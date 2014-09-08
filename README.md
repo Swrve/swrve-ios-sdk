@@ -1,15 +1,28 @@
-Swrve iOS SDK
-=============
-
-Official Swrve native iOS SDK.
+Getting started
+---------------
+Have a look at the quick integration guide at https://dashboard.swrve.com/help/category/20127113
 
 Requirements
 ------------
-
 ### Xcode (latest)
 The SDK supports iOS 6+ and the latest version of Xcode (Xcode 6, as the time of writing).
 
-How to run the Swrve Demo
--------------------------
+How to run the demo
+-------------------
 - Open the project located under SwrveDemo/SwrveDemoFramework.xcodeproj
-- Run on your device or on the emulator
+- Run on your device or on the emulator.
+- Change the App ID and Api Key in the Settings with the values provided by Swrve.
+
+Contributing
+------------
+We would love to see your contributions! Follow these steps:
+
+1. Fork this repository.
+2. Create a branch (`git checkout -b my_awesome_feature`)
+3. Commit your changes (`git commit -m "Awesome feature"`)
+4. Push to the branch (`git push origin my_awesome_feature`)
+5. Open a Pull Request.
+
+License
+-------
+?????
