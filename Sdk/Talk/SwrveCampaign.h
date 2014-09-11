@@ -81,6 +81,12 @@
  */
 -(void)messageWasShownToUser:(SwrveMessage*)message;
 
+/*! Notify that a message was dismissed.
+ *
+ * \param timeDismissed When was the message dismissed.
+ */
+-(void)messageDismissed:(NSDate*)timeDismissed;
+
 /*! Get the campaign settings.
  *
  * \returns Stored campaign settings.
