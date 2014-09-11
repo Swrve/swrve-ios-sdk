@@ -192,13 +192,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * contentServer;
 
-/*! Set to override the default location of the server that Swrve uses to link users across multiple apps by the same publisher.
- * If your company has a special API end-point enabled, then you should specify
- * that here. You should only need to change this value if you are working with Swrve
- * support on a specific support issue.
- */
-@property (nonatomic, retain) NSString * linkServer;
-
 /*! The event cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contant the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
@@ -239,14 +232,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * installTimeCacheFile;
 
-/*! The linkToken is used by Swrve to identify users between a publisher's set of
- * apps on a device. This value must be unique for users, but should be consistent
- * across apps on a given device. The value must be a canonical UUID, for example :
- * 5B093A97-43D1-4478-B14B-2EA2369806E6.
- * On iOS6+, the default value is Apple's IDFV.
- */
-@property (nonatomic, retain) NSString * linkToken;
-
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
  */
 @property (nonatomic) int maxConcurrentDownloads;
@@ -272,7 +257,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
 @property (nonatomic, readonly) NSString * contentServer;
-@property (nonatomic, readonly) NSString * linkServer;
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
@@ -283,7 +267,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * installTimeCacheFile;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
-@property (nonatomic, readonly) NSString * linkToken;
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
@@ -578,9 +561,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 #pragma mark -
 #pragma mark Other
-
-/*! Used internally to track cross promotional installs. */
--(void) clickThruForTargetGame:(long)targetApp source:(NSString*)source;
 
 /*! Sends all events that are queued to the Swrve servers.
  * If any events cannot be send they will be re-queued and sent again later.

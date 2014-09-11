@@ -68,7 +68,6 @@ enum
 };
 
 const static char* swrve_trailing_comma = ",\n";
-static NSString* swrve_link_token_key = @"swrve_link_token";
 static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 
@@ -188,7 +187,6 @@ enum
 - (void) sendCrashlyticsMetadata;
 - (BOOL) isValidJson:(NSData*) json;
 - (void) initResources;
-- (void) initLinking:(NSString*)server;
 - (UInt64) getInstallTime:(NSString*)fileName;
 - (void) sendLogfile;
 - (NSOutputStream*) createLogfile:(int)mode;
@@ -241,8 +239,6 @@ enum
 
 // URLs
 @property (atomic) NSURL* batchURL;
-@property (atomic) NSURL* linkingAppLaunchURL;
-@property (atomic) NSURL* linkingClickThruURL;
 @property (atomic) NSURL* campaignsAndResourcesURL;
 
 @end
@@ -310,7 +306,6 @@ enum
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
-@synthesize linkServer;
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
@@ -321,7 +316,6 @@ enum
 @synthesize installTimeCacheFile;
 @synthesize appVersion;
 @synthesize receiptProvider;
-@synthesize linkToken;
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
@@ -357,7 +351,6 @@ enum
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
         self.talkEnabled = YES;
-        self.linkToken = [self createLinkToken];
         self.pushEnabled = NO;
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
@@ -379,21 +372,6 @@ static NSString* getIDFV() {
     return nil;
 }
 
--(NSString*)createLinkToken
-{
-    NSString* result = getIDFV();
-    if (result) {
-        return result;
-    }
-
-    result = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_link_token_key];
-    if (result) {
-        return result;
-    }
-
-    return [[[NSUUID alloc] init] UUIDString];
-}
-
 @end
 
 @implementation ImmutableSwrveConfig
@@ -402,7 +380,6 @@ static NSString* getIDFV() {
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
-@synthesize linkServer;
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
@@ -413,7 +390,6 @@ static NSString* getIDFV() {
 @synthesize installTimeCacheFile;
 @synthesize appVersion;
 @synthesize receiptProvider;
-@synthesize linkToken;
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
@@ -433,7 +409,6 @@ static NSString* getIDFV() {
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         contentServer = config.contentServer;
-        linkServer = config.linkServer;
         language = config.language;
         eventCacheFile = config.eventCacheFile;
         eventCacheSignatureFile = config.eventCacheSignatureFile;
@@ -444,7 +419,6 @@ static NSString* getIDFV() {
         installTimeCacheFile = config.installTimeCacheFile;
         appVersion = config.appVersion;
         receiptProvider = config.receiptProvider;
-        linkToken = config.linkToken;
         maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
@@ -558,8 +532,6 @@ static bool didSwizzle = false;
 @synthesize eventBufferBytes;
 @synthesize eventsWereSent;
 @synthesize batchURL;
-@synthesize linkingAppLaunchURL;
-@synthesize linkingClickThruURL;
 @synthesize campaignsAndResourcesURL;
 
 + (void) resetSwrveSharedInstance
@@ -707,8 +679,6 @@ static bool didSwizzle = false;
             [[NSUserDefaults standardUserDefaults] setObject:self.deviceUUID forKey:@"swrve_device_id"];
         }
 
-        [self initLinking:swrveConfig.linkServer];
-
         // Setup empty user attributes store
         self.userUpdates = [[NSMutableDictionary alloc]init];
         [self.userUpdates setValue:@"user" forKey:@"type"];
@@ -730,7 +700,7 @@ static bool didSwizzle = false;
         }
 
         [self queueSessionStart];
-        [self userIdentified];
+        [self sendDeviceProperties];
         [self sendIdentifiers];
 
         if (swrveConfig.talkEnabled) {
@@ -1150,20 +1120,6 @@ static bool didSwizzle = false;
     }
 }
 
--(void) clickThruForTargetGame:(long)targetApp source:(NSString*)source
-{
-    NSString * authString = [NSString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&link_token=%@&destination=%ld&source=%@",
-                             self.userID,
-                             self.apiKey,
-                             self.config.appVersion,
-                             self.config.linkToken,
-                             targetApp,
-                             source];
-    DebugLog(@"Swrve click through logged from %ld to %ld as '%@'", self.appID, targetApp, source);
-
-    [self sendHttpGETRequest:[self linkingClickThruURL] queryString:authString];
-}
-
 -(void) setPushNotificationsDeviceToken:(NSData*)newDeviceToken
 {
     NSCAssert(newDeviceToken, @"The device token cannot be null", nil);
@@ -1509,18 +1465,8 @@ static bool didSwizzle = false;
         newConfig.contentServer = [NSString stringWithFormat:@"https://%ld.content.swrve.com", self.appID];
     }
 
-    if (nil == newConfig.linkServer) {
-        newConfig.linkServer = [NSString stringWithFormat:@"https://%ld.link.swrve.com", self.appID];
-    }
-
     // Validate other values
     NSCAssert(newConfig.httpTimeoutSeconds > 0, @"httpTimeoutSeconds must be greater than zero or requests will fail immediately.", nil);
-
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-    if (newConfig.linkToken) {
-        [defaults setObject:newConfig.linkToken forKey:swrve_link_token_key];
-    }
 }
 
 -(void) maybeFlushToDisk
@@ -1662,7 +1608,6 @@ static bool didSwizzle = false;
     NSDictionary* deviceProperties = [self getDeviceProperties];
     NSMutableString* formattedDeviceData = [[NSMutableString alloc] initWithFormat:
     @"                      User: %@\n"
-     "                Link Token: %@\n"
      "                   API Key: %@\n"
      "                    App ID: %ld\n"
      "               App Version: %@\n"
@@ -1670,7 +1615,6 @@ static bool didSwizzle = false;
      "              Event Server: %@\n"
      "            Content Server: %@\n",
           self.userID,
-          self.config.linkToken,
           self.apiKey,
           self.appID,
           self.config.appVersion,
@@ -1800,27 +1744,6 @@ enum HttpStatus {
 
     // 500+
     return HTTP_SERVER_ERROR;
-}
-
-- (void) initLinking:(NSString*) server
-{
-    NSURL* baseURL = [NSURL URLWithString:server];
-    [self setLinkingAppLaunchURL:[NSURL URLWithString:@"1/app_launch" relativeToURL:baseURL]];
-    [self setLinkingClickThruURL:[NSURL URLWithString:@"1/click_thru" relativeToURL:baseURL]];
-}
-
-- (void) userIdentified
-{
-    NSString* query = [NSString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&link_token=%@",
-                            self.userID,
-                            self.apiKey,
-                            self.config.appVersion,
-                            self.config.linkToken];
-
-    [self sendHttpGETRequest:[self linkingAppLaunchURL] queryString:query];
-
-    // Always send device data
-    [self sendDeviceProperties];
 }
 
 - (NSOutputStream*) createLogfile:(int)mode
