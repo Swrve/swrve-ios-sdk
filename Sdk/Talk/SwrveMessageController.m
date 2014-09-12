@@ -803,12 +803,18 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return true;
 }
 
+-(void)setMessageMinDelayThrottle
+{
+    NSDate* now = [[self analyticsSDK] getNow];
+    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+}
+
 -(void)messageWasShownToUser:(SwrveMessage*)message
 {
     NSDate* now = [[self analyticsSDK] getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
-    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+    [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
 
     [[message campaign] messageWasShownToUser:message at:now];
@@ -939,11 +945,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) dismissMessageWindow {
-
     if( self.inAppMessageWindow == nil ) {
         DebugLog(@"No message to dismiss.", nil);
         return;
     }
+    [self setMessageMinDelayThrottle];
+    NSDate* now = [[self analyticsSDK] getNow];
+    SwrveCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
+    [dismissedCampaign messageDismissed:now];
     
     if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
         [self.showMessageDelegate messageWillBeHidden:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
