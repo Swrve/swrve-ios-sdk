@@ -418,6 +418,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         for (NSDictionary* notification in self.notifications) {
             [self.qaUser pushNotification:notification];
         }
+    } else {
+        self.qaUser = nil;
     }
     
     // Empty saved push notifications
