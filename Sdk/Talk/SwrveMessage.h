@@ -33,7 +33,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
 /*! In-app message. */
 @interface SwrveMessage : NSObject
 
-@property (nonatomic, unsafe_unretained) SwrveCampaign* campaign; /*!< Reference to parent campaign */
+@property (nonatomic, weak)              SwrveCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* messageID;     /*!< Identifies the message in a campaign */
 @property (nonatomic, retain)            NSString* name;          /*!< Name of the message */
 @property (nonatomic, retain)            NSNumber* priority;      /*!< Priority of the message */
