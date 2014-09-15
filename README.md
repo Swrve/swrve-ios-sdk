@@ -25,4 +25,4 @@ We would love to see your contributions! Follow these steps:
 
 License
 -------
-?????
+Distributed under the [Apache 2.0 License](LICENSE).
