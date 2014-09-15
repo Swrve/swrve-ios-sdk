@@ -639,19 +639,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Ignore delay after launch throttle limit for auto show messages
         if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:now])
         {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{Game throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
+            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
             return nil;
         }
         
         if ([self isTooSoonToShowMessageAfterDelay:now])
         {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{Game throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
+            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
             return nil;
         }
         
         if ([self hasShowTooManyMessagesAlready])
         {
-            [self noMessagesWereShown:event withReason:@"{Game throttle limit} Too many messages shown"];
+            [self noMessagesWereShown:event withReason:@"{App throttle limit} Too many messages shown"];
             return nil;
         }
         
