@@ -904,27 +904,16 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
--(int) iapWithRawParameters:(SwrveIAPRewards*)rewards localCost:(double)localCost localCurrency:(NSString*) localCurrency productId:(NSString*) productId productIdQuantity:(int) productIdQuantity receipt:(NSData*) receipt
+-(int) unvalidatedIap:(SwrveIAPRewards*) rewards localCost:(double) localCost localCurrency:(NSString*) localCurrency productId:(NSString*) productId productIdQuantity:(int) productIdQuantity
 {
-    NSString* store = @"apple";
-    if(receipt == nil) {
-        store = @"unknown";
-    }
-
-    NSString* encodedReceipt = @"";
-    if( receipt != nil ) {
-        encodedReceipt = [self.config.receiptProvider base64encode:receipt];
-    }
-
     [self maybeFlushToDisk];
     NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
-    [json setValue:store forKey:@"app_store"];
+    [json setValue:@"unknown" forKey:@"app_store"];
     [json setValue:localCurrency forKey:@"local_currency"];
     [json setValue:[NSNumber numberWithDouble:localCost] forKey:@"cost"];
     [json setValue:productId forKey:@"product_id"];
     [json setValue:[NSNumber numberWithInteger:productIdQuantity] forKey:@"quantity"];
     [json setValue:[rewards rewards] forKey:@"rewards"];
-    [json setValue:encodedReceipt forKey:@"receipt"];
     [self queueEvent:@"iap" data:json triggerCallback:true];
     return SWRVE_SUCCESS;
 }

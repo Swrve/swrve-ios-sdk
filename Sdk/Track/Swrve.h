@@ -444,8 +444,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product rewards:(SwrveIAPRewards*)rewards;
 
-/*! Similar to iap event but does not use objects to pass data. Set receipt to
- * nil to disable Swrve's server side receipt verification.
+/*! Similar to iap event but does validate the receipt data server side.
  *
  * \param rewards The SwrveIAPRewards object containing any additional
  *                items or in-app currencies that are part of this purchase.
@@ -454,10 +453,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \param localCurrency The name of the currency that the user has spent in real money.
  * \param productId The ID of the IAP item being purchased.
  * \param productIdQuantity The number of product items being purchased (usually 1).
- * \param receipt Digital receipt of the transaction.
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
--(int) iapWithRawParameters:(SwrveIAPRewards*)rewards localCost:(double)localCost localCurrency:(NSString*) localCurrency productId:(NSString*) productId productIdQuantity:(int) productIdQuantity receipt:(NSData*) receipt;
+-(int) unvalidatedIap:(SwrveIAPRewards*)rewards localCost:(double)localCost localCurrency:(NSString*)localCurrency productId:(NSString*)productId productIdQuantity:(int)productIdQuantity;
 
 /*! Call this to send a named custom event with no payload.
  *
