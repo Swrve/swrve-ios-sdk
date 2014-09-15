@@ -90,7 +90,10 @@ static CGPoint scaled(CGPoint point, float scale)
 
 -(void)wasPressedByUser
 {
-    [self.controller buttonWasPressedByUser:self];
+    SwrveMessageController* c = self.controller;
+    if (c != nil) {
+        [c buttonWasPressedByUser:self];
+    }
 }
 
 @end
