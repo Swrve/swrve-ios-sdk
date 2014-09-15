@@ -705,9 +705,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             {
                 if (result != otherMessage)
                 {
-                    NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:otherMessage.campaign.ID] stringValue];
-                    [campaignMessages setValue:otherMessage.messageID forKey:campaignIdString];
-                    [campaignReasons setValue:[NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long)campaign.ID] forKey:campaignIdString];
+                    SwrveCampaign* c = otherMessage.campaign;
+                    if (c != nil)
+                    {
+                        NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:c.ID] stringValue];
+                        [campaignMessages setValue:otherMessage.messageID forKey:campaignIdString];
+                        [campaignReasons setValue:[NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long)campaign.ID] forKey:campaignIdString];
+                    }
                 }
             }
         }
@@ -817,7 +821,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
 
-    [[message campaign] messageWasShownToUser:message at:now];
+    SwrveCampaign* c = message.campaign;
+    if (c != nil) {
+        [c messageWasShownToUser:message at:now];
+    }
     [self saveSettings];
 
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];

@@ -26,8 +26,8 @@
 @property (atomic)                       CGSize  size;                          /*!< Size of the button. */
 @property (atomic)                       long messageID;                        /*!< Message identifier associated with this button. */
 @property (atomic)                       long appID;                            /*!< ID of the target installation app. */
-@property (nonatomic, unsafe_unretained) SwrveMessageController* controller;    /*!< Reference to parent message controller. */
-@property (nonatomic, unsafe_unretained) SwrveMessage* message;                 /*!< Reference to parent message. */
+@property (nonatomic, weak)              SwrveMessageController* controller;    /*!< Reference to parent message controller. */
+@property (nonatomic, weak)              SwrveMessage* message;                 /*!< Reference to parent message. */
 
 /*! Create a button with the given orientation and position.
  *

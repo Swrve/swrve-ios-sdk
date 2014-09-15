@@ -19,7 +19,7 @@
 
 @interface SwrveMessage()
 
-@property (nonatomic, unsafe_unretained) SwrveMessageController* controller;
+@property (nonatomic, weak) SwrveMessageController* controller;
 
 @end
 
@@ -117,7 +117,10 @@ static bool in_cache(NSString* file, NSSet* set){
 
 -(void)wasShownToUser
 {
-    [self.controller messageWasShownToUser:self];
+    SwrveMessageController* c = self.controller;
+    if (c != nil) {
+        [c messageWasShownToUser:self];
+    }
 }
 
 @end
