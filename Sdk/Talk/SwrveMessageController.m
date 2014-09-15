@@ -51,7 +51,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @interface SwrveMessageController()
 
 @property (nonatomic, retain) NSString*             user;
-@property (nonatomic, retain) NSString*             token;
 @property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSString*         	server;
@@ -112,7 +111,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize backgroundColor;
 @synthesize campaigns;
 @synthesize user;
-@synthesize token;
 @synthesize assetsOnDisk;
 @synthesize notifications;
 @synthesize language;
@@ -148,7 +146,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
-    self.token              = sdk.config.linkToken;
     self.apiKey             = sdk.apiKey;
     self.server             = sdk.config.contentServer;
     self.analyticsSDK       = sdk;
@@ -806,12 +803,18 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return true;
 }
 
+-(void)setMessageMinDelayThrottle
+{
+    NSDate* now = [[self analyticsSDK] getNow];
+    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+}
+
 -(void)messageWasShownToUser:(SwrveMessage*)message
 {
     NSDate* now = [[self analyticsSDK] getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
-    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+    [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
 
     [[message campaign] messageWasShownToUser:message at:now];
@@ -830,12 +833,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
-    }
-
-    if (button.actionType == kSwrveActionInstall) {
-        DebugLog(@"Sending click_thru link event", nil);
-        NSString* clickSource = [NSString stringWithFormat:@"Swrve.Message-%ld", button.messageID];
-        [self.analyticsSDK clickThruForTargetGame:button.appID source:clickSource];
     }
 }
 
@@ -948,11 +945,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) dismissMessageWindow {
-
     if( self.inAppMessageWindow == nil ) {
         DebugLog(@"No message to dismiss.", nil);
         return;
     }
+    [self setMessageMinDelayThrottle];
+    NSDate* now = [[self analyticsSDK] getNow];
+    SwrveCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
+    [dismissedCampaign messageDismissed:now];
     
     if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
         [self.showMessageDelegate messageWillBeHidden:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
@@ -1126,8 +1126,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 
-    return [NSString stringWithFormat:@"version=%d&link_token=%@&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
-            CAMPAIGN_VERSION, self.token, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
 }
 
 @end
