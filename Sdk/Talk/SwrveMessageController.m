@@ -20,8 +20,8 @@
 #import "SwrveTalkQA.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
-static NSString* swrve_campaign_cache = @"cmcc.json";
-static NSString* swrve_campaign_cache_signature = @"cmccsgt.txt";
+static NSString* swrve_campaign_cache = @"cmcc2.json";
+static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 
 const static int CAMPAIGN_VERSION            = 4;
