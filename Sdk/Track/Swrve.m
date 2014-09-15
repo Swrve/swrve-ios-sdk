@@ -341,11 +341,11 @@ enum
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         eventCacheFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
 
-        userResourcesCacheFile = [caches stringByAppendingPathComponent: @"srcngt.txt"];
-        userResourcesCacheSignatureFile = [caches stringByAppendingPathComponent: @"srcngtsgt.txt"];
+        userResourcesCacheFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
+        userResourcesCacheSignatureFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
 
-        userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt.txt"];
-        userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt.txt"];
+        userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
+        userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
@@ -362,14 +362,6 @@ enum
         };
     }
     return self;
-}
-
-static NSString* getIDFV() {
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(identifierForVendor)]) {
-        return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    }
-
-    return nil;
 }
 
 @end
@@ -619,14 +611,11 @@ static bool didSwizzle = false;
         if (!swrveUserID) {
             swrveUserID = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key];
             if(!swrveUserID) {
-                swrveUserID = getIDFV();
-            }
-            if(!swrveUserID) {
                 swrveUserID = [[NSUUID UUID] UUIDString];
             }
         }
 
-        instanceID = [[SwrveInstanceIDRecorder sharedInstance]addSwrveInstanceID];
+        instanceID = [[SwrveInstanceIDRecorder sharedInstance] addSwrveInstanceID];
         [self sendCrashlyticsMetadata];
 
         NSCAssert(swrveConfig, @"Null config object given to Swrve", nil);
@@ -701,8 +690,7 @@ static bool didSwizzle = false;
 
         [self queueSessionStart];
         [self sendDeviceProperties];
-        [self sendIdentifiers];
-
+        
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
         }
@@ -1506,22 +1494,6 @@ static bool didSwizzle = false;
     }
 }
 
--(void) sendIdentifiers
-{
-    NSMutableDictionary* identifiers = [[NSMutableDictionary alloc] init];
-
-    NSString* id_forv = getIDFV();
-    if (id_forv) {
-        [identifiers setValue:id_forv forKey:@"ios_idfv"];
-    }
-
-    if ([identifiers count] > 0) {
-        NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
-        [json setValue:identifiers forKey:@"identifiers"];
-        [self queueEvent:@"identifiers" data:json triggerCallback:false];
-    }
-}
-
 - (float) _estimate_dpi
 {
     float scale = 1;
@@ -2088,7 +2060,7 @@ enum HttpStatus {
 
 - (NSString*) getSignatureKey
 {
-    return [NSString stringWithFormat:@"%@%llu%@", self.apiKey, self->install_time, getIDFV()];
+    return [NSString stringWithFormat:@"%@%llu", self.apiKey, self->install_time];
 }
 
 - (void)signatureError:(NSURL*)file
