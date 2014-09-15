@@ -175,7 +175,10 @@ enum
         // Add campaign that was shown, if available
         if (messageShown != NULL) {
             NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
-            [campaignInfo setValue:[NSNumber numberWithUnsignedInteger:messageShown.campaign.ID] forKey:@"id"];
+            SwrveCampaign* c = messageShown.campaign;
+            if (c != nil) {
+                [campaignInfo setValue:[NSNumber numberWithUnsignedInteger:c.ID] forKey:@"id"];
+            }
             [campaignInfo setValue:[NSNumber numberWithBool:TRUE] forKey:@"displayed"];
             [campaignInfo setValue:messageShown.messageID forKey:@"message_id"];
             [campaignInfo setValue:@"" forKey:@"reason"];
