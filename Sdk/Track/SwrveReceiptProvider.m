@@ -38,7 +38,7 @@ static SwrveReceiptProviderResult* receipt_ios7(SKPaymentTransaction* transactio
 }
 
 // Return the transaction receipt data from a device that is running iO6.
-// This required a reference to the SKPaymentTransaction, since the receipt data
+// This requires a reference to the SKPaymentTransaction, since the receipt data
 // is embedded inside it.
 static SwrveReceiptProviderResult* receipt_ios6(SKPaymentTransaction* transaction) {
     NSData* receipt = [transaction transactionReceipt];

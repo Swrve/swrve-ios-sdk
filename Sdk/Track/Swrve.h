@@ -25,7 +25,7 @@ enum
     SWRVE_FAILURE = -1  /*!< Method did not execute successfully. */
 };
 
-/*! Defines the block signature for receiving resouces after calling
+/*! Defines the block signature for receiving resources after calling
  * Swrve getUserResources.
  *
  * \param resources         A dictionary containing the resources.
@@ -57,9 +57,9 @@ typedef void (^SwrveEventQueuedCallback) (NSDictionary * eventPayload,
 /*! SwrveIAPRewards contains additional IAP rewards that you want to send to Swrve.
  *
  * If the IAP represents a bundle containing a few reward items and/or
- * in-app currencies you can create create a SwrveIAPRewards object and call
+ * in-app currencies you can create a SwrveIAPRewards object and call
  * addCurrency: and addItem: for each element contained in the bundle.
- * By including this when recording an iap event with Swrve you will be able to track
+ * By including this when recording an IAP event with Swrve you will be able to track
  * individual bundle items as well as the bundle purchase itself.
  */
 @interface SwrveIAPRewards : NSObject
@@ -116,7 +116,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * language;
 
-/*! Controls if resources and in-app campaigns are automatically downloaded.
+/*! Controls if resources and in-app messages are automatically downloaded.
  */
 @property (nonatomic) BOOL autoDownloadCampaignsAndResources;
 
@@ -179,7 +179,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, retain) NSString * contentServer;
 
 /*! The event cache stores data that has not yet been sent to Swrve.
- * If you plan to change this please contant the team at Swrve who will be happy to help you out.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
@@ -190,7 +190,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The user resources cache stores the result of calls to Swrve getUserResources
  * so that the results can be used when the device is offline.
- * If you plan to change this please contant the team at Swrve who will be happy to help you out.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
@@ -201,7 +201,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The user resources diff cache stores the result of calls to Swrve getUserResourcesDiff
  * so that the results can be used when the device is offline.
- * If you plan to change this please contant the team at Swrve who will be happy to help you out.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
@@ -210,9 +210,8 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Store signature to verify content of userResourcesDiffCacheFile. */
 @property (nonatomic, retain) NSString * userResourcesDiffCacheSignatureFile;
 
-/*! The install-time cache caches the time that the user first installed the
- * app.
- * If you plan to change this please contant the team at Swrve who will be happy to help you out.
+/*! The install-time cache caches the time that the user first installed the app.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
@@ -225,7 +224,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Internal Only.
  * Used to get a base64 encoded string of the receipt associated
  * with a StoreKit SKPaymentTransaction.
- * This is exposed to the config object to allow dependancy injection for testing
+ * This is exposed to the config object to allow dependency injection for testing
  * in isolation and for mocking.
  */
 @property (nonatomic, retain) SwrveReceiptProvider* receiptProvider;
@@ -404,7 +403,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Call this when the user has bought something using real currency.
  *
- * See the REST API docs for the iap event for a detailed description of the
+ * See the REST API docs for the IAP event for a detailed description of the
  * semantics of this call, noting in particular the format specification for
  * currency.
  *
@@ -415,10 +414,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product;
 
 /*!
- * Call this when the user has bought something using real currency.  Include
- * the virtual item and currency given to the user in rewards.
+ * Call this when the user has bought something using real currency.  
+ * Include the virtual item and currency given to the user in rewards.
  *
- * See the REST API docs for the iap event for a detailed description of the
+ * See the REST API docs for the IAP event for a detailed description of the
  * semantics of this call, noting in particular the format specification for
  * currency.
  *
@@ -430,7 +429,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product rewards:(SwrveIAPRewards*)rewards;
 
-/*! Similar to iap event but does validate the receipt data server side.
+/*! Similar to IAP event but does not validate the receipt data server side.
  *
  * \param rewards The SwrveIAPRewards object containing any additional
  *                items or in-app currencies that are part of this purchase.
@@ -464,7 +463,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  *
  * \param givenCurrency The name of the in-app currency that the player was
  *                      rewarded with.
- * \param givenAmount The amount of virtual currency that the player was
+ * \param givenAmount The amount of in-app currency that the player was
  *                    rewarded with.
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
@@ -482,13 +481,13 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 #pragma mark -
 #pragma mark User Resources
 
-/*! If SwrveConfig.autoDownloadCampaignsAndResources is true (default value) this function is called
+/*! If SwrveConfig.autoDownloadCampaignsAndResources is YES (default value) this function is called
  * automatically to keep the user resources and campaign data up to date.
  *
  * Use the resourceManager to get the latest up-to-date values for the resources.
  *
- * If SwrveConfig.autoDownloadCampaignsAndResources is set to false, please call this function to update
- * values. This function issues an asynchronous HTTP request to the Swrve ABTest server
+ * If SwrveConfig.autoDownloadCampaignsAndResources is set to NO, please call this function to update
+ * values. This function issues an asynchronous HTTP request to the Swrve content server
  * specified in SwrveConfig. This function will return immediately, and the
  * callback will be fired after the Swrve server has sent its response. At this point
  * the resourceManager can be used to retrieve the updated resource values.
@@ -507,7 +506,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  *
  * http://dashboard.swrve.com/help/docs/abtest_api#GetUserResources
  *
- * This function issues an asynchronous HTTP request to the Swrve AB-Test server
+ * This function issues an asynchronous HTTP request to the Swrve content server
  * specified in SwrveConfig. This function will return immediately, and the
  * callback will be fired at some unspecified time in the future. The callback
  * will be fired after the Swrve server has sent some AB-Test modifications to
@@ -522,13 +521,13 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(void) getUserResources:(SwrveUserResourcesCallback)callbackBlock;
 
-/*! Gets a list of resource differences that should be applied to items for the .
+/*! Gets a list of resource differences that should be applied to items for the
  * given user based on the A/B test the user is involved in.  Please refer to
  * our online documentation for more details:
  *
  * http://dashboard.swrve.com/help/docs/abtest_api#GetUserResourcesDiff
  *
- * This function issues an asynchronous HTTP request to the Serve AB-Test server
+ * This function issues an asynchronous HTTP request to the Swrve content server
  * specified in #swrve_init. This function will return immediately, and the
  * callback will be fired at some unspecified time in the future. The callback
  * will be fired after the Swrve server has sent some AB-Test modifications to

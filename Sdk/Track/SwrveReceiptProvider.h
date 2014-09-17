@@ -10,10 +10,10 @@
 
 @end
 
-/*! Used internally to take a transaction and returns a base-64 encoded
- * version of the receipt that transaction.
+/*! Used internally to take a transaction and return a base-64 encoded
+ * version of the receipt for that transaction.
  *
- * The location of the receipt data and how to base 64 encode this data differs
+ * The location of the receipt data and how to base-64 encode this data differs
  * between different versions of iOS.
  */
 @interface SwrveReceiptProvider : NSObject

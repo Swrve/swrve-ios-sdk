@@ -2,7 +2,7 @@
 
 @class SwrveMessage;
 
-/*! Manage a in-app message on screen */
+/*! Manage an in-app message on screen */
 @interface SwrveMessageViewController : UIViewController
 
 @property (nonatomic, retain) SwrveMessage*      message;   /*!< Message to render. */

@@ -33,7 +33,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 -(id)initAtTime:(NSDate*)time
 {
     self = [super init];
-    // Defaul both dates to now
+    // Default both dates to now
     NSDate* now = [NSDate date];
     [self setDateStart:now];
     [self setDateEnd:now];
