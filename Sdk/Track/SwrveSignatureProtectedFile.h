@@ -30,7 +30,7 @@
 - (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey;
 - (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey signatureErrorListener:(id<SwrveSignatureErrorListener>)listener;
 
-/*!Write the data specified into the file and create a signature file for verification. */
+/*! Write the data specified into the file and create a signature file for verification. */
 - (void) writeToFile:(NSData*)content;
 
 /*! Read from the file, returning an error if file does not exist or signature is invalid. */

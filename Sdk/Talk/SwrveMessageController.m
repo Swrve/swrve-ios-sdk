@@ -561,8 +561,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
                  NSURL* dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
 
-                 // TODO: Do this write to disk asynchronously
                  [data writeToURL:dst atomically:YES];
+
                  // Add the asset to the set of assets that we know are downloaded.
                  [self.assetsOnDisk addObject:asset];
                  DebugLog(@"Asset downloaded: %@", asset);
@@ -583,7 +583,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)autoShowMessages
 {
-    // Don't do anything if we've already shown a message or if its too long after session start
+    // Don't do anything if we've already shown a message or if it is too long after session start
     if (![self autoShowMessagesEnabled]) {
         return;
     }

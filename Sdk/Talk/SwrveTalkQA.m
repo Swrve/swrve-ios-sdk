@@ -18,7 +18,7 @@
 enum
 {
     // The API version of this file.
-    // This is send to the server on each call, and should not be modified.
+    // This is sent to the server on each call, and should not be modified.
     QA_API_VERSION = 1,
     
     // This is the max timeout on a HTTP send before Swrve will kill the connection

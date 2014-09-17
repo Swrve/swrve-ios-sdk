@@ -34,7 +34,7 @@
 enum
 {
     // The API version of this file.
-    // This is send to the server on each call, and should not be modified.
+    // This is sent to the server on each call, and should not be modified.
     SWRVE_VERSION = 2,
 
     // Initial size of the in-memory queue
@@ -46,16 +46,16 @@ enum
     // to disk, and the queue will be emptied.
     SWRVE_MEMORY_QUEUE_MAX_BYTES = KB(100),
 
-    // This is the largest size that the disk-cache persist between runs of the
+    // This is the largest size that the disk-cache persists between runs of the
     // application. The file may grow larger than this size over a very long run
     // of the app, but then next time the app is run, the file will be truncated.
-    // To avoid losing data, you should allow enough disk space here for your apps
+    // To avoid losing data, you should allow enough disk space here for your app's
     // messages.
     SWRVE_DISK_MAX_BYTES = MB(4),
 
     // This is the max timeout on a HTTP send before Swrve will kill the connection
     // This is used for sending data to Swrve. For data where the client is reading
-    // from Swrve, the timeout is mush smaller, and is specified in swrve_config
+    // from Swrve, the timeout is much smaller, and is specified in swrve_config
     // This value of 4000 seconds is the maximum latency seen to api.swrve.com
     // over a 7 day period in July 2013
     SWRVE_SEND_TIMEOUT_SECONDS = 4000,
@@ -219,7 +219,7 @@ enum
 @property (atomic) double campaignsAndResourcesFlushRefreshDelay;
 @property (atomic) NSTimer* campaignsAndResourcesTimer;
 @property (atomic) NSDate* campaignsAndResourcesLastRefreshed;
-@property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to api returns
+@property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to API returns
 
 // Resource cache files
 @property (atomic) SwrveSignatureProtectedFile* resourcesFile;
@@ -699,7 +699,7 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
-        // All set up, so start to do any work work now.
+        // All set up, so start to do any work now.
         self.deviceUUID = [[NSUserDefaults standardUserDefaults] stringForKey:@"swrve_device_id"];
         if (self.deviceUUID == nil) {
             // This is the first time we see this device, assign a UUID to it
@@ -709,7 +709,7 @@ static bool didSwizzle = false;
 
         [self initLinking:swrveConfig.linkServer];
 
-        // Setup empty user attributes store
+        // Set up empty user attributes store
         self.userUpdates = [[NSMutableDictionary alloc]init];
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
@@ -720,7 +720,7 @@ static bool didSwizzle = false;
             SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
             SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
 
-            // Cast to actual method signature, otherwise it may crash
+            // Cast to actual method signature
             didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegister inObject:appDelegate withImplementationIn:self];
             didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFail inObject:appDelegate withImplementationIn:self];
             didSwizzle = true;
@@ -908,7 +908,7 @@ static bool didSwizzle = false;
             [json setValue:[rewards rewards] forKey:@"rewards"];
             [json setValue:encodedReceipt forKey:@"receipt"];
             if ( receipt.transactionId ) {
-                // Send transactionId only for iOS7+. It is how the server knows it is an iOS7 receipt!
+                // Send transactionId only for iOS7+. This is how the server knows it is an iOS7 receipt!
                 [json setValue:receipt.transactionId forKey:@"transaction_id"];
             }
             [self queueEvent:@"iap" data:json triggerCallback:true];
@@ -1422,9 +1422,8 @@ static bool didSwizzle = false;
     }
 }
 
-/*
- *If talk enabled ensure that after SWRVE_DEFAULT_AUTOSHOW_MESSAGES_MAX_DELAY autoshow is disabled
- */
+
+//If talk enabled ensure that after SWRVE_DEFAULT_AUTOSHOW_MESSAGES_MAX_DELAY autoshow is disabled
 -(void) disableAutoShowAfterDelay
 {
     if ([self talk]) {
@@ -1481,7 +1480,7 @@ static bool didSwizzle = false;
 }
 
 // Get a string that represents the current App Version
-// The implemention intentionally is unspecified, the rest of the SDK is not aware
+// The implementation intentionally is unspecified, the rest of the SDK is not aware
 // of the details of this.
 +(NSString*) getAppVersion
 {
@@ -1500,7 +1499,7 @@ static bool didSwizzle = false;
 
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
-    // Setup default server locations
+    // Set up default server locations
     if (nil == newConfig.eventsServer) {
         newConfig.eventsServer = [NSString stringWithFormat:@"https://%ld.api.swrve.com", self.appID];
     }
@@ -1602,7 +1601,6 @@ static bool didSwizzle = false;
     if (crashlyticsClass != nil) {
         SEL setObjectValueSelector = NSSelectorFromString(@"setObjectValue:forKey:");
         if ([crashlyticsClass respondsToSelector:setObjectValueSelector]) {
-            // TODO
             IMP imp = [crashlyticsClass methodForSelector:setObjectValueSelector];
             void (*func)(__strong id, SEL, id, NSString*) = (void(*)(__strong id, SEL, id, NSString*))imp;
             func(crashlyticsClass, setObjectValueSelector, @SWRVE_SDK_VERSION, @"Swrve_version");
@@ -1703,8 +1701,7 @@ static bool didSwizzle = false;
         DebugLog(@"could not read file: %@", fileName);
     }
 
-    // If we loaded a value and it was not zero (or less than zero?)
-    // then we are done.
+    // If we loaded a non-zero value we're done.
     if (seconds > 0)
     {
         UInt64 result = seconds;
@@ -1912,7 +1909,7 @@ enum HttpStatus {
                      options:NSJSONReadingMutableContainers
                      error:nil];
 
-    // Device ID needs to be unique for this user only, so we create a shorter version to safe on storage in S3
+    // Device ID needs to be unique for this user only, so we create a shorter version to save on storage in S3
     NSUInteger shortDeviceID = [self.deviceUUID hash];
     if (shortDeviceID > 10000) {
         shortDeviceID = shortDeviceID / 1000;
