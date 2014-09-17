@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "SwrveMessageViewController.h"
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
@@ -97,7 +83,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 @property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */
 @property (nonatomic, retain) NSArray* campaigns;                                       /*!< List of campaigns available to the user. */
-@property (nonatomic, assign) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
+@property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
 @property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;    /*!< Implement this delegate to process custom button actions. */
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */

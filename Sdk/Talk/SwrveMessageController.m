@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "SwrveMessageController.h"
 #import "Swrve.h"
 #import "SwrveButton.h"
@@ -20,8 +6,8 @@
 #import "SwrveTalkQA.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
-static NSString* swrve_campaign_cache = @"cmcc.json";
-static NSString* swrve_campaign_cache_signature = @"cmccsgt.txt";
+static NSString* swrve_campaign_cache = @"cmcc2.json";
+static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 
 const static int CAMPAIGN_VERSION            = 4;
@@ -51,7 +37,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @interface SwrveMessageController()
 
 @property (nonatomic, retain) NSString*             user;
-@property (nonatomic, retain) NSString*             token;
 @property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSString*         	server;
@@ -112,7 +97,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize backgroundColor;
 @synthesize campaigns;
 @synthesize user;
-@synthesize token;
 @synthesize assetsOnDisk;
 @synthesize notifications;
 @synthesize language;
@@ -148,7 +132,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
-    self.token              = sdk.config.linkToken;
     self.apiKey             = sdk.apiKey;
     self.server             = sdk.config.contentServer;
     self.analyticsSDK       = sdk;
@@ -421,6 +404,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         for (NSDictionary* notification in self.notifications) {
             [self.qaUser pushNotification:notification];
         }
+    } else {
+        self.qaUser = nil;
     }
     
     // Empty saved push notifications
@@ -640,19 +625,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Ignore delay after launch throttle limit for auto show messages
         if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:now])
         {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{Game throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
+            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
             return nil;
         }
         
         if ([self isTooSoonToShowMessageAfterDelay:now])
         {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{Game throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
+            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
             return nil;
         }
         
         if ([self hasShowTooManyMessagesAlready])
         {
-            [self noMessagesWereShown:event withReason:@"{Game throttle limit} Too many messages shown"];
+            [self noMessagesWereShown:event withReason:@"{App throttle limit} Too many messages shown"];
             return nil;
         }
         
@@ -708,9 +693,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             {
                 if (result != otherMessage)
                 {
-                    NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:otherMessage.campaign.ID] stringValue];
-                    [campaignMessages setValue:otherMessage.messageID forKey:campaignIdString];
-                    [campaignReasons setValue:[NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long)campaign.ID] forKey:campaignIdString];
+                    SwrveCampaign* c = otherMessage.campaign;
+                    if (c != nil)
+                    {
+                        NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:c.ID] stringValue];
+                        [campaignMessages setValue:otherMessage.messageID forKey:campaignIdString];
+                        [campaignReasons setValue:[NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long)campaign.ID] forKey:campaignIdString];
+                    }
                 }
             }
         }
@@ -806,15 +795,24 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return true;
 }
 
+-(void)setMessageMinDelayThrottle
+{
+    NSDate* now = [[self analyticsSDK] getNow];
+    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+}
+
 -(void)messageWasShownToUser:(SwrveMessage*)message
 {
     NSDate* now = [[self analyticsSDK] getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
-    [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
+    [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
 
-    [[message campaign] messageWasShownToUser:message at:now];
+    SwrveCampaign* c = message.campaign;
+    if (c != nil) {
+        [c messageWasShownToUser:message at:now];
+    }
     [self saveSettings];
 
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
@@ -830,12 +828,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
-    }
-
-    if (button.actionType == kSwrveActionInstall) {
-        DebugLog(@"Sending click_thru link event", nil);
-        NSString* clickSource = [NSString stringWithFormat:@"Swrve.Message-%ld", button.messageID];
-        [self.analyticsSDK clickThruForTargetGame:button.appID source:clickSource];
     }
 }
 
@@ -948,11 +940,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) dismissMessageWindow {
-
     if( self.inAppMessageWindow == nil ) {
         DebugLog(@"No message to dismiss.", nil);
         return;
     }
+    [self setMessageMinDelayThrottle];
+    NSDate* now = [[self analyticsSDK] getNow];
+    SwrveCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
+    [dismissedCampaign messageDismissed:now];
     
     if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
         [self.showMessageDelegate messageWillBeHidden:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
@@ -1126,8 +1121,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 
-    return [NSString stringWithFormat:@"version=%d&link_token=%@&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
-            CAMPAIGN_VERSION, self.token, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
 }
 
 @end

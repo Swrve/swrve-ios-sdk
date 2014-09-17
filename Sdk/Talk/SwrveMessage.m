@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "SwrveMessage.h"
 #import "Swrve.h"
 #import "SwrveButton.h"
@@ -19,7 +5,7 @@
 
 @interface SwrveMessage()
 
-@property (nonatomic, unsafe_unretained) SwrveMessageController* controller;
+@property (nonatomic, weak) SwrveMessageController* controller;
 
 @end
 
@@ -117,7 +103,10 @@ static bool in_cache(NSString* file, NSSet* set){
 
 -(void)wasShownToUser
 {
-    [self.controller messageWasShownToUser:self];
+    SwrveMessageController* c = self.controller;
+    if (c != nil) {
+        [c messageWasShownToUser:self];
+    }
 }
 
 @end
