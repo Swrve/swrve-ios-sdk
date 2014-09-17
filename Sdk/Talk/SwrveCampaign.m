@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 
@@ -66,14 +52,16 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     [self messageWasShownToUser:message at:[NSDate date]];
 }
 
+-(void)setMessageMinDelayThrottle:(NSDate*)timeShown
+{
+    [self setShowMsgsAfterDelay:[timeShown dateByAddingTimeInterval:[self minDelayBetweenMsgs]]];
+}
+
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown
 {
     #pragma unused(message)
     [self incrementImpressions];
-    
-    // The message was shown. Take the current time so that we can throttle messages
-    // from being shown too quickly.
-    [self setShowMsgsAfterDelay:[timeShown dateByAddingTimeInterval:[self minDelayBetweenMsgs]]];
+    [self setMessageMinDelayThrottle:timeShown];
     
     if (![self randomOrder])
     {
@@ -82,6 +70,11 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         DebugLog(@"Round Robin message in campaign %ld is %ld (next will be %ld)", (unsigned long)[self ID], (unsigned long)[self next], (unsigned long)nextMessage);
         [self setNext:nextMessage];
     }
+}
+
+-(void)messageDismissed:(NSDate *)timeDismissed
+{
+    [self setMessageMinDelayThrottle:timeDismissed];
 }
 
 -(void)incrementImpressions;

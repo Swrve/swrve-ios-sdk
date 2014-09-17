@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "SwrveMessageFormat.h"
 
 /*! Enumerates the possible types of action that can be associated with tapping a message button. */
@@ -33,7 +19,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
 /*! In-app message. */
 @interface SwrveMessage : NSObject
 
-@property (nonatomic, unsafe_unretained) SwrveCampaign* campaign; /*!< Reference to parent campaign */
+@property (nonatomic, weak)              SwrveCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* messageID;     /*!< Identifies the message in a campaign */
 @property (nonatomic, retain)            NSString* name;          /*!< Name of the message */
 @property (nonatomic, retain)            NSNumber* priority;      /*!< Priority of the message */

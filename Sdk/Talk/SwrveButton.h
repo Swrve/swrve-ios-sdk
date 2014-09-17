@@ -1,17 +1,3 @@
-/*
- * SWRVE CONFIDENTIAL
- *
- * (c) Copyright 2010-2014 Swrve New Media, Inc. and its licensors.
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is and remains the property of Swrve
- * New Media, Inc or its licensors.  The intellectual property and technical
- * concepts contained herein are proprietary to Swrve New Media, Inc. or its
- * licensors and are protected by trade secret and/or copyright law.
- * Dissemination of this information or reproduction of this material is
- * strictly forbidden unless prior written permission is obtained from Swrve.
- */
-
 #import "SwrveMessageController.h"
 
 @class SwrveMessageController;
@@ -26,8 +12,8 @@
 @property (atomic)                       CGSize  size;                          /*!< Size of the button. */
 @property (atomic)                       long messageID;                        /*!< Message identifier associated with this button. */
 @property (atomic)                       long appID;                            /*!< ID of the target installation app. */
-@property (nonatomic, unsafe_unretained) SwrveMessageController* controller;    /*!< Reference to parent message controller. */
-@property (nonatomic, unsafe_unretained) SwrveMessage* message;                 /*!< Reference to parent message. */
+@property (nonatomic, weak)              SwrveMessageController* controller;    /*!< Reference to parent message controller. */
+@property (nonatomic, weak)              SwrveMessage* message;                 /*!< Reference to parent message. */
 
 /*! Create a button with the given orientation and position.
  *
