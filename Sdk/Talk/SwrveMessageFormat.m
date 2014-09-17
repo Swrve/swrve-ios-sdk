@@ -66,7 +66,6 @@
     button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
     button.messageID  = [message.messageID integerValue];
 
-
     // Set up the action for the button.
     button.actionType   = kSwrveActionDismiss;
     button.appID       = 0;

@@ -87,7 +87,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;    /*!< Implement this delegate to process custom button actions. */
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
-@property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hidding messages. */
+@property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
 
 /*! Initialize the message controller.
  *
@@ -97,7 +97,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 - (id)initWithSwrve:(Swrve*)swrve;
 
 /*! Find an in-app message for the given trigger event that also satisfies the rules
- * setup in the dashboard.
+ * set up in the dashboard.
  * 
  * \param event Trigger event name.
  * \returns In-app message for the given tirgger.
@@ -130,7 +130,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 +(NSString*)getTimeFormatted:(NSDate*)date;
 
-/*! Suffle the given array randomly. For internal use.
+/*! Shuffle the given array randomly. For internal use.
  *
  \param source Array to be shuffled.
  \returns Copy of the array, now shuffled randomly.
