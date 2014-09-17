@@ -25,7 +25,7 @@
 @property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 @property (atomic)            NSUInteger maxImpressions;            /*!< Maximum number of impressions per user. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
-@property (atomic)            NSTimeInterval minDelayBetweenMsgs;   /*!< Minimum interval between to campaigns being shown. */
+@property (atomic)            NSTimeInterval minDelayBetweenMsgs;   /*!< Minimum interval between different campaigns being shown. */
 @property (nonatomic, retain) NSDate* showMsgsAfterLaunch;          /*!< Timestamp to block messages after launch. */
 @property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
 
