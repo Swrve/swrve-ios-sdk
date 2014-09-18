@@ -1,6 +1,6 @@
 What is Swrve
 -------------
-Swrve is a single integrated platform delivering everything you need to drive mobile engagement and create valuable consumer relationships on mobile.
+Swrve is a single integrated platform delivering everything you need to drive mobile engagement and create valuable consumer relationships on mobile.  
 This native iOS SDK will enable your app to use all of these features.
 
 Getting started
@@ -30,4 +30,4 @@ We would love to see your contributions! Follow these steps:
 
 License
 -------
-Distributed under the [Apache 2.0 License](LICENSE).
+© Copyright Swrve Mobile Inc or its licensors. Distributed under the [Apache 2.0 License](LICENSE).
