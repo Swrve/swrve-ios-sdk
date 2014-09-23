@@ -1424,7 +1424,7 @@ static bool didSwizzle = false;
     }
 
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"https://%ld.content.swrve.com", self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
     }
 
     // Validate other values
