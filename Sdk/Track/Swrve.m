@@ -1130,8 +1130,8 @@ static bool didSwizzle = false;
 
                 if (error){
                     DebugLog(@"Error opening HTTP stream: %@ %@", [error localizedDescription], [error localizedFailureReason]);
-                    [self setEventBufferBytes:[self eventBufferBytes] + (int)[json_string length]];
-                    [[self eventBuffer] addObject:json_string];
+                    [self setEventBufferBytes:[self eventBufferBytes] + bytes];
+                    [[self eventBuffer] addObjectsFromArray:buffer];
                     return;
                 }
 
