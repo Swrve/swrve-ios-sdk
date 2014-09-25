@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source_files = 'Swrve/**/*.{m,h}'
-  s.public_header_files = 'Swrve/**/*.h'
+  s.source_files = 'Sdk/**/*.{m,h}'
+  s.public_header_files = 'Sdk/**/*.h'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security'
 end
