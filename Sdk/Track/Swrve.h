@@ -172,11 +172,19 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * eventsServer;
 
+/*! Use HTTPs for the event API endpoint.
+ */
+@property (nonatomic) BOOL useHttpsForEventServer;
+
 /*! Set to override the default location of the server from which Swrve will receive personalized content.
  * If your company has a special API end-point enabled, then you should specify it here.
  * You should only need to change this value if you are working with Swrve support on a specific support issue.
  */
 @property (nonatomic, retain) NSString * contentServer;
+
+/*! Use HTTPs for the in-app and user resources API endpoint.
+ */
+@property (nonatomic) BOOL useHttpsForContentServer;
 
 /*! The event cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
@@ -241,7 +249,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
+@property (nonatomic, readonly) BOOL useHttpsForEventServer;
 @property (nonatomic, readonly) NSString * contentServer;
+@property (nonatomic, readonly) BOOL useHttpsForContentServer;
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
