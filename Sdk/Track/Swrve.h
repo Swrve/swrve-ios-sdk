@@ -172,7 +172,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * eventsServer;
 
-/*! Use HTTPs for the event API endpoint.
+/*! Use HTTPS for the event API endpoint.
  */
 @property (nonatomic) BOOL useHttpsForEventServer;
 
@@ -182,7 +182,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * contentServer;
 
-/*! Use HTTPs for the in-app and user resources API endpoint.
+/*! Use HTTPS for the in-app and user resources API endpoint.
  */
 @property (nonatomic) BOOL useHttpsForContentServer;
 
