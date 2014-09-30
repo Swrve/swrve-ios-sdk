@@ -158,6 +158,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) BOOL autoCollectDeviceToken;
 
+/*! Set of interactive push notification categories. */
+@property (nonatomic, copy) NSSet* pushCategories;
+
 /*! Maximum delay for in-app messages to appear after initialization. */
 @property (nonatomic) long autoShowMessagesMaxDelay;
 
@@ -261,6 +264,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL pushEnabled;
 @property (nonatomic, readonly) NSSet* pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
+@property (nonatomic, readonly) NSSet* pushCategories;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
 @property (nonatomic, readonly) BOOL testBuffersActivated;
 
