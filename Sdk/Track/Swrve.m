@@ -291,7 +291,9 @@ enum
 @synthesize orientation;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
+@synthesize useHttpsForEventServer;
 @synthesize contentServer;
+@synthesize useHttpsForContentServer;
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
@@ -334,6 +336,8 @@ enum
         userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
+        self.useHttpsForEventServer = YES;
+        self.useHttpsForContentServer = NO;
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
@@ -358,7 +362,9 @@ enum
 @synthesize orientation;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
+@synthesize useHttpsForEventServer;
 @synthesize contentServer;
+@synthesize useHttpsForContentServer;
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
@@ -388,7 +394,9 @@ enum
         orientation = config.orientation;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
+        useHttpsForEventServer = config.useHttpsForEventServer;
         contentServer = config.contentServer;
+        useHttpsForContentServer = config.useHttpsForContentServer;
         language = config.language;
         eventCacheFile = config.eventCacheFile;
         eventCacheSignatureFile = config.eventCacheSignatureFile;
@@ -1419,15 +1427,20 @@ static bool didSwizzle = false;
     return appVersion;
 }
 
+static NSString* httpScheme(bool useHttps)
+{
+    return useHttps ? @"https" : @"http";
+}
+
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"https://%ld.api.swrve.com", self.appID];
+        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID];
     }
 
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID];
     }
 
     // Validate other values
