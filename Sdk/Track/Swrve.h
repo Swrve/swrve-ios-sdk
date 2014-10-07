@@ -158,7 +158,11 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) BOOL autoCollectDeviceToken;
 
-/*! Set of interactive push notification categories. */
+/*! Set of iOS8+ interactive push notification categories (UIMutableUserNotificationCategory).
+ * Initialize this set only if running on an iOS8+ device with the interactive actions that
+ * your app supports for push notifications. Will be used when registering for
+ * push notification permissions with UIUserNotificationSettings. 
+ */
 @property (nonatomic, copy) NSSet* pushCategories;
 
 /*! Maximum delay for in-app messages to appear after initialization. */
