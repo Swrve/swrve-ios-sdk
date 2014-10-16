@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDK"
   s.version          = "3.2.0"
-  s.summary          = "iOS native SDK for Swrve."
-  s.homepage         = "https://swrve.com"
+  s.summary          = "iOS SDK for Swrve."
+  s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => "LICENSE" }
   s.authors          = "Swrve Mobile Inc or its licensors"
   s.source           = { :git => "https://github.com/Swrve/swrve-ios-sdk.git", :tag => s.version.to_s }
