@@ -46,11 +46,7 @@
 {
     NSString* attribute = [[self attributes] objectForKey:attributeId];
     if (attribute != nil) {
-        if( [attribute caseInsensitiveCompare:@"true"] || [attribute caseInsensitiveCompare:@"yes"] )
-        {
-            return YES;
-        }
-        return NO;
+        return (([attribute caseInsensitiveCompare:@"true"] == NSOrderedSame) || ([attribute caseInsensitiveCompare:@"yes"] == NSOrderedSame));
     }
     return defaultValue;
 }
