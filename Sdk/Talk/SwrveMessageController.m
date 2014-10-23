@@ -1086,12 +1086,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 - (void) pushNotificationReceived:(NSDictionary*)userInfo
 {
     if (self.pushEnabled) {
-        [self.analyticsSDK pushNotificationReceived:userInfo];
-        if (self.qaUser) {
-           [self.qaUser pushNotification:userInfo];
-        } else {
-            DebugLog(@"Queuing push notification for later", nil);
-            [self.notifications addObject:userInfo];
+        // Do not process the push notification if the app was on the foreground
+        UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
+        if (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground) {
+            [self.analyticsSDK pushNotificationReceived:userInfo];
+            if (self.qaUser) {
+               [self.qaUser pushNotification:userInfo];
+            } else {
+                DebugLog(@"Queuing push notification for later", nil);
+                [self.notifications addObject:userInfo];
+            }
         }
     }
 }
