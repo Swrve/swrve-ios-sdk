@@ -3,6 +3,8 @@
 #endif
 
 #include <sys/time.h>
+#import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 #import "SwrveSwizzleHelper.h"
@@ -668,14 +670,14 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
         if(swrveConfig.autoCollectDeviceToken && [Swrve sharedInstance] == self && !didSwizzle){
-            id appDelegate = [UIApplication sharedApplication].delegate;
+            Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
             SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
             SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
 
             // Cast to actual method signature
-            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegister inObject:appDelegate withImplementationIn:self];
-            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFail inObject:appDelegate withImplementationIn:self];
+            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegister inClass:appDelegateClass withImplementationIn:self];
+            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFail inClass:appDelegateClass withImplementationIn:self];
             didSwizzle = true;
         } else {
             didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
@@ -724,14 +726,14 @@ static bool didSwizzle = false;
 - (void)_deswizzlePushMethods
 {
     if( [Swrve sharedInstance] == self && didSwizzle) {
-        id appDelegate = [UIApplication sharedApplication].delegate;
+        Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
-        [SwrveSwizzleHelper deswizzleMethod:didRegister target:appDelegate originalImplementation:(IMP)didRegisterForRemoteNotificationsWithDeviceTokenImpl];
+        [SwrveSwizzleHelper deswizzleMethod:didRegister inClass:appDelegateClass originalImplementation:(IMP)didRegisterForRemoteNotificationsWithDeviceTokenImpl];
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
 
         SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
-        [SwrveSwizzleHelper deswizzleMethod:didFail target:appDelegate originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
+        [SwrveSwizzleHelper deswizzleMethod:didFail inClass:appDelegateClass originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
 
         didSwizzle = false;
@@ -1557,8 +1559,29 @@ static NSString* httpScheme(bool useHttps)
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
     }
+    
+    // Carrier info
+    CTCarrier *carrier = [self getCarrierInfo];
+    if (carrier != nil) {
+        NSString* mobileCountryCode = [carrier mobileCountryCode];
+        NSString* mobileNetworkCode = [carrier mobileNetworkCode];
+        if (mobileCountryCode != nil && mobileNetworkCode != nil) {
+            NSMutableString* carrierCode = [[NSMutableString alloc] initWithString:mobileCountryCode];
+            [carrierCode appendString:mobileNetworkCode];
+            [deviceProperties setValue:carrierCode           forKey:@"swrve.sim_operator.code"];
+        }
+        [deviceProperties setValue:[carrier carrierName]     forKey:@"swrve.sim_operator.name"];
+        [deviceProperties setValue:[carrier isoCountryCode]  forKey:@"swrve.sim_operator.iso_country_code"];
+    }
 
     return deviceProperties;
+}
+
+- (CTCarrier*) getCarrierInfo
+{
+    // Obtain carrier info from the device
+    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+    return [netinfo subscriberCellularProvider];
 }
 
 - (void) sendDeviceProperties
