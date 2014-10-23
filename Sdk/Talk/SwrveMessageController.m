@@ -217,7 +217,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     else
 #endif
     {
-        [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+        [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:self.analyticsSDK.config.pushCategories]];
         [app registerForRemoteNotifications];
     }
 #else

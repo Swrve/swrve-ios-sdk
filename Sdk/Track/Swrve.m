@@ -313,6 +313,7 @@ enum
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
+@synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize testBuffersActivated;
 
@@ -383,6 +384,7 @@ enum
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
+@synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize testBuffersActivated;
 
@@ -414,6 +416,7 @@ enum
         pushEnabled = config.pushEnabled;
         pushNotificationEvents = config.pushNotificationEvents;
         autoCollectDeviceToken = config.autoCollectDeviceToken;
+        pushCategories = config.pushCategories;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         testBuffersActivated = config.testBuffersActivated;
     }
