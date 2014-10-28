@@ -1217,6 +1217,11 @@ static bool didSwizzle = false;
     [self setEventBuffer:nil];
 }
 
+- (BOOL) appInBackground {
+    UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
+    return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
+}
+
 -(int) eventWithNoCallback:(NSString*)eventName payload:(NSDictionary*)eventPayload
 {
     return [self eventInternal:eventName payload:eventPayload triggerCallback:false];
