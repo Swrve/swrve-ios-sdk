@@ -16,17 +16,17 @@ static Method _class_getInstanceMethodSelfOrParents(Class c, SEL selector) {
 
 @implementation SwrveSwizzleHelper
 
-// Replaces the selector on oldObject with the same selector on newObject.
+// Replaces the selector on the class with the same selector on newObject.
 // Returns the implementation of the selector that was replaced, or NULL if
 // no replacement was done.
-+ (IMP) swizzleMethod:(SEL)selector inObject:(NSObject*)oldObject withImplementationIn:(NSObject*)newObject;
++ (IMP) swizzleMethod:(SEL)selector inClass:(Class)class withImplementationIn:(NSObject*)newObject;
 {
-    Method originalMethod = _class_getInstanceMethodSelfOrParents([oldObject class], selector);
+    Method originalMethod = _class_getInstanceMethodSelfOrParents(class, selector);
     IMP oldImplementation = method_getImplementation(originalMethod);
     
     Method newMethod = class_getInstanceMethod([newObject class], selector);
     if (!oldImplementation) {
-        class_addMethod([oldObject class], selector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod));
+        class_addMethod(class, selector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod));
     } else {
         IMP newImplementation = [newObject methodForSelector:selector];
         method_setImplementation(originalMethod, newImplementation);
@@ -35,9 +35,9 @@ static Method _class_getInstanceMethodSelfOrParents(Class c, SEL selector) {
     return NULL;
 }
 
-+ (void) deswizzleMethod:(SEL)selector target:(id)target originalImplementation:(IMP)originalImplementation
++ (void) deswizzleMethod:(SEL)selector inClass:(Class)class originalImplementation:(IMP)originalImplementation
 {
-    Method originalMethod = class_getInstanceMethod([target class], selector);
+    Method originalMethod = class_getInstanceMethod(class, selector);
     if (originalImplementation == NULL) {
         method_setImplementation(originalMethod, NULL);
     } else {
