@@ -1087,8 +1087,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 {
     if (self.pushEnabled) {
         // Do not process the push notification if the app was on the foreground
-        UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
-        if (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground) {
+        if ([self.analyticsSDK appInBackground]) {
             [self.analyticsSDK pushNotificationReceived:userInfo];
             if (self.qaUser) {
                [self.qaUser pushNotification:userInfo];
