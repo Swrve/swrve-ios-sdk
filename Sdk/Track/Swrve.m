@@ -864,6 +864,10 @@ static bool didSwizzle = false;
             [json setValue:[NSNumber numberWithDouble:localCost] forKey:@"cost"];
             [json setValue:[rewards rewards] forKey:@"rewards"];
             [json setValue:encodedReceipt forKey:@"receipt"];
+            // Payload data
+            NSMutableDictionary* eventPayload = [[NSMutableDictionary alloc] init];
+            [eventPayload setValue:product_id forKey:@"product_id"];
+            [json setValue:eventPayload forKey:@"payload"];
             if ( receipt.transactionId ) {
                 // Send transactionId only for iOS7+. This is how the server knows it is an iOS7 receipt!
                 [json setValue:receipt.transactionId forKey:@"transaction_id"];
