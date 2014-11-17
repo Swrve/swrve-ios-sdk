@@ -961,8 +961,6 @@ static bool didSwizzle = false;
 
 -(void) refreshCampaignsAndResources
 {
-    NSLog(@"******************************************************************refreshCampaignsAndResources");
-
     // When campaigns need to be downloaded manually, enforce max. flush frequency
     if (!self.config.autoDownloadCampaignsAndResources) {
         NSDate* now = [self getNow];
