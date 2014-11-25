@@ -1289,11 +1289,12 @@ static bool didSwizzle = false;
 {
     #pragma unused(notification)
     if (self.okToStartSessionOnResume) {
+        [self sessionStart];
+        [self queueDeviceProperties];
+        
         if (self.config.autoSendEventsOnResume) {
             [self sendQueuedEvents];
         }
-        [self sessionStart];
-        [self queueDeviceProperties];
 
         // Re-enable auto show messages at session start
         if ([self talk]) {
