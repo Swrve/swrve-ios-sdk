@@ -1095,8 +1095,6 @@ static bool didSwizzle = false;
         [self setEventsWereSent:NO];
 
         [NSTimer scheduledTimerWithTimeInterval:self.campaignsAndResourcesFlushRefreshDelay target:self selector:@selector(refreshCampaignsAndResources:) userInfo:nil repeats:NO];
-    } else {
-        [self refreshCampaignsAndResources];
     }
 }
 
