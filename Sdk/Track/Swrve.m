@@ -918,6 +918,11 @@ static bool didSwizzle = false;
     [json setValue:[NSNumber numberWithInteger:productIdQuantity] forKey:@"quantity"];
     [json setValue:[rewards rewards] forKey:@"rewards"];
     [self queueEvent:@"iap" data:json triggerCallback:true];
+    // After IAP event we want to immediately flush the event buffer and update campaigns and resources if necessary
+    if ([self.config autoDownloadCampaignsAndResources]) {
+        [self checkForCampaignAndResourcesUpdates:nil];
+    }
+    
     return SWRVE_SUCCESS;
 }
 
