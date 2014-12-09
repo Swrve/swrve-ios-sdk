@@ -688,7 +688,7 @@ static bool didSwizzle = false;
         }
 
         [self queueSessionStart];
-        [self sendDeviceProperties];
+        [self queueDeviceProperties];
         
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
@@ -1106,7 +1106,8 @@ static bool didSwizzle = false;
     NSString* newTokenString = [[[newDeviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
     self.deviceToken = newTokenString;
     [[NSUserDefaults standardUserDefaults] setValue:newTokenString forKey:swrve_device_token_key];
-    [self sendDeviceProperties];
+    [self queueDeviceProperties];
+    [self sendQueuedEvents];
 }
 
 -(void) sendQueuedEvents
@@ -1288,11 +1289,12 @@ static bool didSwizzle = false;
 {
     #pragma unused(notification)
     if (self.okToStartSessionOnResume) {
+        [self sessionStart];
+        [self queueDeviceProperties];
+        
         if (self.config.autoSendEventsOnResume) {
             [self sendQueuedEvents];
         }
-        [self sessionStart];
-        [self sendDeviceProperties];
 
         // Re-enable auto show messages at session start
         if ([self talk]) {
@@ -1596,7 +1598,7 @@ static NSString* httpScheme(bool useHttps)
     return [netinfo subscriberCellularProvider];
 }
 
-- (void) sendDeviceProperties
+- (void) queueDeviceProperties
 {
     NSDictionary* deviceProperties = [self getDeviceProperties];
     NSMutableString* formattedDeviceData = [[NSMutableString alloc] initWithFormat:
