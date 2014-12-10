@@ -1,3 +1,5 @@
+#include <UIKit/UIKit.h>
+
 /*! In-app message background image. */
 @interface SwrveImage : NSObject
 

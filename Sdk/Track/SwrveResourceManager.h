@@ -1,3 +1,5 @@
+#include <Foundation/Foundation.h>
+
 /*! Resource setup in the dashboard. A collection of attributes under a UID. */
 @interface SwrveResource : NSObject
 
