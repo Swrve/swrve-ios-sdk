@@ -1,3 +1,4 @@
+#include <UIKit/UIKit.h>
 #import "SwrveInterfaceOrientation.h"
 
 @class SwrveMessage;
