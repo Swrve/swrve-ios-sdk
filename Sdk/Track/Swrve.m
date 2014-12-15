@@ -686,13 +686,13 @@ static bool didSwizzle = false;
             didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
         }
-
-        [self queueSessionStart];
-        [self queueDeviceProperties];
         
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
         }
+        
+        [self queueSessionStart];
+        [self queueDeviceProperties];
 
         self.okToStartSessionOnResume = NO;
         [self registerForNotifications];
