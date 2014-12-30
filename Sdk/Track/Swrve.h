@@ -299,7 +299,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Creates and initializes the shared Swrve singleton.
  *
- * On iOS6+ the user ID is set to Apple's IdentifierForVendor. The userID is cached in the
+ * The default user ID is a random UUID. The userID is cached in the
  * default settings of the app and recalled the next time you initialize the
  * app. This means the ID for the user will stay consistent for as long as the
  * user has your app installed on the device.
@@ -312,7 +312,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Creates and initializes the shared Swrve singleton.
  * The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. On iOS6+, Swrve recommends using Apple's IdentifierForVendor.
+ * of your app. The default user ID is a random UUID.
  *
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
@@ -336,7 +336,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  *
  * Takes a SwrveConfig object that can be used to change default settings.
  * The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. On iOS6+, Swrve recommends using Apple's IdentifierForVendor.
+ * of your app. The default user ID is a random UUID.
  *
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
@@ -351,7 +351,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Initializes a Swrve object that has already been allocated using [Swrve alloc].
  *
- * On iOS6+ the user ID is set to Apple's IdentifierForVendor, The userID is cached in the
+ * The default user ID is a random UUID. The userID is cached in the
  * default settings of the app and recalled the next time you initialize the
  * app. This means the ID for the user will stay consistent for as long as the
  * user has your app installed on the device.
@@ -365,7 +365,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Initializes a Swrve object that has already been allocated using [Swrve alloc].
  *
  * The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. On iOS6+, Swrve recommends using Apple's IdentifierForVendor.
+ * of your app. The default user ID is a random UUID.
  *
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
@@ -378,7 +378,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  *
  * Takes a SwrveConfig object that can be used to change default settings.
  * The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. On iOS6+, Swrve recommends using Apple's IdentifierForVendor.
+ * of your app. The default user ID is a random UUID.
  *
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
@@ -391,7 +391,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  *
  * Takes a SwrveConfig object that can be used to change default settings.
  * The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. On iOS6+, Swrve recommends using Apple's IdentifierForVendor.
+ * of your app. The default user ID is a random UUID.
  *
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
