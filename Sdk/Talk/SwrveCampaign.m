@@ -1,5 +1,6 @@
 #import "Swrve.h"
 #import "SwrveCampaign.h"
+#import "SwrveConversation.h"
 
 const static int  DEFAULT_MAX_IMPRESSIONS        = 99999;
 const static int  DEFAULT_DELAY_FIRST_MSG        = 180;
@@ -16,6 +17,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @implementation SwrveCampaign
 
 @synthesize messages;
+@synthesize conversations;
 @synthesize next;
 @synthesize ID;
 @synthesize maxImpressions;
@@ -251,6 +253,13 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets){
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
+}
+
+/*! Check if a conversation has been added as part of this
+ * campaign
+ */
+-(SwrveConversation*)getConversation {
+    return [SwrveConversation new];
 }
 
 -(void)logAndAddReason:(NSString*)reason withReasons:(NSMutableDictionary*)campaignReasons

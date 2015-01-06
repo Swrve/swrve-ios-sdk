@@ -5,6 +5,8 @@
 //  Copyright (c) 2010-2014 Swrve. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
 /*
  * UI to change settings in the app
  */

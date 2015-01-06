@@ -4,7 +4,7 @@
 #import "SwrveCampaign.h"
 #import "SwrveImage.h"
 #import "SwrveTalkQA.h"
-#import "SwrveConversationViewController.h"
+#import "SwrveConversation.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
@@ -165,23 +165,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
     SwrveMessageController * __weak weakSelf = self;
     [sdk setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {
         #pragma unused(eventsPayloadAsJSON)
-        NSString* eventName = [self getEventName:eventPayload];
-
-        // omh: Take alt route once conversation event has been spotted
-        if ([eventName isEqualToString:@"Swrve.conversation"]) {
-            UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle:@"Conversation Event"
-                                                               message:@"You would normally see a conversation here."
-                                                              delegate:self
-                                                     cancelButtonTitle:@"OK"
-                                                     otherButtonTitles:nil];
-            [theAlert show];
-            SwrveConversationViewController *convControl = [SwrveConversationViewController new];
-            [convControl conversation:eventPayload];
-        } else {
-            SwrveMessageController * strongSelf = weakSelf;
-            if (strongSelf != nil) {
-                [strongSelf eventRaised:eventPayload];
-            }
+        SwrveMessageController * strongSelf = weakSelf;
+        if (strongSelf != nil) {
+            [strongSelf eventRaised:eventPayload];
         }
     }];
     
@@ -464,6 +450,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
         
         campaign.messages = [[NSArray alloc] initWithArray:messages];
+        
+        /* 06jan15  omh  Update to include conversations in the campaign */
+        NSMutableArray* convs = [[NSMutableArray alloc] init];
+        NSArray* campaign_convs = [dict objectForKey:@"conversations"];
+        for (NSDictionary* convDict in campaign_convs)
+        {
+            SwrveConversation* conv = [SwrveConversation fromJSON:convDict forCampaign:campaign forController:self];
+            [convs addObject:conv];
+        }
+        
+        campaign.conversations = [[NSArray alloc] initWithArray:convs];
+        
+        /* END Conversations */
         
         campaign.next = 0;
         if(!self.qaUser || !self.qaUser.resetDevice) {
@@ -898,6 +897,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return [self getMessageForEvent:eventName];
 }
 
+-(SwrveConversation*)getConversation {
+    
+}
 
 -(void) showMessage:(SwrveMessage *)message
 {
@@ -999,7 +1001,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSURL* url = [NSURL URLWithString: nonProcessedAction];
         
         if( url != nil ) {
-            DebugLog(@"Action - %@ - handled.  Sending to applition as URL", nonProcessedAction);
+            DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
         } else {
             DebugLog(@"Action - %@ -  not handled.  Override the SwrveCustomButtonPressedCallback customize message actions", nonProcessedAction);
@@ -1064,15 +1066,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     else {
         message = [self findMessageForEvent:eventName withParameters:event];
     }
-    
-    // Only show the message if it supports the given orientation
-    if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-        DebugLog(@"The message doesn't support the current orientation", nil);
-        return NO;
-    }
 
-    // Show the message if it exists
-    if( message != nil ) {
+    // No message? Could it be a a conversation perhaps?
+    if (message == nil) {
+        SwrveConversation* conv = [self getConversation];
+        return NO;
+    } else {
+        // Only show the message if it supports the given orientation
+        if (![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+            DebugLog(@"The message doesn't support the current orientation", nil);
+            return NO;
+        }
+
+        // Show the message if it exists
         if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
             [self.showMessageDelegate showMessage:message];
         }
@@ -1081,8 +1087,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
         return YES;
     }
+}
+
+- (SwrveConversation*) getConversation {
     
-    return NO;
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken
