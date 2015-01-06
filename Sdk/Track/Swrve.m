@@ -994,6 +994,7 @@ static bool didSwizzle = false;
         [queryString appendFormat:@"&etag=%@", etagValue];
     }
 
+    
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
     [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (!error) {

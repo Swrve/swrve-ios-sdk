@@ -1,6 +1,7 @@
 @class SwrveMessage;
 @class SwrveButton;
 @class SwrveMessageController;
+@class SwrveConversation;
 
 /*! In-app campaign. */
 @interface SwrveCampaign : NSObject
@@ -8,6 +9,7 @@
 @property (atomic)            NSUInteger ID;                        /*!< Unique identifier. */
 @property (nonatomic, retain) NSString* name;                       /*!< Name of the campaign. */
 @property (atomic, retain)    NSArray*  messages;                   /*!< List of messages. */
+@property (atomic, retain)    NSArray*  conversations;              /*!< List of conversations. */
 @property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 @property (atomic)            NSUInteger maxImpressions;            /*!< Maximum number of impressions per user. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
@@ -96,5 +98,10 @@
  * \param json JSON object containing the dates.
  */
 -(void)loadDatesFrom:(NSDictionary*)json;
+
+/*! Check if a conversation has been added as part of this
+ * campaign
+ */
+-(SwrveConversation*)getConversation;
 
 @end

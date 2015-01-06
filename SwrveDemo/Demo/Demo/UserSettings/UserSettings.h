@@ -5,6 +5,8 @@
 //  Copyright (c) 2010-2014 Swrve. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 /*
  * Wrapper around NSUserDefaults.  Used to store per user values.
  */
