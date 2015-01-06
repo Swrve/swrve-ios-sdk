@@ -4,6 +4,7 @@
 #import "SwrveCampaign.h"
 #import "SwrveImage.h"
 #import "SwrveTalkQA.h"
+#import "SwrveConversationViewController.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
@@ -164,12 +165,25 @@ const static int DEFAULT_MIN_DELAY           = 55;
     SwrveMessageController * __weak weakSelf = self;
     [sdk setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {
         #pragma unused(eventsPayloadAsJSON)
-        SwrveMessageController * strongSelf = weakSelf;
-        if (strongSelf != nil) {
-            [strongSelf eventRaised:eventPayload];
+        NSString* eventName = [self getEventName:eventPayload];
+
+        // omh: Take alt route once conversation event has been spotted
+        if ([eventName isEqualToString:@"Swrve.conversation"]) {
+            UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle:@"Conversation Event"
+                                                               message:@"You would normally see a conversation here."
+                                                              delegate:self
+                                                     cancelButtonTitle:@"OK"
+                                                     otherButtonTitles:nil];
+            [theAlert show];
+            SwrveConversationViewController *convControl = [SwrveConversationViewController new];
+            [convControl conversation:eventPayload];
+        } else {
+            SwrveMessageController * strongSelf = weakSelf;
+            if (strongSelf != nil) {
+                [strongSelf eventRaised:eventPayload];
+            }
         }
     }];
-    
     
     NSAssert1([self.language length] > 0, @"Invalid language specified %@", self.language);
     NSAssert1([self.user     length] > 0, @"Invalid username specified %@", self.user);
