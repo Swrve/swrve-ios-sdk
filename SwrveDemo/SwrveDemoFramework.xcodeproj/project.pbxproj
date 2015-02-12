@@ -80,6 +80,9 @@
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
 		1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */; };
+		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
+		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
+		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
@@ -195,6 +198,13 @@
 		1B22100019B8AFFC00F378E6 /* SwrveSwizzleHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSwizzleHelper.h; sourceTree = "<group>"; };
 		1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSwizzleHelper.m; sourceTree = "<group>"; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversation.h; sourceTree = "<group>"; };
+		1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversation.m; sourceTree = "<group>"; };
+		1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseCampaign.h; sourceTree = "<group>"; };
+		1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveBaseCampaign.m; sourceTree = "<group>"; };
+		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
+		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
+		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -358,6 +368,7 @@
 		095F5E5C16D040820046D096 /* Sdk */ = {
 			isa = PBXGroup;
 			children = (
+				1B9A35D41A8CCF8500F34406 /* Conversation */,
 				1B220FE519B8AFFC00F378E6 /* Talk */,
 				1B220FF719B8AFFC00F378E6 /* Track */,
 			);
@@ -481,6 +492,9 @@
 				1B220FF419B8AFFC00F378E6 /* SwrveMessageViewController.m */,
 				1B220FF519B8AFFC00F378E6 /* SwrveTalkQA.h */,
 				1B220FF619B8AFFC00F378E6 /* SwrveTalkQA.m */,
+				1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */,
+				1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */,
+				1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */,
 			);
 			name = Talk;
 			path = ../Sdk/Talk;
@@ -502,6 +516,18 @@
 			);
 			name = Track;
 			path = ../Sdk/Track;
+			sourceTree = "<group>";
+		};
+		1B9A35D41A8CCF8500F34406 /* Conversation */ = {
+			isa = PBXGroup;
+			children = (
+				1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */,
+				1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */,
+				1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */,
+				1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */,
+			);
+			name = Conversation;
+			path = ../Sdk/Conversation;
 			sourceTree = "<group>";
 		};
 		303C467316B345EA00A1A718 /* Api */ = {
@@ -710,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */,
 				095F5E8016D049260046D096 /* InAppPurchaseDemo.m in Sources */,
 				095F5E8516D0494E0046D096 /* Demo.m in Sources */,
 				1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */,
@@ -725,6 +752,7 @@
 				1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */,
 				1B22100B19B8AFFC00F378E6 /* SwrveReceiptProvider.m in Sources */,
 				1B22100A19B8AFFC00F378E6 /* Swrve.m in Sources */,
+				1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */,
 				1B22100419B8AFFC00F378E6 /* SwrveImage.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
@@ -737,6 +765,7 @@
 				1B22100519B8AFFC00F378E6 /* SwrveMessage.m in Sources */,
 				099BF510170E6BE100345404 /* SettingsView.m in Sources */,
 				0913B8DA17139419000DA83C /* UserSettings.m in Sources */,
+				1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */,
 				1B22100719B8AFFC00F378E6 /* SwrveMessageFormat.m in Sources */,
 				1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */,
 				0972B20A17FB85B7003CD08D /* TransparencyDemo.m in Sources */,

@@ -3,6 +3,7 @@
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 
 @class SwrveMessage;
+@class SwrveConversation;
 @class SwrveButton;
 @class Swrve;
 
@@ -31,9 +32,21 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  *
  * \param eventName Trigger event.
  * \param parameters Event parameters.
- * \returns Button with the given trigger event.
+ * \returns Message with the given trigger event.
  */
 - (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+
+
+/*! Called when an event is raised by the Swrve SDK. Look up a conversation
+ * to display. Return nil if no conversation should be displayed. By default
+ * the SwrveMessageController will search for conversations with the provided
+ * trigger.
+ *
+ * \param eventName Trigger event.
+ * \param parameters Event parameters.
+ * \returns Conversation with the given trigger event.
+ */
+- (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
 
 /*! Called when a message should be shown. Should show and react to the action
  * in the message. By default the SwrveMessageController will display the
@@ -44,6 +57,13 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param message Message to be displayed.
  */
 - (void)showMessage:(SwrveMessage *)message;
+
+/*! Called when a conversation should be shown. Should show and react to the action
+ * in the conversation.
+ *
+ * \param conversation Conversation to be displayed.
+ */
+- (void)showConversation:(SwrveConversation *)conversation;
 
 /*! Called when the message will be shown to the user. The message is shown in
  * a separate UIWindow. This selector is called before that UIWindow is shown.
