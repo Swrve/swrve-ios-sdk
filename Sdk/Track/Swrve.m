@@ -1444,20 +1444,20 @@ static bool didSwizzle = false;
     return appVersion;
 }
 
-static NSString* httpScheme(bool useHttps)
-{
-    return useHttps ? @"https" : @"http";
-}
+//static NSString* httpScheme(bool useHttps)
+//{
+//    return useHttps ? @"https" : @"http";
+//}
 
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID];
+        newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.converser-api.swrve.com", self.appID];
     }
 
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.conversations-content.swrve.com", self.appID];
     }
 
     // Validate other values
