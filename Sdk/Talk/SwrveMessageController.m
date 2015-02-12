@@ -40,7 +40,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             user;
 @property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
-@property (nonatomic, retain) NSString*         	server;
+@property (nonatomic, retain) NSString*           	server;
 @property (nonatomic, retain) NSMutableSet*         assetsOnDisk;
 @property (nonatomic, retain) NSString*             cacheFolder;
 @property (nonatomic, retain) NSString*             campaignCache;
@@ -897,10 +897,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return [self getMessageForEvent:eventName];
 }
 
--(SwrveConversation*)getConversation {
-    
-}
-
 -(void) showMessage:(SwrveMessage *)message
 {
     if ( message && self.inAppMessageWindow == nil ) {
@@ -1070,6 +1066,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // No message? Could it be a a conversation perhaps?
     if (message == nil) {
         SwrveConversation* conv = [self getConversation];
+        NSLog(@"Got a conversation %@", conv.title);
         return NO;
     } else {
         // Only show the message if it supports the given orientation
@@ -1090,7 +1087,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (SwrveConversation*) getConversation {
-    
+    SwrveConversation *conv = nil;
+    if ([self.campaigns count] != 0) {
+        SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
+        if ([camp.conversations count] > 0) {
+            conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
+        }
+    }
+    return conv;
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken

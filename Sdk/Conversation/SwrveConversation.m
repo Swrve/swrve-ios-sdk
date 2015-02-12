@@ -12,7 +12,6 @@
 @interface SwrveConversation()
 
 @property (nonatomic, weak)     SwrveMessageController* controller;
-@property (nonatomic, strong)   NSNumber* persistent;
 
 @end
 
@@ -30,13 +29,8 @@
     self.title          = [json objectForKey:@"title"];
     self.subtitle       = [json objectForKey:@"subtitle"];
     self.notification   = [json objectForKey:@"notification"];
-    self.persistent     = [json objectForKey:@"persistent"];
 
     return self;
-}
-
--(BOOL) isPersistent {
-    return [self.persistent boolValue];
 }
 
 +(SwrveConversation*) fromJSON:(NSDictionary*)json
