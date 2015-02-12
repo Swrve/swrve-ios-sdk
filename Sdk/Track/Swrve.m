@@ -1453,11 +1453,15 @@ static bool didSwizzle = false;
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.converser-api.swrve.com", self.appID];
+        newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.api.swrve.com", self.appID];
+        // TODO: REMOVE BEFORE RELEASE!
+        newConfig.eventsServer = [NSString stringWithFormat:@"http://converser-api.swrve.com"];
     }
 
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.conversations-content.swrve.com", self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
+        // TODO: REMOVE BEFORE RELEASE!
+        newConfig.contentServer = [NSString stringWithFormat:@"http://converser-content.swrve.com"];
     }
 
     // Validate other values

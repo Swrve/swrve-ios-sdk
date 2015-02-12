@@ -1,17 +1,17 @@
 #import "SwrveMessageController.h"
 #import "Swrve.h"
+#import "SwrveImage.h"
 #import "SwrveButton.h"
 #import "SwrveCampaign.h"
-#import "SwrveImage.h"
+#import "SwrveConversationCampaign.h"
 #import "SwrveTalkQA.h"
-#import "SwrveConversation.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 
-const static int CAMPAIGN_VERSION            = 4;
+const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
@@ -416,54 +416,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
-        SwrveCampaign* campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime];
+        bool conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
+        SwrveBaseCampaign* campaign = nil;
+        if (conversationCampaign) {
+            campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+        } else {
+            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+        }
         
-        campaign.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
-        campaign.name = [dict objectForKey:@"name"];
-
         DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
 
-        [campaign loadTriggersFrom:dict];
-        [campaign loadRulesFrom:   dict];
-        [campaign loadDatesFrom:   dict];
-
-        NSMutableArray* messages = [[NSMutableArray alloc] init];
-        NSArray* campaign_messages = [dict objectForKey:@"messages"];
-        for (NSDictionary* messageDict in campaign_messages)
-        {
-            SwrveMessage* message = [SwrveMessage fromJSON:messageDict forCampaign:campaign forController:self];
-
-            for (SwrveMessageFormat* format in message.formats)
-            {
-                // Add all images to the download queue
-                for (SwrveButton* button in format.buttons)
-                {
-                    [assetsQueue addObject:button.image];
-                }
-                
-                for (SwrveImage* image in format.images)
-                {
-                    [assetsQueue addObject:image.file];
-                }
-            }
-            [messages addObject:message];
-        }
-        
-        campaign.messages = [[NSArray alloc] initWithArray:messages];
-        
-        /* 06jan15  omh  Update to include conversations in the campaign */
-        NSMutableArray* convs = [[NSMutableArray alloc] init];
-        NSArray* campaign_convs = [dict objectForKey:@"conversations"];
-        for (NSDictionary* convDict in campaign_convs)
-        {
-            SwrveConversation* conv = [SwrveConversation fromJSON:convDict forCampaign:campaign forController:self];
-            [convs addObject:conv];
-        }
-        
-        campaign.conversations = [[NSArray alloc] initWithArray:convs];
-        
-        /* END Conversations */
-        
         campaign.next = 0;
         if(!self.qaUser || !self.qaUser.resetDevice) {
             NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
@@ -503,7 +465,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSMutableArray* downloadQueue = [self withOutExistingFiles:assetsQueue];
     while([downloadQueue count] > 0)
     {
-        [self downloadAsset: [downloadQueue lastObject]];
+        [self downloadAsset:[downloadQueue lastObject]];
         [downloadQueue removeLastObject];
     }
     
@@ -591,18 +553,35 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
     
-    for (SwrveCampaign* campaign in [self campaigns]) {
-        if ([campaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
-            @synchronized(self) {
-                if ([self autoShowMessagesEnabled]) {
-                    NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
-                    if ([self eventRaised:event]) {
-                        // If a message was shown we want to disable autoshow
-                        [self setAutoShowMessagesEnabled:NO];
+    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+        if ([campaign isKindOfClass:[SwrveCampaign class]]) {
+            SwrveCampaign* specificCampaign = (SwrveCampaign*)campaign;
+            if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
+                @synchronized(self) {
+                    if ([self autoShowMessagesEnabled]) {
+                        NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
+                        if ([self eventRaised:event]) {
+                            // If a message was shown we want to disable autoshow
+                            [self setAutoShowMessagesEnabled:NO];
+                        }
                     }
                 }
+                break;
             }
-            break;
+        } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+            SwrveConversationCampaign* specificCampaign = (SwrveConversationCampaign*)campaign;
+            if ([specificCampaign hasConversationForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
+                @synchronized(self) {
+                    if ([self autoShowMessagesEnabled]) {
+                        NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
+                        if ([self eventRaised:event]) {
+                            // If a message was shown we want to disable autoshow
+                            [self setAutoShowMessagesEnabled:NO];
+                        }
+                    }
+                }
+                break;
+            }
         }
     }
 }
@@ -622,6 +601,42 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return self.messagesLeftToShow <= 0;
 }
 
+-(BOOL)checkGlobalRules:(NSString *)event {
+    NSDate* now = [[self analyticsSDK] getNow];
+    if ([self.campaigns count] == 0)
+    {
+        [self noMessagesWereShown:event withReason:@"No campaigns available"];
+        return FALSE;
+    }
+    
+    // Ignore delay after launch throttle limit for auto show messages
+    if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:now])
+    {
+        [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
+        return FALSE;
+    }
+    
+    if ([self isTooSoonToShowMessageAfterDelay:now])
+    {
+        [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
+        return FALSE;
+    }
+    
+    if ([self hasShowTooManyMessagesAlready])
+    {
+        [self noMessagesWereShown:event withReason:@"{App throttle limit} Too many messages shown"];
+        return FALSE;
+    }
+    return TRUE;
+}
+
+- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+{
+#pragma unused(parameters)
+    // By default does a simple by name look up.
+    return [self getMessageForEvent:eventName];
+}
+
 -(SwrveMessage*)getMessageForEvent:(NSString *)event
 {
     NSDate* now = [[self analyticsSDK] getNow];
@@ -629,28 +644,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     SwrveCampaign* campaign = nil;
     
     if (self.campaigns != nil) {
-        if ([self.campaigns count] == 0)
+        if (![self checkGlobalRules:event])
         {
-            [self noMessagesWereShown:event withReason:@"No campaigns available"];
-            return nil;
-        }
-        
-        // Ignore delay after launch throttle limit for auto show messages
-        if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:now])
-        {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after launch. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterLaunch]]];
-            return nil;
-        }
-        
-        if ([self isTooSoonToShowMessageAfterDelay:now])
-        {
-            [self noMessagesWereShown:event withReason:[NSString stringWithFormat:@"{App throttle limit} Too soon after last message. Wait until %@", [[self class] getTimeFormatted:self.showMessagesAfterDelay]]];
-            return nil;
-        }
-        
-        if ([self hasShowTooManyMessagesAlready])
-        {
-            [self noMessagesWereShown:event withReason:@"{App throttle limit} Too many messages shown"];
             return nil;
         }
         
@@ -667,28 +662,31 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSMutableArray* candidateMessages = [[NSMutableArray alloc] init];
         // Get current orientation
         UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        for (SwrveCampaign* campaignIt in self.campaigns)
+        for (SwrveBaseCampaign* baseCampaignIt in self.campaigns)
         {
-            SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
-            if (nextMessage != nil) {
-                if ([nextMessage supportsOrientation:currentOrientation]) {
-                    // Add to list of returned messages
-                    [availableMessages addObject:nextMessage];
-                    // Check if it is a candidate to be shown
-                    long nextMessagePriorityLong = [nextMessage.priority longValue];
-                    long minPriorityLong = [minPriority longValue];
-                    if (nextMessagePriorityLong <= minPriorityLong) {
-                        minPriority = nextMessage.priority;
-                        if (nextMessagePriorityLong < minPriorityLong) {
-                            [candidateMessages removeAllObjects];
+            if ([baseCampaignIt isKindOfClass:[SwrveCampaign class]]) {
+                SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
+                SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                if (nextMessage != nil) {
+                    if ([nextMessage supportsOrientation:currentOrientation]) {
+                        // Add to list of returned messages
+                        [availableMessages addObject:nextMessage];
+                        // Check if it is a candidate to be shown
+                        long nextMessagePriorityLong = [nextMessage.priority longValue];
+                        long minPriorityLong = [minPriority longValue];
+                        if (nextMessagePriorityLong <= minPriorityLong) {
+                            minPriority = nextMessage.priority;
+                            if (nextMessagePriorityLong < minPriorityLong) {
+                                [candidateMessages removeAllObjects];
+                            }
+                            [candidateMessages addObject:nextMessage];
                         }
-                        [candidateMessages addObject:nextMessage];
-                    }
-                } else {
-                    if (self.qaUser != nil) {
-                        NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:campaignIt.ID] stringValue];
-                        [campaignMessages setValue:nextMessage.messageID forKey:campaignIdString];
-                        [campaignReasons setValue:@"Message didn't support the given orientation" forKey:campaignIdString];
+                    } else {
+                        if (self.qaUser != nil) {
+                            NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:campaignIt.ID] stringValue];
+                            [campaignMessages setValue:nextMessage.messageID forKey:campaignIdString];
+                            [campaignReasons setValue:@"Message didn't support the given orientation" forKey:campaignIdString];
+                        }
                     }
                 }
             }
@@ -723,6 +721,79 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
 
+    if (result == nil) {
+        DebugLog(@"Not showing message: no candidate messages for %@", event);
+    }
+    return result;
+}
+
+- (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+{
+    #pragma unused(parameters)
+    // By default does a simple by name look up.
+    return [self getConversationForEvent:eventName];
+}
+
+-(SwrveConversation*)getConversationForEvent:(NSString *)event
+{
+    NSDate* now = [[self analyticsSDK] getNow];
+    SwrveConversation* result = nil;
+    SwrveConversationCampaign* campaign = nil;
+    
+    if (self.campaigns != nil) {
+        if (![self checkGlobalRules:event])
+        {
+            return nil;
+        }
+        
+        NSMutableDictionary* campaignReasons = nil;
+        NSMutableDictionary* campaignMessages = nil;
+        if (self.qaUser != nil) {
+            campaignReasons = [[NSMutableDictionary alloc] init];
+            campaignMessages = [[NSMutableDictionary alloc] init];
+        }
+        
+        NSMutableArray* availableMessages = [[NSMutableArray alloc] init];
+        for (SwrveBaseCampaign* baseCampaignIt in self.campaigns)
+        {
+            if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
+                SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
+                SwrveConversation* conversation = [campaignIt getConversationForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                if (conversation != nil) {
+                    [availableMessages addObject:conversation];
+                }
+            }
+        }
+        
+        NSArray* shuffledCandidates = [SwrveMessageController shuffled:availableMessages];
+        if ([shuffledCandidates count] > 0) {
+            result = [shuffledCandidates objectAtIndex:0];
+            campaign = result.campaign;
+        }
+        
+        if (self.qaUser != nil && campaign != nil && result != nil) {
+            // A message was chosen, set the reason for the others
+            for (SwrveConversation* otherConversation in availableMessages)
+            {
+                if (result != otherConversation)
+                {
+                    SwrveConversationCampaign* c = otherConversation.campaign;
+                    if (c != nil)
+                    {
+                        NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:c.ID] stringValue];
+                        [campaignMessages setValue:otherConversation.conversationID forKey:campaignIdString];
+                        [campaignReasons setValue:[NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long)campaign.ID] forKey:campaignIdString];
+                    }
+                }
+            }
+        }
+        
+        // If QA enabled, send message selection information
+        if(self.qaUser != nil) {
+            [self.qaUser trigger:event withConversation:result withReason:campaignReasons];
+        }
+    }
+    
     if (result == nil) {
         DebugLog(@"Not showing message: no candidate messages for %@", event);
     }
@@ -890,13 +961,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return eventName;
 }
 
-- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
-{
-    #pragma unused(parameters)
-    // By default does a simple by name look up.
-    return [self getMessageForEvent:eventName];
-}
-
 -(void) showMessage:(SwrveMessage *)message
 {
     if ( message && self.inAppMessageWindow == nil ) {
@@ -919,6 +983,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         [self showMessageWindow:messageViewController];
     }
+}
+
+-(void) showConversation:(SwrveConversation*)conversation
+{
+    #pragma unused(conversation)
+    //TODO: SHOW CONVERSATION HERE
+    int k = 0;
+    k = 2;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
@@ -1054,46 +1126,66 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
     
-    // Find a message that should be fired
-    SwrveMessage* message = nil;
-    if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withParameters:)]) {
-        message = [self.showMessageDelegate findMessageForEvent:eventName withParameters:event];
+    // Find a conversation that should be displayed
+    SwrveConversation* conversation = nil;
+    if( [self.showMessageDelegate respondsToSelector:@selector(findConversationForEvent: withParameters:)]) {
+        conversation = [self.showMessageDelegate findConversationForEvent:eventName withParameters:event];
     }
     else {
-        message = [self findMessageForEvent:eventName withParameters:event];
+        conversation = [self findConversationForEvent:eventName withParameters:event];
     }
-
-    // No message? Could it be a a conversation perhaps?
-    if (message == nil) {
-        SwrveConversation* conv = [self getConversation];
-        NSLog(@"Got a conversation %@", conv.title);
-        return NO;
+    
+    if (conversation != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if( [self.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                [self.showMessageDelegate showConversation:conversation];
+            } else {
+                [self showConversation:conversation];
+            }
+        });
+        return YES;
     } else {
-        // Only show the message if it supports the given orientation
-        if (![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-            DebugLog(@"The message doesn't support the current orientation", nil);
-            return NO;
-        }
-
-        // Show the message if it exists
-        if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-            [self.showMessageDelegate showMessage:message];
+        // Find a message that should be displayed
+        SwrveMessage* message = nil;
+        if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withParameters:)]) {
+            message = [self.showMessageDelegate findMessageForEvent:eventName withParameters:event];
         }
         else {
-            [self showMessage:message];
+            message = [self findMessageForEvent:eventName withParameters:event];
         }
-        return YES;
+
+        if (message != nil) {
+            // Only show the message if it supports the given orientation
+            if (![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Show the message if it exists
+                if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                    [self.showMessageDelegate showMessage:message];
+                }
+                else {
+                    [self showMessage:message];
+                }
+            });
+            return YES;
+        }
     }
+    
+    return NO;
 }
 
 - (SwrveConversation*) getConversation {
     SwrveConversation *conv = nil;
-    if ([self.campaigns count] != 0) {
+    //TODO.Sergio
+    /*if ([self.campaigns count] != 0) {
         SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
         if ([camp.conversations count] > 0) {
             conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
         }
-    }
+    }*/
     return conv;
 }
 

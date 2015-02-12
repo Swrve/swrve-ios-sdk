@@ -1,29 +1,32 @@
-//
-//  SwrveConversation.h
-//  swrvinator
-//
-//  Created by Oisin Hurley on 06/01/2015.
-//  Copyright (c) 2015 Converser. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
+
+@class SwrveMessageController;
+@class SwrveConversationCampaign;
 
 @interface SwrveConversation : NSObject
 
-
-@property (nonatomic, weak)              SwrveCampaign* campaign; /*!< Reference to parent campaign */
-@property (nonatomic, retain)            NSNumber* conversationID;     /*!< Identifies the message in a campaign */
-@property (nonatomic, retain)            NSString* title;          /*!< Name of the message */
-@property (nonatomic, retain)            NSString* subtitle;          /*!< Name of the message */
-@property (nonatomic, retain)            NSString* notification;          /*!< Name of the message */
+@property (nonatomic, weak)              SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
+@property (nonatomic, retain)            NSNumber* conversationID;            /*!< Identifies the conversation in a campaign */
+@property (nonatomic, retain)            NSString* name;                      /*!< Name of the conversation */
+@property (nonatomic, retain)            NSDictionary* pages;                 /*!< Pages of the message */
 
 /*! Create an in-app conversation from the JSON content.
  *
  * \param json In-app conversation JSON content.
- * \param campaign Parent in-app campaign.
+ * \param campaign Parent conversationcampaign.
  * \param controller Message controller.
- * \returns Parsed in-app conversation.
+ * \returns Parsed conversation.
  */
-+(SwrveConversation*)fromJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)campaign forController:(SwrveMessageController*)controller;
++(SwrveConversation*)fromJSON:(NSDictionary*)json forCampaign:(SwrveConversationCampaign*)campaign forController:(SwrveMessageController*)controller;
+
+/*! Check if assets are downloaded.
+ *
+ * \returns TRUE if all assets have been downloaded.
+ */
+-(BOOL)areDownloaded:(NSSet*)assets;
+
+/*! Notify that this message was shown to the user.
+ */
+-(void)wasShownToUser;
 
 @end
