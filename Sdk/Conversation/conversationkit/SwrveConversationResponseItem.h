@@ -1,0 +1,23 @@
+
+/*******************************************************
+ * Copyright (C) 2011-2012 Converser contact@converser.io
+ *
+ * This file is part of the Converser iOS SDK.
+ *
+ * This code may not be copied and/or distributed without the express
+ * permission of Converser. Please email contact@converser.io for
+ * all redistribution and reuse enquiries.
+ *******************************************************/
+
+#import <Foundation/Foundation.h>
+
+#import "SwrveInputItem.h"
+
+@interface SwrveConversationResponseItem : NSObject
+
+@property(nonatomic, readonly, strong) NSString *tag;
+@property(nonatomic, readonly, strong) NSString *value;
+
+-(id) initWithInputItem:(SwrveInputItem *)inputItem;
+
+@end

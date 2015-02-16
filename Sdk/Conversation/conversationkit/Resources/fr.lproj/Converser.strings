@@ -1,0 +1,92 @@
+/* Cancel */
+"CANCEL" = "Annuler";
+
+/* Copy Link */
+"COPY_LINK" = "Copier le lien";
+
+/* Done */
+"DONE" = "Terminé";
+
+/* Error */
+"ERROR" = "Erreur";
+
+/* Please fill all required fields. */
+"FILL_ALL" = "Remplir tous les champs obligatoires.";
+
+/* Inbox */
+"INBOX" = "Boîte de réception";
+
+/* Inbox (0) */
+"INBOX_0" = "Boîte de réception (0)";
+
+/* Inbox (%lu) */
+"INBOX_LU" = "Boîte de réception (%lu)";
+
+/* likely */
+"LIKELY" = "probable";
+
+/* Loading */
+"LOADING" = "Chargement...";
+
+/* Error loading conversation list */
+"LOADING_ERROR" = "Erreur de chargement de la liste des conversations.";
+
+/* Mail Link to this Page */
+"MAIL_LINK" = "Envoyer un lien vers cette page";
+
+/* Messages */
+"MESSAGES" = "Messages";
+
+/* No messages */
+"NO_MESSAGES" = "Aucun message";
+
+/* not likely */
+"NOT_LIKELY" = "peu probable";
+
+/* Not subscribed */
+"NOT_SUBSCRIBED" = "Non abonné";
+
+/* Open in Chrome */
+"OPEN_IN_CHROME" = "Ouvrir avec Chrome";
+
+/* Open in Safari */
+"OPEN_IN_SAFARI" = "Ouvrir avec Safari";
+
+/* perhaps... */
+"PERHAPS" = "peut-être...";
+
+/* Retrieving */
+"RETRIEVING" = "Récupération...";
+
+/* Review (Optional) */
+"REVIEW_OPTIONAL" = "Donner un avis (facultatif)";
+
+/* Send */
+"SEND" = "Envoyer";
+
+/* Sending */
+"SENDING" = "Envoi...";
+
+/* Failed subscribe to Converser */
+"SUBSCRIBE_FAILED" = "Échec de l'abonnement à Converser.";
+
+/* Tap a Star to Rate */
+"TAP_A_STAR" = "Appuyer sur une étoile pour noter";
+
+/* Title */
+"TITLE" = "Civilité";
+
+/* You have no messages */
+"YOUVE_NO_MESSAGES" = "Vous n'avez pas de messages.";
+
+/* When someone has entered an invalid email address */
+"VALID_EMAIL" = "Veuillez donner une adresse e-mail valide.";
+
+/* When someone tries to click a URL to an app which they don't have installed */
+"NO_APP" = "Vous devrez installer une appli pour visiter %@.";
+
+/* When someone's inbox is empty */
+"EMPTY_INBOX" = "Boîte de réception vide";
+
+/* When the app can't open a URL */
+"CANNOT_OPEN_URL" = "Impossible de copier l'URL";

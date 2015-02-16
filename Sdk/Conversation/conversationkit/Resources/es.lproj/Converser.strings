@@ -1,0 +1,92 @@
+/* Cancel */
+"CANCEL" = "Cancelar";
+
+/* Copy Link */
+"COPY_LINK" = "Copiar enlace";
+
+/* Done */
+"DONE" = "Listo";
+
+/* Error */
+"ERROR" = "Error";
+
+/* Please fill all required fields. */
+"FILL_ALL" = "Rellena todos los campos obligatorios.";
+
+/* Inbox */
+"INBOX" = "Buzón";
+
+/* Inbox (0) */
+"INBOX_0" = "Buzón (0)";
+
+/* Inbox (%lu) */
+"INBOX_LU" = "Buzón (%lu)";
+
+/* likely */
+"LIKELY" = "Probable";
+
+/* Loading */
+"LOADING" = "Cargando...";
+
+/* Error loading conversation list */
+"LOADING_ERROR" = "Error al cargar la lista de conversaciones.";
+
+/* Mail Link to this Page */
+"MAIL_LINK" = "Enviar enlace a esta página";
+
+/* Messages */
+"MESSAGES" = "Mensajes";
+
+/* No messages */
+"NO_MESSAGES" = "Sin mensajes";
+
+/* not likely */
+"NOT_LIKELY" = "Improbable";
+
+/* Not subscribed */
+"NOT_SUBSCRIBED" = "Sin suscripción";
+
+/* Open in Chrome */
+"OPEN_IN_CHROME" = "Abrir en Chrome";
+
+/* Open in Safari */
+"OPEN_IN_SAFARI" = "Abrir en Safari";
+
+/* perhaps... */
+"PERHAPS" = "Tal vez";
+
+/* Retrieving */
+"RETRIEVING" = "Recuperando...";
+
+/* Review (Optional) */
+"REVIEW_OPTIONAL" = "Reseña (opcional)";
+
+/* Send */
+"SEND" = "Enviar";
+
+/* Sending */
+"SENDING" = "Enviando...";
+
+/* Failed subscribe to Converser */
+"SUBSCRIBE_FAILED" = "Error al suscribirse a Converser.";
+
+/* Tap a Star to Rate */
+"TAP_A_STAR" = "Toca una estrella para evaluar";
+
+/* Title */
+"TITLE" = "Título";
+
+/* You have no messages */
+"YOUVE_NO_MESSAGES" = "No tienes mensajes.";
+
+/* When someone has entered an invalid email address */
+"VALID_EMAIL" = "Proporcione una dirección de correo electrónico válida";
+
+/* When someone tries to click a URL to an app which they don't have installed */
+"NO_APP" = "Deberá instalar una aplicación para visitar %@";
+
+/* When someone's inbox is empty */
+"EMPTY_INBOX" = "Buzón vacío";
+
+/* When the app can't open a URL */
+"CANNOT_OPEN_URL" = "No se puede abrir la URL";
