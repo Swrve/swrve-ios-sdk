@@ -994,6 +994,7 @@ static bool didSwizzle = false;
         [queryString appendFormat:@"&etag=%@", etagValue];
     }
 
+    
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
     [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (!error) {
@@ -1443,20 +1444,24 @@ static bool didSwizzle = false;
     return appVersion;
 }
 
-static NSString* httpScheme(bool useHttps)
-{
-    return useHttps ? @"https" : @"http";
-}
+//static NSString* httpScheme(bool useHttps)
+//{
+//    return useHttps ? @"https" : @"http";
+//}
 
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID];
+        newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.api.swrve.com", self.appID];
+        // TODO: REMOVE BEFORE RELEASE!
+        newConfig.eventsServer = [NSString stringWithFormat:@"http://converser-api.swrve.com"];
     }
 
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
+        // TODO: REMOVE BEFORE RELEASE!
+        newConfig.contentServer = [NSString stringWithFormat:@"http://converser-content.swrve.com"];
     }
 
     // Validate other values
