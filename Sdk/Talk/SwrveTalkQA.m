@@ -1,5 +1,6 @@
 #import "SwrveTalkQA.h"
 #import "SwrveCampaign.h"
+#import "SwrveConversationCampaign.h"
 
 enum
 {
@@ -167,6 +168,45 @@ enum
             }
             [campaignInfo setValue:[NSNumber numberWithBool:TRUE] forKey:@"displayed"];
             [campaignInfo setValue:messageShown.messageID forKey:@"message_id"];
+            [campaignInfo setValue:@"" forKey:@"reason"];
+            [campaignsJson addObject:campaignInfo];
+        }
+        
+        [triggerJson setValue:campaignsJson forKey:@"campaigns"];
+        [self makeRequest:endpoint withJSON:triggerJson];
+    }
+}
+
+-(void)trigger:(NSString*)event withConversation:(SwrveConversation*)conversationShow withReason:(NSDictionary*)campaignReasons
+{
+    if ([self canMakeTriggerRequest]) {
+        NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/trigger", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
+        
+        NSMutableDictionary* triggerJson = [[NSMutableDictionary alloc] init];
+        [triggerJson setValue:event forKey:@"trigger_name"];
+        [triggerJson setValue:[NSNumber numberWithBool:(conversationShow != NULL)] forKey:@"displayed"];
+        [triggerJson setValue:(conversationShow == NULL)? @"The loaded campaigns returned no conversation" : @"" forKey:@"reason"];
+        
+        // Add campaigns that were not displayed
+        NSMutableArray* campaignsJson = [[NSMutableArray alloc] init];
+        for (id campaignId in campaignReasons) {
+            NSString* reason = [campaignReasons objectForKey:campaignId];
+            NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
+            [campaignInfo setValue:campaignId forKey:@"id"];
+            [campaignInfo setValue:[NSNumber numberWithBool:NO] forKey:@"displayed"];
+            [campaignInfo setValue:reason forKey:@"reason"];
+            [campaignsJson addObject:campaignInfo];
+        }
+        
+        // Add campaign that was shown, if available
+        if (conversationShow != NULL) {
+            NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
+            SwrveConversationCampaign* c = conversationShow.campaign;
+            if (c != nil) {
+                [campaignInfo setValue:[NSNumber numberWithUnsignedInteger:c.ID] forKey:@"id"];
+            }
+            [campaignInfo setValue:[NSNumber numberWithBool:TRUE] forKey:@"displayed"];
+            [campaignInfo setValue:conversationShow.conversationID forKey:@"message_id"];
             [campaignInfo setValue:@"" forKey:@"reason"];
             [campaignsJson addObject:campaignInfo];
         }

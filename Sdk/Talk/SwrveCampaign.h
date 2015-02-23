@@ -1,26 +1,22 @@
-@class SwrveMessage;
+#import "SwrveBaseCampaign.h"
+#import "SwrveMessage.h"
+
 @class SwrveButton;
 @class SwrveMessageController;
 
 /*! In-app campaign. */
-@interface SwrveCampaign : NSObject
+@interface SwrveCampaign : SwrveBaseCampaign
 
 @property (atomic)            NSUInteger ID;                        /*!< Unique identifier. */
 @property (nonatomic, retain) NSString* name;                       /*!< Name of the campaign. */
-@property (atomic, retain)    NSArray*  messages;                   /*!< List of messages. */
-@property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 @property (atomic)            NSUInteger maxImpressions;            /*!< Maximum number of impressions per user. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
 @property (atomic)            NSTimeInterval minDelayBetweenMsgs;   /*!< Minimum interval between different campaigns being shown. */
 @property (nonatomic, retain) NSDate* showMsgsAfterLaunch;          /*!< Timestamp to block messages after launch. */
 @property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
+@property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 
-/*! Initialize the campaign.
- *
- * \param time Used to initialize time-based rules.
- * \returns Initialized campaign.
- */
--(id)initAtTime:(NSDate*)time;
+@property (atomic, retain)    NSArray*  messages;                   /*!< List of messages. */
 
 /*! Check if the campaign has any message setup for the
  * given trigger.
@@ -57,10 +53,6 @@
                             atTime:(NSDate*)time
                        withReasons:(NSMutableDictionary*)campaignReasons;
 
-/*! Increment impressions by one.
- */
--(void)incrementImpressions;
-
 /*! Notify that a message was shown to the user.
  *
  * \param message Message that was shown to the user.
@@ -72,29 +64,5 @@
  * \param timeDismissed When was the message dismissed.
  */
 -(void)messageDismissed:(NSDate*)timeDismissed;
-
-/*! Get the campaign settings.
- *
- * \returns Stored campaign settings.
- */
--(NSDictionary*)campaignSettings;
-
-/*! Load the triggers from the JSON response.
- *
- * \param json JSON object containing the triggers.
- */
--(void)loadTriggersFrom:(NSDictionary*)json;
-
-/*! Load the rules from the JSON response.
- *
- * \param json JSON object containing the rules.
- */
--(void)loadRulesFrom:(NSDictionary*)json;
-
-/*! Load the start and end dates from the JSON response.
- *
- * \param json JSON object containing the dates.
- */
--(void)loadDatesFrom:(NSDictionary*)json;
 
 @end
