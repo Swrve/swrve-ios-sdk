@@ -5,6 +5,7 @@
 @interface SwrveMessageViewController ()
 
 @property (nonatomic, retain) SwrveMessageFormat* current_format;
+@property (nonatomic) BOOL impressionSent;
 
 @end
 
@@ -13,19 +14,17 @@
 @synthesize block;
 @synthesize message;
 @synthesize current_format;
-
-- (void)viewDidLoad
-{
-    current_format = nil;
-    [super viewDidLoad];
-}
+@synthesize impressionSent;
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self updateBounds];
     [self addViewForOrientation:[self interfaceOrientation]];
-    [self.message wasShownToUser];
+    if (self.impressionSent == NO) {
+        [self.message wasShownToUser];
+        self.impressionSent = YES;
+    }
 }
 
 -(void)updateBounds
