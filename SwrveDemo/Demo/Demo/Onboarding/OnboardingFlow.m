@@ -1,10 +1,3 @@
-//
-//  OnboardingFlow.m
-//  SwrveDemoFramework
-//
-//  Copyright (c) 2010-2014 Swrve. All rights reserved.
-//
-
 #import "OnboardingFlow.h"
 #import "DemoFramework.h"
 

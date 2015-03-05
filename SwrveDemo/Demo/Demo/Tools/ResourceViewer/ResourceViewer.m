@@ -1,10 +1,3 @@
-//
-//  ResourceViewer.m
-//  SwrveDemoFramework
-//
-//  Copyright (c) 2010-2014 Swrve. All rights reserved.
-//
-
 #import "ResourceViewer.h"
 #import "DemoFramework.h"
 

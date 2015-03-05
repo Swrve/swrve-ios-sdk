@@ -1,10 +1,3 @@
-//
-//  Settings.h
-//  SwrveDemoFramework
-//
-//  Copyright (c) 2010-2014 Swrve. All rights reserved.
-//
-
 /*
  * UI to change settings in the app
  */
