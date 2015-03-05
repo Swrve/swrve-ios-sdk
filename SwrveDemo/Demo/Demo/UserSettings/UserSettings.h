@@ -1,10 +1,3 @@
-//
-//  UserSettings.h
-//  SwrveDemoFramework
-//
-//  Copyright (c) 2010-2014 Swrve. All rights reserved.
-//
-
 /*
  * Wrapper around NSUserDefaults.  Used to store per user values.
  */

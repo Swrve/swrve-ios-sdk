@@ -1,10 +1,3 @@
-//
-//  OnboardingFlow.h
-//  SwrveDemoFramework
-//
-//  Copyright (c) 2010-2014 Swrve. All rights reserved.
-//
-
 /*
  * Controller used to onboard users the first time they use the app.
  */
