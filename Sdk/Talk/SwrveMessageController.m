@@ -1059,16 +1059,17 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
     // Show the message if it exists
     if( message != nil ) {
-        if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-            [self.showMessageDelegate showMessage:message];
-        }
-        else {
-            [self showMessage:message];
-        }
-        return YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                [self.showMessageDelegate showMessage:message];
+            }
+            else {
+                [self showMessage:message];
+            }
+        });
     }
     
-    return NO;
+    return ( message != nil );
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken
