@@ -1059,14 +1059,22 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
     // Show the message if it exists
     if( message != nil ) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_block_t showMessageBlock = ^{
             if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                 [self.showMessageDelegate showMessage:message];
             }
             else {
                 [self showMessage:message];
             }
-        });
+        };
+
+        
+        if ([NSThread isMainThread]) {
+            showMessageBlock();
+        } else {
+            // Run in the main thread as we have been called from other thread
+            dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+        }
     }
     
     return ( message != nil );
