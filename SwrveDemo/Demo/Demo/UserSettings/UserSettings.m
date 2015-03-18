@@ -14,11 +14,11 @@ static NSString *firstRunIdKey = @"swrve.firstTimeRunningApp";
 static NSString *qaUserIdKey = @"swrve.qaUserId";
 static NSString *qaUserEnabledKey = @"swrve.qaUserEnabled";
 
-static NSString *swrveApiKey = @"VhZ4d59QKL0tRPjmBhnP";
-static NSString *swrveGameId = @"415";
+static NSString *swrveApiKey = @"wp95NfUPfrylyZrxDsU";
+static NSString *swrveGameId = @"2130";
 
-static NSString *demoApiKey = @"VhZ4d59QKL0tRPjmBhnP";
-static NSString *demoGameId = @"415";
+static NSString *demoApiKey = @"wp95NfUPfrylyZrxDsU";
+static NSString *demoGameId = @"2130";
 
 @implementation UserSettings
 

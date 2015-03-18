@@ -13,6 +13,7 @@
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
+#import "SwrveConversation.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationResource.h"
 #import "SwrveConversationResponse.h"
@@ -24,11 +25,11 @@
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveSimpleChoiceTableViewControllerViewController.h"
-#import "Swrve_SVProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "Swrve_SVModalWebViewController.h"
 #import "SwrveSetup.h"
+#import "Swrve.h"
 
 #define kVerticalPadding 10.0
 
@@ -50,10 +51,11 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
+    SwrveConversation *conversation;
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
-//@property (strong, nonatomic) UIView *keyboardDismissView;
+@property (assign, nonatomic) NSUInteger currentPage;
 
 @end
 
@@ -79,6 +81,7 @@ typedef enum {
 @synthesize conversationTrackerId = _conversationTrackerId;
 @synthesize engine = _engine;
 @synthesize conversationPane = _conversationPane;
+@synthesize currentPage;
 
 -(void) viewWillAppear:(BOOL)animated {
 #pragma unused (animated)
@@ -87,6 +90,8 @@ typedef enum {
         [self.contentTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
         updatePath = nil;
     }
+    
+    [self showConversation];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
@@ -118,7 +123,7 @@ typedef enum {
 }
 
 -(void) performActions:(NSDictionary *)actions {
-    SwrveActionType actionType;
+    SwrveConversationActionType actionType;
     id param;
     
     if (actions == nil) {
@@ -208,6 +213,7 @@ typedef enum {
     // If the conversation has already ended, then don't send
     // anything back to the server.
     //
+    DebugLog(@"CONTROL BUTTON TAPPED");
     if(conversationEnd) {
         if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
             dispatch_async(dispatch_get_main_queue(), ^ { 
@@ -289,47 +295,6 @@ typedef enum {
             [response addResponseItem:responseItem];
         }
     }
-
-    [Swrve_SVProgressHUD showWithStatus:NSLocalizedStringFromTable(@"SENDING", @"Converser", @"Sending")];
-
-    // TODO: here is the thing where you add a response to a conversation eh!
-    
-//    [self.engine postConversationResponse:response toConversation:self.conversationTrackerId withCompletionBlock:^(SwrveConversationPane *pane) {
-//         if (pane) {
-//            // The pane is the next page of the conversation that should be rendered.
-//            //
-//            self.conversationPane = pane;
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [Swrve_SVProgressHUD dismiss];
-//                [self updateUI];
-//            });
-//        } else {
-//            // There's no more to render, which means that the conversation is finished.
-//            // Call the app's delegate to announce it is done, then take actions.
-//            //
-//            if(self.delegate && [self->delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-//                dispatch_async(dispatch_get_main_queue(), ^ {
-//                    [Swrve_SVProgressHUD dismiss];
-//                    if (vgButton.actions != nil) {
-//                        [self performActions:vgButton.actions];
-//                    }
-//                    [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];
-//                });
-//            }
-//        }
-//    } errorHandler:^(NSError *error) {
-//        // There was an error communicating with the server. Inform the app of the issue.
-//        // Not that it can do much about it :(
-//        // Actions will happen regardless.
-//        if(self->delegate && [self->delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-//            dispatch_async(dispatch_get_main_queue(), ^ { 
-//                [Swrve_SVProgressHUD dismiss];
-//                if (vgButton.actions != nil) {
-//                    [self performActions:vgButton.actions];
-//                }
-//                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultFailed error:error];});
-//            }
-//    }];
 }
 
 -(void) updateButtonStyle:(UIButton *)button withColor:(SwrveButtonColor)color andStyle:(SwrveButtonColorStyle)style {
@@ -417,7 +382,6 @@ typedef enum {
     if(numViewsReady == self.conversationPane.content.count) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
-            [Swrve_SVProgressHUD dismiss];
         });
     }
 }
@@ -516,18 +480,35 @@ typedef enum {
 
 #pragma mark - Inits
 
--(id) initWithConversationTrackerId:(NSString *)conversationTrackerId {
+-(id)initWithConversation:(SwrveConversation*)conv {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPad" bundle:nil];
     } else {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPhone" bundle:nil];
     }
-    if(self) {
-        _conversationTrackerId = conversationTrackerId;
+    
+    if (self) {
+        conversation = conv;
+        self.currentPage = 0;
     }
     return self;
 }
 
+// TODO: this is the renderer of old london town
+
+// Show conversation - take the current page number (defaults to 0)
+// Pull the conversation page at current page number from the SwrveConversation
+// Convert the page into a Conversation Pane
+// Set the current conversation pane and update the UI
+
+-(void) showConversation {
+    if (conversation) {
+        self.conversationPane = [conversation pageAtIndex:self.currentPage];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateUI];
+        });
+    }
+}
 
 // Tapping the content view outside the context of any
 // interactive input views requests the current first
@@ -759,9 +740,14 @@ typedef enum {
 
 - (IBAction)cancelButtonTapped:(id)sender {
 #pragma unused (sender)
+    // TODO: remove debug logging and send a cancel event
+    DebugLog(@"CANCEL BUTTON TAPPED");
     if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
         // It is the delegate's job to cancel us, thank you.
         [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultCancelled error:nil];
+    } else {
+        // If no delegate present, this controller is in a navigation view controller, so just pop it
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
