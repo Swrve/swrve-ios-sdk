@@ -56,6 +56,11 @@
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
                                           rotated:false];
+        
+        // Update background color
+        if (current_format.backgroundColor != nil) {
+            self.view.backgroundColor = current_format.backgroundColor;
+        }
     } else {
         DebugLog(@"Couldn't find a format for message: %@", message.name);
     }
