@@ -15,6 +15,7 @@
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
 @class SwrveFeedbackViewController;
+@class SwrveConversation;
 
 typedef enum {
     SwrveConversationResultCancelled,
@@ -25,7 +26,7 @@ typedef enum {
 typedef enum {
     SwrveCallNumberActionType,
     SwrveVisitURLActionType
-} SwrveActionType;
+} SwrveConversationActionType;
 
 @protocol SwrveConversationItemViewControllerDelegate <NSObject>
 
@@ -35,7 +36,7 @@ typedef enum {
                        error:(NSError *)error;
 
 -(BOOL) conversationController:(SwrveConversationItemViewController *)controller
-                willTakeAction:(SwrveActionType)action
+                willTakeAction:(SwrveConversationActionType)action
                      withParam:(NSString*)param;
 @end
 
@@ -54,9 +55,9 @@ typedef enum {
 @property (readonly, nonatomic) NSString *conversationTrackerId;
 @property (nonatomic, strong) SwrveConversationResource *engine;
 
+-(id)initWithConversation:(SwrveConversation*)conversation;
 
 -(IBAction)cancelButtonTapped:(id)sender;
--(id)initWithConversationTrackerId:(NSString *)conversationTrackerId;
 -(void)updateUI;
 
 @end

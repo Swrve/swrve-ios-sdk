@@ -2,13 +2,14 @@
 
 @class SwrveMessageController;
 @class SwrveConversationCampaign;
+@class SwrveConversationPane;
 
 @interface SwrveConversation : NSObject
 
 @property (nonatomic, weak)              SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* conversationID;            /*!< Identifies the conversation in a campaign */
 @property (nonatomic, retain)            NSString* name;                      /*!< Name of the conversation */
-@property (nonatomic, retain)            NSDictionary* pages;                 /*!< Pages of the message */
+@property (nonatomic, retain)            NSArray* pages;                 /*!< Pages of the message */
 
 /*! Create an in-app conversation from the JSON content.
  *
@@ -28,5 +29,10 @@
 /*! Notify that this message was shown to the user.
  */
 -(void)wasShownToUser;
+
+/*! Return the page at a given index in the conversation
+ */
+
+-(SwrveConversationPane*)pageAtIndex:(NSUInteger)index;
 
 @end
