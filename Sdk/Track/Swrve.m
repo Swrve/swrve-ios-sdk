@@ -309,6 +309,7 @@ enum
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
+@synthesize defaultBackgroundColor;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -380,6 +381,7 @@ enum
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
+@synthesize defaultBackgroundColor;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -412,6 +414,7 @@ enum
         maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
+        defaultBackgroundColor = config.defaultBackgroundColor;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;

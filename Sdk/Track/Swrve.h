@@ -123,6 +123,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /* Controls if Swrve in-app messaging is enabled. */
 @property (nonatomic) BOOL talkEnabled;
 
+/* Default in-app background color used if none is specified in the template */
+@property (nonatomic, retain) UIColor* defaultBackgroundColor;
+
 /*! A callback to get notified when user resources have been updated.
  *
  * If config.autoDownloadCampaignsAndResources is YES (default) user resources will be kept up to date automatically
@@ -272,6 +275,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
+@property (nonatomic, readonly) UIColor* defaultBackgroundColor;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
