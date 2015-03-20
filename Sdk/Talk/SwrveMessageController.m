@@ -140,7 +140,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.cdnRoot            = nil;
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
-    self.backgroundColor    = [UIColor blackColor];
+    self.backgroundColor    = sdk.config.defaultBackgroundColor;
     
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     self.settingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
