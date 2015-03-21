@@ -23,21 +23,7 @@
     self = [super init];
     if(self) {
         _title = [title copy];
-        id obj = [choices objectAtIndex:0];
-        if([obj isKindOfClass:[NSString class]]) {
-            _choices = [choices copy];
-            _hasMore = NO;
-        } else {
-            _hasMore = YES;
-            NSMutableArray *inner = [[NSMutableArray alloc] initWithCapacity:choices.count];
-            for(NSDictionary *dict in choices) {
-                NSString *innerTitle = [dict objectForKey:@"title"];
-                NSArray *innerOptions = [dict objectForKey:@"options"];
-                SwrveChoiceArray *innerChoice = [[SwrveChoiceArray alloc] initWithArray:innerOptions andTitle:innerTitle];
-                [inner addObject:innerChoice];
-            }
-            _choices = [[NSArray alloc] initWithArray:inner];
-        }
+        _choices = [choices copy];
         self.selectedIndex = -1;
     }
     return self;
@@ -48,9 +34,9 @@
         return @"";
     }
     
-    // TBD: c
     NSUInteger inx = (NSUInteger)self.selectedIndex;
-    return [_choices objectAtIndex:inx];
+    NSDictionary *item = (NSDictionary*)[_choices objectAtIndex:inx];
+    return [item objectForKey:@"answer_text"];
 }
 
 -(NSDictionary *)userResponse {

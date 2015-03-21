@@ -24,7 +24,7 @@
 #import "SwrveInputItem.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
-#import "SwrveSimpleChoiceTableViewControllerViewController.h"
+#import "SwrveSimpleChoiceTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "Swrve_SVModalWebViewController.h"
@@ -54,7 +54,7 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
-@property (assign, nonatomic) NSUInteger currentPage;
+@property (assign, nonatomic) NSString* currentPageTag;
 
 @end
 
@@ -80,7 +80,7 @@ typedef enum {
 @synthesize conversationTrackerId = _conversationTrackerId;
 @synthesize engine = _engine;
 @synthesize conversationPane = _conversationPane;
-@synthesize currentPage;
+@synthesize currentPageTag;
 
 -(void) viewWillAppear:(BOOL)animated {
 #pragma unused (animated)
@@ -298,6 +298,7 @@ typedef enum {
 
     self.conversationPane = [conversation pageForTag:vgButton.target];
     dispatch_async(dispatch_get_main_queue(), ^ {
+        // TODO: navigation event
         [self updateUI];
     });
     
@@ -500,7 +501,7 @@ typedef enum {
     
     if (self) {
         conversation = conv;
-        self.currentPage = 0;
+        self.currentPageTag = nil;
     }
     return self;
 }
@@ -515,7 +516,9 @@ typedef enum {
 // for navigation, so a refactor would be good.
 -(void) showConversation {
     if (conversation) {
-        self.conversationPane = [conversation pageAtIndex:self.currentPage];
+        if (!self.conversationPane) {
+            self.conversationPane = [conversation pageAtIndex:0];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateUI];
         });
@@ -799,7 +802,7 @@ typedef enum {
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(NSUInteger)indexPath.section];
         [tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
     } else if([atom.type isEqualToString:kSwrveInputMultiValueLong]) {
-        SwrveSimpleChoiceTableViewControllerViewController *simpleVC = [[SwrveSimpleChoiceTableViewControllerViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        SwrveSimpleChoiceTableViewController *simpleVC = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         simpleVC.choiceValues = [(SwrveInputMultiValueLong *)atom choicesForRow:(NSUInteger)indexPath.row];
         [self.navigationController pushViewController:simpleVC animated:YES];
         // Also note that this row may need an update
