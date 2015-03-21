@@ -25,4 +25,6 @@
 - (IBAction)onFlushEvents:(id)sender;
 - (IBAction)onSaveEvents:(id)sender;
 
+// TODO: remove from ship
+-(IBAction)onConversationEvent:(id)sender;
 @end
