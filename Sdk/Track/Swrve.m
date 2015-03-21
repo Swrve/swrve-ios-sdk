@@ -1445,24 +1445,15 @@ static bool didSwizzle = false;
     return appVersion;
 }
 
-//static NSString* httpScheme(bool useHttps)
-//{
-//    return useHttps ? @"https" : @"http";
-//}
-
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
         newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.api.swrve.com", self.appID];
-        // TODO: REMOVE BEFORE RELEASE!
-        newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.converser-api.swrve.com", self.appID];
     }
 
     if (nil == newConfig.contentServer) {
         newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
-        // TODO: REMOVE BEFORE RELEASE!
-        newConfig.contentServer = [NSString stringWithFormat:@"http://converser-content.swrve.com"];
     }
 
     // Validate other values
@@ -1471,8 +1462,7 @@ static bool didSwizzle = false;
 
 -(void) maybeFlushToDisk
 {
-    if ([self eventBufferBytes] > SWRVE_MEMORY_QUEUE_MAX_BYTES)
-    {
+    if ([self eventBufferBytes] > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
         [self saveEventsToDisk];
     }
 }

@@ -80,6 +80,11 @@
         SwrveConversationButton *vgConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
         vgConversationButton.actions = [dict objectForKey:@"action"];
         
+        // Leave the target nil if this a conversation ender (i.e. no following state)
+        NSString *target = [dict objectForKey:@"target"];
+        if (target && ![target isEqualToString:@""]) {
+            vgConversationButton.target = target;
+        }
         return vgConversationButton;
     }
     if([type isEqualToString:kSwrveInputMultiValueLong]) {

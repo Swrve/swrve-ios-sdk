@@ -46,7 +46,6 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
-    BOOL conversationEnd;
     BOOL conversationEndedWithAction;
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
@@ -209,30 +208,28 @@ typedef enum {
     }    
 }
 
--(void) buttonTapped:(id) sender {
-    // If the conversation has already ended, then don't send
-    // anything back to the server.
-    //
-    DebugLog(@"CONTROL BUTTON TAPPED");
-    if(conversationEnd) {
-        if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^ { 
-                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];});
-        }
-        return;
-    }
+-(void) endConversationButtonTapped:(id)sender {
+#pragma unused(sender)
+    // TODO: send an end conversation event here
+    DebugLog(@"EVENT: end conversation");
     
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void) buttonTapped:(id) sender {
+    DebugLog(@"EVENT: send a navigation event here");
+    
+    UIButton *button = (UIButton *)sender;
+
     // Discover which button was tapped and tell it to perform its
     // actions
     //
-    UIButton *button = (UIButton *)sender;
     NSUInteger tag = (NSUInteger)button.tag;
     SwrveConversationButton *vgButton = [self.conversationPane.controls objectAtIndex:tag];
     
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
     //
-    SwrveConversationResponse *response = [[SwrveConversationResponse alloc] initWithControl:vgButton.tag];
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
@@ -287,13 +284,30 @@ typedef enum {
     }
     
     // Construct the response to send back to the server
-    //
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        if([atom isKindOfClass:[SwrveInputItem class]]) {
-            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
-            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
-            [response addResponseItem:responseItem];
-        }
+    // TODO: only for input items
+//    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+//        if([atom isKindOfClass:[SwrveInputItem class]]) {
+//            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
+//            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
+//            [response addResponseItem:responseItem];
+//        }
+//    }
+    
+    // Move onto the next page in the conversation - fetch the next Convseration pane
+    
+
+    self.conversationPane = [conversation pageForTag:vgButton.target];
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        [self updateUI];
+    });
+    
+    // Actions
+    if (vgButton.actions != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            // TODO: issue action event
+            [self performActions:vgButton.actions];
+            // TODO: one of these actions will end the conversation, so issue end event
+        });
     }
 }
 
@@ -387,8 +401,6 @@ typedef enum {
 }
 
 -(void) updateUI {
-    conversationEnd = NO;
-
     // Style the table based on iOS version
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         self.contentTableView.backgroundColor = [UIColor clearColor];
@@ -428,13 +440,8 @@ typedef enum {
     }
     
     self.navigationItem.title = self.conversationPane.title;
-    // And now the buttons
     NSArray *buttons = self.conversationPane.controls;
-    if(buttons.count == 0) {
-        SwrveConversationButton *doneButton = [[SwrveConversationButton alloc] initWithTag:@"done" andDescription:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")];
-        buttons = [NSArray arrayWithObject:doneButton];
-        conversationEnd = YES;
-    }
+
     // Buttons need to fit into width - 2*button padding
     // When there are n buttons, there are n-1 gaps between them
     // So, the buttons each take up (width-(n+1)*gapwidth)/numbuttons
@@ -446,7 +453,11 @@ typedef enum {
         v.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
         v.tag = (NSInteger)i;
         v.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        if ([button endsConversation] ) {
+            [(UIButton *)v addTarget:self action:@selector(endConversationButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        } else {
+            [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        }
         [self styleButton:(UIButton *)v atIndex:i withCount:buttons.count];
         [buttonsView addSubview:v];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
@@ -500,7 +511,8 @@ typedef enum {
 // Pull the conversation page at current page number from the SwrveConversation
 // Convert the page into a Conversation Pane
 // Set the current conversation pane and update the UI
-
+// TODO: this is good forstarting the conversation, or hitting a page, not
+// for navigation, so a refactor would be good.
 -(void) showConversation {
     if (conversation) {
         self.conversationPane = [conversation pageAtIndex:self.currentPage];
@@ -739,16 +751,11 @@ typedef enum {
 }
 
 - (IBAction)cancelButtonTapped:(id)sender {
-#pragma unused (sender)
+#pragma unused (sender)    
     // TODO: remove debug logging and send a cancel event
-    DebugLog(@"CANCEL BUTTON TAPPED");
-    if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-        // It is the delegate's job to cancel us, thank you.
-        [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultCancelled error:nil];
-    } else {
-        // If no delegate present, this controller is in a navigation view controller, so just pop it
-        [self.navigationController popViewControllerAnimated:YES];
-    }
+    
+    DebugLog(@"EVENT: cancel event");
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -

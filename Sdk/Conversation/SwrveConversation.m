@@ -63,8 +63,7 @@
     return true;
 }
 
--(void)wasShownToUser
-{
+-(void)wasShownToUser {
     SwrveMessageController* c = self.controller;
     if (c != nil) {
         // TODO.Converser
@@ -80,4 +79,13 @@
     }
 }
 
+-(SwrveConversationPane*)pageForTag:(NSString*)tag {
+    for (NSDictionary* page in self.pages) {
+        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
+            return [[SwrveConversationPane alloc] initWithDictionary:page];
+        }
+    }
+    DebugLog(@"FAIL: page for tag %@ not found in conversation", tag);
+    return nil;
+}
 @end

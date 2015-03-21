@@ -35,4 +35,9 @@
 
 -(SwrveConversationPane*)pageAtIndex:(NSUInteger)index;
 
+/*! Return the page in the conversation with the given tag
+ */
+
+-(SwrveConversationPane*)pageForTag:(NSString*)tag;
+
 @end
