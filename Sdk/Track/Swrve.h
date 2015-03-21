@@ -16,7 +16,7 @@
 #pragma clang diagnostic pop
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "3.3.1-converser-beta"
+#define SWRVE_SDK_VERSION "4.0"
 
 /*! Result codes for Swrve methods. */
 enum

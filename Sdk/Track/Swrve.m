@@ -996,6 +996,7 @@ static bool didSwizzle = false;
 
     
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
+    DebugLog(@"Refreshing campaigns from URL %@", url);
     [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (!error) {
             NSInteger statusCode = 200;
@@ -1444,24 +1445,15 @@ static bool didSwizzle = false;
     return appVersion;
 }
 
-//static NSString* httpScheme(bool useHttps)
-//{
-//    return useHttps ? @"https" : @"http";
-//}
-
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
         newConfig.eventsServer = [NSString stringWithFormat:@"http://%ld.api.swrve.com", self.appID];
-        // TODO: REMOVE BEFORE RELEASE!
-        newConfig.eventsServer = [NSString stringWithFormat:@"http://converser-api.swrve.com"];
     }
 
     if (nil == newConfig.contentServer) {
         newConfig.contentServer = [NSString stringWithFormat:@"http://%ld.content.swrve.com", self.appID];
-        // TODO: REMOVE BEFORE RELEASE!
-        newConfig.contentServer = [NSString stringWithFormat:@"http://converser-content.swrve.com"];
     }
 
     // Validate other values
@@ -1470,8 +1462,7 @@ static bool didSwizzle = false;
 
 -(void) maybeFlushToDisk
 {
-    if ([self eventBufferBytes] > SWRVE_MEMORY_QUEUE_MAX_BYTES)
-    {
+    if ([self eventBufferBytes] > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
         [self saveEventsToDisk];
     }
 }
