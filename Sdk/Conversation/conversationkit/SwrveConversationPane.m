@@ -25,12 +25,14 @@
 @synthesize controls=_controls;
 @synthesize name=_name;
 @synthesize title=_title;
+@synthesize tag=_tag;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
     if(self) {
         _name = [dict objectForKey:@"name"];
         _title = [dict objectForKey:@"title"];
+        _tag = [dict objectForKey:@"tag"];
         NSArray *contentItems = [dict objectForKey:@"content"];
         if(contentItems) {
             NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:contentItems.count];

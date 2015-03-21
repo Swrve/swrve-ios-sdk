@@ -33,7 +33,14 @@
         UITableViewCell *cell = [self fetchStandardCell:tableView];
         
         NSDictionary *dict = [self.values objectAtIndex:(row - [self hasDescription])];
-        cell.textLabel.text = [[dict allKeys] objectAtIndex:0];
+        
+        // The form for each cell in the choice is
+        // {
+        //    "answer_id" = "54264172-option";
+        //    "answer_text" = "The text to show";
+        // }
+        
+        cell.textLabel.text = [dict objectForKey:@"answer_text"];
         
         if(self.selectedIndex == (NSInteger)row) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;

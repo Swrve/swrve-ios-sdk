@@ -274,7 +274,7 @@
 		938F97CF1A921EC30089168A /* SwrveInputMultiValueLong.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96A91A921EC20089168A /* SwrveInputMultiValueLong.m */; };
 		938F97D01A921EC30089168A /* SwrveInputText.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96AB1A921EC20089168A /* SwrveInputText.m */; };
 		938F97D21A921EC30089168A /* SwrveNonRotatingNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */; };
-		938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */; };
+		938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */; };
 		938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */; };
 		938F97DE1A921EC30089168A /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CC1A921EC20089168A /* UIWebView+YouTubeVimeo.m */; };
 		938F97E01A921EC30089168A /* SwrveReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96D21A921EC20089168A /* SwrveReachability.m */; };
@@ -636,8 +636,8 @@
 		938F96AE1A921EC20089168A /* SwrveNonRotatingNavController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveNonRotatingNavController.h; sourceTree = "<group>"; };
 		938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveNonRotatingNavController.m; sourceTree = "<group>"; };
 		938F96B21A921EC20089168A /* SwrveSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSetup.h; sourceTree = "<group>"; };
-		938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSimpleChoiceTableViewControllerViewController.h; sourceTree = "<group>"; };
-		938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSimpleChoiceTableViewControllerViewController.m; sourceTree = "<group>"; };
+		938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSimpleChoiceTableViewController.h; sourceTree = "<group>"; };
+		938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSimpleChoiceTableViewController.m; sourceTree = "<group>"; };
 		938F96C91A921EC20089168A /* UINavigationController+KeyboardResponderFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+KeyboardResponderFix.h"; path = "ThirdParty/Categories/UINavigationController+KeyboardResponderFix.h"; sourceTree = "<group>"; };
 		938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "ThirdParty/Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		938F96CB1A921EC20089168A /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "ThirdParty/Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
@@ -1189,8 +1189,8 @@
 				938F96AE1A921EC20089168A /* SwrveNonRotatingNavController.h */,
 				938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */,
 				938F96B21A921EC20089168A /* SwrveSetup.h */,
-				938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.h */,
-				938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */,
+				938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewController.h */,
+				938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */,
 				938F98371A92365B0089168A /* SwrveConversationResource.m */,
 				938F98391A9236A50089168A /* SwrveConversationResource.h */,
 			);
@@ -1763,7 +1763,7 @@
 				938F97BB1A921EC30089168A /* SwrveChoiceArray.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
-				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewControllerViewController.m in Sources */,
+				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */,
 				938F97C31A921EC30089168A /* SwrveConversationButton.m in Sources */,
 				096C941A170DBAD9002ADF90 /* ItemPromotion.m in Sources */,
 				099BF500170E542800345404 /* SwrveAuthoritativeDemo.m in Sources */,

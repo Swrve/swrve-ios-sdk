@@ -15,15 +15,15 @@
 #endif
 
 #import "SwrveConversationResource.h"
-#import "SwrveSimpleChoiceTableViewControllerViewController.h"
+#import "SwrveSimpleChoiceTableViewController.h"
 #import "SwrveSetup.h"
 
-@interface SwrveSimpleChoiceTableViewControllerViewController () {
+@interface SwrveSimpleChoiceTableViewController () {
     NSIndexPath *refreshIndex;
 }
 @end
 
-@implementation SwrveSimpleChoiceTableViewControllerViewController
+@implementation SwrveSimpleChoiceTableViewController
 @synthesize choiceValues = _choiceValues;
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -90,7 +90,8 @@
         if(cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
-        cell.textLabel.text = [self.choiceValues.choices objectAtIndex:(NSUInteger)indexPath.row];
+        NSDictionary *chosenElement = [self.choiceValues.choices objectAtIndex:(NSUInteger)indexPath.row];
+        cell.textLabel.text = [chosenElement objectForKey:@"answer_text"];
         if(indexPath.row == self.choiceValues.selectedIndex) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {
@@ -107,7 +108,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if(self.choiceValues.hasMore) {
         SwrveChoiceArray *inner = [self.choiceValues.choices objectAtIndex:(NSUInteger)indexPath.row];
-        SwrveSimpleChoiceTableViewControllerViewController *next = [[SwrveSimpleChoiceTableViewControllerViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        SwrveSimpleChoiceTableViewController *next = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         next.choiceValues = inner;
         [self.navigationController pushViewController:next animated:YES];
         refreshIndex = indexPath;
