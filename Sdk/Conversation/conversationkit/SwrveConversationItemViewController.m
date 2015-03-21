@@ -13,6 +13,7 @@
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
+#import "SwrveConversation.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationResource.h"
 #import "SwrveConversationResponse.h"
@@ -23,12 +24,12 @@
 #import "SwrveInputItem.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
-#import "SwrveSimpleChoiceTableViewControllerViewController.h"
-#import "Swrve_SVProgressHUD.h"
+#import "SwrveSimpleChoiceTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "Swrve_SVModalWebViewController.h"
 #import "SwrveSetup.h"
+#import "Swrve.h"
 
 #define kVerticalPadding 10.0
 
@@ -45,15 +46,15 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
-    BOOL conversationEnd;
     BOOL conversationEndedWithAction;
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
+    SwrveConversation *conversation;
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
-//@property (strong, nonatomic) UIView *keyboardDismissView;
+@property (assign, nonatomic) NSString* currentPageTag;
 
 @end
 
@@ -79,6 +80,7 @@ typedef enum {
 @synthesize conversationTrackerId = _conversationTrackerId;
 @synthesize engine = _engine;
 @synthesize conversationPane = _conversationPane;
+@synthesize currentPageTag;
 
 -(void) viewWillAppear:(BOOL)animated {
 #pragma unused (animated)
@@ -87,6 +89,8 @@ typedef enum {
         [self.contentTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
         updatePath = nil;
     }
+    
+    [self showConversation];
 }
 
 -(void) viewDidAppear:(BOOL)animated {
@@ -118,7 +122,7 @@ typedef enum {
 }
 
 -(void) performActions:(NSDictionary *)actions {
-    SwrveActionType actionType;
+    SwrveConversationActionType actionType;
     id param;
     
     if (actions == nil) {
@@ -204,29 +208,28 @@ typedef enum {
     }    
 }
 
--(void) buttonTapped:(id) sender {
-    // If the conversation has already ended, then don't send
-    // anything back to the server.
-    //
-    if(conversationEnd) {
-        if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^ { 
-                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];});
-        }
-        return;
-    }
+-(void) endConversationButtonTapped:(id)sender {
+#pragma unused(sender)
+    // TODO: send an end conversation event here
+    DebugLog(@"EVENT: end conversation");
     
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void) buttonTapped:(id) sender {
+    DebugLog(@"EVENT: send a navigation event here");
+    
+    UIButton *button = (UIButton *)sender;
+
     // Discover which button was tapped and tell it to perform its
     // actions
     //
-    UIButton *button = (UIButton *)sender;
     NSUInteger tag = (NSUInteger)button.tag;
     SwrveConversationButton *vgButton = [self.conversationPane.controls objectAtIndex:tag];
     
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
     //
-    SwrveConversationResponse *response = [[SwrveConversationResponse alloc] initWithControl:vgButton.tag];
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
@@ -281,55 +284,32 @@ typedef enum {
     }
     
     // Construct the response to send back to the server
-    //
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        if([atom isKindOfClass:[SwrveInputItem class]]) {
-            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
-            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
-            [response addResponseItem:responseItem];
-        }
-    }
-
-    [Swrve_SVProgressHUD showWithStatus:NSLocalizedStringFromTable(@"SENDING", @"Converser", @"Sending")];
-
-    // TODO: here is the thing where you add a response to a conversation eh!
-    
-//    [self.engine postConversationResponse:response toConversation:self.conversationTrackerId withCompletionBlock:^(SwrveConversationPane *pane) {
-//         if (pane) {
-//            // The pane is the next page of the conversation that should be rendered.
-//            //
-//            self.conversationPane = pane;
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [Swrve_SVProgressHUD dismiss];
-//                [self updateUI];
-//            });
-//        } else {
-//            // There's no more to render, which means that the conversation is finished.
-//            // Call the app's delegate to announce it is done, then take actions.
-//            //
-//            if(self.delegate && [self->delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-//                dispatch_async(dispatch_get_main_queue(), ^ {
-//                    [Swrve_SVProgressHUD dismiss];
-//                    if (vgButton.actions != nil) {
-//                        [self performActions:vgButton.actions];
-//                    }
-//                    [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];
-//                });
-//            }
+    // TODO: only for input items
+//    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+//        if([atom isKindOfClass:[SwrveInputItem class]]) {
+//            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
+//            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
+//            [response addResponseItem:responseItem];
 //        }
-//    } errorHandler:^(NSError *error) {
-//        // There was an error communicating with the server. Inform the app of the issue.
-//        // Not that it can do much about it :(
-//        // Actions will happen regardless.
-//        if(self->delegate && [self->delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-//            dispatch_async(dispatch_get_main_queue(), ^ { 
-//                [Swrve_SVProgressHUD dismiss];
-//                if (vgButton.actions != nil) {
-//                    [self performActions:vgButton.actions];
-//                }
-//                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultFailed error:error];});
-//            }
-//    }];
+//    }
+    
+    // Move onto the next page in the conversation - fetch the next Convseration pane
+    
+
+    self.conversationPane = [conversation pageForTag:vgButton.target];
+    dispatch_async(dispatch_get_main_queue(), ^ {
+        // TODO: navigation event
+        [self updateUI];
+    });
+    
+    // Actions
+    if (vgButton.actions != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            // TODO: issue action event
+            [self performActions:vgButton.actions];
+            // TODO: one of these actions will end the conversation, so issue end event
+        });
+    }
 }
 
 -(void) updateButtonStyle:(UIButton *)button withColor:(SwrveButtonColor)color andStyle:(SwrveButtonColorStyle)style {
@@ -417,14 +397,11 @@ typedef enum {
     if(numViewsReady == self.conversationPane.content.count) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
-            [Swrve_SVProgressHUD dismiss];
         });
     }
 }
 
 -(void) updateUI {
-    conversationEnd = NO;
-
     // Style the table based on iOS version
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         self.contentTableView.backgroundColor = [UIColor clearColor];
@@ -464,13 +441,8 @@ typedef enum {
     }
     
     self.navigationItem.title = self.conversationPane.title;
-    // And now the buttons
     NSArray *buttons = self.conversationPane.controls;
-    if(buttons.count == 0) {
-        SwrveConversationButton *doneButton = [[SwrveConversationButton alloc] initWithTag:@"done" andDescription:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")];
-        buttons = [NSArray arrayWithObject:doneButton];
-        conversationEnd = YES;
-    }
+
     // Buttons need to fit into width - 2*button padding
     // When there are n buttons, there are n-1 gaps between them
     // So, the buttons each take up (width-(n+1)*gapwidth)/numbuttons
@@ -482,7 +454,11 @@ typedef enum {
         v.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
         v.tag = (NSInteger)i;
         v.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        if ([button endsConversation] ) {
+            [(UIButton *)v addTarget:self action:@selector(endConversationButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        } else {
+            [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        }
         [self styleButton:(UIButton *)v atIndex:i withCount:buttons.count];
         [buttonsView addSubview:v];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
@@ -516,18 +492,38 @@ typedef enum {
 
 #pragma mark - Inits
 
--(id) initWithConversationTrackerId:(NSString *)conversationTrackerId {
+-(id)initWithConversation:(SwrveConversation*)conv {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPad" bundle:nil];
     } else {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPhone" bundle:nil];
     }
-    if(self) {
-        _conversationTrackerId = conversationTrackerId;
+    
+    if (self) {
+        conversation = conv;
+        self.currentPageTag = nil;
     }
     return self;
 }
 
+// TODO: this is the renderer of old london town
+
+// Show conversation - take the current page number (defaults to 0)
+// Pull the conversation page at current page number from the SwrveConversation
+// Convert the page into a Conversation Pane
+// Set the current conversation pane and update the UI
+// TODO: this is good forstarting the conversation, or hitting a page, not
+// for navigation, so a refactor would be good.
+-(void) showConversation {
+    if (conversation) {
+        if (!self.conversationPane) {
+            self.conversationPane = [conversation pageAtIndex:0];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateUI];
+        });
+    }
+}
 
 // Tapping the content view outside the context of any
 // interactive input views requests the current first
@@ -758,11 +754,11 @@ typedef enum {
 }
 
 - (IBAction)cancelButtonTapped:(id)sender {
-#pragma unused (sender)
-    if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]) {
-        // It is the delegate's job to cancel us, thank you.
-        [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultCancelled error:nil];
-    }
+#pragma unused (sender)    
+    // TODO: remove debug logging and send a cancel event
+    
+    DebugLog(@"EVENT: cancel event");
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -
@@ -806,7 +802,7 @@ typedef enum {
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(NSUInteger)indexPath.section];
         [tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
     } else if([atom.type isEqualToString:kSwrveInputMultiValueLong]) {
-        SwrveSimpleChoiceTableViewControllerViewController *simpleVC = [[SwrveSimpleChoiceTableViewControllerViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        SwrveSimpleChoiceTableViewController *simpleVC = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         simpleVC.choiceValues = [(SwrveInputMultiValueLong *)atom choicesForRow:(NSUInteger)indexPath.row];
         [self.navigationController pushViewController:simpleVC animated:YES];
         // Also note that this row may need an update

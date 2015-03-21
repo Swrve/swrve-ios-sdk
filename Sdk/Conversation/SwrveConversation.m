@@ -1,6 +1,8 @@
+#import "Swrve.h"
 #import "SwrveCampaign.h"
 #import "SwrveMessageController.h"
 #import "SwrveConversation.h"
+#import "SwrveConversationPane.h"
 
 @interface SwrveConversation()
 
@@ -61,12 +63,29 @@
     return true;
 }
 
--(void)wasShownToUser
-{
+-(void)wasShownToUser {
     SwrveMessageController* c = self.controller;
     if (c != nil) {
         // TODO.Converser
     }
 }
 
+-(SwrveConversationPane*)pageAtIndex:(NSUInteger)index {
+    if (index > self.pages.count) {
+        DebugLog(@"Seeking page %lu in a %lu-paged conversation", (unsigned long)index, (unsigned long)self.pages.count);
+        return nil;
+    } else {
+        return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
+    }
+}
+
+-(SwrveConversationPane*)pageForTag:(NSString*)tag {
+    for (NSDictionary* page in self.pages) {
+        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
+            return [[SwrveConversationPane alloc] initWithDictionary:page];
+        }
+    }
+    DebugLog(@"FAIL: page for tag %@ not found in conversation", tag);
+    return nil;
+}
 @end

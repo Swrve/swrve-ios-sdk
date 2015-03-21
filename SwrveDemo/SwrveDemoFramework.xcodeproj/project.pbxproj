@@ -87,6 +87,9 @@
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
+		9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1A71AB83B6D00F29FCE /* Converser.strings */; };
+		9360E1C11AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */; };
+		9360E1C21AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */; };
 		938F97121A921EC20089168A /* CustomFeedbackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CB1A921EC20089168A /* CustomFeedbackView.xib */; };
 		938F97131A921EC20089168A /* cvsr_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CC1A921EC20089168A /* cvsr_0.png */; };
 		938F97141A921EC20089168A /* cvsr_0@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CD1A921EC20089168A /* cvsr_0@2x.png */; };
@@ -252,8 +255,6 @@
 		938F97B41A921EC30089168A /* cvsr_unread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F966D1A921EC20089168A /* cvsr_unread@2x.png */; };
 		938F97B51A921EC30089168A /* Converser.strings in Resources */ = {isa = PBXBuildFile; fileRef = 938F966E1A921EC20089168A /* Converser.strings */; };
 		938F97B61A921EC30089168A /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 938F96761A921EC20089168A /* VERSION */; };
-		938F97B71A921EC30089168A /* VGConversationItemViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 938F96771A921EC20089168A /* VGConversationItemViewController_iPad.xib */; };
-		938F97B81A921EC30089168A /* VGConversationItemViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 938F96781A921EC20089168A /* VGConversationItemViewController_iPhone.xib */; };
 		938F97B91A921EC30089168A /* VGConversationKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 938F96791A921EC20089168A /* VGConversationKitResources-Info.plist */; };
 		938F97BB1A921EC30089168A /* SwrveChoiceArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F967D1A921EC20089168A /* SwrveChoiceArray.m */; };
 		938F97BC1A921EC30089168A /* SwrveContentHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F967F1A921EC20089168A /* SwrveContentHTML.m */; };
@@ -273,7 +274,7 @@
 		938F97CF1A921EC30089168A /* SwrveInputMultiValueLong.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96A91A921EC20089168A /* SwrveInputMultiValueLong.m */; };
 		938F97D01A921EC30089168A /* SwrveInputText.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96AB1A921EC20089168A /* SwrveInputText.m */; };
 		938F97D21A921EC30089168A /* SwrveNonRotatingNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */; };
-		938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */; };
+		938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */; };
 		938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */; };
 		938F97DE1A921EC30089168A /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CC1A921EC20089168A /* UIWebView+YouTubeVimeo.m */; };
 		938F97E01A921EC30089168A /* SwrveReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96D21A921EC20089168A /* SwrveReachability.m */; };
@@ -415,6 +416,15 @@
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		9360E1A51AB83B6D00F29FCE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1A81AB83B6D00F29FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1AB1AB83B6D00F29FCE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1AE1AB83B6D00F29FCE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1B11AB83B6D00F29FCE /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1B41AB83B6D00F29FCE /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1B71AB83B6D00F29FCE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = Converser.strings; sourceTree = "<group>"; };
+		9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwrveConversationItemViewController_iPad.xib; sourceTree = "<group>"; };
+		9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwrveConversationItemViewController_iPhone.xib; sourceTree = "<group>"; };
 		938F95CB1A921EC20089168A /* CustomFeedbackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomFeedbackView.xib; sourceTree = "<group>"; };
 		938F95CC1A921EC20089168A /* cvsr_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cvsr_0.png; sourceTree = "<group>"; };
 		938F95CD1A921EC20089168A /* cvsr_0@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cvsr_0@2x.png"; sourceTree = "<group>"; };
@@ -586,8 +596,6 @@
 		938F96741A921EC20089168A /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Converser.strings; sourceTree = "<group>"; };
 		938F96751A921EC20089168A /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/Converser.strings; sourceTree = "<group>"; };
 		938F96761A921EC20089168A /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
-		938F96771A921EC20089168A /* VGConversationItemViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VGConversationItemViewController_iPad.xib; sourceTree = "<group>"; };
-		938F96781A921EC20089168A /* VGConversationItemViewController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VGConversationItemViewController_iPhone.xib; sourceTree = "<group>"; };
 		938F96791A921EC20089168A /* VGConversationKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VGConversationKitResources-Info.plist"; sourceTree = "<group>"; };
 		938F967C1A921EC20089168A /* SwrveChoiceArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveChoiceArray.h; sourceTree = "<group>"; };
 		938F967D1A921EC20089168A /* SwrveChoiceArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveChoiceArray.m; sourceTree = "<group>"; };
@@ -628,8 +636,8 @@
 		938F96AE1A921EC20089168A /* SwrveNonRotatingNavController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveNonRotatingNavController.h; sourceTree = "<group>"; };
 		938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveNonRotatingNavController.m; sourceTree = "<group>"; };
 		938F96B21A921EC20089168A /* SwrveSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSetup.h; sourceTree = "<group>"; };
-		938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSimpleChoiceTableViewControllerViewController.h; sourceTree = "<group>"; };
-		938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSimpleChoiceTableViewControllerViewController.m; sourceTree = "<group>"; };
+		938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSimpleChoiceTableViewController.h; sourceTree = "<group>"; };
+		938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSimpleChoiceTableViewController.m; sourceTree = "<group>"; };
 		938F96C91A921EC20089168A /* UINavigationController+KeyboardResponderFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+KeyboardResponderFix.h"; path = "ThirdParty/Categories/UINavigationController+KeyboardResponderFix.h"; sourceTree = "<group>"; };
 		938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "ThirdParty/Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		938F96CB1A921EC20089168A /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "ThirdParty/Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
@@ -816,6 +824,7 @@
 		095F5E5C16D040820046D096 /* Sdk */ = {
 			isa = PBXGroup;
 			children = (
+				938F95CA1A921EC20089168A /* Resources */,
 				1B9A35D41A8CCF8500F34406 /* Conversation */,
 				1B220FE519B8AFFC00F378E6 /* Talk */,
 				1B220FF719B8AFFC00F378E6 /* Track */,
@@ -1073,6 +1082,62 @@
 			path = GemPack;
 			sourceTree = "<group>";
 		};
+		9360E1A31AB83B6D00F29FCE /* de.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1A41AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = de.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1A61AB83B6D00F29FCE /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1A71AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1A91AB83B6D00F29FCE /* es.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1AA1AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = es.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1AC1AB83B6D00F29FCE /* fr.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1AD1AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = fr.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1AF1AB83B6D00F29FCE /* it.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1B01AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = it.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1B21AB83B6D00F29FCE /* nl.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1B31AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = nl.lproj;
+			sourceTree = "<group>";
+		};
+		9360E1B51AB83B6D00F29FCE /* pt.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9360E1B61AB83B6D00F29FCE /* Converser.strings */,
+			);
+			path = pt.lproj;
+			sourceTree = "<group>";
+		};
 		938F95C91A921EC20089168A /* conversationkit */ = {
 			isa = PBXGroup;
 			children = (
@@ -1080,7 +1145,6 @@
 				938F983B1A92570A0089168A /* SwrveConversationResponse.m */,
 				938F983C1A92570A0089168A /* SwrveConversationResponseItem.h */,
 				938F983D1A92570A0089168A /* SwrveConversationResponseItem.m */,
-				938F95CA1A921EC20089168A /* Resources */,
 				938F96B51A921EC20089168A /* ThirdParty */,
 				938F96C91A921EC20089168A /* UINavigationController+KeyboardResponderFix.h */,
 				938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */,
@@ -1125,8 +1189,8 @@
 				938F96AE1A921EC20089168A /* SwrveNonRotatingNavController.h */,
 				938F96AF1A921EC20089168A /* SwrveNonRotatingNavController.m */,
 				938F96B21A921EC20089168A /* SwrveSetup.h */,
-				938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.h */,
-				938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewControllerViewController.m */,
+				938F96B31A921EC20089168A /* SwrveSimpleChoiceTableViewController.h */,
+				938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */,
 				938F98371A92365B0089168A /* SwrveConversationResource.m */,
 				938F98391A9236A50089168A /* SwrveConversationResource.h */,
 			);
@@ -1136,6 +1200,15 @@
 		938F95CA1A921EC20089168A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9360E1A31AB83B6D00F29FCE /* de.lproj */,
+				9360E1A61AB83B6D00F29FCE /* en.lproj */,
+				9360E1A91AB83B6D00F29FCE /* es.lproj */,
+				9360E1AC1AB83B6D00F29FCE /* fr.lproj */,
+				9360E1AF1AB83B6D00F29FCE /* it.lproj */,
+				9360E1B21AB83B6D00F29FCE /* nl.lproj */,
+				9360E1B51AB83B6D00F29FCE /* pt.lproj */,
+				9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */,
+				9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */,
 				938F95CB1A921EC20089168A /* CustomFeedbackView.xib */,
 				938F95CC1A921EC20089168A /* cvsr_0.png */,
 				938F95CD1A921EC20089168A /* cvsr_0@2x.png */,
@@ -1301,11 +1374,10 @@
 				938F966D1A921EC20089168A /* cvsr_unread@2x.png */,
 				938F966E1A921EC20089168A /* Converser.strings */,
 				938F96761A921EC20089168A /* VERSION */,
-				938F96771A921EC20089168A /* VGConversationItemViewController_iPad.xib */,
-				938F96781A921EC20089168A /* VGConversationItemViewController_iPhone.xib */,
 				938F96791A921EC20089168A /* VGConversationKitResources-Info.plist */,
 			);
-			path = Resources;
+			name = Resources;
+			path = ../Sdk/Conversation/conversationkit/Resources;
 			sourceTree = "<group>";
 		};
 		938F96B51A921EC20089168A /* ThirdParty */ = {
@@ -1481,7 +1553,6 @@
 				095F5EB616D049860046D096 /* swrve_tiny.png in Resources */,
 				938F97841A921EC20089168A /* cvsr_notification_bg.png in Resources */,
 				938F97871A921EC20089168A /* cvsr_orange-star@2x.png in Resources */,
-				938F97B81A921EC30089168A /* VGConversationItemViewController_iPhone.xib in Resources */,
 				938F97F81A921EC30089168A /* LICENSE-SVWVC.txt in Resources */,
 				095F5EB716D049860046D096 /* swrve.png in Resources */,
 				938F974B1A921EC20089168A /* cvsr_emoticon_01_so_angry_selected.png in Resources */,
@@ -1501,6 +1572,7 @@
 				938F97451A921EC20089168A /* cvsr_bottom_button_solid_green_ios7.png in Resources */,
 				938F97831A921EC20089168A /* cvsr_layer_1_background@2x.png in Resources */,
 				938F97891A921EC20089168A /* cvsr_refresh.png in Resources */,
+				9360E1C21AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib in Resources */,
 				938F976E1A921EC20089168A /* cvsr_grouped_cell_mid_ios7@2x.png in Resources */,
 				938F977E1A921EC20089168A /* cvsr_keyboardBackground@2x.png in Resources */,
 				938F97641A921EC20089168A /* cvsr_gray-star@2x.png in Resources */,
@@ -1512,7 +1584,6 @@
 				09E82C0C1701197300EE4E3B /* swrve_logo.png in Resources */,
 				938F97131A921EC20089168A /* cvsr_0.png in Resources */,
 				938F97181A921EC20089168A /* cvsr_1@2x.png in Resources */,
-				938F97B71A921EC30089168A /* VGConversationItemViewController_iPad.xib in Resources */,
 				938F97AD1A921EC30089168A /* cvsr_talkback_send_button_background_ios7.png in Resources */,
 				938F978A1A921EC20089168A /* cvsr_refresh@2x.png in Resources */,
 				938F972F1A921EC20089168A /* cvsr_bottom_button_background_ios7.png in Resources */,
@@ -1530,6 +1601,7 @@
 				938F975F1A921EC20089168A /* cvsr_error.png in Resources */,
 				938F975C1A921EC20089168A /* cvsr_emoticon_05_taasty_selected@2x.png in Resources */,
 				938F976C1A921EC20089168A /* cvsr_grouped_cell_mid@2x.png in Resources */,
+				9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */,
 				938F971A1A921EC20089168A /* cvsr_2@2x.png in Resources */,
 				09EFDF53170BE83C00AF3EE5 /* Default@2x.png in Resources */,
 				096C9403170D037A002ADF90 /* swipe.png in Resources */,
@@ -1564,6 +1636,7 @@
 				938F976A1A921EC20089168A /* cvsr_grouped_cell_bottom_tapped@2x.png in Resources */,
 				938F972D1A921EC20089168A /* cvsr_bottom_button_background.png in Resources */,
 				099BF4FB170E1FE200345404 /* tutorial_b.png in Resources */,
+				9360E1C11AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib in Resources */,
 				938F97881A921EC20089168A /* cvsr_progress@2x.png in Resources */,
 				938F97981A921EC20089168A /* cvsr_slider_track@2x.png in Resources */,
 				938F97AB1A921EC30089168A /* cvsr_talkback_send_button_background.png in Resources */,
@@ -1690,7 +1763,7 @@
 				938F97BB1A921EC30089168A /* SwrveChoiceArray.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
-				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewControllerViewController.m in Sources */,
+				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */,
 				938F97C31A921EC30089168A /* SwrveConversationButton.m in Sources */,
 				096C941A170DBAD9002ADF90 /* ItemPromotion.m in Sources */,
 				099BF500170E542800345404 /* SwrveAuthoritativeDemo.m in Sources */,
@@ -1725,6 +1798,62 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		9360E1A41AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1A51AB83B6D00F29FCE /* de */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1A71AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1A81AB83B6D00F29FCE /* en */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1AA1AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1AB1AB83B6D00F29FCE /* es */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1AD1AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1AE1AB83B6D00F29FCE /* fr */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1B01AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1B11AB83B6D00F29FCE /* it */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1B31AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1B41AB83B6D00F29FCE /* nl */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
+		9360E1B61AB83B6D00F29FCE /* Converser.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9360E1B71AB83B6D00F29FCE /* pt */,
+			);
+			name = Converser.strings;
+			sourceTree = "<group>";
+		};
 		938F966E1A921EC20089168A /* Converser.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

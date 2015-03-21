@@ -5,6 +5,8 @@
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrveTalkQA.h"
+#import "SwrveConversationsNavigationController.h"
+#import "SwrveConversationItemViewController.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
@@ -987,14 +989,36 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void) showConversation:(SwrveConversation*)conversation
 {
-    #pragma unused(conversation)
-    //TODO: SHOW CONVERSATION HERE
-    int k = 0;
-    k = 2;
+    DebugLog(@"Showing conversation %@", conversation.name);
+    if ( conversation && self.inAppMessageWindow == nil ) {
+        // Create a view to show the conversation
+        //
+        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
+        // TODO: this delegate/callbacks are nil TEMPORARILY
+        scivc.engine = nil;
+        scivc.delegate = nil;
+        
+        // Create a navigation controller in which to push the conversation, and choose iPad presentation style
+        SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            svnc.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
+        // Attach cancel button to the conversation navigation options
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
+        scivc.navigationItem.leftBarButtonItem = cancelButton;
+        
+        // TODO: animations, if any
+        // TODO: callbacks to conversation delegate
+        // TODO: do not show message if there is something already being shown
+        
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
+        });
+    }
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
-    
     if( messageViewController == nil ) {
         DebugLog(@"Cannot show a nil view.", nil);
         return;

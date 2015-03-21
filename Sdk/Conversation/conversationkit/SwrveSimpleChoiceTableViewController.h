@@ -12,7 +12,7 @@
 #import <UIKit/UIKit.h>
 #import "SwrveChoiceArray.h"
 
-@interface SwrveSimpleChoiceTableViewControllerViewController : UITableViewController
+@interface SwrveSimpleChoiceTableViewController : UITableViewController
 
 @property(nonatomic, strong) SwrveChoiceArray *choiceValues;
 

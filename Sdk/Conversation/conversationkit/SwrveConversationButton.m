@@ -16,13 +16,19 @@
 
 @synthesize description = _description;
 @synthesize actions = _actions;
+@synthesize target = _target;
 
 -(id) initWithTag:(NSString *)tag andDescription:(NSString *)description {
     self = [super initWithTag:tag andType:kSwrveControlTypeButton];
     if(self) {
-        _description = description;        
+        _description = description;
+        _target = nil;
     }
     return self;
+}
+
+-(BOOL) endsConversation {
+    return _target==nil;
 }
 
 -(UIView *)view {
