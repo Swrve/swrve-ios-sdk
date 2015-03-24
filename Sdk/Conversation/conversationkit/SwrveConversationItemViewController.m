@@ -54,7 +54,6 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
-@property (assign, nonatomic) NSString* currentPageTag;
 
 @end
 
@@ -77,10 +76,7 @@ typedef enum {
 @synthesize contentTableView;
 @synthesize buttonsView;
 @synthesize delegate;
-@synthesize conversationTrackerId = _conversationTrackerId;
-@synthesize engine = _engine;
 @synthesize conversationPane = _conversationPane;
-@synthesize currentPageTag;
 
 -(void) viewWillAppear:(BOOL)animated {
 #pragma unused (animated)
@@ -501,7 +497,6 @@ typedef enum {
     
     if (self) {
         conversation = conv;
-        self.currentPageTag = nil;
     }
     return self;
 }
