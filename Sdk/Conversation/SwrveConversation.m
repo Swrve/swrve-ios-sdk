@@ -23,6 +23,7 @@
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
     self.pages          = [json objectForKey:@"pages"];
+    
 
     return self;
 }
@@ -66,7 +67,7 @@
 -(void)wasShownToUser {
     SwrveMessageController* c = self.controller;
     if (c != nil) {
-        // TODO.Converser
+        // TODO: resolve that the user has seen the conversation
     }
 }
 

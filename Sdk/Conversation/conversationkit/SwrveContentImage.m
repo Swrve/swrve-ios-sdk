@@ -27,7 +27,11 @@
 -(void) loadView {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
-        UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.value]]];
+        NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+        NSString* swrve_folder = @"com.ngt.msgs";
+        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
+        UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
+
         [self sizeAndDisplayImage:image];
     });
 }
