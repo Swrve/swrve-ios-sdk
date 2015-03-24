@@ -12,6 +12,21 @@
 {
     id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:controller];
     NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
+    
+    // Set up asset downloads here
+    // given the converstion
+    // for each page
+    // scan content to find any images
+    // queue up the image for download as an asset
+    
+    for (NSDictionary *page in [conversationJson objectForKey:@"pages"]) {
+        for (NSDictionary *contentItem in [page objectForKey:@"content"]) {
+            if ([[contentItem objectForKey:@"type"] isEqualToString:@"image"]) {
+                // found an image, queu da
+                [assetsQueue addObject:[contentItem objectForKey:@"value"]];
+            }
+        }
+    }
     self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:controller];
     return instance;
 }
