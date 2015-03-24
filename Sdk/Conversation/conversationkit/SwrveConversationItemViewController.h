@@ -52,8 +52,6 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
 @property (nonatomic, assign) id<SwrveConversationItemViewControllerDelegate> delegate;
-@property (readonly, nonatomic) NSString *conversationTrackerId;
-@property (nonatomic, strong) SwrveConversationResource *engine;
 
 -(id)initWithConversation:(SwrveConversation*)conversation;
 

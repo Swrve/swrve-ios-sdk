@@ -995,7 +995,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         //
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
         // TODO: this delegate/callbacks are nil TEMPORARILY
-        scivc.engine = nil;
         scivc.delegate = nil;
         
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style

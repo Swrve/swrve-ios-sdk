@@ -17,7 +17,6 @@
 @property (readonly, atomic, strong) NSArray *controls; // Array of SwrveConversationButtons
 @property (readonly, atomic, strong) NSString *name;
 @property (readonly, atomic, strong) NSString *title;
-@property (readonly, atomic, strong) NSString *tag;
 
 -(id) initWithDictionary:(NSDictionary *)dict;
 
