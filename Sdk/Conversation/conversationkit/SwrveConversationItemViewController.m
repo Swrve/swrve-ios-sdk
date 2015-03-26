@@ -205,28 +205,27 @@ typedef enum {
     }    
 }
 
--(void) endConversationButtonTapped:(id)sender {
-    // The sender is tagged with its index in the list of controls in the
-    // conversation pane. Use this to lift the tag associated with the control
-    // to populate the finished conversation event.
-    NSUInteger buttonIndex = (NSUInteger)((UIButton*)sender).tag;
-    SwrveConversationButton *button = self.conversationPane.controls[buttonIndex];
-    
-    [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:button.tag];
+- (IBAction)cancelButtonTapped:(id)sender {
+#pragma unused(sender)
+    [SwrveConversationEvents cancelled:conversation onPage:self.conversationPane.tag];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void) buttonTapped:(id) sender {
-    DebugLog(@"EVENT: send a navigation event here");
-    
-    UIButton *button = (UIButton *)sender;
+-(void) buttonTapped:(id)sender {
+    SwrveConversationButton *control = [self mapButtonToControl:(UIButton*)sender];
+    [self transitionWithControl:control];
+}
 
-    // Discover which button was tapped and tell it to perform its
-    // actions
-    //
+-(SwrveConversationButton*)mapButtonToControl:(UIButton*)button {
+    // The sender is tagged with its index in the list of controls in the
+    // conversation pane. Use this to lift the tag associated with the control
+    // to populate the finished conversation event.
+
     NSUInteger tag = (NSUInteger)button.tag;
-    SwrveConversationButton *vgButton = [self.conversationPane.controls objectAtIndex:tag];
-    
+    return self.conversationPane.controls[(NSUInteger)tag];
+}
+
+-(void)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
     //
@@ -285,28 +284,38 @@ typedef enum {
     
     // Construct the response to send back to the server
     // TODO: only for input items
-//    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-//        if([atom isKindOfClass:[SwrveInputItem class]]) {
-//            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
-//            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
-//            [response addResponseItem:responseItem];
-//        }
-//    }
+    //    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+    //        if([atom isKindOfClass:[SwrveInputItem class]]) {
+    //            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
+    //            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
+    //            [response addResponseItem:responseItem];
+    //        }
+    //    }
     
     // Move onto the next page in the conversation - fetch the next Convseration pane
     
-
-    self.conversationPane = [conversation pageForTag:vgButton.target];
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        // TODO: navigation event
-        [self updateUI];
-    });
     
-    // Actions
-    if (vgButton.actions != nil) {
+    if ([control endsConversation]) {
+        [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        });
+    } else {
+        self.conversationPane = [conversation pageForTag:control.target];
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            // TODO: navigation event
+            [self updateUI];
+        });
+    }
+
+    [self runControlActions:control];
+}
+
+-(void)runControlActions:(SwrveConversationButton*)control {
+    if (control.actions != nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
             // TODO: issue action event
-            [self performActions:vgButton.actions];
+            [self performActions:control.actions];
             // TODO: one of these actions will end the conversation, so issue end event
         });
     }
@@ -454,11 +463,7 @@ typedef enum {
         v.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
         v.tag = (NSInteger)i;
         v.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        if ([button endsConversation] ) {
-            [(UIButton *)v addTarget:self action:@selector(endConversationButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        } else {
-            [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        }
+        [(UIButton *)v addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
         [self styleButton:(UIButton *)v atIndex:i withCount:buttons.count];
         [buttonsView addSubview:v];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
@@ -750,16 +755,6 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIDeviceOrientationDidChangeNotification
                                                   object:nil];
-}
-
-- (IBAction)cancelButtonTapped:(id)sender {
-#pragma unused (sender)    
-    // TODO: remove debug logging and send a cancel event
-    
-    DebugLog(@"EVENT: cancel event");
-    
-    [SwrveConversationEvents cancelled:conversation onPage:self.conversationPane.tag];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -
