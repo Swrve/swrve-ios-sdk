@@ -44,8 +44,7 @@
         type = kSwrveControlTypeButton;
     }
     
-    BOOL optional = [[dict objectForKey:kSwrveKeyOptional] isEqualToString:@"true"];
-    
+    BOOL optional = [[dict objectForKey:kSwrveKeyOptional] boolValue];
 
     // Create some resilience with defaults for tag and type.
     // the tag must be unique within the context of the page.
