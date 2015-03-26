@@ -87,6 +87,7 @@
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
+		932B29AB1AC3234500E9D338 /* SwrveConversationEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 932B29AA1AC3234500E9D338 /* SwrveConversationEvents.m */; };
 		9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1A71AB83B6D00F29FCE /* Converser.strings */; };
 		9360E1C11AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */; };
 		9360E1C21AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */; };
@@ -416,6 +417,8 @@
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		932B29AA1AC3234500E9D338 /* SwrveConversationEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationEvents.m; sourceTree = "<group>"; };
+		932B29AC1AC3236900E9D338 /* SwrveConversationEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveConversationEvents.h; sourceTree = "<group>"; };
 		9360E1A51AB83B6D00F29FCE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Converser.strings; sourceTree = "<group>"; };
 		9360E1A81AB83B6D00F29FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Converser.strings; sourceTree = "<group>"; };
 		9360E1AB1AB83B6D00F29FCE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Converser.strings; sourceTree = "<group>"; };
@@ -1193,6 +1196,8 @@
 				938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */,
 				938F98371A92365B0089168A /* SwrveConversationResource.m */,
 				938F98391A9236A50089168A /* SwrveConversationResource.h */,
+				932B29AA1AC3234500E9D338 /* SwrveConversationEvents.m */,
+				932B29AC1AC3236900E9D338 /* SwrveConversationEvents.h */,
 			);
 			path = conversationkit;
 			sourceTree = "<group>";
@@ -1752,6 +1757,7 @@
 				938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */,
 				938F97D21A921EC30089168A /* SwrveNonRotatingNavController.m in Sources */,
 				938F97E01A921EC30089168A /* SwrveReachability.m in Sources */,
+				932B29AB1AC3234500E9D338 /* SwrveConversationEvents.m in Sources */,
 				1B22100319B8AFFC00F378E6 /* SwrveCampaign.m in Sources */,
 				1B22100619B8AFFC00F378E6 /* SwrveMessageController.m in Sources */,
 				1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */,

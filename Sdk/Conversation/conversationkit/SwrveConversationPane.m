@@ -23,13 +23,13 @@
 @implementation SwrveConversationPane
 @synthesize content=_content;
 @synthesize controls=_controls;
-@synthesize name=_name;
+@synthesize tag=_tag;
 @synthesize title=_title;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
     if(self) {
-        _name = [dict objectForKey:@"name"];
+        _tag = [dict objectForKey:@"tag"];
         _title = [dict objectForKey:@"title"];
         NSArray *contentItems = [dict objectForKey:@"content"];
         if(contentItems) {

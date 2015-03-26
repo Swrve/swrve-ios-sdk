@@ -30,6 +30,7 @@
 #import "Swrve_SVModalWebViewController.h"
 #import "SwrveSetup.h"
 #import "Swrve.h"
+#import "SwrveConversationEvents.h"
 
 #define kVerticalPadding 10.0
 
@@ -205,10 +206,13 @@ typedef enum {
 }
 
 -(void) endConversationButtonTapped:(id)sender {
-#pragma unused(sender)
-    // TODO: send an end conversation event here
-    DebugLog(@"EVENT: end conversation");
+    // The sender is tagged with its index in the list of controls in the
+    // conversation pane. Use this to lift the tag associated with the control
+    // to populate the finished conversation event.
+    NSUInteger buttonIndex = (NSUInteger)((UIButton*)sender).tag;
+    SwrveConversationButton *button = self.conversationPane.controls[buttonIndex];
     
+    [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:button.tag];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -501,8 +505,6 @@ typedef enum {
     return self;
 }
 
-// TODO: this is the renderer of old london town
-
 // Show conversation - take the current page number (defaults to 0)
 // Pull the conversation page at current page number from the SwrveConversation
 // Convert the page into a Conversation Pane
@@ -512,7 +514,9 @@ typedef enum {
 -(void) showConversation {
     if (conversation) {
         if (!self.conversationPane) {
+            // No current conversation pane means that conversation is starting
             self.conversationPane = [conversation pageAtIndex:0];
+            [SwrveConversationEvents started:conversation onPage:self.conversationPane.tag];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateUI];
@@ -753,6 +757,8 @@ typedef enum {
     // TODO: remove debug logging and send a cancel event
     
     DebugLog(@"EVENT: cancel event");
+    
+    [SwrveConversationEvents cancelled:conversation onPage:self.conversationPane.tag];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
