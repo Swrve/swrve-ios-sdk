@@ -12,6 +12,7 @@
 @property (retain, nonatomic) NSArray* text;                           /*!< Currently not used */
 @property (retain, nonatomic) NSString* name;                          /*!< The name of the format */
 @property (retain, nonatomic) NSString* language;                      /*!< The language of the format */
+@property (nonatomic, retain) UIColor* backgroundColor;                /*!< Background color of the format */
 @property (nonatomic)         SwrveInterfaceOrientation orientation;   /*!< The orientation of the format */
 @property (nonatomic)         float scale;                             /*!< The scale that the format should render */
 @property (atomic)            CGSize size;                             /*!< The size of the format */
