@@ -5,7 +5,14 @@ This native iOS SDK will enable your app to use all of these features.
 
 Getting started
 ---------------
-Have a look at the quick integration guide at https://dashboard.swrve.com/help/category/20127113
+Have a look at the quick integration guide at http://docs.swrve.com/developer-documentation/37926233/
+
+Installing using CocoaPods
+--------------------------
+Add the following line to your Podfile
+```
+pod ‘SwrveSDK’
+```
 
 Requirements
 ------------
