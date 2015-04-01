@@ -1203,7 +1203,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             }
         }
 
-    return ( message != nil );
+        return ( message != nil );
+    }
 }
 
 - (SwrveConversation*) getConversation {
