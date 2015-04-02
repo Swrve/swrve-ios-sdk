@@ -13,7 +13,6 @@
 
 
 -(NSString *)vimeoEmbed:(NSString *)url {
-    // TODO: identity transform for the moment...
     return url;
 }
 

@@ -136,6 +136,12 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 -(void)messageWasShownToUser:(SwrveMessage*)message;
 
+/*! Notify that a message was shown to the user.
+ *
+ * \param message Message that was shown to the user.
+ */
+-(void)conversationWasShownToUser:(SwrveConversation*)conversation;
+
 /*! Obtain the app store URL configured for the given app.
  *
  * \param appID App ID of the target app.
