@@ -138,7 +138,7 @@ static const int kStateKey;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
         [view performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.0];
-#pragma clang pop
+#pragma clang diagnostic pop
         return YES;
     }
 

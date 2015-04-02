@@ -31,8 +31,8 @@
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (![self hasDescription] || row > 0) {
         UITableViewCell *cell = [self fetchStandardCell:tableView];
-        
-        NSDictionary *dict = [self.values objectAtIndex:(row - [self hasDescription])];
+        NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
+        NSDictionary *dict = [self.values objectAtIndex:finalRow];
         
         // The form for each cell in the choice is
         // {
@@ -47,7 +47,7 @@
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
-        return [self styleCell:cell atRow:(row - [self hasDescription])];
+        return [self styleCell:cell atRow:finalRow];
     } else {
         return [self fetchDescriptionCell:tableView];
     }
