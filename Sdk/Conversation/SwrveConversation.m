@@ -67,7 +67,7 @@
 -(void)wasShownToUser {
     SwrveMessageController* c = self.controller;
     if (c != nil) {
-        // TODO: resolve that the user has seen the conversation
+        [c conversationWasShownToUser:self];
     }
 }
 
