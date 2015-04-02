@@ -216,7 +216,6 @@
 		938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96B41A921EC20089168A /* SwrveSimpleChoiceTableViewController.m */; };
 		938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */; };
 		938F97DE1A921EC30089168A /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CC1A921EC20089168A /* UIWebView+YouTubeVimeo.m */; };
-		938F97E01A921EC30089168A /* SwrveReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96D21A921EC20089168A /* SwrveReachability.m */; };
 		938F97F61A921EC30089168A /* LICENSE-SVPH.txt in Resources */ = {isa = PBXBuildFile; fileRef = 938F97011A921EC20089168A /* LICENSE-SVPH.txt */; };
 		938F97F71A921EC30089168A /* Swrve_SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F97031A921EC20089168A /* Swrve_SVProgressHUD.m */; };
 		938F97F81A921EC30089168A /* LICENSE-SVWVC.txt in Resources */ = {isa = PBXBuildFile; fileRef = 938F97051A921EC20089168A /* LICENSE-SVWVC.txt */; };
@@ -521,8 +520,6 @@
 		938F96CA1A921EC20089168A /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "ThirdParty/Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		938F96CB1A921EC20089168A /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "ThirdParty/Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
 		938F96CC1A921EC20089168A /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+YouTubeVimeo.m"; path = "ThirdParty/Categories/UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
-		938F96D11A921EC20089168A /* SwrveReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveReachability.h; sourceTree = "<group>"; };
-		938F96D21A921EC20089168A /* SwrveReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveReachability.m; sourceTree = "<group>"; };
 		938F97011A921EC20089168A /* LICENSE-SVPH.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE-SVPH.txt"; sourceTree = "<group>"; };
 		938F97021A921EC20089168A /* Swrve_SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Swrve_SVProgressHUD.h; sourceTree = "<group>"; };
 		938F97031A921EC20089168A /* Swrve_SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Swrve_SVProgressHUD.m; sourceTree = "<group>"; };
@@ -1202,21 +1199,11 @@
 		938F96B51A921EC20089168A /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
-				938F96D01A921EC20089168A /* Reachability */,
 				938F97001A921EC20089168A /* SVProgressHUD */,
 				938F97041A921EC20089168A /* SVWebViewController */,
 				938F970A1A921EC20089168A /* TPKeyboardAvoiding */,
 			);
 			path = ThirdParty;
-			sourceTree = "<group>";
-		};
-		938F96D01A921EC20089168A /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				938F96D11A921EC20089168A /* SwrveReachability.h */,
-				938F96D21A921EC20089168A /* SwrveReachability.m */,
-			);
-			path = Reachability;
 			sourceTree = "<group>";
 		};
 		938F97001A921EC20089168A /* SVProgressHUD */ = {
@@ -1508,7 +1495,6 @@
 				092D28AD16D48F5800EB77BE /* GameAuthoritativeDemo.m in Sources */,
 				938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */,
 				938F97D21A921EC30089168A /* SwrveNonRotatingNavController.m in Sources */,
-				938F97E01A921EC30089168A /* SwrveReachability.m in Sources */,
 				932B29AB1AC3234500E9D338 /* SwrveConversationEvents.m in Sources */,
 				1B22100319B8AFFC00F378E6 /* SwrveCampaign.m in Sources */,
 				1B22100619B8AFFC00F378E6 /* SwrveMessageController.m in Sources */,

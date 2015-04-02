@@ -52,7 +52,6 @@
 // TODO: remove this convenience
 -(IBAction)onConversationEvent:(id)sender {
 #pragma unused(sender)
-    DebugLog(@"EVENT: sending converser event");
     [swrve event:@"converser"];
 }
 
