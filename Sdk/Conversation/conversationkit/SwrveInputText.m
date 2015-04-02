@@ -108,9 +108,7 @@
         UILabel *descLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, 2, inputWidth, 9999)];
         descLabel.backgroundColor = [UIColor clearColor];
         descLabel.font = [UIFont boldSystemFontOfSize:20.0];
-#pragma deploymate push "ignored-api-availability"
         descLabel.lineBreakMode = NSLineBreakByWordWrapping;
-#pragma deploymate pop
         descLabel.numberOfLines = 0;
         descLabel.adjustsFontSizeToFitWidth = NO;
         descLabel.text = self.descriptiveText;
@@ -133,7 +131,7 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         tv.backgroundColor = [UIColor whiteColor];
     } else {
-        tv.backgroundColor = [UIColor colorWithRed:1.000 green:0.984 blue:0.984 alpha:1.000];
+        tv.backgroundColor = [UIColor colorWithRed:1.000f green:0.984f blue:0.984f alpha:1.000f];
     }
     
     if ([keyboardTag isEqualToString:urlKeyboard]) {
@@ -240,12 +238,10 @@
         fieldAccessoryView.barStyle = UIBarStyleDefault;
     } else {
         fieldAccessoryView.barStyle = UIBarStyleBlackTranslucent;
-        fieldAccessoryView.backgroundColor = [UIColor colorWithRed:0.49 green:0.52 blue:0.57 alpha:1.0];
+        fieldAccessoryView.backgroundColor = [UIColor colorWithRed:0.49f green:0.52f blue:0.57f alpha:1.0f];
         UIImage *backgroundImage = [SwrveConversationResource imageFromBundleNamed:@"keyboardBackground.png"];
         if( [backgroundImage respondsToSelector:@selector(resizableImageWithCapInsets:resizingMode:)] ) {
-#pragma deploymate push "ignored-api-availability"
             backgroundImage = [backgroundImage resizableImageWithCapInsets:UIEdgeInsetsMake(2, 0, 0, 0 ) resizingMode:UIImageResizingModeStretch];
-#pragma deploymate pop
         } else {
             backgroundImage = [backgroundImage resizableImageWithCapInsets:UIEdgeInsetsMake(2, 0, 0, 0 )];
         }

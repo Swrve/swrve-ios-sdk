@@ -14,6 +14,7 @@
 @synthesize scale;
 @synthesize language;
 @synthesize orientation;
+@synthesize backgroundColor;
 
 +(CGPoint)getCenterFrom:(NSDictionary*)data
 {
@@ -85,6 +86,13 @@
     return button;
 }
 
+static CGFloat extractHex(NSString* color, NSUInteger index) {
+    NSString* componentString = [color substringWithRange:NSMakeRange(index, 2)];
+    unsigned hexResult;
+    [[NSScanner scannerWithString:componentString] scanHexInt: &hexResult];
+    return hexResult / 255.0f;
+}
+
 -(id)initFromJson:(NSDictionary*)json forController:(SwrveMessageController*)controller forMessage:(SwrveMessage*)message
 {
     self = [super init];
@@ -96,6 +104,28 @@
     if (jsonOrientation)
     {
         self.orientation = ([jsonOrientation caseInsensitiveCompare:@"landscape"] == NSOrderedSame)? SWRVE_ORIENTATION_LANDSCAPE : SWRVE_ORIENTATION_PORTRAIT;
+    }
+    
+    NSString* jsonColor = [json objectForKey:@"color"];
+    if (jsonColor)
+    {
+        NSString* hexColor = [jsonColor uppercaseString];
+        CGFloat alpha, red, blue, green;
+        switch ([hexColor length]) {
+            case 6: // #RRGGBB
+                alpha = 1.0f;
+                red   = extractHex(hexColor, 0);
+                green = extractHex(hexColor, 2);
+                blue  = extractHex(hexColor, 4);
+                break;
+            case 8: // #AARRGGBB
+                alpha = extractHex(hexColor, 0);
+                red   = extractHex(hexColor, 2);
+                green = extractHex(hexColor, 4);
+                blue  = extractHex(hexColor, 6);
+                break;
+        }
+        self.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
     }
     
     // If doesn't exist default to 1.0

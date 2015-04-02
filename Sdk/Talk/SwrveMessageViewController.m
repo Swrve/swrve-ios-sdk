@@ -5,6 +5,7 @@
 @interface SwrveMessageViewController ()
 
 @property (nonatomic, retain) SwrveMessageFormat* current_format;
+@property (nonatomic) BOOL impressionSent;
 
 @end
 
@@ -13,19 +14,17 @@
 @synthesize block;
 @synthesize message;
 @synthesize current_format;
-
-- (void)viewDidLoad
-{
-    current_format = nil;
-    [super viewDidLoad];
-}
+@synthesize impressionSent;
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self updateBounds];
     [self addViewForOrientation:[self interfaceOrientation]];
-    [self.message wasShownToUser];
+    if (self.impressionSent == NO) {
+        [self.message wasShownToUser];
+        self.impressionSent = YES;
+    }
 }
 
 -(void)updateBounds
@@ -57,6 +56,11 @@
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
                                           rotated:false];
+        
+        // Update background color
+        if (current_format.backgroundColor != nil) {
+            self.view.backgroundColor = current_format.backgroundColor;
+        }
     } else {
         DebugLog(@"Couldn't find a format for message: %@", message.name);
     }

@@ -143,7 +143,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.cdnRoot            = nil;
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
-    self.backgroundColor    = [UIColor blackColor];
+    self.backgroundColor    = sdk.config.defaultBackgroundColor;
     
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     self.settingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
@@ -1022,9 +1022,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
-        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
         // Attach cancel button to the conversation navigation options
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
+#pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
         
         // TODO: animations, if any
@@ -1197,27 +1199,34 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             message = [self findMessageForEvent:eventName withParameters:event];
         }
 
-        if (message != nil) {
-            // Only show the message if it supports the given orientation
-            if (![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-                DebugLog(@"The message doesn't support the current orientation", nil);
-                return NO;
-            }
+        // Only show the message if it supports the given orientation
+        if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+            DebugLog(@"The message doesn't support the current orientation", nil);
+            return NO;
+        }
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Show the message if it exists
+        // Show the message if it exists
+        if( message != nil ) {
+            dispatch_block_t showMessageBlock = ^{
                 if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                     [self.showMessageDelegate showMessage:message];
                 }
                 else {
                     [self showMessage:message];
                 }
-            });
-            return YES;
+            };
+
+            
+            if ([NSThread isMainThread]) {
+                showMessageBlock();
+            } else {
+                // Run in the main thread as we have been called from other thread
+                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+            }
         }
+
+        return ( message != nil );
     }
-    
-    return NO;
 }
 
 - (SwrveConversation*) getConversation {
