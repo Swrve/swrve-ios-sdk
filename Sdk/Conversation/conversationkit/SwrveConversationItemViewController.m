@@ -709,12 +709,8 @@ typedef enum {
         backgroundImageView.image = nil;
         buttonsBackgroundImageView.image = nil;
         buttonsView.backgroundColor = [UIColor clearColor];
-
-#pragma deploymate push "ignored-api-availability"
         self.edgesForExtendedLayout = UIRectEdgeNone;
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-#pragma deploymate 
-        
         self.navigationController.navigationBar.translucent = NO;
         UIImage *buttonBgImg = [SwrveConversationResource imageFromBundleNamed:@"bottom_button_background_ios7"];
         buttonsBackgroundImageView.image = buttonBgImg;
@@ -757,9 +753,6 @@ typedef enum {
                                                   object:nil];
 }
 
-#pragma mark -
-#pragma UITableViewDataSource
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #pragma unused (tableView)
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)section];
@@ -776,9 +769,6 @@ typedef enum {
     // Each item is a "section"
     return (NSInteger)self.conversationPane.content.count;
 }
-
-#pragma mark -
-#pragma mark UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 #pragma unused (tableView)

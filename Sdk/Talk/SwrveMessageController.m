@@ -1002,9 +1002,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
-        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
         // Attach cancel button to the conversation navigation options
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
+#pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
         
         // TODO: animations, if any

@@ -13,16 +13,14 @@
 @implementation SwrveKeyboardAvoidingScrollView
 
 // http://stackoverflow.com/questions/20664918/xcode-spurious-warnings-for-creating-selector-for-nonexistent-method-compare
-#pragma GCC diagnostic-ignored -Wselector
-
 #pragma mark - Setup/Teardown
 
 - (void)setup {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SwrveKeyboardAvoiding_keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-#pragma clang pop
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SwrveKeyboardAvoiding_keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+#pragma clang diagnostic pop
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollToActiveTextField) name:UITextViewTextDidBeginEditingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollToActiveTextField) name:UITextFieldTextDidBeginEditingNotification object:nil];
 }
@@ -71,7 +69,10 @@
 -(void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
     if ( !newSuperview ) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(SwrveKeyboardAvoiding_assignTextDelegateForViewsBeneathView:) object:self];
+#pragma clang diagnostic pop
     }
 }
 

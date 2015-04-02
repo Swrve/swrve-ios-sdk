@@ -66,8 +66,6 @@
     return _view;
 }
 
-#pragma UIWebViewDelegate
-
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
 #pragma unused (webView)
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
