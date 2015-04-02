@@ -26,7 +26,7 @@
 }
 
 -(NSUInteger) numberOfRowsNeeded {
-    return self.values.count + [self hasDescription];
+    return self.values.count + ([self hasDescription]? 1: 0);
 }
 
 -(UITableViewCell*) styleCell:(UITableViewCell *)cell atRow:(NSUInteger) row {
@@ -102,12 +102,10 @@
             }
         }
 
-#pragma deploymate push "ignored-api-availability"
         CGSize possibleSize = [self.description sizeWithFont:uifont
                                            constrainedToSize:CGSizeMake(constrainedWidth, 9999)
                                                lineBreakMode:NSLineBreakByWordWrapping];
-#pragma deploymate pop
-        CGFloat h = ceil(possibleSize.height);
+        CGFloat h = (float)ceil(possibleSize.height);
         return (h > 51.0) ? 51.0 : h;
     } else {
         return 51.0;
@@ -124,9 +122,7 @@
         cell.userInteractionEnabled = NO;
     }
     cell.textLabel.text = self.description;
-#pragma deploymate push "ignored-api-availability"
     [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
-#pragma deploymate pop
     cell.textLabel.numberOfLines = 0;
     return cell;
 }

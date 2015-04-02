@@ -198,9 +198,6 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
     }
 }
 
-
-#pragma mark - Offset
-
 + (void)setOffsetFromCenter:(UIOffset)offset {
     [self sharedView].offsetFromCenter = offset;
 }
@@ -209,11 +206,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
     [self setOffsetFromCenter:UIOffsetZero];
 }
 
-#pragma mark - Instance Methods
-
 // http://stackoverflow.com/questions/20664918/xcode-spurious-warnings-for-creating-selector-for-nonexistent-method-compare
-#pragma GCC diagnostic-ignored -Wselector
-
 - (id)initWithFrame:(CGRect)frame {
 
     if ((self = [super initWithFrame:frame])) {
@@ -226,15 +219,13 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         Swrve_SVProgressHUDBackgroundColor = [UIColor whiteColor];
         Swrve_SVProgressHUDForegroundColor = [UIColor blackColor];
 #pragma clang diagnostic push
-#pragma clang diagnostic ignore "-Wselector"
+#pragma clang diagnostic ignored "-Wselector"
         if ([UIFont respondsToSelector:@selector(preferredFontForTextStyle:)]) {
-#pragma pop
-#pragma deploymate push "ignored-api-availability"
+#pragma clang diagnostic pop
             Swrve_SVProgressHUDFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-#pragma deploymate pop
         } else {
             Swrve_SVProgressHUDFont = [UIFont systemFontOfSize:14.0];
-            Swrve_SVProgressHUDBackgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+            Swrve_SVProgressHUDBackgroundColor = [UIColor colorWithWhite:0 alpha:0.8f];
             Swrve_SVProgressHUDForegroundColor = [UIColor whiteColor];
         }
         
@@ -248,16 +239,17 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
             error = @"error";
         }
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
         if ([[UIImage class] instancesRespondToSelector:@selector(imageWithRenderingMode:)]) {
-#pragma deploymate push "ignored-api-availability"
           Swrve_SVProgressHUDSuccessImage = [[SwrveConversationResource imageFromBundleNamed:success] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
           Swrve_SVProgressHUDErrorImage = [[SwrveConversationResource imageFromBundleNamed:error] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-#pragma deploymate pop
         } else {
           Swrve_SVProgressHUDSuccessImage = [SwrveConversationResource imageFromBundleNamed:success];
           Swrve_SVProgressHUDErrorImage = [SwrveConversationResource imageFromBundleNamed:error];
         }
         Swrve_SVProgressHUDRingThickness = 4;
+#pragma clang diagnostic pop
     }
 
     return self;
@@ -287,7 +279,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
             CGFloat freeHeight = self.bounds.size.height - self.visibleKeyboardHeight;
 
             CGPoint center = CGPointMake(self.bounds.size.width/2, freeHeight/2);
-            CGFloat radius = fmin(self.bounds.size.width , self.bounds.size.height) ;
+            CGFloat radius = (float)fmin(self.bounds.size.width , self.bounds.size.height) ;
             CGContextDrawRadialGradient (context, gradient, center, 0, center, radius, kCGGradientDrawsAfterEndLocation);
             CGGradientRelease(gradient);
 
@@ -315,18 +307,16 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         CGSize constraintSize = CGSizeMake(200, 300);
         CGRect stringRect;
         if ([string respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)]) {
-#pragma deploymate push "ignored-api-availability"
           stringRect = [string boundingRectWithSize:constraintSize
                                             options:(NSStringDrawingUsesFontLeading|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin)
                                          attributes:@{NSFontAttributeName: self.stringLabel.font}
                                             context:NULL];
-#pragma deploymate pop
         } else {
           CGSize stringSize = [string sizeWithFont:self.stringLabel.font constrainedToSize:CGSizeMake(200, 300)];
           stringRect = CGRectMake(0.0f, 0.0f, stringSize.width, stringSize.height);
         }
         stringWidth = stringRect.size.width;
-        stringHeight = ceil(stringRect.size.height);
+        stringHeight = (float)ceil(stringRect.size.height);
 
         if (imageUsed)
             hudHeight = stringAndImageHeightBuffer + stringHeight;
@@ -334,7 +324,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
             hudHeight = stringHeightBuffer + stringHeight;
 
         if(stringWidth > hudWidth)
-            hudWidth = ceil(stringWidth/2)*2;
+            hudWidth = (float)ceil(stringWidth/2)*2;
 
         CGFloat labelRectY = imageUsed ? 68 : 9;
 
@@ -481,7 +471,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         activeHeight += statusBarFrame.size.height*2;
 
     activeHeight -= keyboardHeight;
-    CGFloat posY = floor(activeHeight*0.45);
+    CGFloat posY = (float)floor(activeHeight*0.45);
     CGFloat posX = orientationFrame.size.width/2;
 
     CGPoint newCenter;
@@ -493,15 +483,15 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
     } else {
         switch (orientation) {
             case UIInterfaceOrientationPortraitUpsideDown:
-                rotateAngle = M_PI;
+                rotateAngle = (float)M_PI;
                 newCenter = CGPointMake(posX, orientationFrame.size.height-posY);
                 break;
             case UIInterfaceOrientationLandscapeLeft:
-                rotateAngle = -M_PI/2.0f;
+                rotateAngle = (float)(-M_PI/2.0f);
                 newCenter = CGPointMake(posY, posX);
                 break;
             case UIInterfaceOrientationLandscapeRight:
-                rotateAngle = M_PI/2.0f;
+                rotateAngle = (float)(M_PI/2.0f);
                 newCenter = CGPointMake(orientationFrame.size.height-posY, posX);
                 break;
             default: // as UIInterfaceOrientationPortrait
@@ -599,7 +589,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
                                                           userInfo:userInfo];
 
         [self registerNotifications];
-        self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 1.3, 1.3);
+        self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 1.3f, 1.3f);
 
         if(self.isClear) {
             self.alpha = 1;
@@ -610,7 +600,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
                               delay:0
                             options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
-                             self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 1/1.3, 1/1.3);
+                             self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 1/1.3f, 1/1.3f);
 
                              if(self.isClear) // handle iOS 7 UIToolbar not answer well to hierarchy opacity change
                                  self.hudView.alpha = 1;
@@ -652,9 +642,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         [self.class show];
 
     if ([self.imageView respondsToSelector:@selector(setTintColor:)]) {
-#pragma deploymate push "ignored-api-availability"
       self.imageView.tintColor = Swrve_SVProgressHUDForegroundColor;
-#pragma deploymate pop
     } else {
       image = [self image:image withTintColor:Swrve_SVProgressHUDForegroundColor];
     }
@@ -691,7 +679,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
                           delay:0
                         options:UIViewAnimationCurveEaseIn | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-                         self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 0.8, 0.8);
+                         self.hudView.transform = CGAffineTransformScale(self.hudView.transform, 0.8f, 0.8f);
                          if(self.isClear) // handle iOS 7 UIToolbar not answer well to hierarchy opacity change
                              self.hudView.alpha = 0;
                          else
@@ -723,9 +711,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
                              // Tell the rootViewController to update the StatusBar appearance
                              UIViewController *rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
                              if ([rootController respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-#pragma deploymate push "ignored-api-availability"
                                  [rootController setNeedsStatusBarAppearanceUpdate];
-#pragma deploymate pop
                              }
                              // uncomment to make sure UIWindow is gone from app.windows
                              //NSLog(@"%@", [UIApplication sharedApplication].windows);
@@ -764,7 +750,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         backgroundRingLayer = [self createRingLayerWithCenter:center
                                                         radius:Swrve_SVProgressHUDRingRadius
                                                      lineWidth:Swrve_SVProgressHUDRingThickness
-                                                         color:[Swrve_SVProgressHUDForegroundColor colorWithAlphaComponent:0.1]];
+                                                         color:[Swrve_SVProgressHUDForegroundColor colorWithAlphaComponent:0.1f]];
         backgroundRingLayer.strokeEnd = 1;
         [self.hudView.layer addSublayer:backgroundRingLayer];
     }
@@ -792,7 +778,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
 
 - (CAShapeLayer *)createRingLayerWithCenter:(CGPoint)center radius:(CGFloat)radius lineWidth:(CGFloat)lineWidth color:(UIColor *)color {
 
-    UIBezierPath* smoothedPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(radius, radius) radius:radius startAngle:-M_PI_2 endAngle:(M_PI + M_PI_2) clockwise:YES];
+    UIBezierPath* smoothedPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(radius, radius) radius:radius startAngle:(float)(-M_PI_2) endAngle:(float)(M_PI + M_PI_2) clockwise:YES];
 
     CAShapeLayer *slice = [CAShapeLayer layer];
     slice.contentsScale = [[UIScreen mainScreen] scale];
@@ -844,7 +830,6 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
                                      UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin);
 
       if ([hudView respondsToSelector:@selector(addMotionEffect:)]) {
-#pragma deploymate push "ignored-api-availability"
         UIInterpolatingMotionEffect *effectX = [[UIInterpolatingMotionEffect alloc] initWithKeyPath: @"center.x" type: UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
         effectX.minimumRelativeValue = @(-Swrve_SVProgressHUDParallaxDepthPoints);
         effectX.maximumRelativeValue = @(Swrve_SVProgressHUDParallaxDepthPoints);
@@ -855,7 +840,6 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
 
         [hudView addMotionEffect: effectX];
         [hudView addMotionEffect: effectY];
-#pragma deploymate pop
       }
 
         [self addSubview:hudView];
@@ -868,9 +852,7 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
         stringLabel = [[UILabel alloc] initWithFrame:CGRectZero];
 		stringLabel.backgroundColor = [UIColor clearColor];
 		stringLabel.adjustsFontSizeToFitWidth = YES;
-#pragma deploymate push "ignored-api-availability"
         stringLabel.textAlignment = NSTextAlignmentCenter;
-#pragma deploymate pop
 		stringLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
 		stringLabel.textColor = Swrve_SVProgressHUDForegroundColor;
 		stringLabel.font = Swrve_SVProgressHUDFont;
@@ -964,8 +946,8 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
 
         UIBezierPath* smoothedPath = [UIBezierPath bezierPathWithArcCenter:arcCenter
                                                                     radius:self.radius
-                                                                startAngle:M_PI*3/2
-                                                                  endAngle:M_PI/2+M_PI*5
+                                                                startAngle:(float)(M_PI*3/2)
+                                                                  endAngle:(float)(M_PI/2+M_PI*5)
                                                                  clockwise:YES];
 
         indefiniteAnimatedLayer = [CAShapeLayer layer];

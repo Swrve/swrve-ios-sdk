@@ -25,15 +25,11 @@
     label.backgroundColor = [UIColor clearColor];
 
     label.font = [UIFont boldSystemFontOfSize:14.0];
-#pragma deploymate push "ignored-api-availability"
     label.textAlignment = NSTextAlignmentCenter;
-#pragma deploymate pop
-    label.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    label.textColor = [UIColor colorWithRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
     label.shadowColor = [UIColor whiteColor];
     label.shadowOffset = CGSizeMake(0.0, 1.0);
-#pragma deploymate push "ignored-api-availability"
     label.lineBreakMode = NSLineBreakByWordWrapping;
-#pragma deploymate pop
     CGSize maxSize = CGSizeMake(label.frame.size.width, 9999);
     CGSize sizeIneed = [self.value sizeWithFont:label.font constrainedToSize:maxSize lineBreakMode:label.lineBreakMode];
     CGRect rect = label.frame;
