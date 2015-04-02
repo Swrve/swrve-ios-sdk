@@ -907,6 +907,26 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
 }
 
+-(void)conversationWasShownToUser:(SwrveConversation*)conversation
+{
+    NSDate* now = [[self analyticsSDK] getNow];
+    // The message was shown. Take the current time so that we can throttle messages
+    // from being shown too quickly.
+    [self setMessageMinDelayThrottle];
+    [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
+    
+    SwrveConversationCampaign* c = conversation.campaign;
+    if (c != nil) {
+        [c conversationWasShownToUser:conversation at:now];
+    }
+    [self saveSettings];
+    
+//    NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
+//    DebugLog(@"Sending view event: %@", viewEvent);
+//    
+//    [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
+}
+
 -(void)buttonWasPressedByUser:(SwrveButton*)button
 {
     if (button.actionType != kSwrveActionDismiss) {

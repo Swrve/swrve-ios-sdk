@@ -58,6 +58,8 @@
  */
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation;
 
+-(void)conversationWasShownToUser:(SwrveConversation*)conversation at:(NSDate*)timeShown;
+
 /*! Notify that a conversation was dismissed.
  *
  * \param timeDismissed When was the conversation dismissed.
