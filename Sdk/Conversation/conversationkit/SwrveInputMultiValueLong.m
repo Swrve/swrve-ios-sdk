@@ -34,13 +34,13 @@
 
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (![self hasDescription] || row > 0) {
+        NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
         UITableViewCell *cell = [self fetchStandardCell:tableView];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-        SwrveChoiceArray *vgChoiceArray = [self.values objectAtIndex:(row - [self hasDescription])];
+        SwrveChoiceArray *vgChoiceArray = [self.values objectAtIndex:finalRow];
         cell.textLabel.text = vgChoiceArray.title;
         cell.detailTextLabel.text = vgChoiceArray.selectedItem;
-        return [self styleCell:cell atRow:(row - [self hasDescription])];
+        return [self styleCell:cell atRow:finalRow];
     } else {
         return [self fetchDescriptionCell:tableView];
     }
@@ -55,7 +55,7 @@
 }
 
 -(id)choicesForRow:(NSUInteger) row {
-    return [self.values objectAtIndex:row-[self hasDescription]];
+    return [self.values objectAtIndex:row - ([self hasDescription]? 1 : 0)];
 }
 
 -(BOOL)isComplete {
