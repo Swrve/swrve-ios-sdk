@@ -51,5 +51,41 @@
    return [NSString stringWithFormat:@"Swrve.Conversations.Conversation-%@.%@", conversation.conversationID, event];
 }
 
+// Page related
++(void)pageTransition:(SwrveConversation*)conversation fromPage:(NSString*)originPage toPage:(NSString*)toPage withControl:(NSString*)controlTag{
+    NSDictionary *eventPayload =
+    @{
+      @"event" : @"navigation",
+      @"to" : toPage,
+      @"page" : originPage,
+      @"conversation" : [conversation.conversationID stringValue],
+      @"control" : controlTag
+      };
+    
+    [[Swrve sharedInstance] event:[self nameOf:[self nameOf:@"navigation" for:conversation] for:conversation] payload:eventPayload];
+}
+
++(void)viewed:(SwrveConversation*)conversation page:(NSString*)pageTag {
+    [self genericEvent:@"impression" forConversation:conversation onPage:pageTag];
+}
+
+// Actions
++(void)linkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"link" forConversation:conversation onPage:pageTag withControl:controlTag];
+}
+
++(void)callNumber:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"call" forConversation:conversation onPage:pageTag withControl:controlTag];
+}
+
+// Error
++(void)error:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
+    [self genericEvent:@"error" forConversation:conversation onPage:pageTag];
+}
+
++(void)error:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"error" forConversation:conversation onPage:pageTag withControl:controlTag];
+}
+
 // TODO: link accessed / impression / call / page transition / error if any
 @end

@@ -118,7 +118,8 @@ typedef enum {
     return kVerticalPadding;
 }
 
--(void) performActions:(NSDictionary *)actions {
+-(void) performActions:(SwrveConversationButton *)control {
+    NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType;
     id param;
     
@@ -137,14 +138,8 @@ typedef enum {
                 param = [actions objectForKey:@"call"];
             } else {
                 // NSLog(@"Converser: ignoring unknown control action %@", key);
+                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
-        }
-    }
-    
-    if ([delegate respondsToSelector:@selector(conversationController:willTakeAction:withParam:)]) {
-        if (![delegate conversationController:self willTakeAction:actionType withParam:param]) {
-            // NSLog(@"Converser: action denied for parameter %@", param);
-            return;
         }
     }
     
@@ -153,11 +148,14 @@ typedef enum {
         case SwrveCallNumberActionType:
             // NSLog(@"Converser: calling number action: %@", param);
             conversationEndedWithAction = YES;
+            [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]]];
             break;
         case SwrveVisitURLActionType: {
             if (!param) {
                 // NSLog(@"Converser: missing URL in visit action, ignoring.");
+                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 return;
             }
             
@@ -178,6 +176,8 @@ typedef enum {
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
+                
+                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Converser", @"You will need to install an app to visit %@"), [target absoluteString]];
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Converser", @"Cannot open URL")
                                                                 message:msg
@@ -186,6 +186,9 @@ typedef enum {
                                                       otherButtonTitles:nil];
                 [alert show];
             } else {
+                [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+
                 NSDictionary *visitDict = [actions objectForKey:@"visit"];
                 NSNumber *ext = (NSNumber*)[visitDict objectForKey:@"ext"];
                 // The 'ext' piece is ignored when using an app URL scheme.
@@ -301,9 +304,11 @@ typedef enum {
             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         });
     } else {
-        self.conversationPane = [conversation pageForTag:control.target];
+        SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
+        [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
+
+        self.conversationPane = nextPage;
         dispatch_async(dispatch_get_main_queue(), ^ {
-            // TODO: navigation event
             [self updateUI];
         });
     }
@@ -314,9 +319,7 @@ typedef enum {
 -(void)runControlActions:(SwrveConversationButton*)control {
     if (control.actions != nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            // TODO: issue action event
-            [self performActions:control.actions];
-            // TODO: one of these actions will end the conversation, so issue end event
+            [self performActions:control];
         });
     }
 }
