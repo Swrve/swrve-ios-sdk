@@ -289,7 +289,6 @@ static const CGFloat Swrve_SVProgressHUDParallaxDepthPoints = 10;
 }
 
 - (void)updatePosition {
-
     CGFloat hudWidth = 100;
     CGFloat hudHeight = 100;
     CGFloat stringHeightBuffer = 20;
