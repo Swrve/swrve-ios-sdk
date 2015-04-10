@@ -62,7 +62,7 @@
       @"control" : controlTag
       };
     
-    [[Swrve sharedInstance] event:[self nameOf:[self nameOf:@"navigation" for:conversation] for:conversation] payload:eventPayload];
+    [[Swrve sharedInstance] event:[self nameOf:@"navigation" for:conversation] payload:eventPayload];
 }
 
 +(void)viewed:(SwrveConversation*)conversation page:(NSString*)pageTag {
