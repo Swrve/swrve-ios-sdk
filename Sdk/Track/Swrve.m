@@ -1506,12 +1506,7 @@ static NSString* httpScheme(bool useHttps)
 
 - (float) _estimate_dpi
 {
-    float scale = 1;
-
-    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-        scale = (float)[[UIScreen mainScreen] scale];
-    }
-
+    float scale = (float)[[UIScreen mainScreen] scale];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
     }
@@ -1541,10 +1536,7 @@ static NSString* httpScheme(bool useHttps)
 {
     UIScreen* screen   = [UIScreen mainScreen];
     CGRect bounds = [screen bounds];
-    float screen_scale = 1;
-    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-        screen_scale = (float)[[UIScreen mainScreen] scale];
-    }
+    float screen_scale = (float)[[UIScreen mainScreen] scale];
     bounds.size.width  = bounds.size.width  * screen_scale;
     bounds.size.height = bounds.size.height * screen_scale;
     return bounds;

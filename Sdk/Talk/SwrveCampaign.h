@@ -7,15 +7,6 @@
 /*! In-app campaign. */
 @interface SwrveCampaign : SwrveBaseCampaign
 
-@property (atomic)            NSUInteger ID;                        /*!< Unique identifier. */
-@property (nonatomic, retain) NSString* name;                       /*!< Name of the campaign. */
-@property (atomic)            NSUInteger maxImpressions;            /*!< Maximum number of impressions per user. */
-@property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
-@property (atomic)            NSTimeInterval minDelayBetweenMsgs;   /*!< Minimum interval between different campaigns being shown. */
-@property (nonatomic, retain) NSDate* showMsgsAfterLaunch;          /*!< Timestamp to block messages after launch. */
-@property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
-@property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
-
 @property (atomic, retain)    NSArray*  messages;                   /*!< List of messages. */
 
 /*! Check if the campaign has any message setup for the
