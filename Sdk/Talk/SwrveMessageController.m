@@ -208,25 +208,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 -(void)registerForPushNotifications
 {
-    UIApplication* app = [UIApplication sharedApplication];
-#ifdef __IPHONE_8_0
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-    // Check if the new push API is not available
-    if (![app respondsToSelector:@selector(registerUserNotificationSettings:)])
-    {
-        // Use the old API
-        [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-    }
-    else
-#endif
-    {
-        [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:self.analyticsSDK.config.pushCategories]];
-        [app registerForRemoteNotifications];
-    }
-#else
-    // Not building with the latest XCode that contains iOS 8 definitions
-    [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
+    [SwrvePermissions requestPushNotifications:self.analyticsSDK];
 }
 
 - (NSDictionary*)getCampaignSettings
@@ -1014,7 +996,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
         //
-        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
+        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
         // TODO: this delegate/callbacks are nil TEMPORARILY
         scivc.delegate = nil;
         
@@ -1102,22 +1084,25 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             break;
         case kSwrveActionCustom:
         {
-            if (self.customButtonCallback != nil) {
-                self.customButtonCallback(action);
-            } else {
-                nonProcessedAction = action;
+            BOOL processedRequest = [self processPermissionRequest:action];
+            if (!processedRequest) {
+                if (self.customButtonCallback != nil) {
+                    self.customButtonCallback(action);
+                } else {
+                    nonProcessedAction = action;
+                }
             }
         }
             break;
     }
     
     if(nonProcessedAction != nil) {
-        NSURL* url = [NSURL URLWithString: nonProcessedAction];
+        NSURL* url = [NSURL URLWithString:nonProcessedAction];
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
         } else {
-            DebugLog(@"Action - %@ -  not handled.  Override the customButtonCallback to    customize message actions", nonProcessedAction);
+            DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
     }
     
@@ -1126,19 +1111,25 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     self.inAppMessageAction = nil;
 }
 
-- (void) processDeepLink:(NSString*)action from:(NSString*)fromSource {
-#pragma unused(fromSource)
-    if([action caseInsensitiveCompare:@"swrve.request_permission.location"] == NSOrderedSame) {
-        [SwrvePermissions requestLocationPermission];
-    } else {
-        NSURL* url = [NSURL URLWithString:action];
-        if( url != nil ) {
-            //DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
-            [[UIApplication sharedApplication] openURL:url];
-        } else {
-            //DebugLog(@"Action - %@ -  not handled.  Override the customButtonCallback to    customize message actions", nonProcessedAction);
-        }
+- (BOOL) processPermissionRequest:(NSString*)action {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.push_notifications"] == NSOrderedSame) {
+        [SwrvePermissions requestPushNotifications:self.analyticsSDK];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.location"] == NSOrderedSame) {
+        [SwrvePermissions requestLocationAlways:self.analyticsSDK];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.contacts"] == NSOrderedSame) {
+        [SwrvePermissions requestContacts:self.analyticsSDK];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.photos"] == NSOrderedSame) {
+        [SwrvePermissions requestPhotoLibrary:self.analyticsSDK];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.camera"] == NSOrderedSame) {
+        [SwrvePermissions requestCamera:self.analyticsSDK];
+        return YES;
     }
+    
+    return NO;
 }
 
 - (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController {

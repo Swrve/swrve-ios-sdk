@@ -25,7 +25,8 @@ typedef enum {
 
 typedef enum {
     SwrveCallNumberActionType,
-    SwrveVisitURLActionType
+    SwrveVisitURLActionType,
+    SwrvePermissionRequestActionType
 } SwrveConversationActionType;
 
 @protocol SwrveConversationItemViewControllerDelegate <NSObject>
@@ -53,7 +54,7 @@ typedef enum {
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
 @property (nonatomic, assign) id<SwrveConversationItemViewControllerDelegate> delegate;
 
--(id)initWithConversation:(SwrveConversation*)conversation;
+-(id)initWithConversation:(SwrveConversation*)conversation withMessageController:(SwrveMessageController*)controller;
 
 -(IBAction)cancelButtonTapped:(id)sender;
 -(void)updateUI;

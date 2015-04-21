@@ -13,6 +13,7 @@
 #import "ISHPermissionRequestPhotoLibrary.h"
 #import "ISHPermissionRequestPhotoCamera.h"
 #import "ISHPermissionRequestNotificationsLocal.h"
+#import "ISHPermissionRequestNotificationsRemote.h"
 #import "ISHPermissionRequestAccount.h"
 #import "ISHPermissionRequestHealth.h"
 #import "ISHPermissionRequestAddressBook.h"
@@ -67,6 +68,9 @@
         case ISHPermissionCategoryEvents:
         case ISHPermissionCategoryReminders:
             request = [ISHPermissionRequestEventStore new];
+            break;
+        case ISHPermissionCategoryNotificationRemote:
+            request = [ISHPermissionRequestNotificationsRemote new];
             break;
     }
     

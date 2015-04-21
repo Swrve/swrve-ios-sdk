@@ -16,7 +16,7 @@
  */
 typedef NS_ENUM(NSUInteger, ISHPermissionState) {
     /**
-     *  THe state of the permission could not be determined.
+     *  The state of the permission could not be determined.
      */
     ISHPermissionStateUnknown = 0,
     

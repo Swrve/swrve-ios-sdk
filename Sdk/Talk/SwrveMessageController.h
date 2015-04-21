@@ -200,5 +200,9 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void) dismissMessageWindow;
 
+/*! Used internally to process permission requests from different sources
+ */
+- (BOOL) processPermissionRequest:(NSString*)request;
+
 @end
 
