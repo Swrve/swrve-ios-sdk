@@ -7,7 +7,7 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>6A317093-A8F3-488B-A064-39CE4FB39904</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>SwrveDemoFramework</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>B529E579E82E3055CAC89B0C47FBDC346B032D64</key>
@@ -16,13 +16,13 @@
 		<string>github.com:Swrve/swrve-sdk.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>SwrveDemo/SwrveDemoFramework.xcodeproj/project.xcworkspace</string>
+	<string>SwrveDemo/SwrveDemoFramework.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>B529E579E82E3055CAC89B0C47FBDC346B032D64</key>
 		<string>../../..</string>
 		<key>D9A80FC0172759C27A6C76AA9506ABF956ED1B2C</key>
-		<string>../../../..</string>
+		<string>../../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:Swrve/converser-ios-sdk.git</string>
@@ -38,7 +38,7 @@
 			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>D9A80FC0172759C27A6C76AA9506ABF956ED1B2C</string>
 			<key>IDESourceControlWCCName</key>
-			<string></string>
+			<string>..</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

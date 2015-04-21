@@ -103,6 +103,7 @@
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
+		1BE98C491AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BE98C481AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.m */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
@@ -365,8 +366,8 @@
 		1B389ABC1AE66DBC007F5956 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1B389ABE1AE66DE4007F5956 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		1B389AC01AE66E03007F5956 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePermissions.h; sourceTree = "<group>"; };
-		1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrvePermissions.m; sourceTree = "<group>"; };
+		1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwrvePermissions.h; path = ../Sdk/Permissions/SwrvePermissions.h; sourceTree = "<group>"; };
+		1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SwrvePermissions.m; path = ../Sdk/Permissions/SwrvePermissions.m; sourceTree = "<group>"; };
 		1B389AC51AE66E81007F5956 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1B6226501AE6621F001E9E5C /* ISHPermissionCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionCategory.h; path = ../Sdk/Permissions/ISHPermissionCategory.h; sourceTree = "<group>"; };
@@ -402,6 +403,8 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
+		1BE98C471AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestNotificationsRemote.h; path = ../Sdk/Permissions/ISHPermissionRequestNotificationsRemote.h; sourceTree = "<group>"; };
+		1BE98C481AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestNotificationsRemote.m; path = ../Sdk/Permissions/ISHPermissionRequestNotificationsRemote.m; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -891,8 +894,6 @@
 				1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */,
 				1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */,
 				1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */,
-				1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */,
-				1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */,
 			);
 			name = Talk;
 			path = ../Sdk/Talk;
@@ -941,10 +942,14 @@
 				1B6226631AE6621F001E9E5C /* ISHPermissionRequestMotion.m */,
 				1B6226641AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.h */,
 				1B6226651AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m */,
+				1BE98C471AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.h */,
+				1BE98C481AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.m */,
 				1B6226661AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.h */,
 				1B6226671AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m */,
 				1B6226681AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.h */,
 				1B6226691AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m */,
+				1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */,
+				1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */,
 			);
 			name = Permissions;
 			sourceTree = "<group>";
@@ -1621,6 +1626,7 @@
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
 				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */,
 				938F97C31A921EC30089168A /* SwrveConversationButton.m in Sources */,
+				1BE98C491AE6C28A003FBC60 /* ISHPermissionRequestNotificationsRemote.m in Sources */,
 				1B62266B1AE6621F001E9E5C /* ISHPermissionRequest+All.m in Sources */,
 				096C941A170DBAD9002ADF90 /* ItemPromotion.m in Sources */,
 				099BF500170E542800345404 /* SwrveAuthoritativeDemo.m in Sources */,

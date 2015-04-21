@@ -35,11 +35,14 @@
 #ifdef __IPHONE_8_0
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     // Check if the new API is not available
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     if (![app respondsToSelector:@selector(isRegisteredForRemoteNotifications:)])
     {
         // Use the old API
         return ([app enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone)? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
     }
+#pragma clang diagnostic pop
     else
 #endif
     {
