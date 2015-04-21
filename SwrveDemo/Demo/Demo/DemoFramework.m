@@ -21,6 +21,8 @@
 // Settings
 #import "SettingsView.h"
 
+#import "SwrvePermissions.h"
+
 @implementation DemoFramework
 
 static Swrve *swrveTrack;
@@ -101,6 +103,8 @@ static Swrve *swrveTrackInternal;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = navController;
     [self.window makeKeyAndVisible];
+    
+    [SwrvePermissions requestLocationPermission];
     
     return YES;
 }
