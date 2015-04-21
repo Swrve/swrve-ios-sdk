@@ -79,7 +79,27 @@
 		1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFD19B8AFFC00F378E6 /* SwrveResourceManager.m */; };
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
+		1B389AB91AE66420007F5956 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389AB81AE66420007F5956 /* CoreLocation.framework */; };
+		1B389ABB1AE66D8F007F5956 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389ABA1AE66D8F007F5956 /* AddressBook.framework */; };
+		1B389ABD1AE66DBC007F5956 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389ABC1AE66DBC007F5956 /* AVFoundation.framework */; };
+		1B389ABF1AE66DE4007F5956 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389ABE1AE66DE4007F5956 /* Accounts.framework */; };
+		1B389AC11AE66E03007F5956 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389AC01AE66E03007F5956 /* CoreMotion.framework */; };
+		1B389AC41AE66E2B007F5956 /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */; };
+		1B389AC61AE66E81007F5956 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389AC51AE66E81007F5956 /* AssetsLibrary.framework */; };
+		1B389AC71AE66EB6007F5956 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B389AB61AE66407007F5956 /* EventKit.framework */; };
 		1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */; };
+		1B62266A1AE6621F001E9E5C /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226521AE6621F001E9E5C /* ISHPermissionRequest.m */; };
+		1B62266B1AE6621F001E9E5C /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226541AE6621F001E9E5C /* ISHPermissionRequest+All.m */; };
+		1B62266C1AE6621F001E9E5C /* ISHPermissionRequestAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226571AE6621F001E9E5C /* ISHPermissionRequestAccount.m */; };
+		1B62266D1AE6621F001E9E5C /* ISHPermissionRequestAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226591AE6621F001E9E5C /* ISHPermissionRequestAddressBook.m */; };
+		1B62266E1AE6621F001E9E5C /* ISHPermissionRequestEventStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B62265B1AE6621F001E9E5C /* ISHPermissionRequestEventStore.m */; };
+		1B62266F1AE6621F001E9E5C /* ISHPermissionRequestHealth.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B62265D1AE6621F001E9E5C /* ISHPermissionRequestHealth.m */; };
+		1B6226701AE6621F001E9E5C /* ISHPermissionRequestLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B62265F1AE6621F001E9E5C /* ISHPermissionRequestLocation.m */; };
+		1B6226711AE6621F001E9E5C /* ISHPermissionRequestMicrophone.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226611AE6621F001E9E5C /* ISHPermissionRequestMicrophone.m */; };
+		1B6226721AE6621F001E9E5C /* ISHPermissionRequestMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226631AE6621F001E9E5C /* ISHPermissionRequestMotion.m */; };
+		1B6226731AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226651AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m */; };
+		1B6226741AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226671AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m */; };
+		1B6226751AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6226691AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m */; };
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
@@ -339,7 +359,42 @@
 		1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSignatureProtectedFile.m; sourceTree = "<group>"; };
 		1B22100019B8AFFC00F378E6 /* SwrveSwizzleHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSwizzleHelper.h; sourceTree = "<group>"; };
 		1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSwizzleHelper.m; sourceTree = "<group>"; };
+		1B389AB61AE66407007F5956 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		1B389AB81AE66420007F5956 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		1B389ABA1AE66D8F007F5956 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		1B389ABC1AE66DBC007F5956 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		1B389ABE1AE66DE4007F5956 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		1B389AC01AE66E03007F5956 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePermissions.h; sourceTree = "<group>"; };
+		1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrvePermissions.m; sourceTree = "<group>"; };
+		1B389AC51AE66E81007F5956 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1B6226501AE6621F001E9E5C /* ISHPermissionCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionCategory.h; path = ../Sdk/Permissions/ISHPermissionCategory.h; sourceTree = "<group>"; };
+		1B6226511AE6621F001E9E5C /* ISHPermissionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequest.h; path = ../Sdk/Permissions/ISHPermissionRequest.h; sourceTree = "<group>"; };
+		1B6226521AE6621F001E9E5C /* ISHPermissionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequest.m; path = ../Sdk/Permissions/ISHPermissionRequest.m; sourceTree = "<group>"; };
+		1B6226531AE6621F001E9E5C /* ISHPermissionRequest+All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ISHPermissionRequest+All.h"; path = "../Sdk/Permissions/ISHPermissionRequest+All.h"; sourceTree = "<group>"; };
+		1B6226541AE6621F001E9E5C /* ISHPermissionRequest+All.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "ISHPermissionRequest+All.m"; path = "../Sdk/Permissions/ISHPermissionRequest+All.m"; sourceTree = "<group>"; };
+		1B6226551AE6621F001E9E5C /* ISHPermissionRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ISHPermissionRequest+Private.h"; path = "../Sdk/Permissions/ISHPermissionRequest+Private.h"; sourceTree = "<group>"; };
+		1B6226561AE6621F001E9E5C /* ISHPermissionRequestAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestAccount.h; path = ../Sdk/Permissions/ISHPermissionRequestAccount.h; sourceTree = "<group>"; };
+		1B6226571AE6621F001E9E5C /* ISHPermissionRequestAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestAccount.m; path = ../Sdk/Permissions/ISHPermissionRequestAccount.m; sourceTree = "<group>"; };
+		1B6226581AE6621F001E9E5C /* ISHPermissionRequestAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestAddressBook.h; path = ../Sdk/Permissions/ISHPermissionRequestAddressBook.h; sourceTree = "<group>"; };
+		1B6226591AE6621F001E9E5C /* ISHPermissionRequestAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestAddressBook.m; path = ../Sdk/Permissions/ISHPermissionRequestAddressBook.m; sourceTree = "<group>"; };
+		1B62265A1AE6621F001E9E5C /* ISHPermissionRequestEventStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestEventStore.h; path = ../Sdk/Permissions/ISHPermissionRequestEventStore.h; sourceTree = "<group>"; };
+		1B62265B1AE6621F001E9E5C /* ISHPermissionRequestEventStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestEventStore.m; path = ../Sdk/Permissions/ISHPermissionRequestEventStore.m; sourceTree = "<group>"; };
+		1B62265C1AE6621F001E9E5C /* ISHPermissionRequestHealth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestHealth.h; path = ../Sdk/Permissions/ISHPermissionRequestHealth.h; sourceTree = "<group>"; };
+		1B62265D1AE6621F001E9E5C /* ISHPermissionRequestHealth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestHealth.m; path = ../Sdk/Permissions/ISHPermissionRequestHealth.m; sourceTree = "<group>"; };
+		1B62265E1AE6621F001E9E5C /* ISHPermissionRequestLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestLocation.h; path = ../Sdk/Permissions/ISHPermissionRequestLocation.h; sourceTree = "<group>"; };
+		1B62265F1AE6621F001E9E5C /* ISHPermissionRequestLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestLocation.m; path = ../Sdk/Permissions/ISHPermissionRequestLocation.m; sourceTree = "<group>"; };
+		1B6226601AE6621F001E9E5C /* ISHPermissionRequestMicrophone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestMicrophone.h; path = ../Sdk/Permissions/ISHPermissionRequestMicrophone.h; sourceTree = "<group>"; };
+		1B6226611AE6621F001E9E5C /* ISHPermissionRequestMicrophone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestMicrophone.m; path = ../Sdk/Permissions/ISHPermissionRequestMicrophone.m; sourceTree = "<group>"; };
+		1B6226621AE6621F001E9E5C /* ISHPermissionRequestMotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestMotion.h; path = ../Sdk/Permissions/ISHPermissionRequestMotion.h; sourceTree = "<group>"; };
+		1B6226631AE6621F001E9E5C /* ISHPermissionRequestMotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestMotion.m; path = ../Sdk/Permissions/ISHPermissionRequestMotion.m; sourceTree = "<group>"; };
+		1B6226641AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestNotificationsLocal.h; path = ../Sdk/Permissions/ISHPermissionRequestNotificationsLocal.h; sourceTree = "<group>"; };
+		1B6226651AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestNotificationsLocal.m; path = ../Sdk/Permissions/ISHPermissionRequestNotificationsLocal.m; sourceTree = "<group>"; };
+		1B6226661AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestPhotoCamera.h; path = ../Sdk/Permissions/ISHPermissionRequestPhotoCamera.h; sourceTree = "<group>"; };
+		1B6226671AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestPhotoCamera.m; path = ../Sdk/Permissions/ISHPermissionRequestPhotoCamera.m; sourceTree = "<group>"; };
+		1B6226681AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISHPermissionRequestPhotoLibrary.h; path = ../Sdk/Permissions/ISHPermissionRequestPhotoLibrary.h; sourceTree = "<group>"; };
+		1B6226691AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISHPermissionRequestPhotoLibrary.m; path = ../Sdk/Permissions/ISHPermissionRequestPhotoLibrary.m; sourceTree = "<group>"; };
 		1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversation.h; sourceTree = "<group>"; };
 		1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversation.m; sourceTree = "<group>"; };
 		1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseCampaign.h; sourceTree = "<group>"; };
@@ -550,6 +605,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B389AC71AE66EB6007F5956 /* EventKit.framework in Frameworks */,
+				1B389AC61AE66E81007F5956 /* AssetsLibrary.framework in Frameworks */,
+				1B389AC11AE66E03007F5956 /* CoreMotion.framework in Frameworks */,
+				1B389ABF1AE66DE4007F5956 /* Accounts.framework in Frameworks */,
+				1B389ABD1AE66DBC007F5956 /* AVFoundation.framework in Frameworks */,
+				1B389ABB1AE66D8F007F5956 /* AddressBook.framework in Frameworks */,
+				1B389AB91AE66420007F5956 /* CoreLocation.framework in Frameworks */,
 				938F98431A9260F70089168A /* MessageUI.framework in Frameworks */,
 				938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */,
 				1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */,
@@ -700,6 +762,7 @@
 		095F5E5C16D040820046D096 /* Sdk */ = {
 			isa = PBXGroup;
 			children = (
+				1B6F70411AE64CE80055C56D /* Permissions */,
 				938F95CA1A921EC20089168A /* Resources */,
 				1B9A35D41A8CCF8500F34406 /* Conversation */,
 				1B220FE519B8AFFC00F378E6 /* Talk */,
@@ -828,6 +891,8 @@
 				1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */,
 				1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */,
 				1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */,
+				1B389AC21AE66E2B007F5956 /* SwrvePermissions.h */,
+				1B389AC31AE66E2B007F5956 /* SwrvePermissions.m */,
 			);
 			name = Talk;
 			path = ../Sdk/Talk;
@@ -849,6 +914,39 @@
 			);
 			name = Track;
 			path = ../Sdk/Track;
+			sourceTree = "<group>";
+		};
+		1B6F70411AE64CE80055C56D /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				1B6226501AE6621F001E9E5C /* ISHPermissionCategory.h */,
+				1B6226511AE6621F001E9E5C /* ISHPermissionRequest.h */,
+				1B6226521AE6621F001E9E5C /* ISHPermissionRequest.m */,
+				1B6226531AE6621F001E9E5C /* ISHPermissionRequest+All.h */,
+				1B6226541AE6621F001E9E5C /* ISHPermissionRequest+All.m */,
+				1B6226551AE6621F001E9E5C /* ISHPermissionRequest+Private.h */,
+				1B6226561AE6621F001E9E5C /* ISHPermissionRequestAccount.h */,
+				1B6226571AE6621F001E9E5C /* ISHPermissionRequestAccount.m */,
+				1B6226581AE6621F001E9E5C /* ISHPermissionRequestAddressBook.h */,
+				1B6226591AE6621F001E9E5C /* ISHPermissionRequestAddressBook.m */,
+				1B62265A1AE6621F001E9E5C /* ISHPermissionRequestEventStore.h */,
+				1B62265B1AE6621F001E9E5C /* ISHPermissionRequestEventStore.m */,
+				1B62265C1AE6621F001E9E5C /* ISHPermissionRequestHealth.h */,
+				1B62265D1AE6621F001E9E5C /* ISHPermissionRequestHealth.m */,
+				1B62265E1AE6621F001E9E5C /* ISHPermissionRequestLocation.h */,
+				1B62265F1AE6621F001E9E5C /* ISHPermissionRequestLocation.m */,
+				1B6226601AE6621F001E9E5C /* ISHPermissionRequestMicrophone.h */,
+				1B6226611AE6621F001E9E5C /* ISHPermissionRequestMicrophone.m */,
+				1B6226621AE6621F001E9E5C /* ISHPermissionRequestMotion.h */,
+				1B6226631AE6621F001E9E5C /* ISHPermissionRequestMotion.m */,
+				1B6226641AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.h */,
+				1B6226651AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m */,
+				1B6226661AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.h */,
+				1B6226671AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m */,
+				1B6226681AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.h */,
+				1B6226691AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m */,
+			);
+			name = Permissions;
 			sourceTree = "<group>";
 		};
 		1B9A35D41A8CCF8500F34406 /* Conversation */ = {
@@ -931,6 +1029,13 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1B389AC51AE66E81007F5956 /* AssetsLibrary.framework */,
+				1B389AC01AE66E03007F5956 /* CoreMotion.framework */,
+				1B389ABE1AE66DE4007F5956 /* Accounts.framework */,
+				1B389ABC1AE66DBC007F5956 /* AVFoundation.framework */,
+				1B389ABA1AE66D8F007F5956 /* AddressBook.framework */,
+				1B389AB81AE66420007F5956 /* CoreLocation.framework */,
+				1B389AB61AE66407007F5956 /* EventKit.framework */,
 				938F98421A9260F70089168A /* MessageUI.framework */,
 				938F98401A9260AB0089168A /* SystemConfiguration.framework */,
 				1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */,
@@ -1472,17 +1577,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B62266E1AE6621F001E9E5C /* ISHPermissionRequestEventStore.m in Sources */,
 				1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */,
 				938F97CD1A921EC30089168A /* SwrveInputMultiBase.m in Sources */,
 				095F5E8016D049260046D096 /* InAppPurchaseDemo.m in Sources */,
 				938F97FD1A921EC30089168A /* SwrveKeyboardAvoidingScrollView.m in Sources */,
+				1B62266F1AE6621F001E9E5C /* ISHPermissionRequestHealth.m in Sources */,
 				095F5E8516D0494E0046D096 /* Demo.m in Sources */,
 				1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */,
 				095F5E8616D0494E0046D096 /* DemoFramework.m in Sources */,
+				1B62266C1AE6621F001E9E5C /* ISHPermissionRequestAccount.m in Sources */,
 				938F97DE1A921EC30089168A /* UIWebView+YouTubeVimeo.m in Sources */,
 				938F97CE1A921EC30089168A /* SwrveInputMultiValue.m in Sources */,
 				938F97C71A921EC30089168A /* SwrveConversationPane.m in Sources */,
 				095F5E8A16D0495A0046D096 /* Menu.m in Sources */,
+				1B6226751AE6621F001E9E5C /* ISHPermissionRequestPhotoLibrary.m in Sources */,
 				938F97BF1A921EC30089168A /* SwrveContentText.m in Sources */,
 				938F97FC1A921EC30089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.m in Sources */,
 				095F5E9416D049680046D096 /* OnboardingFlow.m in Sources */,
@@ -1491,11 +1600,13 @@
 				938F98381A92365B0089168A /* SwrveConversationResource.m in Sources */,
 				1B22100919B8AFFC00F378E6 /* SwrveTalkQA.m in Sources */,
 				095F5EF116D04E470046D096 /* TrackApiDemo.m in Sources */,
+				1B389AC41AE66E2B007F5956 /* SwrvePermissions.m in Sources */,
 				095F5F0516D04F9A0046D096 /* DemoResourceManager.m in Sources */,
 				092D28AD16D48F5800EB77BE /* GameAuthoritativeDemo.m in Sources */,
 				938F97DD1A921EC30089168A /* UINavigationController+KeyboardResponderFix.m in Sources */,
 				938F97D21A921EC30089168A /* SwrveNonRotatingNavController.m in Sources */,
 				932B29AB1AC3234500E9D338 /* SwrveConversationEvents.m in Sources */,
+				1B62266D1AE6621F001E9E5C /* ISHPermissionRequestAddressBook.m in Sources */,
 				1B22100319B8AFFC00F378E6 /* SwrveCampaign.m in Sources */,
 				1B22100619B8AFFC00F378E6 /* SwrveMessageController.m in Sources */,
 				1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */,
@@ -1505,16 +1616,20 @@
 				1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */,
 				1B22100419B8AFFC00F378E6 /* SwrveImage.m in Sources */,
 				938F97BB1A921EC30089168A /* SwrveChoiceArray.m in Sources */,
+				1B6226721AE6621F001E9E5C /* ISHPermissionRequestMotion.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
 				938F97D41A921EC30089168A /* SwrveSimpleChoiceTableViewController.m in Sources */,
 				938F97C31A921EC30089168A /* SwrveConversationButton.m in Sources */,
+				1B62266B1AE6621F001E9E5C /* ISHPermissionRequest+All.m in Sources */,
 				096C941A170DBAD9002ADF90 /* ItemPromotion.m in Sources */,
 				099BF500170E542800345404 /* SwrveAuthoritativeDemo.m in Sources */,
+				1B6226701AE6621F001E9E5C /* ISHPermissionRequestLocation.m in Sources */,
 				099BF505170E67DA00345404 /* ABTestViewer.m in Sources */,
 				938F97CF1A921EC30089168A /* SwrveInputMultiValueLong.m in Sources */,
 				938F983E1A92570A0089168A /* SwrveConversationResponse.m in Sources */,
 				938F983F1A92570A0089168A /* SwrveConversationResponseItem.m in Sources */,
+				1B6226731AE6621F001E9E5C /* ISHPermissionRequestNotificationsLocal.m in Sources */,
 				1B22100219B8AFFC00F378E6 /* SwrveButton.m in Sources */,
 				938F97C11A921EC30089168A /* SwrveConversationAtom.m in Sources */,
 				099BF50A170E67E500345404 /* ResourceViewer.m in Sources */,
@@ -1524,8 +1639,10 @@
 				099BF510170E6BE100345404 /* SettingsView.m in Sources */,
 				0913B8DA17139419000DA83C /* UserSettings.m in Sources */,
 				938F97F71A921EC30089168A /* Swrve_SVProgressHUD.m in Sources */,
+				1B6226711AE6621F001E9E5C /* ISHPermissionRequestMicrophone.m in Sources */,
 				1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */,
 				938F97BC1A921EC30089168A /* SwrveContentHTML.m in Sources */,
+				1B6226741AE6621F001E9E5C /* ISHPermissionRequestPhotoCamera.m in Sources */,
 				938F97D01A921EC30089168A /* SwrveInputText.m in Sources */,
 				1B22100719B8AFFC00F378E6 /* SwrveMessageFormat.m in Sources */,
 				1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */,
@@ -1536,6 +1653,7 @@
 				938F97C21A921EC30089168A /* SwrveConversationAtomFactory.m in Sources */,
 				938F97FE1A921EC30089168A /* SwrveKeyboardAvoidingTableView.m in Sources */,
 				938F97C01A921EC30089168A /* SwrveContentVideo.m in Sources */,
+				1B62266A1AE6621F001E9E5C /* ISHPermissionRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
