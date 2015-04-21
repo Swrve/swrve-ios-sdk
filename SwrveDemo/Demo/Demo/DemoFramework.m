@@ -104,8 +104,6 @@ static Swrve *swrveTrackInternal;
     self.window.rootViewController = navController;
     [self.window makeKeyAndVisible];
     
-    [SwrvePermissions requestLocationPermission];
-    
     return YES;
 }
 
