@@ -52,6 +52,7 @@ static NSString *otherButtonImageNameIOS7  = @"bottom_button_blue_ios7";
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
+    SwrveMessageController* controller;
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
@@ -132,21 +133,20 @@ typedef enum {
             actionType = SwrveVisitURLActionType;
             NSDictionary *visitDict = [actions objectForKey:@"visit"];
             param = [visitDict objectForKey:@"url"];
+        } else if ([key isEqualToString:@"call"]) {
+            actionType = SwrveCallNumberActionType;
+            param = [actions objectForKey:@"call"];
+        } else if ([key isEqualToString:@"permission_request"]) {
+            actionType = SwrvePermissionRequestActionType;
+            param = [actions objectForKey:@"permission"];
         } else {
-            if ([key isEqualToString:@"call"]) {
-                actionType = SwrveCallNumberActionType;
-                param = [actions objectForKey:@"call"];
-            } else {
-                // NSLog(@"Converser: ignoring unknown control action %@", key);
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            }
+            [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
         }
     }
     
     // Delegate has permitted it, so go for it
     switch (actionType) {
         case SwrveCallNumberActionType:
-            // NSLog(@"Converser: calling number action: %@", param);
             conversationEndedWithAction = YES;
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
@@ -154,7 +154,6 @@ typedef enum {
             break;
         case SwrveVisitURLActionType: {
             if (!param) {
-                // NSLog(@"Converser: missing URL in visit action, ignoring.");
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 return;
             }
@@ -172,17 +171,16 @@ typedef enum {
             conversationEndedWithAction = YES;
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
-                // NSLog(@"Converser: cannot open URL %@", [target absoluteString]);
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
                 
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Converser", @"You will need to install an app to visit %@"), [target absoluteString]];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Converser", @"Cannot open URL")
+                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL")
                                                                 message:msg
                                                                delegate:nil
-                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
+                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
                                                       otherButtonTitles:nil];
                 [alert show];
             } else {
@@ -193,16 +191,20 @@ typedef enum {
                 NSNumber *ext = (NSNumber*)[visitDict objectForKey:@"ext"];
                 // The 'ext' piece is ignored when using an app URL scheme.
                 if (isAppScheme || (ext && [ext boolValue] == YES)) {
-                    // NSLog(@"Converser: visiting URL in external browser: %@", [target absoluteString]);
                     [[UIApplication sharedApplication] openURL:target];
                 } else {
-                    // NSLog(@"Converser: visiting URL in web view: %@", [target absoluteString]);
                     Swrve_SVModalWebViewController *webViewController = [[Swrve_SVModalWebViewController alloc] initWithAddress:[target absoluteString]];                    
                     [self presentViewController:webViewController animated:YES completion:NULL];
                 }
             }
             break;
         }
+        case SwrvePermissionRequestActionType:
+            // Ask for the configured permission
+            if (![controller processPermissionRequest:param]) {
+                NSLog(@"Unkown permission request %@", param);
+            }
+            break;
         default:
             break;
     }    
@@ -500,7 +502,7 @@ typedef enum {
 
 #pragma mark - Inits
 
--(id)initWithConversation:(SwrveConversation*)conv {
+-(id)initWithConversation:(SwrveConversation*)conv withMessageController:(SwrveMessageController *)ctrl {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPad" bundle:nil];
     } else {
@@ -509,6 +511,7 @@ typedef enum {
     
     if (self) {
         conversation = conv;
+        controller = ctrl;
     }
     return self;
 }

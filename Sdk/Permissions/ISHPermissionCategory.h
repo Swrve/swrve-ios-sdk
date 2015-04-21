@@ -107,6 +107,21 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  Permission required to access the user's reminders.
      */
     ISHPermissionCategoryReminders = 8250,
+    
+    /**
+     *  Permission required to schedule remote notifications.
+     *  @note Requests for this permission might require further
+     *        configuration via the ISHPermissionsViewControllerDataSource.
+     *
+     *  @warning Your app delegate will need to implement the following lines:
+     *  @code
+     *  - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+     *       [[NSNotificationCenter defaultCenter] postNotificationName:ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings
+     *                                                           object:self];
+     *  }
+     *  @endcode
+     */
+    ISHPermissionCategoryNotificationRemote = 8300
 };
 
 
@@ -147,5 +162,7 @@ static inline NSString *ISHStringFromPermissionCategory(ISHPermissionCategory ca
             return @"ISHPermissionCategoryEvents";
         case ISHPermissionCategoryReminders:
             return @"ISHPermissionCategoryReminders";
+        case ISHPermissionCategoryNotificationRemote:
+            return @"ISHPermissionCategoryNotificationRemote";
     }
 }

@@ -8,6 +8,7 @@
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 #import "SwrveSwizzleHelper.h"
+#import "SwrvePermissions.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -1586,6 +1587,10 @@ static NSString* httpScheme(bool useHttps)
         [deviceProperties setValue:[carrier carrierName]     forKey:@"swrve.sim_operator.name"];
         [deviceProperties setValue:[carrier isoCountryCode]  forKey:@"swrve.sim_operator.iso_country_code"];
     }
+    
+    // Get current state of permissions
+    NSDictionary* permissionStatus = [SwrvePermissions currentStatus];
+    [deviceProperties addEntriesFromDictionary:permissionStatus];
 
     return deviceProperties;
 }
