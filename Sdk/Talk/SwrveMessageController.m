@@ -427,7 +427,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             if ([conversationVersion integerValue] <= CONVERSATION_VERSION) {
                 campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
             } else {
-                DebugLog(@"Conversation version %@ cannot be loaded with this SDK version.", conversationVersion);
+                DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
             }
         } else {
             campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
