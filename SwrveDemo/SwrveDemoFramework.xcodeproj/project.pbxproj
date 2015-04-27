@@ -239,9 +239,6 @@
 		938F97DE1A921EC30089168A /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96CC1A921EC20089168A /* UIWebView+YouTubeVimeo.m */; };
 		938F97F61A921EC30089168A /* LICENSE-SVPH.txt in Resources */ = {isa = PBXBuildFile; fileRef = 938F97011A921EC20089168A /* LICENSE-SVPH.txt */; };
 		938F97F71A921EC30089168A /* Swrve_SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F97031A921EC20089168A /* Swrve_SVProgressHUD.m */; };
-		938F97F81A921EC30089168A /* LICENSE-SVWVC.txt in Resources */ = {isa = PBXBuildFile; fileRef = 938F97051A921EC20089168A /* LICENSE-SVWVC.txt */; };
-		938F97F91A921EC30089168A /* Swrve_SVModalWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F97071A921EC20089168A /* Swrve_SVModalWebViewController.m */; };
-		938F97FA1A921EC30089168A /* Swrve_SVWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F97091A921EC20089168A /* Swrve_SVWebViewController.m */; };
 		938F97FB1A921EC30089168A /* LICENSE-TPKA.txt in Resources */ = {isa = PBXBuildFile; fileRef = 938F970B1A921EC20089168A /* LICENSE-TPKA.txt */; };
 		938F97FC1A921EC30089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F970D1A921EC20089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.m */; };
 		938F97FD1A921EC30089168A /* SwrveKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F970F1A921EC20089168A /* SwrveKeyboardAvoidingScrollView.m */; };
@@ -581,11 +578,6 @@
 		938F97011A921EC20089168A /* LICENSE-SVPH.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE-SVPH.txt"; sourceTree = "<group>"; };
 		938F97021A921EC20089168A /* Swrve_SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Swrve_SVProgressHUD.h; sourceTree = "<group>"; };
 		938F97031A921EC20089168A /* Swrve_SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Swrve_SVProgressHUD.m; sourceTree = "<group>"; };
-		938F97051A921EC20089168A /* LICENSE-SVWVC.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE-SVWVC.txt"; sourceTree = "<group>"; };
-		938F97061A921EC20089168A /* Swrve_SVModalWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Swrve_SVModalWebViewController.h; sourceTree = "<group>"; };
-		938F97071A921EC20089168A /* Swrve_SVModalWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Swrve_SVModalWebViewController.m; sourceTree = "<group>"; };
-		938F97081A921EC20089168A /* Swrve_SVWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Swrve_SVWebViewController.h; sourceTree = "<group>"; };
-		938F97091A921EC20089168A /* Swrve_SVWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Swrve_SVWebViewController.m; sourceTree = "<group>"; };
 		938F970B1A921EC20089168A /* LICENSE-TPKA.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "LICENSE-TPKA.txt"; sourceTree = "<group>"; };
 		938F970C1A921EC20089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SwrveKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
 		938F970D1A921EC20089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SwrveKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
@@ -1310,7 +1302,6 @@
 			isa = PBXGroup;
 			children = (
 				938F97001A921EC20089168A /* SVProgressHUD */,
-				938F97041A921EC20089168A /* SVWebViewController */,
 				938F970A1A921EC20089168A /* TPKeyboardAvoiding */,
 			);
 			path = ThirdParty;
@@ -1324,18 +1315,6 @@
 				938F97031A921EC20089168A /* Swrve_SVProgressHUD.m */,
 			);
 			path = SVProgressHUD;
-			sourceTree = "<group>";
-		};
-		938F97041A921EC20089168A /* SVWebViewController */ = {
-			isa = PBXGroup;
-			children = (
-				938F97051A921EC20089168A /* LICENSE-SVWVC.txt */,
-				938F97061A921EC20089168A /* Swrve_SVModalWebViewController.h */,
-				938F97071A921EC20089168A /* Swrve_SVModalWebViewController.m */,
-				938F97081A921EC20089168A /* Swrve_SVWebViewController.h */,
-				938F97091A921EC20089168A /* Swrve_SVWebViewController.m */,
-			);
-			path = SVWebViewController;
 			sourceTree = "<group>";
 		};
 		938F970A1A921EC20089168A /* TPKeyboardAvoiding */ = {
@@ -1454,7 +1433,6 @@
 				938F97201A921EC20089168A /* cvsr_5@2x.png in Resources */,
 				938F97211A921EC20089168A /* cvsr_6.png in Resources */,
 				095F5EB616D049860046D096 /* swrve_tiny.png in Resources */,
-				938F97F81A921EC30089168A /* LICENSE-SVWVC.txt in Resources */,
 				095F5EB716D049860046D096 /* swrve.png in Resources */,
 				938F97311A921EC20089168A /* cvsr_bottom_button_blue.png in Resources */,
 				938F97361A921EC20089168A /* cvsr_bottom_button_blue_tapped@2x.png in Resources */,
@@ -1600,8 +1578,6 @@
 				938F97BF1A921EC30089168A /* SwrveContentText.m in Sources */,
 				938F97FC1A921EC30089168A /* UIScrollView+SwrveKeyboardAvoidingAdditions.m in Sources */,
 				095F5E9416D049680046D096 /* OnboardingFlow.m in Sources */,
-				938F97F91A921EC30089168A /* Swrve_SVModalWebViewController.m in Sources */,
-				938F97FA1A921EC30089168A /* Swrve_SVWebViewController.m in Sources */,
 				938F98381A92365B0089168A /* SwrveConversationResource.m in Sources */,
 				1B22100919B8AFFC00F378E6 /* SwrveTalkQA.m in Sources */,
 				095F5EF116D04E470046D096 /* TrackApiDemo.m in Sources */,
