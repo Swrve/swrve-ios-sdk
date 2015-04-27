@@ -27,7 +27,6 @@
 #import "SwrveSimpleChoiceTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "Swrve_SVModalWebViewController.h"
 #import "SwrveSetup.h"
 #import "Swrve.h"
 #import "SwrveConversationEvents.h"
@@ -186,16 +185,7 @@ typedef enum {
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
-
-                NSDictionary *visitDict = [actions objectForKey:@"visit"];
-                NSNumber *ext = (NSNumber*)[visitDict objectForKey:@"ext"];
-                // The 'ext' piece is ignored when using an app URL scheme.
-                if (isAppScheme || (ext && [ext boolValue] == YES)) {
-                    [[UIApplication sharedApplication] openURL:target];
-                } else {
-                    Swrve_SVModalWebViewController *webViewController = [[Swrve_SVModalWebViewController alloc] initWithAddress:[target absoluteString]];                    
-                    [self presentViewController:webViewController animated:YES completion:NULL];
-                }
+                [[UIApplication sharedApplication] openURL:target];
             }
             break;
         }
