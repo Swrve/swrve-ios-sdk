@@ -8,16 +8,10 @@
 
 #import "ISHPermissionRequest+All.h"
 #import "ISHPermissionRequestLocation.h"
-#import "ISHPermissionRequestMotion.h"
-#import "ISHPermissionRequestMicrophone.h"
 #import "ISHPermissionRequestPhotoLibrary.h"
 #import "ISHPermissionRequestPhotoCamera.h"
-#import "ISHPermissionRequestNotificationsLocal.h"
 #import "ISHPermissionRequestNotificationsRemote.h"
-#import "ISHPermissionRequestAccount.h"
-#import "ISHPermissionRequestHealth.h"
 #import "ISHPermissionRequestAddressBook.h"
-#import "ISHPermissionRequestEventStore.h"
 #import "ISHPermissionRequest+Private.h"
 
 @implementation ISHPermissionRequest (All)
@@ -32,17 +26,6 @@
             break;
         }
             
-        case ISHPermissionCategoryActivity:
-            request = [ISHPermissionRequestMotion new];
-            break;
-        case ISHPermissionCategoryHealth:
-            request = [ISHPermissionRequestHealth new];
-            break;
-            
-        case ISHPermissionCategoryMicrophone:
-            request = [ISHPermissionRequestMicrophone new];
-            break;
-            
         case ISHPermissionCategoryPhotoLibrary:
             request = [ISHPermissionRequestPhotoLibrary new];
             break;
@@ -51,30 +34,21 @@
             request = [ISHPermissionRequestPhotoCamera new];
             break;
             
-        case ISHPermissionCategoryNotificationLocal:
-            request = [ISHPermissionRequestNotificationsLocal new];
-            break;
-            
-        case ISHPermissionCategorySocialFacebook:
-        case ISHPermissionCategorySocialTwitter:
-        case ISHPermissionCategorySocialSinaWeibo:
-        case ISHPermissionCategorySocialTencentWeibo:
-            request = [ISHPermissionRequestAccount new];
-            break;
-            
         case ISHPermissionCategoryAddressBook:
             request = [ISHPermissionRequestAddressBook new];
             break;
-        case ISHPermissionCategoryEvents:
-        case ISHPermissionCategoryReminders:
-            request = [ISHPermissionRequestEventStore new];
-            break;
+
         case ISHPermissionCategoryNotificationRemote:
             request = [ISHPermissionRequestNotificationsRemote new];
             break;
+            
+        default:
+            break;
     }
     
-    [request setPermissionCategory:category];
+    if (request != nil) {
+        [request setPermissionCategory:category];
+    }
     
     NSAssert(request, @"Request not implemented for category %@", @(category));
     return request;

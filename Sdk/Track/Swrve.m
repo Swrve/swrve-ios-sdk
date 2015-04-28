@@ -1409,23 +1409,39 @@ static bool didSwizzle = false;
 -(void) pushNotificationReceived:(NSDictionary *)userInfo
 {
     // Try to get the identifier _p
-    id push_identifier = [userInfo objectForKey:@"_p"];
-    if (push_identifier && ![push_identifier isKindOfClass:[NSNull class]]) {
-        NSString* push_id = @"-1";
-        if ([push_identifier isKindOfClass:[NSString class]]) {
-            push_id = (NSString*)push_identifier;
+    id pushIdentifier = [userInfo objectForKey:@"_p"];
+    if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+        NSString* pushId = @"-1";
+        if ([pushIdentifier isKindOfClass:[NSString class]]) {
+            pushId = (NSString*)pushIdentifier;
         }
-        else if ([push_identifier isKindOfClass:[NSNumber class]]) {
-            push_id = [((NSNumber*)push_identifier) stringValue];
+        else if ([pushIdentifier isKindOfClass:[NSNumber class]]) {
+            pushId = [((NSNumber*)pushIdentifier) stringValue];
         }
         else {
             DebugLog(@"Unknown Swrve notification ID class for _p attribute", nil);
             return;
         }
+        
+        // Process deeplink _d
+        id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+        if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+            NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+            BOOL wasPermissionRequest = [self.talk processPermissionRequest:pushDeeplink];
+            if (!wasPermissionRequest) {
+                NSURL* url = [NSURL URLWithString:pushDeeplink];
+                if( url != nil ) {
+                    DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
+                    [[UIApplication sharedApplication] openURL:url];
+                } else {
+                    DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+                }
+            }
+        }
 
-        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", push_id];
+        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
         [self event:eventName];
-        DebugLog(@"Got Swrve notification with ID %@", push_id);
+        DebugLog(@"Got Swrve notification with ID %@", pushId);
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
