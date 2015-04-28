@@ -11,7 +11,7 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>B529E579E82E3055CAC89B0C47FBDC346B032D64</key>
-		<string>github.com:Swrve/swrve-ios-sdk.git</string>
+		<string>github.com:Swrve/converser-ios-sdk.git</string>
 		<key>D9A80FC0172759C27A6C76AA9506ABF956ED1B2C</key>
 		<string>github.com:Swrve/swrve-sdk.git</string>
 	</dict>
@@ -25,7 +25,7 @@
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>github.com:Swrve/swrve-ios-sdk.git</string>
+	<string>github.com:Swrve/converser-ios-sdk.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
