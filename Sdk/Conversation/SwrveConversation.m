@@ -41,9 +41,9 @@
     return [file length] == 0 || [set containsObject:file];
 }*/
 
--(BOOL)areDownloaded:(NSSet*)assets
-{
+-(BOOL)areDownloaded:(NSSet*)assets {
     #pragma unused(assets)
+    // TODO: what's the implementation requirements here?
     // Iterate through the images and check in_cache(image, assets)
     /*for (SwrveMessageFormat* format in self.formats) {
      for (SwrveButton* button in format.buttons) {
