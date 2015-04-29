@@ -1,5 +1,6 @@
 #import "SwrvePermissions.h"
 #import "ISHPermissionRequest+All.h"
+#import "ISHPermissionRequestNotificationsRemote.h"
 
 static ISHPermissionRequest *_locationAlwaysRequest = nil;
 static ISHPermissionRequest *_photoLibraryRequest = nil;
@@ -127,7 +128,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
     if ([app respondsToSelector:@selector(registerUserNotificationSettings:)])
 #endif
     {
-        r.noticationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:swrve.config.pushCategories];
+        ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:swrve.config.pushCategories];
     }
 #endif
     
