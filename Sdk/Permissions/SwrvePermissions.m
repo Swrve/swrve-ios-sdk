@@ -125,6 +125,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 #ifdef __IPHONE_8_0
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     // Check if the new push API is not available
+    UIApplication* app = [UIApplication sharedApplication];
     if ([app respondsToSelector:@selector(registerUserNotificationSettings:)])
 #endif
     {
