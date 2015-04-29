@@ -56,7 +56,6 @@
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
     NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block");
-    NSAssert(self.noticationSettings, @"Requested notification settings should be set for request before requesting user permission");
     // ensure that the app delegate implements the didRegisterMethods:
     NSAssert([[[UIApplication sharedApplication] delegate] respondsToSelector:@selector(application:didRegisterUserNotificationSettings:)], @"AppDelegate must implement application:didRegisterUserNotificationSettings: and post notification ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings");
     
@@ -84,6 +83,7 @@
     else
 #endif
     {
+        NSAssert(self.noticationSettings, @"Requested notification settings should be set for request before requesting user permission");
         [app registerUserNotificationSettings:noticationSettings];
         [app registerForRemoteNotifications];
     }

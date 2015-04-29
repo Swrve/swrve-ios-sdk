@@ -121,7 +121,16 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 
 +(void)requestPushNotifications:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
-    r.noticationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:swrve.config.pushCategories];
+#ifdef __IPHONE_8_0
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+    // Check if the new push API is not available
+    if ([app respondsToSelector:@selector(registerUserNotificationSettings:)])
+#endif
+    {
+        r.noticationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:swrve.config.pushCategories];
+    }
+#endif
+    
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error)
         // Either the user responded or we can't request again

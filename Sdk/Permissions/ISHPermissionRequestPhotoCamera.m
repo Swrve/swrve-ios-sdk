@@ -21,17 +21,19 @@
     //    return ISHPermissionStateUnsupported;
     //}
     
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    switch (authStatus) {
-        case AVAuthorizationStatusAuthorized:
-            return ISHPermissionStateAuthorized;
+    if ([AVCaptureDevice respondsToSelector:@selector(authorizationStatusForMediaType:)]) {
+        AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+        switch (authStatus) {
+            case AVAuthorizationStatusAuthorized:
+                return ISHPermissionStateAuthorized;
 
-        case AVAuthorizationStatusDenied:
-        case AVAuthorizationStatusRestricted:
-            return ISHPermissionStateDenied;
-            
-        case AVAuthorizationStatusNotDetermined:
-            return [self internalPermissionState];
+            case AVAuthorizationStatusDenied:
+            case AVAuthorizationStatusRestricted:
+                return ISHPermissionStateDenied;
+                
+            case AVAuthorizationStatusNotDetermined:
+                return [self internalPermissionState];
+        }
     }
 
 }
@@ -44,11 +46,17 @@
         return;
     }
     
-    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            ISHPermissionState state = granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
-            completion(self, state, nil);
-        });
-    }];
+    if ([AVCaptureDevice respondsToSelector:@selector(requestAccessForMediaType: completionHandler:)]) {
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                ISHPermissionState state = granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
+                completion(self, state, nil);
+            });
+        }];
+    } else {
+        AVCaptureDevice *inputDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        AVCaptureDeviceInput *captureInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
+        completion(self, self.permissionState, nil);
+    }
 }
 @end
