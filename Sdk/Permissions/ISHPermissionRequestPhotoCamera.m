@@ -14,11 +14,12 @@
 @implementation ISHPermissionRequestPhotoCamera
 
 - (ISHPermissionState)permissionState {
-    AVCaptureDevice *inputDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    AVCaptureDeviceInput *captureInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
-    if (!captureInput) {
-        return ISHPermissionStateUnsupported;
-    }
+    // Disabled as it would invoke a permission dialog
+    //AVCaptureDevice *inputDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    //AVCaptureDeviceInput *captureInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
+    //if (!captureInput) {
+    //    return ISHPermissionStateUnsupported;
+    //}
     
     AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     switch (authStatus) {
