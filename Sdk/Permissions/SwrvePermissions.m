@@ -121,6 +121,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 
 +(void)requestPushNotifications:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
+    r.noticationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:swrve.config.pushCategories];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error)
         // Either the user responded or we can't request again
