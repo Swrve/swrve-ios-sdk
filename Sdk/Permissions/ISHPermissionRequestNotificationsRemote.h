@@ -10,5 +10,5 @@
 #import "ISHPermissionRequest.h"
 
 @interface ISHPermissionRequestNotificationsRemote : ISHPermissionRequest
-@property (nonatomic) UIUserNotificationSettings *noticationSettings;
+@property (nonatomic) UIUserNotificationSettings *notificationSettings;
 @end

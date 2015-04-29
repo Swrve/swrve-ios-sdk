@@ -15,7 +15,7 @@
 
 @implementation ISHPermissionRequestNotificationsRemote
 
-@synthesize noticationSettings;
+@synthesize notificationSettings;
 @synthesize completionBlock;
 
 - (BOOL)allowsConfiguration {
@@ -83,8 +83,8 @@
     else
 #endif
     {
-        NSAssert(self.noticationSettings, @"Requested notification settings should be set for request before requesting user permission");
-        [app registerUserNotificationSettings:noticationSettings];
+        NSAssert(self.notificationSettings, @"Requested notification settings should be set for request before requesting user permission");
+        [app registerUserNotificationSettings:self.notificationSettings];
         [app registerForRemoteNotifications];
     }
 #else
