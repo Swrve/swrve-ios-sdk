@@ -35,7 +35,8 @@
                 return [self internalPermissionState];
         }
     }
-
+    
+    return ISHPermissionStateUnsupported;
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
@@ -55,7 +56,7 @@
         }];
     } else {
         AVCaptureDevice *inputDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-        AVCaptureDeviceInput *captureInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
+        [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
         completion(self, self.permissionState, nil);
     }
 }
