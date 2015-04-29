@@ -34,7 +34,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 +(void)requestLocationAlways:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions locationAlwaysRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
-#pragma unused(request, state, error)
+#pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
         [SwrvePermissions sendPermissionEvent:@"swrve.permission.location" withState:state withSDK:swrve];
@@ -56,7 +56,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 +(void)requestPhotoLibrary:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions photoLibraryRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
-#pragma unused(request, state, error)
+#pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
         [SwrvePermissions sendPermissionEvent:@"swrve.permission.photos" withState:state withSDK:swrve];
@@ -78,7 +78,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 +(void)requestCamera:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions cameraRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
-#pragma unused(request, state, error)
+#pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
         [SwrvePermissions sendPermissionEvent:@"swrve.permission.camera" withState:state withSDK:swrve];
@@ -100,7 +100,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 +(void)requestContacts:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions contactsRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
-#pragma unused(request, state, error)
+#pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
         [SwrvePermissions sendPermissionEvent:@"swrve.permission.contacts" withState:state withSDK:swrve];
@@ -122,7 +122,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 +(void)requestPushNotifications:(Swrve*)swrve {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
-#pragma unused(request, state, error)
+#pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
         [SwrvePermissions sendPermissionEvent:@"swrve.permission.push_notifications" withState:state withSDK:swrve];
