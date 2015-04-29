@@ -124,6 +124,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (SwrveMessage*)getMessageForEvent:(NSString *)event;
 
+/*! Find an in-app conversation for the given trigger event that also satisfies the rules
+ * set up in the dashboard.
+ *
+ * \param event Trigger event name.
+ * \returns In-app conversation for the given tirgger.
+ */
+- (SwrveConversation*)getConversationForEvent:(NSString *)event;
+
 /*! Notify that the user pressed an in-app message button.
  *
  * \param button Button pressed by the user.
