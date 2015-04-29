@@ -72,7 +72,7 @@
 }
 
 -(SwrveConversationPane*)pageAtIndex:(NSUInteger)index {
-    if (index > self.pages.count) {
+    if (index > self.pages.count - 1) {
         DebugLog(@"Seeking page %lu in a %lu-paged conversation", (unsigned long)index, (unsigned long)self.pages.count);
         return nil;
     } else {
