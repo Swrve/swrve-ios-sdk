@@ -10,6 +10,27 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 
 @implementation SwrvePermissions
 
++(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)swrve {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.push_notifications"] == NSOrderedSame) {
+        [SwrvePermissions requestPushNotifications:swrve];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.location"] == NSOrderedSame) {
+        [SwrvePermissions requestLocationAlways:swrve];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.contacts"] == NSOrderedSame) {
+        [SwrvePermissions requestContacts:swrve];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.photos"] == NSOrderedSame) {
+        [SwrvePermissions requestPhotoLibrary:swrve];
+        return YES;
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.camera"] == NSOrderedSame) {
+        [SwrvePermissions requestCamera:swrve];
+        return YES;
+    }
+    
+    return NO;
+}
+
 +(NSDictionary*)currentStatus {
     NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
     [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkLocationAlways]]  forKey:@"swrve.permission.location"];

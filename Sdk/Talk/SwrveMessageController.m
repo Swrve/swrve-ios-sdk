@@ -76,8 +76,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (atomic) long messagesLeftToShow;
 @property (atomic) NSTimeInterval minDelayBetweenMessage;
 
-@property (nonatomic) Swrve* analyticsSDK;
-
 // QA
 @property (nonatomic) SwrveTalkQA* qaUser;
 
@@ -1084,7 +1082,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             break;
         case kSwrveActionCustom:
         {
-            BOOL processedRequest = [self processPermissionRequest:action];
+            BOOL processedRequest = [SwrvePermissions processPermissionRequest:action withSDK:self.analyticsSDK];
             if (!processedRequest) {
                 if (self.customButtonCallback != nil) {
                     self.customButtonCallback(action);
@@ -1109,27 +1107,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     self.inAppMessageWindow.hidden = YES;
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
-}
-
-- (BOOL) processPermissionRequest:(NSString*)action {
-    if([action caseInsensitiveCompare:@"swrve.request_permission.push_notifications"] == NSOrderedSame) {
-        [SwrvePermissions requestPushNotifications:self.analyticsSDK];
-        return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.location"] == NSOrderedSame) {
-        [SwrvePermissions requestLocationAlways:self.analyticsSDK];
-        return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.contacts"] == NSOrderedSame) {
-        [SwrvePermissions requestContacts:self.analyticsSDK];
-        return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.photos"] == NSOrderedSame) {
-        [SwrvePermissions requestPhotoLibrary:self.analyticsSDK];
-        return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.camera"] == NSOrderedSame) {
-        [SwrvePermissions requestCamera:self.analyticsSDK];
-        return YES;
-    }
-    
-    return NO;
 }
 
 - (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController {

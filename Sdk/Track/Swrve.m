@@ -1427,7 +1427,7 @@ static bool didSwizzle = false;
         id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
         if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
             NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-            BOOL wasPermissionRequest = [self.talk processPermissionRequest:pushDeeplink];
+            BOOL wasPermissionRequest = [SwrvePermissions processPermissionRequest:pushDeeplink withSDK:self];
             if (!wasPermissionRequest) {
                 NSURL* url = [NSURL URLWithString:pushDeeplink];
                 if( url != nil ) {

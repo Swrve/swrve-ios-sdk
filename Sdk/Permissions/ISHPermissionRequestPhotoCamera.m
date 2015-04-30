@@ -40,7 +40,7 @@
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
-    NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block");
+    NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block", nil);
     ISHPermissionState currentState = self.permissionState;
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
         completion(self, currentState, nil);
