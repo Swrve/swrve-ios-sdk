@@ -18,13 +18,13 @@
 @synthesize permissionCategory;
 
 - (ISHPermissionState)permissionState {
-    NSAssert(false, @"Subclasses should implement permission state and not call super.");
+    NSAssert(false, @"Subclasses should implement permission state and not call super.", nil);
     return [self internalPermissionState];
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
 #pragma unused(completion)
-    NSAssert(false, @"Subclasses should implement -requestUserPermissionWithCompletionBlock: and not call super.");
+    NSAssert(false, @"Subclasses should implement -requestUserPermissionWithCompletionBlock: and not call super.", nil);
 }
 
 - (ISHPermissionState)internalPermissionState {

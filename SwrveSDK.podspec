@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Sdk/**/*.{m,h}'
   s.public_header_files = 'Sdk/**/*.h'
-  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'Accounts', 'CoreMotion', 'AssetsLibrary', 'EventKit'
+  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary'
 end

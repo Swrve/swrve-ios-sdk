@@ -4,6 +4,7 @@
 /*! Used internally to offer permission request support */
 @interface SwrvePermissions : NSObject
 
++ (BOOL)processPermissionRequest:(NSString*)action withSDK:(Swrve*)swrve;
 + (NSDictionary*) currentStatus;
 
 + (BOOL)checkLocationAlways;

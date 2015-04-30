@@ -30,6 +30,7 @@
 #import "SwrveSetup.h"
 #import "Swrve.h"
 #import "SwrveConversationEvents.h"
+#import "SwrvePermissions.h"
 
 #define kVerticalPadding 10.0
 
@@ -191,7 +192,7 @@ typedef enum {
         }
         case SwrvePermissionRequestActionType:
             // Ask for the configured permission
-            if (![controller processPermissionRequest:param]) {
+            if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
                 NSLog(@"Unkown permission request %@", param);
             }
             break;
