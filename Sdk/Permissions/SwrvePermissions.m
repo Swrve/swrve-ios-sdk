@@ -11,19 +11,19 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 @implementation SwrvePermissions
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)swrve {
-    if([action caseInsensitiveCompare:@"swrve.request_permission.push_notifications"] == NSOrderedSame) {
-        [SwrvePermissions requestPushNotifications:swrve];
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
+        [SwrvePermissions requestPushNotifications:swrve withCallback:YES];
         return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.location"] == NSOrderedSame) {
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.location"] == NSOrderedSame) {
         [SwrvePermissions requestLocationAlways:swrve];
         return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.contacts"] == NSOrderedSame) {
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.contacts"] == NSOrderedSame) {
         [SwrvePermissions requestContacts:swrve];
         return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.photos"] == NSOrderedSame) {
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.photos"] == NSOrderedSame) {
         [SwrvePermissions requestPhotoLibrary:swrve];
         return YES;
-    } else if([action caseInsensitiveCompare:@"swrve.request_permission.camera"] == NSOrderedSame) {
+    } else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         [SwrvePermissions requestCamera:swrve];
         return YES;
     }
@@ -33,11 +33,11 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 
 +(NSDictionary*)currentStatus {
     NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
-    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkLocationAlways]]  forKey:@"swrve.permission.location"];
-    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkPhotoLibrary]]  forKey:@"swrve.permission.photos"];
-    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkCamera]]  forKey:@"swrve.permission.camera"];
-    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkContacts]]  forKey:@"swrve.permission.contacts"];
-    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkPushNotifications]]  forKey:@"swrve.permission.push_notifications"];
+    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkLocationAlways]]  forKey:@"swrve.permission.ios.location"];
+    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkPhotoLibrary]]  forKey:@"swrve.permission.ios.photos"];
+    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkCamera]]  forKey:@"swrve.permission.ios.camera"];
+    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkContacts]]  forKey:@"swrve.permission.ios.contacts"];
+    [permissionsStatus setValue:[NSNumber numberWithBool:[SwrvePermissions checkPushNotifications]]  forKey:@"swrve.permission.ios.push_notifications"];
     return permissionsStatus;
 }
 
@@ -59,7 +59,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 #pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
-        [SwrvePermissions sendPermissionEvent:@"swrve.permission.location" withState:state withSDK:swrve];
+        [SwrvePermissions sendPermissionEvent:@"swrve.permission.ios.location" withState:state withSDK:swrve];
     }];
  }
 
@@ -81,7 +81,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 #pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
-        [SwrvePermissions sendPermissionEvent:@"swrve.permission.photos" withState:state withSDK:swrve];
+        [SwrvePermissions sendPermissionEvent:@"swrve.permission.ios.photos" withState:state withSDK:swrve];
     }];
 }
 
@@ -103,7 +103,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 #pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
-        [SwrvePermissions sendPermissionEvent:@"swrve.permission.camera" withState:state withSDK:swrve];
+        [SwrvePermissions sendPermissionEvent:@"swrve.permission.ios.camera" withState:state withSDK:swrve];
     }];
 }
 
@@ -125,7 +125,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
 #pragma unused(request, error)
         // Either the user responded or we can't request again
         [swrve userUpdate:[SwrvePermissions currentStatus]];
-        [SwrvePermissions sendPermissionEvent:@"swrve.permission.contacts" withState:state withSDK:swrve];
+        [SwrvePermissions sendPermissionEvent:@"swrve.permission.ios.contacts" withState:state withSDK:swrve];
     }];
 }
 
@@ -141,7 +141,7 @@ static ISHPermissionRequest *_remoteNotifications = nil;
     return ([r permissionState] == ISHPermissionStateAuthorized);
 }
 
-+(void)requestPushNotifications:(Swrve*)swrve {
++(void)requestPushNotifications:(Swrve*)swrve withCallback:(BOOL)callback {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
 #ifdef __IPHONE_8_0
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -154,12 +154,16 @@ static ISHPermissionRequest *_remoteNotifications = nil;
     }
 #endif
     
-    [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
+    if (callback) {
+        [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error)
-        // Either the user responded or we can't request again
-        [swrve userUpdate:[SwrvePermissions currentStatus]];
-        [SwrvePermissions sendPermissionEvent:@"swrve.permission.push_notifications" withState:state withSDK:swrve];
-    }];
+            // Either the user responded or we can't request again
+            [swrve userUpdate:[SwrvePermissions currentStatus]];
+            [SwrvePermissions sendPermissionEvent:@"swrve.permission.ios.push_notifications" withState:state withSDK:swrve];
+        }];
+    } else {
+        [(ISHPermissionRequestNotificationsRemote*)r requestUserPermissionWithoutCompleteBlock];
+    }
 }
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(Swrve*)swrve {

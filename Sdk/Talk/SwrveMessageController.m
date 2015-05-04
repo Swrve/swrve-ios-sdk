@@ -206,7 +206,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 -(void)registerForPushNotifications
 {
-    [SwrvePermissions requestPushNotifications:self.analyticsSDK];
+    [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
 }
 
 - (NSDictionary*)getCampaignSettings

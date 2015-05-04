@@ -20,6 +20,6 @@
 + (void)requestContacts:(Swrve*)swrve;
 
 + (BOOL)checkPushNotifications;
-+ (void)requestPushNotifications:(Swrve*)swrve;
++ (void)requestPushNotifications:(Swrve*)swrve withCallback:(BOOL)callback;
 
 @end
