@@ -11,4 +11,7 @@
 
 @interface ISHPermissionRequestNotificationsRemote : ISHPermissionRequest
 @property (nonatomic) UIUserNotificationSettings *notificationSettings;
+
+-(void)requestUserPermissionWithoutCompleteBlock;
+
 @end

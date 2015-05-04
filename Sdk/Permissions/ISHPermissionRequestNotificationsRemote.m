@@ -56,8 +56,10 @@
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
     NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block", nil);
-    // ensure that the app delegate implements the didRegisterMethods:
-    NSAssert([[[UIApplication sharedApplication] delegate] respondsToSelector:@selector(application:didRegisterUserNotificationSettings:)], @"AppDelegate must implement application:didRegisterUserNotificationSettings: and post notification ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings", nil);
+    if (![[[UIApplication sharedApplication] delegate] respondsToSelector:@selector(application:didRegisterUserNotificationSettings:)]) {
+        // ensure that the app delegate implements the didRegisterMethods:
+        NSLog(@"AppDelegate must implement application:didRegisterUserNotificationSettings: and post notification ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings", nil);
+    }
     
     ISHPermissionState currentState = self.permissionState;
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
@@ -70,7 +72,14 @@
                                              selector:@selector(ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings:)
                                                  name:ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings
                                                object:nil];
-    
+    [ISHPermissionRequestNotificationsRemote registerForRemoteNotifications:self.notificationSettings];
+}
+
+-(void)requestUserPermissionWithoutCompleteBlock {
+    [ISHPermissionRequestNotificationsRemote registerForRemoteNotifications:self.notificationSettings];
+}
+
++(void)registerForRemoteNotifications:(UIUserNotificationSettings*)notificationSettings {
     UIApplication* app = [UIApplication sharedApplication];
 #ifdef __IPHONE_8_0
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -83,8 +92,8 @@
     else
 #endif
     {
-        NSAssert(self.notificationSettings, @"Requested notification settings should be set for request before requesting user permission", nil);
-        [app registerUserNotificationSettings:self.notificationSettings];
+        NSAssert(notificationSettings, @"Requested notification settings should be set for request before requesting user permission", nil);
+        [app registerUserNotificationSettings:notificationSettings];
         [app registerForRemoteNotifications];
     }
 #else
