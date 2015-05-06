@@ -423,8 +423,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         SwrveBaseCampaign* campaign = nil;
         if (conversationCampaign) {
             // Conversation version check
-            NSNumber* conversationVersion = [campaignJson objectForKey:@"conversation_version"];
-            if ([conversationVersion integerValue] <= CONVERSATION_VERSION) {
+            NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
+            if (conversationVersion != nil && [conversationVersion integerValue] <= CONVERSATION_VERSION) {
                 campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
             } else {
                 DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
@@ -985,7 +985,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     else if( [eventType isEqualToString:@"user"])
     {
-        eventName = @"Swrve.user_properties_changed	";
+        eventName = @"Swrve.user_properties_changed";
     }
 
     return eventName;
