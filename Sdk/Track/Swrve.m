@@ -1543,6 +1543,10 @@ static NSString* httpScheme(bool useHttps)
     float screen_scale = (float)[[UIScreen mainScreen] scale];
     bounds.size.width  = bounds.size.width  * screen_scale;
     bounds.size.height = bounds.size.height * screen_scale;
+    const int side_a = (int)bounds.size.width;
+    const int side_b = (int)bounds.size.height;
+    bounds.size.width  = (side_a > side_b)? side_b : side_a;
+    bounds.size.height = (side_a > side_b)? side_a : side_b;
     return bounds;
 }
 
