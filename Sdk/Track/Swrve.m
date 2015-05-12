@@ -671,7 +671,7 @@ static bool didSwizzle = false;
             self.shortDeviceID = newShortDeviceID;
             [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedShort:newShortDeviceID] forKey:@"short_device_id"];
         } else {
-            self.shortDeviceID = ((NSNumber*)shortDeviceIdDisk).shortValue;
+            self.shortDeviceID = ((NSNumber*)shortDeviceIdDisk).unsignedShortValue;
         }
 
         // Set up empty user attributes store
