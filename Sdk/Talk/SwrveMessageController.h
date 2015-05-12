@@ -6,6 +6,8 @@ static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
 @class SwrveConversation;
 @class SwrveButton;
 @class Swrve;
+@class SwrveConversationsNavigationController;
+@class SwrveConversationItemViewController;
 
 /*! A block that will be called when an install button in an in-app message
  * is pressed.
@@ -108,6 +110,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
 @property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
+
+@property (nonatomic, retain) SwrveConversationsNavigationController* swrveConversationsNavigationController;
+@property (nonatomic, retain) SwrveConversationItemViewController* swrveConversationItemViewController;
+
 
 /*! Initialize the message controller.
  *
