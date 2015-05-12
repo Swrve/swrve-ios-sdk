@@ -127,10 +127,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 {
     self = [super init];
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
-    const int side_a = (int)screen_bounds.size.width;
-    const int side_b = (int)screen_bounds.size.height;
-    self.device_height = (side_a > side_b)? side_a : side_b;
-    self.device_width  = (side_a > side_b)? side_b : side_a;
+    self.device_height = (int)screen_bounds.size.width;
+    self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
 
     self.language           = sdk.config.language;
