@@ -6,6 +6,8 @@ static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
 @class SwrveConversation;
 @class SwrveButton;
 @class Swrve;
+@class SwrveConversationsNavigationController;
+@class SwrveConversationItemViewController;
 
 /*! A block that will be called when an install button in an in-app message
  * is pressed.
@@ -109,6 +111,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
 @property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
 
+@property (nonatomic, retain) SwrveConversationsNavigationController* swrveConversationsNavigationController;
+@property (nonatomic, retain) SwrveConversationItemViewController* swrveConversationItemViewController;
+
+
 /*! Initialize the message controller.
  *
  * \param swrve Swrve SDK instance.
@@ -123,6 +129,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \returns In-app message for the given tirgger.
  */
 - (SwrveMessage*)getMessageForEvent:(NSString *)event;
+
+/*! Find an in-app conversation for the given trigger event that also satisfies the rules
+ * set up in the dashboard.
+ *
+ * \param event Trigger event name.
+ * \returns In-app conversation for the given tirgger.
+ */
+- (SwrveConversation*)getConversationForEvent:(NSString *)event;
 
 /*! Notify that the user pressed an in-app message button.
  *
