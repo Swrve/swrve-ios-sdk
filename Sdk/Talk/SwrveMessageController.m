@@ -122,6 +122,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize installButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
+@synthesize swrveConversationsNavigationController;
+@synthesize swrveConversationItemViewController;
+
 
 - (id)initWithSwrve:(Swrve*)sdk
 {
@@ -1014,9 +1017,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
         // TODO: this delegate/callbacks are nil TEMPORARILY
         scivc.delegate = nil;
+        self.swrveConversationItemViewController=scivc;
         
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+        self.swrveConversationsNavigationController =svnc;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
