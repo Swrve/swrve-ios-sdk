@@ -122,15 +122,16 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize installButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
+@synthesize swrveConversationsNavigationController;
+@synthesize swrveConversationItemViewController;
+
 
 - (id)initWithSwrve:(Swrve*)sdk
 {
     self = [super init];
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
-    const int side_a = (int)screen_bounds.size.width;
-    const int side_b = (int)screen_bounds.size.height;
-    self.device_height = (side_a > side_b)? side_a : side_b;
-    self.device_width  = (side_a > side_b)? side_b : side_a;
+    self.device_height = (int)screen_bounds.size.width;
+    self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
 
     self.language           = sdk.config.language;
@@ -1016,9 +1017,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
         // TODO: this delegate/callbacks are nil TEMPORARILY
         scivc.delegate = nil;
+        self.swrveConversationItemViewController=scivc;
         
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+        self.swrveConversationsNavigationController =svnc;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
