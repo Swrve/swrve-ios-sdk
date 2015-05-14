@@ -1,5 +1,7 @@
 #import "SwrveMessageViewController.h"
 
+const static int CONVERSATION_VERSION        = 1;
+
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 
 @class SwrveMessage;

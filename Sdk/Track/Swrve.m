@@ -1576,6 +1576,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];

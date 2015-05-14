@@ -422,36 +422,43 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         bool conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
         SwrveBaseCampaign* campaign = nil;
         if (conversationCampaign) {
-            campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+            // Conversation version check
+            NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
+            if (conversationVersion != nil && [conversationVersion integerValue] <= CONVERSATION_VERSION) {
+                campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+            } else {
+                DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
+            }
         } else {
             campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
         }
         
-        DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-
-        campaign.next = 0;
-        if(!self.qaUser || !self.qaUser.resetDevice) {
-            NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-            NSDictionary* campaignSettings = [settings objectForKey:ID];
-            if(campaignSettings) {
-                NSNumber* next = [campaignSettings objectForKey:@"next"];
-                if (next)
-                {
-                    campaign.next = next.unsignedIntegerValue;
-                }
-                NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                if (impressions)
-                {
-                    campaign.impressions = impressions.unsignedIntegerValue;
+        if (campaign != nil) {
+            DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
+            campaign.next = 0;
+            if(!self.qaUser || !self.qaUser.resetDevice) {
+                NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
+                NSDictionary* campaignSettings = [settings objectForKey:ID];
+                if(campaignSettings) {
+                    NSNumber* next = [campaignSettings objectForKey:@"next"];
+                    if (next)
+                    {
+                        campaign.next = next.unsignedIntegerValue;
+                    }
+                    NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
+                    if (impressions)
+                    {
+                        campaign.impressions = impressions.unsignedIntegerValue;
+                    }
                 }
             }
-        }
-        
-        [result addObject:campaign];
-        
-        if(self.qaUser) {
-            // Add campaign for QA purposes
-            [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+            
+            [result addObject:campaign];
+            
+            if(self.qaUser) {
+                // Add campaign for QA purposes
+                [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+            }
         }
     }
     
@@ -978,7 +985,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     else if( [eventType isEqualToString:@"user"])
     {
-        eventName = @"Swrve.user_properties_changed	";
+        eventName = @"Swrve.user_properties_changed";
     }
 
     return eventName;
@@ -1297,8 +1304,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName, CONVERSATION_VERSION];
 }
 
 @end
