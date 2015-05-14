@@ -144,13 +144,15 @@ typedef enum {
     
     // Delegate has permitted it, so go for it
     switch (actionType) {
-        case SwrveCallNumberActionType:
-            // NSLog(@"Converser: calling number action: %@", param);
+        case SwrveCallNumberActionType: {
             conversationEndedWithAction = YES;
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]]];
+            NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
+            NSLog(@"calling number: %@", callUrl.absoluteString);
+            [[UIApplication sharedApplication] openURL:callUrl];
             break;
+        }
         case SwrveVisitURLActionType: {
             if (!param) {
                 // NSLog(@"Converser: missing URL in visit action, ignoring.");
