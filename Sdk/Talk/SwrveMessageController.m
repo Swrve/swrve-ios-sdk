@@ -15,7 +15,6 @@ static NSString* swrve_device_token_key = @"swrve_device_token";
 
 const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
-const static int CONVERSATION_VERSION        = 1;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
 const static int DEFAULT_MIN_DELAY           = 55;
