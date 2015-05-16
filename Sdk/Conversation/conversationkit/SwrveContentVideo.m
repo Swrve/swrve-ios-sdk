@@ -18,6 +18,7 @@
 @interface SwrveContentVideo () {
     NSString *_height;
     UIWebView *webview;
+    BOOL stopped;
 }
 
 @end
@@ -38,7 +39,7 @@
 
 -(void) stop {
     // Stop the running video - this will happen on a
-    // page change.
+    // page change. This is a well-known trick.
     [webview loadHTMLString:@"" baseURL:nil];
 }
 
@@ -55,7 +56,7 @@
     // ??? testers
     // this is the default - webview.autoresizesSubviews = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
-    [webview loadYouTubeOrVimeoVideo:self.value];
+    [webview loadVideo:self.value];
     [_view addSubview:webview];
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
