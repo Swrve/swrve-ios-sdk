@@ -52,7 +52,7 @@
 // TODO: remove this convenience
 -(IBAction)onConversationEvent:(id)sender {
 #pragma unused(sender)
-    [swrve event:@"converser"];
+    [swrve event:@"conversation_event"];
 }
 
 - (IBAction)onEvent:(id)sender

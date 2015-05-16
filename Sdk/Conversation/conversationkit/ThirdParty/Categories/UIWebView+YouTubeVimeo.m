@@ -20,6 +20,8 @@
 
 -(void) loadVimeoVideo:(NSString*)videoUrl {
     [self loadVideo:videoUrl];
+    [self setMediaPlaybackRequiresUserAction:NO];
+    [self loadHTMLString:[self htmlForVideoUrl:videoUrl] baseURL:[NSURL URLWithString:@"/"]];
 }
 
 -(void) loadYouTubeVideo:(NSString*)videoUrl {
@@ -45,84 +47,28 @@
         if (match) {
             NSRange videoIDRange = [match rangeAtIndex:1];
             NSString *videoID = [videoUrl substringWithRange:videoIDRange];
-            [self loadYouTubeVideoID:videoID];
+
+            [self setMediaPlaybackRequiresUserAction:NO];
+            self.scrollView.bounces = NO;
+            self.scrollView.scrollEnabled = NO;
+            
+            [self loadHTMLString:[self htmlForYouTubeEmbed:videoID] baseURL:[NSURL URLWithString:@"/"]];
         } else {
             // TODO: log an issue
         }
     }
 }
 
--(void) loadVideoFromUrl:(NSURL*)url {
-    [self setMediaPlaybackRequiresUserAction:NO];
-    [self loadRequest:[NSURLRequest requestWithURL:url]];
-}
-
--(void) loadVideoFromFile:(NSString*)url {
-    // TODO: SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadVideo");
-    self.scrollView.bounces = NO;
-    self.scrollView.scrollEnabled = NO;
-    
-    // Pull the data from the video into a file locally
-    //
-    NSString *fileName = [self generateFileNameWithExtension:@"html"];
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0], fileName];
-    NSString *htmlToLoad = [self htmlForVideoUrl:url];
-    NSData *data = [htmlToLoad dataUsingEncoding:NSUTF8StringEncoding];
-    
-    [data writeToFile:filePath atomically:YES];
-    [self loadVideoFromUrl:[NSURL fileURLWithPath:filePath]];
-}
-
--(void)loadYouTubeVideoID:(NSString*)videoID {
-    // TODO: SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadYouTubeVideoID");
-    self.scrollView.bounces = NO;
-    self.scrollView.scrollEnabled = NO;
-    
-    NSString *fileName = [NSString stringWithFormat:@"youtubevideo%@.html",videoID];
-    
-    // File is stored in the NSCachesDirectory, where it will be deleted on
-    // app uninstall, app update, or if memory conditions are low
-    //
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0], fileName];
-    NSData *data = [[self htmlForYouTubeEmbed:videoID] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    //write data to file
-    [data writeToFile:filePath atomically:YES];
-    [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: filePath]]];
-}
-
 #pragma mark URL Processing
 
 -(NSString *) htmlForYouTubeEmbed:(NSString *)videoID {
     NSString *htmlString = @"<html><head> <meta name = \"viewport\" content = \"initial-scale = 1.0, user-scalable = no, width = \"%f\"/></head> <body style=\"background:#000000;margin-top:0px;margin-left:0px\"> <iframe width= \"%f\" height=\"%f\" src = \"http://www.youtube.com/embed/%@?html5=1&controls=0&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
-    NSString *html = [NSString stringWithFormat:htmlString, self.frame.size.width, self.frame.size.width, self.frame.size.height, videoID];
-    SwrveLogIt(@"UIWebView+YouTubeVimeo :: youTubeEmbedHTMLFromVideoID :: html:\n%@\n", html);
-    return html;
+    return [NSString stringWithFormat:htmlString, self.frame.size.width, self.frame.size.width, self.frame.size.height, videoID];
 }
 
 -(NSString *) htmlForVideoUrl:(NSString *)url {
     NSString *htmlString = @"<html><head> <meta name = \"viewport\" content = \"initial-scale = 1.0, user-scalable = no, width = \"%f\"/></head> <body style=\"background:#000000;margin-top:0px;margin-left:0px\"> <iframe width= \"%f\" height=\"%f\" src = \"%@\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
-    NSString *html = [NSString stringWithFormat:htmlString, self.frame.size.width, self.frame.size.width, self.frame.size.height, url];
-    SwrveLogIt(@"UIWebView+YouTubeVimeo :: embedVideoInHTML :: html:\n%@\n", html);
-    return html;
-}
-
-#pragma mark Helper methods
-
--(NSString*)generateFileNameWithExtension:(NSString *)extensionString {
-    NSString *timeString = [self uniqueFileName];
-    NSString *fileName = [NSString stringWithFormat:@"video-%@.%@", timeString, extensionString];
-    return fileName;
-}
-
-// Using a timestamp strategy here because NSUUID not available
-// pre iOS6. We to use 'A' for milliseconds in the format.
-// See #56
--(NSString*)uniqueFileName {
-    NSDate *time = [NSDate date];
-    NSDateFormatter* df = [NSDateFormatter new];
-    [df setDateFormat:@"dd-MM-yyyy-hh-mm-ss-A"];
-    return [df stringFromDate:time];
+    return [NSString stringWithFormat:htmlString, self.frame.size.width, self.frame.size.width, self.frame.size.height, url];
 }
 
 @end
