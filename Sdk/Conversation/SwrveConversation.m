@@ -1,6 +1,7 @@
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 #import "SwrveMessageController.h"
+#import "SwrveContentItem.h"
 #import "SwrveConversation.h"
 #import "SwrveConversationPane.h"
 
@@ -23,8 +24,6 @@
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
     self.pages          = [json objectForKey:@"pages"];
-    
-
     return self;
 }
 
@@ -37,30 +36,22 @@
                                               forController:controller];
 }
 
-/*static bool in_cache(NSString* file, NSSet* set){
-    return [file length] == 0 || [set containsObject:file];
-}*/
-
 -(BOOL)areDownloaded:(NSSet*)assets {
-    #pragma unused(assets)
-    // TODO: what's the implementation requirements here?
-    // Iterate through the images and check in_cache(image, assets)
-    /*for (SwrveMessageFormat* format in self.formats) {
-     for (SwrveButton* button in format.buttons) {
-     if (!in_cache(button.image, assets)){
-     DebugLog(@"Button Asset not yet downloaded: %@", button.image);
-     return false;
-     }
-     }
-     
-     for (SwrveImage* image in format.images) {
-     if (!in_cache(image.file, assets)){
-     DebugLog(@"Image Asset not yet downloaded: %@", image.file);
-     return false;
-     }
-     }
-     }*/
-    
+
+    for (NSDictionary* page in self.pages) {
+        SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
+        for (SwrveContentItem* contentItem in pane.content) {
+            if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
+                if([assets containsObject:contentItem.value]) {
+                    return true;
+                }
+                else {
+                    DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
 
