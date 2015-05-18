@@ -43,7 +43,6 @@
         for (SwrveContentItem* contentItem in pane.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
-                    DebugLog(@"Conversation asset downloaded: %@", contentItem.value);
                     return true;
                 }
                 else {
