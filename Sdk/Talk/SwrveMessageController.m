@@ -12,7 +12,8 @@ static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
-
+static NSArray* SUPPORTED_REQUIREMENTS;
+    
 const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
@@ -125,6 +126,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize swrveConversationsNavigationController;
 @synthesize swrveConversationItemViewController;
 
+
++ (void)initialize {
+    SUPPORTED_REQUIREMENTS = [NSArray arrayWithObjects:@"ios", nil];
+}
 
 - (id)initWithSwrve:(Swrve*)sdk
 {
@@ -330,6 +335,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [[self campaignFile] writeToFile:campaignData];
 }
 
+-(BOOL) supportsRequirement:(NSString*)requirement {
+    return [SUPPORTED_REQUIREMENTS containsObject:requirement];
+}
+
 -(void) updateCampaigns:(NSDictionary*)campaignJson
 {
     if (campaignJson == nil) {
@@ -419,46 +428,64 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
-        bool conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
-        SwrveBaseCampaign* campaign = nil;
-        if (conversationCampaign) {
-            // Conversation version check
-            NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
-            if (conversationVersion != nil && [conversationVersion integerValue] <= CONVERSATION_VERSION) {
-                campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
-            } else {
-                DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
-            }
-        } else {
-            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
-        }
-        
-        if (campaign != nil) {
-            DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-            campaign.next = 0;
-            if(!self.qaUser || !self.qaUser.resetDevice) {
-                NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-                NSDictionary* campaignSettings = [settings objectForKey:ID];
-                if(campaignSettings) {
-                    NSNumber* next = [campaignSettings objectForKey:@"next"];
-                    if (next)
-                    {
-                        campaign.next = next.unsignedIntegerValue;
-                    }
-                    NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                    if (impressions)
-                    {
-                        campaign.impressions = impressions.unsignedIntegerValue;
-                    }
+        // Check requirements (permission requests, platform)
+        NSArray* requirements = [dict objectForKey:@"required"];
+        BOOL hasAllRequirements = TRUE;
+        NSString* lastCheckedRequirement = nil;
+        if (requirements != nil) {
+            for (NSString* requirement in requirements) {
+                lastCheckedRequirement = requirement;
+                if (![self supportsRequirement:requirement]) {
+                    hasAllRequirements = NO;
+                    break;
                 }
             }
-            
-            [result addObject:campaign];
-            
-            if(self.qaUser) {
-                // Add campaign for QA purposes
-                [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+        }
+        
+        if (hasAllRequirements) {
+            BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
+            SwrveBaseCampaign* campaign = nil;
+            if (conversationCampaign) {
+                // Conversation version check
+                NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
+                if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
+                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+                } else {
+                    DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
+                }
+            } else {
+                campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
             }
+            
+            if (campaign != nil) {
+                DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
+                campaign.next = 0;
+                if(!self.qaUser || !self.qaUser.resetDevice) {
+                    NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
+                    NSDictionary* campaignSettings = [settings objectForKey:ID];
+                    if(campaignSettings) {
+                        NSNumber* next = [campaignSettings objectForKey:@"next"];
+                        if (next)
+                        {
+                            campaign.next = next.unsignedIntegerValue;
+                        }
+                        NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
+                        if (impressions)
+                        {
+                            campaign.impressions = impressions.unsignedIntegerValue;
+                        }
+                    }
+                }
+                
+                [result addObject:campaign];
+                
+                if(self.qaUser) {
+                    // Add campaign for QA purposes
+                    [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+                }
+            }
+        } else {
+            DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedRequirement);
         }
     }
     
