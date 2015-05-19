@@ -336,7 +336,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 -(BOOL) supportsRequirement:(NSString*)requirement {
-    return [SUPPORTED_REQUIREMENTS containsObject:requirement];
+    return [SUPPORTED_REQUIREMENTS containsObject:[requirement lowercaseString]];
 }
 
 -(void) updateCampaigns:(NSDictionary*)campaignJson
