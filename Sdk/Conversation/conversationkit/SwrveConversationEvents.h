@@ -1,11 +1,3 @@
-//
-//  SwrveConversationEvents.h
-//  SwrveDemoFramework
-//
-//  Created by Oisin Hurley on 25/03/2015.
-//  Copyright (c) 2015 Swrve. All rights reserved.
-//
-
 #ifndef SwrveDemoFramework_SwrveConversationEvents_h
 #define SwrveDemoFramework_SwrveConversationEvents_h
 

@@ -1,13 +1,4 @@
-//
-//  SwrveConversationResource.m
-//  SwrveDemoFramework
-//
-//  Created by Oisin Hurley on 16/02/2015.
-//  Copyright (c) 2015 Swrve. All rights reserved.
-//
-
 #import "SwrveConversationResource.h"
-
 #import <Foundation/Foundation.h>
 
 @implementation SwrveConversationResource

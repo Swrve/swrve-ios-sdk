@@ -91,7 +91,6 @@
 		9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1A71AB83B6D00F29FCE /* Converser.strings */; };
 		9360E1C11AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */; };
 		9360E1C21AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */; };
-		938F97121A921EC20089168A /* CustomFeedbackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CB1A921EC20089168A /* CustomFeedbackView.xib */; };
 		938F97131A921EC20089168A /* cvsr_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CC1A921EC20089168A /* cvsr_0.png */; };
 		938F97141A921EC20089168A /* cvsr_0@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CD1A921EC20089168A /* cvsr_0@2x.png */; };
 		938F97151A921EC20089168A /* cvsr_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 938F95CE1A921EC20089168A /* cvsr_1.png */; };
@@ -356,7 +355,6 @@
 		9360E1B71AB83B6D00F29FCE /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = Converser.strings; sourceTree = "<group>"; };
 		9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwrveConversationItemViewController_iPad.xib; sourceTree = "<group>"; };
 		9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwrveConversationItemViewController_iPhone.xib; sourceTree = "<group>"; };
-		938F95CB1A921EC20089168A /* CustomFeedbackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomFeedbackView.xib; sourceTree = "<group>"; };
 		938F95CC1A921EC20089168A /* cvsr_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cvsr_0.png; sourceTree = "<group>"; };
 		938F95CD1A921EC20089168A /* cvsr_0@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cvsr_0@2x.png"; sourceTree = "<group>"; };
 		938F95CE1A921EC20089168A /* cvsr_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cvsr_1.png; sourceTree = "<group>"; };
@@ -1062,7 +1060,6 @@
 				9360E1B51AB83B6D00F29FCE /* pt.lproj */,
 				9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */,
 				9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */,
-				938F95CB1A921EC20089168A /* CustomFeedbackView.xib */,
 				938F95CC1A921EC20089168A /* cvsr_0.png */,
 				938F95CD1A921EC20089168A /* cvsr_0@2x.png */,
 				938F95CE1A921EC20089168A /* cvsr_1.png */,
@@ -1358,7 +1355,6 @@
 				0913B8CB17139047000DA83C /* swrve_icon_large.png in Resources */,
 				0913B8CD17139051000DA83C /* swrve_icon_black.png in Resources */,
 				938F97281A921EC20089168A /* cvsr_9@2x.png in Resources */,
-				938F97121A921EC20089168A /* CustomFeedbackView.xib in Resources */,
 				938F971C1A921EC20089168A /* cvsr_3@2x.png in Resources */,
 				938F979D1A921EC30089168A /* cvsr_success.png in Resources */,
 				938F97731A921EC20089168A /* cvsr_grouped_cell_single_ios7.png in Resources */,
