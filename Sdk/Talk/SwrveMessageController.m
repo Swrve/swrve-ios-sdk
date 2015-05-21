@@ -12,7 +12,7 @@ static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
-static NSArray* SUPPORTED_REQUIREMENTS;
+static NSArray* SUPPORTED_DEVICE_FILTERS;
     
 const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
@@ -128,7 +128,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 
 + (void)initialize {
-    SUPPORTED_REQUIREMENTS = [NSArray arrayWithObjects:@"ios", nil];
+    SUPPORTED_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
 }
 
 - (id)initWithSwrve:(Swrve*)sdk
@@ -335,8 +335,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [[self campaignFile] writeToFile:campaignData];
 }
 
--(BOOL) supportsRequirement:(NSString*)requirement {
-    return [SUPPORTED_REQUIREMENTS containsObject:[requirement lowercaseString]];
+-(BOOL) supportsDeviceFilter:(NSString*)filter {
+    return [SUPPORTED_DEVICE_FILTERS containsObject:[filter lowercaseString]];
 }
 
 -(void) updateCampaigns:(NSDictionary*)campaignJson
@@ -428,21 +428,21 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
-        // Check requirements (permission requests, platform)
-        NSArray* requirements = [dict objectForKey:@"required"];
-        BOOL hasAllRequirements = TRUE;
-        NSString* lastCheckedRequirement = nil;
-        if (requirements != nil) {
-            for (NSString* requirement in requirements) {
-                lastCheckedRequirement = requirement;
-                if (![self supportsRequirement:requirement]) {
-                    hasAllRequirements = NO;
+        // Check device filters (permission requests, platform)
+        NSArray* filters = [dict objectForKey:@"filters"];
+        BOOL passesAllFilters = TRUE;
+        NSString* lastCheckedFilter = nil;
+        if (filters != nil) {
+            for (NSString* filter in filters) {
+                lastCheckedFilter = filter;
+                if (![self supportsDeviceFilter:filter]) {
+                    passesAllFilters = NO;
                     break;
                 }
             }
         }
         
-        if (hasAllRequirements) {
+        if (passesAllFilters) {
             BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
             SwrveBaseCampaign* campaign = nil;
             if (conversationCampaign) {
@@ -485,7 +485,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 }
             }
         } else {
-            DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedRequirement);
+            DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
         }
     }
     
