@@ -1,11 +1,3 @@
-//
-//  SwrveNonRotatingNavController.m
-//  SwrveConversationKit
-//
-//  Created by Oisin Hurley on 20/03/2013.
-//  Copyright (c) 2013 Converser. All rights reserved.
-//
-
 #import "SwrveNonRotatingNavController.h"
 #import "SwrveSetup.h"
 
