@@ -1,14 +1,3 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #if !__has_feature(objc_arc)
 #error ConverserSDK must be built with ARC.
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
@@ -22,7 +11,6 @@
 #import "SwrveConversationButton.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
-#import "SwrveSetup.h"
 
 #define kSwrveKeyTag @"tag"
 #define kSwrveKeyType @"type"
@@ -57,44 +45,49 @@
     }
     
     if([type isEqualToString:kSwrveInputTypeText]) {
-        SwrveInputText *vgInputText = [[SwrveInputText alloc] initWithTag:tag andDictionary:dict];
-        [vgInputText setOptional:optional];
-        return vgInputText;
+        SwrveInputText *swrveInputText = [[SwrveInputText alloc] initWithTag:tag andDictionary:dict];
+        [swrveInputText setOptional:optional];
+        swrveInputText.style = [dict objectForKey:@"style"];
+        return swrveInputText;
     }
     if([type isEqualToString:kSwrveContentTypeHTML]) {
-        SwrveContentHTML *vgContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
-        return vgContentHTML;
+        SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
+        swrveContentHTML.style = [dict objectForKey:@"style"];
+        return swrveContentHTML;
     }
     if([type isEqualToString:kSwrveContentTypeImage]) {
-        SwrveContentImage *vgContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
-        return vgContentImage;
+        SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
+        swrveContentImage.style = [dict objectForKey:@"style"];
+        return swrveContentImage;
     }
     
     if([type isEqualToString:kSwrveContentTypeVideo]) {
-        SwrveContentVideo *vgContentVideo = [[SwrveContentVideo alloc] initWithTag:tag andDictionary:dict];
-        return vgContentVideo;
+        SwrveContentVideo *swrveContentVideo = [[SwrveContentVideo alloc] initWithTag:tag andDictionary:dict];
+        swrveContentVideo.style = [dict objectForKey:@"style"];
+        return swrveContentVideo;
     }
     
     if([type isEqualToString:kSwrveControlTypeButton]) {
-        SwrveConversationButton *vgConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
-        vgConversationButton.actions = [dict objectForKey:@"action"];
-        
-        // Leave the target nil if this a conversation ender (i.e. no following state)
-        NSString *target = [dict objectForKey:@"target"];
+        SwrveConversationButton *swrveConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
+        swrveConversationButton.actions = [dict objectForKey:@"action"];
+        swrveConversationButton.style = [dict objectForKey:@"style"];
+        NSString *target = [dict objectForKey:@"target"]; // Leave the target nil if this a conversation ender (i.e. no following state)
         if (target && ![target isEqualToString:@""]) {
-            vgConversationButton.target = target;
+            swrveConversationButton.target = target;
         }
-        return vgConversationButton;
+        return swrveConversationButton;
     }
     if([type isEqualToString:kSwrveInputMultiValueLong]) {
-        SwrveInputMultiValueLong *vgInputMultivalueLong = [[SwrveInputMultiValueLong alloc] initWithTag:tag andDictionary:dict];
-         [vgInputMultivalueLong setOptional:optional];
-        return vgInputMultivalueLong;
+        SwrveInputMultiValueLong *swrveInputMultiValueLong = [[SwrveInputMultiValueLong alloc] initWithTag:tag andDictionary:dict];
+        [swrveInputMultiValueLong setOptional:optional];
+        swrveInputMultiValueLong.style = [dict objectForKey:@"style"];
+        return swrveInputMultiValueLong;
     }
     if([type isEqualToString:kSwrveInputMultiValue]) {
-        SwrveInputMultiValue *vgInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
-         [vgInputMultiValue setOptional:optional];
-        return vgInputMultiValue;
+        SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
+        [swrveInputMultiValue setOptional:optional];
+        swrveInputMultiValue.style = [dict objectForKey:@"style"];
+        return swrveInputMultiValue;
     }
     
     return nil;

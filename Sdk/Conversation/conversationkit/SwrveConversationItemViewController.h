@@ -1,20 +1,8 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #import <UIKit/UIKit.h>
 
 @class SwrveConversationResource;
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
-@class SwrveFeedbackViewController;
 @class SwrveConversation;
 
 typedef enum {
@@ -52,6 +40,7 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
 @property (nonatomic, assign) id<SwrveConversationItemViewControllerDelegate> delegate;
+@property (strong, nonatomic) SwrveConversation *conversation;
 
 -(id)initWithConversation:(SwrveConversation*)conversation;
 

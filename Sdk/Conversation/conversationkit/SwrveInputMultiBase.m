@@ -10,6 +10,7 @@
 #import "SwrveConversationResource.h"
 #import "SwrveInputMultiBase.h"
 #import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @implementation SwrveInputMultiBase
 
@@ -117,13 +118,13 @@
     if(cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"descriptionCell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [cell.textLabel setTextColor:[UIColor blackColor]];
         [cell.textLabel setFont:[UIFont boldSystemFontOfSize:20.0]];
         cell.userInteractionEnabled = NO;
     }
     cell.textLabel.text = self.description;
     [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
     cell.textLabel.numberOfLines = 0;
+    [SwrveConversationStyler styleView:cell withStyle:self.style];
     return cell;
 }
 

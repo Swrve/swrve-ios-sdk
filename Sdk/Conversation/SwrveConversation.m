@@ -1,6 +1,4 @@
 #import "Swrve.h"
-#import "SwrveCampaign.h"
-#import "SwrveMessageController.h"
 #import "SwrveContentItem.h"
 #import "SwrveConversation.h"
 #import "SwrveConversationPane.h"
@@ -13,7 +11,8 @@
 
 @implementation SwrveConversation
 
-@synthesize controller, campaign, conversationID, name, pages;
+@synthesize controller, campaign, conversationID, name, pages, style;
+
 
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
                          forCampaign:(SwrveConversationCampaign*)_campaign
@@ -24,6 +23,8 @@
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
     self.pages          = [json objectForKey:@"pages"];
+    NSDictionary *pagesJson = pages[0];  // using the first page style as global page style
+    self.style          = [pagesJson objectForKey:@"style"];
     return self;
 }
 
