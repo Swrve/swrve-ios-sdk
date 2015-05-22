@@ -1,5 +1,5 @@
 #import "SwrveInputMultiValue.h"
-#import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @implementation SwrveInputMultiValue
 
@@ -36,6 +36,7 @@
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
+        [SwrveConversationStyler styleView:cell withStyle:self.style];
         return [self styleCell:cell atRow:finalRow];
     } else {
         return [self fetchDescriptionCell:tableView];

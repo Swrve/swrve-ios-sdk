@@ -1,6 +1,6 @@
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveChoiceArray.h"
-#import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @implementation SwrveInputMultiValueLong
 
@@ -29,6 +29,7 @@
         SwrveChoiceArray *vgChoiceArray = [self.values objectAtIndex:finalRow];
         cell.textLabel.text = vgChoiceArray.title;
         cell.detailTextLabel.text = vgChoiceArray.selectedItem;
+        [SwrveConversationStyler styleView:cell withStyle:self.style];
         return [self styleCell:cell atRow:finalRow];
     } else {
         return [self fetchDescriptionCell:tableView];

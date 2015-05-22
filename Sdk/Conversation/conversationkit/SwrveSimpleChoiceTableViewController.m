@@ -6,6 +6,7 @@
 #import "SwrveConversationResource.h"
 #import "SwrveSimpleChoiceTableViewController.h"
 #import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @interface SwrveSimpleChoiceTableViewController () {
     NSIndexPath *refreshIndex;
@@ -14,6 +15,7 @@
 
 @implementation SwrveSimpleChoiceTableViewController
 @synthesize choiceValues = _choiceValues;
+@synthesize pageStyle, choiceStyle;
 
 -(void) viewWillAppear:(BOOL)animated {
 #pragma unused (animated)
@@ -36,13 +38,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        UIImage *img = [SwrveConversationResource imageFromBundleNamed:@"layer_1_background"];
-        [(UITableView *)self.view setBackgroundView:[[UIImageView alloc] initWithImage:img]];
-    } else {
-        // iOS 7 background style
-        self.view.backgroundColor = [UIColor whiteColor];
-    }
+    [SwrveConversationStyler styleView:self.view withStyle:self.pageStyle];
 }
 
 -(NSUInteger) supportedInterfaceOrientations {
@@ -88,6 +84,7 @@
         }
         
     }
+    [SwrveConversationStyler styleView:cell withStyle:self.choiceStyle];
     return cell;
 }
 
