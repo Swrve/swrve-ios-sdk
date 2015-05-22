@@ -11,7 +11,7 @@
 
 @implementation SwrveConversation
 
-@synthesize controller, campaign, conversationID, name, pages, style;
+@synthesize controller, campaign, conversationID, name, pages;
 
 
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
@@ -23,8 +23,6 @@
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
     self.pages          = [json objectForKey:@"pages"];
-    NSDictionary *pagesJson = pages[0];  // using the first page style as global page style
-    self.style          = [pagesJson objectForKey:@"style"];
     return self;
 }
 
