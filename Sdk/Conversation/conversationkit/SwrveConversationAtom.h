@@ -2,12 +2,10 @@
 #import "SwrveSetup.h"
 
 // Content types
-#define kSwrveContentTypeText @"text"
 #define kSwrveContentTypeHTML @"html-fragment"
 #define kSwrveContentTypeImage @"image"
 #define kSwrveContentTypeVideo @"video"
 // Input types
-#define kSwrveInputTypeText @"text-input"
 #define kSwrveInputMultiValueLong @"multi-value-long-input"
 #define kSwrveInputMultiValue @"multi-value-input"
 // Control types
