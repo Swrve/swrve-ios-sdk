@@ -300,8 +300,8 @@
         self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
         [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
     }
+    [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
-    
     
     // In the case where a pane is scrolled, then the user moves on to the next
     // pane, that second pane will display as scrolled too, unless we reset the
@@ -572,7 +572,6 @@
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     self.navigationController.navigationBar.translucent = NO;
 
-    [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:conversation.style];
     backgroundImageView.backgroundColor = [UIColor clearColor];
     buttonsView.backgroundColor = [UIColor clearColor];
     buttonsBackgroundImageView.backgroundColor = [UIColor clearColor];
@@ -650,7 +649,7 @@
     } else if([atom.type isEqualToString:kSwrveInputMultiValueLong]) {
         SwrveSimpleChoiceTableViewController *simpleVC = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         simpleVC.choiceValues = [(SwrveInputMultiValueLong *)atom choicesForRow:(NSUInteger)indexPath.row];
-        simpleVC.pageStyle = [conversation style];
+        simpleVC.pageStyle = self.conversationPane.pageStyle;
         simpleVC.choiceStyle = [atom style];
         [self.navigationController pushViewController:simpleVC animated:YES];
         // Also note that this row may need an update
