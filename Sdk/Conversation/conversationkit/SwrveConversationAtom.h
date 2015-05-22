@@ -2,19 +2,12 @@
 #import "SwrveSetup.h"
 
 // Content types
-#define kSwrveContentTypeText @"text"
 #define kSwrveContentTypeHTML @"html-fragment"
 #define kSwrveContentTypeImage @"image"
 #define kSwrveContentTypeVideo @"video"
-#define kSwrveContentTypeTalkback @"talkback"
 // Input types
-#define kSwrveInputTypeText @"text-input"
-#define kSwrveInputReaction @"reaction-input"
 #define kSwrveInputMultiValueLong @"multi-value-long-input"
-#define kSwrveInputSlider @"slider-input"
 #define kSwrveInputMultiValue @"multi-value-input"
-#define kSwrveNetPromoter @"nps-input"
-#define kSwrveCalendarInput @"calendar-input"
 // Control types
 #define kSwrveControlTypeButton @"button"
 
@@ -28,6 +21,7 @@
 @property (readonly, nonatomic) NSString *tag;
 @property (readonly, nonatomic) NSString *type;
 @property (readonly, nonatomic) UIView *view;
+@property (strong, nonatomic)   NSDictionary *style;
 
 -(id)                initWithTag:(NSString *)tag andType:(NSString *)type;
 -(BOOL)              willRequireLandscape;

@@ -3,15 +3,14 @@
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
-#import "SwrveConversationResource.h"
 #import "SwrveConversationAtom.h"
-#import "SwrveSetup.h"
 
 @implementation SwrveConversationAtom
 
 @synthesize tag=_tag;
 @synthesize type=_type;
 @synthesize view=_view;
+@synthesize style;
 
 #define kCellTag 101
 
@@ -80,6 +79,8 @@
         [cell.contentView addSubview:self->_view];
         cell.contentView.backgroundColor = [UIColor clearColor];
     });
+
+    cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
 
