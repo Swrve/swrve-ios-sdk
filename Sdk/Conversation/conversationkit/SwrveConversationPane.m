@@ -14,6 +14,7 @@
 @synthesize controls=_controls;
 @synthesize tag=_tag;
 @synthesize title=_title;
+@synthesize pageStyle=_pageStyle;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
@@ -49,6 +50,10 @@
             _controls = [NSArray arrayWithArray:arr];
         } else {
             _controls = nil;
+        }
+        NSDictionary *pagesJson = [dict objectForKey:@"style"];
+        if(pagesJson) {
+            _pageStyle = pagesJson;
         }
     }
     return self;

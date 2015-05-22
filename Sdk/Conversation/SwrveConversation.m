@@ -1,6 +1,4 @@
 #import "Swrve.h"
-#import "SwrveCampaign.h"
-#import "SwrveMessageController.h"
 #import "SwrveContentItem.h"
 #import "SwrveConversation.h"
 #import "SwrveConversationPane.h"
@@ -14,6 +12,7 @@
 @implementation SwrveConversation
 
 @synthesize controller, campaign, conversationID, name, pages;
+
 
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
                          forCampaign:(SwrveConversationCampaign*)_campaign
@@ -37,7 +36,6 @@
 }
 
 -(BOOL)areDownloaded:(NSSet*)assets {
-
     for (NSDictionary* page in self.pages) {
         SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
         for (SwrveContentItem* contentItem in pane.content) {

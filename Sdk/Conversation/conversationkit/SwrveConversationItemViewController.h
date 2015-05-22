@@ -3,7 +3,6 @@
 @class SwrveConversationResource;
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
-@class SwrveFeedbackViewController;
 @class SwrveConversation;
 
 typedef enum {
@@ -27,6 +26,7 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UIImageView *buttonsBackgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
+@property (strong, nonatomic) SwrveConversation *conversation;
 
 -(id)initWithConversation:(SwrveConversation*)conversation;
 
