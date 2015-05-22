@@ -65,7 +65,6 @@ typedef enum {
 @synthesize buttonsBackgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
-@synthesize delegate;
 @synthesize conversationPane = _conversationPane;
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -77,17 +76,6 @@ typedef enum {
     }
     
     [self showConversation];
-}
-
--(void) viewDidAppear:(BOOL)animated {
-#pragma unused (animated)
-    if (conversationEndedWithAction) {
-        if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]){
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];});
-        }
-        return;
-    }
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -126,13 +114,11 @@ typedef enum {
                 actionType = SwrveCallNumberActionType;
                 param = [actions objectForKey:@"call"];
             } else {
-                // NSLog(@"Converser: ignoring unknown control action %@", key);
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
         }
     }
     
-    // Delegate has permitted it, so go for it
     switch (actionType) {
         case SwrveCallNumberActionType: {
             conversationEndedWithAction = YES;
@@ -145,7 +131,6 @@ typedef enum {
         }
         case SwrveVisitURLActionType: {
             if (!param) {
-                // NSLog(@"Converser: missing URL in visit action, ignoring.");
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 return;
             }
@@ -163,11 +148,9 @@ typedef enum {
             conversationEndedWithAction = YES;
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
-                // NSLog(@"Converser: cannot open URL %@", [target absoluteString]);
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
-                
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Converser", @"You will need to install an app to visit %@"), [target absoluteString]];
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Converser", @"Cannot open URL")
@@ -203,7 +186,6 @@ typedef enum {
     // The sender is tagged with its index in the list of controls in the
     // conversation pane. Use this to lift the tag associated with the control
     // to populate the finished conversation event.
-
     NSUInteger tag = (NSUInteger)button.tag;
     return self.conversationPane.controls[(NSUInteger)tag];
 }
@@ -234,8 +216,6 @@ typedef enum {
         }
     }
     
-    // TODO: - these alert views could be better - for example listing all of the
-    // various things that are going wrong
     if ([incompleteRequiredInputs count] > 0) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
                                                         message:NSLocalizedStringFromTable(@"FILL_ALL", @"Converser", @"Please fill all required fields.")
@@ -246,8 +226,6 @@ typedef enum {
         return;
     }
     
-    // TODO: - v1.8.2 only email addresses are validated
-    //
     if ([invalidInputs count] > 0 ) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
                                                         message:NSLocalizedStringFromTable(@"VALID_EMAIL", @"Converser", @"Please supply a valid email address.")
@@ -265,19 +243,8 @@ typedef enum {
         [atom stop];
     }
     
-    // Construct the response to send back to the server
-    // TODO: only for input items
-    //    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-    //        if([atom isKindOfClass:[SwrveInputItem class]]) {
-    //            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
-    //            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
-    //            [response addResponseItem:responseItem];
-    //        }
-    //    }
     
     // Move onto the next page in the conversation - fetch the next Convseration pane
-    
-    
     if ([control endsConversation]) {
         [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {

@@ -5,7 +5,6 @@
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrveTalkQA.h"
-#import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationItemViewController.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
@@ -1020,31 +1019,21 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        //
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
-        // TODO: this delegate/callbacks are nil TEMPORARILY
-        scivc.delegate = nil;
-        self.swrveConversationItemViewController=scivc;
-        
-        // Create a navigation controller in which to push the conversation, and choose iPad presentation style
-        SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
-        self.swrveConversationsNavigationController =svnc;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            svnc.modalPresentationStyle = UIModalPresentationFormSheet;
+            scivc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
-#pragma clang diagnostic push
+        self.swrveConversationItemViewController = scivc;
+
+/*#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
         // Attach cancel button to the conversation navigation options
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
-        scivc.navigationItem.leftBarButtonItem = cancelButton;
-        
-        // TODO: animations, if any
-        // TODO: callbacks to conversation delegate
-        // TODO: do not show message if there is something already being shown
-        
+        scivc.navigationItem.leftBarButtonItem = cancelButton;*/
+
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
+            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:scivc animated:YES completion:nil];
         });
     }
 }

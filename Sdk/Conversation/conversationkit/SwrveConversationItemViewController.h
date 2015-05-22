@@ -17,19 +17,6 @@ typedef enum {
     SwrveVisitURLActionType
 } SwrveConversationActionType;
 
-@protocol SwrveConversationItemViewControllerDelegate <NSObject>
-
-@optional
--(void) conversationController:(SwrveConversationItemViewController *)controller
-         didFinishWithResult:(SwrveConversationResultType)result
-                       error:(NSError *)error;
-
--(BOOL) conversationController:(SwrveConversationItemViewController *)controller
-                willTakeAction:(SwrveConversationActionType)action
-                     withParam:(NSString*)param;
-@end
-
-
 @interface SwrveConversationItemViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
     SwrveConversationPane *_conversationPane;
     SwrveConversationResource *_engine;
@@ -40,7 +27,6 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UIImageView *buttonsBackgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
-@property (nonatomic, assign) id<SwrveConversationItemViewControllerDelegate> delegate;
 
 -(id)initWithConversation:(SwrveConversation*)conversation;
 
