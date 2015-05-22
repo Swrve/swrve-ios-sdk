@@ -4,7 +4,6 @@
 #endif
 
 #import "SwrveConversationAtomFactory.h"
-#import "SwrveInputText.h"
 #import "SwrveContentHTML.h"
 #import "SwrveContentImage.h"
 #import "SwrveContentVideo.h"
@@ -40,16 +39,6 @@
         tag = [self GUIDString];
     }
     
-    if(type == nil) {
-        type = kSwrveInputTypeText;
-    }
-    
-    if([type isEqualToString:kSwrveInputTypeText]) {
-        SwrveInputText *swrveInputText = [[SwrveInputText alloc] initWithTag:tag andDictionary:dict];
-        [swrveInputText setOptional:optional];
-        swrveInputText.style = [dict objectForKey:@"style"];
-        return swrveInputText;
-    }
     if([type isEqualToString:kSwrveContentTypeHTML]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         swrveContentHTML.style = [dict objectForKey:@"style"];
