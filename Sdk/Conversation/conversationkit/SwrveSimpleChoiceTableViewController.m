@@ -88,4 +88,22 @@
     return cell;
 }
 
+#pragma mark - Table view delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if(self.choiceValues.hasMore) {
+        SwrveChoiceArray *inner = [self.choiceValues.choices objectAtIndex:(NSUInteger)indexPath.row];
+        SwrveSimpleChoiceTableViewController *next = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        next.choiceValues = inner;
+        [self.navigationController pushViewController:next animated:YES];
+        refreshIndex = indexPath;
+    } else {
+        self.choiceValues.selectedIndex = indexPath.row;
+        NSIndexSet *set = [NSIndexSet indexSetWithIndex:(NSUInteger)indexPath.section];
+        [tableView reloadSections:set withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
 @end
