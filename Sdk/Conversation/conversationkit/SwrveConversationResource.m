@@ -3,14 +3,6 @@
 
 @implementation SwrveConversationResource
 
-+(UIImage*) backgroundImage {
-    if ([UIScreen mainScreen].bounds.size.height == 568) {
-        return [SwrveConversationResource imageFromBundleNamed:@"layer_1_background-568h"];
-    } else {
-        return [SwrveConversationResource imageFromBundleNamed:@"layer_1_background"];
-    }
-}
-
 +(UIImage *) imageFromBundleNamed:(NSString *)imageName {
     // Keep old location behaviour - the VGConversationKit bundle,
     // add new behaviour - the ConverserResources folder,
