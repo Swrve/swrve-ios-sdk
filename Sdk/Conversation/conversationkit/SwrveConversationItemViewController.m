@@ -33,9 +33,9 @@
 @implementation SwrveConversationItemViewController
 
 @synthesize fullScreenBackgroundImageView;
-@synthesize backgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
+@synthesize closeButtonView;
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
 
@@ -265,7 +265,17 @@
     } else {
         self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
         [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+            // Add spacing for status bar
+            self.contentTableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+            self.contentTableView.contentOffset = CGPointMake(0, -20);
+            CGRect frame = self.closeButtonView.frame;
+            frame.origin.y += 20;
+            self.closeButtonView.frame = frame;
+        }
     }
+    
+    
     [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
     
@@ -531,8 +541,6 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     self.navigationController.navigationBar.translucent = NO;
-
-    backgroundImageView.backgroundColor = [UIColor clearColor];
     buttonsView.backgroundColor = [UIColor clearColor];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
