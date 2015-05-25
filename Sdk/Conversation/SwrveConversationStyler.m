@@ -17,7 +17,6 @@
 @implementation SwrveConversationStyler : NSObject
 
 + (void)styleView:(UIView *)uiView withStyle:(NSDictionary*)style {
-
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     UIColor *fgUIColor = [self convertToUIColor:fgHexColor];
     if([uiView isKindOfClass:[UITableViewCell class]] ) {

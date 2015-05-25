@@ -1024,14 +1024,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             scivc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
         self.swrveConversationItemViewController = scivc;
-
-/*#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wselector"
-        // Attach cancel button to the conversation navigation options
-        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
-#pragma clang diagnostic pop
-        scivc.navigationItem.leftBarButtonItem = cancelButton;*/
-
         dispatch_async(dispatch_get_main_queue(), ^ {
             [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:scivc animated:YES completion:nil];
         });

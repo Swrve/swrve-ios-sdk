@@ -34,7 +34,6 @@
 
 @synthesize fullScreenBackgroundImageView;
 @synthesize backgroundImageView;
-@synthesize buttonsBackgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
 @synthesize conversationPane = _conversationPane;
@@ -535,7 +534,6 @@
 
     backgroundImageView.backgroundColor = [UIColor clearColor];
     buttonsView.backgroundColor = [UIColor clearColor];
-    buttonsBackgroundImageView.backgroundColor = [UIColor clearColor];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewReady:)

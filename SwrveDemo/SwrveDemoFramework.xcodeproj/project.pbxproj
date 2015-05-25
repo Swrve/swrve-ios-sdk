@@ -79,6 +79,8 @@
 		1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFD19B8AFFC00F378E6 /* SwrveResourceManager.m */; };
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
+		1B4225C71B13188A00AC21DB /* close_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B4225C51B13188A00AC21DB /* close_button.png */; };
+		1B4225C81B13188A00AC21DB /* close_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B4225C61B13188A00AC21DB /* close_button@2x.png */; };
 		1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */; };
 		1B6814911B0F3C1100FCDE4F /* SwrveConversationStyler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */; };
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
@@ -131,7 +133,6 @@
 		938F97C31A921EC30089168A /* SwrveConversationButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F968D1A921EC20089168A /* SwrveConversationButton.m */; };
 		938F97C61A921EC30089168A /* SwrveConversationItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96941A921EC20089168A /* SwrveConversationItemViewController.m */; };
 		938F97C71A921EC30089168A /* SwrveConversationPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96971A921EC20089168A /* SwrveConversationPane.m */; };
-		938F97CA1A921EC30089168A /* SwrveConversationsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F969E1A921EC20089168A /* SwrveConversationsNavigationController.m */; };
 		938F97CC1A921EC30089168A /* SwrveInputItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96A31A921EC20089168A /* SwrveInputItem.m */; };
 		938F97CD1A921EC30089168A /* SwrveInputMultiBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96A51A921EC20089168A /* SwrveInputMultiBase.m */; };
 		938F97CE1A921EC30089168A /* SwrveInputMultiValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 938F96A71A921EC20089168A /* SwrveInputMultiValue.m */; };
@@ -253,6 +254,8 @@
 		1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSignatureProtectedFile.m; sourceTree = "<group>"; };
 		1B22100019B8AFFC00F378E6 /* SwrveSwizzleHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSwizzleHelper.h; sourceTree = "<group>"; };
 		1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSwizzleHelper.m; sourceTree = "<group>"; };
+		1B4225C51B13188A00AC21DB /* close_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close_button.png; sourceTree = "<group>"; };
+		1B4225C61B13188A00AC21DB /* close_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close_button@2x.png"; sourceTree = "<group>"; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1B68148F1B0F3C1100FCDE4F /* SwrveConversationStyler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStyler.h; sourceTree = "<group>"; };
 		1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStyler.m; sourceTree = "<group>"; };
@@ -338,8 +341,6 @@
 		938F96961A921EC20089168A /* SwrveConversationPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationPane.h; sourceTree = "<group>"; };
 		938F96971A921EC20089168A /* SwrveConversationPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationPane.m; sourceTree = "<group>"; };
 		938F969C1A921EC20089168A /* SwrveConversations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversations.h; sourceTree = "<group>"; };
-		938F969D1A921EC20089168A /* SwrveConversationsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationsNavigationController.h; sourceTree = "<group>"; };
-		938F969E1A921EC20089168A /* SwrveConversationsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationsNavigationController.m; sourceTree = "<group>"; };
 		938F96A21A921EC20089168A /* SwrveInputItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputItem.h; sourceTree = "<group>"; };
 		938F96A31A921EC20089168A /* SwrveInputItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInputItem.m; sourceTree = "<group>"; };
 		938F96A41A921EC20089168A /* SwrveInputMultiBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputMultiBase.h; sourceTree = "<group>"; };
@@ -869,8 +870,6 @@
 				938F96961A921EC20089168A /* SwrveConversationPane.h */,
 				938F96971A921EC20089168A /* SwrveConversationPane.m */,
 				938F969C1A921EC20089168A /* SwrveConversations.h */,
-				938F969D1A921EC20089168A /* SwrveConversationsNavigationController.h */,
-				938F969E1A921EC20089168A /* SwrveConversationsNavigationController.m */,
 				938F96A21A921EC20089168A /* SwrveInputItem.h */,
 				938F96A31A921EC20089168A /* SwrveInputItem.m */,
 				938F96A41A921EC20089168A /* SwrveInputMultiBase.h */,
@@ -902,6 +901,8 @@
 				9360E1B51AB83B6D00F29FCE /* pt.lproj */,
 				9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */,
 				9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */,
+				1B4225C51B13188A00AC21DB /* close_button.png */,
+				1B4225C61B13188A00AC21DB /* close_button@2x.png */,
 				938F961E1A921EC20089168A /* cvsr_grouped_cell_bottom.png */,
 				938F961F1A921EC20089168A /* cvsr_grouped_cell_bottom@2x.png */,
 				938F96201A921EC20089168A /* cvsr_grouped_cell_bottom_ios7.png */,
@@ -1035,6 +1036,7 @@
 				938F976C1A921EC20089168A /* cvsr_grouped_cell_mid@2x.png in Resources */,
 				9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */,
 				09EFDF53170BE83C00AF3EE5 /* Default@2x.png in Resources */,
+				1B4225C81B13188A00AC21DB /* close_button@2x.png in Resources */,
 				096C9403170D037A002ADF90 /* swipe.png in Resources */,
 				938F97651A921EC20089168A /* cvsr_grouped_cell_bottom.png in Resources */,
 				938F977B1A921EC20089168A /* cvsr_grouped_cell_top_tapped.png in Resources */,
@@ -1078,6 +1080,7 @@
 				0987EC7B1716316800F56D6E /* settings-2.png in Resources */,
 				0987EC7C1716316800F56D6E /* settings-2@2x.png in Resources */,
 				0972B20B17FB85B7003CD08D /* TransparencyDemo.xib in Resources */,
+				1B4225C71B13188A00AC21DB /* close_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1138,7 +1141,6 @@
 				1B22100719B8AFFC00F378E6 /* SwrveMessageFormat.m in Sources */,
 				1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */,
 				1B6814911B0F3C1100FCDE4F /* SwrveConversationStyler.m in Sources */,
-				938F97CA1A921EC30089168A /* SwrveConversationsNavigationController.m in Sources */,
 				938F97BE1A921EC30089168A /* SwrveContentItem.m in Sources */,
 				938F97C61A921EC30089168A /* SwrveConversationItemViewController.m in Sources */,
 				0972B20A17FB85B7003CD08D /* TransparencyDemo.m in Sources */,
