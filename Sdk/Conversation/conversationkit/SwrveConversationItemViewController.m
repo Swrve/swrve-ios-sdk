@@ -20,7 +20,6 @@
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
-    BOOL conversationEndedWithAction;
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
@@ -109,7 +108,6 @@
     
     switch (actionType) {
         case SwrveCallNumberActionType: {
-            conversationEndedWithAction = YES;
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
@@ -133,7 +131,6 @@
                 ([@"https" caseInsensitiveCompare:[target scheme]] == NSOrderedSame)) {
                 isAppScheme = NO;
             }
-            conversationEndedWithAction = YES;
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
                 // The URL scheme could be an app URL scheme, but there is a chance that
