@@ -85,7 +85,6 @@
 }
 
 -(CGFloat) verticalPadding {
-    // TODO: the vertical padding should be adjustable
     return 10.0;
 }
 

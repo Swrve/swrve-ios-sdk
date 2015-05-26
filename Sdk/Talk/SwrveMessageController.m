@@ -955,17 +955,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [c conversationWasShownToUser:conversation at:now];
     }
     [self saveSettings];
-    
-//    NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
-//    DebugLog(@"Sending view event: %@", viewEvent);
-//    
-//    [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
 }
 
 -(void)buttonWasPressedByUser:(SwrveButton*)button
 {
     if (button.actionType != kSwrveActionDismiss) {
-
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
@@ -1047,10 +1041,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        //
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
-        // TODO: this delegate/callbacks are nil TEMPORARILY
-        scivc.delegate = nil;
         self.swrveConversationItemViewController=scivc;
         
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
@@ -1065,10 +1056,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
-        
-        // TODO: animations, if any
-        // TODO: callbacks to conversation delegate
-        // TODO: do not show message if there is something already being shown
         
         dispatch_async(dispatch_get_main_queue(), ^ {
             [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
