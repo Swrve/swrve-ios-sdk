@@ -6,12 +6,6 @@
 @class SwrveConversation;
 
 typedef enum {
-    SwrveConversationResultCancelled,
-    SwrveConversationResultSent,
-    SwrveConversationResultFailed,
-} SwrveConversationResultType;
-
-typedef enum {
     SwrveCallNumberActionType,
     SwrveVisitURLActionType
 } SwrveConversationActionType;
