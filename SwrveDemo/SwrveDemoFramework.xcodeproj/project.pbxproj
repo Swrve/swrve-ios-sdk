@@ -84,6 +84,8 @@
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
+		1BDA94DD1B1476C900A3C6B8 /* close_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 1BDA94DB1B1476C900A3C6B8 /* close_button.png */; };
+		1BDA94DE1B1476C900A3C6B8 /* close_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1BDA94DC1B1476C900A3C6B8 /* close_button@2x.png */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
@@ -263,6 +265,8 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
+		1BDA94DB1B1476C900A3C6B8 /* close_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close_button.png; sourceTree = "<group>"; };
+		1BDA94DC1B1476C900A3C6B8 /* close_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close_button@2x.png"; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -902,6 +906,8 @@
 				9360E1B51AB83B6D00F29FCE /* pt.lproj */,
 				9360E1B81AB83B6D00F29FCE /* SwrveConversationItemViewController_iPad.xib */,
 				9360E1B91AB83B6D00F29FCE /* SwrveConversationItemViewController_iPhone.xib */,
+				1BDA94DB1B1476C900A3C6B8 /* close_button.png */,
+				1BDA94DC1B1476C900A3C6B8 /* close_button@2x.png */,
 				938F961E1A921EC20089168A /* cvsr_grouped_cell_bottom.png */,
 				938F961F1A921EC20089168A /* cvsr_grouped_cell_bottom@2x.png */,
 				938F96201A921EC20089168A /* cvsr_grouped_cell_bottom_ios7.png */,
@@ -1035,6 +1041,7 @@
 				938F976C1A921EC20089168A /* cvsr_grouped_cell_mid@2x.png in Resources */,
 				9360E1BB1AB83B6D00F29FCE /* Converser.strings in Resources */,
 				09EFDF53170BE83C00AF3EE5 /* Default@2x.png in Resources */,
+				1BDA94DE1B1476C900A3C6B8 /* close_button@2x.png in Resources */,
 				096C9403170D037A002ADF90 /* swipe.png in Resources */,
 				938F97651A921EC20089168A /* cvsr_grouped_cell_bottom.png in Resources */,
 				938F977B1A921EC20089168A /* cvsr_grouped_cell_top_tapped.png in Resources */,
@@ -1078,6 +1085,7 @@
 				0987EC7B1716316800F56D6E /* settings-2.png in Resources */,
 				0987EC7C1716316800F56D6E /* settings-2@2x.png in Resources */,
 				0972B20B17FB85B7003CD08D /* TransparencyDemo.xib in Resources */,
+				1BDA94DD1B1476C900A3C6B8 /* close_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

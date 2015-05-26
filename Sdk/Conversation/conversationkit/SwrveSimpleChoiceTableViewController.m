@@ -18,7 +18,9 @@
 @synthesize pageStyle, choiceStyle;
 
 -(void) viewWillAppear:(BOOL)animated {
-#pragma unused (animated)
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    
     self.title = self.choiceValues.title;
     if(refreshIndex) {
         [(UITableView *)self.view reloadRowsAtIndexPaths:[NSArray arrayWithObject:refreshIndex] withRowAnimation:UITableViewRowAnimationNone];
