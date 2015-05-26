@@ -24,9 +24,11 @@
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
+    
 }
 
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
+@property (nonatomic) BOOL wasShownToUserNotified;
 
 @end
 
@@ -37,12 +39,24 @@
 @synthesize buttonsBackgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
-@synthesize delegate;
+@synthesize cancelButtonView;
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
+@synthesize wasShownToUserNotified;
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if (self.wasShownToUserNotified == NO) {
+        [self.conversation wasShownToUser];
+        self.wasShownToUserNotified = YES;
+    }
+}
 
 -(void) viewWillAppear:(BOOL)animated {
-#pragma unused (animated)
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = YES;
+    
     if (updatePath) {
         NSArray *arr = [NSArray arrayWithObject:updatePath];
         [self.contentTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
@@ -50,17 +64,6 @@
     }
     
     [self showConversation];
-}
-
--(void) viewDidAppear:(BOOL)animated {
-#pragma unused (animated)
-    if (conversationEndedWithAction) {
-        if(self.delegate && [delegate respondsToSelector:@selector(conversationController:didFinishWithResult:error:)]){
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self.delegate conversationController:self didFinishWithResult:SwrveConversationResultSent error:nil];});
-        }
-        return;
-    }
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -104,7 +107,6 @@
         }
     }
     
-    // Delegate has permitted it, so go for it
     switch (actionType) {
         case SwrveCallNumberActionType: {
             conversationEndedWithAction = YES;
@@ -134,7 +136,6 @@
             conversationEndedWithAction = YES;
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
-                // NSLog(@"Converser: cannot open URL %@", [target absoluteString]);
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
@@ -174,7 +175,6 @@
     // The sender is tagged with its index in the list of controls in the
     // conversation pane. Use this to lift the tag associated with the control
     // to populate the finished conversation event.
-
     NSUInteger tag = (NSUInteger)button.tag;
     return self.conversationPane.controls[(NSUInteger)tag];
 }
@@ -182,7 +182,6 @@
 -(void)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
-    //
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
@@ -205,8 +204,6 @@
         }
     }
     
-    // TODO: - these alert views could be better - for example listing all of the
-    // various things that are going wrong
     if ([incompleteRequiredInputs count] > 0) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
                                                         message:NSLocalizedStringFromTable(@"FILL_ALL", @"Converser", @"Please fill all required fields.")
@@ -217,8 +214,6 @@
         return;
     }
     
-    // TODO: - v1.8.2 only email addresses are validated
-    //
     if ([invalidInputs count] > 0 ) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
                                                         message:NSLocalizedStringFromTable(@"VALID_EMAIL", @"Converser", @"Please supply a valid email address.")
@@ -236,19 +231,8 @@
         [atom stop];
     }
     
-    // Construct the response to send back to the server
-    // TODO: only for input items
-    //    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-    //        if([atom isKindOfClass:[SwrveInputItem class]]) {
-    //            SwrveInputItem *inputItem = (SwrveInputItem *)atom;
-    //            SwrveConversationResponseItem *responseItem = [[SwrveConversationResponseItem alloc] initWithInputItem:inputItem];
-    //            [response addResponseItem:responseItem];
-    //        }
-    //    }
     
     // Move onto the next page in the conversation - fetch the next Convseration pane
-    
-    
     if ([control endsConversation]) {
         [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
@@ -290,8 +274,7 @@
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         // The table view should be -10 on each side and centred in the
         // width of its containing view (so that it will behave correctly
-        // on iPad modal.
-        //
+        // on iPad modal).
         self.contentTableView.frame =
             CGRectMake(10, self.contentTableView.frame.origin.y,
                        self.view.frame.size.width - 20, self.contentTableView.frame.size.height);
@@ -299,6 +282,15 @@
     } else {
         self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
         [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+        
+        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+            // Add spacing for status bar
+            self.contentTableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+            self.contentTableView.contentOffset = CGPointMake(0, -20);
+            CGRect frame = self.cancelButtonView.frame;
+            frame.origin.y = 30; // 10 points + 20 points for status bar
+            self.cancelButtonView.frame = frame;
+        }
     }
     [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
@@ -307,8 +299,6 @@
     // pane, that second pane will display as scrolled too, unless we reset the
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-    // TODO: check the above for iOS 8 / autolayout use
-    // may need to use setContentOffset instead
     
     // Only called once the conversation has been retrieved
     for(UIView *view in buttonsView.subviews) {
@@ -386,9 +376,7 @@
 // Show conversation - take the current page number (defaults to 0)
 // Pull the conversation page at current page number from the SwrveConversation
 // Convert the page into a Conversation Pane
-// Set the current conversation pane and update the UI
-// TODO: this is good forstarting the conversation, or hitting a page, not
-// for navigation, so a refactor would be good.
+// Set the current conversation pane and update the UI.
 -(void) showConversation {
     if (conversation) {
         if (!self.conversationPane) {
@@ -406,7 +394,6 @@
 // interactive input views requests the current first
 // responder to relinquish its status. Gesture recognizer
 // is then removed. 
-//
 - (void)contentViewTapped:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded)     {
         for(SwrveConversationAtom *atom in self.conversationPane.content) {

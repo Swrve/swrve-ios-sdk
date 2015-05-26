@@ -78,6 +78,4 @@
 +(void)error:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
     [self genericEvent:@"error" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
-
-// TODO: link accessed / impression / call / page transition / error if any
 @end

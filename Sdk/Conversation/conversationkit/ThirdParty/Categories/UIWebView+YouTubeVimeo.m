@@ -17,38 +17,11 @@
     }
     
     if ([videoUrl rangeOfString:@"youtube"].length > 0) {
-        NSRegularExpression *regexEmbed = [NSRegularExpression regularExpressionWithPattern:@"embed/([^/]+)"
-                                                                                    options:NSRegularExpressionCaseInsensitive
-                                                                                      error:nil];
-        NSTextCheckingResult *matchEmbed = [regexEmbed firstMatchInString:videoUrl options:0 range:NSMakeRange(0, [videoUrl length])];
-        
-        // Check to see if it has the word "embed" in it
-        if (matchEmbed) {
-            [self loadVideo:videoUrl];
-        } else {
-            // Ok so the backend will always condition the URL to have an
-            // embed in it, so this code really doesn't get executed - or shouldn't!
-            // TODO: remove for next release
-            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"?.*v=([^&]+)"
-                                                                                   options:NSRegularExpressionCaseInsensitive
-                                                                                     error:nil];
-            NSTextCheckingResult *match = [regex firstMatchInString:videoUrl
-                                                            options:0
-                                                              range:NSMakeRange(0, [videoUrl length])];
-            if (match) {
-                NSRange videoIDRange = [match rangeAtIndex:1];
-                NSString *videoID = [videoUrl substringWithRange:videoIDRange];
-                // SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadYouTubeOrVimeoVideo, Extracted YouTube videoID: %@", videoID);
-                [self loadYouTubeVideoID:videoID];
-            } else {
-                // TODO: log an issue
-            }
-        }
+        [self loadVideo:videoUrl];
+        return;
     } else {
         // It's not video, nor is it youtube, so we are not sure what to do.
-        // The backend video URL conditioning should mean that we don't get here
-        // TODO: just pop in a blank screen here as don't know how
-        // TODO:         SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadYouTubeOrVimeoVideo, Not a valid URL");
+        // The backend video URL conditioning should mean that we don't get here.
     }
 }
 
@@ -67,12 +40,10 @@
 }
 
 -(void)loadVideo:(NSString*)url {
-    // TODO: SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadVideo");
     self.scrollView.bounces = NO;
     self.scrollView.scrollEnabled = NO;
 
     // Pull the data from the video into a file locally
-    //
     NSString *fileName = [self generateFileNameWithExtension:@"html"];
     NSString *filePath = [NSString stringWithFormat:@"%@/%@", [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0], fileName];
     NSString *htmlToLoad = [self embedVideoInHTML:url];
@@ -80,13 +51,12 @@
     
     [data writeToFile:filePath atomically:YES];
 
-    // Now, load the data, that is, the video...
+    // Now, load the video
     [self setMediaPlaybackRequiresUserAction:NO];
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:filePath]]];
 }
 
 -(void)loadYouTubeVideoID:(NSString*)videoID {
-    // TODO: SwrveLogIt(@"UIWebView+YouTubeVimeo :: loadYouTubeVideoID");
     self.scrollView.bounces = NO;
     self.scrollView.scrollEnabled = NO;
 
@@ -94,11 +64,10 @@
 
     // File is stored in the NSCachesDirectory, where it will be deleted on
     // app uninstall, app update, or if memory conditions are low
-    //
     NSString *filePath = [NSString stringWithFormat:@"%@/%@", [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0], fileName];
     NSData *data = [[self youTubeEmbedHTMLFromVideoID:videoID] dataUsingEncoding:NSUTF8StringEncoding];
 
-    //write data to file
+    // Write data to file
     [data writeToFile:filePath atomically:YES];
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: filePath]]];
 }
