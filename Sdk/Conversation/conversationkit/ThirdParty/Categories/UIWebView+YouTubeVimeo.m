@@ -32,20 +32,4 @@
     return html;
 }
 
--(NSString*)generateFileNameWithExtension:(NSString *)extensionString {
-    NSString *timeString = [self uniqueFileName];
-    NSString *fileName = [NSString stringWithFormat:@"video-%@.%@", timeString, extensionString];
-    return fileName;
-}
-
-// Using a timestamp strategy here because NSUUID not available
-// pre iOS6. We to use 'A' for milliseconds in the format.
-// See #56
--(NSString*)uniqueFileName {
-    NSDate *time = [NSDate date];
-    NSDateFormatter* df = [NSDateFormatter new];
-    [df setDateFormat:@"dd-MM-yyyy-hh-mm-ss-A"];
-    return [df stringFromDate:time];
-}
-
 @end
