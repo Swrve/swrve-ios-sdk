@@ -36,7 +36,6 @@
 }
 
 -(BOOL)areDownloaded:(NSSet*)assets {
-
     for (NSDictionary* page in self.pages) {
         SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
         for (SwrveContentItem* contentItem in pane.content) {

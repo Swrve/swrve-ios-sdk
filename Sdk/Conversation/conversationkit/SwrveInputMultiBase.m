@@ -49,7 +49,6 @@
         UIImage *selectedImage = [SwrveConversationResource imageFromBundleNamed:selectedImageName];
         cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:selectedImage];
     } else {
-        // TODO: Use the iOS 7 style
         if(row == 0) {
             // Potentially a top row
             if(self.values.count == 1) {
@@ -76,9 +75,6 @@
     return cell;
 }
 
-// TODO: The hardcoding and computing of results here is not the right
-// way to go about it. Instead convert this guy to a view that has a
-// label at the top and then a table below to see how that works.
 -(CGFloat) heightForRow:(NSUInteger) row {
     if (row == 0) {
         UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
@@ -86,7 +82,6 @@
         CGFloat constrainedWidth = 480.0;
         
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            // All the metrics below have been empirically divined alas!
             if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
                 constrainedWidth = (screenBounds.size.height - 80);
             } else {

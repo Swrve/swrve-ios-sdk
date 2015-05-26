@@ -44,7 +44,7 @@
     NSString *output = [(UIWebView*)_view
                         stringByEvaluatingJavaScriptFromString:
                         @"document.height;"];
-     frame = _view.frame;
+    frame = _view.frame;
     frame.size.height = [output floatValue];
     _view.frame = frame;
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];    
