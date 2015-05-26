@@ -56,22 +56,6 @@
     [self loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:filePath]]];
 }
 
--(void)loadYouTubeVideoID:(NSString*)videoID {
-    self.scrollView.bounces = NO;
-    self.scrollView.scrollEnabled = NO;
-
-    NSString *fileName = [NSString stringWithFormat:@"youtubevideo%@.html",videoID];
-
-    // File is stored in the NSCachesDirectory, where it will be deleted on
-    // app uninstall, app update, or if memory conditions are low
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0], fileName];
-    NSData *data = [[self youTubeEmbedHTMLFromVideoID:videoID] dataUsingEncoding:NSUTF8StringEncoding];
-
-    // Write data to file
-    [data writeToFile:filePath atomically:YES];
-    [self loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: filePath]]];
-}
-
 -(NSString*)generateFileNameWithExtension:(NSString *)extensionString {
     NSString *timeString = [self uniqueFileName];
     NSString *fileName = [NSString stringWithFormat:@"video-%@.%@", timeString, extensionString];
