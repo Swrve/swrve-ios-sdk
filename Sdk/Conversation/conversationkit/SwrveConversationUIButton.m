@@ -25,11 +25,11 @@
     // Calculate pressed colors
     self.swrveForegroundPressedColor = [SwrveConversationUIButton lighterOrDarkerColor:self.swrveForegroundColor];
     self.swrveBackgroundPressedColor = [SwrveConversationUIButton lighterOrDarkerColor:self.swrveBackgroundColor];
+    self.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
     [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundColor withBackgroundColor:self.swrveBackgroundColor];
 }
 
 - (void) updateButtonType:(NSString*)buttonType withForegroundColor:(UIColor*)foregroundColor withBackgroundColor:(UIColor*)backgroundColor {
-    self.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
     [self setTitleColor:foregroundColor forState:UIControlStateNormal];
     [self setTitleColor:foregroundColor forState:UIControlStateHighlighted];
     [self setTitleColor:foregroundColor forState:UIControlStateSelected];
