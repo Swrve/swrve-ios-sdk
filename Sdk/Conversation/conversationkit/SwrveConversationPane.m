@@ -10,11 +10,11 @@
 #import "SwrveSetup.h"
 
 @implementation SwrveConversationPane
-@synthesize content=_content;
-@synthesize controls=_controls;
-@synthesize tag=_tag;
-@synthesize title=_title;
-@synthesize pageStyle=_pageStyle;
+@synthesize content = _content;
+@synthesize controls = _controls;
+@synthesize tag = _tag;
+@synthesize title = _title;
+@synthesize pageStyle = _pageStyle;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];

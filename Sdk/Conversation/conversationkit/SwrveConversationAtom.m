@@ -7,9 +7,9 @@
 
 @implementation SwrveConversationAtom
 
-@synthesize tag=_tag;
-@synthesize type=_type;
-@synthesize view=_view;
+@synthesize tag = _tag;
+@synthesize type = _type;
+@synthesize view = _view;
 @synthesize style;
 
 #define kCellTag 101

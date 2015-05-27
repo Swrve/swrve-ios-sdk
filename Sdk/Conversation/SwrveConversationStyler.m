@@ -1,4 +1,5 @@
 #import "SwrveConversationStyler.h"
+#import "SwrveConversationButton.h"
 #import "SwrveSetup.h"
 
 #define kSwrveKeyBg @"bg"
@@ -8,8 +9,6 @@
 
 #define kSwrveTypeTransparent @"transparent"
 #define kSwrveTypeColor @"color"
-#define kSwrveTypeSolid @"solid"
-#define kSwrveTypeOutline @"outline"
 
 #define kSwrveDefaultColorBg @"#ffffff"
 #define kSwrveDefaultColorFg @"#000000"
@@ -72,28 +71,17 @@
     return html;
 }
 
-+(void) styleButton:(UIButton *)button withStyle:(NSDictionary*)style {
++(void) styleButton:(SwrveConversationUIButton*)button withStyle:(NSDictionary*)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     UIColor *fgUIColor = [self convertToUIColor:fgHexColor];
-
-    [button setTitleColor:fgUIColor forState:UIControlStateNormal];
-    [button setTitleColor:fgUIColor forState:UIControlStateHighlighted];
-    [button setTitleColor:fgUIColor forState:UIControlStateSelected];
-
     NSString *styleType = kSwrveTypeSolid;
     if([style objectForKey:kSwrveKeyType]) {
         styleType = [style objectForKey:kSwrveKeyType];
     }
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
-
-    if ([styleType isEqualToString:kSwrveTypeSolid]) {
-        [button setBackgroundColor:bgUIColor];
-    } else if ([styleType isEqualToString:kSwrveTypeOutline]) {
-        [[button layer] setBorderWidth:1.5f];
-        [[button layer] setBorderColor:fgUIColor.CGColor];
-        [button setBackgroundColor:bgUIColor];
-    }
+    
+    [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor];
 }
 
 @end
