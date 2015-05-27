@@ -2,6 +2,7 @@
 #import "SwrveSetup.h"
 
 @implementation SwrveChoiceArray
+
 @synthesize choices = _choices;
 @synthesize selectedIndex = _selectedIndex;
 @synthesize title = _title;

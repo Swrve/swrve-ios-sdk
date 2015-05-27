@@ -1,4 +1,5 @@
 #import "SwrveConversationButton.h"
+#import "SwrveConversationUIButton.h"
 #import "SwrveSetup.h"
 
 @implementation SwrveConversationButton
@@ -22,8 +23,7 @@
 
 -(UIView *)view {
     if(_view == nil) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
+        SwrveConversationUIButton *button = [SwrveConversationUIButton buttonWithType:UIButtonTypeCustom];
         [button setTitle:_description forState:UIControlStateNormal];
         _view = button;
     }

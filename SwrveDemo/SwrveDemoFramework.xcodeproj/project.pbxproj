@@ -84,6 +84,7 @@
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
+		1B9E3A5F1B15F53100DC228A /* SwrveConversationUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9E3A5E1B15F53100DC228A /* SwrveConversationUIButton.m */; };
 		1BDA94DD1B1476C900A3C6B8 /* close_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 1BDA94DB1B1476C900A3C6B8 /* close_button.png */; };
 		1BDA94DE1B1476C900A3C6B8 /* close_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1BDA94DC1B1476C900A3C6B8 /* close_button@2x.png */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
@@ -265,6 +266,8 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
+		1B9E3A5D1B15F53100DC228A /* SwrveConversationUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationUIButton.h; sourceTree = "<group>"; };
+		1B9E3A5E1B15F53100DC228A /* SwrveConversationUIButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationUIButton.m; sourceTree = "<group>"; };
 		1BDA94DB1B1476C900A3C6B8 /* close_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close_button.png; sourceTree = "<group>"; };
 		1BDA94DC1B1476C900A3C6B8 /* close_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close_button@2x.png"; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -890,6 +893,8 @@
 				938F98391A9236A50089168A /* SwrveConversationResource.h */,
 				932B29AA1AC3234500E9D338 /* SwrveConversationEvents.m */,
 				932B29AC1AC3236900E9D338 /* SwrveConversationEvents.h */,
+				1B9E3A5D1B15F53100DC228A /* SwrveConversationUIButton.h */,
+				1B9E3A5E1B15F53100DC228A /* SwrveConversationUIButton.m */,
 			);
 			path = conversationkit;
 			sourceTree = "<group>";
@@ -1142,6 +1147,7 @@
 				099BF510170E6BE100345404 /* SettingsView.m in Sources */,
 				0913B8DA17139419000DA83C /* UserSettings.m in Sources */,
 				1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */,
+				1B9E3A5F1B15F53100DC228A /* SwrveConversationUIButton.m in Sources */,
 				938F97BC1A921EC30089168A /* SwrveContentHTML.m in Sources */,
 				1B22100719B8AFFC00F378E6 /* SwrveMessageFormat.m in Sources */,
 				1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */,
