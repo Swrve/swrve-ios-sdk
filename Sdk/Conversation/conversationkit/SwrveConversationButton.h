@@ -2,6 +2,8 @@
 #import "SwrveConversationAtom.h"
 
 #define kSwrveKeyDescription @"description"
+#define kSwrveTypeSolid @"solid"
+#define kSwrveTypeOutline @"outline"
 
 @interface SwrveConversationButton : SwrveConversationAtom
 
