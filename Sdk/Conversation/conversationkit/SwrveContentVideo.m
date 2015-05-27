@@ -41,11 +41,10 @@
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
-    // ??? testers
-    // this is the default - webview.autoresizesSubviews = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
     [webview loadYouTubeOrVimeoVideo:self.value];
     [_view addSubview:webview];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
@@ -55,11 +54,6 @@
         [self loadView];
     }
     return _view;
-}
-
--(void) webViewDidFinishLoad:(UIWebView *)webView {
-#pragma unused (webView)
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
 -(void) sizeTheWebView {
