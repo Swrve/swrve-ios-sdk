@@ -13,7 +13,7 @@
 
 @implementation SwrveContentVideo
 
-@synthesize height=_height;
+@synthesize height = _height;
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];

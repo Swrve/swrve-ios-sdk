@@ -2,9 +2,10 @@
 #import "SwrveSetup.h"
 
 @implementation SwrveInputItem
-@synthesize optional;
 
+@synthesize optional;
 @dynamic userResponse;
+
 -(BOOL) isFirstResponder {
     return NO;
 }
