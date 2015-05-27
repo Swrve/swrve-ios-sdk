@@ -1,6 +1,9 @@
 #import "SwrveConversationUIButton.h"
 #import "SwrveConversationButton.h"
 
+#define SWRVEMIN(a,b)    ((a) < (b) ? (a) : (b))
+#define SWRVEMAX(a,b)    ((a) > (b) ? (a) : (b))
+
 @interface SwrveConversationUIButton ()
 
 @property (nonatomic, retain) NSString *swrveButtonType;
@@ -16,6 +19,8 @@
 @synthesize swrveButtonType;
 @synthesize swrveForegroundColor;
 @synthesize swrveBackgroundColor;
+@synthesize swrveForegroundPressedColor;
+@synthesize swrveBackgroundPressedColor;
 
 - (void) initButtonType:(NSString*)buttonType withForegroundColor:(UIColor*)foregroundColor withBackgroundColor:(UIColor*)backgroundColor {
     self.swrveButtonType = buttonType;
@@ -43,10 +48,12 @@
     }
 }
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    #pragma unused(touches, event)
     [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundPressedColor withBackgroundColor:self.swrveBackgroundPressedColor];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    #pragma unused(touches, event)
     [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundColor withBackgroundColor:self.swrveBackgroundColor];
 }
 
@@ -57,13 +64,13 @@
             // Color is dark, return a lighter color
             return [UIColor colorWithHue:h
                               saturation:s
-                              brightness:MIN(b + 0.3f, 1.0)
+                              brightness:SWRVEMIN(b + 0.3f, 1.0)
                                    alpha:a];
         } else {
             // Color is light, return a darker color
             return [UIColor colorWithHue:h
                           saturation:s
-                          brightness:MAX(b - 0.3f, 0)
+                          brightness:SWRVEMAX(b - 0.3f, 0)
                                alpha:a];
         }
     }
