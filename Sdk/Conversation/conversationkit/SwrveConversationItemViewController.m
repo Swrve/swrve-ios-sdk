@@ -14,6 +14,7 @@
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveSimpleChoiceTableViewController.h"
 #import "SwrveConversationStyler.h"
+#import "SwrveConversationUIButton.h"
 
 #define kVerticalPadding 10.0
 
@@ -324,7 +325,7 @@
         buttonUIView.tag = (NSInteger)i;
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [(UIButton *) buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        [SwrveConversationStyler styleButton:(UIButton *)buttonUIView withStyle:button.style];
+        [SwrveConversationStyler styleButton:(SwrveConversationUIButton *)buttonUIView withStyle:button.style];
         [buttonsView addSubview:buttonUIView];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
     }
