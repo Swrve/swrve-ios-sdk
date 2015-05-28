@@ -47,15 +47,16 @@
         [self setBackgroundColor:backgroundColor];
     }
 }
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//    #pragma unused(touches, event)
-//    [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundPressedColor withBackgroundColor:self.swrveBackgroundPressedColor];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    #pragma unused(touches, event)
-//    [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundColor withBackgroundColor:self.swrveBackgroundColor];
-//}
+
+- (void) setHighlighted:(BOOL)highlighted {
+    [super setHighlighted:highlighted];
+    if (highlighted) {
+        [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundPressedColor withBackgroundColor:self.swrveBackgroundPressedColor];
+    }
+    else {
+        [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundColor withBackgroundColor:self.swrveBackgroundColor];
+    }
+}
 
 + (UIColor *)lighterOrDarkerColor:(UIColor*)color {
     CGFloat h, s, b, a;
