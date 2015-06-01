@@ -112,7 +112,6 @@
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
-            NSLog(@"calling number: %@", callUrl.absoluteString);
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
         }
