@@ -18,7 +18,7 @@
 }
 
 -(BOOL) endsConversation {
-    return _target==nil;
+    return _target == nil;
 }
 
 -(UIView *)view {

@@ -536,8 +536,9 @@ static bool didSwizzle = false;
 
 + (void) addSharedInstance:(Swrve*)instance
 {
-    _swrveSharedInstance = instance;
-    sharedInstanceToken = 1;
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = instance;
+    });
 }
 
 +(Swrve*) sharedInstance
@@ -679,7 +680,7 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
-        if(swrveConfig.autoCollectDeviceToken && [Swrve sharedInstance] == self && !didSwizzle){
+        if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
             SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -735,7 +736,7 @@ static bool didSwizzle = false;
 
 - (void)_deswizzlePushMethods
 {
-    if( [Swrve sharedInstance] == self && didSwizzle) {
+    if(_swrveSharedInstance == self && didSwizzle) {
         Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
