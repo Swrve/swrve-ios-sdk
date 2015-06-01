@@ -320,10 +320,12 @@
     CGFloat xOffset = [self buttonHorizontalPadding];
     for(NSUInteger i = 0; i < buttons.count; i++) {
         SwrveConversationButton *button = [buttons objectAtIndex:i];
-        UIView *buttonUIView = button.view;
+        UIButton *buttonUIView = (UIButton*)button.view;
         buttonUIView.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
         buttonUIView.tag = (NSInteger)i;
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+        [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+        [buttonUIView.titleLabel setNumberOfLines:1];
         [(UIButton *) buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
         [SwrveConversationStyler styleButton:(SwrveConversationUIButton *)buttonUIView withStyle:button.style];
         [buttonsView addSubview:buttonUIView];
