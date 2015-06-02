@@ -1,11 +1,3 @@
-//
-//  SwrveConversationEvents.m
-//  SwrveDemoFramework
-//
-//  Created by Oisin Hurley on 25/03/2015.
-//  Copyright (c) 2015 Swrve. All rights reserved.
-//
-
 #import "SwrveConversationEvents.h"
 #import "SwrveConversation.h"
 #import "Swrve.h"
@@ -86,6 +78,4 @@
 +(void)error:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
     [self genericEvent:@"error" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
-
-// TODO: link accessed / impression / call / page transition / error if any
 @end

@@ -13,7 +13,8 @@ static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
-
+static NSArray* SUPPORTED_DEVICE_FILTERS;
+    
 const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
@@ -121,15 +122,20 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize installButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
+@synthesize swrveConversationsNavigationController;
+@synthesize swrveConversationItemViewController;
+
+
++ (void)initialize {
+    SUPPORTED_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
+}
 
 - (id)initWithSwrve:(Swrve*)sdk
 {
     self = [super init];
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
-    const int side_a = (int)screen_bounds.size.width;
-    const int side_b = (int)screen_bounds.size.height;
-    self.device_height = (side_a > side_b)? side_a : side_b;
-    self.device_width  = (side_a > side_b)? side_b : side_a;
+    self.device_height = (int)screen_bounds.size.width;
+    self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
     
     self.language           = sdk.config.language;
@@ -310,6 +316,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [[self campaignFile] writeToFile:campaignData];
 }
 
+-(BOOL) supportsDeviceFilter:(NSString*)filter {
+    return [SUPPORTED_DEVICE_FILTERS containsObject:[filter lowercaseString]];
+}
+
 -(void) updateCampaigns:(NSDictionary*)campaignJson
 {
     if (campaignJson == nil) {
@@ -399,39 +409,64 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
-        bool conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
-        SwrveBaseCampaign* campaign = nil;
-        if (conversationCampaign) {
-            campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
-        } else {
-            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
-        }
-        
-        DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-        
-        campaign.next = 0;
-        if(!self.qaUser || !self.qaUser.resetDevice) {
-            NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-            NSDictionary* campaignSettings = [settings objectForKey:ID];
-            if(campaignSettings) {
-                NSNumber* next = [campaignSettings objectForKey:@"next"];
-                if (next)
-                {
-                    campaign.next = next.unsignedIntegerValue;
-                }
-                NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                if (impressions)
-                {
-                    campaign.impressions = impressions.unsignedIntegerValue;
+        // Check device filters (permission requests, platform)
+        NSArray* filters = [dict objectForKey:@"filters"];
+        BOOL passesAllFilters = TRUE;
+        NSString* lastCheckedFilter = nil;
+        if (filters != nil) {
+            for (NSString* filter in filters) {
+                lastCheckedFilter = filter;
+                if (![self supportsDeviceFilter:filter]) {
+                    passesAllFilters = NO;
+                    break;
                 }
             }
         }
         
-        [result addObject:campaign];
-        
-        if(self.qaUser) {
-            // Add campaign for QA purposes
-            [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+        if (passesAllFilters) {
+            BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
+            SwrveBaseCampaign* campaign = nil;
+            if (conversationCampaign) {
+                // Conversation version check
+                NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
+                if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
+                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+                } else {
+                    DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
+                }
+            } else {
+                campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+            }
+            
+            if (campaign != nil) {
+                DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
+                campaign.next = 0;
+                if(!self.qaUser || !self.qaUser.resetDevice) {
+                    NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
+                    NSDictionary* campaignSettings = [settings objectForKey:ID];
+                    if(campaignSettings) {
+                        NSNumber* next = [campaignSettings objectForKey:@"next"];
+                        if (next)
+                        {
+                            campaign.next = next.unsignedIntegerValue;
+                        }
+                        NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
+                        if (impressions)
+                        {
+                            campaign.impressions = impressions.unsignedIntegerValue;
+                        }
+                    }
+                }
+                
+                [result addObject:campaign];
+                
+                if(self.qaUser) {
+                    // Add campaign for QA purposes
+                    [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+                }
+            }
+        } else {
+            DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
         }
     }
     
@@ -901,17 +936,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [c conversationWasShownToUser:conversation at:now];
     }
     [self saveSettings];
-    
-    //    NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
-    //    DebugLog(@"Sending view event: %@", viewEvent);
-    //
-    //    [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
 }
 
 -(void)buttonWasPressedByUser:(SwrveButton*)button
 {
     if (button.actionType != kSwrveActionDismiss) {
-        
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
@@ -958,7 +987,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     else if( [eventType isEqualToString:@"user"])
     {
-        eventName = @"Swrve.user_properties_changed	";
+        eventName = @"Swrve.user_properties_changed";
     }
     
     return eventName;
@@ -993,13 +1022,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        //
         SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
-        // TODO: this delegate/callbacks are nil TEMPORARILY
-        scivc.delegate = nil;
-        
+        self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+        self.swrveConversationsNavigationController = svnc;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
@@ -1009,10 +1036,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
-        
-        // TODO: animations, if any
-        // TODO: callbacks to conversation delegate
-        // TODO: do not show message if there is something already being shown
         
         dispatch_async(dispatch_get_main_queue(), ^ {
             [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
@@ -1272,13 +1295,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 - (NSString*) getCampaignQueryString
 {
     const NSString* orientationName = [self orientationName];
-    
-    UIDevice* device   = [UIDevice currentDevice];
+    UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-    
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName, CONVERSATION_VERSION];
 }
 
 @end

@@ -1,11 +1,3 @@
-//
-//  SwrveSetup.h
-//  SwrveConversationKit
-//
-//  Created by Barry Scott on 16/04/2013.
-//  Copyright (c) 2013 Converser. All rights reserved.
-//
-
 #ifndef SwrveConversationKit_Setup_h
 #define SwrveConversationKit_Setup_h
 

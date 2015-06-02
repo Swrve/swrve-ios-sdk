@@ -1,11 +1,3 @@
-//
-//  SwrveInputMultiBase.h
-//  SwrveConversationKit
-//
-//  Created by Oisin Hurley on 17/09/2014.
-//  Copyright (c) 2014 Converser. All rights reserved.
-//
-
 #import "SwrveInputItem.h"
 
 @interface SwrveInputMultiBase : SwrveInputItem

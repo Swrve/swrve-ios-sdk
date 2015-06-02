@@ -1,24 +1,7 @@
-//
-//  SwrveConversationResource.m
-//  SwrveDemoFramework
-//
-//  Created by Oisin Hurley on 16/02/2015.
-//  Copyright (c) 2015 Swrve. All rights reserved.
-//
-
 #import "SwrveConversationResource.h"
-
 #import <Foundation/Foundation.h>
 
 @implementation SwrveConversationResource
-
-+(UIImage*) backgroundImage {
-    if ([UIScreen mainScreen].bounds.size.height == 568) {
-        return [SwrveConversationResource imageFromBundleNamed:@"layer_1_background-568h"];
-    } else {
-        return [SwrveConversationResource imageFromBundleNamed:@"layer_1_background"];
-    }
-}
 
 +(UIImage *) imageFromBundleNamed:(NSString *)imageName {
     // Keep old location behaviour - the VGConversationKit bundle,
