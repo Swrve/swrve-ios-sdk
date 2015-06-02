@@ -195,7 +195,7 @@ enum
 @property (atomic) NSString* deviceToken;
 
 // Device id, used for tracking event streams from different devices
-@property (atomic) NSString* deviceUUID;
+@property (atomic) unsigned short shortDeviceID;
 
 // HTTP Request metrics that haven't been sent yet
 @property (atomic) NSMutableArray* httpPerformanceMetrics;
@@ -510,7 +510,7 @@ static bool didSwizzle = false;
 @synthesize userUpdates;
 @synthesize okToStartSessionOnResume;
 @synthesize deviceToken;
-@synthesize deviceUUID;
+@synthesize shortDeviceID;
 @synthesize httpPerformanceMetrics;
 @synthesize campaignsAndResourcesETAG;
 @synthesize campaignsAndResourcesFlushFrequency;
@@ -537,8 +537,9 @@ static bool didSwizzle = false;
 
 + (void) addSharedInstance:(Swrve*)instance
 {
-    _swrveSharedInstance = instance;
-    sharedInstanceToken = 1;
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = instance;
+    });
 }
 
 +(Swrve*) sharedInstance
@@ -664,11 +665,15 @@ static bool didSwizzle = false;
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
         // All set up, so start to do any work now.
-        self.deviceUUID = [[NSUserDefaults standardUserDefaults] stringForKey:@"swrve_device_id"];
-        if (self.deviceUUID == nil) {
+        id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
+        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
             // This is the first time we see this device, assign a UUID to it
-            self.deviceUUID = [[NSUUID UUID] UUIDString];
-            [[NSUserDefaults standardUserDefaults] setObject:self.deviceUUID forKey:@"swrve_device_id"];
+            NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
+            unsigned short newShortDeviceID = (unsigned short)deviceUUID;
+            self.shortDeviceID = newShortDeviceID;
+            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedShort:newShortDeviceID] forKey:@"short_device_id"];
+        } else {
+            self.shortDeviceID = ((NSNumber*)shortDeviceIdDisk).unsignedShortValue;
         }
 
         // Set up empty user attributes store
@@ -676,7 +681,7 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
-        if(swrveConfig.autoCollectDeviceToken && [Swrve sharedInstance] == self && !didSwizzle){
+        if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
             SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -732,7 +737,7 @@ static bool didSwizzle = false;
 
 - (void)_deswizzlePushMethods
 {
-    if( [Swrve sharedInstance] == self && didSwizzle) {
+    if(_swrveSharedInstance == self && didSwizzle) {
         Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -1556,6 +1561,10 @@ static NSString* httpScheme(bool useHttps)
     float screen_scale = (float)[[UIScreen mainScreen] scale];
     bounds.size.width  = bounds.size.width  * screen_scale;
     bounds.size.height = bounds.size.height * screen_scale;
+    const int side_a = (int)bounds.size.width;
+    const int side_b = (int)bounds.size.height;
+    bounds.size.width  = (side_a > side_b)? side_b : side_a;
+    bounds.size.height = (side_a > side_b)? side_a : side_b;
     return bounds;
 }
 
@@ -1585,6 +1594,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
@@ -1849,15 +1859,9 @@ enum HttpStatus {
                      options:NSJSONReadingMutableContainers
                      error:nil];
 
-    // Device ID needs to be unique for this user only, so we create a shorter version to save on storage in S3
-    NSUInteger shortDeviceID = [self.deviceUUID hash];
-    if (shortDeviceID > 10000) {
-        shortDeviceID = shortDeviceID / 1000;
-    }
-
     NSMutableDictionary* jsonPacket = [[NSMutableDictionary alloc] init];
     [jsonPacket setValue:self.userID forKey:@"user"];
-    [jsonPacket setValue:[NSNumber numberWithInteger:(NSInteger)shortDeviceID] forKey:@"device_id"];
+    [jsonPacket setValue:[NSNumber numberWithUnsignedShort:self.shortDeviceID] forKey:@"short_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
     [jsonPacket setValue:NullableNSString(self.config.appVersion) forKey:@"app_version"];
     [jsonPacket setValue:NullableNSString(sessionToken) forKey:@"session_token"];

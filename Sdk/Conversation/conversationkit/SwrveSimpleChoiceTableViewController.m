@@ -1,14 +1,3 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #if !__has_feature(objc_arc)
 #error ConverserSDK must be built with ARC.
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
@@ -17,6 +6,7 @@
 #import "SwrveConversationResource.h"
 #import "SwrveSimpleChoiceTableViewController.h"
 #import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @interface SwrveSimpleChoiceTableViewController () {
     NSIndexPath *refreshIndex;
@@ -25,9 +15,12 @@
 
 @implementation SwrveSimpleChoiceTableViewController
 @synthesize choiceValues = _choiceValues;
+@synthesize pageStyle, choiceStyle;
 
 -(void) viewWillAppear:(BOOL)animated {
-#pragma unused (animated)
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    
     self.title = self.choiceValues.title;
     if(refreshIndex) {
         [(UITableView *)self.view reloadRowsAtIndexPaths:[NSArray arrayWithObject:refreshIndex] withRowAnimation:UITableViewRowAnimationNone];
@@ -47,13 +40,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        UIImage *img = [SwrveConversationResource imageFromBundleNamed:@"layer_1_background"];
-        [(UITableView *)self.view setBackgroundView:[[UIImageView alloc] initWithImage:img]];
-    } else {
-        // iOS 7 background style
-        self.view.backgroundColor = [UIColor whiteColor];
-    }
+    [SwrveConversationStyler styleView:self.view withStyle:self.pageStyle];
 }
 
 -(NSUInteger) supportedInterfaceOrientations {
@@ -99,6 +86,7 @@
         }
         
     }
+    [SwrveConversationStyler styleView:cell withStyle:self.choiceStyle];
     return cell;
 }
 

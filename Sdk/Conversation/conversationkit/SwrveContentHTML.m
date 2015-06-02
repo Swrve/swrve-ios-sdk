@@ -1,17 +1,5 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
-#import "SwrveConversationResource.h"
 #import "SwrveContentHTML.h"
-#import "SwrveSetup.h"
+#import "SwrveConversationStyler.h"
 
 @interface SwrveContentHTML () {
     UIWebView *webview;
@@ -24,21 +12,15 @@
     // Create _view
     webview = [[UIWebView alloc] init];
     webview.frame = CGRectMake(0,0,[SwrveConversationAtom widthOfContentView], 1);
-    webview.backgroundColor = [UIColor clearColor];
+    [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
-    NSString *fontFam = @"Helvetica";
-    
-    NSString *htmlPage = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">html h1 {font-family:\"%@\"; font-weight:bold; font-size:22px; color:#333333} \
-                          body {font-family:\"%@\";background-color: transparent;} \
-                          </style> \
-                          </head> \
-                          <body> \
-                          %@ \
-                          </body></html>", fontFam, fontFam, self.value];
-    [webview loadHTMLString:htmlPage baseURL:nil];
+
+    NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withStyle:self.style];
+    [webview loadHTMLString:html baseURL:nil];
+
     _view = webview;
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
@@ -62,7 +44,7 @@
     NSString *output = [(UIWebView*)_view
                         stringByEvaluatingJavaScriptFromString:
                         @"document.height;"];
-     frame = _view.frame;
+    frame = _view.frame;
     frame.size.height = [output floatValue];
     _view.frame = frame;
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];    
@@ -86,15 +68,10 @@
 -(void) deviceOrientationDidChange
 {
     _view.frame = [self newFrameForOrientationChange];
-    // Reload the web page
-    NSString *htmlPage = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">html h1 {font-family:\"Helvetica\"; font-weight:bold; font-size:22px; color:#333333} \
-                          body {font-family:\"Helvetica\";background-color: transparent;} \
-                          </style> \
-                          </head> \
-                          <body> \
-                          %@ \
-                          </body></html>", self.value];
-    [webview loadHTMLString:htmlPage baseURL:nil];
+
+    NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withStyle:self.style];
+    [webview loadHTMLString:html baseURL:nil];
+
     _view = webview;
 }
 

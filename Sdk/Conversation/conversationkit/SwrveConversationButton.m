@@ -1,15 +1,5 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #import "SwrveConversationButton.h"
+#import "SwrveConversationUIButton.h"
 #import "SwrveSetup.h"
 
 @implementation SwrveConversationButton
@@ -28,13 +18,12 @@
 }
 
 -(BOOL) endsConversation {
-    return _target==nil;
+    return _target == nil;
 }
 
 -(UIView *)view {
     if(_view == nil) {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
+        SwrveConversationUIButton *button = [SwrveConversationUIButton buttonWithType:UIButtonTypeCustom];
         [button setTitle:_description forState:UIControlStateNormal];
         _view = button;
     }

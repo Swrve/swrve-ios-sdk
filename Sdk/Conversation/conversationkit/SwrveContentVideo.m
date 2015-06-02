@@ -1,14 +1,3 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import "SwrveSetup.h"
@@ -23,6 +12,8 @@
 @end
 
 @implementation SwrveContentVideo
+
+@synthesize height = _height;
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
@@ -50,11 +41,10 @@
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
-    // ??? testers
-    // this is the default - webview.autoresizesSubviews = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
     [webview loadYouTubeOrVimeoVideo:self.value];
     [_view addSubview:webview];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
@@ -64,11 +54,6 @@
         [self loadView];
     }
     return _view;
-}
-
--(void) webViewDidFinishLoad:(UIWebView *)webView {
-#pragma unused (webView)
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
 -(void) sizeTheWebView {

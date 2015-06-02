@@ -1,28 +1,16 @@
-
-/*******************************************************
- * Copyright (C) 2011-2012 Converser contact@converser.io
- *
- * This file is part of the Converser iOS SDK.
- *
- * This code may not be copied and/or distributed without the express
- * permission of Converser. Please email contact@converser.io for
- * all redistribution and reuse enquiries.
- *******************************************************/
-
 #if !__has_feature(objc_arc)
 #error ConverserSDK must be built with ARC.
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
-#import "SwrveConversationResource.h"
 #import "SwrveConversationAtom.h"
-#import "SwrveSetup.h"
 
 @implementation SwrveConversationAtom
 
-@synthesize tag=_tag;
-@synthesize type=_type;
-@synthesize view=_view;
+@synthesize tag = _tag;
+@synthesize type = _type;
+@synthesize view = _view;
+@synthesize style;
 
 #define kCellTag 101
 
@@ -91,11 +79,12 @@
         [cell.contentView addSubview:self->_view];
         cell.contentView.backgroundColor = [UIColor clearColor];
     });
+
+    cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
 
 -(CGFloat) verticalPadding {
-    // TODO: the vertical padding should be adjustable
     return 10.0;
 }
 
