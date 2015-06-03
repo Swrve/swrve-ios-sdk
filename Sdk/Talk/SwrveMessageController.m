@@ -1088,6 +1088,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     NSString* action = self.inAppMessageAction;
     NSString* nonProcessedAction = nil;
+    
+    BOOL processedRequest = [SwrvePermissions processPermissionRequest:@"swrve.request_permission.ios.contacts" withSDK:self.analyticsSDK];
+    /*
     switch(self.inAppMessageActionType)
     {
         case kSwrveActionDismiss: break;
@@ -1115,7 +1118,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             }
         }
             break;
-    }
+    }*/
     
     if(nonProcessedAction != nil) {
         NSURL* url = [NSURL URLWithString:nonProcessedAction];

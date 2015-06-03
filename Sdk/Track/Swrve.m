@@ -1282,6 +1282,8 @@ static bool didSwizzle = false;
     NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
+    // Send permission events
+    [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
 }
 
 -(void) registerForNotifications
@@ -1432,15 +1434,12 @@ static bool didSwizzle = false;
         id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
         if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
             NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-            BOOL wasPermissionRequest = [SwrvePermissions processPermissionRequest:pushDeeplink withSDK:self];
-            if (!wasPermissionRequest) {
-                NSURL* url = [NSURL URLWithString:pushDeeplink];
-                if( url != nil ) {
-                    DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
-                    [[UIApplication sharedApplication] openURL:url];
-                } else {
-                    DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
-                }
+            NSURL* url = [NSURL URLWithString:pushDeeplink];
+            if( url != nil ) {
+                DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
+                [[UIApplication sharedApplication] openURL:url];
+            } else {
+                DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
             }
         }
 
