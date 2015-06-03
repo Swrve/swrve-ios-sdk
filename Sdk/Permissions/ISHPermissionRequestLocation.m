@@ -55,7 +55,7 @@
                 if (self.internalPermissionState == ISHPermissionStateDenied) {
                     return ISHPermissionStateDenied;
                 }
-                return ISHPermissionStateAskAgain;
+                return ISHPermissionStateUnknown;
             } else {
                 return ISHPermissionStateAuthorized;
             }

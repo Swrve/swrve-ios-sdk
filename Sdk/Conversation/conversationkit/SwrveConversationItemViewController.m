@@ -114,7 +114,7 @@
     }
     
     switch (actionType) {
-        case SwrveCallNumberActionType:
+        case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
@@ -158,12 +158,13 @@
             }
             break;
         }
-        case SwrvePermissionRequestActionType:
+        case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
                 NSLog(@"Unkown permission request %@", param);
             }
             break;
+        }
         default:
             break;
     }    
