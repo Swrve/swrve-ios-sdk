@@ -4,13 +4,20 @@
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveConversation.h"
 
+@interface SwrveConversationCampaign()
+
+@property (nonatomic, weak)     SwrveMessageController* controller;
+
+@end
+
 @implementation SwrveConversationCampaign
 
-@synthesize conversation;
+@synthesize controller, conversation, filters;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
+-(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)_controller
 {
-    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:controller];
+    self.controller = _controller;
+    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:_controller];
     NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
     
     // Set up asset downloads here: for each page, scan content to find any images/assets, queue up for download as an asset
@@ -21,7 +28,10 @@
             }
         }
     }
-    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:controller];
+    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
+    self.filters      = [NSArray arrayWithObjects:@"swrve.permission.ios.push_notifications.requestsable", nil];
+    //[dict objectForKey:@"filters"];
+    
     return instance;
 }
 
@@ -77,6 +87,11 @@
     }
     
     if (![self checkCampaignRulesForEvent:event atTime:time withReasons:campaignReasons]) {
+        return nil;
+    }
+    
+    if (self.controller == nil || ![self.controller supportsDeviceFilters:filters]) {
+        [self logAndAddReason:[NSString stringWithFormat:@"Some filters were not supported in campaign %ld", (long)self.ID] withReasons:campaignReasons];
         return nil;
     }
     

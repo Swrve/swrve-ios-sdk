@@ -9,14 +9,6 @@ static ISHPermissionRequest *_cameraRequest = nil;
 static ISHPermissionRequest *_contactsRequest = nil;
 static ISHPermissionRequest *_remoteNotifications = nil;
 
-static NSString* swrve_permission_status = @"swrve_permission_status";
-static NSString* swrve_permission_location_always = @"swrve.permission.ios.location.always";
-static NSString* swrve_permission_location_when_in_use = @"swrve.permission.ios.location.when_in_use";
-static NSString* swrve_permission_photos = @"swrve.permission.ios.photos";
-static NSString* swrve_permission_camera = @"swrve.permission.ios.camera";
-static NSString* swrve_permission_contacts = @"swrve.permission.ios.contacts";
-static NSString* swrve_permission_push_notifications = @"swrve.permission.ios.push_notifications";
-
 @implementation SwrvePermissions
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)swrve {
@@ -66,6 +58,24 @@ static NSString* swrve_permission_push_notifications = @"swrve.permission.ios.pu
         [self compareStatusAndQueueEvent:swrve_permission_push_notifications lastStatus:lastStatus currentStatus:currentStatus withSDK:swrve];
     }
     [[NSUserDefaults standardUserDefaults] setObject:currentStatus forKey:swrve_permission_status];
+}
+
++(NSArray*)currentPermissionFilters {
+    NSMutableArray* filters = [[NSMutableArray alloc] init];
+    NSDictionary* currentStatus = [SwrvePermissions currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_when_in_use to:filters withCurrentStatus:currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:currentStatus];
+    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_push_notifications to:filters withCurrentStatus:currentStatus];
+    return filters;
+}
+
++(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
+    if ([[currentStatus objectForKey:permissionName] isEqualToString:swrve_permission_status_unknown]) {
+        [filters addObject:[permissionName stringByAppendingString:swrve_permission_requestable]];
+    }
 }
 
 +(void)compareStatusAndQueueEvent:(NSString*)permissioName lastStatus:(NSDictionary*)lastStatus currentStatus:(NSDictionary*)currentStatus withSDK:(Swrve*)swrve {

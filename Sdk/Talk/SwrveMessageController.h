@@ -217,5 +217,12 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void) dismissMessageWindow;
 
+
+/*! Used internally to determine if the conversation filters are supporter at this moment
+ *
+ * \param filters Filtesr we need to support to display the campaign.
+ */
+-(BOOL) supportsDeviceFilters:(NSArray*)filters;
+
 @end
 
