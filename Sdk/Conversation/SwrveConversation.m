@@ -13,7 +13,6 @@
 
 @synthesize controller, campaign, conversationID, name, pages;
 
-
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
                          forCampaign:(SwrveConversationCampaign*)_campaign
                        forController:(SwrveMessageController*)_controller
@@ -78,4 +77,5 @@
     DebugLog(@"FAIL: page for tag %@ not found in conversation", tag);
     return nil;
 }
+
 @end

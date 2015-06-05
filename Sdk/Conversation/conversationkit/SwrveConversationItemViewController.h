@@ -7,7 +7,8 @@
 
 typedef enum {
     SwrveCallNumberActionType,
-    SwrveVisitURLActionType
+    SwrveVisitURLActionType,
+    SwrveDeeplinkActionType
 } SwrveConversationActionType;
 
 @interface SwrveConversationItemViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
