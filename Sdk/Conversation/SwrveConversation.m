@@ -22,7 +22,11 @@
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
-    self.pages          = [json objectForKey:@"pages"];
+    self.pages          = [[NSMutableArray alloc] init];
+    NSArray* pagesJson  = [json objectForKey:@"pages"];
+    for (NSDictionary* page in pagesJson) {
+        [self.pages addObject:[[SwrveConversationPane alloc] initWithDictionary:page]];
+    }
     return self;
 }
 
@@ -36,8 +40,7 @@
 }
 
 -(BOOL)areDownloaded:(NSSet*)assets {
-    for (NSDictionary* page in self.pages) {
-        SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
+    for (SwrveConversationPane *pane in self.pages) {
         for (SwrveContentItem* contentItem in pane.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
@@ -62,20 +65,18 @@
 
 -(SwrveConversationPane*)pageAtIndex:(NSUInteger)index {
     if (index > self.pages.count - 1) {
-        DebugLog(@"Seeking page %lu in a %lu-paged conversation", (unsigned long)index, (unsigned long)self.pages.count);
         return nil;
     } else {
-        return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
+        return [self.pages objectAtIndex:index];
     }
 }
 
 -(SwrveConversationPane*)pageForTag:(NSString*)tag {
-    for (NSDictionary* page in self.pages) {
-        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
-            return [[SwrveConversationPane alloc] initWithDictionary:page];
+    for (SwrveConversationPane* page in self.pages) {
+        if ([tag isEqualToString:[page tag]]) {
+            return page;
         }
     }
-    DebugLog(@"FAIL: page for tag %@ not found in conversation", tag);
     return nil;
 }
 @end

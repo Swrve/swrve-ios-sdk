@@ -222,14 +222,12 @@
     }
     
     // Things that are 'running' need to be 'stopped'
-    // Bit of a band-aid for videos continuing to play
-    // in the background for now.
+    // Bit of a band-aid for videos continuing to play in the background for now.
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom stop];
     }
-    
-    
-    // Move onto the next page in the conversation - fetch the next Convseration pane
+
+    // Move onto the next page in the conversation - fetch the next Conversation pane
     if ([control endsConversation]) {
         [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
@@ -325,7 +323,7 @@
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
         [buttonUIView.titleLabel setNumberOfLines:1];
-        [(UIButton *) buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        [buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
         [SwrveConversationStyler styleButton:(SwrveConversationUIButton *)buttonUIView withStyle:button.style];
         [buttonsView addSubview:buttonUIView];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
@@ -608,7 +606,8 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath]; // HACK
+    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom cellForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
 
@@ -620,8 +619,18 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 #pragma unused (tableView)
-    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];  // HACK
+    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom heightForRow:(NSUInteger)indexPath.row];
+}
+
+// HACK for EA
+- (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
+    NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
+    if(checkedIndexPath >= [self.conversationPane.content count]) {
+        checkedIndexPath = checkedIndexPath - 1;
+    }
+    return checkedIndexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

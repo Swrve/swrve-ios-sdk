@@ -63,7 +63,7 @@
     } else {
         // Cope with phone rotation
         // Too big or same size?
-        if (webview.frame.size.width >= _view.frame.size.width) {
+        if (webview.frame.size.width > 0 && webview.frame.size.width >= _view.frame.size.width) {
             webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
         }
         // Too small?
