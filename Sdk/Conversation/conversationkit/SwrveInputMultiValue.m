@@ -6,7 +6,7 @@
 @synthesize selectedIndex;
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
-    self = [super initWithTag:tag andType:kSwrveInputMultiValue];
+    self = [super initWithTag:tag type:kSwrveInputMultiValue andDictionary:dict];
     if(self) {
         self.description = [dict objectForKey:@"description"];
         // Get the values here
@@ -44,14 +44,12 @@
 }
 
 -(NSString *) userResponse {
-    if(self.selectedIndex == -1) {
+    if(self.selectedIndex <= 0) {
         return @"";
     }
-    
-    // TODO: check for zero
     NSUInteger inx = (NSUInteger)(self.selectedIndex - 1);
     NSDictionary *dict = [self.values objectAtIndex:inx];
-    return [[dict allValues] objectAtIndex:0];
+    return [dict valueForKey:@"answer_id"];
 }
 
 -(BOOL)isComplete {

@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "SwrveConversation.h"
 
 @interface SwrveConversationPane : NSObject 
 

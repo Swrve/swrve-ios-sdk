@@ -1,6 +1,6 @@
-#import "SwrveConversationAtom.h"
+#import "SwrveContentItem.h"
 
-@interface SwrveInputItem : SwrveConversationAtom
+@interface SwrveInputItem : SwrveContentItem
 
 @property(nonatomic,strong) id userResponse;
 @property(nonatomic,assign,getter = isOptional) BOOL optional;

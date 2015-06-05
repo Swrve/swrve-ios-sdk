@@ -9,7 +9,6 @@
 #import "SwrveConversationEvents.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationPane.h"
-#import "SwrveConversationResponse.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveSimpleChoiceTableViewController.h"
@@ -73,6 +72,7 @@
 -(void) setConversationPane:(SwrveConversationPane *)conversationPane {
     _conversationPane = conversationPane;
     numViewsReady = 0;
+    [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
 }
 
 -(CGFloat) buttonHorizontalPadding {
@@ -97,20 +97,22 @@
             actionType = SwrveVisitURLActionType;
             NSDictionary *visitDict = [actions objectForKey:@"visit"];
             param = [visitDict objectForKey:@"url"];
+        } else if ([key isEqualToString:@"deeplink"]) {
+            actionType = SwrveDeeplinkActionType;
+            NSDictionary *deeplinkDict = [actions objectForKey:@"deeplink"];
+            param = [deeplinkDict objectForKey:@"url"];
+        } else if ([key isEqualToString:@"call"]) {
+            actionType = SwrveCallNumberActionType;
+            param = [actions objectForKey:@"call"];
         } else {
-            if ([key isEqualToString:@"call"]) {
-                actionType = SwrveCallNumberActionType;
-                param = [actions objectForKey:@"call"];
-            } else {
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            }
+            [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
         }
     }
     
     switch (actionType) {
         case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
@@ -147,10 +149,20 @@
                 [alert show];
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
             }
             break;
+        }
+        case SwrveDeeplinkActionType: {
+            if (!param) {
+                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                return;
+            }
+            NSURL *target = [NSURL URLWithString:param];
+            [SwrveConversationEvents deeplinkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [[UIApplication sharedApplication] openURL:target];
         }
         default:
             break;
@@ -159,7 +171,9 @@
 
 - (IBAction)cancelButtonTapped:(id)sender {
 #pragma unused(sender)
-    [SwrveConversationEvents cancelled:conversation onPage:self.conversationPane.tag];
+    [SwrveConversationEvents cancel:conversation onPage:self.conversationPane.tag];
+    // Send queued user input events
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -183,6 +197,7 @@
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
     
+    // Gather the user responses and send them
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         if([atom isKindOfClass:[SwrveInputItem class]]) {
             SwrveInputItem *item = (SwrveInputItem*)atom;
@@ -200,6 +215,8 @@
             }
         }
     }
+    
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
     
     if ([incompleteRequiredInputs count] > 0) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
@@ -228,10 +245,9 @@
         [atom stop];
     }
     
-    
     // Move onto the next page in the conversation - fetch the next Convseration pane
     if ([control endsConversation]) {
-        [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+        [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         });
@@ -381,7 +397,7 @@
         if (!self.conversationPane) {
             // No current conversation pane means that conversation is starting
             self.conversationPane = [conversation pageAtIndex:0];
-            [SwrveConversationEvents started:conversation onPage:self.conversationPane.tag];
+            [SwrveConversationEvents started:conversation onStartPage:self.conversationPane.tag];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateUI];
@@ -627,7 +643,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
-    // Now...how to handle this.
     if([atom.type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *vgInputMultiValue = (SwrveInputMultiValue *)atom;
         vgInputMultiValue.selectedIndex = indexPath.row;

@@ -1,6 +1,7 @@
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import "SwrveSetup.h"
+#import "SwrveConversationEvents.h"
 
 #import "UIWebView+YouTubeVimeo.h"
 
@@ -14,6 +15,7 @@
 @implementation SwrveContentVideo
 
 @synthesize height = _height;
+@synthesize interactedWith = _interactedWith;
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
@@ -34,7 +36,7 @@
 -(void) loadView {
     // Create _view
     float vid_height = (_height) ? [_height floatValue] : 180.0;
-    _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
+    _view = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
     webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 300.0, vid_height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
@@ -44,9 +46,24 @@
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
     [webview loadYouTubeOrVimeoVideo:self.value];
     [_view addSubview:webview];
+    
+    UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
+    gesRecognizer.delegate = self;
+    [gesRecognizer setNumberOfTapsRequired:1];
+    [webview addGestureRecognizer:gesRecognizer];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
+    _interactedWith = YES;
 }
 
 -(UIView *)view {
