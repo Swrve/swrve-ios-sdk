@@ -72,29 +72,34 @@
     for(SwrveConversationAtom *atom in conversationPane.content) {
         if([atom isKindOfClass:[SwrveInputMultiValue class]]) {
             SwrveInputMultiValue *item = (SwrveInputMultiValue*)atom;
-            id result = item.userResponse;
-            // TODO SEND CORRECT EVENT USING RESULT
+            NSString* result = item.userResponse;
             NSDictionary *userInputResult =
             @{
-              @"type" : @"play",
+              @"type" : @"choice",
               @"page" : conversationPane.tag,
               @"conversation" : [conversation.conversationID stringValue],
-              @"fragment" : item.tag
+              @"fragment" : item.tag,
+              @"value" : result
               };
-            [[Swrve sharedInstance] event:[self nameOf:@"page.play" for:conversation] payload:userInputResult];
+            [[Swrve sharedInstance] event:[self nameOf:@"page.choice" for:conversation] payload:userInputResult];
             
         } else if ([atom isKindOfClass:[SwrveInputMultiValueLong class]]) {
             SwrveInputMultiValueLong *item = (SwrveInputMultiValueLong*)atom;
-            id result = item.userResponse;
-            // TODO SEND CORRECT EVENT USING RESULT
-            NSDictionary *userInputResult =
-            @{
-              @"type" : @"play",
-              @"page" : conversationPane.tag,
-              @"conversation" : [conversation.conversationID stringValue],
-              @"fragment" : item.tag
-              };
-            [[Swrve sharedInstance] event:[self nameOf:@"page.play" for:conversation] payload:userInputResult];
+            NSDictionary* results = item.userResponse;
+            NSArray* questionIds = [results allKeys];
+            for (NSString* questionId in questionIds) {
+                NSString* questionValue = [results valueForKey:questionId];
+                NSDictionary *userInputResult =
+                @{
+                  @"type" : @"play",
+                  @"page" : conversationPane.tag,
+                  @"conversation" : [conversation.conversationID stringValue],
+                  @"fragment" : item.tag,
+                  @"set" : questionId,
+                  @"value" : questionValue
+                  };
+                [[Swrve sharedInstance] event:[self nameOf:@"page.multi-choice" for:conversation] payload:userInputResult];
+            }
         } else if ([atom isKindOfClass:[SwrveContentVideo class]]) {
             SwrveContentVideo *item = (SwrveContentVideo*)atom;
             if (item.interactedWith) {
