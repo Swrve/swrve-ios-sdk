@@ -22,11 +22,7 @@
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
-    self.pages          = [[NSMutableArray alloc] init];
-    NSArray* pagesJson  = [json objectForKey:@"pages"];
-    for (NSDictionary* page in pagesJson) {
-        [self.pages addObject:[[SwrveConversationPane alloc] initWithDictionary:page]];
-    }
+    self.pages          = [json objectForKey:@"pages"];
     return self;
 }
 
@@ -40,7 +36,8 @@
 }
 
 -(BOOL)areDownloaded:(NSSet*)assets {
-    for (SwrveConversationPane *pane in self.pages) {
+    for (NSDictionary* page in self.pages) {
+        SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
         for (SwrveContentItem* contentItem in pane.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
@@ -67,14 +64,14 @@
     if (index > self.pages.count - 1) {
         return nil;
     } else {
-        return [self.pages objectAtIndex:index];
+        return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
     }
 }
 
 -(SwrveConversationPane*)pageForTag:(NSString*)tag {
-    for (SwrveConversationPane* page in self.pages) {
-        if ([tag isEqualToString:[page tag]]) {
-            return page;
+    for (NSDictionary *page in self.pages) {
+        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
+            return [[SwrveConversationPane alloc] initWithDictionary:page];
         }
     }
     return nil;
