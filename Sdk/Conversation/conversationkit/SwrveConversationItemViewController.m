@@ -62,7 +62,7 @@
         updatePath = nil;
     }
     
-    [self showConversation];
+    [self updateUI]; // this method always to be called on main thread, natch.
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -384,25 +384,12 @@
     
     if (self) {
         conversation = conv;
+        // The conversation is starting now, so issue a starting event
+        SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
+        [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
+        self.conversationPane = firstPage;  // Assigment will issue an impression event
     }
     return self;
-}
-
-// Show conversation - take the current page number (defaults to 0)
-// Pull the conversation page at current page number from the SwrveConversation
-// Convert the page into a Conversation Pane
-// Set the current conversation pane and update the UI.
--(void) showConversation {
-    if (conversation) {
-        if (!self.conversationPane) {
-            // No current conversation pane means that conversation is starting
-            self.conversationPane = [conversation pageAtIndex:0];
-            [SwrveConversationEvents started:conversation onStartPage:self.conversationPane.tag];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateUI];
-        });
-    }
 }
 
 // Tapping the content view outside the context of any
