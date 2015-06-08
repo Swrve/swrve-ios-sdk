@@ -308,7 +308,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
             [self updateCampaigns:jsonDict];
         }
     } else {
-        [[self analyticsSDK] invalidateETag];
+        [self.analyticsSDK invalidateETag];
     }
 }
 
@@ -401,7 +401,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         self.messagesLeftToShow = maxShows.longValue;
         
         DebugLog(@"Game rules OK: Delay Seconds: %@ Max shows: %@ ", delay, maxShows);
-        DebugLog(@"Time is %@ show messages after %@", [[self analyticsSDK] getNow], [self showMessagesAfterLaunch]);
+        DebugLog(@"Time is %@ show messages after %@", [self.analyticsSDK getNow], [self showMessagesAfterLaunch]);
     }
     
     // QA
@@ -600,7 +600,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     // Only execute if at least 1 call to the /user_resources_and_campaigns api endpoint has been completed
-    if (![[self analyticsSDK] campaignsAndResourcesInitialized]) {
+    if (![self.analyticsSDK campaignsAndResourcesInitialized]) {
         return;
     }
     
@@ -653,7 +653,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 -(BOOL)checkGlobalRules:(NSString *)event {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     if ([self.campaigns count] == 0)
     {
         [self noMessagesWereShown:event withReason:@"No campaigns available"];
@@ -690,7 +690,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(SwrveMessage*)getMessageForEvent:(NSString *)event
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
     
@@ -773,6 +773,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     if (result == nil) {
         DebugLog(@"Not showing message: no candidate messages for %@", event);
+    } else {
+        // Notify message has been returned
+        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:@"id",[result.messageID stringValue], nil];
+        [self.analyticsSDK event:@"Swrve.Messages.message_returned" payload:payload];
     }
     return result;
 }
@@ -786,7 +790,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(SwrveConversation*)getConversationForEvent:(NSString *)event
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
     
@@ -931,13 +935,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)setMessageMinDelayThrottle
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
 }
 
 -(void)messageWasShownToUser:(SwrveMessage*)message
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
     [self setMessageMinDelayThrottle];
@@ -957,7 +961,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
     [self setMessageMinDelayThrottle];
@@ -1110,7 +1114,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
     [self setMessageMinDelayThrottle];
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
     [dismissedCampaign messageDismissed:now];
     
