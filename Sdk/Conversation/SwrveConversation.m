@@ -61,7 +61,6 @@
 
 -(SwrveConversationPane*)pageAtIndex:(NSUInteger)index {
     if (index > self.pages.count - 1) {
-        DebugLog(@"Seeking page %lu in a %lu-paged conversation", (unsigned long)index, (unsigned long)self.pages.count);
         return nil;
     } else {
         return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
@@ -69,12 +68,11 @@
 }
 
 -(SwrveConversationPane*)pageForTag:(NSString*)tag {
-    for (NSDictionary* page in self.pages) {
+    for (NSDictionary *page in self.pages) {
         if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
             return [[SwrveConversationPane alloc] initWithDictionary:page];
         }
     }
-    DebugLog(@"FAIL: page for tag %@ not found in conversation", tag);
     return nil;
 }
 

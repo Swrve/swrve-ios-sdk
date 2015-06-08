@@ -62,15 +62,15 @@
 -(void) deviceOrientationDidChange {
     _view.frame = [self newFrameForOrientationChange];
     // Redraw the image and image view within this view
-    CGRect r = iv.frame;
+    CGRect ivCgRect = iv.frame;
 
     // Too big or same size?
-    if (r.size.width >= _view.frame.size.width) {
-        iv.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, r.size.height/r.size.width*_view.frame.size.width);
+    if (ivCgRect.size.width>0 && ivCgRect.size.width >= _view.frame.size.width) {
+        iv.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, ivCgRect.size.height/ ivCgRect.size.width*_view.frame.size.width);
     }
     // Too small?
-    if(r.size.width < _view.frame.size.width) {
-        iv.frame = CGRectMake((_view.frame.size.width-r.size.width)/2, r.origin.y, r.size.width, r.size.height);
+    if(ivCgRect.size.width < _view.frame.size.width) {
+        iv.frame = CGRectMake((_view.frame.size.width- ivCgRect.size.width)/2, ivCgRect.origin.y, ivCgRect.size.width, ivCgRect.size.height);
     }
 }
 
