@@ -4,10 +4,12 @@
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
 @class SwrveConversation;
+@class SwrveConversationButton;
 
 typedef enum {
     SwrveCallNumberActionType,
-    SwrveVisitURLActionType
+    SwrveVisitURLActionType,
+    SwrveDeeplinkActionType
 } SwrveConversationActionType;
 
 @interface SwrveConversationItemViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
@@ -22,8 +24,10 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
 @property (strong, nonatomic) SwrveConversation *conversation;
+@property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
 -(id)initWithConversation:(SwrveConversation*)conversation;
+-(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;
 -(void)updateUI;

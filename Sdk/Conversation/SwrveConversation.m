@@ -13,7 +13,6 @@
 
 @synthesize controller, campaign, conversationID, name, pages;
 
-
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
                          forCampaign:(SwrveConversationCampaign*)_campaign
                        forController:(SwrveMessageController*)_controller
@@ -76,4 +75,5 @@
     }
     return nil;
 }
+
 @end
