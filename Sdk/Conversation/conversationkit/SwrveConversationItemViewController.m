@@ -26,7 +26,6 @@
     
 }
 
-@property (strong, nonatomic) SwrveConversationPane *conversationPane;
 @property (nonatomic) BOOL wasShownToUserNotified;
 
 @end
@@ -62,7 +61,7 @@
         updatePath = nil;
     }
     
-    [self showConversation];
+    [self updateUI]; // this method always to be called on main thread, natch.
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -72,6 +71,7 @@
 -(void) setConversationPane:(SwrveConversationPane *)conversationPane {
     _conversationPane = conversationPane;
     numViewsReady = 0;
+    NSLog(@"-----> Setting conversation pane to %p", conversationPane);
     [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
 }
 
@@ -190,7 +190,7 @@
     return self.conversationPane.controls[(NSUInteger)tag];
 }
 
--(void)transitionWithControl:(SwrveConversationButton *)control {
+-(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
@@ -216,8 +216,6 @@
         }
     }
     
-    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
-    
     if ([incompleteRequiredInputs count] > 0) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
                                                         message:NSLocalizedStringFromTable(@"FILL_ALL", @"Converser", @"Please fill all required fields.")
@@ -225,7 +223,7 @@
                                               cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
                                               otherButtonTitles:nil];
         [alert show];
-        return;
+        return NO;
     }
     
     if ([invalidInputs count] > 0 ) {
@@ -235,7 +233,7 @@
                                               cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
                                               otherButtonTitles:nil];
         [alert show];
-        return;
+        return NO;
     }
     
     // Things that are 'running' need to be 'stopped'
@@ -243,6 +241,9 @@
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom stop];
     }
+    
+    // Issue events for data from the user
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
     
     // Move onto the next page in the conversation - fetch the next Convseration pane
     if ([control endsConversation]) {
@@ -261,6 +262,7 @@
     }
 
     [self runControlActions:control];
+    return YES;
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
@@ -383,25 +385,12 @@
     
     if (self) {
         conversation = conv;
+        // The conversation is starting now, so issue a starting event
+        SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
+        [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
+        self.conversationPane = firstPage;  // Assigment will issue an impression event
     }
     return self;
-}
-
-// Show conversation - take the current page number (defaults to 0)
-// Pull the conversation page at current page number from the SwrveConversation
-// Convert the page into a Conversation Pane
-// Set the current conversation pane and update the UI.
--(void) showConversation {
-    if (conversation) {
-        if (!self.conversationPane) {
-            // No current conversation pane means that conversation is starting
-            self.conversationPane = [conversation pageAtIndex:0];
-            [SwrveConversationEvents started:conversation onStartPage:self.conversationPane.tag];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateUI];
-        });
-    }
 }
 
 // Tapping the content view outside the context of any

@@ -57,12 +57,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+#pragma unused(gestureRecognizer, otherGestureRecognizer)
     return YES;
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
+#pragma unused(gestureRecognizer)
     _interactedWith = YES;
 }
 

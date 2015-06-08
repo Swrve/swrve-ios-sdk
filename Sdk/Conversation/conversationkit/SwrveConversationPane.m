@@ -59,5 +59,15 @@
     return self;
 }
 
+-(SwrveConversationAtom*) contentForTag:(NSString*)tag {
+    for(unsigned int i=0; i < [_content count]; i++) {
+        SwrveConversationAtom *atom = (SwrveConversationAtom*)_content[i];
+        if ([atom.tag isEqualToString:tag]) {
+            return atom;
+        }
+    }
+    return nil;
+}
+
 
 @end
