@@ -17,6 +17,10 @@
     return self;
 }
 
+-(void)setSelectedIndex:(NSInteger)inx {
+    selectedIndex = inx;
+}
+
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (![self hasDescription] || row > 0) {
         UITableViewCell *cell = [self fetchStandardCell:tableView];
@@ -53,6 +57,6 @@
 }
 
 -(BOOL)isComplete {
-    return self.selectedIndex > -1;
+    return self.selectedIndex > 0;
 }
 @end
