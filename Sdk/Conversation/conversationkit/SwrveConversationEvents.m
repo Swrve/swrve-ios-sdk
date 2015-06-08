@@ -91,7 +91,7 @@
                 NSString* questionValue = [results valueForKey:questionId];
                 NSDictionary *userInputResult =
                 @{
-                  @"type" : @"play",
+                  @"type" : @"multi-choice",
                   @"page" : conversationPane.tag,
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag,
