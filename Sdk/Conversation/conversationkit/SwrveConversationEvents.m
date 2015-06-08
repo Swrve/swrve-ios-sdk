@@ -1,19 +1,24 @@
 #import "SwrveConversationEvents.h"
 #import "SwrveConversation.h"
 #import "Swrve.h"
+#import "SwrveConversationAtom.h"
+#import "SwrveConversationPane.h"
+#import "SwrveInputMultiValue.h"
+#import "SwrveInputMultiValueLong.h"
+#import "SwrveContentVideo.h"
 
 @implementation SwrveConversationEvents
 
-+(void)started:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
++(void)started:(SwrveConversation*)conversation onStartPage:(NSString*)pageTag {
     [self genericEvent:@"start" forConversation:conversation onPage:pageTag];
 }
 
-+(void)cancelled:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
-    [self genericEvent:@"cancel" forConversation:conversation onPage:pageTag];
++(void)done:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"done" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
 
-+(void)finished:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
-    [self genericEvent:@"done" forConversation:conversation onPage:pageTag withControl:controlTag];
++(void)cancel:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
+    [self genericEvent:@"cancel" forConversation:conversation onPage:pageTag];
 }
 
 +(void)genericEvent:(NSString*)name forConversation:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:controlTag{
@@ -23,7 +28,7 @@
       @"page" : pageTag,
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
-      };
+    };
     
     [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
 }
@@ -34,7 +39,7 @@
       @"event" : name,
       @"page" : pageTag,
       @"conversation" : [conversation.conversationID stringValue]
-      };
+    };
     
     [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
 }
@@ -44,6 +49,10 @@
 }
 
 // Page related
++(void)impression:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
+    [self genericEvent:@"impression" forConversation:conversation onPage:pageTag];
+}
+
 +(void)pageTransition:(SwrveConversation*)conversation fromPage:(NSString*)originPage toPage:(NSString*)toPage withControl:(NSString*)controlTag{
     NSDictionary *eventPayload =
     @{
@@ -52,13 +61,60 @@
       @"page" : originPage,
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
-      };
+    };
     
     [[Swrve sharedInstance] event:[self nameOf:@"navigation" for:conversation] payload:eventPayload];
 }
 
-+(void)viewed:(SwrveConversation*)conversation page:(NSString*)pageTag {
-    [self genericEvent:@"impression" forConversation:conversation onPage:pageTag];
+// Atom actions
++(void)gatherAndSendUserInputs:(SwrveConversationPane*)conversationPane forConversation:(SwrveConversation*)conversation {
+    // Send the queued user input elements
+    for(SwrveConversationAtom *atom in conversationPane.content) {
+        if([atom isKindOfClass:[SwrveInputMultiValue class]]) {
+            SwrveInputMultiValue *item = (SwrveInputMultiValue*)atom;
+            NSString* result = item.userResponse;
+            NSDictionary *userInputResult =
+            @{
+              @"type" : @"choice",
+              @"page" : conversationPane.tag,
+              @"conversation" : [conversation.conversationID stringValue],
+              @"fragment" : item.tag,
+              @"value" : result
+              };
+            [[Swrve sharedInstance] event:[self nameOf:@"page.choice" for:conversation] payload:userInputResult];
+            
+        } else if ([atom isKindOfClass:[SwrveInputMultiValueLong class]]) {
+            SwrveInputMultiValueLong *item = (SwrveInputMultiValueLong*)atom;
+            NSDictionary* results = item.userResponse;
+            NSArray* questionIds = [results allKeys];
+            for (NSString* questionId in questionIds) {
+                NSString* questionValue = [results valueForKey:questionId];
+                NSDictionary *userInputResult =
+                @{
+                  @"type" : @"play",
+                  @"page" : conversationPane.tag,
+                  @"conversation" : [conversation.conversationID stringValue],
+                  @"fragment" : item.tag,
+                  @"set" : questionId,
+                  @"value" : questionValue
+                  };
+                [[Swrve sharedInstance] event:[self nameOf:@"page.multi-choice" for:conversation] payload:userInputResult];
+            }
+        } else if ([atom isKindOfClass:[SwrveContentVideo class]]) {
+            SwrveContentVideo *item = (SwrveContentVideo*)atom;
+            if (item.interactedWith) {
+                NSDictionary *userInputResult =
+                @{
+                  @"type" : @"play",
+                  @"page" : conversationPane.tag,
+                  @"conversation" : [conversation.conversationID stringValue],
+                  @"fragment" : item.tag
+                };
+                [[Swrve sharedInstance] event:[self nameOf:@"page.play" for:conversation] payload:userInputResult];
+            }
+        }
+    }
+
 }
 
 // Actions
@@ -68,6 +124,10 @@
 
 +(void)callNumber:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
     [self genericEvent:@"call" forConversation:conversation onPage:pageTag withControl:controlTag];
+}
+
++(void)deeplinkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"deeplink" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
 
 // Error

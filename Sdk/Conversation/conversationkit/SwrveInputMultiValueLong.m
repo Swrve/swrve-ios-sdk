@@ -5,15 +5,16 @@
 @implementation SwrveInputMultiValueLong
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
-    self = [super initWithTag:tag andType:kSwrveInputMultiValueLong];
+    self = [super initWithTag:tag type:kSwrveInputMultiValueLong andDictionary:dict];
     if(self) {
         self.description = [dict objectForKey:@"description"];
         NSArray *arr = [dict objectForKey:@"values"];
         NSMutableArray *vals =[[NSMutableArray alloc] initWithCapacity:arr.count];
         for(NSDictionary *innerDict in arr) {
+            NSString *questionId = [innerDict objectForKey:@"question_id"];
             NSArray *options = [innerDict objectForKey:@"options"];
             NSString *title = [innerDict objectForKey:@"title"];
-            SwrveChoiceArray  *vgChoiceArray = [[SwrveChoiceArray alloc] initWithArray:options andTitle:title];
+            SwrveChoiceArray  *vgChoiceArray = [[SwrveChoiceArray alloc] initWithArray:options andQuestionId:questionId andTitle:title];
             [vals addObject:vgChoiceArray];
         }
         self.values = vals;
@@ -58,10 +59,6 @@
         }
     }
     return YES;
-}
-
--(void)highlight {
-    //[_view.layer setBorderColor:[UIColor redColor].CGColor];
 }
 
 @end
