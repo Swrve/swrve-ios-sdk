@@ -71,7 +71,6 @@
 -(void) setConversationPane:(SwrveConversationPane *)conversationPane {
     _conversationPane = conversationPane;
     numViewsReady = 0;
-    NSLog(@"-----> Setting conversation pane to %p", conversationPane);
     [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
 }
 
