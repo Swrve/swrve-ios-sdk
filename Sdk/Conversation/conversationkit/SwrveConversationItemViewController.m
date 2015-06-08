@@ -9,7 +9,6 @@
 #import "SwrveConversationEvents.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationPane.h"
-#import "SwrveConversationResponse.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveSimpleChoiceTableViewController.h"
@@ -32,7 +31,6 @@
     SwrveMessageController* controller;
 }
 
-@property (strong, nonatomic) SwrveConversationPane *conversationPane;
 @property (nonatomic) BOOL wasShownToUserNotified;
 
 @end
@@ -68,7 +66,7 @@
         updatePath = nil;
     }
     
-    [self showConversation];
+    [self updateUI]; // this method always to be called on main thread, natch.
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -78,6 +76,7 @@
 -(void) setConversationPane:(SwrveConversationPane *)conversationPane {
     _conversationPane = conversationPane;
     numViewsReady = 0;
+    [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
 }
 
 -(CGFloat) buttonHorizontalPadding {
@@ -102,12 +101,17 @@
             actionType = SwrveVisitURLActionType;
             NSDictionary *visitDict = [actions objectForKey:@"visit"];
             param = [visitDict objectForKey:@"url"];
+        } else if ([key isEqualToString:@"deeplink"]) {
+            actionType = SwrveDeeplinkActionType;
+            NSDictionary *deeplinkDict = [actions objectForKey:@"deeplink"];
+            param = [deeplinkDict objectForKey:@"url"];
         } else if ([key isEqualToString:@"call"]) {
             actionType = SwrveCallNumberActionType;
             param = [actions objectForKey:@"call"];
         } else if ([key isEqualToString:@"permission_request"]) {
             actionType = SwrvePermissionRequestActionType;
-            param = [actions objectForKey:@"permission"];
+            NSDictionary *permissionDict = [actions objectForKey:@"permission_request"];
+            param = [deeplinkDict objectForKey:@"permission"];
         } else {
             [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
         }
@@ -116,7 +120,7 @@
     switch (actionType) {
         case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
@@ -153,7 +157,7 @@
                 [alert show];
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
             }
             break;
@@ -162,8 +166,19 @@
             // Ask for the configured permission
             if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
                 NSLog(@"Unkown permission request %@", param);
+            } else {
+                [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
             break;
+        case SwrveDeeplinkActionType: {
+            if (!param) {
+                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                return;
+            }
+            NSURL *target = [NSURL URLWithString:param];
+            [SwrveConversationEvents deeplinkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [[UIApplication sharedApplication] openURL:target];
         }
         default:
             break;
@@ -172,7 +187,9 @@
 
 - (IBAction)cancelButtonTapped:(id)sender {
 #pragma unused(sender)
-    [SwrveConversationEvents cancelled:conversation onPage:self.conversationPane.tag];
+    [SwrveConversationEvents cancel:conversation onPage:self.conversationPane.tag];
+    // Send queued user input events
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -189,13 +206,14 @@
     return self.conversationPane.controls[(NSUInteger)tag];
 }
 
--(void)transitionWithControl:(SwrveConversationButton *)control {
+-(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
     // alert to the user if this is not the case.
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
     
+    // Gather the user responses and send them
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         if([atom isKindOfClass:[SwrveInputItem class]]) {
             SwrveInputItem *item = (SwrveInputItem*)atom;
@@ -221,7 +239,7 @@
                                               cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
                                               otherButtonTitles:nil];
         [alert show];
-        return;
+        return NO;
     }
     
     if ([invalidInputs count] > 0 ) {
@@ -231,20 +249,21 @@
                                               cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
                                               otherButtonTitles:nil];
         [alert show];
-        return;
+        return NO;
     }
     
     // Things that are 'running' need to be 'stopped'
-    // Bit of a band-aid for videos continuing to play
-    // in the background for now.
+    // Bit of a band-aid for videos continuing to play in the background for now.
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom stop];
     }
     
+    // Issue events for data from the user
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
     
     // Move onto the next page in the conversation - fetch the next Convseration pane
     if ([control endsConversation]) {
-        [SwrveConversationEvents finished:conversation onPage:self.conversationPane.tag withControl:control.tag];
+        [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         });
@@ -259,6 +278,7 @@
     }
 
     [self runControlActions:control];
+    return YES;
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
@@ -338,7 +358,7 @@
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
         [buttonUIView.titleLabel setNumberOfLines:1];
-        [(UIButton *) buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        [buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
         [SwrveConversationStyler styleButton:(SwrveConversationUIButton *)buttonUIView withStyle:button.style];
         [buttonsView addSubview:buttonUIView];
         xOffset += buttonWidth + [self buttonHorizontalPadding];
@@ -382,25 +402,12 @@
     if (self) {
         conversation = conv;
         controller = ctrl;
+        // The conversation is starting now, so issue a starting event
+        SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
+        [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
+        self.conversationPane = firstPage;  // Assigment will issue an impression event
     }
     return self;
-}
-
-// Show conversation - take the current page number (defaults to 0)
-// Pull the conversation page at current page number from the SwrveConversation
-// Convert the page into a Conversation Pane
-// Set the current conversation pane and update the UI.
--(void) showConversation {
-    if (conversation) {
-        if (!self.conversationPane) {
-            // No current conversation pane means that conversation is starting
-            self.conversationPane = [conversation pageAtIndex:0];
-            [SwrveConversationEvents started:conversation onPage:self.conversationPane.tag];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateUI];
-        });
-    }
 }
 
 // Tapping the content view outside the context of any
@@ -568,8 +575,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    }
     self.navigationController.navigationBar.translucent = NO;
 
     backgroundImageView.backgroundColor = [UIColor clearColor];
@@ -620,7 +629,8 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath]; // HACK
+    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom cellForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
 
@@ -632,14 +642,23 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 #pragma unused (tableView)
-    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];  // HACK
+    SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom heightForRow:(NSUInteger)indexPath.row];
+}
+
+// HACK for EA
+- (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
+    NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
+    if(checkedIndexPath >= [self.conversationPane.content count]) {
+        checkedIndexPath = checkedIndexPath - 1;
+    }
+    return checkedIndexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)indexPath.section];
-    // Now...how to handle this.
     if([atom.type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *vgInputMultiValue = (SwrveInputMultiValue *)atom;
         vgInputMultiValue.selectedIndex = indexPath.row;
