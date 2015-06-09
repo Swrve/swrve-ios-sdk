@@ -12,6 +12,10 @@
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
 #import "SwrveSimpleChoiceTableViewController.h"
+#import "SwrveSetup.h"
+#import "Swrve.h"
+#import "SwrveConversationEvents.h"
+#import "SwrvePermissions.h"
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
@@ -23,7 +27,8 @@
     NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
-    
+    SwrveConversation *conversation;
+    SwrveMessageController* controller;
 }
 
 @property (nonatomic) BOOL wasShownToUserNotified;
@@ -103,6 +108,10 @@
         } else if ([key isEqualToString:@"call"]) {
             actionType = SwrveCallNumberActionType;
             param = [actions objectForKey:@"call"];
+        } else if ([key isEqualToString:@"permission_request"]) {
+            actionType = SwrvePermissionRequestActionType;
+            NSDictionary *permissionDict = [actions objectForKey:@"permission_request"];
+            param = [deeplinkDict objectForKey:@"permission"];
         } else {
             [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
         }
@@ -139,11 +148,11 @@
                 // Notify the user that the app isn't available and then just return.
                 
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Converser", @"You will need to install an app to visit %@"), [target absoluteString]];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Converser", @"Cannot open URL")
+                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL")
                                                                 message:msg
                                                                delegate:nil
-                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
+                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
                                                       otherButtonTitles:nil];
                 [alert show];
             } else {
@@ -153,6 +162,14 @@
             }
             break;
         }
+        case SwrvePermissionRequestActionType: {
+            // Ask for the configured permission
+            if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
+                NSLog(@"Unkown permission request %@", param);
+            } else {
+                [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            }
+            break;
         case SwrveDeeplinkActionType: {
             if (!param) {
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
@@ -375,7 +392,7 @@
 
 #pragma mark - Inits
 
--(id)initWithConversation:(SwrveConversation*)conv {
+-(id)initWithConversation:(SwrveConversation*)conv withMessageController:(SwrveMessageController *)ctrl {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self = [super initWithNibName:@"SwrveConversationItemViewController_iPad" bundle:nil];
     } else {
@@ -384,6 +401,7 @@
     
     if (self) {
         conversation = conv;
+        controller = ctrl;
         // The conversation is starting now, so issue a starting event
         SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
         [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event

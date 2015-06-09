@@ -9,7 +9,8 @@
 typedef enum {
     SwrveCallNumberActionType,
     SwrveVisitURLActionType,
-    SwrveDeeplinkActionType
+    SwrveDeeplinkActionType,
+    SwrvePermissionRequestActionType
 } SwrveConversationActionType;
 
 @interface SwrveConversationItemViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
@@ -26,7 +27,7 @@ typedef enum {
 @property (strong, nonatomic) SwrveConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
--(id)initWithConversation:(SwrveConversation*)conversation;
+-(id)initWithConversation:(SwrveConversation*)conversation withMessageController:(SwrveMessageController*)controller;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;

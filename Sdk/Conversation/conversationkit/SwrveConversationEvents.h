@@ -19,6 +19,7 @@
 +(void)linkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
 +(void)callNumber:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
 +(void)deeplinkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)permissionRequest:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
 
 // Atom actions
 +(void)gatherAndSendUserInputs:(SwrveConversationPane*)pane forConversation:(SwrveConversation*)conversation;
