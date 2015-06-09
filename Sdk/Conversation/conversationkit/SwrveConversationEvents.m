@@ -119,7 +119,7 @@
 
 // Actions
 +(void)linkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
-    [self genericEvent:@"link" forConversation:conversation onPage:pageTag withControl:controlTag];
+    [self genericEvent:@"visit" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
 
 +(void)callNumber:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
@@ -128,6 +128,10 @@
 
 +(void)deeplinkVisit:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
     [self genericEvent:@"deeplink" forConversation:conversation onPage:pageTag withControl:controlTag];
+}
+
++(void)permissionRequest:(SwrveConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag {
+    [self genericEvent:@"permission" forConversation:conversation onPage:pageTag withControl:controlTag];
 }
 
 // Error

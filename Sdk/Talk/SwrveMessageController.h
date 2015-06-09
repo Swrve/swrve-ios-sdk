@@ -105,6 +105,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 /*! In-app messages controller */
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate>
 
+@property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
 @property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */
 @property (nonatomic, retain) NSArray* campaigns;                                       /*!< List of campaigns available to the user. */
 @property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
@@ -215,6 +216,13 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * nothing is done.
  */
 - (void) dismissMessageWindow;
+
+
+/*! Used internally to determine if the conversation filters are supporter at this moment
+ *
+ * \param filters Filtesr we need to support to display the campaign.
+ */
+-(BOOL) supportsDeviceFilters:(NSArray*)filters;
 
 @end
 
