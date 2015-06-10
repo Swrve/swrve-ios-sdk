@@ -111,7 +111,7 @@
         } else if ([key isEqualToString:@"permission_request"]) {
             actionType = SwrvePermissionRequestActionType;
             NSDictionary *permissionDict = [actions objectForKey:@"permission_request"];
-            param = [deeplinkDict objectForKey:@"permission"];
+            param = [permissionDict objectForKey:@"permission"];
         } else {
             [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
         }
@@ -170,6 +170,7 @@
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
             break;
+        }
         case SwrveDeeplinkActionType: {
             if (!param) {
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
