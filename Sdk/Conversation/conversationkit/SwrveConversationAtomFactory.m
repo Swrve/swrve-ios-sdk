@@ -74,6 +74,7 @@
     } else if ([type isEqualToString:kSwrveContentSpacer]) {
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
         swrveContentSpacer.style = [dict objectForKey:@"style"];
+        return swrveContentSpacer;
     }
     
     return nil;
