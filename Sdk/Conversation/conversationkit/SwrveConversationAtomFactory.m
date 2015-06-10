@@ -7,6 +7,7 @@
 #import "SwrveContentHTML.h"
 #import "SwrveContentImage.h"
 #import "SwrveContentVideo.h"
+#import "SwrveContentSpacer.h"
 #import "SwrveConversationButton.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveInputMultiValueLong.h"
@@ -43,20 +44,15 @@
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         swrveContentHTML.style = [dict objectForKey:@"style"];
         return swrveContentHTML;
-    }
-    if([type isEqualToString:kSwrveContentTypeImage]) {
+    } else if([type isEqualToString:kSwrveContentTypeImage]) {
         SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
         swrveContentImage.style = [dict objectForKey:@"style"];
         return swrveContentImage;
-    }
-    
-    if([type isEqualToString:kSwrveContentTypeVideo]) {
+    } else if([type isEqualToString:kSwrveContentTypeVideo]) {
         SwrveContentVideo *swrveContentVideo = [[SwrveContentVideo alloc] initWithTag:tag andDictionary:dict];
         swrveContentVideo.style = [dict objectForKey:@"style"];
         return swrveContentVideo;
-    }
-    
-    if([type isEqualToString:kSwrveControlTypeButton]) {
+    } else if([type isEqualToString:kSwrveControlTypeButton]) {
         SwrveConversationButton *swrveConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
         swrveConversationButton.actions = [dict objectForKey:@"action"];
         swrveConversationButton.style = [dict objectForKey:@"style"];
@@ -65,22 +61,23 @@
             swrveConversationButton.target = target;
         }
         return swrveConversationButton;
-    }
-    if([type isEqualToString:kSwrveInputMultiValueLong]) {
+    } else if([type isEqualToString:kSwrveInputMultiValueLong]) {
         SwrveInputMultiValueLong *swrveInputMultiValueLong = [[SwrveInputMultiValueLong alloc] initWithTag:tag andDictionary:dict];
         [swrveInputMultiValueLong setOptional:optional];
         swrveInputMultiValueLong.style = [dict objectForKey:@"style"];
         return swrveInputMultiValueLong;
-    }
-    if([type isEqualToString:kSwrveInputMultiValue]) {
+    } else if([type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
         [swrveInputMultiValue setOptional:optional];
         swrveInputMultiValue.style = [dict objectForKey:@"style"];
         return swrveInputMultiValue;
+    } else if ([type isEqualToString:kSwrveContentSpacer]) {
+        SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
+        swrveContentSpacer.style = [dict objectForKey:@"style"];
+        return swrveContentSpacer;
     }
     
     return nil;
 }
-
 
 @end

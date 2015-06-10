@@ -6,7 +6,7 @@
 
 @interface SwrveConversationCampaign()
 
-@property (nonatomic, weak)     SwrveMessageController* controller;
+@property (nonatomic, weak) SwrveMessageController* controller;
 
 @end
 
@@ -29,8 +29,7 @@
         }
     }
     self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
-    self.filters      = [NSArray arrayWithObjects:@"swrve.permission.ios.push_notifications.requestsable", nil];
-    //[dict objectForKey:@"filters"];
+    self.filters      = [dict objectForKey:@"filters"];
     
     return instance;
 }
@@ -90,7 +89,8 @@
         return nil;
     }
     
-    if (self.controller == nil || ![self.controller supportsDeviceFilters:filters]) {
+    SwrveMessageController* controllerStrongReference = self.controller;
+    if (controllerStrongReference == nil || ![controllerStrongReference supportsDeviceFilters:filters]) {
         [self logAndAddReason:[NSString stringWithFormat:@"Some filters were not supported in campaign %ld", (long)self.ID] withReasons:campaignReasons];
         return nil;
     }
