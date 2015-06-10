@@ -51,7 +51,7 @@
     gesRecognizer.delegate = self;
     [gesRecognizer setNumberOfTapsRequired:1];
     [webview addGestureRecognizer:gesRecognizer];
-    
+    // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];

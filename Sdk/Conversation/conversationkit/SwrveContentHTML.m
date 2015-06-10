@@ -47,7 +47,8 @@
     frame = _view.frame;
     frame.size.height = [output floatValue];
     _view.frame = frame;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];    
+    // Notify that the view is ready to be displayed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
