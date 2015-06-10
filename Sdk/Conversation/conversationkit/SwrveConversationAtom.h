@@ -7,6 +7,7 @@
 #define kSwrveContentTypeHTML @"html-fragment"
 #define kSwrveContentTypeImage @"image"
 #define kSwrveContentTypeVideo @"video"
+#define kSwrveContentSpacer @"spacer"
 // Input types
 #define kSwrveInputMultiValueLong @"multi-value-long-input"
 #define kSwrveInputMultiValue @"multi-value-input"
