@@ -46,7 +46,7 @@
     else
 #endif
     {
-        return ([app isRegisteredForRemoteNotifications] && ([app currentUserNotificationSettings] != UIUserNotificationTypeNone))? ISHPermissionStateAuthorized : ISHPermissionStateUnknown;
+        return ([app isRegisteredForRemoteNotifications] && ([app currentUserNotificationSettings].types & UIUserNotificationTypeAlert))? ISHPermissionStateAuthorized : ISHPermissionStateUnknown;
     }
 #else
     // Not building with the latest XCode that contains iOS 8 definitions
