@@ -102,6 +102,7 @@
         [self.locationManager requestAlwaysAuthorization];
     } else {
         [self.locationManager requestWhenInUseAuthorization];
+        [self.locationManager startUpdatingLocation];
     }
 #endif
 }

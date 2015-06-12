@@ -40,17 +40,17 @@
     if (![app respondsToSelector:@selector(isRegisteredForRemoteNotifications:)])
     {
         // Use the old API
-        return ([app enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone)? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
+        return ([app enabledRemoteNotificationTypes] & UIRemoteNotificationTypeAlert)? ISHPermissionStateAuthorized : ISHPermissionStateUnknown;
     }
 #pragma clang diagnostic pop
     else
 #endif
     {
-        return [app isRegisteredForRemoteNotifications]? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
+        return ([app isRegisteredForRemoteNotifications] && ([app currentUserNotificationSettings] != UIUserNotificationTypeNone))? ISHPermissionStateAuthorized : ISHPermissionStateUnknown;
     }
 #else
     // Not building with the latest XCode that contains iOS 8 definitions
-    return ([app enabledRemoteNotificationTypes] != UIRemoteNotificationTypeNone)? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
+    return ([app enabledRemoteNotificationTypes] & UIRemoteNotificationTypeAlert)? ISHPermissionStateAuthorized : ISHPermissionStateUnknown;
 #endif
 }
 
