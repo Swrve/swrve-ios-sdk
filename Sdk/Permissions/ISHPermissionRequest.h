@@ -3,6 +3,7 @@
 //  ISHPermissionKit
 //
 //  Created by Felix Lamouroux on 25.06.14.
+//  Modified by Swrve Mobile Inc.
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
