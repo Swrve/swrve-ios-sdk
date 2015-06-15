@@ -609,5 +609,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
+@property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 
 @end

@@ -348,7 +348,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(NSArray*)getCurrentlySupportedDeviceFilters {
     NSMutableArray* supported = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
-    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFilters];
+    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFiltersWithSDK:analyticsSDK];
     [supported addObjectsFromArray:currentPermissionFilters];
     return supported;
 }
