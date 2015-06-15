@@ -75,11 +75,11 @@
             NSString* result = item.userResponse;
             NSDictionary *userInputResult =
             @{
-              @"type" : @"choice",
+              @"event" : @"choice",
               @"page" : conversationPane.tag,
               @"conversation" : [conversation.conversationID stringValue],
               @"fragment" : item.tag,
-              @"value" : result
+              @"result" : result
               };
             [[Swrve sharedInstance] event:[self nameOf:@"page.choice" for:conversation] payload:userInputResult];
             
@@ -91,12 +91,12 @@
                 NSString* questionValue = [results valueForKey:questionId];
                 NSDictionary *userInputResult =
                 @{
-                  @"type" : @"multi-choice",
+                  @"event" : @"multi-choice",
                   @"page" : conversationPane.tag,
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag,
                   @"set" : questionId,
-                  @"value" : questionValue
+                  @"result" : questionValue
                   };
                 [[Swrve sharedInstance] event:[self nameOf:@"page.multi-choice" for:conversation] payload:userInputResult];
             }
@@ -105,7 +105,7 @@
             if (item.interactedWith) {
                 NSDictionary *userInputResult =
                 @{
-                  @"type" : @"play",
+                  @"event" : @"play",
                   @"page" : conversationPane.tag,
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag
