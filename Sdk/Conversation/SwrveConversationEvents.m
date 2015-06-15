@@ -79,7 +79,7 @@
               @"page" : conversationPane.tag,
               @"conversation" : [conversation.conversationID stringValue],
               @"fragment" : item.tag,
-              @"value" : result
+              @"result" : result
               };
             [[Swrve sharedInstance] event:[self nameOf:@"page.choice" for:conversation] payload:userInputResult];
             
@@ -96,7 +96,7 @@
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag,
                   @"set" : questionId,
-                  @"value" : questionValue
+                  @"result" : questionValue
                   };
                 [[Swrve sharedInstance] event:[self nameOf:@"page.multi-choice" for:conversation] payload:userInputResult];
             }
