@@ -20,25 +20,25 @@ static NSString* swrve_permission_requestable = @".requestable";
 /*! Used internally to offer permission request support */
 @interface SwrvePermissions : NSObject
 
-+ (BOOL)processPermissionRequest:(NSString*)action withSDK:(Swrve*)swrve;
-+ (NSDictionary*) currentStatus;
-+ (void)compareStatusAndQueueEventsWithSDK:(Swrve*)swrve;
-+ (NSArray*) currentPermissionFilters;
++ (BOOL)processPermissionRequest:(NSString*)action withSDK:(Swrve*)sdk;
++ (NSDictionary*) currentStatusWithSDK:(Swrve*)sdk;
++ (void)compareStatusAndQueueEventsWithSDK:(Swrve*)sdk;
++ (NSArray*) currentPermissionFiltersWithSDK:(Swrve*)sdk;
 
 + (ISHPermissionState)checkLocationAlways;
-+ (void)requestLocationAlways:(Swrve*)swrve;
++ (void)requestLocationAlways:(Swrve*)sdk;
 
 + (ISHPermissionState)checkPhotoLibrary;
-+ (void)requestPhotoLibrary:(Swrve*)swrve;
++ (void)requestPhotoLibrary:(Swrve*)sdk;
 
 + (ISHPermissionState)checkCamera;
-+ (void)requestCamera:(Swrve*)swrve;
++ (void)requestCamera:(Swrve*)sdk;
 
 + (ISHPermissionState)checkContacts;
-+ (void)requestContacts:(Swrve*)swrve;
++ (void)requestContacts:(Swrve*)sdk;
 
-+ (ISHPermissionState)checkPushNotifications;
-+ (void)requestPushNotifications:(Swrve*)swrve withCallback:(BOOL)callback;
++ (ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk;
++ (void)requestPushNotifications:(Swrve*)sdk withCallback:(BOOL)callback;
 
 @end
 

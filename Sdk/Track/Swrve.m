@@ -191,9 +191,6 @@ enum
 // Set to YES after the first sessionEnd so that multiple session starts are not generated if the app resume event occurs after swrve has been initialized
 @property (atomic) BOOL okToStartSessionOnResume;
 
-// Push notification device token
-@property (atomic) NSString* deviceToken;
-
 // Device id, used for tracking event streams from different devices
 @property (atomic) unsigned short shortDeviceID;
 
@@ -509,7 +506,7 @@ static bool didSwizzle = false;
 
 @synthesize userUpdates;
 @synthesize okToStartSessionOnResume;
-@synthesize deviceToken;
+@synthesize deviceToken = _deviceToken;
 @synthesize shortDeviceID;
 @synthesize httpPerformanceMetrics;
 @synthesize campaignsAndResourcesETAG;
@@ -1118,7 +1115,7 @@ static bool didSwizzle = false;
 {
     NSCAssert(newDeviceToken, @"The device token cannot be null", nil);
     NSString* newTokenString = [[[newDeviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
-    self.deviceToken = newTokenString;
+    _deviceToken = newTokenString;
     [[NSUserDefaults standardUserDefaults] setValue:newTokenString forKey:swrve_device_token_key];
     [self queueDeviceProperties];
     [self sendQueuedEvents];
@@ -1614,7 +1611,7 @@ static NSString* httpScheme(bool useHttps)
     }
     
     // Get current state of permissions
-    NSDictionary* permissionStatus = [SwrvePermissions currentStatus];
+    NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     [deviceProperties addEntriesFromDictionary:permissionStatus];
 
     return deviceProperties;
