@@ -192,7 +192,7 @@ enum
 @property (atomic) BOOL okToStartSessionOnResume;
 
 // Device id, used for tracking event streams from different devices
-@property (atomic) unsigned short shortDeviceID;
+@property (atomic) NSNumber* shortDeviceID;
 
 // HTTP Request metrics that haven't been sent yet
 @property (atomic) NSMutableArray* httpPerformanceMetrics;
@@ -661,17 +661,7 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
-        // All set up, so start to do any work now.
-        id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
-        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
-            // This is the first time we see this device, assign a UUID to it
-            NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
-            unsigned short newShortDeviceID = (unsigned short)deviceUUID;
-            self.shortDeviceID = newShortDeviceID;
-            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedShort:newShortDeviceID] forKey:@"short_device_id"];
-        } else {
-            self.shortDeviceID = ((NSNumber*)shortDeviceIdDisk).unsignedShortValue;
-        }
+        [self generateShortDeviceId];
 
         // Set up empty user attributes store
         self.userUpdates = [[NSMutableDictionary alloc]init];
@@ -1857,7 +1847,7 @@ enum HttpStatus {
 
     NSMutableDictionary* jsonPacket = [[NSMutableDictionary alloc] init];
     [jsonPacket setValue:self.userID forKey:@"user"];
-    [jsonPacket setValue:[NSNumber numberWithUnsignedShort:self.shortDeviceID] forKey:@"short_device_id"];
+    [jsonPacket setValue:self.shortDeviceID forKey:@"short_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
     [jsonPacket setValue:NullableNSString(self.config.appVersion) forKey:@"app_version"];
     [jsonPacket setValue:NullableNSString(sessionToken) forKey:@"session_token"];
@@ -2215,6 +2205,32 @@ enum HttpStatus {
 - (NSDate*)getNow
 {
     return [NSDate date];
+}
+
+- (void) generateShortDeviceId {
+    // Read old short device id or generate a new short one
+    NSString* oldShortDeviceId = [[NSUserDefaults standardUserDefaults] stringForKey:@"swrve_device_id"];
+    if (oldShortDeviceId != nil) {
+        // Reproduce old behaviour, remove key when finished
+        NSUInteger shortDeviceIDInteger = [oldShortDeviceId hash];
+        if (shortDeviceIDInteger > 10000) {
+            shortDeviceIDInteger = shortDeviceIDInteger / 1000;
+        }
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"swrve_device_id"];
+        self.shortDeviceID = [NSNumber numberWithInteger:(NSInteger)shortDeviceIDInteger];
+        [[NSUserDefaults standardUserDefaults] setObject:self.shortDeviceID forKey:@"short_device_id"];
+    } else {
+        id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
+        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
+            // This is the first time we see this device, assign a UUID to it
+            NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
+            unsigned short newShortDeviceID = (unsigned short)deviceUUID;
+            self.shortDeviceID = [NSNumber numberWithUnsignedShort:newShortDeviceID];
+            [[NSUserDefaults standardUserDefaults] setObject:self.shortDeviceID forKey:@"short_device_id"];
+        } else {
+            self.shortDeviceID = shortDeviceIdDisk;
+        }
+    }
 }
 
 @end
