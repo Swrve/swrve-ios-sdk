@@ -4,6 +4,7 @@
 #endif
 
 #import "SwrveConversationAtom.h"
+#import "SwrveConversation.h"
 
 @implementation SwrveConversationAtom
 
@@ -85,7 +86,7 @@
 }
 
 -(CGFloat) verticalPadding {
-    return 10.0;
+    return 0.0;
 }
 
 -(CGFloat) heightForRow:(NSUInteger) row {
@@ -98,9 +99,7 @@
     NSString *device = [[UIDevice currentDevice] model];
     
     if ([device rangeOfString:@"imulator"].location != NSNotFound) {
-        // In the days of resizable simulators, you need to get
-        // the size of the key window rather than the actual
-        // simulator size.
+        // In the days of resizable simulators, you need to get the size of the key window rather than the actual simulator size.
         screenSize = [[UIApplication sharedApplication] keyWindow].frame.size;
     }
     
@@ -131,27 +130,14 @@
     return newFrame;
 }
 
-// Rules for the width of the content view:
-//   iPhone, iOS 7+ : width of screen in points
-//   iPhone, iOS 6- : 10pt border => width of screen - 20pt
-//
-//   iPad, iOS 7+ : 540pt
-//   iPad, iOS 6- : 520pt
-//
 +(CGFloat) widthOfContentView {
     CGFloat containerWidth = 540.0;  // default: width of view on iPad iOS 7+
-    CGFloat bordersSize = 0.0;
-    
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        bordersSize = 20.0;
-    }
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         // iOS 8 makes width/height orientation dependent at
         // last :)
         if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
             UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
-            
+
             switch (o) {
                 case UIDeviceOrientationPortrait:
                 case UIDeviceOrientationPortraitUpsideDown:
@@ -169,10 +155,8 @@
             containerWidth = [SwrveConversationAtom screenSize].width;
         }
     }
-    
-    containerWidth -= bordersSize;  // Apply border math for iOS 6-
-    
     SwrveLogIt(@"widthOfContentView :: returning containerWidth: %f", containerWidth);
     return containerWidth;
 }
+
 @end
