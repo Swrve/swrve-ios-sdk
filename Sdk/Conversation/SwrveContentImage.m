@@ -1,5 +1,4 @@
 #import "SwrveContentImage.h"
-#import "SwrveSetup.h"
 
 @interface SwrveContentImage () {
     UIImageView *iv;
@@ -34,14 +33,8 @@
         self->iv.image = image;
         [self->iv sizeToFit];
         CGRect r = self->iv.frame;
-        if(r.size.width > [SwrveConversationAtom widthOfContentView]) {
-            self->iv.frame = CGRectMake(r.origin.x, r.origin.y, [SwrveConversationAtom widthOfContentView], r.size.height/r.size.width*[SwrveConversationAtom widthOfContentView]);
-        }
-        // If it is too small let's center it in the view, or just add it as a subview of the same size
+        self->iv.frame = CGRectMake(r.origin.x, r.origin.y, [SwrveConversationAtom widthOfContentView], (r.size.height/r.size.width*[SwrveConversationAtom widthOfContentView]));
         self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], self->iv.frame.size.height)];
-        if(r.size.width < [SwrveConversationAtom widthOfContentView]) {
-            self->iv.frame = CGRectMake(([SwrveConversationAtom widthOfContentView]-r.size.width)/2, r.origin.y, r.size.width, r.size.height);
-        }
         [self->_view addSubview:self->iv];
     });
     // Notify that the view is ready to be displayed
