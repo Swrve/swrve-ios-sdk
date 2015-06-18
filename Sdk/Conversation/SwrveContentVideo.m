@@ -37,7 +37,7 @@
     // Create _view
     float vid_height = (_height) ? [_height floatValue] : 180.0;
     _view = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
-    webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 300.0, vid_height)];
+    webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
     webview.opaque = NO;

@@ -19,8 +19,6 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
-#define kVerticalPadding 10.0
-
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
@@ -81,10 +79,6 @@
 
 -(CGFloat) buttonHorizontalPadding {
     return 6.0;
-}
-
--(CGFloat) verticalPadding {
-    return kVerticalPadding;
 }
 
 -(void) performActions:(SwrveConversationButton *)control {
@@ -303,17 +297,12 @@
 -(void) updateUI {
     // Style the table based on iOS version
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        // The table view should be -10 on each side and centred in the
-        // width of its containing view (so that it will behave correctly
-        // on iPad modal).
-        self.contentTableView.frame =
-            CGRectMake(10, self.contentTableView.frame.origin.y,
-                       self.view.frame.size.width - 20, self.contentTableView.frame.size.height);
+        self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
         [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     } else {
         self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
         [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
-        
+
         if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
             // Add spacing for status bar
             self.contentTableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);

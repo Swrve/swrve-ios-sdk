@@ -45,9 +45,9 @@
         }
         UIImage *img = [SwrveConversationResource imageFromBundleNamed:imageName];
         cell.backgroundView = [[UIImageView alloc] initWithImage:img];
-        NSString *selectedImageName = [NSString stringWithFormat:@"%@_tapped", imageName];
-        UIImage *selectedImage = [SwrveConversationResource imageFromBundleNamed:selectedImageName];
-        cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:selectedImage];
+//        NSString *selectedImageName = [NSString stringWithFormat:@"%@_tapped", imageName];
+//        UIImage *selectedImage = [SwrveConversationResource imageFromBundleNamed:selectedImageName];
+        cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:nil];
     } else {
         if(row == 0) {
             // Potentially a top row
