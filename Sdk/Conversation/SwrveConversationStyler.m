@@ -55,18 +55,17 @@
     return uiColor;
 }
 
-+ (NSString *) convertContentToHtml:(NSString*)content withStyle:(NSDictionary*)style{
-    NSString *fontFam = @"Helvetica";
++ (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style{
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
 
-    NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">html h1 {font-family:\"%@\"; font-weight:bold; font-size:22px; color:%@} \
-                          body {font-family:\"%@\";background-color: %@;} \
+    NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">%@ html { color: %@; } \
+                          body { background-color: %@; } \
                           </style> \
                           </head> \
                           <body> \
                           %@ \
-                          </body></html>", fontFam, fgHexColor, fontFam, bgHexColor, content];
+                          </body></html>", pageCSS, fgHexColor, bgHexColor, content];
     
     return html;
 }
