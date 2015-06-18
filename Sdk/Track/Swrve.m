@@ -949,6 +949,15 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
+-(SwrveCampaign*)getCampaignForId:(int)campaignId {
+    for(SwrveCampaign* campaign in self.talk.campaigns) {
+        if (campaign.ID == campaignId) {
+            return campaign;
+        }
+    }
+    return nil;
+}
+
 -(SwrveResourceManager*) getSwrveResourceManager
 {
     return [self resourceManager];

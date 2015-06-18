@@ -500,6 +500,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) userUpdate:(NSDictionary*)attributes;
 
+// TODO: Document
+-(SwrveCampaign*)getCampaignForId:(int)campaignId;
+
 #pragma mark -
 #pragma mark User Resources
 
