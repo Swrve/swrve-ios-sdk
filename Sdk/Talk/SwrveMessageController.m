@@ -1074,7 +1074,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         scivc.navigationItem.leftBarButtonItem = cancelButton;
         
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
+            // Resign first responder first
+            UIViewController* rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
+            [rootController.view endEditing:YES];
+            [rootController presentViewController:svnc animated:YES completion:nil];
         });
     }
 }
