@@ -24,26 +24,6 @@
 -(UITableViewCell*) styleCell:(UITableViewCell *)cell atRow:(NSUInteger) row {
     NSString *imageName;
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        if(row == 0) {
-            // Potentially a top row
-            if(self.values.count == 1) {
-                // Its actuall a top + bottom
-                imageName = @"grouped_cell_single";
-            } else {
-                // Actually a top
-                imageName = @"grouped_cell_top";
-            }
-        } else {
-            // Not a top row
-            if(row == self.values.count-1) {
-                // It is a bottom row
-                imageName = @"grouped_cell_bottom";
-            } else {
-                // Must be a mid, yo
-                imageName = @"grouped_cell_mid";
-            }
-        }
-        UIImage *img = [SwrveConversationResource imageFromBundleNamed:imageName];
         cell.backgroundView = [[UIImageView alloc] initWithImage:nil];
     } else {
         if(row == 0) {
