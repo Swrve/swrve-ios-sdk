@@ -29,7 +29,7 @@
         if(row == 0) {
             // Potentially a top row
             if(self.values.count == 1) {
-                // Its actuall a top + bottom
+                // Its actually a top + bottom
                 imageName = @"grouped_cell_single_ios7";
             } else {
                 // Actually a top
@@ -55,22 +55,18 @@
 -(CGFloat) heightForRow:(NSUInteger) row {
     if (row == 0) {
         UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
-        CGRect screenBounds = [[UIScreen mainScreen] bounds];
-        CGFloat constrainedWidth = 480.0;
-        
+        CGFloat constrainedWidth = [SwrveConversationAtom widthOfContentView];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
-                constrainedWidth = (screenBounds.size.height - 80);
-            } else {
-                constrainedWidth = (screenBounds.size.width - 50);
-            }
+            constrainedWidth = (constrainedWidth - 100);
+        } else {
+            constrainedWidth = (constrainedWidth - 150);
         }
 
         CGSize possibleSize = [self.description sizeWithFont:uifont
-                                           constrainedToSize:CGSizeMake(constrainedWidth, 9999)
+                                           constrainedToSize:CGSizeMake(constrainedWidth, MAXFLOAT)
                                                lineBreakMode:NSLineBreakByWordWrapping];
         CGFloat h = (float)ceil(possibleSize.height);
-        return (h > 51.0) ? 51.0 : h;
+        return h;
     } else {
         return 51.0;
     }
