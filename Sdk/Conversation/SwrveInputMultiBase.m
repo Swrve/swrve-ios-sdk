@@ -63,7 +63,7 @@
         }
 
         CGSize possibleSize = [self.description sizeWithFont:uifont
-                                           constrainedToSize:CGSizeMake(constrainedWidth, MAXFLOAT)
+                                           constrainedToSize:CGSizeMake(constrainedWidth, 9999)
                                                lineBreakMode:NSLineBreakByWordWrapping];
         CGFloat h = (float)ceil(possibleSize.height);
         return h;
