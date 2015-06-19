@@ -29,7 +29,7 @@
         if(row == 0) {
             // Potentially a top row
             if(self.values.count == 1) {
-                // Its actuall a top + bottom
+                // Its actually a top + bottom
                 imageName = @"grouped_cell_single_ios7";
             } else {
                 // Actually a top
@@ -59,7 +59,7 @@
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             constrainedWidth = (constrainedWidth - 100);
         } else {
-            constrainedWidth = (constrainedWidth - 125);
+            constrainedWidth = (constrainedWidth - 150);
         }
 
         CGSize possibleSize = [self.description sizeWithFont:uifont
