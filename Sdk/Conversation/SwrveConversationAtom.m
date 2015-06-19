@@ -133,24 +133,24 @@
 +(CGFloat) widthOfContentView {
     CGFloat containerWidth = 540.0;  // default: width of view on iPad iOS 7+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // iOS 8 makes width/height orientation dependent at
-        // last :)
+        // iOS 8 makes width/height orientation dependent at last :)
         if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-            UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
-
-            switch (o) {
-                case UIDeviceOrientationPortrait:
-                case UIDeviceOrientationPortraitUpsideDown:
-                case UIDeviceOrientationUnknown:
-                case UIDeviceOrientationFaceUp:
-                case UIDeviceOrientationFaceDown:
-                    containerWidth = [SwrveConversationAtom screenSize].width;
-                    break;
-                case UIDeviceOrientationLandscapeLeft:
-                case UIDeviceOrientationLandscapeRight:
-                    containerWidth = [SwrveConversationAtom screenSize].height;
-                    break;
-            }
+            containerWidth = [SwrveConversationAtom screenSize].width;
+// Locking to portrait mode so comment out below
+//            UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
+//            switch (o) {
+//                case UIDeviceOrientationPortrait:
+//                case UIDeviceOrientationPortraitUpsideDown:
+//                case UIDeviceOrientationUnknown:
+//                case UIDeviceOrientationFaceUp:
+//                case UIDeviceOrientationFaceDown:
+//                    containerWidth = [SwrveConversationAtom screenSize].width;
+//                    break;
+//                case UIDeviceOrientationLandscapeLeft:
+//                case UIDeviceOrientationLandscapeRight:
+//                    containerWidth = [SwrveConversationAtom screenSize].height;
+//                    break;
+//            }
         } else {
             containerWidth = [SwrveConversationAtom screenSize].width;
         }
