@@ -29,7 +29,7 @@
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
     };
-    
+
     [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
 }
 
@@ -40,7 +40,7 @@
       @"page" : pageTag,
       @"conversation" : [conversation.conversationID stringValue]
     };
-    
+
     [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
 }
 
@@ -62,7 +62,7 @@
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
     };
-    
+
     [[Swrve sharedInstance] event:[self nameOf:@"navigation" for:conversation] payload:eventPayload];
 }
 
@@ -81,7 +81,7 @@
               @"fragment" : item.tag,
               @"result" : result
               };
-            [[Swrve sharedInstance] event:[self nameOf:@"page.choice" for:conversation] payload:userInputResult];
+            [[Swrve sharedInstance] event:[self nameOf:@"choice" for:conversation] payload:userInputResult];
             
         } else if ([atom isKindOfClass:[SwrveInputMultiValueLong class]]) {
             SwrveInputMultiValueLong *item = (SwrveInputMultiValueLong*)atom;
@@ -98,7 +98,7 @@
                   @"set" : questionId,
                   @"result" : questionValue
                   };
-                [[Swrve sharedInstance] event:[self nameOf:@"page.multi-choice" for:conversation] payload:userInputResult];
+                [[Swrve sharedInstance] event:[self nameOf:@"multi-choice" for:conversation] payload:userInputResult];
             }
         } else if ([atom isKindOfClass:[SwrveContentVideo class]]) {
             SwrveContentVideo *item = (SwrveContentVideo*)atom;
@@ -110,7 +110,7 @@
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag
                 };
-                [[Swrve sharedInstance] event:[self nameOf:@"page.play" for:conversation] payload:userInputResult];
+                [[Swrve sharedInstance] event:[self nameOf:@"play" for:conversation] payload:userInputResult];
             }
         }
     }
