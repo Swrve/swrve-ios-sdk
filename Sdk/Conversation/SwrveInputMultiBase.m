@@ -59,7 +59,7 @@
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             constrainedWidth = (constrainedWidth - 100);
         } else {
-            constrainedWidth = (constrainedWidth - 150);
+            constrainedWidth = (constrainedWidth - 155);
         }
 
         CGSize possibleSize = [self.description sizeWithFont:uifont
