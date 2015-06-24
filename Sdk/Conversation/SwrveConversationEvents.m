@@ -73,16 +73,17 @@
         if([atom isKindOfClass:[SwrveInputMultiValue class]]) {
             SwrveInputMultiValue *item = (SwrveInputMultiValue*)atom;
             NSString* result = item.userResponse;
-            NSDictionary *userInputResult =
-            @{
-              @"event" : @"choice",
-              @"page" : conversationPane.tag,
-              @"conversation" : [conversation.conversationID stringValue],
-              @"fragment" : item.tag,
-              @"result" : result
-              };
-            [[Swrve sharedInstance] event:[self nameOf:@"choice" for:conversation] payload:userInputResult];
-            
+            if (result && ![result isEqualToString:@""]) {
+                NSDictionary *userInputResult =
+                        @{
+                                @"event" : @"choice",
+                                @"page" : conversationPane.tag,
+                                @"conversation" : [conversation.conversationID stringValue],
+                                @"fragment" : item.tag,
+                                @"result" : result
+                        };
+                [[Swrve sharedInstance] event:[self nameOf:@"choice" for:conversation] payload:userInputResult];
+            }
         } else if ([atom isKindOfClass:[SwrveInputMultiValueLong class]]) {
             SwrveInputMultiValueLong *item = (SwrveInputMultiValueLong*)atom;
             NSDictionary* results = item.userResponse;
