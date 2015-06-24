@@ -9,6 +9,8 @@ static ISHPermissionRequest *_cameraRequest = nil;
 static ISHPermissionRequest *_contactsRequest = nil;
 static ISHPermissionRequest *_remoteNotifications = nil;
 
+static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
+
 @implementation SwrvePermissions
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)sdk {
@@ -68,8 +70,17 @@ static ISHPermissionRequest *_remoteNotifications = nil;
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:currentStatus];
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:currentStatus];
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:currentStatus];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_push_notifications to:filters withCurrentStatus:currentStatus];
+    
+    // Check that we haven't already asked for push permissions
+    if ([SwrvePermissions didWeAskForPushPermissionsAlready]) {
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_push_notifications to:filters withCurrentStatus:currentStatus];
+    }
+
     return filters;
+}
+
++(BOOL)didWeAskForPushPermissionsAlready {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:asked_for_push_flag_key];
 }
 
 +(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
@@ -232,6 +243,9 @@ static ISHPermissionRequest *_remoteNotifications = nil;
     } else {
         [(ISHPermissionRequestNotificationsRemote*)r requestUserPermissionWithoutCompleteBlock];
     }
+    
+    // Remember we asked for push permissions
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:asked_for_push_flag_key];
 }
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(Swrve*)sdk {

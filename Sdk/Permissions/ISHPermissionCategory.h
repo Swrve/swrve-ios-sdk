@@ -110,15 +110,6 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
     
     /**
      *  Permission required to schedule remote notifications.
-     *  @note Requests for this permission might require further
-     *        configuration via the ISHPermissionsViewControllerDataSource.
-     *
-     *  @warning Your app delegate will need to implement the following lines:
-     *  @code
-     *  - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-     *       [[NSNotificationCenter defaultCenter] postNotificationName:ISHPermissionNotificationApplicationDidRegisterUserNotificationSettings
-     *                                                           object:self];
-     *  }
      *  @endcode
      */
     ISHPermissionCategoryNotificationRemote = 8300
