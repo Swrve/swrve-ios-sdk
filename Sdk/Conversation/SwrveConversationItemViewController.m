@@ -114,7 +114,6 @@
     switch (actionType) {
         case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
@@ -151,7 +150,6 @@
                 [alert show];
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
             }
             break;
@@ -172,7 +170,6 @@
             }
             NSURL *target = [NSURL URLWithString:param];
             [SwrveConversationEvents deeplinkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
             [[UIApplication sharedApplication] openURL:target];
         }
         default:
