@@ -64,11 +64,6 @@
     CGFloat containerWidth = [SwrveConversationAtom widthOfContentView];
     CGFloat cellItemWidth  = r.size.width;
     CGFloat leftPadding    = 0.0;
-    if (cellItemWidth < containerWidth) {
-        // Possibly move this padding in to the item itself
-//        SwrveLogIt(@"cellForRow :: Content needs padded");
-//        leftPadding = roundf((containerWidth - cellItemWidth) / 2);
-    }
     // If it is too wide, adjust
     if (cellItemWidth > containerWidth) {
         leftPadding = 0.0;
