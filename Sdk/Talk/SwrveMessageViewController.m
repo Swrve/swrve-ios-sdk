@@ -107,8 +107,12 @@
     }
 }
 
+#ifdef __IPHONE_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#else
 // iOS 6 and iOS 7 (to be deprecated)
 - (NSUInteger)supportedInterfaceOrientations
+#endif
 {
     BOOL portrait = [self.message supportsOrientation:UIInterfaceOrientationPortrait];
     BOOL landscape = [self.message supportsOrientation:UIInterfaceOrientationLandscapeLeft];

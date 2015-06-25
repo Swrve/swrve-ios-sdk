@@ -350,8 +350,12 @@
 
 #pragma mark - Rotation
 
-// Rotation for iOS < 6
--(NSUInteger) supportedInterfaceOrientations {
+#ifdef __IPHONE_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+#else
+// Rotation for iOS 6
+- (NSUInteger)supportedInterfaceOrientations {
+#endif    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return UIInterfaceOrientationMaskAll;
     } else {

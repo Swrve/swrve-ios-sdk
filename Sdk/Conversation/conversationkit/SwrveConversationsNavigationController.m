@@ -24,8 +24,12 @@
     return landscapeEnabled;
 }
 
+#ifdef __IPHONE_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+#else
 // Rotation for iOS 6
 - (NSUInteger)supportedInterfaceOrientations {
+#endif
     if (landscapeEnabled) {
         // On iOS 6+, you would use the shorthand UIInterfaceOrientationMaskAll
         // here, but it won't compile for iOS 5.1, so must be primitive about it

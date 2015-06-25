@@ -28,13 +28,8 @@
     }
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+- (id)initWithStyle:(UITableViewStyle)style {
+    return [super initWithStyle:style];
 }
 
 - (void)viewDidLoad
@@ -43,7 +38,11 @@
     [SwrveConversationStyler styleView:self.view withStyle:self.pageStyle];
 }
 
+#ifdef __IPHONE_9_0
+-(UIInterfaceOrientationMask) supportedInterfaceOrientations {
+#else
 -(NSUInteger) supportedInterfaceOrientations {
+#endif
     return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
