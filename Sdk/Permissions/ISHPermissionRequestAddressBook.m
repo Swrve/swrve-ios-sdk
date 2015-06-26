@@ -6,9 +6,12 @@
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
+#include <objc/runtime.h>
 #import <AddressBook/AddressBook.h>
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation ISHPermissionRequestAddressBook {
     ABAddressBookRef _addressBook;
@@ -51,7 +54,14 @@
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
         
         if (addressBook) {
-            [self setAddressBook:CFAutorelease(addressBook)];
+            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
+                [self setAddressBook:CFAutorelease(addressBook)];
+            } else {
+                // CFAutoRelease not supported on iOS6 so we need to use this awful code!
+                SEL autorelease = sel_getUid("autorelease");
+                IMP imp = class_getMethodImplementation(object_getClass((__bridge id)addressBook), autorelease);
+                ((CFTypeRef (*)(CFTypeRef, SEL))imp)(addressBook, autorelease);
+            }
         }
     }
     
