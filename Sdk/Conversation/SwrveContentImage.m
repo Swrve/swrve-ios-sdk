@@ -26,21 +26,25 @@
 
 - (void)sizeAndDisplayImage:(UIImage *)image
 {
-    // Create _view and add image to it
-    iv = [[UIImageView alloc] init];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Image setting and manipulation should be done on the main thread, otherwise this slows down a lot on iOS 7
-        self->iv.image = image;
-        [self->iv sizeToFit];
-        CGRect r = self->iv.frame;
-        self->iv.frame = CGRectMake(r.origin.x, r.origin.y, [SwrveConversationAtom widthOfContentView], (r.size.height/r.size.width*[SwrveConversationAtom widthOfContentView]));
-        self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], self->iv.frame.size.height)];
-        [self->_view addSubview:self->iv];
-    });
-    // Notify that the view is ready to be displayed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
-    // Get notified if the view should change dimensions
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
+    if (image != nil) {
+        // Create _view and add image to it
+        iv = [[UIImageView alloc] init];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Image setting and manipulation should be done on the main thread, otherwise this slows down a lot on iOS 7
+            self->iv.image = image;
+            [self->iv sizeToFit];
+            CGRect r = self->iv.frame;
+            if (r.size.width > 0) {
+                self->iv.frame = CGRectMake(r.origin.x, r.origin.y, [SwrveConversationAtom widthOfContentView], (r.size.height/r.size.width*[SwrveConversationAtom widthOfContentView]));
+                self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], self->iv.frame.size.height)];
+                [self->_view addSubview:self->iv];
+            }
+        });
+        // Notify that the view is ready to be displayed
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
+        // Get notified if the view should change dimensions
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
+    }
 }
 
 -(UIView *)view {
