@@ -182,7 +182,7 @@
     [SwrveConversationEvents cancel:conversation onPage:self.conversationPane.tag];
     // Send queued user input events
     [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self dismiss];
 }
 
 -(void) buttonTapped:(id)sender {
@@ -257,7 +257,7 @@
     if ([control endsConversation]) {
         [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [self dismiss];
         });
     } else {
         SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
@@ -271,6 +271,13 @@
 
     [self runControlActions:control];
     return YES;
+}
+
+-(void)dismiss {
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        [atom stop];
+    }
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
