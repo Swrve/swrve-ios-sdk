@@ -28,9 +28,12 @@
 }
 
 -(void) stop {
-    // Stop the running video - this will happen on a
-    // page change.
+    // Stop the running video - this will happen on a page change.
     [webview loadHTMLString:@"" baseURL:nil];
+    [webview setDelegate:nil];
+    if (webview.isLoading) {
+        [webview stopLoading];
+    }
 }
 
 -(void) loadView {
