@@ -246,9 +246,7 @@
     
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        [atom stop];
-    }
+    [self stopAtoms];
     
     // Issue events for data from the user
     [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
@@ -273,10 +271,14 @@
     return YES;
 }
 
--(void)dismiss {
+-(void)stopAtoms {
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom stop];
     }
+}
+
+-(void)dismiss {
+    [self stopAtoms];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
