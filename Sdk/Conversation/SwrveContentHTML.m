@@ -82,4 +82,11 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 
+-(void) stop {
+    [webview setDelegate:nil];
+    if (webview.isLoading) {
+        [webview stopLoading];
+    }
+}
+
 @end
