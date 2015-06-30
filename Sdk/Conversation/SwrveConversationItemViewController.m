@@ -182,7 +182,7 @@
     [SwrveConversationEvents cancel:conversation onPage:self.conversationPane.tag];
     // Send queued user input events
     [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self dismiss];
 }
 
 -(void) buttonTapped:(id)sender {
@@ -246,9 +246,7 @@
     
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        [atom stop];
-    }
+    [self stopAtoms];
     
     // Issue events for data from the user
     [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
@@ -257,7 +255,7 @@
     if ([control endsConversation]) {
         [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            [self dismiss];
         });
     } else {
         SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
@@ -271,6 +269,17 @@
 
     [self runControlActions:control];
     return YES;
+}
+
+-(void)stopAtoms {
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        [atom stop];
+    }
+}
+
+-(void)dismiss {
+    [self stopAtoms];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
