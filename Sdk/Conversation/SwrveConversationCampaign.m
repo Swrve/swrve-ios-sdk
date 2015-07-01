@@ -90,9 +90,19 @@
     }
     
     SwrveMessageController* controllerStrongReference = self.controller;
-    if (controllerStrongReference == nil || ![controllerStrongReference supportsDeviceFilters:filters]) {
-        [self logAndAddReason:[NSString stringWithFormat:@"Some filters were not supported in campaign %ld", (long)self.ID] withReasons:campaignReasons];
+    if (controllerStrongReference == nil) {
+        DebugLog(@"No message controller!", nil);
         return nil;
+    } else {
+        NSString* unsupportedFilter = [controllerStrongReference supportsDeviceFilters:filters];
+        if (unsupportedFilter != nil) {
+            // There was a filter that was not supported
+            if ([unsupportedFilter containsString:@".permission."]) {
+                [self logAndAddReason:[NSString stringWithFormat:@"The permission %@ was either unsupported, denied or already authorized while displaying campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
+            } else {
+                [self logAndAddReason:[NSString stringWithFormat:@"The filter %@ was not supported in campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
+            }
+        }
     }
     
     if ([self.conversation areDownloaded:assets]) {
