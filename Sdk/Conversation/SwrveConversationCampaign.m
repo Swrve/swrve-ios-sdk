@@ -98,7 +98,7 @@
         if (unsupportedFilter != nil) {
             // There was a filter that was not supported
             if ([unsupportedFilter containsString:@".permission."]) {
-                [self logAndAddReason:[NSString stringWithFormat:@"The permission %@ was either unsupported, denied or already authorized while displaying campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
+                [self logAndAddReason:[NSString stringWithFormat:@"The permission %@ was either unsupported, denied or already authorised while displaying campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
             } else {
                 [self logAndAddReason:[NSString stringWithFormat:@"The filter %@ was not supported in campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
             }
