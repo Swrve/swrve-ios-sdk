@@ -220,9 +220,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 /*! Used internally to determine if the conversation filters are supporter at this moment
  *
- * \param filters Filtesr we need to support to display the campaign.
+ * \param filters Filters we need to support to display the campaign.
+ * \returns nil if all devices are supported or the name of the filter that is not supported.
  */
--(BOOL) supportsDeviceFilters:(NSArray*)filters;
+-(NSString*) supportsDeviceFilters:(NSArray*)filters;
 
 @end
 
