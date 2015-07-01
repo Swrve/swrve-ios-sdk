@@ -72,7 +72,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:currentStatus];
     
     // Check that we haven't already asked for push permissions
-    if ([SwrvePermissions didWeAskForPushPermissionsAlready]) {
+    if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_push_notifications to:filters withCurrentStatus:currentStatus];
     }
 
