@@ -10,6 +10,16 @@
 #import "SwrveSwizzleHelper.h"
 #import "SwrvePermissions.h"
 
+#ifdef SWRVE_ADOBE_INTEGRATION
+#import "ADBMobile.h"
+
+typedef void (*ADBMobileTrackActionSignature)(__strong id,SEL,NSString*, NSDictionary*);
+typedef void (*ADBMobileTrackStateSignature)(__strong id,SEL,NSString*, NSDictionary*);
+typedef void (*ADBMobileTrackActionFromBackgroundSignature)(__strong id,SEL,NSString*, NSDictionary*);
+typedef void (*ADBMobileSetPushIdentifierSignature)(__strong id,SEL,NSdata*);
+
+#endif
+
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
 #else
@@ -496,6 +506,13 @@ static Swrve * _swrveSharedInstance = nil;
 static dispatch_once_t sharedInstanceToken = 0;
 static bool didSwizzle = false;
 
+#ifdef SWRVE_ADOBE_INTEGRATION
+static ADBMobileTrackActionSignature originalTrackActionMethod;
+static ADBMobileTrackStateSignature originalTrackStateMethod;
+static ADBMobileTrackActionSignature originalTrackActionFromBackgroundMethod;
+static ADBMobileSetPushIdentifierSignature originalSetPushIdentifierMethod;
+#endif
+
 @synthesize config;
 @synthesize appID;
 @synthesize apiKey;
@@ -598,6 +615,107 @@ static bool didSwizzle = false;
 {
    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil config:swrveConfig];
 }
+
+#ifdef SWRVE_ADOBE_INTEGRATION
+-(id) initWithAppIDAndAdobeIntegration:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
+{
+    return [self initWithAppIDAndAdobeIntegration:swrveAppID apiKey:swrveAPIKey userID:nil];
+}
+
+-(id) initWithAppIDAndAdobeIntegration:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID {
+    return [self initWithAppIDAndAdobeIntegration:swrveAppID apiKey:swrveAPIKey userID:nil];
+}
+
+-(id) initWithAppIDAndAdobeIntegration:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
+{
+    return [self initWithAppIDAndAdobeIntegration:swrveAppID apiKey:swrveAPIKey userID:nil config:swrveConfig];
+}
+
+-(id) initWithAppIDAndAdobeIntegration:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
+{
+    Class adbmobileClass = [ADBMobile class];
+    SEL admobileTrackActionSelector = @selector(trackAction:data:);
+    SEL admobileTrackStateSelector = @selector(trackState:data:);
+    SEL admobileTrackActionFromBackgroundSelector = @selector(trackActionFromBackground:data:);
+    SEL admobileSetPushIdentifierSelector = @selector(setPushIdentifier:);
+    
+    // Cast to actual method signature
+    originalTrackActionMethod = (ADBMobileTrackActionSignature)[SwrveSwizzleHelper swizzleClassMethod:admobileTrackActionSelector inClass:adbmobileClass withImplementationIn:[self class]];
+    
+    originalTrackStateMethod = (ADBMobileTrackStateSignature)[SwrveSwizzleHelper swizzleClassMethod:admobileTrackStateSelector inClass:adbmobileClass withImplementationIn:[self class]];
+    
+    originalTrackActionFromBackgroundMethod = (ADBMobileTrackActionSignature)[SwrveSwizzleHelper swizzleClassMethod:admobileTrackActionFromBackgroundSelector inClass:adbmobileClass withImplementationIn:[self class]];
+    
+    originalSetPushIdentifierMethod = (ADBMobileSetPushIdentifierSignature)[SwrveSwizzleHelper swizzleClassMethod:admobileSetPushIdentifierSelector inClass:adbmobileClass withImplementationIn:[self class]];
+    
+    // Use the ADBMobile SDK tracking id as user id if not configured
+    if (swrveUserID == nil) {
+        swrveUserID = [ADBMobile trackingIdentifier];
+    }
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
+}
+
++ (void) trackAction:(NSString *)action data:(NSDictionary *)data {
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Swrve Adobe Integration only works if you are using the Swrve instance singleton.", nil);
+    } else {
+        [swrveInstance event:action payload:data];
+    }
+    
+    // Call original method
+    if(originalTrackActionMethod != NULL ) {
+        SEL admobileTrackActionSelector = @selector(trackAction:data:);
+        originalTrackActionMethod(nil, admobileTrackActionSelector, action, data);
+    }
+}
+
++ (void) trackState:(NSString *)action data:(NSDictionary *)data {
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Swrve Adobe Integration only works if you are using the Swrve instance singleton.", nil);
+    } else {
+        [swrveInstance userUpdate:data];
+    }
+    
+    // Call original method
+    if(originalTrackStateMethod != NULL ) {
+        SEL admobileTrackStateSelector = @selector(trackState:data:);
+        originalTrackStateMethod(nil, admobileTrackStateSelector, action, data);
+    }
+}
+
++ (void) trackActionFromBackground:(NSString *)action data:(NSDictionary *)data {
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Swrve Adobe Integration only works if you are using the Swrve instance singleton.", nil);
+    } else {
+        [swrveInstance event:action payload:data];
+    }
+    
+    // Call original method
+    if(originalTrackActionFromBackgroundMethod != NULL ) {
+        SEL admobileTrackActionFromBackgroundSelector = @selector(trackActionFromBackground:data:);
+        originalTrackActionFromBackgroundMethod(nil, admobileTrackActionFromBackgroundSelector, action, data);
+    }
+}
+
++ (void) setPushIdentifier:(NSData*)newDeviceToken {
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Swrve Adobe Integration only works if you are using the Swrve instance singleton.", nil);
+    } else {
+        [swrveInstance.talk setDeviceToken:newDeviceToken];
+    }
+    
+    // Call original method
+    if(originalSetPushIdentifierMethod != NULL ) {
+        SEL admobileSetPushIdentifierSelector = @selector(setPushIdentifier:);
+        originalSetPushIdentifierMethod(nil, admobileSetPushIdentifierSelector, newDeviceToken);
+    }
+}
+
+#endif
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
 {

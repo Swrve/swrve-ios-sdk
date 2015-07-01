@@ -18,7 +18,7 @@ static Method _class_getInstanceMethodSelfOrParents(Class c, SEL selector) {
 // Replaces the selector on the class with the same selector on newObject.
 // Returns the implementation of the selector that was replaced, or NULL if
 // no replacement was done.
-+ (IMP) swizzleMethod:(SEL)selector inClass:(Class)c withImplementationInClass:(NSObject*)newObject;
++ (IMP) swizzleMethod:(SEL)selector inClass:(Class)c withImplementationIn:(NSObject*)newObject;
 {
     Method originalMethod = _class_getInstanceMethodSelfOrParents(c, selector);
     IMP oldImplementation = method_getImplementation(originalMethod);
@@ -49,13 +49,12 @@ static Method _class_getInstanceMethodSelfOrParents(Class c, SEL selector) {
 // no replacement was done.
 + (IMP) swizzleClassMethod:(SEL)selector inClass:(Class)c withImplementationIn:(Class)c2;
 {
-    // Obtain metea classes
+    // Obtain meta classes
     c = object_getClass((id)c);
     c2 = object_getClass((id)c2);
     
     Method originalMethod = class_getInstanceMethod(c, selector);
     Method newMethod = class_getInstanceMethod(c2, selector);
-    
     IMP oldImplementation = method_getImplementation(originalMethod);
     
     if (!oldImplementation) {
