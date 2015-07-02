@@ -327,23 +327,24 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 -(BOOL) canSupportDeviceFilter:(NSString*)filter {
-    // Used to check al global filters this SDK supports
+    // Used to check all global filters this SDK supports
     return [SUPPORTED_DEVICE_FILTERS containsObject:[filter lowercaseString]];
 }
 
--(BOOL) supportsDeviceFilters:(NSArray*)filters {
+-(NSString*) supportsDeviceFilters:(NSArray*)filters {
     // Update device filters to the current status
     NSArray* currentFilters = [self getCurrentlySupportedDeviceFilters];
     
     // Used to check the current enabled filters
     if (filters != nil) {
         for (NSString* filter in filters) {
-            if (![currentFilters containsObject:[filter lowercaseString]]) {
-                return FALSE;
+            NSString* lowercaseFilter = [filter lowercaseString];
+            if (![currentFilters containsObject:lowercaseFilter]) {
+                return lowercaseFilter;
             }
         }
     }
-    return TRUE;
+    return nil;
 }
 
 -(NSArray*)getCurrentlySupportedDeviceFilters {
