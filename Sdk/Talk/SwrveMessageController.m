@@ -1145,13 +1145,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             break;
         case kSwrveActionCustom:
         {
-            BOOL processedRequest = [SwrvePermissions processPermissionRequest:action withSDK:self.analyticsSDK];
-            if (!processedRequest) {
-                if (self.customButtonCallback != nil) {
-                    self.customButtonCallback(action);
-                } else {
-                    nonProcessedAction = action;
-                }
+            if (self.customButtonCallback != nil) {
+                self.customButtonCallback(action);
+            } else {
+                nonProcessedAction = action;
             }
         }
             break;
