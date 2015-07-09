@@ -1,3 +1,5 @@
 *.xcarchive
 *.ipa
 .DS_Store
+build/
+.idea

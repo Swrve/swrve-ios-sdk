@@ -7,12 +7,16 @@
 #import "SwrveTalkQA.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationItemViewController.h"
+#import "SwrvePermissions.h"
 
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
-
+static NSArray* SUPPORTED_DEVICE_FILTERS;
+static NSArray* SUPPORTED_STATIC_DEVICE_FILTERS;
+static NSArray* ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS;
+    
 const static int CAMPAIGN_VERSION            = 5;
 const static int CAMPAIGN_RESPONSE_VERSION   = 1;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
@@ -75,8 +79,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (atomic) long messagesLeftToShow;
 @property (atomic) NSTimeInterval minDelayBetweenMessage;
 
-@property (nonatomic) Swrve* analyticsSDK;
-
 // QA
 @property (nonatomic) SwrveTalkQA* qaUser;
 
@@ -125,6 +127,18 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize swrveConversationsNavigationController;
 @synthesize swrveConversationItemViewController;
 
++ (void)initialize {
+    ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
+        [swrve_permission_location_always stringByAppendingString:swrve_permission_requestable],
+        [swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable],
+        [swrve_permission_photos stringByAppendingString:swrve_permission_requestable],
+        [swrve_permission_camera stringByAppendingString:swrve_permission_requestable],
+        [swrve_permission_contacts stringByAppendingString:swrve_permission_requestable],
+        [swrve_permission_push_notifications stringByAppendingString:swrve_permission_requestable], nil];
+    SUPPORTED_STATIC_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
+    SUPPORTED_DEVICE_FILTERS = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
+    [(NSMutableArray*)SUPPORTED_DEVICE_FILTERS addObjectsFromArray:ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS];
+}
 
 - (id)initWithSwrve:(Swrve*)sdk
 {
@@ -133,7 +147,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_height = (int)screen_bounds.size.width;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
-
+    
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
     self.apiKey             = sdk.apiKey;
@@ -162,12 +176,12 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.messagesLeftToShow = LONG_MAX;
     
     DebugLog(@"Swrve Messaging System initialised: Server: %@ Game: %@",
-          self.server,
-          self.apiKey);
-
+             self.server,
+             self.apiKey);
+    
     SwrveMessageController * __weak weakSelf = self;
     [sdk setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {
-        #pragma unused(eventsPayloadAsJSON)
+#pragma unused(eventsPayloadAsJSON)
         SwrveMessageController * strongSelf = weakSelf;
         if (strongSelf != nil) {
             [strongSelf eventRaised:eventPayload];
@@ -177,7 +191,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSAssert1([self.language length] > 0, @"Invalid language specified %@", self.language);
     NSAssert1([self.user     length] > 0, @"Invalid username specified %@", self.user);
     NSAssert(self.analyticsSDK != NULL,   @"Swrve Analytics SDK is null", nil);
-
+    
     NSData* device_token = [[NSUserDefaults standardUserDefaults] objectForKey:swrve_device_token_key];
     if (self.pushEnabled && device_token) {
         // Once we have a device token, ask for it every time
@@ -187,7 +201,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
-
+    
     self.showMessageTransition = [CATransition animation];
     self.showMessageTransition.type = kCATransitionPush;
     self.showMessageTransition.subtype = kCATransitionFromBottom;
@@ -208,32 +222,14 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 -(void)registerForPushNotifications
 {
-    UIApplication* app = [UIApplication sharedApplication];
-#ifdef __IPHONE_8_0
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-    // Check if the new push API is not available
-    if (![app respondsToSelector:@selector(registerUserNotificationSettings:)])
-    {
-        // Use the old API
-        [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-    }
-    else
-#endif
-    {
-        [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:self.analyticsSDK.config.pushCategories]];
-        [app registerForRemoteNotifications];
-    }
-#else
-    // Not building with the latest XCode that contains iOS 8 definitions
-    [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
+    [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
 }
 
 - (NSDictionary*)getCampaignSettings
 {
     NSMutableDictionary* settings = [[NSMutableDictionary alloc] init];
     NSData* data = [NSData dataWithContentsOfFile:[self settingsPath]];
-
+    
     if(!data)
     {
         DebugLog(@"Error: No settings loaded. [Reading from %@]", [self settingsPath]);
@@ -268,9 +264,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
     
     NSError*  error = NULL;
     NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newSettings
-                                                                   format:NSPropertyListXMLFormat_v1_0
-                                                                  options:0
-                                                                    error:&error];
+                                                                format:NSPropertyListXMLFormat_v1_0
+                                                               options:0
+                                                                 error:&error];
     if(data)
     {
         BOOL success = [data writeToFile:[self settingsPath] atomically:YES];
@@ -296,15 +292,15 @@ const static int DEFAULT_MIN_DELAY           = 55;
     {
         DebugLog(@"Error creating %@: %@", self.cacheFolder, error);
     }
-
+    
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.campaignCache];
     NSURL* signatureURL = [NSURL fileURLWithPath:self.campaignCacheSignature];
     campaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self.analyticsSDK getSignatureKey]];
-
+    
     // read content of campaigns file and update campaigns
     NSData* content = [campaignFile readFromFile];
-
+    
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -312,7 +308,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
             [self updateCampaigns:jsonDict];
         }
     } else {
-        [[self analyticsSDK] invalidateETag];
+        [self.analyticsSDK invalidateETag];
     }
 }
 
@@ -330,33 +326,61 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [[self campaignFile] writeToFile:campaignData];
 }
 
+-(BOOL) canSupportDeviceFilter:(NSString*)filter {
+    // Used to check all global filters this SDK supports
+    return [SUPPORTED_DEVICE_FILTERS containsObject:[filter lowercaseString]];
+}
+
+-(NSString*) supportsDeviceFilters:(NSArray*)filters {
+    // Update device filters to the current status
+    NSArray* currentFilters = [self getCurrentlySupportedDeviceFilters];
+    
+    // Used to check the current enabled filters
+    if (filters != nil) {
+        for (NSString* filter in filters) {
+            NSString* lowercaseFilter = [filter lowercaseString];
+            if (![currentFilters containsObject:lowercaseFilter]) {
+                return lowercaseFilter;
+            }
+        }
+    }
+    return nil;
+}
+
+-(NSArray*)getCurrentlySupportedDeviceFilters {
+    NSMutableArray* supported = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
+    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFiltersWithSDK:analyticsSDK];
+    [supported addObjectsFromArray:currentPermissionFilters];
+    return supported;
+}
+
 -(void) updateCampaigns:(NSDictionary*)campaignJson
 {
     if (campaignJson == nil) {
         DebugLog(@"Error parsing campaign JSON", nil);
         return;
     }
-
+    
     if ([campaignJson count] == 0) {
         DebugLog(@"Campaign JSON empty, no campaigns downloaded", nil);
         self.campaigns = [[NSArray alloc] init];
         return;
     }
-
+    
     NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
     NSMutableArray* result    = [[NSMutableArray alloc] init];
-
+    
     // Version check
     NSNumber* version = [campaignJson objectForKey:@"version"];
     if ([version integerValue] != CAMPAIGN_RESPONSE_VERSION){
         DebugLog(@"Campaign JSON has the wrong version. No campaigns loaded.", nil);
         return;
     }
-
+    
     // CDN
     self.cdnRoot = [campaignJson objectForKey:@"cdn_root" ];
     DebugLog(@"CDN URL %@", self.cdnRoot);
-
+    
     // Game Data
     NSDictionary* gameData = [campaignJson objectForKey:@"game_data"];
     if (gameData){
@@ -372,13 +396,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSNumber* delay    = numberFromJsonWithDefault(rules, @"delay_first_message", DEFAULT_DELAY_FIRST_MESSAGE);
         NSNumber* maxShows = numberFromJsonWithDefault(rules, @"max_messages_per_session", DEFAULT_MAX_SHOWS);
         NSNumber* minDelay = numberFromJsonWithDefault(rules, @"min_delay_between_messages", DEFAULT_MIN_DELAY);
-  
+        
         self.showMessagesAfterLaunch  = [self.initialisedTime dateByAddingTimeInterval:delay.doubleValue];
         self.minDelayBetweenMessage = minDelay.doubleValue;
         self.messagesLeftToShow = maxShows.longValue;
-    
+        
         DebugLog(@"Game rules OK: Delay Seconds: %@ Max shows: %@ ", delay, maxShows);
-        DebugLog(@"Time is %@ show messages after %@", [[self analyticsSDK] getNow], [self showMessagesAfterLaunch]);
+        DebugLog(@"Time is %@ show messages after %@", [self.analyticsSDK getNow], [self showMessagesAfterLaunch]);
     }
     
     // QA
@@ -395,7 +419,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             for (NSDictionary* json_qa_campaign in json_qa_campaigns) {
                 NSNumber* campaign_id = [json_qa_campaign objectForKey:@"id"];
                 NSString* campaign_reason = [json_qa_campaign objectForKey:@"reason"];
-            
+                
                 DebugLog(@"Campaign %@ not downloaded because: %@", campaign_id, campaign_reason);
                 
                 // Add campaign for QA purposes
@@ -415,43 +439,68 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [self.notifications removeAllObjects];
     
     NSDictionary* settings = [self getCampaignSettings];
-
+    
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
-        bool conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
+        BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
         SwrveBaseCampaign* campaign = nil;
         if (conversationCampaign) {
-            campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+            // Check device filters (permission requests, platform)
+            NSArray* filters = [dict objectForKey:@"filters"];
+            BOOL passesAllFilters = TRUE;
+            NSString* lastCheckedFilter = nil;
+            if (filters != nil) {
+                for (NSString* filter in filters) {
+                    lastCheckedFilter = filter;
+                    if (![self canSupportDeviceFilter:filter]) {
+                        passesAllFilters = NO;
+                        break;
+                    }
+                }
+            }
+            
+            if (passesAllFilters) {
+                // Conversation version check
+                NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
+                if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
+                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+                } else {
+                    DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
+                }
+            } else {
+                DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
+            }
         } else {
             campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
         }
         
-        DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-
-        campaign.next = 0;
-        if(!self.qaUser || !self.qaUser.resetDevice) {
-            NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-            NSDictionary* campaignSettings = [settings objectForKey:ID];
-            if(campaignSettings) {
-                NSNumber* next = [campaignSettings objectForKey:@"next"];
-                if (next)
-                {
-                    campaign.next = next.unsignedIntegerValue;
-                }
-                NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                if (impressions)
-                {
-                    campaign.impressions = impressions.unsignedIntegerValue;
+        if (campaign != nil) {
+            DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
+            campaign.next = 0;
+            if(!self.qaUser || !self.qaUser.resetDevice) {
+                NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
+                NSDictionary* campaignSettings = [settings objectForKey:ID];
+                if(campaignSettings) {
+                    NSNumber* next = [campaignSettings objectForKey:@"next"];
+                    if (next)
+                    {
+                        campaign.next = next.unsignedIntegerValue;
+                    }
+                    NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
+                    if (impressions)
+                    {
+                        campaign.impressions = impressions.unsignedIntegerValue;
+                    }
                 }
             }
-        }
-        
-        [result addObject:campaign];
-        
-        if(self.qaUser) {
-            // Add campaign for QA purposes
-            [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+            
+            [result addObject:campaign];
+            
+            if(self.qaUser) {
+                // Add campaign for QA purposes
+                [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long)campaign.ID]];
+            }
         }
     }
     
@@ -459,12 +508,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (self.qaUser != nil) {
         [self.qaUser talkSession:campaignsDownloaded];
     }
-
+    
     for (NSString* asset in assetsQueue) {
-        #pragma unused(asset)
+#pragma unused(asset)
         DebugLog(@"Asset Set: %@", asset);
     }
-
+    
     NSMutableArray* downloadQueue = [self withOutExistingFiles:assetsQueue];
     while([downloadQueue count] > 0)
     {
@@ -505,13 +554,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     NSURL* url = [NSURL URLWithString: asset relativeToURL: [NSURL URLWithString:self.cdnRoot]];
-
+    
     DebugLog(@"Downloading asset: %@", url);
-
+    
     [self.analyticsSDK sendHttpGETRequest:url
                         completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
      {
-        #pragma unused(response)
+#pragma unused(response)
          if (error)
          {
              DebugLog(@"Asset Error: %@", error);
@@ -521,11 +570,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
              if (![SwrveMessageController verifySHA:data against:asset]){
                  DebugLog(@"Error downloading %@ – SHA1 does not match.", asset);
              } else {
-
+                 
                  NSURL* dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
-
+                 
                  [data writeToURL:dst atomically:YES];
-
+                 
                  // Add the asset to the set of assets that we know are downloaded.
                  [self.assetsOnDisk addObject:asset];
                  DebugLog(@"Asset downloaded: %@", asset);
@@ -536,7 +585,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
          // Check if all assets are finished and if so call autoShowMessage
          @synchronized([self assetsCurrentlyDownloading]) {
              [[self assetsCurrentlyDownloading] removeObject:asset];
-
+             
              if ([[self assetsCurrentlyDownloading] count] == 0) {
                  [self autoShowMessages];
              }
@@ -552,7 +601,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     // Only execute if at least 1 call to the /user_resources_and_campaigns api endpoint has been completed
-    if (![[self analyticsSDK] campaignsAndResourcesInitialized]) {
+    if (![self.analyticsSDK campaignsAndResourcesInitialized]) {
         return;
     }
     
@@ -605,7 +654,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 -(BOOL)checkGlobalRules:(NSString *)event {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     if ([self.campaigns count] == 0)
     {
         [self noMessagesWereShown:event withReason:@"No campaigns available"];
@@ -642,13 +691,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(SwrveMessage*)getMessageForEvent:(NSString *)event
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
     
     if (self.campaigns != nil) {
-        if (![self checkGlobalRules:event])
-        {
+        if (![self checkGlobalRules:event]) {
             return nil;
         }
         
@@ -658,7 +706,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             campaignReasons = [[NSMutableDictionary alloc] init];
             campaignMessages = [[NSMutableDictionary alloc] init];
         }
-
+        
         NSMutableArray* availableMessages = [[NSMutableArray alloc] init];
         // Select messages with higher priority that have the current orientation
         NSNumber* minPriority = [NSNumber numberWithInteger:INT_MAX];
@@ -723,23 +771,27 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             [self.qaUser trigger:event withMessage:result withReason:campaignReasons withMessages:campaignMessages];
         }
     }
-
+    
     if (result == nil) {
         DebugLog(@"Not showing message: no candidate messages for %@", event);
+    } else {
+        // Notify message has been returned
+        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:@"id",[result.messageID stringValue], nil];
+        [self.analyticsSDK event:@"Swrve.Messages.message_returned" payload:payload];
     }
     return result;
 }
 
 - (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
 {
-    #pragma unused(parameters)
+#pragma unused(parameters)
     // By default does a simple by name look up.
     return [self getConversationForEvent:eventName];
 }
 
 -(SwrveConversation*)getConversationForEvent:(NSString *)event
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
     
@@ -849,34 +901,34 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 +(bool)verifySHA:(NSData*)data against:(NSString*)expectedDigest
 {
     const static char hex[] = {'0', '1', '2', '3',
-                               '4', '5', '6', '7',
-                               '8', '9', 'a', 'b',
-                               'c', 'd', 'e', 'f'};
-
+        '4', '5', '6', '7',
+        '8', '9', 'a', 'b',
+        'c', 'd', 'e', 'f'};
+    
     unsigned char digest[CC_SHA1_DIGEST_LENGTH];
-
+    
     // SHA-1 hash has been calculated and stored in 'digest'
     unsigned int length = (unsigned int)[data length];
     if (CC_SHA1([data bytes], length, digest)) {
         for (unsigned int i = 0; i < [expectedDigest length]; i++) {
             unichar c = [expectedDigest characterAtIndex:i];
             unsigned char e = digest[i>>1];
-
+            
             if (i&1) {
                 e = e & 0xF;
             } else {
                 e = e >> 4;
             }
-
+            
             e = (unsigned char)hex[e];
-
+            
             if (c != e) {
                 DebugLog(@"SHA[%d] Expected: %d Computed %d", i, e, c);
                 return false;
             }
         }
     }
-
+    
     DebugLog(@"SHA Check OK %@", expectedDigest);
     
     return true;
@@ -884,24 +936,24 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)setMessageMinDelayThrottle
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     [self setShowMessagesAfterDelay:[now dateByAddingTimeInterval:[self minDelayBetweenMessage]]];
 }
 
 -(void)messageWasShownToUser:(SwrveMessage*)message
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
     [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
-
+    
     SwrveCampaign* c = message.campaign;
     if (c != nil) {
         [c messageWasShownToUser:message at:now];
     }
     [self saveSettings];
-
+    
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
     DebugLog(@"Sending view event: %@", viewEvent);
     
@@ -910,7 +962,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation
 {
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     // The message was shown. Take the current time so that we can throttle messages
     // from being shown too quickly.
     [self setMessageMinDelayThrottle];
@@ -921,17 +973,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [c conversationWasShownToUser:conversation at:now];
     }
     [self saveSettings];
-    
-//    NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
-//    DebugLog(@"Sending view event: %@", viewEvent);
-//    
-//    [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
 }
 
 -(void)buttonWasPressedByUser:(SwrveButton*)button
 {
     if (button.actionType != kSwrveActionDismiss) {
-
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
@@ -978,9 +1024,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     else if( [eventType isEqualToString:@"user"])
     {
-        eventName = @"Swrve.user_properties_changed	";
+        eventName = @"Swrve.user_properties_changed";
     }
-
+    
     return eventName;
 }
 
@@ -991,7 +1037,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         messageViewController.view.backgroundColor = self.backgroundColor;
         messageViewController.message = message;
         messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
-            #pragma unused(appId)
+#pragma unused(appId)
             // Save button type and action for processing later
             self.inAppMessageActionType = type;
             self.inAppMessageAction = action;
@@ -1013,15 +1059,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        //
-        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation];
-        // TODO: this delegate/callbacks are nil TEMPORARILY
-        scivc.delegate = nil;
-        self.swrveConversationItemViewController=scivc;
-        
+        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
+        self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
-        self.swrveConversationsNavigationController =svnc;
+        self.swrveConversationsNavigationController = svnc;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             svnc.modalPresentationStyle = UIModalPresentationFormSheet;
         }
@@ -1032,12 +1074,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
         
-        // TODO: animations, if any
-        // TODO: callbacks to conversation delegate
-        // TODO: do not show message if there is something already being shown
-        
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:svnc animated:YES completion:nil];
+            // Resign first responder first
+            UIViewController* rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
+            [rootController.view endEditing:YES];
+            [rootController presentViewController:svnc animated:YES completion:nil];
         });
     }
 }
@@ -1077,7 +1118,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
     [self setMessageMinDelayThrottle];
-    NSDate* now = [[self analyticsSDK] getNow];
+    NSDate* now = [self.analyticsSDK getNow];
     SwrveCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
     [dismissedCampaign messageDismissed:now];
     
@@ -1114,16 +1155,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     if(nonProcessedAction != nil) {
-        NSURL* url = [NSURL URLWithString: nonProcessedAction];
-        
+        NSURL* url = [NSURL URLWithString:nonProcessedAction];
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
         } else {
-            DebugLog(@"Action - %@ -  not handled.  Override the SwrveCustomButtonPressedCallback customize message actions", nonProcessedAction);
+            DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
     }
-
+    
     self.inAppMessageWindow.hidden = YES;
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
@@ -1141,7 +1181,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) beginHideMessageAnimation:(SwrveMessageViewController*) viewController {
-    #pragma unused(viewController)
+#pragma unused(viewController)
     [UIView animateWithDuration:0.25
                           delay:0
                         options: UIViewAnimationOptionCurveEaseOut
@@ -1149,13 +1189,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                          self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
                      }
                      completion:^(BOOL finished){
-                         #pragma unused(finished)
+#pragma unused(finished)
                          [self dismissMessageWindow];
                      }];
 }
 
 -(void) userPressedButton:(SwrveActionType) actionType action:(NSString*) action {
-    #pragma unused(actionType, action)
+#pragma unused(actionType, action)
     if( self.inAppMessageWindow != nil && self.inAppMessageWindow.hidden == YES ) {
         self.inAppMessageWindow.hidden = YES;
         self.inAppMessageWindow = nil;
@@ -1163,14 +1203,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 -(BOOL) eventRaised:(NSDictionary*)event;
-{    
+{
     // Get event name
     NSString* eventName = [self getEventName:event];
     
     if (self.pushEnabled) {
         if ([eventName isEqualToString:@"Swrve.push_notification_permission"] || (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName])) {
-                // Ask for push notification permission
-                [self registerForPushNotifications];
+            // Ask for push notification permission
+            [self registerForPushNotifications];
         }
     }
     
@@ -1201,13 +1241,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         else {
             message = [self findMessageForEvent:eventName withParameters:event];
         }
-
+        
         // Only show the message if it supports the given orientation
         if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
             DebugLog(@"The message doesn't support the current orientation", nil);
             return NO;
         }
-
+        
         // Show the message if it exists
         if( message != nil ) {
             dispatch_block_t showMessageBlock = ^{
@@ -1218,7 +1258,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     [self showMessage:message];
                 }
             };
-
+            
             
             if ([NSThread isMainThread]) {
                 showMessageBlock();
@@ -1227,7 +1267,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 dispatch_async(dispatch_get_main_queue(), showMessageBlock);
             }
         }
-
+        
         return ( message != nil );
     }
 }
@@ -1236,19 +1276,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     SwrveConversation *conv = nil;
     //TODO.Sergio
     /*if ([self.campaigns count] != 0) {
-        SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
-        if ([camp.conversations count] > 0) {
-            conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
-        }
-    }*/
+     SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
+     if ([camp.conversations count] > 0) {
+     conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
+     }
+     }*/
     return conv;
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken
 {
-   if (self.pushEnabled && deviceToken) {
-       [self.analyticsSDK setPushNotificationsDeviceToken:deviceToken];
-
+    if (self.pushEnabled && deviceToken) {
+        [self.analyticsSDK setPushNotificationsDeviceToken:deviceToken];
+        
         if (self.qaUser) {
             // If we are a QA user then send a device info update
             [self.qaUser updateDeviceInfo];
@@ -1263,7 +1303,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if ([self.analyticsSDK appInBackground]) {
             [self.analyticsSDK pushNotificationReceived:userInfo];
             if (self.qaUser) {
-               [self.qaUser pushNotification:userInfo];
+                [self.qaUser pushNotification:userInfo];
             } else {
                 DebugLog(@"Queuing push notification for later", nil);
                 [self.notifications addObject:userInfo];
@@ -1292,13 +1332,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 - (NSString*) getCampaignQueryString
 {
     const NSString* orientationName = [self orientationName];
-
-    UIDevice* device   = [UIDevice currentDevice];
+    UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName, CONVERSATION_VERSION];
 }
 
 @end

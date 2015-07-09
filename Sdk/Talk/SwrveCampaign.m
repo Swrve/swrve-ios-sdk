@@ -110,6 +110,9 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     if (![self checkCampaignRulesForEvent:event atTime:time withReasons:campaignReasons]) {
         return nil;
     }
+    
+    // TODO: Check dynamic filters
+    
 
     SwrveMessage* message = nil;
     if (self.randomOrder)
