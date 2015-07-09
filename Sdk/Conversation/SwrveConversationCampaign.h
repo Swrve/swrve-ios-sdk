@@ -7,6 +7,7 @@
 @interface SwrveConversationCampaign : SwrveBaseCampaign
 
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
+@property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
 /*! Check if the campaign has any conversation setup for the
  * given trigger.

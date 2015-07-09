@@ -8,6 +8,7 @@
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 #import "SwrveSwizzleHelper.h"
+#import "SwrvePermissions.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -190,11 +191,8 @@ enum
 // Set to YES after the first sessionEnd so that multiple session starts are not generated if the app resume event occurs after swrve has been initialized
 @property (atomic) BOOL okToStartSessionOnResume;
 
-// Push notification device token
-@property (atomic) NSString* deviceToken;
-
 // Device id, used for tracking event streams from different devices
-@property (atomic) unsigned short shortDeviceID;
+@property (atomic) NSNumber* shortDeviceID;
 
 // HTTP Request metrics that haven't been sent yet
 @property (atomic) NSMutableArray* httpPerformanceMetrics;
@@ -508,7 +506,7 @@ static bool didSwizzle = false;
 
 @synthesize userUpdates;
 @synthesize okToStartSessionOnResume;
-@synthesize deviceToken;
+@synthesize deviceToken = _deviceToken;
 @synthesize shortDeviceID;
 @synthesize httpPerformanceMetrics;
 @synthesize campaignsAndResourcesETAG;
@@ -536,8 +534,9 @@ static bool didSwizzle = false;
 
 + (void) addSharedInstance:(Swrve*)instance
 {
-    _swrveSharedInstance = instance;
-    sharedInstanceToken = 1;
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = instance;
+    });
 }
 
 +(Swrve*) sharedInstance
@@ -662,24 +661,14 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
-        // All set up, so start to do any work now.
-        id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
-        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
-            // This is the first time we see this device, assign a UUID to it
-            NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
-            unsigned short newShortDeviceID = (unsigned short)deviceUUID;
-            self.shortDeviceID = newShortDeviceID;
-            [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedShort:newShortDeviceID] forKey:@"short_device_id"];
-        } else {
-            self.shortDeviceID = ((NSNumber*)shortDeviceIdDisk).unsignedShortValue;
-        }
+        [self generateShortDeviceId];
 
         // Set up empty user attributes store
         self.userUpdates = [[NSMutableDictionary alloc]init];
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
-        if(swrveConfig.autoCollectDeviceToken && [Swrve sharedInstance] == self && !didSwizzle){
+        if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
             SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -735,7 +724,7 @@ static bool didSwizzle = false;
 
 - (void)_deswizzlePushMethods
 {
-    if( [Swrve sharedInstance] == self && didSwizzle) {
+    if(_swrveSharedInstance == self && didSwizzle) {
         Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -1116,7 +1105,7 @@ static bool didSwizzle = false;
 {
     NSCAssert(newDeviceToken, @"The device token cannot be null", nil);
     NSString* newTokenString = [[[newDeviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
-    self.deviceToken = newTokenString;
+    _deviceToken = newTokenString;
     [[NSUserDefaults standardUserDefaults] setValue:newTokenString forKey:swrve_device_token_key];
     [self queueDeviceProperties];
     [self sendQueuedEvents];
@@ -1280,6 +1269,8 @@ static bool didSwizzle = false;
     NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
+    // Send permission events
+    [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
 }
 
 -(void) registerForNotifications
@@ -1412,23 +1403,36 @@ static bool didSwizzle = false;
 -(void) pushNotificationReceived:(NSDictionary *)userInfo
 {
     // Try to get the identifier _p
-    id push_identifier = [userInfo objectForKey:@"_p"];
-    if (push_identifier && ![push_identifier isKindOfClass:[NSNull class]]) {
-        NSString* push_id = @"-1";
-        if ([push_identifier isKindOfClass:[NSString class]]) {
-            push_id = (NSString*)push_identifier;
+    id pushIdentifier = [userInfo objectForKey:@"_p"];
+    if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+        NSString* pushId = @"-1";
+        if ([pushIdentifier isKindOfClass:[NSString class]]) {
+            pushId = (NSString*)pushIdentifier;
         }
-        else if ([push_identifier isKindOfClass:[NSNumber class]]) {
-            push_id = [((NSNumber*)push_identifier) stringValue];
+        else if ([pushIdentifier isKindOfClass:[NSNumber class]]) {
+            pushId = [((NSNumber*)pushIdentifier) stringValue];
         }
         else {
             DebugLog(@"Unknown Swrve notification ID class for _p attribute", nil);
             return;
         }
+        
+        // Process deeplink _d
+        id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+        if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+            NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+            NSURL* url = [NSURL URLWithString:pushDeeplink];
+            if( url != nil ) {
+                DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
+                [[UIApplication sharedApplication] openURL:url];
+            } else {
+                DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+            }
+        }
 
-        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", push_id];
+        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
         [self event:eventName];
-        DebugLog(@"Got Swrve notification with ID %@", push_id);
+        DebugLog(@"Got Swrve notification with ID %@", pushId);
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
@@ -1576,6 +1580,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
@@ -1594,6 +1599,10 @@ static NSString* httpScheme(bool useHttps)
         [deviceProperties setValue:[carrier carrierName]     forKey:@"swrve.sim_operator.name"];
         [deviceProperties setValue:[carrier isoCountryCode]  forKey:@"swrve.sim_operator.iso_country_code"];
     }
+    
+    // Get current state of permissions
+    NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
+    [deviceProperties addEntriesFromDictionary:permissionStatus];
 
     return deviceProperties;
 }
@@ -1838,7 +1847,7 @@ enum HttpStatus {
 
     NSMutableDictionary* jsonPacket = [[NSMutableDictionary alloc] init];
     [jsonPacket setValue:self.userID forKey:@"user"];
-    [jsonPacket setValue:[NSNumber numberWithUnsignedShort:self.shortDeviceID] forKey:@"short_device_id"];
+    [jsonPacket setValue:self.shortDeviceID forKey:@"short_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
     [jsonPacket setValue:NullableNSString(self.config.appVersion) forKey:@"app_version"];
     [jsonPacket setValue:NullableNSString(sessionToken) forKey:@"session_token"];
@@ -2196,6 +2205,32 @@ enum HttpStatus {
 - (NSDate*)getNow
 {
     return [NSDate date];
+}
+
+- (void) generateShortDeviceId {
+    // Read old short device id or generate a new short one
+    NSString* oldShortDeviceId = [[NSUserDefaults standardUserDefaults] stringForKey:@"swrve_device_id"];
+    if (oldShortDeviceId != nil) {
+        // Reproduce old behaviour, remove key when finished
+        NSUInteger shortDeviceIDInteger = [oldShortDeviceId hash];
+        if (shortDeviceIDInteger > 10000) {
+            shortDeviceIDInteger = shortDeviceIDInteger / 1000;
+        }
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"swrve_device_id"];
+        self.shortDeviceID = [NSNumber numberWithInteger:(NSInteger)shortDeviceIDInteger];
+        [[NSUserDefaults standardUserDefaults] setObject:self.shortDeviceID forKey:@"short_device_id"];
+    } else {
+        id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
+        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
+            // This is the first time we see this device, assign a UUID to it
+            NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
+            unsigned short newShortDeviceID = (unsigned short)deviceUUID;
+            self.shortDeviceID = [NSNumber numberWithUnsignedShort:newShortDeviceID];
+            [[NSUserDefaults standardUserDefaults] setObject:self.shortDeviceID forKey:@"short_device_id"];
+        } else {
+            self.shortDeviceID = shortDeviceIdDisk;
+        }
+    }
 }
 
 @end

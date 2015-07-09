@@ -4,30 +4,33 @@
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveConversation.h"
 
+@interface SwrveConversationCampaign()
+
+@property (nonatomic, weak) SwrveMessageController* controller;
+
+@end
+
 @implementation SwrveConversationCampaign
 
-@synthesize conversation;
+@synthesize controller, conversation, filters;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
+-(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)_controller
 {
-    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:controller];
+    self.controller = _controller;
+    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:_controller];
     NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
     
-    // Set up asset downloads here
-    // given the converstion
-    // for each page
-    // scan content to find any images
-    // queue up the image for download as an asset
-    
+    // Set up asset downloads here: for each page, scan content to find any images/assets, queue up for download as an asset
     for (NSDictionary *page in [conversationJson objectForKey:@"pages"]) {
         for (NSDictionary *contentItem in [page objectForKey:@"content"]) {
             if ([[contentItem objectForKey:@"type"] isEqualToString:@"image"]) {
-                // found an image, queu da
                 [assetsQueue addObject:[contentItem objectForKey:@"value"]];
             }
         }
     }
-    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:controller];
+    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
+    self.filters      = [dict objectForKey:@"filters"];
+    
     return instance;
 }
 
@@ -84,6 +87,22 @@
     
     if (![self checkCampaignRulesForEvent:event atTime:time withReasons:campaignReasons]) {
         return nil;
+    }
+    
+    SwrveMessageController* controllerStrongReference = self.controller;
+    if (controllerStrongReference == nil) {
+        DebugLog(@"No message controller!", nil);
+        return nil;
+    } else {
+        NSString* unsupportedFilter = [controllerStrongReference supportsDeviceFilters:filters];
+        if (unsupportedFilter != nil) {
+            // There was a filter that was not supported
+            if ([unsupportedFilter containsString:@".permission."]) {
+                [self logAndAddReason:[NSString stringWithFormat:@"The permission %@ was either unsupported, denied or already authorised when trying to displaying campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
+            } else {
+                [self logAndAddReason:[NSString stringWithFormat:@"The filter %@ was not supported when trying to display campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
+            }
+        }
     }
     
     if ([self.conversation areDownloaded:assets]) {

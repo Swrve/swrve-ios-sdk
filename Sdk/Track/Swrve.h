@@ -16,7 +16,7 @@
 #pragma clang diagnostic pop
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.1"
+#define SWRVE_SDK_VERSION "4.0"
 
 /*! Result codes for Swrve methods. */
 enum
@@ -609,5 +609,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
+@property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 
 @end

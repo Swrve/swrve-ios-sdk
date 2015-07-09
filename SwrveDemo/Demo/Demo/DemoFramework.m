@@ -21,6 +21,8 @@
 // Settings
 #import "SettingsView.h"
 
+#import "SwrvePermissions.h"
+
 @implementation DemoFramework
 
 static Swrve *swrveTrack;
