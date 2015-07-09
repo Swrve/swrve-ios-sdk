@@ -102,6 +102,7 @@
             } else {
                 [self logAndAddReason:[NSString stringWithFormat:@"The filter %@ was not supported when trying to display campaign %ld", unsupportedFilter, (long)self.ID] withReasons:campaignReasons];
             }
+            return nil;
         }
     }
     
