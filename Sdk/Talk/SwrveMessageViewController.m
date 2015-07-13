@@ -2,6 +2,8 @@
 #import "SwrveMessageViewController.h"
 #import "SwrveButton.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 @interface SwrveMessageViewController ()
 
 @property (nonatomic, retain) SwrveMessageFormat* current_format;
@@ -20,7 +22,11 @@
 {
     [super viewDidAppear:animated];
     [self updateBounds];
-    [self addViewForOrientation:[self interfaceOrientation]];
+    
+    if(SYSTEM_VERSION_LESS_THAN(@"8.0")){
+        [self removeAllViews];
+        [self addViewForOrientation:[self interfaceOrientation]];
+    }
     if (self.wasShownToUserNotified == NO) {
         [self.message wasShownToUser];
         self.wasShownToUserNotified = YES;
@@ -84,15 +90,18 @@
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
         [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
-    UIInterfaceOrientation currentOrientation = (size.width > size.height)? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
+    // TODO: Must select the format closest to the ratio of the current screen
+    // then display with zoom?
+    
+//    UIInterfaceOrientation currentOrientation = (size.width > size.height)? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
     [self removeAllViews];
     
     BOOL mustRotate = false;
-    current_format = [self.message getBestFormatFor:currentOrientation];
+    current_format = nil;//[self.message getBestFormatFor:currentOrientation];
     if (!current_format) {
         // Never leave the screen without a format
         current_format = [self.message.formats objectAtIndex:0];
-        mustRotate = true;
+        //mustRotate = true;
     }
     
     if (current_format) {

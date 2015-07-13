@@ -2,6 +2,8 @@
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 enum
 {
     // The API version of this file.
@@ -54,7 +56,12 @@ enum
     self.resetDevice = [[qaJson objectForKey:@"reset_device_state"] boolValue];
     self.logging = [[qaJson objectForKey:@"logging"] boolValue];
     if (self.logging) {
-        self.loggingUrl = [qaJson objectForKey:@"logging_url"];
+        NSString *loggingUrlRaw = [qaJson objectForKey:@"logging_url"];
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // If it is iOS9 we need to force this endpoint to use HTTPs
+            loggingUrlRaw = [loggingUrlRaw stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
+        }
+        self.loggingUrl = loggingUrlRaw;
         self.queue = [[NSOperationQueue alloc] init];
     }
     

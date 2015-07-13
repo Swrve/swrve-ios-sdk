@@ -174,6 +174,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
                            withSize:(CGSize)sizeParent
                             rotated:(BOOL)rotated
 {
+    // Add the new format
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
     if (rotated) {
         containerViewSize = CGRectMake(0, 0, sizeParent.height, sizeParent.width);
@@ -248,7 +249,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
     }
     [containerView setCenter:CGPointMake(half_screen_width, half_screen_height)];
-    [view addSubview: containerView];
+    [view addSubview:containerView];
     return containerView;
 }
 

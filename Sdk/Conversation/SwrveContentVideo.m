@@ -1,5 +1,6 @@
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SwrveSetup.h"
 #import "SwrveConversationEvents.h"
 
@@ -8,6 +9,7 @@
 @interface SwrveContentVideo () {
     NSString *_height;
     UIWebView *webview;
+    BOOL preventNagiation;
 }
 
 @end
@@ -29,14 +31,18 @@
 
 -(void) stop {
     // Stop the running video - this will happen on a page change.
-    [webview loadHTMLString:@"" baseURL:nil];
+    [webview loadHTMLString:@"about:blank" baseURL:nil];
     [webview setDelegate:nil];
-    if (webview.isLoading) {
+    /*if (webview.isLoading) {
         [webview stopLoading];
-    }
+    }*/
 }
 
 -(void) loadView {
+    // Enable audio
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+    
     // Create _view
     float vid_height = (_height) ? [_height floatValue] : 180.0;
     _view = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
@@ -101,6 +107,14 @@
 -(void) deviceOrientationDidChange {
     _view.frame = [self newFrameForOrientationChange];
     [self sizeTheWebView];
+}
+
+- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
+    return !preventNagiation;
+}
+
+- (void)webViewDidFinishLoad:(UIWebView*)webView {
+    preventNagiation = YES;
 }
 
 - (void)dealloc {

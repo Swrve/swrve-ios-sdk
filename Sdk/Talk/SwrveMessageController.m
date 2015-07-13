@@ -9,6 +9,8 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrvePermissions.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
@@ -378,7 +380,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     // CDN
-    self.cdnRoot = [campaignJson objectForKey:@"cdn_root" ];
+    NSString *cdnRootRaw = [campaignJson objectForKey:@"cdn_root"];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // If it is iOS9 we need to force this endpoint to use HTTPs
+        cdnRootRaw = [cdnRootRaw stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
+    }
+    
+    self.cdnRoot = cdnRootRaw;
     DebugLog(@"CDN URL %@", self.cdnRoot);
     
     // Game Data
@@ -553,7 +561,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [[self assetsCurrentlyDownloading] addObject:asset];
     }
     
-    NSURL* url = [NSURL URLWithString: asset relativeToURL: [NSURL URLWithString:self.cdnRoot]];
+    NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
     
     DebugLog(@"Downloading asset: %@", url);
     
