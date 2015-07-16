@@ -1,6 +1,8 @@
+#ifndef SWRVE_WATCHKIT
 #import "SwrveMessageController.h"
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveReceiptProvider.h"
+#endif
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
 
@@ -95,8 +97,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Advanced configuration for the Swrve SDK. */
 @interface SwrveConfig : NSObject
 
+#ifndef SWRVE_WATCHKIT
 /*! The supported orientations of the app. */
 @property (nonatomic) SwrveInterfaceOrientation orientation;
+#endif
 
 /*! By default Swrve will read the application version from the current
  * application bundle. This is used to allow you to test and target users with a
@@ -123,8 +127,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /* Controls if Swrve in-app messaging is enabled. */
 @property (nonatomic) BOOL talkEnabled;
 
+#ifndef SWRVE_WATCHKIT
 /* Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor* defaultBackgroundColor;
+#endif
 
 /*! A callback to get notified when user resources have been updated.
  *
@@ -239,6 +245,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) int maxConcurrentDownloads;
 
+#ifndef SWRVE_WATCHKIT
 /*! Internal Only.
  * Used to get a base64 encoded string of the receipt associated
  * with a StoreKit SKPaymentTransaction.
@@ -246,6 +253,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * in isolation and for mocking.
  */
 @property (nonatomic, retain) SwrveReceiptProvider* receiptProvider;
+#endif
 
 /*! Used for testing. Please do not use this property. */
 @property (nonatomic) BOOL testBuffersActivated;
@@ -256,7 +264,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @interface ImmutableSwrveConfig : NSObject
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config;
+#ifndef SWRVE_WATCHKIT
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
+#endif
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
 @property (nonatomic, readonly) BOOL useHttpsForEventServer;
@@ -271,11 +281,15 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheSignatureFile;
 @property (nonatomic, readonly) NSString * installTimeCacheFile;
 @property (nonatomic, readonly) NSString * appVersion;
+#ifndef SWRVE_WATCHKIT
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
+#endif
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
+#ifndef SWRVE_WATCHKIT
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;
+#endif
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
@@ -423,6 +437,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) purchaseItem:(NSString*)itemName currency:(NSString*)itemCurrency cost:(int)itemCost quantity:(int)itemQuantity;
 
+#ifndef SWRVE_WATCHKIT
 /*! Call this when the user has bought something using real currency.
  *
  * See the REST API docs for the IAP event for a detailed description of the
@@ -450,6 +465,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product rewards:(SwrveIAPRewards*)rewards;
+#endif
 
 /*! Similar to IAP event but does not validate the receipt data server side.
  *
@@ -595,9 +611,11 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(void) shutdown;
 
+#ifndef SWRVE_WATCHKIT
 /*! Used internally to detect if the app is in the background.
  */
 -(BOOL) appInBackground;
+#endif
 
 #pragma mark -
 #pragma mark Properties
@@ -607,7 +625,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSString * apiKey;                       /*!< Secret token used to initialize this Swrve object. */
 @property (atomic, readonly)         NSString * userID;                       /*!< User ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
+#ifndef SWRVE_WATCHKIT
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
+#endif
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 

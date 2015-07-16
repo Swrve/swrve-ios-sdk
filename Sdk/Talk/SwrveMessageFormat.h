@@ -26,6 +26,7 @@
  */
 -(id)initFromJson:(NSDictionary*)json forController:(SwrveMessageController*)controller forMessage:(SwrveMessage*)message;
 
+#ifndef SWRVE_WATCHKIT
 /*! Create a view to display this format.
  *
  * \param orientation Device orientation.
@@ -39,6 +40,7 @@
                     thatDelegatesTo:(UIViewController*)delegate
                            withSize:(CGSize)size
                             rotated:(BOOL) rotated;
+#endif
 
 @end
 
