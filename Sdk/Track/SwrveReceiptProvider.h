@@ -1,4 +1,7 @@
+#import <Foundation/Foundation.h>
+#ifndef SWRVE_WATCHKIT
 #import <StoreKit/StoreKit.h>
+#endif
 
 /*! Used internally to obtain the receipt from a purchase
  * in the different iOS versions.
@@ -18,7 +21,9 @@
  */
 @interface SwrveReceiptProvider : NSObject
 
+#ifndef SWRVE_WATCHKIT
 - (SwrveReceiptProviderResult*)obtainReceiptForTransaction:(SKPaymentTransaction*)transaction;
 - (NSString*)base64encode:(NSData*)receipt;
+#endif
 
 @end
