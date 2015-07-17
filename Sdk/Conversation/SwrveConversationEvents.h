@@ -1,6 +1,8 @@
 #ifndef SwrveDemoFramework_SwrveConversationEvents_h
 #define SwrveDemoFramework_SwrveConversationEvents_h
 
+#include <Foundation/Foundation.h>
+
 @class SwrveConversation;
 @class SwrveConversationPane;
 

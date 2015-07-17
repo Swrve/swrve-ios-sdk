@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
+#include <UIKit/UIKit.h>
 #include <objc/runtime.h>
 #import <AddressBook/AddressBook.h>
 #import "ISHPermissionRequestAddressBook.h"

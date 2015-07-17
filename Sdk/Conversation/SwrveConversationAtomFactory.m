@@ -18,13 +18,6 @@
 
 @implementation SwrveConversationAtomFactory
 
-+(NSString*)GUIDString {
-    CFUUIDRef theUUID = CFUUIDCreate(NULL);
-    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-    CFRelease(theUUID);
-    return (__bridge NSString *)string;
-}
-
 +(SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict {
     NSString *tag = [dict objectForKey:kSwrveKeyTag];
     NSString *type = [dict objectForKey:kSwrveKeyType];
@@ -37,7 +30,7 @@
     // Create some resilience with defaults for tag and type.
     // the tag must be unique within the context of the page.
     if (tag == nil) {
-        tag = [self GUIDString];
+        tag = [[NSUUID UUID] UUIDString];
     }
     
     if([type isEqualToString:kSwrveContentTypeHTML]) {

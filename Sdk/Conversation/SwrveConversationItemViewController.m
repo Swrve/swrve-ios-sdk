@@ -83,7 +83,7 @@
 
 -(void) performActions:(SwrveConversationButton *)control {
     NSDictionary *actions = control.actions;
-    SwrveConversationActionType actionType;
+    SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
     
     if (actions == nil) {
@@ -127,12 +127,6 @@
             NSURL *target = [NSURL URLWithString:param];
             if (![target scheme]) {
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
-            }
-
-            BOOL isAppScheme = YES;
-            if (([@"http" caseInsensitiveCompare:[target scheme]] == NSOrderedSame) ||
-                ([@"https" caseInsensitiveCompare:[target scheme]] == NSOrderedSame)) {
-                isAppScheme = NO;
             }
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
