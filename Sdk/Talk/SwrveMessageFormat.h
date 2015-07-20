@@ -29,17 +29,26 @@
 #ifndef SWRVE_WATCHKIT
 /*! Create a view to display this format.
  *
- * \param orientation Device orientation.
  * \param view Parent view.
  * \param delegate View delegate.
  * \param size Expected size of the view.
  * \returns View representing this in-app message format.
  */
--(UIView*)createViewWithOrientation:(UIInterfaceOrientation)orientation
-                              toFit:(UIView*)view
-                    thatDelegatesTo:(UIViewController*)delegate
-                           withSize:(CGSize)size
-                            rotated:(BOOL) rotated;
+-(UIView*)createViewToFit:(UIView*)view
+          thatDelegatesTo:(UIViewController*)delegate
+                 withSize:(CGSize)size
+                  rotated:(BOOL) rotated;
+
+/*! Create a view to display this format.
+ *
+ * \param view Parent view.
+ * \param delegate View delegate.
+ * \param size Expected size of the view.
+ * \returns View representing this in-app message format.
+ */
+-(UIView*)createViewToFit:(UIView*)view
+          thatDelegatesTo:(UIViewController*)delegate
+                 withSize:(CGSize)sizeParent;
 #endif
 
 @end

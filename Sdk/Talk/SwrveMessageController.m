@@ -727,7 +727,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
                 SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
-                    if ([nextMessage supportsOrientation:currentOrientation]) {
+                    BOOL canBeChosen = YES;
+                    // iOS9+ will display with local scale
+                    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+                        canBeChosen = [nextMessage supportsOrientation:currentOrientation];
+                    }
+                    if (canBeChosen) {
                         // Add to list of returned messages
                         [availableMessages addObject:nextMessage];
                         // Check if it is a candidate to be shown
@@ -1250,10 +1255,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             message = [self findMessageForEvent:eventName withParameters:event];
         }
         
-        // Only show the message if it supports the given orientation
-        if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-            DebugLog(@"The message doesn't support the current orientation", nil);
-            return NO;
+        // iOS9+ will display with local scale
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // Only show the message if it supports the given orientation
+            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
         }
         
         // Show the message if it exists
