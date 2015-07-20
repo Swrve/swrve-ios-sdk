@@ -33,15 +33,12 @@ static CGPoint scaled(CGPoint point, float scale)
     return self;
 }
 
--(UIButton*)createButtonWithOrientation:(UIInterfaceOrientation)orientation
-                            andDelegate:(id)delegate
+-(UIButton*)createButtonWithDelegate:(id)delegate
                             andSelector:(SEL)selector
                                andScale:(float)scale
                              andCenterX:(float)cx
                              andCenterY:(float)cy
 {
-    (void)orientation;
-            
     NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* swrve_folder = @"com.ngt.msgs";
     
@@ -51,7 +48,7 @@ static CGPoint scaled(CGPoint point, float scale)
     UIButton* result;
     if (up) {
         result = [UIButton buttonWithType:UIButtonTypeCustom];
-        [result setBackgroundImage:up   forState:UIControlStateNormal];
+        [result setBackgroundImage:up forState:UIControlStateNormal];
     }
     else {
         result = [UIButton buttonWithType:UIButtonTypeRoundedRect];

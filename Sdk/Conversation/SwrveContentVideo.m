@@ -38,6 +38,7 @@
 
 -(void)viewWillDisappear:(BOOL)animated
 {
+#pragma unused(animated)
     // Stop the running video - this will happen on a page change.
     [webview loadHTMLString:@"about:blank" baseURL:nil];
 }
@@ -114,10 +115,12 @@
 }
 
 - (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
+#pragma unused(webView, request, navigationType)
     return !preventNagiation;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView*)webView {
+#pragma unused(webView)
     preventNagiation = YES;
 }
 

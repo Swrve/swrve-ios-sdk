@@ -168,13 +168,11 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     return self;
 }
 
--(UIView*)createViewWithOrientation:(UIInterfaceOrientation)interfaceOrientation
-                              toFit:(UIView*)view
-                    thatDelegatesTo:(UIViewController*)delegate
-                           withSize:(CGSize)sizeParent
-                            rotated:(BOOL)rotated
+-(UIView*)createViewToFit:(UIView*)view
+              thatDelegatesTo:(UIViewController*)delegate
+                     withSize:(CGSize)sizeParent
+                      rotated:(BOOL)rotated
 {
-    // Add the new format
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
     if (rotated) {
         containerViewSize = CGRectMake(0, 0, sizeParent.height, sizeParent.width);
@@ -197,35 +195,61 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     
     NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* swrve_folder = @"com.ngt.msgs";
-
-    for (SwrveImage* backgroundImage in self.images)
-    {
-        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, backgroundImage.file, nil]];
-        UIImage* background = [UIImage imageWithData:[NSData dataWithContentsOfURL:bgurl]];
-
-        CGRect frame = CGRectMake(0, 0,
-                                  background.size.width * renderScale,
-                                  background.size.height * renderScale);
-        
-        
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
-        imageView.image = background;
-        [imageView setCenter:CGPointMake(logical_half_screen_width + (backgroundImage.center.x * renderScale),
-                                               logical_half_screen_height + (backgroundImage.center.y * renderScale))];
-        [containerView addSubview:imageView];
-    }
-
-    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
+    [self addImageViews:containerView cachePath:cache swrveFolderPath:swrve_folder centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
+    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
     
+    if (rotated) {
+        containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
+    }
+    [containerView setCenter:CGPointMake(half_screen_width, half_screen_height)];
+    [view addSubview:containerView];
+    return containerView;
+}
+
+-(UIView*)createViewToFit:(UIView*)view
+          thatDelegatesTo:(UIViewController*)delegate
+                 withSize:(CGSize)sizeParent
+{
+    // Calculate the scale needed to fit the format in the current viewport
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    float wscale = (sizeParent.width * screenScale)/self.size.width;
+    float hscale = (sizeParent.height * screenScale)/self.size.height;
+    float viewportScale = MIN(wscale, hscale);
+    
+    CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
+    UIView* containerView = [[UIView alloc] initWithFrame:containerViewSize];
+    
+    // Find the center point of the view
+    CGFloat centerX = sizeParent.width/2;
+    CGFloat centerY = sizeParent.height/2;
+    
+    // Adjust scale, accounting for retina devices
+    CGFloat renderScale = (self.scale / screenScale) * viewportScale;
+    
+    DebugLog(@"MessageViewFormat scale :%g", self.scale);
+    DebugLog(@"UI scale :%g", screenScale);
+    
+    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    NSString* swrve_folder = @"com.ngt.msgs";
+    [self addImageViews:containerView cachePath:cache swrveFolderPath:swrve_folder centerX:centerX centerY:centerY scale:renderScale];
+    [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale];
+    
+    [containerView setCenter:CGPointMake(centerX, centerY)];
+    [view addSubview:containerView];
+    return containerView;
+}
+
+-(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(float)centerX centerY:(float)centerY scale:(float)renderScale
+{
+    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
     for (SwrveButton* button in self.buttons)
     {
-        UIButton* buttonView = [button createButtonWithOrientation:interfaceOrientation
-                                              andDelegate:delegate
-                                              andSelector:buttonPressedSelector
-                                                 andScale:(float)renderScale
-                                                        andCenterX:(float)logical_half_screen_width
-                                                        andCenterY:(float)logical_half_screen_height];
+        UIButton* buttonView = [button createButtonWithDelegate:delegate
+                                                    andSelector:buttonPressedSelector
+                                                        andScale:(float)renderScale
+                                                      andCenterX:(float)centerX
+                                                      andCenterY:(float)centerY];
         buttonView.tag = buttonTag;
         
         NSString * buttonType;
@@ -244,13 +268,25 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         [containerView addSubview:buttonView];
         buttonTag++;
     }
-    
-    if (rotated) {
-        containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
-    }
-    [containerView setCenter:CGPointMake(half_screen_width, half_screen_height)];
-    [view addSubview:containerView];
-    return containerView;
 }
 
+-(void)addImageViews:(UIView*)containerView cachePath:(NSString*)cachePath swrveFolderPath:(NSString*)swrveFolderPath centerX:(float)centerX centerY:(float)centerY scale:(float)renderScale
+{
+    for (SwrveImage* backgroundImage in self.images)
+    {
+        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cachePath, swrveFolderPath, backgroundImage.file, nil]];
+        UIImage* background = [UIImage imageWithData:[NSData dataWithContentsOfURL:bgurl]];
+        
+        CGRect frame = CGRectMake(0, 0,
+                                  background.size.width * renderScale,
+                                  background.size.height * renderScale);
+        
+        
+        UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
+        imageView.image = background;
+        [imageView setCenter:CGPointMake(centerX + (backgroundImage.center.x * renderScale),
+                                         centerY + (backgroundImage.center.y * renderScale))];
+        [containerView addSubview:imageView];
+    }
+}
 @end
