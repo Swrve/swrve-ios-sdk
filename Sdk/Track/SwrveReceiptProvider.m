@@ -20,8 +20,6 @@
 
 @implementation SwrveReceiptProvider
 
-#ifndef SWRVE_WATCHKIT
-
 +(BOOL) SwrveSystemVersionGreaterOrEqualThan:(NSString*) desired {
     NSString* currentVersion = [[UIDevice currentDevice] systemVersion];
     return [currentVersion compare:desired options:NSNumericSearch] != NSOrderedAscending;
@@ -71,7 +69,5 @@ static SwrveReceiptProviderResult* receipt_ios6(SKPaymentTransaction* transactio
     
     return [receipt base64Encoding];
 }
-
-#endif
 
 @end

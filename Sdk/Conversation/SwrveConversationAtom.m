@@ -34,6 +34,7 @@
 }
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
+#pragma unused(containerView)
     NSException *exec = [[NSException alloc] initWithName:@"NotImplemented" reason:@"Not Implemented" userInfo:nil];
     [exec raise];
 }
@@ -85,6 +86,7 @@
 // iOS8+
 -(void)viewWillTransitionToSize:(CGSize)size
 {
+#pragma unused(size)
     // By default, does nothing. Specialize in subclass
 }
 

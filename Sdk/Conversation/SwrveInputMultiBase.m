@@ -61,7 +61,7 @@
 -(CGFloat) heightForRow:(NSUInteger) row {
     if (row == 0) {
         UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
-        float constrainedWidth = containerView.frame.size.width;
+        CGFloat constrainedWidth = containerView.frame.size.width;
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             constrainedWidth = (constrainedWidth - 100);
         } else {

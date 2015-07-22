@@ -26,7 +26,6 @@
  */
 -(id)initFromJson:(NSDictionary*)json forController:(SwrveMessageController*)controller forMessage:(SwrveMessage*)message;
 
-#ifndef SWRVE_WATCHKIT
 /*! Create a view to display this format.
  *
  * \param view Parent view.
@@ -49,7 +48,6 @@
 -(UIView*)createViewToFit:(UIView*)view
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)sizeParent;
-#endif
 
 @end
 
