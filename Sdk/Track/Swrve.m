@@ -1566,6 +1566,7 @@ static NSString* httpScheme(bool useHttps)
     NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_bounds.size.height];
     NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
     NSString* timezone_name = [tz name];
+    NSString* regionCountry = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
 
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
     [deviceProperties setValue:[device model]         forKey:@"swrve.device_name"];
@@ -1581,6 +1582,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
+    [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
