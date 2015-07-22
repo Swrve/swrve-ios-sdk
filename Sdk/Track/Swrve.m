@@ -2114,17 +2114,24 @@ enum HttpStatus {
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
 
-#ifndef SWRVE_WATCHKIT
-    SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
-    [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    BOOL useURLSession = NO;
+#ifdef SWRVE_WATCHKIT
+    useURLSession = YES;
 #else
-    // TODO: Metrics
-    NSURLSession *session = [NSURLSession sharedSession];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        handler(response, data, error);
-    }];
-    [task resume];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        useURLSession = YES;
+    }
 #endif
+    if (useURLSession) {
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            handler(response, data, error);
+        }];
+        [task resume];
+    } else {
+        SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
+        [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    }
 }
 
 - (void) addHttpPerformanceMetrics:(NSString*) metrics

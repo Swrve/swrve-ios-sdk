@@ -10,10 +10,10 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 @implementation SwrveContentHTML
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)containerView {
     // Create _view
     webview = [[UIWebView alloc] init];
-    webview.frame = CGRectMake(0,0,[SwrveConversationAtom widthOfContentView], 1);
+    webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 1);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     webview.delegate = self;
@@ -31,13 +31,6 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeHTML andDictionary:dict];
     return self;
-}
-
--(UIView *)view {
-    if(!_view) {
-        [self loadView];
-    }
-    return _view;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
@@ -74,8 +67,13 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
+}
 
-    _view = webview;
+// iOS8+
+-(void)viewWillTransitionToSize:(CGSize)size
+{
+    // Mantain full width
+    _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
 }
 
 - (void)dealloc {

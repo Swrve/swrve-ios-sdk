@@ -1072,7 +1072,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
+        UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
+        SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+        [scivc setConversation:conversation andMessageController:self];
+        
         self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];

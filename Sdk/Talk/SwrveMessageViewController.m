@@ -108,6 +108,17 @@
     self.viewportHeight = size.height;
     [self removeAllViews];
     [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
+    
+    // Add constraint
+    UIView* parentView = self.view;
+    id topGuide = self.topLayoutGuide;
+    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings (parentView, topGuide);
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat: @"V:[topGuide]-0-[parentView]"
+                                             options: 0
+                                             metrics: nil
+                                               views: viewsDictionary]
+     ];
 }
 
 - (void) displayForViewportOfSize:(CGSize)size

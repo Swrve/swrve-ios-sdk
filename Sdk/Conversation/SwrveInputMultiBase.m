@@ -3,12 +3,18 @@
 #import "SwrveSetup.h"
 #import "SwrveConversationStyler.h"
 
+@interface SwrveInputMultiBase () {
+    UIView* containerView;
+}
+@end
+
 @implementation SwrveInputMultiBase
 
 @synthesize values;
 @synthesize description;
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)cw {
+    containerView = cw;
     // Note: A multivalue can only be used in a table, so it doesn't load a view as such
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
@@ -55,7 +61,7 @@
 -(CGFloat) heightForRow:(NSUInteger) row {
     if (row == 0) {
         UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
-        CGFloat constrainedWidth = [SwrveConversationAtom widthOfContentView];
+        float constrainedWidth = containerView.frame.size.width;
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             constrainedWidth = (constrainedWidth - 100);
         } else {
