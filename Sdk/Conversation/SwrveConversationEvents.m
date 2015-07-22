@@ -4,7 +4,6 @@
 #import "SwrveConversationAtom.h"
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
-#import "SwrveInputMultiValueLong.h"
 #import "SwrveContentVideo.h"
 
 @implementation SwrveConversationEvents
@@ -83,23 +82,6 @@
                                 @"result" : result
                         };
                 [[Swrve sharedInstance] event:[self nameOf:@"choice" for:conversation] payload:userInputResult];
-            }
-        } else if ([atom isKindOfClass:[SwrveInputMultiValueLong class]]) {
-            SwrveInputMultiValueLong *item = (SwrveInputMultiValueLong*)atom;
-            NSDictionary* results = item.userResponse;
-            NSArray* questionIds = [results allKeys];
-            for (NSString* questionId in questionIds) {
-                NSString* questionValue = [results valueForKey:questionId];
-                NSDictionary *userInputResult =
-                @{
-                  @"event" : @"multi-choice",
-                  @"page" : conversationPane.tag,
-                  @"conversation" : [conversation.conversationID stringValue],
-                  @"fragment" : item.tag,
-                  @"set" : questionId,
-                  @"result" : questionValue
-                  };
-                [[Swrve sharedInstance] event:[self nameOf:@"multi-choice" for:conversation] payload:userInputResult];
             }
         } else if ([atom isKindOfClass:[SwrveContentVideo class]]) {
             SwrveContentVideo *item = (SwrveContentVideo*)atom;

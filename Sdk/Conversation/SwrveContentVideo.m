@@ -43,15 +43,15 @@
     [webview loadHTMLString:@"about:blank" baseURL:nil];
 }
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)containerView {
     // Enable audio
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     // Create _view
     float vid_height = (_height) ? [_height floatValue] : 180.0;
-    _view = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
-    webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], vid_height)];
+    float vid_width = containerView.frame.size.width;
+    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, vid_width, vid_height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
     webview.opaque = NO;
@@ -59,7 +59,6 @@
     webview.userInteractionEnabled = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
     [webview loadYouTubeOrVimeoVideo:self.value];
-    [_view addSubview:webview];
     
     UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
     gesRecognizer.delegate = self;
@@ -79,13 +78,6 @@
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
 #pragma unused(gestureRecognizer)
     _interactedWith = YES;
-}
-
--(UIView *)view {
-    if(!_view) {
-        [self loadView];
-    }
-    return _view;
 }
 
 -(void) sizeTheWebView {
@@ -122,6 +114,13 @@
 - (void)webViewDidFinishLoad:(UIWebView*)webView {
 #pragma unused(webView)
     preventNagiation = YES;
+}
+
+// iOS8+
+-(void)viewWillTransitionToSize:(CGSize)size
+{
+    // Mantain full width
+    _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
 }
 
 - (void)dealloc {

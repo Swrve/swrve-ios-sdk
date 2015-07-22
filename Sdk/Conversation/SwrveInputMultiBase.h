@@ -5,7 +5,7 @@
 @property (nonatomic, strong) NSArray *values;
 @property (nonatomic, strong) NSString *description;
 
--(void)             loadView;
+-(void)             loadViewWithContainerView:(UIView*)containerView;
 -(BOOL)             hasDescription;
 -(NSUInteger)       numberOfRowsNeeded;
 -(CGFloat)          heightForRow:(NSUInteger)row;

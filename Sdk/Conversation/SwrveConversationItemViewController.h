@@ -19,7 +19,6 @@ typedef enum {
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *fullScreenBackgroundImageView;
-@property (strong, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (strong, nonatomic) IBOutlet UIImageView *buttonsBackgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
@@ -27,7 +26,7 @@ typedef enum {
 @property (strong, nonatomic) SwrveConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
--(id)initWithConversation:(SwrveConversation*)conversation withMessageController:(SwrveMessageController*)controller;
+-(void)setConversation:(SwrveConversation*)conversation andMessageController:(SwrveMessageController*)controller;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;

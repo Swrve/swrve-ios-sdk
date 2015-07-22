@@ -12,7 +12,7 @@
     return self;
 }
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)containerView {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
         NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
@@ -20,11 +20,11 @@
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
         UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
 
-        [self sizeAndDisplayImage:image];
+        [self sizeAndDisplayImage:image withContainer:containerView];
     });
 }
 
-- (void)sizeAndDisplayImage:(UIImage *)image
+- (void)sizeAndDisplayImage:(UIImage *)image withContainer:(UIView*)containerView
 {
     if (image != nil) {
         // Create _view and add image to it
@@ -35,8 +35,9 @@
             [self->iv sizeToFit];
             CGRect r = self->iv.frame;
             if (r.size.width > 0) {
-                self->iv.frame = CGRectMake(r.origin.x, r.origin.y, [SwrveConversationAtom widthOfContentView], (r.size.height/r.size.width*[SwrveConversationAtom widthOfContentView]));
-                self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], self->iv.frame.size.height)];
+                float containerWidth = containerView.frame.size.width;
+                self->iv.frame = CGRectMake(r.origin.x, r.origin.y, containerWidth, (r.size.height/r.size.width*containerWidth));
+                self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerWidth, self->iv.frame.size.height)];
                 [self->_view addSubview:self->iv];
             }
         });
@@ -47,22 +48,14 @@
     }
 }
 
--(UIView *)view {
-    if(!_view) {
-        [self loadView];
-    }
-    return _view;
-}
-
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
 -(void) deviceOrientationDidChange {
     _view.frame = [self newFrameForOrientationChange];
     // Redraw the image and image view within this view
     CGRect ivCgRect = iv.frame;
-
     // Too big or same size?
-    if (ivCgRect.size.width>0 && ivCgRect.size.width >= _view.frame.size.width) {
+    if (ivCgRect.size.width > 0 && ivCgRect.size.width >= _view.frame.size.width) {
         iv.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, ivCgRect.size.height/ ivCgRect.size.width*_view.frame.size.width);
     }
     // Too small?
