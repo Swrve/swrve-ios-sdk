@@ -49,8 +49,8 @@
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     // Create _view
-    float vid_height = (_height) ? [_height floatValue] : 180.0;
-    float vid_width = containerView.frame.size.width;
+    CGFloat vid_height = (_height) ? [_height floatValue] : 180.0;
+    CGFloat vid_width = containerView.frame.size.width;
     _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, vid_width, vid_height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];

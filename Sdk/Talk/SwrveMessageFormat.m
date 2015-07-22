@@ -212,9 +212,9 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 {
     // Calculate the scale needed to fit the format in the current viewport
     CGFloat screenScale = [[UIScreen mainScreen] scale];
-    float wscale = (sizeParent.width * screenScale)/self.size.width;
-    float hscale = (sizeParent.height * screenScale)/self.size.height;
-    float viewportScale = MIN(wscale, hscale);
+    float wscale = (float)((sizeParent.width * screenScale)/self.size.width);
+    float hscale = (float)((sizeParent.height * screenScale)/self.size.height);
+    float viewportScale = (wscale < hscale)? wscale : hscale;
     
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
     UIView* containerView = [[UIView alloc] initWithFrame:containerViewSize];
@@ -239,7 +239,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     return containerView;
 }
 
--(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(float)centerX centerY:(float)centerY scale:(float)renderScale
+-(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
 {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
@@ -270,7 +270,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addImageViews:(UIView*)containerView cachePath:(NSString*)cachePath swrveFolderPath:(NSString*)swrveFolderPath centerX:(float)centerX centerY:(float)centerY scale:(float)renderScale
+-(void)addImageViews:(UIView*)containerView cachePath:(NSString*)cachePath swrveFolderPath:(NSString*)swrveFolderPath centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
 {
     for (SwrveImage* backgroundImage in self.images)
     {

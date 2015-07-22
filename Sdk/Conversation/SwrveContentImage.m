@@ -35,7 +35,7 @@
             [self->iv sizeToFit];
             CGRect r = self->iv.frame;
             if (r.size.width > 0) {
-                float containerWidth = containerView.frame.size.width;
+                CGFloat containerWidth = containerView.frame.size.width;
                 self->iv.frame = CGRectMake(r.origin.x, r.origin.y, containerWidth, (r.size.height/r.size.width*containerWidth));
                 self->_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerWidth, self->iv.frame.size.height)];
                 [self->_view addSubview:self->iv];

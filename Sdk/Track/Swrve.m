@@ -4,14 +4,10 @@
 
 #include <sys/time.h>
 #import "Swrve.h"
-#ifndef SWRVE_WATCHKIT
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
-#else
-#import <WatchKit/WatchKit.h>
-#endif
 #import "SwrveSwizzleHelper.h"
 
 #if SWRVE_TEST_BUILD
@@ -68,10 +64,8 @@ static NSString* swrve_device_token_key = @"swrve_device_token";
 
 typedef void (^ConnectionCompletionHandler)(NSURLResponse* response, NSData* data, NSError* error);
 
-#ifndef SWRVE_WATCHKIT
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
-#endif
 
 @interface SwrveSendContext : NSObject
 @property (atomic, weak)   Swrve* swrveReference;
@@ -137,7 +131,6 @@ enum
 
 @end
 
-#ifndef SWRVE_WATCHKIT
 @interface SwrveMessageController()
 
 @property (nonatomic) bool autoShowMessagesEnabled;
@@ -148,7 +141,6 @@ enum
 -(void) autoShowMessages;
 
 @end
-#endif
 
 @interface Swrve()
 {
@@ -163,10 +155,8 @@ enum
     // The unique id associated with this instance of Swrve
     long    instanceID;
 
-#ifndef SWRVE_WATCHKIT
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
-#endif
 }
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
@@ -176,11 +166,9 @@ enum
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
 -(void) removeBlockStoreItem:(int)blockId;
 -(void) updateDeviceInfo;
-#ifndef SWRVE_WATCHKIT
 -(void) registerForNotifications;
 -(void) appDidBecomeActive:(NSNotification*)notification;
 -(void) pushNotificationReceived:(NSDictionary*)userInfo;
-#endif
 -(void) appWillResignActive:(NSNotification*)notification;
 -(void) appWillTerminate:(NSNotification*)notification;
 -(void) queueUserUpdates;
@@ -302,9 +290,7 @@ enum
 
 @implementation SwrveConfig
 
-#ifndef SWRVE_WATCHKIT
 @synthesize orientation;
-#endif
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -319,15 +305,11 @@ enum
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
 @synthesize appVersion;
-#ifndef SWRVE_WATCHKIT
 @synthesize receiptProvider;
-#endif
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
-#ifndef SWRVE_WATCHKIT
 @synthesize defaultBackgroundColor;
-#endif
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -344,9 +326,7 @@ enum
         httpTimeoutSeconds = 15;
         autoDownloadCampaignsAndResources = YES;
         maxConcurrentDownloads = 2;
-#ifndef SWRVE_WATCHKIT
         orientation = SWRVE_ORIENTATION_BOTH;
-#endif
         appVersion = [Swrve getAppVersion];
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
 
@@ -360,11 +340,7 @@ enum
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
-#ifndef SWRVE_WATCHKIT
         self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
-#else
-        self.useHttpsForContentServer = YES;
-#endif
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
@@ -374,9 +350,7 @@ enum
         self.autoCollectDeviceToken = YES;
         self.autoShowMessagesMaxDelay = 5000;
         self.testBuffersActivated = NO;
-#ifndef SWRVE_WATCHKIT
         self.receiptProvider = [[SwrveReceiptProvider alloc] init];
-#endif
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
         };
@@ -388,9 +362,7 @@ enum
 
 @implementation ImmutableSwrveConfig
 
-#ifndef SWRVE_WATCHKIT
 @synthesize orientation;
-#endif
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -405,15 +377,11 @@ enum
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
 @synthesize appVersion;
-#ifndef SWRVE_WATCHKIT
 @synthesize receiptProvider;
-#endif
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
-#ifndef SWRVE_WATCHKIT
 @synthesize defaultBackgroundColor;
-#endif
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -427,9 +395,7 @@ enum
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
     if (self = [super init]) {
-#ifndef SWRVE_WATCHKIT
         orientation = config.orientation;
-#endif
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         useHttpsForEventServer = config.useHttpsForEventServer;
@@ -444,15 +410,11 @@ enum
         userResourcesDiffCacheSignatureFile = config.userResourcesDiffCacheSignatureFile;
         installTimeCacheFile = config.installTimeCacheFile;
         appVersion = config.appVersion;
-#ifndef SWRVE_WATCHKIT
         receiptProvider = config.receiptProvider;
-#endif
         maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
-#ifndef SWRVE_WATCHKIT
         defaultBackgroundColor = config.defaultBackgroundColor;
-#endif
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
@@ -534,18 +496,14 @@ enum
 
 static Swrve * _swrveSharedInstance = nil;
 static dispatch_once_t sharedInstanceToken = 0;
-#ifndef SWRVE_WATCHKIT
 static bool didSwizzle = false;
-#endif
 
 @synthesize config;
 @synthesize appID;
 @synthesize apiKey;
 @synthesize userID;
 @synthesize deviceInfo;
-#ifndef SWRVE_WATCHKIT
 @synthesize talk;
-#endif
 @synthesize resourceManager;
 
 @synthesize userUpdates;
@@ -712,7 +670,6 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
-#ifndef SWRVE_WATCHKIT
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
@@ -732,7 +689,6 @@ static bool didSwizzle = false;
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
         }
         [self registerForNotifications];
-#endif
         
         [self queueSessionStart];
         [self queueDeviceProperties];
@@ -769,7 +725,6 @@ static bool didSwizzle = false;
     return self;
 }
 
-#ifndef SWRVE_WATCHKIT
 - (void)_deswizzlePushMethods
 {
     if(_swrveSharedInstance == self && didSwizzle) {
@@ -818,7 +773,6 @@ static bool didSwizzle = false;
         }
     }
 }
-#endif
 
 -(void) queueSessionStart
 {
@@ -865,7 +819,6 @@ static bool didSwizzle = false;
     return [self eventInternal:eventName payload:eventPayload triggerCallback:true];
 }
 
-#ifndef SWRVE_WATCHKIT
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product
 {
     return [self iap:transaction product:product rewards:nil];
@@ -952,7 +905,6 @@ static bool didSwizzle = false;
 
     return SWRVE_SUCCESS;
 }
-#endif
 
 -(int) unvalidatedIap:(SwrveIAPRewards*) rewards localCost:(double) localCost localCurrency:(NSString*) localCurrency productId:(NSString*) productId productIdQuantity:(int) productIdQuantity
 {
@@ -1031,12 +983,10 @@ static bool didSwizzle = false;
 
     NSMutableString* queryString = [NSMutableString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&joined=%llu",
                              self.userID, self.apiKey, self.config.appVersion, self->install_time];
-#ifndef SWRVE_WATCHKIT
     if (self.talk && [self.config talkEnabled]) {
         NSString* campaignQueryString = [self.talk getCampaignQueryString];
         [queryString appendFormat:@"&%@", campaignQueryString];
     }
-#endif
 
     NSString* etagValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"campaigns_and_resources_etag"];
     if (etagValue != nil) {
@@ -1080,7 +1030,6 @@ static bool didSwizzle = false;
                         [[NSUserDefaults standardUserDefaults] setDouble:self.campaignsAndResourcesFlushRefreshDelay forKey:@"swrve_cr_flush_delay"];
                     }
 
-#ifndef SWRVE_WATCHKIT
                     if (self.talk && [self.config talkEnabled]) {
                         NSDictionary* campaignJson = [responseDict objectForKey:@"campaigns"];
                         if (campaignJson != nil) {
@@ -1103,7 +1052,6 @@ static bool didSwizzle = false;
                             [self event:@"Swrve.Messages.campaigns_downloaded" payload:payload];
                         }
                     }
-#endif
 
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
                     if (resourceJson != nil) {
@@ -1122,13 +1070,11 @@ static bool didSwizzle = false;
         if (![self campaignsAndResourcesInitialized]) {
             [self setCampaignsAndResourcesInitialized:YES];
 
-#ifndef SWRVE_WATCHKIT
             // Only called first time API call returns - whether failed or successful, whether new campaigns were returned or not;
             // this ensures that if API call fails or there are no changes, we call autoShowMessages with cached campaigns
             if ([self talk]) {
                 [[self talk] autoShowMessages];
             }
-#endif
 
             // Invoke listeners once to denote that the first attempt at downloading has finished
             // independent of whether the resources or campaigns have changed from cached values
@@ -1265,9 +1211,7 @@ static bool didSwizzle = false;
 
     [self stopCampaignsAndResourcesTimer];
 
-#ifndef SWRVE_WATCHKIT
     talk = nil;
-#endif
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -1282,12 +1226,10 @@ static bool didSwizzle = false;
     [self setEventBuffer:nil];
 }
 
-#ifndef SWRVE_WATCHKIT
 - (BOOL) appInBackground {
     UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
     return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
 }
-#endif
 
 -(int) eventWithNoCallback:(NSString*)eventName payload:(NSDictionary*)eventPayload
 {
@@ -1330,13 +1272,10 @@ static bool didSwizzle = false;
     NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
-#ifndef SWRVE_WATCHKIT
     // Send permission events
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
-#endif
 }
 
-#ifndef SWRVE_WATCHKIT
 -(void) registerForNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1372,7 +1311,6 @@ static bool didSwizzle = false;
     [self startCampaignsAndResourcesTimer];
     [self disableAutoShowAfterDelay];
 }
-#endif
 
 -(void) appWillResignActive:(NSNotification*)notification
 {
@@ -1437,7 +1375,6 @@ static bool didSwizzle = false;
 //If talk enabled ensure that after SWRVE_DEFAULT_AUTOSHOW_MESSAGES_MAX_DELAY autoshow is disabled
 -(void) disableAutoShowAfterDelay
 {
-#ifndef SWRVE_WATCHKIT
     if ([self talk]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
@@ -1454,7 +1391,6 @@ static bool didSwizzle = false;
 
         [NSTimer scheduledTimerWithTimeInterval:(self.config.autoShowMessagesMaxDelay/1000) invocation:disableAutoshowInvocation repeats:NO];
     }
-#endif
 }
 
 
@@ -1467,7 +1403,6 @@ static bool didSwizzle = false;
     }
 }
 
-#ifndef SWRVE_WATCHKIT
 -(void) pushNotificationReceived:(NSDictionary *)userInfo
 {
     // Try to get the identifier _p
@@ -1505,7 +1440,6 @@ static bool didSwizzle = false;
         DebugLog(@"Got unidentified notification", nil);
     }
 }
-#endif
 
 // Get a string that represents the current App Version
 // The implementation intentionally is unspecified, the rest of the SDK is not aware
@@ -1581,7 +1515,6 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
-#ifndef SWRVE_WATCHKIT
 - (float) _estimate_dpi
 {
     float scale = (float)[[UIScreen mainScreen] scale];
@@ -1595,7 +1528,6 @@ static NSString* httpScheme(bool useHttps)
 
     return 160.0f * scale;
 }
-#endif
 
 - (void) sendCrashlyticsMetadata
 {
@@ -1611,7 +1543,6 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
-#ifndef SWRVE_WATCHKIT
 - (CGRect) getDeviceScreenBounds
 {
     UIScreen* screen   = [UIScreen mainScreen];
@@ -1625,13 +1556,11 @@ static NSString* httpScheme(bool useHttps)
     bounds.size.height = (side_a > side_b)? side_a : side_b;
     return bounds;
 }
-#endif
 
 - (NSDictionary*) getDeviceProperties
 {
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
     
-#ifndef SWRVE_WATCHKIT
     UIDevice* device = [UIDevice currentDevice];
     CGRect screen_bounds = [self getDeviceScreenBounds];
     NSNumber* device_width = [NSNumber numberWithFloat: (float)screen_bounds.size.width];
@@ -1660,15 +1589,6 @@ static NSString* httpScheme(bool useHttps)
     NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     [deviceProperties addEntriesFromDictionary:permissionStatus];
 
-#else
-    WKInterfaceDevice* device = [WKInterfaceDevice currentDevice];
-    CGRect screen_bounds = device.screenBounds;
-    const int side_a = (int)screen_bounds.size.width;
-    const int side_b = (int)screen_bounds.size.height;
-    NSNumber* device_width = [NSNumber numberWithFloat: (float)((side_a > side_b)? side_b : side_a)];
-    NSNumber* device_height = [NSNumber numberWithFloat: (float)((side_a > side_b)? side_a : side_b)];
-#endif
-
     NSTimeZone* tz     = [NSTimeZone localTimeZone];
     NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
     NSString *sdk_language = self.config.language;
@@ -1691,14 +1611,12 @@ static NSString* httpScheme(bool useHttps)
     return deviceProperties;
 }
 
-#ifndef SWRVE_WATCHKIT
 - (CTCarrier*) getCarrierInfo
 {
     // Obtain carrier info from the device
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     return [netinfo subscriberCellularProvider];
 }
-#endif
 
 - (void) queueDeviceProperties
 {
@@ -2115,13 +2033,9 @@ enum HttpStatus {
     }
 
     BOOL useURLSession = NO;
-#ifdef SWRVE_WATCHKIT
-    useURLSession = YES;
-#else
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         useURLSession = YES;
     }
-#endif
     if (useURLSession) {
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {

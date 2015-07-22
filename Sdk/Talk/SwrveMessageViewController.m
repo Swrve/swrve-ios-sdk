@@ -9,8 +9,8 @@
 
 @property (nonatomic, retain) SwrveMessageFormat* current_format;
 @property (nonatomic) BOOL wasShownToUserNotified;
-@property (nonatomic) float viewportWidth;
-@property (nonatomic) float viewportHeight;
+@property (nonatomic) CGFloat viewportWidth;
+@property (nonatomic) CGFloat viewportHeight;
 
 @end
 
@@ -20,6 +20,8 @@
 @synthesize message;
 @synthesize current_format;
 @synthesize wasShownToUserNotified;
+@synthesize viewportWidth;
+@synthesize viewportHeight;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -124,11 +126,11 @@
 - (void) displayForViewportOfSize:(CGSize)size
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        float viewportRatio = size.width/size.width;
+        float viewportRatio = (float)(size.width/size.width);
         float closestRatio = -1;
         SwrveMessageFormat* closestFormat = nil;
         for (SwrveMessageFormat* format in self.message.formats) {
-            float formatRatio = format.size.width/format.size.height;
+            float formatRatio = (float)(format.size.width/format.size.height);
             if (closestFormat == nil || (fabsf(formatRatio - viewportRatio) < closestRatio)) {
                 closestFormat = format;
             }
