@@ -3,6 +3,7 @@
 #endif
 
 #include <sys/time.h>
+#include <sys/sysctl.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "Swrve.h"
@@ -1554,6 +1555,16 @@ static NSString* httpScheme(bool useHttps)
     return bounds;
 }
 
+- (NSString *) getHWMachineName {
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+    return platform;
+}
+
 - (NSDictionary*) getDeviceProperties
 {
     UIDevice* device   = [UIDevice currentDevice];
@@ -1581,6 +1592,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
+    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_model"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
