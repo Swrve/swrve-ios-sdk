@@ -1291,18 +1291,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
-- (SwrveConversation*) getConversation {
-    SwrveConversation *conv = nil;
-    //TODO.Sergio
-    /*if ([self.campaigns count] != 0) {
-     SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
-     if ([camp.conversations count] > 0) {
-     conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
-     }
-     }*/
-    return conv;
-}
-
 - (void) setDeviceToken:(NSData*)deviceToken
 {
     if (self.pushEnabled && deviceToken) {

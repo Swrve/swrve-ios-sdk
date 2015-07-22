@@ -1398,13 +1398,13 @@ static bool didSwizzle = false;
 
 -(void) startCampaignsAndResourcesTimer
 {
-    if (![[self config] autoDownloadCampaignsAndResources]) {
+    if (!self.config.autoDownloadCampaignsAndResources) {
         return;
     }
 
-    @synchronized([self campaignsAndResourcesTimer]) {
+    @synchronized(self.campaignsAndResourcesTimer) {
         // If there is not already a timer running initialize timers and call refresh
-        if (![self campaignsAndResourcesTimer] || ![[self campaignsAndResourcesTimer] isValid]) {
+        if (!self.campaignsAndResourcesTimer || ![self.campaignsAndResourcesTimer isValid]) {
             [self refreshCampaignsAndResources];
 
             // Start repeating timer
@@ -1426,9 +1426,9 @@ static bool didSwizzle = false;
 
 - (void) stopCampaignsAndResourcesTimer
 {
-    @synchronized([self campaignsAndResourcesTimer]) {
-        if ([self campaignsAndResourcesTimer] && [[self campaignsAndResourcesTimer] isValid]) {
-            [[self campaignsAndResourcesTimer] invalidate];
+    @synchronized(self.campaignsAndResourcesTimer) {
+        if (self.campaignsAndResourcesTimer && [self.campaignsAndResourcesTimer isValid]) {
+            [self.campaignsAndResourcesTimer invalidate];
         }
     }
 }
@@ -1460,7 +1460,7 @@ static bool didSwizzle = false;
 
 -(void) queueUserUpdates
 {
-    NSMutableDictionary * currentAttributes =  (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+    NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];

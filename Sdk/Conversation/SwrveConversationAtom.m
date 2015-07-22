@@ -58,25 +58,11 @@
             [v removeFromSuperview];
         }
     });
-    /*TODO: CGRect r = _view.frame;
-    
-    SwrveLogIt(@"cellForRow :: r frame in Atom: %f, %f, %f, %f", r.origin.x, r.origin.y, r.size.width, r.size.height);
-    // If the content supplied is not as wide as the container cell, pad it to center
-    CGFloat containerWidth = [SwrveConversationAtom widthOfContentView];
-    CGFloat cellItemWidth  = r.size.width;
-    CGFloat leftPadding    = 0.0;
-    // If it is too wide, adjust
-    if (cellItemWidth > containerWidth) {
-        leftPadding = 0.0;
-        cellItemWidth = containerWidth;
-    }
-    _view.frame = CGRectMake(leftPadding, [self verticalPadding], cellItemWidth, r.size.height);*/
     _view.tag = kCellTag;
     dispatch_async(dispatch_get_main_queue(), ^{
         [cell.contentView addSubview:self->_view];
         cell.contentView.backgroundColor = [UIColor clearColor];
     });
-
     cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
