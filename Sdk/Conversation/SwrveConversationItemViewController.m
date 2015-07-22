@@ -651,7 +651,7 @@
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
     NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
     if(checkedIndexPath >= [self.conversationPane.content count]) {
-        checkedIndexPath = checkedIndexPath - 1;
+        checkedIndexPath = [self.conversationPane.content count] - 1;
     }
     return checkedIndexPath;
 }
