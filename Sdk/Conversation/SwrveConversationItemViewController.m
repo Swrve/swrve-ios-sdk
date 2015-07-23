@@ -20,7 +20,6 @@
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
-    NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
@@ -34,7 +33,6 @@
 @implementation SwrveConversationItemViewController
 
 @synthesize fullScreenBackgroundImageView;
-@synthesize buttonsBackgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
 @synthesize cancelButtonView;
@@ -54,14 +52,7 @@
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
-    
-    if (updatePath) {
-        NSArray *arr = [NSArray arrayWithObject:updatePath];
-        [self.contentTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
-        updatePath = nil;
-    }
-    
-    [self updateUI]; // this method always to be called on main thread, natch.
+    [self updateUI];
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -197,7 +188,7 @@
 
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
-    // alert to the user if this is not the case.
+    // alert to the ufser if this is not the case.
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
@@ -307,13 +298,13 @@
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     
     // Only called once the conversation has been retrieved
-    for(UIView *view in buttonsView.subviews) {
+    for (UIView *view in buttonsView.subviews) {
         if (![view isKindOfClass:[UIImageView class]]) {
             [view removeFromSuperview];
         }
     }
+
     NSArray *contentToAdd = self.conversationPane.content;
-    
     for (SwrveConversationAtom *atom in contentToAdd) {
         [atom loadViewWithContainerView:self.view];
     }
@@ -329,7 +320,7 @@
     for(NSUInteger i = 0; i < buttons.count; i++) {
         SwrveConversationButton *button = [buttons objectAtIndex:i];
         UIButton *buttonUIView = (UIButton*)button.view;
-        buttonUIView.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
+        buttonUIView.frame = CGRectMake(xOffset, 10, buttonWidth, 45.0);
         buttonUIView.tag = (NSInteger)i;
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
@@ -425,9 +416,6 @@
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     }
     self.navigationController.navigationBar.translucent = NO;
-    buttonsView.backgroundColor = [UIColor clearColor];
-    buttonsBackgroundImageView.backgroundColor = [UIColor clearColor];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewReady:)
                                                  name:kSwrveNotificationViewReady
