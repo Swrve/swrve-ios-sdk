@@ -12,7 +12,7 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
     // Create _view
-    webview = [[UIWebView alloc] init];
+    _view = webview = [[UIWebView alloc] init];
     webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 1);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
@@ -23,7 +23,6 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
 
-    _view = webview;
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
