@@ -1579,20 +1579,19 @@ static NSString* httpScheme(bool useHttps)
     NSString* timezone_name = [tz name];
 
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
-    [deviceProperties setValue:[device model]         forKey:@"swrve.device_name"];
-    [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
-    [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
-    [deviceProperties setValue:min_os                 forKey:@"swrve.ios_min_version"];
-    [deviceProperties setValue:sdk_language           forKey:@"swrve.language"];
-    [deviceProperties setValue:device_height          forKey:@"swrve.device_height"];
-    [deviceProperties setValue:device_width           forKey:@"swrve.device_width"];
-    [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
-    [deviceProperties setValue:@SWRVE_SDK_VERSION     forKey:@"swrve.sdk_version"];
-    [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
-    [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
-    [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_name"];
+    [deviceProperties setValue:[device systemName]     forKey:@"swrve.os"];
+    [deviceProperties setValue:[device systemVersion]  forKey:@"swrve.os_version"];
+    [deviceProperties setValue:min_os                  forKey:@"swrve.ios_min_version"];
+    [deviceProperties setValue:sdk_language            forKey:@"swrve.language"];
+    [deviceProperties setValue:device_height           forKey:@"swrve.device_height"];
+    [deviceProperties setValue:device_width            forKey:@"swrve.device_width"];
+    [deviceProperties setValue:dpi                     forKey:@"swrve.device_dpi"];
+    [deviceProperties setValue:@SWRVE_SDK_VERSION      forKey:@"swrve.sdk_version"];
+    [deviceProperties setValue:@"apple"                forKey:@"swrve.app_store"];
+    [deviceProperties setValue:secondsFromGMT          forKey:@"swrve.utc_offset_seconds"];
+    [deviceProperties setValue:timezone_name           forKey:@"swrve.timezone_name"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
-    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_model"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
