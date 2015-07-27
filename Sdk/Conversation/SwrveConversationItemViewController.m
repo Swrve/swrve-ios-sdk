@@ -71,7 +71,7 @@
 
 -(void) performActions:(SwrveConversationButton *)control {
     NSDictionary *actions = control.actions;
-    SwrveConversationActionType actionType;
+    SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
     
     if (actions == nil) {
@@ -115,12 +115,6 @@
             NSURL *target = [NSURL URLWithString:param];
             if (![target scheme]) {
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
-            }
-
-            BOOL isAppScheme = YES;
-            if (([@"http" caseInsensitiveCompare:[target scheme]] == NSOrderedSame) ||
-                ([@"https" caseInsensitiveCompare:[target scheme]] == NSOrderedSame)) {
-                isAppScheme = NO;
             }
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
@@ -296,6 +290,7 @@
     // pane, that second pane will display as scrolled too, unless we reset the
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
+    self.contentTableView.separatorColor = [UIColor clearColor];
     
     // Only called once the conversation has been retrieved
     for (UIView *view in buttonsView.subviews) {
@@ -462,11 +457,11 @@
     return [atom heightForRow:(NSUInteger)indexPath.row];
 }
 
-// HACK for EA
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
     NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
-    if(checkedIndexPath >= [self.conversationPane.content count]) {
-        checkedIndexPath = checkedIndexPath - 1;
+    NSUInteger paneCount = [self.conversationPane.content count];
+    if(checkedIndexPath >= paneCount) {
+        checkedIndexPath = paneCount - 1;
     }
     return checkedIndexPath;
 }
@@ -483,6 +478,7 @@
     }
 }
 
+#ifdef __IPHONE_8_0
 - (BOOL)prefersStatusBarHidden
 {
     return NO;
@@ -495,5 +491,6 @@
         [atom viewWillTransitionToSize:size];
     }
 }
+#endif
 
 @end

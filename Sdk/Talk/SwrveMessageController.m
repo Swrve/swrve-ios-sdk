@@ -383,7 +383,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString *cdnRootRaw = [campaignJson objectForKey:@"cdn_root"];
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         // If it is iOS9 we need to force this endpoint to use HTTPs
-        cdnRootRaw = [cdnRootRaw stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
+        // HACK WE SHOULD UPDATE THESE IN THE DB!!!!!
+        cdnRootRaw = @"https://content-cdn.swrve.com/messaging/message_image/";
+        //[cdnRootRaw stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
     }
     
     self.cdnRoot = cdnRootRaw;

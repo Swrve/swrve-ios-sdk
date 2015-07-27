@@ -58,7 +58,13 @@
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
-    [webview loadYouTubeOrVimeoVideo:self.value];
+    
+    NSString *rawValue = self.value;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // If it is iOS9 we need to force this endpoint to use HTTPs
+        rawValue = [rawValue stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
+    }
+    [webview loadYouTubeOrVimeoVideo:@"https://www.youtube.com/embed/LdTm7Vpape0?html5=1&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0"];
     
     UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
     gesRecognizer.delegate = self;

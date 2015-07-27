@@ -110,7 +110,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     if (jsonColor)
     {
         NSString* hexColor = [jsonColor uppercaseString];
-        CGFloat alpha, red, blue, green;
+        CGFloat alpha = 0, red = 0, blue = 0, green = 0;
         switch ([hexColor length]) {
             case 6: // #RRGGBB
                 alpha = 1.0f;

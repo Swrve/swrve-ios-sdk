@@ -2,6 +2,7 @@
 
 @interface SwrveContentImage () {
     UIImageView *iv;
+    UIImage* image;
 }
 @end
 
@@ -18,7 +19,7 @@
         NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
         NSString* swrve_folder = @"com.ngt.msgs";
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
-        UIImage* image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
+        image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
         [self sizeAndDisplayImage:image withContainer:containerView];
     });
 }
@@ -46,6 +47,14 @@
 // Subviews of this should be flexible using AutoResizing masks
 -(void) deviceOrientationDidChange {
     _view.frame = [self newFrameForOrientationChange];
+}
+
+// iOS8+
+-(void)viewWillTransitionToSize:(CGSize)size
+{
+    // Mantain full width
+    CGSize imageSize = image.size;
+    self->iv.frame = CGRectMake(0, 0, size.width, ((imageSize.height/imageSize.width)*size.width));
 }
 
 - (void)dealloc {
