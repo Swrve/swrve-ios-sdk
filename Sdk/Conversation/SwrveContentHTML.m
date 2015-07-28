@@ -5,15 +5,17 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 @interface SwrveContentHTML () {
     UIWebView *webview;
+    UIView *_containerView;
 }
 @end
 
 @implementation SwrveContentHTML
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
+    _containerView = containerView;
     // Create _view
     _view = webview = [[UIWebView alloc] init];
-    webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 1);
+    webview.frame = CGRectMake(0, 0, 1, 1);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     webview.delegate = self;
@@ -34,15 +36,13 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 #pragma unused (webView)
-    CGRect frame;
-    NSString *output = [(UIWebView*)_view
-                        stringByEvaluatingJavaScriptFromString:
-                        @"document.height;"];
-    frame = _view.frame;
-    frame.size.height = [output floatValue];
-    _view.frame = frame;
-    // Notify that the view is ready to be displayed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
+    CGRect webViewFrame = [webview frame];
+    webViewFrame.size.height = 1;
+    webViewFrame.size.width = _containerView.frame.size.width;
+    [webview setFrame:webViewFrame];
+    CGSize fittingSize = [webview sizeThatFits:CGSizeZero];
+    webViewFrame.size = fittingSize;
+    [webview setFrame:webViewFrame];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {

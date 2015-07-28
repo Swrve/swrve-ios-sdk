@@ -9,6 +9,7 @@
 @interface SwrveContentVideo () {
     NSString *_height;
     UIWebView *webview;
+    UIView *_containerView;
     BOOL preventNagiation;
 }
 
@@ -44,14 +45,15 @@
 }
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
+    _containerView = containerView;
+    
     // Enable audio
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     // Create _view
     CGFloat vid_height = (_height) ? [_height floatValue] : 180.0;
-    CGFloat vid_width = containerView.frame.size.width;
-    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, vid_width, vid_height)];
+    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, vid_height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
     webview.opaque = NO;
@@ -64,7 +66,7 @@
         // If it is iOS9 we need to force this endpoint to use HTTPs
         rawValue = [rawValue stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
     }
-    [webview loadYouTubeOrVimeoVideo:@"https://www.youtube.com/embed/LdTm7Vpape0?html5=1&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0"];
+    [webview loadYouTubeOrVimeoVideo:rawValue];
     
     UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
     gesRecognizer.delegate = self;
@@ -120,6 +122,9 @@
 - (void)webViewDidFinishLoad:(UIWebView*)webView {
 #pragma unused(webView)
     preventNagiation = YES;
+    CGRect frame = webview.frame;
+    frame.size.width = _containerView.frame.size.width;
+    webview.frame = frame;
 }
 
 // iOS8+
