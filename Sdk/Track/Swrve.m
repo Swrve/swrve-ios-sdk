@@ -4,6 +4,7 @@
 
 #include <sys/time.h>
 #import "Swrve.h"
+#include <sys/sysctl.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "SwrveCampaign.h"
@@ -1557,6 +1558,16 @@ static NSString* httpScheme(bool useHttps)
     return bounds;
 }
 
+- (NSString *) getHWMachineName {
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+    return platform;
+}
+
 - (NSDictionary*) getDeviceProperties
 {
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
@@ -1571,6 +1582,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
+
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
     if (carrier != nil) {
@@ -1594,6 +1606,7 @@ static NSString* httpScheme(bool useHttps)
     NSString *sdk_language = self.config.language;
     NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
     NSString* timezone_name = [tz name];
+    NSString* regionCountry = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
 
     [deviceProperties setValue:min_os                 forKey:@"swrve.ios_min_version"];
     [deviceProperties setValue:sdk_language           forKey:@"swrve.language"];
@@ -1603,6 +1616,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
     [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
 
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
