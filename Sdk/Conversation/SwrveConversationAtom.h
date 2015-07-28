@@ -39,5 +39,6 @@
 // If the atom has some kind of activity going, then
 // this is notice to cease it. Defaults to doing nothing.
 -(void) stop;
+-(void) viewDidDisappear;
 
 @end

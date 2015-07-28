@@ -31,17 +31,16 @@
 }
 
 -(void) stop {
+    [webview setDelegate:nil];
+    // Stop the running video - this will happen on a page change.
+    [webview loadHTMLString:@"about:blank" baseURL:nil];
+}
+
+-(void)viewDidDisappear
+{
     if (webview.isLoading) {
         [webview stopLoading];
     }
-    [webview setDelegate:nil];
-}
-
--(void)viewWillDisappear:(BOOL)animated
-{
-#pragma unused(animated)
-    // Stop the running video - this will happen on a page change.
-    [webview loadHTMLString:@"about:blank" baseURL:nil];
 }
 
 -(void) loadViewWithContainerView:(UIView*)containerView {

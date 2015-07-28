@@ -87,4 +87,11 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     }
 }
 
+-(void)viewDidDisappear
+{
+    if (webview.isLoading) {
+        [webview stopLoading];
+    }
+}
+
 @end

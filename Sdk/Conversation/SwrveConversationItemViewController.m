@@ -55,6 +55,13 @@
     [self updateUI];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        [atom viewDidDisappear];
+    }
+}
+
 -(SwrveConversationPane *)conversationPane {
     return _conversationPane;
 }

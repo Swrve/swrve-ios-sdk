@@ -33,6 +33,11 @@
     // By default, does nothing. Specialize in subclass
 }
 
+-(void) viewDidDisappear
+{
+    // By default, does nothing. Specialize in subclass
+}
+
 -(void) loadViewWithContainerView:(UIView*)containerView {
 #pragma unused(containerView)
     NSException *exec = [[NSException alloc] initWithName:@"NotImplemented" reason:@"Not Implemented" userInfo:nil];
