@@ -43,6 +43,7 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     CGSize fittingSize = [webview sizeThatFits:CGSizeZero];
     webViewFrame.size = fittingSize;
     [webview setFrame:webViewFrame];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
