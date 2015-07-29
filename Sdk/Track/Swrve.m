@@ -3,13 +3,13 @@
 #endif
 
 #include <sys/time.h>
+#import "Swrve.h"
 #include <sys/sysctl.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import "Swrve.h"
 #import "SwrveCampaign.h"
-#import "SwrveSwizzleHelper.h"
 #import "SwrvePermissions.h"
+#import "SwrveSwizzleHelper.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -20,6 +20,8 @@
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)
 #define KB(x) (1024*(x))
 #define MB(x) (1024*KB((x)))
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 enum
 {
@@ -167,10 +169,10 @@ enum
 -(void) updateDeviceInfo;
 -(void) registerForNotifications;
 -(void) appDidBecomeActive:(NSNotification*)notification;
+-(void) pushNotificationReceived:(NSDictionary*)userInfo;
 -(void) appWillResignActive:(NSNotification*)notification;
 -(void) appWillTerminate:(NSNotification*)notification;
 -(void) queueUserUpdates;
--(void) pushNotificationReceived:(NSDictionary*)userInfo;
 - (NSString*) createSessionToken;
 - (NSString*) createJSON:(NSString*)sessionToken events:(NSString*)rawEvents;
 - (NSString*) copyBufferToJson:(NSArray*)buffer;
@@ -339,7 +341,7 @@ enum
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
-        self.useHttpsForContentServer = NO;
+        self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
@@ -687,12 +689,13 @@ static bool didSwizzle = false;
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
         }
+        [self registerForNotifications];
         
         [self queueSessionStart];
         [self queueDeviceProperties];
 
         self.okToStartSessionOnResume = NO;
-        [self registerForNotifications];
+        
 
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
@@ -1334,13 +1337,13 @@ static bool didSwizzle = false;
 
 -(void) startCampaignsAndResourcesTimer
 {
-    if (![[self config] autoDownloadCampaignsAndResources]) {
+    if (!self.config.autoDownloadCampaignsAndResources) {
         return;
     }
 
-    @synchronized([self campaignsAndResourcesTimer]) {
+    @synchronized(self.campaignsAndResourcesTimer) {
         // If there is not already a timer running initialize timers and call refresh
-        if (![self campaignsAndResourcesTimer] || ![[self campaignsAndResourcesTimer] isValid]) {
+        if (!self.campaignsAndResourcesTimer || ![self.campaignsAndResourcesTimer isValid]) {
             [self refreshCampaignsAndResources];
 
             // Start repeating timer
@@ -1362,9 +1365,9 @@ static bool didSwizzle = false;
 
 - (void) stopCampaignsAndResourcesTimer
 {
-    @synchronized([self campaignsAndResourcesTimer]) {
-        if ([self campaignsAndResourcesTimer] && [[self campaignsAndResourcesTimer] isValid]) {
-            [[self campaignsAndResourcesTimer] invalidate];
+    @synchronized(self.campaignsAndResourcesTimer) {
+        if (self.campaignsAndResourcesTimer && [self.campaignsAndResourcesTimer isValid]) {
+            [self.campaignsAndResourcesTimer invalidate];
         }
     }
 }
@@ -1394,7 +1397,7 @@ static bool didSwizzle = false;
 
 -(void) queueUserUpdates
 {
-    NSMutableDictionary * currentAttributes =  (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+    NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
@@ -1567,38 +1570,19 @@ static NSString* httpScheme(bool useHttps)
 
 - (NSDictionary*) getDeviceProperties
 {
-    UIDevice* device   = [UIDevice currentDevice];
-    NSTimeZone* tz     = [NSTimeZone localTimeZone];
-    NSNumber* dpi = [NSNumber numberWithFloat:[self _estimate_dpi]];
-    NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
-    NSString *sdk_language = self.config.language;
+    NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
+    
+    UIDevice* device = [UIDevice currentDevice];
     CGRect screen_bounds = [self getDeviceScreenBounds];
     NSNumber* device_width = [NSNumber numberWithFloat: (float)screen_bounds.size.width];
     NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_bounds.size.height];
-    NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
-    NSString* timezone_name = [tz name];
-    NSString* regionCountry = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
-
-    NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
-    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_name"];
-    [deviceProperties setValue:[device systemName]     forKey:@"swrve.os"];
-    [deviceProperties setValue:[device systemVersion]  forKey:@"swrve.os_version"];
-    [deviceProperties setValue:min_os                  forKey:@"swrve.ios_min_version"];
-    [deviceProperties setValue:sdk_language            forKey:@"swrve.language"];
-    [deviceProperties setValue:device_height           forKey:@"swrve.device_height"];
-    [deviceProperties setValue:device_width            forKey:@"swrve.device_width"];
-    [deviceProperties setValue:dpi                     forKey:@"swrve.device_dpi"];
-    [deviceProperties setValue:@SWRVE_SDK_VERSION      forKey:@"swrve.sdk_version"];
-    [deviceProperties setValue:@"apple"                forKey:@"swrve.app_store"];
-    [deviceProperties setValue:secondsFromGMT          forKey:@"swrve.utc_offset_seconds"];
-    [deviceProperties setValue:timezone_name           forKey:@"swrve.timezone_name"];
+    NSNumber* dpi = [NSNumber numberWithFloat:[self _estimate_dpi]];
+    [deviceProperties setValue:[device model]         forKey:@"swrve.device_name"];
+    [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
+    [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
+    [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
-    [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
 
-    if (self.deviceToken) {
-        [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
-    }
-    
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
     if (carrier != nil) {
@@ -1617,6 +1601,27 @@ static NSString* httpScheme(bool useHttps)
     NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     [deviceProperties addEntriesFromDictionary:permissionStatus];
 
+    NSTimeZone* tz     = [NSTimeZone localTimeZone];
+    NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
+    NSString *sdk_language = self.config.language;
+    NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
+    NSString* timezone_name = [tz name];
+    NSString* regionCountry = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
+
+    [deviceProperties setValue:min_os                 forKey:@"swrve.ios_min_version"];
+    [deviceProperties setValue:sdk_language           forKey:@"swrve.language"];
+    [deviceProperties setValue:device_height          forKey:@"swrve.device_height"];
+    [deviceProperties setValue:device_width           forKey:@"swrve.device_width"];
+    [deviceProperties setValue:@SWRVE_SDK_VERSION     forKey:@"swrve.sdk_version"];
+    [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
+    [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
+    [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
+
+    if (self.deviceToken) {
+        [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
+    }
+    
     return deviceProperties;
 }
 
@@ -2041,8 +2046,20 @@ enum HttpStatus {
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
 
-    SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
-    [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    BOOL useURLSession = NO;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        useURLSession = YES;
+    }
+    if (useURLSession) {
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            handler(response, data, error);
+        }];
+        [task resume];
+    } else {
+        SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
+        [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    }
 }
 
 - (void) addHttpPerformanceMetrics:(NSString*) metrics

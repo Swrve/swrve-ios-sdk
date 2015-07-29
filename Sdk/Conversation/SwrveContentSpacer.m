@@ -17,21 +17,14 @@
     return self;
 }
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)containerView {
     // Height is defined as 'pixels' so we need to transform it to the point space
     float screenScale = (float)[[UIScreen mainScreen] scale];
     float spacer_height = (_height) ? ([_height floatValue] / screenScale) : 0.0f;
-    _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [SwrveConversationAtom widthOfContentView], spacer_height)];
+    _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerView.frame.size.width, spacer_height)];
     [SwrveConversationStyler styleView:_view withStyle:self.style];
     // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
-}
-
--(UIView *)view {
-    if(!_view) {
-        [self loadView];
-    }
-    return _view;
 }
 
 @end

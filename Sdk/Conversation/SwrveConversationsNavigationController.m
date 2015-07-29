@@ -13,7 +13,8 @@
 
 - (BOOL)shouldAutorotate {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES; // this does not work if conversation is of type UIModalPresentationFormSheet
+        // This does not work if conversation is of type UIModalPresentationFormSheet
+        return YES;
     } else {
         return NO;
     }

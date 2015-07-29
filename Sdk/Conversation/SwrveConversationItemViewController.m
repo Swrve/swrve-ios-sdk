@@ -10,8 +10,6 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
-#import "SwrveInputMultiValueLong.h"
-#import "SwrveSimpleChoiceTableViewController.h"
 #import "SwrveSetup.h"
 #import "Swrve.h"
 #import "SwrveConversationEvents.h"
@@ -22,7 +20,6 @@
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
-    NSIndexPath *updatePath;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
@@ -36,8 +33,6 @@
 @implementation SwrveConversationItemViewController
 
 @synthesize fullScreenBackgroundImageView;
-@synthesize backgroundImageView;
-@synthesize buttonsBackgroundImageView;
 @synthesize contentTableView;
 @synthesize buttonsView;
 @synthesize cancelButtonView;
@@ -57,14 +52,14 @@
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
-    
-    if (updatePath) {
-        NSArray *arr = [NSArray arrayWithObject:updatePath];
-        [self.contentTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
-        updatePath = nil;
+    [self updateUI];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        [atom viewDidDisappear];
     }
-    
-    [self updateUI]; // this method always to be called on main thread, natch.
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -83,7 +78,7 @@
 
 -(void) performActions:(SwrveConversationButton *)control {
     NSDictionary *actions = control.actions;
-    SwrveConversationActionType actionType;
+    SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
     
     if (actions == nil) {
@@ -127,12 +122,6 @@
             NSURL *target = [NSURL URLWithString:param];
             if (![target scheme]) {
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
-            }
-
-            BOOL isAppScheme = YES;
-            if (([@"http" caseInsensitiveCompare:[target scheme]] == NSOrderedSame) ||
-                ([@"https" caseInsensitiveCompare:[target scheme]] == NSOrderedSame)) {
-                isAppScheme = NO;
             }
 
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
@@ -200,7 +189,7 @@
 
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Check to see if all required inputs have had data applied and pop up an
-    // alert to the user if this is not the case.
+    // alert to the ufser if this is not the case.
     NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
     NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
     NSError *invalidInputError = nil;
@@ -301,23 +290,6 @@
 }
 
 -(void) updateUI {
-    // Style the table based on iOS version
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
-        [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-    } else {
-        self.contentTableView.frame = CGRectMake(0, 0, self.contentTableView.frame.size.width, self.contentTableView.frame.size.height);
-        [self.contentTableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
-
-        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-            // Add spacing for status bar
-            self.contentTableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
-            self.contentTableView.contentOffset = CGPointMake(0, -20);
-            CGRect frame = self.cancelButtonView.frame;
-            frame.origin.y = 30; // 10 points + 20 points for status bar
-            self.cancelButtonView.frame = frame;
-        }
-    }
     [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
     
@@ -325,17 +297,18 @@
     // pane, that second pane will display as scrolled too, unless we reset the
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
+    self.contentTableView.separatorColor = [UIColor clearColor];
     
     // Only called once the conversation has been retrieved
-    for(UIView *view in buttonsView.subviews) {
+    for (UIView *view in buttonsView.subviews) {
         if (![view isKindOfClass:[UIImageView class]]) {
             [view removeFromSuperview];
         }
     }
+
     NSArray *contentToAdd = self.conversationPane.content;
-    
     for (SwrveConversationAtom *atom in contentToAdd) {
-        [atom loadView];
+        [atom loadViewWithContainerView:self.view];
     }
     
     self.navigationItem.title = self.conversationPane.title;
@@ -349,7 +322,7 @@
     for(NSUInteger i = 0; i < buttons.count; i++) {
         SwrveConversationButton *button = [buttons objectAtIndex:i];
         UIButton *buttonUIView = (UIButton*)button.view;
-        buttonUIView.frame = CGRectMake(xOffset, 18, buttonWidth, 45.0);
+        buttonUIView.frame = CGRectMake(xOffset, 10, buttonWidth, 45.0);
         buttonUIView.tag = (NSInteger)i;
         buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
         [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
@@ -390,24 +363,14 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
-#pragma mark - Inits
-
--(id)initWithConversation:(SwrveConversation*)conv withMessageController:(SwrveMessageController *)ctrl {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self = [super initWithNibName:@"SwrveConversationItemViewController_iPad" bundle:nil];
-    } else {
-        self = [super initWithNibName:@"SwrveConversationItemViewController_iPhone" bundle:nil];
-    }
-    
-    if (self) {
-        conversation = conv;
-        controller = ctrl;
-        // The conversation is starting now, so issue a starting event
-        SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
-        [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
-        self.conversationPane = firstPage;  // Assigment will issue an impression event
-    }
-    return self;
+-(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl
+{
+    conversation = conv;
+    controller = ctrl;
+    // The conversation is starting now, so issue a starting event
+    SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
+    [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
+    self.conversationPane = firstPage;  // Assigment will issue an impression event
 }
 
 // Tapping the content view outside the context of any
@@ -447,131 +410,6 @@
     return v;
 }
 
--(CGFloat)offsetForAtom:(SwrveConversationAtom*)atom withKeyboardSize:(CGSize)kbdSize {
-    CGPoint p2, p3;
-    CGFloat offset = 0.0;
-
-    UIView *v = [self findTopView];
-    NSIndexPath *indexPath = [self indexPathForAtom:atom];
-    CGRect  screenRect = [[UIScreen mainScreen] bounds];
-    CGPoint originInSuperView = [v convertPoint:CGPointZero fromView:self.view];
-    CGRect  rectInTableView = [self.contentTableView rectForRowAtIndexPath:indexPath];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        switch (orientation) {
-            case UIInterfaceOrientationPortraitUpsideDown:
-                p2 = CGPointMake(originInSuperView.x, originInSuperView.y - rectInTableView.origin.y);
-                p3 = CGPointMake(originInSuperView.x, p2.y - rectInTableView.size.height);
-                offset = kbdSize.height - p3.y;
-                break;
-            case UIInterfaceOrientationPortrait:
-            case UIInterfaceOrientationUnknown:
-                p2 = CGPointMake(originInSuperView.x, originInSuperView.y + rectInTableView.origin.y);
-                p3 = CGPointMake(originInSuperView.x, p2.y + rectInTableView.size.height);
-                offset = p3.y - (screenRect.size.height - kbdSize.height);
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                p2 = CGPointMake(originInSuperView.x + rectInTableView.origin.y, originInSuperView.y);
-                p3 = CGPointMake(p2.x + rectInTableView.size.height, originInSuperView.y);
-                offset = p3.x - (screenRect.size.width - kbdSize.width);
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                p2 = CGPointMake(originInSuperView.x - rectInTableView.origin.y, originInSuperView.y);
-                p3 = CGPointMake(p2.x - rectInTableView.size.height, originInSuperView.y);
-                offset = kbdSize.width - p3.x;
-                break;
-        }
-    }
-    
-    return (offset > 0.0) ? offset : 0.0;
-}
-
--(CGSize) keyboardSize:(NSDictionary*)userinfo {
-    NSValue *value = [userinfo objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGRect keyboardRect;
-    [value getValue:&keyboardRect];
-    return keyboardRect.size;
-}
-
-// On the iPad, the atom is scrolled up a bit. On the iPhone, the atom
-// is brought to the top of the visible content to make it as accessible
-// as possible given the limited space available.
-//
--(void)nudgeAtom:(SwrveConversationAtom*)atom fromKeyboard:(NSDictionary*)userinfo {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        CGFloat scrollDiff = [self offsetForAtom:atom withKeyboardSize:[self keyboardSize:userinfo]];
-        if (scrollDiff > 0) {
-            [UIView animateWithDuration:0.3 animations:^ {
-                self.contentTableView.contentOffset = CGPointMake(self.contentTableView.contentOffset.x, self.contentTableView.contentOffset.y + scrollDiff);
-            }];
-            keyboardOffset = scrollDiff;
-        }
-    } else {
-        CGSize keyboardSize = [self keyboardSize:userinfo];
-        
-        UIEdgeInsets contentInsets;
-        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-            contentInsets = UIEdgeInsetsMake(0.0, 0.0, (keyboardSize.height), 0.0);
-        } else {
-            contentInsets = UIEdgeInsetsMake(0.0, 0.0, (keyboardSize.width), 0.0);
-        }
-        
-        self.contentTableView.contentInset = contentInsets;
-        self.contentTableView.scrollIndicatorInsets = contentInsets;
-        [self.contentTableView scrollToRowAtIndexPath:[self indexPathForAtom:atom] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    }
-}
-
--(void)nudgeAtomBack:(NSNumber*)animRate {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (keyboardOffset != 0) {
-            CGFloat tmpval = keyboardOffset;
-            keyboardOffset = 0.0;
-            [UIView animateWithDuration:animRate.floatValue animations:^ {
-                self.contentTableView.contentOffset = CGPointMake(self.contentTableView.contentOffset.x, self.contentTableView.contentOffset.y - tmpval);
-            }];
-        }
-    } else {
-        [UIView animateWithDuration:animRate.floatValue animations:^ {
-            self.contentTableView.contentInset = UIEdgeInsetsZero;
-            self.contentTableView.scrollIndicatorInsets = UIEdgeInsetsZero;
-        }];
-    }
-}
-
--(void) keyboardWillShow:(NSNotification *)notification {
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        if([atom isKindOfClass:[SwrveInputItem class]]) {
-            if([(SwrveInputItem *)atom isFirstResponder]) {
-                [self nudgeAtom:atom fromKeyboard:notification.userInfo];
-            }
-        }
-    }
-
-    // When there's a keyboard on-screen, then apply a recognizer to this content
-    // view so we can detect when a tap takes place outside the keyboard area.
-    // A tap of this nature means that the user is done typing.
-    //
-    if (localRecognizer == nil) {
-        localRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(contentViewTapped:)];
-        localRecognizer.numberOfTapsRequired = 1;
-    }
-    [self.contentTableView addGestureRecognizer:localRecognizer];
-    
-}
-
--(void) keyboardWillHide:(NSNotification *)notification {
-    // Two ways to get to here - the user has pressed the Done
-    // accessory button on the kbd, or a text input has resigned
-    // first responder. If it's the latter, the local gesture
-    // recognizer added by keyboardWillShow will be removed
-    // already, but if Done is pressed it will not have been
-    // removed, so we need to do it here.
-    [self.contentTableView removeGestureRecognizer:localRecognizer];
-    [self nudgeAtomBack:notification.userInfo[UIKeyboardAnimationDurationUserInfoKey]];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -580,24 +418,9 @@
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     }
     self.navigationController.navigationBar.translucent = NO;
-
-    backgroundImageView.backgroundColor = [UIColor clearColor];
-    buttonsView.backgroundColor = [UIColor clearColor];
-    buttonsBackgroundImageView.backgroundColor = [UIColor clearColor];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewReady:)
                                                  name:kSwrveNotificationViewReady
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
                                                object:nil];
 
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -610,12 +433,6 @@
 -(void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kSwrveNotificationViewReady
-                                                  object:UIKeyboardDidShowNotification];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillHideNotification
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIDeviceOrientationDidChangeNotification
@@ -647,11 +464,11 @@
     return [atom heightForRow:(NSUInteger)indexPath.row];
 }
 
-// HACK for EA
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
     NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
-    if(checkedIndexPath >= [self.conversationPane.content count]) {
-        checkedIndexPath = checkedIndexPath - 1;
+    NSUInteger paneCount = [self.conversationPane.content count];
+    if(checkedIndexPath >= paneCount) {
+        checkedIndexPath = paneCount - 1;
     }
     return checkedIndexPath;
 }
@@ -665,20 +482,22 @@
         // Redraw the section, as we may have switched another off
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:(NSUInteger)indexPath.section];
         [tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else if([atom.type isEqualToString:kSwrveInputMultiValueLong]) {
-        SwrveSimpleChoiceTableViewController *simpleVC = [[SwrveSimpleChoiceTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        simpleVC.choiceValues = [(SwrveInputMultiValueLong *)atom choicesForRow:(NSUInteger)indexPath.row];
-        simpleVC.pageStyle = self.conversationPane.pageStyle;
-        simpleVC.choiceStyle = [atom style];
-        [self.navigationController pushViewController:simpleVC animated:YES];
-        // Also note that this row may need an update
-        updatePath = indexPath;
     }
 }
 
+#ifdef __IPHONE_8_0
 - (BOOL)prefersStatusBarHidden
 {
     return NO;
 }
+    
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        [atom viewWillTransitionToSize:size];
+    }
+}
+#endif
 
 @end

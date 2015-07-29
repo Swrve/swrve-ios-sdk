@@ -9,6 +9,8 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrvePermissions.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
@@ -378,7 +380,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     // CDN
-    self.cdnRoot = [campaignJson objectForKey:@"cdn_root" ];
+    self.cdnRoot = [campaignJson objectForKey:@"cdn_root"];
     DebugLog(@"CDN URL %@", self.cdnRoot);
     
     // Game Data
@@ -553,7 +555,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [[self assetsCurrentlyDownloading] addObject:asset];
     }
     
-    NSURL* url = [NSURL URLWithString: asset relativeToURL: [NSURL URLWithString:self.cdnRoot]];
+    NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
     
     DebugLog(@"Downloading asset: %@", url);
     
@@ -719,7 +721,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
                 SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
-                    if ([nextMessage supportsOrientation:currentOrientation]) {
+                    BOOL canBeChosen = YES;
+                    // iOS9+ will display with local scale
+                    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+                        canBeChosen = [nextMessage supportsOrientation:currentOrientation];
+                    }
+                    if (canBeChosen) {
                         // Add to list of returned messages
                         [availableMessages addObject:nextMessage];
                         // Check if it is a candidate to be shown
@@ -1059,7 +1066,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     DebugLog(@"Showing conversation %@", conversation.name);
     if ( conversation && self.inAppMessageWindow == nil ) {
         // Create a view to show the conversation
-        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
+        UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
+        SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+        [scivc setConversation:conversation andMessageController:self];
+        
         self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
@@ -1242,10 +1252,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             message = [self findMessageForEvent:eventName withParameters:event];
         }
         
-        // Only show the message if it supports the given orientation
-        if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-            DebugLog(@"The message doesn't support the current orientation", nil);
-            return NO;
+        // iOS9+ will display with local scale
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // Only show the message if it supports the given orientation
+            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
         }
         
         // Show the message if it exists
@@ -1270,18 +1283,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         return ( message != nil );
     }
-}
-
-- (SwrveConversation*) getConversation {
-    SwrveConversation *conv = nil;
-    //TODO.Sergio
-    /*if ([self.campaigns count] != 0) {
-     SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
-     if ([camp.conversations count] > 0) {
-     conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
-     }
-     }*/
-    return conv;
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken
