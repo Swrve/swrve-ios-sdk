@@ -20,11 +20,11 @@
         NSString* swrve_folder = @"com.ngt.msgs";
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
         image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
-        [self sizeAndDisplayImage:image withContainer:containerView];
+        [self sizeAndDisplayInContainer:containerView];
     });
 }
 
-- (void)sizeAndDisplayImage:(UIImage*)image withContainer:(UIView*)containerView
+- (void)sizeAndDisplayInContainer:(UIView*)containerView
 {
     if (image != nil) {
         // Create _view and add image to it
