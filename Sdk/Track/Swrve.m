@@ -1344,11 +1344,10 @@ static bool didSwizzle = false;
         if (self.config.autoSaveEventsOnResign) {
             [self saveEventsToDisk];
         }
-        [self stopCampaignsAndResourcesTimer];
     } else {
         [self sendQueuedEvents];
-        [self pauseCampaignsAndResourcesTimer];
     }
+    [self stopCampaignsAndResourcesTimer];
 }
 
 -(void) startCampaignsAndResourcesTimer
@@ -1383,15 +1382,6 @@ static bool didSwizzle = false;
     }
 }
 
-- (void) pauseCampaignsAndResourcesTimer
-{
-    @synchronized(self.campaignsAndResourcesTimer) {
-        if (self.campaignsAndResourcesTimer && [self.campaignsAndResourcesTimer isValid]) {
-            [self.campaignsAndResourcesTimer invalidate];
-        }
-    }
-}
-
 - (void) resumeCampaignsAndResourcesTimer
 {
     if (!self.config.autoDownloadCampaignsAndResources) {
@@ -1399,9 +1389,7 @@ static bool didSwizzle = false;
     }
     
     @synchronized(self.campaignsAndResourcesTimer) {
-        if (self.campaignsAndResourcesTimer && [self.campaignsAndResourcesTimer isValid]) {
-            [self.campaignsAndResourcesTimer invalidate];
-        }
+        [self stopCampaignsAndResourcesTimer];
         [self setCampaignsAndResourcesTimer:[NSTimer scheduledTimerWithTimeInterval:1
                                                                              target:self
                                                                            selector:@selector(campaignsAndResourcesTimerTick:)
