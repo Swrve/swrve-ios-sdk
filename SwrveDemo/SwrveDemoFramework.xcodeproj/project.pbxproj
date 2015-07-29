@@ -949,7 +949,7 @@
 		30A4F71316B05C2500642E8E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = Swrve;
 				TargetAttributes = {
 					30A4F71B16B05C2500642E8E = {
@@ -1172,6 +1172,7 @@
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1259,6 +1260,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1310,6 +1312,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
