@@ -60,6 +60,7 @@
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
     }
+    [controller conversationClosed];
 }
 
 -(SwrveConversationPane *)conversationPane {

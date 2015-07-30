@@ -116,18 +116,21 @@
 - (void) displayForViewportOfSize:(CGSize)size
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        float viewportRatio = (float)(size.width/size.width);
+        float viewportRatio = (float)(size.width/size.height);
         float closestRatio = -1;
         SwrveMessageFormat* closestFormat = nil;
         for (SwrveMessageFormat* format in self.message.formats) {
             float formatRatio = (float)(format.size.width/format.size.height);
-            if (closestFormat == nil || (fabsf(formatRatio - viewportRatio) < closestRatio)) {
+            float diffRatio = fabsf(formatRatio - viewportRatio);
+            if (closestFormat == nil || (diffRatio < closestRatio)) {
                 closestFormat = format;
+                closestRatio = diffRatio;
             }
         }
     
+        current_format = closestFormat;
         DebugLog(@"Selected message format: %@", current_format.name);
-        [closestFormat createViewToFit:self.view
+        [current_format createViewToFit:self.view
                        thatDelegatesTo:self
                               withSize:size];
     } else {
@@ -150,6 +153,10 @@
         } else {
             DebugLog(@"Couldn't find a format for message: %@", message.name);
         }
+    }
+    // Update background color
+    if (current_format.backgroundColor != nil) {
+        self.view.backgroundColor = current_format.backgroundColor;
     }
 }
 

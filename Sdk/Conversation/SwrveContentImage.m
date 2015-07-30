@@ -19,21 +19,21 @@
         NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
         NSString* swrve_folder = @"com.ngt.msgs";
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
-        image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
-        [self sizeAndDisplayImage:image withContainer:containerView];
+        self->image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
+        [self sizeAndDisplayInContainer:containerView];
     });
 }
 
-- (void)sizeAndDisplayImage:(UIImage*)image withContainer:(UIView*)containerView
+- (void)sizeAndDisplayInContainer:(UIView*)containerView
 {
     if (image != nil) {
         // Create _view and add image to it
         _view = iv = [[UIImageView alloc] init];
         dispatch_async(dispatch_get_main_queue(), ^{
             // Image setting and manipulation should be done on the main thread, otherwise this slows down a lot on iOS 7
-            self->iv.image = image;
+            self->iv.image = self->image;
             CGFloat containerWidth = containerView.frame.size.width;
-            CGSize imageSize = image.size;
+            CGSize imageSize = self->image.size;
             self->iv.frame = CGRectMake(0, 0, containerWidth, ((imageSize.height/imageSize.width)*containerWidth));
         });
         // Notify that the view is ready to be displayed

@@ -67,6 +67,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
+@property (nonatomic, retain) UIViewController*     conversationViewController;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
 
@@ -112,6 +113,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize pushNotificationEvents;
 @synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
+@synthesize conversationViewController;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
 @synthesize device_width;
@@ -410,6 +412,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // QA
     NSMutableDictionary* campaignsDownloaded = nil;
     
+    BOOL wasQAUser = (self.qaUser != nil);
     NSDictionary* json_qa = [campaignJson objectForKey:@"qa"];
     if(json_qa) {
         DebugLog(@"You are a QA user!", nil);
@@ -480,18 +483,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (campaign != nil) {
             DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
             campaign.next = 0;
-            if(!self.qaUser || !self.qaUser.resetDevice) {
+            if(!(!wasQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
                 NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
                 NSDictionary* campaignSettings = [settings objectForKey:ID];
                 if(campaignSettings) {
                     NSNumber* next = [campaignSettings objectForKey:@"next"];
-                    if (next)
-                    {
+                    if (next) {
                         campaign.next = next.unsignedIntegerValue;
                     }
                     NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                    if (impressions)
-                    {
+                    if (impressions) {
                         campaign.impressions = impressions.unsignedIntegerValue;
                     }
                 }
@@ -629,7 +630,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     if ([self autoShowMessagesEnabled]) {
                         NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
                         if ([self eventRaised:event]) {
-                            // If a message was shown we want to disable autoshow
+                            // If a conversation was shown we want to disable autoshow
                             [self setAutoShowMessagesEnabled:NO];
                         }
                     }
@@ -1039,7 +1040,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void) showMessage:(SwrveMessage *)message
 {
-    if ( message && self.inAppMessageWindow == nil ) {
+    if ( message && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
         SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
         messageViewController.view.backgroundColor = self.backgroundColor;
         messageViewController.message = message;
@@ -1064,7 +1065,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void) showConversation:(SwrveConversation*)conversation
 {
     DebugLog(@"Showing conversation %@", conversation.name);
-    if ( conversation && self.inAppMessageWindow == nil ) {
+    if ( conversation && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
         // Create a view to show the conversation
         UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
         SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
@@ -1090,7 +1091,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             [rootController.view endEditing:YES];
             [rootController presentViewController:svnc animated:YES completion:nil];
         });
+        conversationViewController = svnc;
     }
+}
+
+- (void) conversationClosed {
+    conversationViewController = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
