@@ -116,13 +116,15 @@
 - (void) displayForViewportOfSize:(CGSize)size
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        float viewportRatio = (float)(size.width/size.width);
+        float viewportRatio = (float)(size.width/size.height);
         float closestRatio = -1;
         SwrveMessageFormat* closestFormat = nil;
         for (SwrveMessageFormat* format in self.message.formats) {
             float formatRatio = (float)(format.size.width/format.size.height);
-            if (closestFormat == nil || (fabsf(formatRatio - viewportRatio) < closestRatio)) {
+            float diffRatio = fabsf(formatRatio - viewportRatio);
+            if (closestFormat == nil || (diffRatio < closestRatio)) {
                 closestFormat = format;
+                closestRatio = diffRatio;
             }
         }
     
