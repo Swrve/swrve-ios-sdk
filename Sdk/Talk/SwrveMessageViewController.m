@@ -126,8 +126,9 @@
             }
         }
     
+        current_format = closestFormat;
         DebugLog(@"Selected message format: %@", current_format.name);
-        [closestFormat createViewToFit:self.view
+        [current_format createViewToFit:self.view
                        thatDelegatesTo:self
                               withSize:size];
     } else {
@@ -150,6 +151,10 @@
         } else {
             DebugLog(@"Couldn't find a format for message: %@", message.name);
         }
+    }
+    // Update background color
+    if (current_format.backgroundColor != nil) {
+        self.view.backgroundColor = current_format.backgroundColor;
     }
 }
 
