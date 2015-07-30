@@ -1593,7 +1593,7 @@ static NSString* httpScheme(bool useHttps)
 - (NSString *) getHWMachineName {
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
+    char *machine = (char*)malloc(size);
     sysctlbyname("hw.machine", machine, &size, NULL, 0);
     NSString *platform = [NSString stringWithUTF8String:machine];
     free(machine);
