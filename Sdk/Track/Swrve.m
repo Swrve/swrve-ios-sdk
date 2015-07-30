@@ -1374,11 +1374,10 @@ static bool didSwizzle = false;
 
 -(void)campaignsAndResourcesTimerTick:(NSTimer*)timer
 {
+    self.campaignsAndResourcesTimerSeconds++;
     if (self.campaignsAndResourcesTimerSeconds >= self.campaignsAndResourcesFlushFrequency) {
         self.campaignsAndResourcesTimerSeconds = 0;
         [self checkForCampaignAndResourcesUpdates:timer];
-    } else {
-        self.campaignsAndResourcesTimerSeconds++;
     }
 }
 
