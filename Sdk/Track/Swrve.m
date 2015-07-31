@@ -1609,7 +1609,7 @@ static NSString* httpScheme(bool useHttps)
     NSNumber* device_width = [NSNumber numberWithFloat: (float)screen_bounds.size.width];
     NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_bounds.size.height];
     NSNumber* dpi = [NSNumber numberWithFloat:[self _estimate_dpi]];
-    [deviceProperties setValue:[device model]         forKey:@"swrve.device_name"];
+    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_name"];
     [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
