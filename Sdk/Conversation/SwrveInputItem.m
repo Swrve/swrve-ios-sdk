@@ -28,7 +28,7 @@
 
 -(BOOL) isValid:(NSError * __autoreleasing *)error {
     // Do nothing - subclasses implement
-    *error= nil;
+    *error = nil;
     return YES;
 }
 

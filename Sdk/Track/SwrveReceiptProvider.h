@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
 /*! Used internally to obtain the receipt from a purchase

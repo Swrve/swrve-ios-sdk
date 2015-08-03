@@ -2,6 +2,8 @@
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 enum
 {
     // The API version of this file.
@@ -54,7 +56,7 @@ enum
     self.resetDevice = [[qaJson objectForKey:@"reset_device_state"] boolValue];
     self.logging = [[qaJson objectForKey:@"logging"] boolValue];
     if (self.logging) {
-        self.loggingUrl = [qaJson objectForKey:@"logging_url"];
+        self.loggingUrl = [qaJson objectForKey:@"logging_url"];;
         self.queue = [[NSOperationQueue alloc] init];
     }
     
