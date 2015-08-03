@@ -3,7 +3,6 @@
 
 @implementation SwrveInputItem
 
-@synthesize optional;
 @dynamic userResponse;
 
 -(BOOL) isFirstResponder {
@@ -12,24 +11,6 @@
 
 -(void) resignFirstResponder {
     // Do nothing - subclasses should though.
-}
-
--(BOOL)isComplete {
-    return YES;
-}
-
--(void) highlight {
-    // Do nothing - subclasses should though.
-}
-
--(void) removeHighlighting {
-    // Do nothing - subclasses should though.
-}
-
--(BOOL) isValid:(NSError * __autoreleasing *)error {
-    // Do nothing - subclasses implement
-    *error = nil;
-    return YES;
 }
 
 @end
