@@ -120,11 +120,14 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) BOOL autoDownloadCampaignsAndResources;
 
-/* Controls if Swrve in-app messaging is enabled. */
+/*! Controls if Swrve in-app messaging is enabled. */
 @property (nonatomic) BOOL talkEnabled;
 
-/* Default in-app background color used if none is specified in the template */
+/*! Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor* defaultBackgroundColor;
+
+/*! Session timeout time in seconds. User activity after this time will be considered a new session. */
+@property (nonatomic) double newSessionInterval;
 
 /*! A callback to get notified when user resources have been updated.
  *
@@ -276,6 +279,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;
+@property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;

@@ -27,9 +27,8 @@
 }
 
 -(NSString *)embedVideoInHTML:(NSString *)url {
-    NSString *htmlString = @"<html><head> <meta name = \"viewport\" content = \"initial-scale = 1.0, user-scalable = no, width = \"%f\"/></head> <body style=\"background:#000000;margin-top:0px;margin-left:0px\"> <iframe width= \"%f\" height=\"%f\" src = \"%@\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
-    NSString *html = [NSString stringWithFormat:htmlString, self.frame.size.width, self.frame.size.width, self.frame.size.height, url];
-    return html;
+    NSString *htmlString = @"<html style=\"margin:0;\"><head><meta name=\"viewport\" content=\"initial-scale = 1.0, user-scalable = no\"/></head><body style=\"background:#000000;margin:0;\"><iframe width=\"100%%\" height=\"100%%\" src=\"%@\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
+    return [NSString stringWithFormat:htmlString, url];
 }
 
 @end

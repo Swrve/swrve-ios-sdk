@@ -9,7 +9,6 @@
 #define kSwrveContentTypeVideo @"video"
 #define kSwrveContentSpacer @"spacer"
 // Input types
-#define kSwrveInputMultiValueLong @"multi-value-long-input"
 #define kSwrveInputMultiValue @"multi-value-input"
 // Control types
 #define kSwrveControlTypeButton @"button"
@@ -34,11 +33,12 @@
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView;
 
 // Subclasses should override this
--(void) loadView;
+-(void) loadViewWithContainerView:(UIView*)containerView;
+-(void)viewWillTransitionToSize:(CGSize)size;
 
 // If the atom has some kind of activity going, then
 // this is notice to cease it. Defaults to doing nothing.
 -(void) stop;
+-(void) viewDidDisappear;
 
-+(CGFloat) widthOfContentView;
 @end

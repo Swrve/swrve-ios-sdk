@@ -17,7 +17,6 @@
 
 /*! Create a button with the given orientation and position.
  *
- * \param orientation Wanted orientation for the button.
  * \param delegate Event action delegate.
  * \param selector Button click selector.
  * \param scale Parent message scale.
@@ -25,8 +24,7 @@
  * \param cy Position in the y-axis.
  * \returns New button instance.
  */
--(UIButton*)createButtonWithOrientation:(UIInterfaceOrientation)orientation
-                            andDelegate:(id)delegate
+-(UIButton*)createButtonWithDelegate:(id)delegate
                             andSelector:(SEL)selector
                                andScale:(float)scale
                              andCenterX:(float)cx

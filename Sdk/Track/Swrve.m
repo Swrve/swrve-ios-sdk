@@ -3,12 +3,13 @@
 #endif
 
 #include <sys/time.h>
+#import "Swrve.h"
+#include <sys/sysctl.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import "Swrve.h"
 #import "SwrveCampaign.h"
-#import "SwrveSwizzleHelper.h"
 #import "SwrvePermissions.h"
+#import "SwrveSwizzleHelper.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -19,6 +20,8 @@
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)
 #define KB(x) (1024*(x))
 #define MB(x) (1024*KB((x)))
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 enum
 {
@@ -59,6 +62,7 @@ enum
 const static char* swrve_trailing_comma = ",\n";
 static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
+static BOOL ignoreFirstDidBecomeActive = YES;
 
 typedef void (^ConnectionCompletionHandler)(NSURLResponse* response, NSData* data, NSError* error);
 
@@ -143,6 +147,7 @@ enum
 @interface Swrve()
 {
     UInt64 install_time;
+    NSDate *lastSessionDate;
 
     SwrveEventQueuedCallback event_queued_callback;
 
@@ -166,10 +171,10 @@ enum
 -(void) updateDeviceInfo;
 -(void) registerForNotifications;
 -(void) appDidBecomeActive:(NSNotification*)notification;
+-(void) pushNotificationReceived:(NSDictionary*)userInfo;
 -(void) appWillResignActive:(NSNotification*)notification;
 -(void) appWillTerminate:(NSNotification*)notification;
 -(void) queueUserUpdates;
--(void) pushNotificationReceived:(NSDictionary*)userInfo;
 - (NSString*) createSessionToken;
 - (NSString*) createJSON:(NSString*)sessionToken events:(NSString*)rawEvents;
 - (NSString*) copyBufferToJson:(NSArray*)buffer;
@@ -188,9 +193,6 @@ enum
 // Used to store the merged user updates
 @property (atomic, strong) NSMutableDictionary * userUpdates;
 
-// Set to YES after the first sessionEnd so that multiple session starts are not generated if the app resume event occurs after swrve has been initialized
-@property (atomic) BOOL okToStartSessionOnResume;
-
 // Device id, used for tracking event streams from different devices
 @property (atomic) NSNumber* shortDeviceID;
 
@@ -202,6 +204,7 @@ enum
 @property (atomic) double campaignsAndResourcesFlushFrequency;
 @property (atomic) double campaignsAndResourcesFlushRefreshDelay;
 @property (atomic) NSTimer* campaignsAndResourcesTimer;
+@property (atomic) int campaignsAndResourcesTimerSeconds;
 @property (atomic) NSDate* campaignsAndResourcesLastRefreshed;
 @property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to API returns
 
@@ -308,6 +311,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -327,6 +331,7 @@ enum
         orientation = SWRVE_ORIENTATION_BOTH;
         appVersion = [Swrve getAppVersion];
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
+        newSessionInterval = 30;
 
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         eventCacheFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
@@ -338,7 +343,7 @@ enum
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
-        self.useHttpsForContentServer = NO;
+        self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
@@ -380,6 +385,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
@@ -413,6 +419,7 @@ enum
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
+        newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
@@ -505,7 +512,6 @@ static bool didSwizzle = false;
 @synthesize resourceManager;
 
 @synthesize userUpdates;
-@synthesize okToStartSessionOnResume;
 @synthesize deviceToken = _deviceToken;
 @synthesize shortDeviceID;
 @synthesize httpPerformanceMetrics;
@@ -513,6 +519,7 @@ static bool didSwizzle = false;
 @synthesize campaignsAndResourcesFlushFrequency;
 @synthesize campaignsAndResourcesFlushRefreshDelay;
 @synthesize campaignsAndResourcesTimer;
+@synthesize campaignsAndResourcesTimerSeconds;
 @synthesize campaignsAndResourcesLastRefreshed;
 @synthesize campaignsAndResourcesInitialized;
 @synthesize resourcesFile;
@@ -646,6 +653,7 @@ static bool didSwizzle = false;
         deviceInfo = [NSMutableDictionary dictionary];
 
         install_time = [self getInstallTime:swrveConfig.installTimeCacheFile];
+        lastSessionDate = [self getNow];
 
         NSURL* base_events_url = [NSURL URLWithString:swrveConfig.eventsServer];
         [self setBatchURL:[NSURL URLWithString:@"1/batch" relativeToURL:base_events_url]];
@@ -685,13 +693,12 @@ static bool didSwizzle = false;
         
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
+            [self disableAutoShowAfterDelay];
         }
+        [self registerForNotifications];
         
         [self queueSessionStart];
         [self queueDeviceProperties];
-
-        self.okToStartSessionOnResume = NO;
-        [self registerForNotifications];
 
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
@@ -704,17 +711,16 @@ static bool didSwizzle = false;
         [self setCampaignsAndResourcesInitialized:NO];
 
         self.campaignsAndResourcesFlushFrequency = [[NSUserDefaults standardUserDefaults] doubleForKey:@"swrve_cr_flush_frequency"];
-        if (self.campaignsAndResourcesFlushFrequency == 0) {
+        if (self.campaignsAndResourcesFlushFrequency <= 0) {
             self.campaignsAndResourcesFlushFrequency = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY / 1000;
         }
 
         self.campaignsAndResourcesFlushRefreshDelay = [[NSUserDefaults standardUserDefaults] doubleForKey:@"swrve_cr_flush_delay"];
-        if (self.campaignsAndResourcesFlushRefreshDelay == 0) {
+        if (self.campaignsAndResourcesFlushRefreshDelay <= 0) {
             self.campaignsAndResourcesFlushRefreshDelay = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY / 1000;
         }
 
         [self startCampaignsAndResourcesTimer];
-        [self disableAutoShowAfterDelay];
     }
 
     [self sendQueuedEvents];
@@ -790,7 +796,6 @@ static bool didSwizzle = false;
     [self maybeFlushToDisk];
     NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
     [self queueEvent:@"session_end" data:json triggerCallback:true];
-    self.okToStartSessionOnResume = YES;
     return SWRVE_SUCCESS;
 }
 
@@ -1086,7 +1091,8 @@ static bool didSwizzle = false;
 {
     // If this wasn't called from the timer then reset the timer
     if (timer == nil) {
-        NSDate* nextInterval = [NSDate dateWithTimeIntervalSinceNow:self.campaignsAndResourcesFlushFrequency];
+        NSDate* now = [self getNow];
+        NSDate* nextInterval = [now dateByAddingTimeInterval:self.campaignsAndResourcesFlushFrequency];
         @synchronized([self campaignsAndResourcesTimer]) {
             [self.campaignsAndResourcesTimer setFireDate:nextInterval];
         }
@@ -1290,84 +1296,115 @@ static bool didSwizzle = false;
 
 -(void) appDidBecomeActive:(NSNotification*)notification
 {
-    #pragma unused(notification)
-    if (self.okToStartSessionOnResume) {
+#pragma unused(notification)
+    // Ignore the first call when the SDK is initialised at app start
+    if (ignoreFirstDidBecomeActive) {
+        ignoreFirstDidBecomeActive = NO;
+        return;
+    }
+    
+    NSDate* now = [self getNow];
+    NSTimeInterval secondsPassed = [now timeIntervalSinceDate:lastSessionDate];
+    if (secondsPassed >= config.newSessionInterval) {
+        // We consider this a new session as more than newSessionInterval seconds
+        // have passed.
         [self sessionStart];
-        [self queueDeviceProperties];
-        
-        if (self.config.autoSendEventsOnResume) {
-            [self sendQueuedEvents];
-        }
-
         // Re-enable auto show messages at session start
         if ([self talk]) {
             [[self talk] setAutoShowMessagesEnabled:YES];
+            [self disableAutoShowAfterDelay];
         }
     }
+    
+    [self queueDeviceProperties];
+    if (self.config.autoSendEventsOnResume) {
+        [self sendQueuedEvents];
+    }
 
-    [self startCampaignsAndResourcesTimer];
-    [self disableAutoShowAfterDelay];
+    [self resumeCampaignsAndResourcesTimer];
+    lastSessionDate = [self getNow];
 }
 
 -(void) appWillResignActive:(NSNotification*)notification
 {
     #pragma unused(notification)
-    [self suspend];
+    lastSessionDate = [self getNow];
+    [self suspend:NO];
 }
 
 -(void) appWillTerminate:(NSNotification*)notification
 {
     #pragma unused(notification)
-    [self suspend];
+    [self suspend:YES];
 }
 
--(void) suspend
+-(void) suspend:(BOOL)terminating
 {
-    [self sessionEnd];
-    if (self.config.autoSaveEventsOnResign) {
-        [self saveEventsToDisk];
+    if (terminating) {
+        if (self.config.autoSaveEventsOnResign) {
+            [self saveEventsToDisk];
+        }
+    } else {
+        [self sendQueuedEvents];
     }
-
     [self stopCampaignsAndResourcesTimer];
 }
 
 -(void) startCampaignsAndResourcesTimer
 {
-    if (![[self config] autoDownloadCampaignsAndResources]) {
+    if (!self.config.autoDownloadCampaignsAndResources) {
         return;
     }
 
-    @synchronized([self campaignsAndResourcesTimer]) {
-        // If there is not already a timer running initialize timers and call refresh
-        if (![self campaignsAndResourcesTimer] || ![[self campaignsAndResourcesTimer] isValid]) {
-            [self refreshCampaignsAndResources];
+    [self refreshCampaignsAndResources];
+    // Start repeating timer
+    [self setCampaignsAndResourcesTimer:[NSTimer scheduledTimerWithTimeInterval:1
+                                                                         target:self
+                                                                       selector:@selector(campaignsAndResourcesTimerTick:)
+                                                                       userInfo:nil
+                                                                        repeats:YES]];
 
-            // Start repeating timer
-            [self setCampaignsAndResourcesTimer:[NSTimer scheduledTimerWithTimeInterval:[self campaignsAndResourcesFlushFrequency]
-                                                                                 target:self
-                                                                               selector:@selector(checkForCampaignAndResourcesUpdates:)
-                                                                               userInfo:nil
-                                                                                repeats:YES]];
+    // Call refresh once after refresh delay to ensure campaigns are reloaded after initial events have been sent
+    [NSTimer scheduledTimerWithTimeInterval:[self campaignsAndResourcesFlushRefreshDelay]
+                                     target:self
+                                   selector:@selector(refreshCampaignsAndResources:)
+                                   userInfo:nil
+                                    repeats:NO];
+}
 
-            // Call refresh once after refresh delay to ensure campaigns are reloaded after initial events have been sent
-            [NSTimer scheduledTimerWithTimeInterval:[self campaignsAndResourcesFlushRefreshDelay]
-                                             target:self
-                                           selector:@selector(refreshCampaignsAndResources:)
-                                           userInfo:nil
-                                            repeats:NO];
-        }
+-(void)campaignsAndResourcesTimerTick:(NSTimer*)timer
+{
+    self.campaignsAndResourcesTimerSeconds++;
+    if (self.campaignsAndResourcesTimerSeconds >= self.campaignsAndResourcesFlushFrequency) {
+        self.campaignsAndResourcesTimerSeconds = 0;
+        [self checkForCampaignAndResourcesUpdates:timer];
+    }
+}
+
+- (void) resumeCampaignsAndResourcesTimer
+{
+    if (!self.config.autoDownloadCampaignsAndResources) {
+        return;
+    }
+    
+    @synchronized(self.campaignsAndResourcesTimer) {
+        [self stopCampaignsAndResourcesTimer];
+        [self setCampaignsAndResourcesTimer:[NSTimer scheduledTimerWithTimeInterval:1
+                                                                             target:self
+                                                                           selector:@selector(campaignsAndResourcesTimerTick:)
+                                                                           userInfo:nil
+                                                                            repeats:YES]];
     }
 }
 
 - (void) stopCampaignsAndResourcesTimer
 {
-    @synchronized([self campaignsAndResourcesTimer]) {
-        if ([self campaignsAndResourcesTimer] && [[self campaignsAndResourcesTimer] isValid]) {
-            [[self campaignsAndResourcesTimer] invalidate];
+    @synchronized(self.campaignsAndResourcesTimer) {
+        if (self.campaignsAndResourcesTimer && [self.campaignsAndResourcesTimer isValid]) {
+            [self.campaignsAndResourcesTimer invalidate];
         }
     }
 }
-
 
 //If talk enabled ensure that after SWRVE_DEFAULT_AUTOSHOW_MESSAGES_MAX_DELAY autoshow is disabled
 -(void) disableAutoShowAfterDelay
@@ -1382,10 +1419,9 @@ static bool didSwizzle = false;
                                                    [[self talk] methodSignatureForSelector:authoShowSelector]];
 
         bool arg = NO;
-        [disableAutoshowInvocation setSelector:@selector(setAutoShowMessagesEnabled:)];
+        [disableAutoshowInvocation setSelector:authoShowSelector];
         [disableAutoshowInvocation setTarget:[self talk]];
         [disableAutoshowInvocation setArgument:&arg atIndex:2];
-
         [NSTimer scheduledTimerWithTimeInterval:(self.config.autoShowMessagesMaxDelay/1000) invocation:disableAutoshowInvocation repeats:NO];
     }
 }
@@ -1393,7 +1429,7 @@ static bool didSwizzle = false;
 
 -(void) queueUserUpdates
 {
-    NSMutableDictionary * currentAttributes =  (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+    NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
@@ -1554,38 +1590,31 @@ static NSString* httpScheme(bool useHttps)
     return bounds;
 }
 
+- (NSString *) getHWMachineName {
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = (char*)malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+    return platform;
+}
+
 - (NSDictionary*) getDeviceProperties
 {
-    UIDevice* device   = [UIDevice currentDevice];
-    NSTimeZone* tz     = [NSTimeZone localTimeZone];
-    NSNumber* dpi = [NSNumber numberWithFloat:[self _estimate_dpi]];
-    NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
-    NSString *sdk_language = self.config.language;
+    NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
+    
+    UIDevice* device = [UIDevice currentDevice];
     CGRect screen_bounds = [self getDeviceScreenBounds];
     NSNumber* device_width = [NSNumber numberWithFloat: (float)screen_bounds.size.width];
     NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_bounds.size.height];
-    NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
-    NSString* timezone_name = [tz name];
-
-    NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
-    [deviceProperties setValue:[device model]         forKey:@"swrve.device_name"];
+    NSNumber* dpi = [NSNumber numberWithFloat:[self _estimate_dpi]];
+    [deviceProperties setValue:[self getHWMachineName] forKey:@"swrve.device_name"];
     [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
-    [deviceProperties setValue:min_os                 forKey:@"swrve.ios_min_version"];
-    [deviceProperties setValue:sdk_language           forKey:@"swrve.language"];
-    [deviceProperties setValue:device_height          forKey:@"swrve.device_height"];
-    [deviceProperties setValue:device_width           forKey:@"swrve.device_width"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
-    [deviceProperties setValue:@SWRVE_SDK_VERSION     forKey:@"swrve.sdk_version"];
-    [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
-    [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
-    [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
-    if (self.deviceToken) {
-        [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
-    }
-    
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
     if (carrier != nil) {
@@ -1604,6 +1633,27 @@ static NSString* httpScheme(bool useHttps)
     NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     [deviceProperties addEntriesFromDictionary:permissionStatus];
 
+    NSTimeZone* tz     = [NSTimeZone localTimeZone];
+    NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
+    NSString *sdk_language = self.config.language;
+    NSNumber* secondsFromGMT = [NSNumber numberWithInteger:[tz secondsFromGMT]];
+    NSString* timezone_name = [tz name];
+    NSString* regionCountry = [[NSLocale currentLocale] objectForKey: NSLocaleCountryCode];
+
+    [deviceProperties setValue:min_os                 forKey:@"swrve.ios_min_version"];
+    [deviceProperties setValue:sdk_language           forKey:@"swrve.language"];
+    [deviceProperties setValue:device_height          forKey:@"swrve.device_height"];
+    [deviceProperties setValue:device_width           forKey:@"swrve.device_width"];
+    [deviceProperties setValue:@SWRVE_SDK_VERSION     forKey:@"swrve.sdk_version"];
+    [deviceProperties setValue:@"apple"               forKey:@"swrve.app_store"];
+    [deviceProperties setValue:secondsFromGMT         forKey:@"swrve.utc_offset_seconds"];
+    [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
+    [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
+
+    if (self.deviceToken) {
+        [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
+    }
+    
     return deviceProperties;
 }
 
@@ -2028,8 +2078,20 @@ enum HttpStatus {
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
 
-    SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
-    [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    BOOL useURLSession = NO;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        useURLSession = YES;
+    }
+    if (useURLSession) {
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            handler(response, data, error);
+        }];
+        [task resume];
+    } else {
+        SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
+        [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+    }
 }
 
 - (void) addHttpPerformanceMetrics:(NSString*) metrics

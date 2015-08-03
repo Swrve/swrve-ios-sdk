@@ -2,10 +2,15 @@
 #import "SwrveMessageViewController.h"
 #import "SwrveButton.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 @interface SwrveMessageViewController ()
 
 @property (nonatomic, retain) SwrveMessageFormat* current_format;
 @property (nonatomic) BOOL wasShownToUserNotified;
+@property (nonatomic) CGFloat viewportWidth;
+@property (nonatomic) CGFloat viewportHeight;
 
 @end
 
@@ -15,12 +20,29 @@
 @synthesize message;
 @synthesize current_format;
 @synthesize wasShownToUserNotified;
+@synthesize viewportWidth;
+@synthesize viewportHeight;
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    // Default viewport size to whole screen
+    CGRect screenRect = [[[UIApplication sharedApplication] keyWindow] bounds];
+    self.viewportWidth = screenRect.size.width;
+    self.viewportHeight = screenRect.size.height;
+}
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self updateBounds];
-    [self addViewForOrientation:[self interfaceOrientation]];
+    [self removeAllViews];
+    if(SYSTEM_VERSION_LESS_THAN(@"9.0")){
+        [self addViewForOrientation:[self interfaceOrientation]];
+    } else {
+        [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
+    }
     if (self.wasShownToUserNotified == NO) {
         [self.message wasShownToUser];
         self.wasShownToUserNotified = YES;
@@ -35,8 +57,7 @@
 
 -(void)removeAllViews
 {
-    for (UIView *view in self.view.subviews)
-    {
+    for (UIView *view in self.view.subviews) {
         [view removeFromSuperview];
     }
 }
@@ -51,8 +72,7 @@
     
     if (current_format) {
         DebugLog(@"Selected message format: %@", current_format.name);
-        [current_format createViewWithOrientation:orientation
-                                            toFit:self.view
+        [current_format createViewToFit:self.view
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
                                           rotated:false];
@@ -76,40 +96,73 @@
     self.block(pressed.actionType, pressed.actionString, pressed.appID);
 }
 
-// iOS 8
--(BOOL)prefersStatusBarHidden {
+#ifdef __IPHONE_8_0
+-(BOOL)prefersStatusBarHidden
+{
     return YES;
 }
 - (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-        [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
-    UIInterfaceOrientation currentOrientation = (size.width > size.height)? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
+       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    self.viewportWidth = size.width;
+    self.viewportHeight = size.height;
     [self removeAllViews];
+    [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];    
+}
+#endif
+
+- (void) displayForViewportOfSize:(CGSize)size
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        float viewportRatio = (float)(size.width/size.height);
+        float closestRatio = -1;
+        SwrveMessageFormat* closestFormat = nil;
+        for (SwrveMessageFormat* format in self.message.formats) {
+            float formatRatio = (float)(format.size.width/format.size.height);
+            float diffRatio = fabsf(formatRatio - viewportRatio);
+            if (closestFormat == nil || (diffRatio < closestRatio)) {
+                closestFormat = format;
+                closestRatio = diffRatio;
+            }
+        }
     
-    BOOL mustRotate = false;
-    current_format = [self.message getBestFormatFor:currentOrientation];
-    if (!current_format) {
-        // Never leave the screen without a format
-        current_format = [self.message.formats objectAtIndex:0];
-        mustRotate = true;
-    }
-    
-    if (current_format) {
+        current_format = closestFormat;
         DebugLog(@"Selected message format: %@", current_format.name);
-        [current_format createViewWithOrientation:UIInterfaceOrientationPortrait
-                                            toFit:self.view
-                                  thatDelegatesTo:self
-                                         withSize:size
-                                          rotated:mustRotate];
+        [current_format createViewToFit:self.view
+                       thatDelegatesTo:self
+                              withSize:size];
     } else {
-        DebugLog(@"Couldn't find a format for message: %@", message.name);
+        UIInterfaceOrientation currentOrientation = (size.width > size.height)? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
+        
+        BOOL mustRotate = false;
+        current_format = [self.message getBestFormatFor:currentOrientation];
+        if (!current_format) {
+            // Never leave the screen without a format
+            current_format = [self.message.formats objectAtIndex:0];
+            mustRotate = true;
+        }
+        
+        if (current_format) {
+            DebugLog(@"Selected message format: %@", current_format.name);
+            [current_format createViewToFit:self.view
+                           thatDelegatesTo:self
+                                  withSize:size
+                                   rotated:mustRotate];
+        } else {
+            DebugLog(@"Couldn't find a format for message: %@", message.name);
+        }
+    }
+    // Update background color
+    if (current_format.backgroundColor != nil) {
+        self.view.backgroundColor = current_format.backgroundColor;
     }
 }
 
 // iOS 6 and iOS 7 (to be deprecated)
 #ifdef __IPHONE_9_0
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 #else
 - (NSUInteger)supportedInterfaceOrientations
 #endif
@@ -133,12 +186,6 @@
     return YES;
 }
 // ---------------
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
-}
 
 - (void)viewWillDisappear:(BOOL)animated
 {

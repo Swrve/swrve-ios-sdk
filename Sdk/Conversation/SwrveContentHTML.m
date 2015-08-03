@@ -5,15 +5,17 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 @interface SwrveContentHTML () {
     UIWebView *webview;
+    UIView *_containerView;
 }
 @end
 
 @implementation SwrveContentHTML
 
--(void) loadView {
+-(void) loadViewWithContainerView:(UIView*)containerView {
+    _containerView = containerView;
     // Create _view
-    webview = [[UIWebView alloc] init];
-    webview.frame = CGRectMake(0,0,[SwrveConversationAtom widthOfContentView], 1);
+    _view = webview = [[UIWebView alloc] init];
+    webview.frame = CGRectMake(0, 0, 1, 1);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     webview.delegate = self;
@@ -23,7 +25,6 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
 
-    _view = webview;
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
@@ -33,23 +34,15 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     return self;
 }
 
--(UIView *)view {
-    if(!_view) {
-        [self loadView];
-    }
-    return _view;
-}
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 #pragma unused (webView)
-    CGRect frame;
-    NSString *output = [(UIWebView*)_view
-                        stringByEvaluatingJavaScriptFromString:
-                        @"document.height;"];
-    frame = _view.frame;
-    frame.size.height = [output floatValue];
-    _view.frame = frame;
-    // Notify that the view is ready to be displayed
+    CGRect webViewFrame = [webview frame];
+    webViewFrame.size.height = 1;
+    webViewFrame.size.width = _containerView.frame.size.width;
+    [webview setFrame:webViewFrame];
+    CGSize fittingSize = [webview sizeThatFits:CGSizeZero];
+    webViewFrame.size = fittingSize;
+    [webview setFrame:webViewFrame];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
@@ -74,8 +67,13 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
+}
 
-    _view = webview;
+// iOS8+
+-(void)viewWillTransitionToSize:(CGSize)size
+{
+    // Mantain full width
+    _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
 }
 
 - (void)dealloc {
@@ -84,6 +82,13 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 -(void) stop {
     [webview setDelegate:nil];
+    if (webview.isLoading) {
+        [webview stopLoading];
+    }
+}
+
+-(void)viewDidDisappear
+{
     if (webview.isLoading) {
         [webview stopLoading];
     }

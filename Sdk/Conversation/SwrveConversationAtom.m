@@ -33,7 +33,13 @@
     // By default, does nothing. Specialize in subclass
 }
 
--(void) loadView {
+-(void) viewDidDisappear
+{
+    // By default, does nothing. Specialize in subclass
+}
+
+-(void) loadViewWithContainerView:(UIView*)containerView {
+#pragma unused(containerView)
     NSException *exec = [[NSException alloc] initWithName:@"NotImplemented" reason:@"Not Implemented" userInfo:nil];
     [exec raise];
 }
@@ -58,24 +64,11 @@
             [v removeFromSuperview];
         }
     });
-    CGRect r = _view.frame;
-    SwrveLogIt(@"cellForRow :: r frame in Atom: %f, %f, %f, %f", r.origin.x, r.origin.y, r.size.width, r.size.height);
-    // If the content supplied is not as wide as the container cell, pad it to center
-    CGFloat containerWidth = [SwrveConversationAtom widthOfContentView];
-    CGFloat cellItemWidth  = r.size.width;
-    CGFloat leftPadding    = 0.0;
-    // If it is too wide, adjust
-    if (cellItemWidth > containerWidth) {
-        leftPadding = 0.0;
-        cellItemWidth = containerWidth;
-    }
-    _view.frame = CGRectMake(leftPadding, [self verticalPadding], cellItemWidth, r.size.height);
     _view.tag = kCellTag;
     dispatch_async(dispatch_get_main_queue(), ^{
         [cell.contentView addSubview:self->_view];
         cell.contentView.backgroundColor = [UIColor clearColor];
     });
-
     cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
@@ -89,69 +82,17 @@
     return _view.frame.size.height + [self verticalPadding];
 }
 
-+(CGSize) screenSize {
-    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-    NSString *device = [[UIDevice currentDevice] model];
-    
-    if ([device rangeOfString:@"imulator"].location != NSNotFound) {
-        // In the days of resizable simulators, you need to get the size of the key window rather than the actual simulator size.
-        screenSize = [[UIApplication sharedApplication] keyWindow].frame.size;
-    }
-    
-    return screenSize;
-}
-
 // Return the new frame that this view needs to sit correctly
 // on the screen after an orientation change
 -(CGRect) newFrameForOrientationChange {
-    SwrveLogIt(@"deviceOrientationDidChange :: _view frame at start: %f, %f, %f, %f", _view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, _view.frame.size.height);
-    
-    CGRect newFrame;
-    
-    // If you are running iOS8, there seems to be some odd things
-    // where the orientation doesn't seem to change in time, and
-    // you are better off using the frame of the superview, which
-    // appears to have reacted to it correctly.
-    //
-    // Not sure, but empirical evidence shows this approach gives
-    // the correct results.
-    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-        newFrame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, [SwrveConversationAtom widthOfContentView], _view.frame.size.height);
-    } else {
-        newFrame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.superview.frame.size.width, _view.frame.size.height);
-    }
-    SwrveLogIt(@"deviceOrientationDidChange :: _view frame at end: %f, %f, %f, %f", newFrame.origin.x, newFrame.origin.y, newFrame.size.width, newFrame.size.height);
-    
-    return newFrame;
+    return CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.superview.frame.size.width, _view.frame.size.height);
 }
 
-+(CGFloat) widthOfContentView {
-    CGFloat containerWidth = 540.0;  // default: width of view on iPad iOS 7+
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // iOS 8 makes width/height orientation dependent at last :)
-        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-            containerWidth = [SwrveConversationAtom screenSize].width;
-// Locking to portrait mode so comment out below
-//            UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
-//            switch (o) {
-//                case UIDeviceOrientationPortrait:
-//                case UIDeviceOrientationPortraitUpsideDown:
-//                case UIDeviceOrientationUnknown:
-//                case UIDeviceOrientationFaceUp:
-//                case UIDeviceOrientationFaceDown:
-//                    containerWidth = [SwrveConversationAtom screenSize].width;
-//                    break;
-//                case UIDeviceOrientationLandscapeLeft:
-//                case UIDeviceOrientationLandscapeRight:
-//                    containerWidth = [SwrveConversationAtom screenSize].height;
-//                    break;
-//            }
-        } else {
-            containerWidth = [SwrveConversationAtom screenSize].width;
-        }
-    }
-    SwrveLogIt(@"widthOfContentView :: returning containerWidth: %f", containerWidth);
-    return containerWidth;
+// iOS8+
+-(void)viewWillTransitionToSize:(CGSize)size
+{
+#pragma unused(size)
+    // By default, does nothing. Specialize in subclass
 }
 
 @end

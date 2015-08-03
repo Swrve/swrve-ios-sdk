@@ -217,6 +217,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void) dismissMessageWindow;
 
+/*! Notify that the latest conversation was dismissed. */
+- (void) conversationClosed;
 
 /*! Used internally to determine if the conversation filters are supporter at this moment
  *

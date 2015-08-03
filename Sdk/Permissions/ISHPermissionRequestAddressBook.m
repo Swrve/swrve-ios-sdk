@@ -3,11 +3,16 @@
 //  ISHPermissionKit
 //
 //  Created by Felix Lamouroux on 02.07.14.
+//  Modified by Swrve Mobile Inc.
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
+#include <UIKit/UIKit.h>
 #include <objc/runtime.h>
 #import <AddressBook/AddressBook.h>
+#ifdef __IPHONE_9_0
+#import <Contacts/Contacts.h>
+#endif
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
 
@@ -15,11 +20,31 @@
 
 @implementation ISHPermissionRequestAddressBook {
     ABAddressBookRef _addressBook;
+#ifdef __IPHONE_9_0
+    CNContactStore* _contactStore;
+#endif
 }
 
 - (ISHPermissionState)permissionState {
-    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // New iOS9+ framework
+        CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+        switch (status) {
+            case CNAuthorizationStatusAuthorized:
+                return ISHPermissionStateAuthorized;
+                
+            case CNAuthorizationStatusRestricted:
+            case CNAuthorizationStatusDenied:
+                return ISHPermissionStateDenied;
+                
+            case CNAuthorizationStatusNotDetermined:
+                return [self internalPermissionState];
+        }
+    }
+#endif
     
+    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     switch (status) {
         case kABAuthorizationStatusAuthorized:
             return ISHPermissionStateAuthorized;
@@ -42,6 +67,20 @@
         return;
     }
     
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // New iOS9+ framework
+        if (_contactStore == nil) {
+            _contactStore = [[CNContactStore alloc] init];
+        }
+        [_contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError *__nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, error);
+            });
+        }];
+        return;
+    }
+#endif
     ABAddressBookRequestAccessWithCompletion(self.addressBook, ^(bool granted, CFErrorRef error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, (__bridge NSError *)(error));
