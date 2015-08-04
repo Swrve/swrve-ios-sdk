@@ -13,7 +13,6 @@
 
 #define kSwrveKeyTag @"tag"
 #define kSwrveKeyType @"type"
-#define kSwrveKeyOptional @"optional"
 
 @implementation SwrveConversationAtomFactory
 
@@ -23,8 +22,6 @@
     if(type == nil) {
         type = kSwrveControlTypeButton;
     }
-    
-    BOOL optional = [[dict objectForKey:kSwrveKeyOptional] boolValue];
 
     // Create some resilience with defaults for tag and type.
     // the tag must be unique within the context of the page.
@@ -55,7 +52,6 @@
         return swrveConversationButton;
     } else if([type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
-        [swrveInputMultiValue setOptional:optional];
         swrveInputMultiValue.style = [dict objectForKey:@"style"];
         return swrveInputMultiValue;
     } else if ([type isEqualToString:kSwrveContentSpacer]) {
