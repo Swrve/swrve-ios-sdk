@@ -15,16 +15,16 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
     _containerView = containerView;
     // Create _view
     _view = webview = [[UIWebView alloc] init];
-    webview.frame = CGRectMake(0, 0, 1, 1);
+    webview.frame = CGRectMake(0,0, 1, 1);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
-
+    
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
-
+    
     // Get notified if the view should change dimensions
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
@@ -36,13 +36,18 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 #pragma unused (webView)
-    CGRect webViewFrame = [webview frame];
-    webViewFrame.size.height = 1;
-    webViewFrame.size.width = _containerView.frame.size.width;
-    [webview setFrame:webViewFrame];
-    CGSize fittingSize = [webview sizeThatFits:CGSizeZero];
-    webViewFrame.size = fittingSize;
-    [webview setFrame:webViewFrame];
+    // Set real width
+    CGRect frame = _view.frame;
+    frame.size.width = _containerView.frame.size.width;
+    _view.frame = frame;
+    // Measure height
+    NSString *output = [(UIWebView*)_view
+                        stringByEvaluatingJavaScriptFromString:
+                        @"document.height;"];
+    frame = _view.frame;
+    frame.size.height = [output floatValue];
+    _view.frame = frame;
+    // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
@@ -64,9 +69,11 @@ NSString* const DEFAULT_CSS = @"/* http://meyerweb.com/eric/tools/css/reset/ v2.
 -(void) deviceOrientationDidChange
 {
     _view.frame = [self newFrameForOrientationChange];
-
+    
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
+    
+    _view = webview;
 }
 
 // iOS8+
