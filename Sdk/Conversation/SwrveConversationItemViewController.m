@@ -326,7 +326,8 @@
     // The conversation is starting now, so issue a starting event
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
-    self.conversationPane = firstPage;  // Assigment will issue an impression event
+    // Assigment will issue an impression event
+    self.conversationPane = firstPage;
 }
 
 // Tapping the content view outside the context of any
