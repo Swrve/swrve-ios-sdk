@@ -77,8 +77,8 @@
     return 0.0;
 }
 
--(CGFloat) heightForRow:(NSUInteger) row {
-#pragma unused (row)
+-(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
+#pragma unused (row, tableview)
     return _view.frame.size.height + [self verticalPadding];
 }
 

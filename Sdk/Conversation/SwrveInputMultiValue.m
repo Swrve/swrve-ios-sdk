@@ -37,7 +37,8 @@
         //    "answer_id" = "54264172-option";
         //    "answer_text" = "The text to show";
         // }
-        
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:17.0];
         cell.textLabel.text = [dict objectForKey:@"answer_text"];
         
         if(self.selectedIndex == (NSInteger)row) {
@@ -50,6 +51,11 @@
     } else {
         return [self fetchDescriptionCell:tableView];
     }
+}
+
++(BOOL) SwrveSystemVersionGreaterOrEqualThan:(NSString*) desired {
+    NSString* currentVersion = [[UIDevice currentDevice] systemVersion];
+    return [currentVersion compare:desired options:NSNumericSearch] != NSOrderedAscending;
 }
 
 -(NSString *) userResponse {
@@ -106,7 +112,7 @@
     return cell;
 }
 
--(CGFloat) heightForRow:(NSUInteger) row {
+-(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (row == 0) {
         UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
         CGFloat constrainedWidth = containerView.frame.size.width;
@@ -122,7 +128,28 @@
         CGFloat h = (float)ceil(possibleSize.height);
         return h;
     } else {
-        return 51.0;
+        NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
+        NSDictionary *dict = [self.values objectAtIndex:finalRow];
+        NSString *cellText = [dict objectForKey:@"answer_text"];
+        UIFont *cellFont = [UIFont fontWithName:@"Helvetica" size:17.0];
+        CGSize constraintSize = CGSizeMake(280.0f, MAXFLOAT);
+        
+        CGFloat height = 51;
+        if ([SwrveInputMultiValue SwrveSystemVersionGreaterOrEqualThan:@"7.0"]) {
+            NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:cellText
+                                                                                 attributes:@{
+                                                                                              NSFontAttributeName: cellFont
+                                                                                              }];
+            CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
+                                                       options:NSStringDrawingUsesLineFragmentOrigin
+                                                       context:nil];
+            height = ceil(rect.size.height);
+        } else {
+            CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:NSLineBreakByWordWrapping];
+            height = ceil(labelSize.height);
+        }
+        
+        return height + 22;
     }
 }
 
