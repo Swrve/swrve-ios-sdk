@@ -34,7 +34,7 @@
 
 // Subclasses should override this
 -(void) loadViewWithContainerView:(UIView*)containerView;
--(void)viewWillTransitionToSize:(CGSize)size;
+-(void) viewWillTransitionToSize:(CGSize)size;
 
 // If the atom has some kind of activity going, then
 // this is notice to cease it. Defaults to doing nothing.
