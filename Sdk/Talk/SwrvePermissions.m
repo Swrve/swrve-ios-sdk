@@ -85,7 +85,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 +(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
     if ([[currentStatus objectForKey:permissionName] isEqualToString:swrve_permission_status_unknown]) {
-        [filters addObject:[permissionName stringByAppendingString:swrve_permission_requestable]];
+        [filters addObject:[[permissionName lowercaseString] stringByAppendingString:swrve_permission_requestable]];
     }
 }
 
