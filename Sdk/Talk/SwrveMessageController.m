@@ -133,12 +133,12 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
-        [swrve_permission_location_always stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_photos stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_camera stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_contacts stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_push_notifications stringByAppendingString:swrve_permission_requestable], nil];
+        [[swrve_permission_location_always stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_photos stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_camera stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_contacts stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_push_notifications stringByAppendingString:swrve_permission_requestable] lowercaseString], nil];
     SUPPORTED_STATIC_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
     SUPPORTED_DEVICE_FILTERS = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
     [(NSMutableArray*)SUPPORTED_DEVICE_FILTERS addObjectsFromArray:ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS];
