@@ -9,6 +9,8 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrvePermissions.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
@@ -65,6 +67,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
+@property (nonatomic, retain) UIViewController*     conversationViewController;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
 
@@ -110,6 +113,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize pushNotificationEvents;
 @synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
+@synthesize conversationViewController;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
 @synthesize device_width;
@@ -129,12 +133,12 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
-        [swrve_permission_location_always stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_photos stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_camera stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_contacts stringByAppendingString:swrve_permission_requestable],
-        [swrve_permission_push_notifications stringByAppendingString:swrve_permission_requestable], nil];
+        [[swrve_permission_location_always stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_photos stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_camera stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_contacts stringByAppendingString:swrve_permission_requestable] lowercaseString],
+        [[swrve_permission_push_notifications stringByAppendingString:swrve_permission_requestable] lowercaseString], nil];
     SUPPORTED_STATIC_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
     SUPPORTED_DEVICE_FILTERS = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
     [(NSMutableArray*)SUPPORTED_DEVICE_FILTERS addObjectsFromArray:ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS];
@@ -378,7 +382,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     // CDN
-    self.cdnRoot = [campaignJson objectForKey:@"cdn_root" ];
+    self.cdnRoot = [campaignJson objectForKey:@"cdn_root"];
     DebugLog(@"CDN URL %@", self.cdnRoot);
     
     // Game Data
@@ -408,6 +412,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // QA
     NSMutableDictionary* campaignsDownloaded = nil;
     
+    BOOL wasQAUser = (self.qaUser != nil);
     NSDictionary* json_qa = [campaignJson objectForKey:@"qa"];
     if(json_qa) {
         DebugLog(@"You are a QA user!", nil);
@@ -478,18 +483,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (campaign != nil) {
             DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
             campaign.next = 0;
-            if(!self.qaUser || !self.qaUser.resetDevice) {
+            if(!(!wasQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
                 NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
                 NSDictionary* campaignSettings = [settings objectForKey:ID];
                 if(campaignSettings) {
                     NSNumber* next = [campaignSettings objectForKey:@"next"];
-                    if (next)
-                    {
+                    if (next) {
                         campaign.next = next.unsignedIntegerValue;
                     }
                     NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                    if (impressions)
-                    {
+                    if (impressions) {
                         campaign.impressions = impressions.unsignedIntegerValue;
                     }
                 }
@@ -553,7 +556,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [[self assetsCurrentlyDownloading] addObject:asset];
     }
     
-    NSURL* url = [NSURL URLWithString: asset relativeToURL: [NSURL URLWithString:self.cdnRoot]];
+    NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
     
     DebugLog(@"Downloading asset: %@", url);
     
@@ -627,7 +630,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     if ([self autoShowMessagesEnabled]) {
                         NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
                         if ([self eventRaised:event]) {
-                            // If a message was shown we want to disable autoshow
+                            // If a conversation was shown we want to disable autoshow
                             [self setAutoShowMessagesEnabled:NO];
                         }
                     }
@@ -719,7 +722,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
                 SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
-                    if ([nextMessage supportsOrientation:currentOrientation]) {
+                    BOOL canBeChosen = YES;
+                    // iOS9+ will display with local scale
+                    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+                        canBeChosen = [nextMessage supportsOrientation:currentOrientation];
+                    }
+                    if (canBeChosen) {
                         // Add to list of returned messages
                         [availableMessages addObject:nextMessage];
                         // Check if it is a candidate to be shown
@@ -1032,7 +1040,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void) showMessage:(SwrveMessage *)message
 {
-    if ( message && self.inAppMessageWindow == nil ) {
+    if ( message && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
         SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
         messageViewController.view.backgroundColor = self.backgroundColor;
         messageViewController.message = message;
@@ -1057,9 +1065,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void) showConversation:(SwrveConversation*)conversation
 {
     DebugLog(@"Showing conversation %@", conversation.name);
-    if ( conversation && self.inAppMessageWindow == nil ) {
+    if ( conversation && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
         // Create a view to show the conversation
-        SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] initWithConversation:conversation withMessageController:self];
+        UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
+        SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+        [scivc setConversation:conversation andMessageController:self];
+        
         self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
         SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
@@ -1080,7 +1091,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             [rootController.view endEditing:YES];
             [rootController presentViewController:svnc animated:YES completion:nil];
         });
+        conversationViewController = svnc;
     }
+}
+
+- (void) conversationClosed {
+    conversationViewController = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
@@ -1242,10 +1258,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             message = [self findMessageForEvent:eventName withParameters:event];
         }
         
-        // Only show the message if it supports the given orientation
-        if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-            DebugLog(@"The message doesn't support the current orientation", nil);
-            return NO;
+        // iOS9+ will display with local scale
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // Only show the message if it supports the given orientation
+            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
         }
         
         // Show the message if it exists
@@ -1270,18 +1289,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         return ( message != nil );
     }
-}
-
-- (SwrveConversation*) getConversation {
-    SwrveConversation *conv = nil;
-    //TODO.Sergio
-    /*if ([self.campaigns count] != 0) {
-     SwrveCampaign *camp = [self.campaigns objectAtIndex:0]; // NB: hard-code here to pick the first conversation - assume only one conversation
-     if ([camp.conversations count] > 0) {
-     conv = (SwrveConversation*)[camp.conversations objectAtIndex:0];  // NB: once again assume that there's only one conversation in place
-     }
-     }*/
-    return conv;
 }
 
 - (void) setDeviceToken:(NSData*)deviceToken

@@ -10,7 +10,6 @@
 #import "SwrveContentSpacer.h"
 #import "SwrveConversationButton.h"
 #import "SwrveInputMultiValue.h"
-#import "SwrveInputMultiValueLong.h"
 
 #define kSwrveKeyTag @"tag"
 #define kSwrveKeyType @"type"
@@ -54,11 +53,6 @@
             swrveConversationButton.target = target;
         }
         return swrveConversationButton;
-    } else if([type isEqualToString:kSwrveInputMultiValueLong]) {
-        SwrveInputMultiValueLong *swrveInputMultiValueLong = [[SwrveInputMultiValueLong alloc] initWithTag:tag andDictionary:dict];
-        [swrveInputMultiValueLong setOptional:optional];
-        swrveInputMultiValueLong.style = [dict objectForKey:@"style"];
-        return swrveInputMultiValueLong;
     } else if([type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
         [swrveInputMultiValue setOptional:optional];
