@@ -365,7 +365,6 @@
 		3AC4DBA41B2992D1004B57CB /* SwrveConversationPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationPane.m; sourceTree = "<group>"; };
 		3AC4DBA51B2992D1004B57CB /* SwrveConversationResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationResource.h; sourceTree = "<group>"; };
 		3AC4DBA61B2992D1004B57CB /* SwrveConversationResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationResource.m; sourceTree = "<group>"; };
-		3AC4DBA71B2992D1004B57CB /* SwrveConversations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversations.h; sourceTree = "<group>"; };
 		3AC4DBA81B2992D1004B57CB /* SwrveConversationsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationsNavigationController.h; sourceTree = "<group>"; };
 		3AC4DBA91B2992D1004B57CB /* SwrveConversationsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationsNavigationController.m; sourceTree = "<group>"; };
 		3AC4DBAA1B2992D1004B57CB /* SwrveConversationUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationUIButton.h; sourceTree = "<group>"; };
@@ -377,7 +376,6 @@
 		3AC4DBB01B2992D1004B57CB /* SwrveInputMultiValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputMultiValue.h; sourceTree = "<group>"; };
 		3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInputMultiValue.m; sourceTree = "<group>"; };
 		3AC4DBB41B2992D1004B57CB /* SwrveSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSetup.h; sourceTree = "<group>"; };
-		3AC4DBB71B2992D1004B57CB /* SwrveChoiceArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveChoiceArray.h; sourceTree = "<group>"; };
 		3AC4DBCC1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+KeyboardResponderFix.h"; path = "Categories/UINavigationController+KeyboardResponderFix.h"; sourceTree = "<group>"; };
 		3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
@@ -798,7 +796,6 @@
 				3AC4DBA41B2992D1004B57CB /* SwrveConversationPane.m */,
 				3AC4DBA51B2992D1004B57CB /* SwrveConversationResource.h */,
 				3AC4DBA61B2992D1004B57CB /* SwrveConversationResource.m */,
-				3AC4DBA71B2992D1004B57CB /* SwrveConversations.h */,
 				3AC4DBA81B2992D1004B57CB /* SwrveConversationsNavigationController.h */,
 				3AC4DBA91B2992D1004B57CB /* SwrveConversationsNavigationController.m */,
 				3AC4DBAA1B2992D1004B57CB /* SwrveConversationUIButton.h */,
@@ -810,7 +807,6 @@
 				3AC4DBB01B2992D1004B57CB /* SwrveInputMultiValue.h */,
 				3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */,
 				3AC4DBB41B2992D1004B57CB /* SwrveSetup.h */,
-				3AC4DBB71B2992D1004B57CB /* SwrveChoiceArray.h */,
 				1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */,
 				1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */,
 				1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */,
