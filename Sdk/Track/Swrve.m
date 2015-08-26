@@ -292,6 +292,7 @@ enum
 @implementation SwrveConfig
 
 @synthesize orientation;
+@synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -329,6 +330,7 @@ enum
         autoDownloadCampaignsAndResources = YES;
         maxConcurrentDownloads = 2;
         orientation = SWRVE_ORIENTATION_BOTH;
+        shouldAutoInferStatusBarAppearance = YES;
         appVersion = [Swrve getAppVersion];
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
@@ -366,6 +368,7 @@ enum
 @implementation ImmutableSwrveConfig
 
 @synthesize orientation;
+@synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -400,6 +403,7 @@ enum
 {
     if (self = [super init]) {
         orientation = config.orientation;
+        shouldAutoInferStatusBarAppearance = config.shouldAutoInferStatusBarAppearance;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         useHttpsForEventServer = config.useHttpsForEventServer;
