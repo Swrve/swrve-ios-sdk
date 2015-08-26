@@ -22,6 +22,7 @@
 @synthesize wasShownToUserNotified;
 @synthesize viewportWidth;
 @synthesize viewportHeight;
+@synthesize shouldAutoInferStatusBarAppearance;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -99,7 +100,11 @@
 #ifdef __IPHONE_8_0
 -(BOOL)prefersStatusBarHidden
 {
-    return YES;
+    if (shouldAutoInferStatusBarAppearance) {
+        return YES;
+    } else {
+        return [super prefersStatusBarHidden];
+    }
 }
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
