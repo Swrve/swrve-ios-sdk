@@ -124,7 +124,6 @@
 		1B5FE6091B5FDDE100413B35 /* SwrveConversation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */; };
 		1B5FE60A1B5FDDE100413B35 /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EA1B5FDDE100413B35 /* VERSION */; };
 		1B5FE60B1B5FDDE100413B35 /* VGConversationKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */; };
-		1B5FE60D1B5FE02C00413B35 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5FE60C1B5FE02C00413B35 /* Contacts.framework */; };
 		1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */; };
 		1B6814911B0F3C1100FCDE4F /* SwrveConversationStyler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */; };
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
@@ -365,7 +364,6 @@
 		3AC4DBA41B2992D1004B57CB /* SwrveConversationPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationPane.m; sourceTree = "<group>"; };
 		3AC4DBA51B2992D1004B57CB /* SwrveConversationResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationResource.h; sourceTree = "<group>"; };
 		3AC4DBA61B2992D1004B57CB /* SwrveConversationResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationResource.m; sourceTree = "<group>"; };
-		3AC4DBA71B2992D1004B57CB /* SwrveConversations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversations.h; sourceTree = "<group>"; };
 		3AC4DBA81B2992D1004B57CB /* SwrveConversationsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationsNavigationController.h; sourceTree = "<group>"; };
 		3AC4DBA91B2992D1004B57CB /* SwrveConversationsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationsNavigationController.m; sourceTree = "<group>"; };
 		3AC4DBAA1B2992D1004B57CB /* SwrveConversationUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationUIButton.h; sourceTree = "<group>"; };
@@ -390,7 +388,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B5FE60D1B5FE02C00413B35 /* Contacts.framework in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
 				1B592D211B2848DF00908895 /* AssetsLibrary.framework in Frameworks */,
 				1B592D1F1B2848D700908895 /* AVFoundation.framework in Frameworks */,
@@ -796,7 +793,6 @@
 				3AC4DBA41B2992D1004B57CB /* SwrveConversationPane.m */,
 				3AC4DBA51B2992D1004B57CB /* SwrveConversationResource.h */,
 				3AC4DBA61B2992D1004B57CB /* SwrveConversationResource.m */,
-				3AC4DBA71B2992D1004B57CB /* SwrveConversations.h */,
 				3AC4DBA81B2992D1004B57CB /* SwrveConversationsNavigationController.h */,
 				3AC4DBA91B2992D1004B57CB /* SwrveConversationsNavigationController.m */,
 				3AC4DBAA1B2992D1004B57CB /* SwrveConversationUIButton.h */,
