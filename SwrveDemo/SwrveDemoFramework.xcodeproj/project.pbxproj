@@ -124,12 +124,13 @@
 		1B5FE6091B5FDDE100413B35 /* SwrveConversation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */; };
 		1B5FE60A1B5FDDE100413B35 /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EA1B5FDDE100413B35 /* VERSION */; };
 		1B5FE60B1B5FDDE100413B35 /* VGConversationKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */; };
-		1B5FE60D1B5FE02C00413B35 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5FE60C1B5FE02C00413B35 /* Contacts.framework */; };
 		1B6200C21A0012F4003C2DA0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */; };
 		1B6814911B0F3C1100FCDE4F /* SwrveConversationStyler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */; };
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
+		239EB1C6E437C337F29DF9DB /* libPlot-v1_10_1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */; };
+		239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBB45338395EC601EF548 /* plotconfig.json */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
@@ -151,6 +152,7 @@
 		3AC4DBC91B2992D1004B57CB /* SwrveInputMultiValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */; };
 		3AC4DBD01B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */; };
 		3AC4DBD11B2992DA004B57CB /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */; };
+		3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
 		938F98431A9260F70089168A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98421A9260F70089168A /* MessageUI.framework */; };
@@ -324,7 +326,6 @@
 		1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SwrveConversation.storyboard; sourceTree = "<group>"; };
 		1B5FE5EA1B5FDDE100413B35 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VGConversationKitResources-Info.plist"; sourceTree = "<group>"; };
-		1B5FE60C1B5FE02C00413B35 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1B68148F1B0F3C1100FCDE4F /* SwrveConversationStyler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStyler.h; sourceTree = "<group>"; };
 		1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStyler.m; sourceTree = "<group>"; };
@@ -335,6 +336,9 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
+		239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPlot-v1_10_1.a"; sourceTree = "<group>"; };
+		239EBB45338395EC601EF548 /* plotconfig.json */ = {isa = PBXFileReference; lastKnownFileType = file.json; path = plotconfig.json; sourceTree = "<group>"; };
+		239EBBD5D0183B0B7F1719A9 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plot.h; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -379,6 +383,7 @@
 		3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
 		3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+YouTubeVimeo.m"; path = "Categories/UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
+		3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -390,7 +395,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B5FE60D1B5FE02C00413B35 /* Contacts.framework in Frameworks */,
+				3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
 				1B592D211B2848DF00908895 /* AssetsLibrary.framework in Frameworks */,
 				1B592D1F1B2848D700908895 /* AVFoundation.framework in Frameworks */,
@@ -404,6 +409,7 @@
 				30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */,
 				30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */,
 				30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */,
+				239EB1C6E437C337F29DF9DB /* libPlot-v1_10_1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -870,6 +876,9 @@
 				09EFDF50170BE82200AF3EE5 /* Default.png */,
 				0913B8CC17139051000DA83C /* swrve_icon_black.png */,
 				0913B8C517138ED4000DA83C /* swrve_icon.png */,
+				239EBBD5D0183B0B7F1719A9 /* Plot.h */,
+				239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */,
+				239EBB45338395EC601EF548 /* plotconfig.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -884,7 +893,7 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1B5FE60C1B5FE02C00413B35 /* Contacts.framework */,
+				3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */,
 				1B592D221B2848EA00908895 /* CoreLocation.framework */,
 				1B592D201B2848DF00908895 /* AssetsLibrary.framework */,
 				1B592D1E1B2848D700908895 /* AVFoundation.framework */,
@@ -1059,6 +1068,7 @@
 				1B5FE5FF1B5FDDE100413B35 /* cvsr_grouped_cell_single_tapped@2x.png in Resources */,
 				1B5FE5F51B5FDDE100413B35 /* cvsr_grouped_cell_mid@2x.png in Resources */,
 				0972B20B17FB85B7003CD08D /* TransparencyDemo.xib in Resources */,
+				239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1251,7 +1261,10 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PROJECT_DIR}/\"/**",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";
@@ -1303,7 +1316,10 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PROJECT_DIR}/\"/**",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";
