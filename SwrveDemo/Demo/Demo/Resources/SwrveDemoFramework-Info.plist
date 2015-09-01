@@ -8,6 +8,8 @@
 	<string>Swrve</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleIcons</key>
 	<dict>
 		<key>CFBundlePrimaryIcon</key>
@@ -52,6 +54,8 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string></string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>I need location</string>
 	<key>UIPrerenderedIcon</key>

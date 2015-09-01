@@ -3,6 +3,7 @@
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
+#import "Plot.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
@@ -602,6 +603,17 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Used internally to detect if the app is in the background.
  */
 -(BOOL) appInBackground;
+
+/*!
+ * Used for Location Campaigns and is called when device crosses a geofence.
+ */
+-(void)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications;
+
+/*!
+ * Used for Location Campaigns and is called when user taps on notification.
+ */
+-(void)engageLocationCampaign:(UILocalNotification*)localNotification data:(NSString*)locationMessageId;
+
 
 #pragma mark -
 #pragma mark Properties
