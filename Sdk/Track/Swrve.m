@@ -2297,7 +2297,7 @@ enum HttpStatus {
 
 -(void)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications {
 
-    BOOL targetLocationCampaigns = NO;
+    BOOL hasValidLocationCampaigns = NO;
     for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
         NSString* plotPayload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
         if(!plotPayload) {
@@ -2317,13 +2317,16 @@ enum HttpStatus {
 
         if (jsonPayLoad != nil && geofenceId != nil && campaignId != nil && trigger != nil) {
             [self geofenceCrossed:geofenceId campaignId:campaignId trigger:trigger];
-            targetLocationCampaigns = YES;
+            NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:localNotification.userInfo];
+            [userInfoCopy setObject:campaignId forKey:@"campaignId"];
+            [localNotification setUserInfo:userInfoCopy];
+            hasValidLocationCampaigns = YES;
         }else {
             DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
         }
     }
 
-    if(targetLocationCampaigns) {
+    if(hasValidLocationCampaigns) {
         [self sendQueuedEvents];
         [self performSelector:@selector(targetLocationCampaigns:) withObject:filterNotifications afterDelay:1]; // todo use config param for delay
     }
@@ -2347,24 +2350,10 @@ enum HttpStatus {
 
     NSMutableArray* notificationsToSend = [NSMutableArray array];
     for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
-
-        NSString* plotPayload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
-        if(!plotPayload) {
-            DebugLog(@"Error in filterLocationCampaigns. No payload action.", nil);
-            continue;
-        }
-        NSError *payloadError = nil;
-        NSData *objectData = [plotPayload dataUsingEncoding:NSUTF8StringEncoding];
-        NSMutableDictionary *jsonPayLoad = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&payloadError];
-        if(payloadError) {
-            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
-            continue;
-        }
-        NSString* campaignId = [jsonPayLoad objectForKey:@"campaignId"];
-
-        // todo Check if campaign is one of targeted campaigns from ABTS
-        if(campaignId) {
-            // todo add the variant id to the action of the notification
+        // todo Check if campaign is one of targeted campaigns from ABTS and update the notification message
+        // todo swap in the variant id (locationMessageId) to the action of the notification so it can be easily found in engageLocationCampaign later
+        NSString* campaignId = [localNotification.userInfo objectForKey:@"campaignId"];
+        if (campaignId) {
             [notificationsToSend addObject:localNotification];
         }
     }
@@ -2378,7 +2367,7 @@ enum HttpStatus {
     [filterNotifications showNotifications:notificationsToSend];
 }
 
--(void) engageLocationCampaign:(UILocalNotification*)localNotification data:(NSString*)locationMessageId {
+-(void) engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId {
 #pragma unused (localNotification)
     [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.engaged", locationMessageId]];
     [self sendQueuedEvents];

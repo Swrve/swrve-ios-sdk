@@ -612,7 +612,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*!
  * Used for Location Campaigns and is called when user taps on notification.
  */
--(void)engageLocationCampaign:(UILocalNotification*)localNotification data:(NSString*)locationMessageId;
+-(void)engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId;
 
 
 #pragma mark -

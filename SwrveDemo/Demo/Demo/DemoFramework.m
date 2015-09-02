@@ -373,7 +373,7 @@ static Swrve *swrveTrackInternal;
 }
 
 -(void)plotHandleNotification:(UILocalNotification*)localNotification data:(NSString*)locationMessageId {
-    [swrveTrack engageLocationCampaign:localNotification data:locationMessageId];
+    [swrveTrack engageLocationCampaign:localNotification withData:locationMessageId];
 }
 
 
