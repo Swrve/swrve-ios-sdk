@@ -34,7 +34,7 @@ enum
     SWRVE_MEMORY_QUEUE_INITIAL_SIZE = 16,
 
     // This is the largest number of bytes that the in-memory queue will use
-    // If more than this numer of bytes are used, the entire queue will be written
+    // If more than this number of bytes are used, the entire queue will be written
     // to disk, and the queue will be emptied.
     SWRVE_MEMORY_QUEUE_MAX_BYTES = KB(100),
 
@@ -2294,6 +2294,88 @@ enum HttpStatus {
         }
     }
 }
+
+-(void)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications {
+
+    BOOL hasValidLocationCampaigns = NO;
+    for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
+        NSString* plotPayload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
+        if(!plotPayload) {
+            DebugLog(@"Error in filterLocationCampaigns. No payload action.", nil);
+            continue;
+        }
+        NSError *payloadError = nil;
+        NSData *objectData = [plotPayload dataUsingEncoding:NSUTF8StringEncoding];
+        NSMutableDictionary *jsonPayLoad = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&payloadError];
+        if(payloadError) {
+            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
+            continue;
+        }
+        NSString* geofenceId = [jsonPayLoad objectForKey:@"geofenceId"];
+        NSString* campaignId = [jsonPayLoad objectForKey:@"campaignId"];
+        NSString* trigger = [localNotification.userInfo objectForKey:PlotNotificationTrigger];
+
+        if (jsonPayLoad != nil && geofenceId != nil && campaignId != nil && trigger != nil) {
+            [self geofenceCrossed:geofenceId campaignId:campaignId trigger:trigger];
+            NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:localNotification.userInfo];
+            [userInfoCopy setObject:campaignId forKey:@"campaignId"];
+            [localNotification setUserInfo:userInfoCopy];
+            hasValidLocationCampaigns = YES;
+        }else {
+            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
+        }
+    }
+
+    if(hasValidLocationCampaigns) {
+        [self sendQueuedEvents];
+        [self performSelector:@selector(targetLocationCampaigns:) withObject:filterNotifications afterDelay:1]; // todo use config param for delay
+    }
+}
+
+-(void) geofenceCrossed:(NSString*)geofenceId campaignId:(NSString*)campaignId trigger:(NSString*)trigger
+{
+    [self maybeFlushToDisk];
+    NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
+    [json setValue:NullableNSString(geofenceId) forKey:@"geofenceId"];
+    [json setValue:NullableNSString(campaignId) forKey:@"campaignId"];
+    [json setValue:NullableNSString(trigger) forKey:@"trigger"];
+    [self queueEvent:@"Swrve.Geofence.crossed" data:json triggerCallback:false];
+}
+
+-(void) targetLocationCampaigns:(PlotFilterNotifications*)filterNotifications {
+
+    // todo refresh campaigns
+    // todo will Swrve have to be properly initialised to refreshcampaigns?
+    [self refreshCampaignsAndResources];
+
+    NSMutableArray* notificationsToSend = [NSMutableArray array];
+    for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
+        // todo Check if campaign is one of targeted campaigns from ABTS and update the notification message
+        // todo swap in the variant id (locationMessageId) to the action of the notification so it can be easily found in engageLocationCampaign later
+        NSString* campaignId = [localNotification.userInfo objectForKey:@"campaignId"];
+        if (campaignId) {
+            [notificationsToSend addObject:localNotification];
+        }
+    }
+
+    // todo if multiple notifications, then reduce to one by picking the campaign with earliest start date
+
+    NSString* locationMessageId = @"12345"; // todo use variant id.
+    [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.impression", locationMessageId]];
+    [self sendQueuedEvents];
+
+    [filterNotifications showNotifications:notificationsToSend];
+}
+
+-(void) engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId {
+#pragma unused (localNotification)
+    [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.engaged", locationMessageId]];
+    [self sendQueuedEvents];
+}
+
+
+
+
 
 @end
 
