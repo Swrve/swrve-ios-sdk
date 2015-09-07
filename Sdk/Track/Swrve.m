@@ -45,13 +45,6 @@ enum
     // messages.
     SWRVE_DISK_MAX_BYTES = MB(4),
 
-    // This is the max timeout on a HTTP send before Swrve will kill the connection
-    // This is used for sending data to Swrve. For data where the client is reading
-    // from Swrve, the timeout is much smaller, and is specified in swrve_config
-    // This value of 4000 seconds is the maximum latency seen to api.swrve.com
-    // over a 7 day period in July 2013
-    SWRVE_SEND_TIMEOUT_SECONDS = 4000,
-
     // Flush frequency for automatic campaign/user resources updates
     SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY = 60000,
 
@@ -325,7 +318,7 @@ enum
 -(id) init
 {
     if ( self = [super init] ) {
-        httpTimeoutSeconds = 15;
+        httpTimeoutSeconds = 60;
         autoDownloadCampaignsAndResources = YES;
         maxConcurrentDownloads = 2;
         orientation = SWRVE_ORIENTATION_BOTH;
@@ -2054,7 +2047,7 @@ enum HttpStatus {
 
 - (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:SWRVE_SEND_TIMEOUT_SECONDS];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:config.httpTimeoutSeconds];
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:json];
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
@@ -2078,11 +2071,7 @@ enum HttpStatus {
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
 
-    BOOL useURLSession = NO;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        useURLSession = YES;
-    }
-    if (useURLSession) {
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             handler(response, data, error);
