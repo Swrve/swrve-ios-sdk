@@ -1099,7 +1099,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) conversationClosed {
-    self.conversationWindow.hidden = nil;
+    self.conversationWindow.hidden = YES;
     self.conversationWindow = nil;
 }
 
