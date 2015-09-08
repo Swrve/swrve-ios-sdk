@@ -67,7 +67,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
-@property (nonatomic, retain) UIViewController*     conversationViewController;
+@property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
 
@@ -113,7 +113,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize pushNotificationEvents;
 @synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
-@synthesize conversationViewController;
+@synthesize conversationWindow;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
 @synthesize device_width;
@@ -1040,7 +1040,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void) showMessage:(SwrveMessage *)message
 {
-    if ( message && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
+    if ( message && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
         SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
         messageViewController.view.backgroundColor = self.backgroundColor;
         messageViewController.message = message;
@@ -1065,7 +1065,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void) showConversation:(SwrveConversation*)conversation
 {
     DebugLog(@"Showing conversation %@", conversation.name);
-    if ( conversation && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
+    if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
         // Create a view to show the conversation
         UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
         SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
@@ -1086,17 +1086,21 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         scivc.navigationItem.leftBarButtonItem = cancelButton;
         
         dispatch_async(dispatch_get_main_queue(), ^ {
-            // Resign first responder first
-            UIViewController* rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
+            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            self.conversationWindow.rootViewController = [[UIViewController alloc] init];
+            self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+            [self.conversationWindow makeKeyAndVisible];
+            
+            UIViewController* rootController = self.conversationWindow.rootViewController;
             [rootController.view endEditing:YES];
             [rootController presentViewController:svnc animated:YES completion:nil];
         });
-        conversationViewController = svnc;
     }
 }
 
 - (void) conversationClosed {
-    conversationViewController = nil;
+    self.conversationWindow.hidden = nil;
+    self.conversationWindow = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
