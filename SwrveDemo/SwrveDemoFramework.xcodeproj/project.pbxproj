@@ -129,7 +129,6 @@
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
-		239EB1C6E437C337F29DF9DB /* libPlot-v1_10_1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */; };
 		239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBB45338395EC601EF548 /* plotconfig.json */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
@@ -152,6 +151,7 @@
 		3AC4DBC91B2992D1004B57CB /* SwrveInputMultiValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */; };
 		3AC4DBD01B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */; };
 		3AC4DBD11B2992DA004B57CB /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */; };
+		3ADA44D71BA053600079A191 /* libPlot-v1_10_1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */; };
 		3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
@@ -336,9 +336,7 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
-		239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libPlot-v1_10_1.a"; sourceTree = "<group>"; };
 		239EBB45338395EC601EF548 /* plotconfig.json */ = {isa = PBXFileReference; lastKnownFileType = file.json; path = plotconfig.json; sourceTree = "<group>"; };
-		239EBBD5D0183B0B7F1719A9 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plot.h; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -382,6 +380,8 @@
 		3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
 		3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+YouTubeVimeo.m"; path = "Categories/UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
+		3ADA44D51BA0533C0079A191 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Plot.h; path = ../Sdk/Plot.h; sourceTree = "<group>"; };
+		3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPlot-v1_10_1.a"; path = "../Sdk/libPlot-v1_10_1.a"; sourceTree = "<group>"; };
 		3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -394,6 +394,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ADA44D71BA053600079A191 /* libPlot-v1_10_1.a in Frameworks */,
 				3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
 				1B592D211B2848DF00908895 /* AssetsLibrary.framework in Frameworks */,
@@ -408,7 +409,6 @@
 				30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */,
 				30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */,
 				30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */,
-				239EB1C6E437C337F29DF9DB /* libPlot-v1_10_1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,6 +550,7 @@
 		095F5E5C16D040820046D096 /* Sdk */ = {
 			isa = PBXGroup;
 			children = (
+				3ADA44D51BA0533C0079A191 /* Plot.h */,
 				1B5FE5C41B5FDDE100413B35 /* Resources */,
 				1B592D021B28488B00908895 /* Permissions */,
 				1B9A35D41A8CCF8500F34406 /* Conversation */,
@@ -874,8 +875,6 @@
 				09EFDF50170BE82200AF3EE5 /* Default.png */,
 				0913B8CC17139051000DA83C /* swrve_icon_black.png */,
 				0913B8C517138ED4000DA83C /* swrve_icon.png */,
-				239EBBD5D0183B0B7F1719A9 /* Plot.h */,
-				239EB26E4EBF8F79B802C99C /* libPlot-v1_10_1.a */,
 				239EBB45338395EC601EF548 /* plotconfig.json */,
 			);
 			sourceTree = "<group>";
@@ -891,6 +890,7 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */,
 				3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */,
 				1B592D221B2848EA00908895 /* CoreLocation.framework */,
 				1B592D201B2848DF00908895 /* AssetsLibrary.framework */,
@@ -1263,6 +1263,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
+					"/Users/dominicmarmion/Dev/plotprojects/swrve-sdk/ios/public/Sdk",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
@@ -1319,6 +1320,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
+					"/Users/dominicmarmion/Dev/plotprojects/swrve-sdk/ios/public/Sdk",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
