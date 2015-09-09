@@ -1,3 +1,4 @@
+#import <CommonCrypto/CommonHMAC.h>
 #import "SwrveMessageController.h"
 #import "Swrve.h"
 #import "SwrveImage.h"
