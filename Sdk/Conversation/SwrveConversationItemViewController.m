@@ -147,7 +147,7 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
-                NSLog(@"Unkown permission request %@", param);
+                DebugLog(@"Unkown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
