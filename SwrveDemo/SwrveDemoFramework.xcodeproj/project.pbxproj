@@ -1263,7 +1263,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
-					"/Users/dominicmarmion/Dev/plotprojects/swrve-sdk/ios/public/Sdk",
+					"../../public/Sdk",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
@@ -1320,7 +1320,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
-					"/Users/dominicmarmion/Dev/plotprojects/swrve-sdk/ios/public/Sdk",
+					"../../public/Sdk",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
