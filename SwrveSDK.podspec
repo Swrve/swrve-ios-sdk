@@ -15,4 +15,6 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Sdk/**/*.h'
   s.resources = 'Sdk/Conversation/Resources/*.*'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary'
+  s.library = 'sqlite3'
+  s.dependency 'PlotPlugin'
 end
