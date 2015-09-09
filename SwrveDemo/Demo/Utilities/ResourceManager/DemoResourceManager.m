@@ -1,4 +1,5 @@
 #import "DemoResourceManager.h"
+#import <CommonCrypto/CommonHMAC.h>
 
 @implementation DemoResource
 
