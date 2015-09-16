@@ -1070,7 +1070,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Create a view to show the conversation
         UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
         SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-        [scivc setConversation:conversation andMessageController:self];
+        self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        [scivc setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
         
         self.swrveConversationItemViewController = scivc;
         // Create a navigation controller in which to push the conversation, and choose iPad presentation style
@@ -1085,17 +1086,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
         scivc.navigationItem.leftBarButtonItem = cancelButton;
+
+        self.conversationWindow.rootViewController = [[UIViewController alloc] init];
+        self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+        [self.conversationWindow makeKeyAndVisible];
         
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            self.conversationWindow.rootViewController = [[UIViewController alloc] init];
-            self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
-            [self.conversationWindow makeKeyAndVisible];
-            
-            UIViewController* rootController = self.conversationWindow.rootViewController;
-            [rootController.view endEditing:YES];
-            [rootController presentViewController:svnc animated:YES completion:nil];
-        });
+        UIViewController* rootController = self.conversationWindow.rootViewController;
+        [rootController.view endEditing:YES];
+        [rootController presentViewController:svnc animated:YES completion:nil];
     }
 }
 
