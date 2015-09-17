@@ -1903,12 +1903,12 @@ enum HttpStatus {
     return json;
 }
 
-- (NSInteger) nextEventSequenceNumber {
-
+- (NSInteger) nextEventSequenceNumber
+{
     NSInteger seqno;
     @synchronized(self) {
         // Defaults to 0 if this value is not available
-        seqno= [[NSUserDefaults standardUserDefaults] integerForKey:@"swrve_event_seqnum"];
+        seqno = [[NSUserDefaults standardUserDefaults] integerForKey:@"swrve_event_seqnum"];
         seqno += 1;
         [[NSUserDefaults standardUserDefaults] setInteger:seqno forKey:@"swrve_event_seqnum"];
     }
