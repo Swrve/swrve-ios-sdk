@@ -25,7 +25,7 @@ typedef enum {
 @property (strong, nonatomic) SwrveConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
--(void)setConversation:(SwrveConversation*)conversation andMessageController:(SwrveMessageController*)controller;
+-(void)setConversation:(SwrveConversation*)conversation andMessageController:(SwrveMessageController*)controller andWindow:(UIWindow*)window;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;

@@ -1,3 +1,4 @@
+#import <CommonCrypto/CommonHMAC.h>
 #import "SwrveMessageController.h"
 #import "Swrve.h"
 #import "SwrveImage.h"
@@ -67,7 +68,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
-@property (nonatomic, retain) UIViewController*     conversationViewController;
+@property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
 
@@ -113,7 +114,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize pushNotificationEvents;
 @synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
-@synthesize conversationViewController;
+@synthesize conversationWindow;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
 @synthesize device_width;
@@ -1040,63 +1041,68 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void) showMessage:(SwrveMessage *)message
 {
-    if ( message && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
-        SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
-        messageViewController.view.backgroundColor = self.backgroundColor;
-        messageViewController.message = message;
-        messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
-#pragma unused(appId)
-            // Save button type and action for processing later
-            self.inAppMessageActionType = type;
-            self.inAppMessageAction = action;
+    @synchronized(self) {
+        if ( message && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
+            SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
+            messageViewController.view.backgroundColor = self.backgroundColor;
+            messageViewController.message = message;
+            messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
+    #pragma unused(appId)
+                // Save button type and action for processing later
+                self.inAppMessageActionType = type;
+                self.inAppMessageAction = action;
+                
+                if( [self.showMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
+                    [self.showMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
+                }
+                else {
+                    [self beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
+                }
+            };
             
-            if( [self.showMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
-                [self.showMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
-            }
-            else {
-                [self beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
-            }
-        };
-        
-        [self showMessageWindow:messageViewController];
+            [self showMessageWindow:messageViewController];
+        }
     }
 }
 
 -(void) showConversation:(SwrveConversation*)conversation
 {
-    DebugLog(@"Showing conversation %@", conversation.name);
-    if ( conversation && self.inAppMessageWindow == nil && self.conversationViewController == nil ) {
-        // Create a view to show the conversation
-        UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
-        SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-        [scivc setConversation:conversation andMessageController:self];
-        
-        self.swrveConversationItemViewController = scivc;
-        // Create a navigation controller in which to push the conversation, and choose iPad presentation style
-        SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
-        self.swrveConversationsNavigationController = svnc;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            svnc.modalPresentationStyle = UIModalPresentationFormSheet;
-        }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wselector"
-        // Attach cancel button to the conversation navigation options
-        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
-#pragma clang diagnostic pop
-        scivc.navigationItem.leftBarButtonItem = cancelButton;
-        
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            // Resign first responder first
-            UIViewController* rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
+    @synchronized(self) {
+        if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
+            // Create a view to show the conversation
+            UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
+            SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            [scivc setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
+            
+            self.swrveConversationItemViewController = scivc;
+            // Create a navigation controller in which to push the conversation, and choose iPad presentation style
+            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+            self.swrveConversationsNavigationController = svnc;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                svnc.modalPresentationStyle = UIModalPresentationFormSheet;
+            }
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wselector"
+            // Attach cancel button to the conversation navigation options
+            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
+    #pragma clang diagnostic pop
+            scivc.navigationItem.leftBarButtonItem = cancelButton;
+
+            self.conversationWindow.rootViewController = [[UIViewController alloc] init];
+            self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+            [self.conversationWindow makeKeyAndVisible];
+            
+            UIViewController* rootController = self.conversationWindow.rootViewController;
             [rootController.view endEditing:YES];
             [rootController presentViewController:svnc animated:YES completion:nil];
-        });
-        conversationViewController = svnc;
+        }
     }
 }
 
 - (void) conversationClosed {
-    conversationViewController = nil;
+    self.conversationWindow.hidden = YES;
+    self.conversationWindow = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
