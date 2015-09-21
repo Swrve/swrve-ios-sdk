@@ -85,7 +85,6 @@
 		1B24B9B11B57B52000D8A5F4 /* SwrveConversationPane.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B24B9271B57B52000D8A5F4 /* SwrveConversationPane.m */; };
 		1B24B9B21B57B52000D8A5F4 /* SwrveConversationResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B24B9281B57B52000D8A5F4 /* SwrveConversationResource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1B24B9B31B57B52000D8A5F4 /* SwrveConversationResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B24B9291B57B52000D8A5F4 /* SwrveConversationResource.m */; };
-		1B24B9B41B57B52000D8A5F4 /* SwrveConversations.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B24B92A1B57B52000D8A5F4 /* SwrveConversations.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1B24B9B51B57B52000D8A5F4 /* SwrveConversationsNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B24B92B1B57B52000D8A5F4 /* SwrveConversationsNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1B24B9B61B57B52000D8A5F4 /* SwrveConversationsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B24B92C1B57B52000D8A5F4 /* SwrveConversationsNavigationController.m */; };
 		1B24B9B71B57B52000D8A5F4 /* SwrveConversationStyler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B24B92D1B57B52000D8A5F4 /* SwrveConversationStyler.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -224,7 +223,6 @@
 		1B24B9271B57B52000D8A5F4 /* SwrveConversationPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationPane.m; sourceTree = "<group>"; };
 		1B24B9281B57B52000D8A5F4 /* SwrveConversationResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationResource.h; sourceTree = "<group>"; };
 		1B24B9291B57B52000D8A5F4 /* SwrveConversationResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationResource.m; sourceTree = "<group>"; };
-		1B24B92A1B57B52000D8A5F4 /* SwrveConversations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversations.h; sourceTree = "<group>"; };
 		1B24B92B1B57B52000D8A5F4 /* SwrveConversationsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationsNavigationController.h; sourceTree = "<group>"; };
 		1B24B92C1B57B52000D8A5F4 /* SwrveConversationsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationsNavigationController.m; sourceTree = "<group>"; };
 		1B24B92D1B57B52000D8A5F4 /* SwrveConversationStyler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStyler.h; sourceTree = "<group>"; };
@@ -371,7 +369,6 @@
 				1B24B9271B57B52000D8A5F4 /* SwrveConversationPane.m */,
 				1B24B9281B57B52000D8A5F4 /* SwrveConversationResource.h */,
 				1B24B9291B57B52000D8A5F4 /* SwrveConversationResource.m */,
-				1B24B92A1B57B52000D8A5F4 /* SwrveConversations.h */,
 				1B24B92B1B57B52000D8A5F4 /* SwrveConversationsNavigationController.h */,
 				1B24B92C1B57B52000D8A5F4 /* SwrveConversationsNavigationController.m */,
 				1B24B92D1B57B52000D8A5F4 /* SwrveConversationStyler.h */,
@@ -532,7 +529,6 @@
 				1B24B9A31B57B52000D8A5F4 /* SwrveConversationAtom.h in Headers */,
 				1B24B9F11B57B52000D8A5F4 /* SwrveResourceManager.h in Headers */,
 				1B24B9AB1B57B52000D8A5F4 /* SwrveConversationEvents.h in Headers */,
-				1B24B9B41B57B52000D8A5F4 /* SwrveConversations.h in Headers */,
 				1B24B9701B57B52000D8A5F4 /* UINavigationController+KeyboardResponderFix.h in Headers */,
 				1B24B9EA1B57B52000D8A5F4 /* SwrvePrivateBaseCampaign.h in Headers */,
 				1B24B9DB1B57B52000D8A5F4 /* SwrveCampaign.h in Headers */,
