@@ -10,6 +10,9 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
+#import "SwrveLocationPayload.h"
+#import "SwrveLocationCampaign.h"
+#import "SwrveLocationManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -208,6 +211,9 @@ enum
 @property (atomic) NSDate* campaignsAndResourcesLastRefreshed;
 @property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to API returns
 
+// Location Campaigns cache files
+@property (atomic) SwrveSignatureProtectedFile* locationCampaignFile;
+
 // Resource cache files
 @property (atomic) SwrveSignatureProtectedFile* resourcesFile;
 @property (atomic) SwrveSignatureProtectedFile* resourcesDiffFile;
@@ -300,6 +306,8 @@ enum
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
+@synthesize locationCampaignCacheFile;
+@synthesize locationCampaignCacheSignatureFile;
 @synthesize userResourcesCacheFile;
 @synthesize userResourcesCacheSignatureFile;
 @synthesize userResourcesDiffCacheFile;
@@ -335,6 +343,9 @@ enum
 
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         eventCacheFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
+
+        locationCampaignCacheFile = [caches stringByAppendingPathComponent: @"lc.txt"];
+        locationCampaignCacheSignatureFile = [caches stringByAppendingPathComponent: @"lcsgt.txt"];
 
         userResourcesCacheFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
         userResourcesCacheSignatureFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
@@ -374,6 +385,8 @@ enum
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSignatureFile;
+@synthesize locationCampaignCacheFile;
+@synthesize locationCampaignCacheSignatureFile;
 @synthesize userResourcesCacheFile;
 @synthesize userResourcesCacheSignatureFile;
 @synthesize userResourcesDiffCacheFile;
@@ -408,6 +421,8 @@ enum
         language = config.language;
         eventCacheFile = config.eventCacheFile;
         eventCacheSignatureFile = config.eventCacheSignatureFile;
+        locationCampaignCacheFile = config.locationCampaignCacheFile;
+        locationCampaignCacheSignatureFile = config.locationCampaignCacheSignatureFile;
         userResourcesCacheFile = config.userResourcesCacheFile;
         userResourcesCacheSignatureFile = config.userResourcesCacheSignatureFile;
         userResourcesDiffCacheFile = config.userResourcesDiffCacheFile;
@@ -509,6 +524,7 @@ static bool didSwizzle = false;
 @synthesize userID;
 @synthesize deviceInfo;
 @synthesize talk;
+@synthesize locationManager;
 @synthesize resourceManager;
 
 @synthesize userUpdates;
@@ -522,6 +538,7 @@ static bool didSwizzle = false;
 @synthesize campaignsAndResourcesTimerSeconds;
 @synthesize campaignsAndResourcesLastRefreshed;
 @synthesize campaignsAndResourcesInitialized;
+@synthesize locationCampaignFile;
 @synthesize resourcesFile;
 @synthesize resourcesDiffFile;
 @synthesize eventBuffer;
@@ -661,9 +678,8 @@ static bool didSwizzle = false;
         NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
         [self setCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
 
-        // Initialize resource cache file and resource manager
+        [self initLocationCampaigns];
         [self initResources];
-
         [self initResourcesDiff];
 
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
@@ -1053,6 +1069,12 @@ static bool didSwizzle = false;
 
                             [self event:@"Swrve.Messages.campaigns_downloaded" payload:payload];
                         }
+                    }
+
+                    NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
+                    if (locationCampaignJson != nil) {
+                        NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
+                        [self updateLocationCampaigns:campaignsJson writeToCache:YES];
                     }
 
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
@@ -1614,6 +1636,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
+    [deviceProperties setValue:[NSNumber numberWithInteger:LOCATION_VERSION] forKey:@"swrve.location_version"];
 
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
@@ -1739,6 +1762,44 @@ static NSString* httpScheme(bool useHttps)
 - (void) invalidateETag
 {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"campaigns_and_resources_etag"];
+}
+
+- (void) initLocationCampaigns
+{
+    NSURL* fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
+    NSURL* signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
+    [self setLocationCampaignFile:[[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey] signatureErrorListener:self]];
+
+    locationManager = [[SwrveLocationManager alloc] init];
+
+    // read content of location campaigns file and update location manager if signature valid
+    NSData* data = [[self locationCampaignFile] readFromFile];
+    if (data != nil) {
+        NSError* error = nil;
+        NSDictionary* locationCampaignsDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+        if (error) {
+            DebugLog(@"Error init location campaigns.\nError: %@\njson: %@", error, data);
+        } else {
+            [self updateLocationCampaigns:locationCampaignsDict writeToCache:NO];
+        }
+    } else {
+        [self invalidateETag];
+    }
+}
+
+- (void) updateLocationCampaigns:(NSDictionary*)campaignsJson writeToCache:(BOOL)writeToCache
+{
+    [[self locationManager] updateWithDictionary:campaignsJson];
+
+    if (writeToCache) {
+        NSError* error = nil;
+        NSData* locationCampaignsData = [NSJSONSerialization dataWithJSONObject:campaignsJson options:0 error:&error];
+        if (error) {
+            DebugLog(@"Error update location campaigns.\nError: %@\njson: %@", error, campaignsJson);
+        } else {
+            [[self locationCampaignFile] writeToFile:locationCampaignsData];
+        }
+    }
 }
 
 - (void) initResources
@@ -2013,10 +2074,12 @@ enum HttpStatus {
     return (((UInt64)time.tv_sec) * 1000) + (((UInt64)time.tv_usec) / 1000);
 }
 
-- (BOOL) isValidJson:(NSData*) json
-{
+- (BOOL) isValidJson:(NSData*) jsonNSData {
     NSError *err = nil;
-    id obj = [NSJSONSerialization JSONObjectWithData:json options:NSJSONReadingMutableContainers error:&err];
+    id obj = [NSJSONSerialization JSONObjectWithData:jsonNSData options:NSJSONReadingMutableContainers error:&err];
+    if (err) {
+        DebugLog(@"Error with json.\nError:%@", err);
+    }
     return obj != nil;
 }
 
@@ -2295,76 +2358,71 @@ enum HttpStatus {
     }
 }
 
--(void)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications {
+- (NSMutableArray*)filterLocationCampaigns:(PlotFilterNotifications *)filterNotifications {
 
-    BOOL hasValidLocationCampaigns = NO;
-    for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
-        NSString* plotPayload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
-        if(!plotPayload) {
-            DebugLog(@"Error in filterLocationCampaigns. No payload action.", nil);
+    // TODO: presumption for FA is that location campaigns have been refreshed from ABTS by starting the app. Fix for GA.
+
+    NSDictionary *locationCampaignsMatched = [[NSMutableDictionary alloc] init];
+    NSDate *now = [self getNow];
+    for (UILocalNotification *localNotification in filterNotifications.uiNotifications) {
+        NSString *payload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
+        if (!payload) {
+            DebugLog(@"Error in filterLocationCampaigns. No payload.", nil);
             continue;
         }
-        NSError *payloadError = nil;
-        NSData *objectData = [plotPayload dataUsingEncoding:NSUTF8StringEncoding];
-        NSMutableDictionary *jsonPayLoad = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&payloadError];
-        if(payloadError) {
-            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
+
+        SwrveLocationPayload *locationPayload = [[SwrveLocationPayload alloc] initWithPayload:payload];
+        if (locationPayload == nil || locationPayload.campaignId == nil) {
+            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload: %@", payload);
             continue;
         }
-        NSString* geofenceId = [jsonPayLoad objectForKey:@"geofenceId"];
-        NSString* campaignId = [jsonPayLoad objectForKey:@"campaignId"];
-        NSString* trigger = [localNotification.userInfo objectForKey:PlotNotificationTrigger];
 
-        if (jsonPayLoad != nil && geofenceId != nil && campaignId != nil && trigger != nil) {
-            [self geofenceCrossed:geofenceId campaignId:campaignId trigger:trigger];
-            NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:localNotification.userInfo];
-            [userInfoCopy setObject:campaignId forKey:@"campaignId"];
-            [localNotification setUserInfo:userInfoCopy];
-            hasValidLocationCampaigns = YES;
-        }else {
-            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload action: %@", plotPayload);
+        SwrveLocationCampaign *locationCampaign = [locationManager getLocationCampaign:locationPayload.campaignId];
+        if (locationCampaign == nil || locationCampaign.message == nil || locationCampaign.message.locationMessageId == nil) {
+            DebugLog(@"LocationCampaign not downloaded, or not targeted, or invalid. Payload: %@", payload);
+            continue;
+        }
+
+        if([locationCampaign.startDate compare:now] == NSOrderedAscending && ([locationCampaign endDate] == nil || [locationCampaign.endDate compare:now] == NSOrderedDescending)) { // todo check end date
+            NSTimeInterval startInterval = [[locationCampaign startDate] timeIntervalSince1970];
+            NSString *startIntervalString = [NSString stringWithFormat:@"%f", startInterval];
+            [locationCampaignsMatched setValue:(localNotification) forKey:startIntervalString]; // store localNotification keyed on start time of campaign
+        } else {
+            DebugLog(@"LocationCampaign is out of date.\nnow:%@ \nlocationCampaign:%@", now, locationCampaign.description);
         }
     }
-
-    if(hasValidLocationCampaigns) {
-        [self sendQueuedEvents];
-        [self performSelector:@selector(targetLocationCampaigns:) withObject:filterNotifications afterDelay:1]; // todo use config param for delay
-    }
-}
-
--(void) geofenceCrossed:(NSString*)geofenceId campaignId:(NSString*)campaignId trigger:(NSString*)trigger
-{
-    [self maybeFlushToDisk];
-    NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
-    [json setValue:NullableNSString(geofenceId) forKey:@"geofenceId"];
-    [json setValue:NullableNSString(campaignId) forKey:@"campaignId"];
-    [json setValue:NullableNSString(trigger) forKey:@"trigger"];
-    [self queueEvent:@"Swrve.Geofence.crossed" data:json triggerCallback:false];
-}
-
--(void) targetLocationCampaigns:(PlotFilterNotifications*)filterNotifications {
-
-    // todo refresh campaigns
-    // todo will Swrve have to be properly initialised to refreshcampaigns?
-    [self refreshCampaignsAndResources];
 
     NSMutableArray* notificationsToSend = [NSMutableArray array];
-    for (UILocalNotification* localNotification in filterNotifications.uiNotifications) {
-        // todo Check if campaign is one of targeted campaigns from ABTS and update the notification message
-        // todo swap in the variant id (locationMessageId) to the action of the notification so it can be easily found in engageLocationCampaign later
-        NSString* campaignId = [localNotification.userInfo objectForKey:@"campaignId"];
-        if (campaignId) {
-            [notificationsToSend addObject:localNotification];
-        }
+    if (locationCampaignsMatched.count == 0) {
+        DebugLog(@"No LocationCampaigns were matched.", nil);
+    } else {
+        UILocalNotification *notificationToSend = [self getByMostRecentlyStarted:locationCampaignsMatched];
+
+        NSString *payload = [notificationToSend.userInfo objectForKey:PlotNotificationActionKey];
+        SwrveLocationPayload *locationPayload = [[SwrveLocationPayload alloc] initWithPayload:payload];
+        SwrveLocationCampaign *locationCampaign = [locationManager getLocationCampaign:locationPayload.campaignId];
+        SwrveLocationMessage *locationMessage = locationCampaign.message;
+
+        // add locationMessageId for engagement event later
+        NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:notificationToSend.userInfo];
+        [userInfoCopy setObject:locationMessage.locationMessageId forKey:@"LocationMessageId"];
+        [notificationToSend setUserInfo:userInfoCopy];
+        [notificationsToSend addObject:notificationToSend];
+        notificationToSend.alertBody = locationMessage.body;
+
+        [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.impression", locationMessage.locationMessageId]];
     }
 
-    // todo if multiple notifications, then reduce to one by picking the campaign with earliest start date
-
-    NSString* locationMessageId = @"12345"; // todo use variant id.
-    [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.impression", locationMessageId]];
-    [self sendQueuedEvents];
-
     [filterNotifications showNotifications:notificationsToSend];
+    return notificationsToSend;
+}
+
+// Dictionary is keyed on start date, so sort into an array and pick off the last object in the array
+-(UILocalNotification*) getByMostRecentlyStarted:(NSDictionary *)locationCampaignsDict {
+    NSArray *sortedKeys = [[locationCampaignsDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    NSUInteger last = [sortedKeys count] - 1;
+    UILocalNotification *mostRecent = [locationCampaignsDict objectForKey:[sortedKeys objectAtIndex:last]];
+    return mostRecent;
 }
 
 -(void) engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId {
@@ -2372,10 +2430,6 @@ enum HttpStatus {
     [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.engaged", locationMessageId]];
     [self sendQueuedEvents];
 }
-
-
-
-
 
 @end
 
