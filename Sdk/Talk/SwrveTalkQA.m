@@ -10,10 +10,6 @@ enum
     // This is sent to the server on each call, and should not be modified.
     QA_API_VERSION = 1,
     
-    // This is the max timeout on a HTTP send before Swrve will kill the connection
-    // This is used for sending data to Swrve.
-    SWRVE_SEND_TIMEOUT_SECONDS = 4,
-    
     // This is the minimum time between session requests
     REST_SESSION_INTERVAL = 1000,
 

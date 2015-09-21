@@ -24,6 +24,7 @@
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
     SwrveMessageController* controller;
+    UIWindow* window;
 }
 
 @property (nonatomic) BOOL wasShownToUserNotified;
@@ -364,10 +365,11 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
--(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl
+-(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl andWindow:(UIWindow*)win
 {
     conversation = conv;
     controller = ctrl;
+    window = win;
     // The conversation is starting now, so issue a starting event
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
