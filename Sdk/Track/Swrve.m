@@ -2079,8 +2079,11 @@ enum HttpStatus {
         }];
         [task resume];
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
         [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
+#pragma clang diagnostic pop
     }
 }
 

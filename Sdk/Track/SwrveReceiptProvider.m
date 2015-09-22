@@ -41,12 +41,15 @@ static SwrveReceiptProviderResult* receipt_ios7(SKPaymentTransaction* transactio
 // This requires a reference to the SKPaymentTransaction, since the receipt data
 // is embedded inside it.
 static SwrveReceiptProviderResult* receipt_ios6(SKPaymentTransaction* transaction) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSData* receipt = [transaction transactionReceipt];
     if (!receipt) {
         DebugLog(@"Error reading receipt from iOS6 device", nil);
         return nil;
     }
     NSString* encodedReceipt = [receipt base64Encoding];
+#pragma clang diagnostic pop
     return [[SwrveReceiptProviderResult alloc] init:encodedReceipt withTransactionId:nil];
 }
 
@@ -66,8 +69,11 @@ static SwrveReceiptProviderResult* receipt_ios6(SKPaymentTransaction* transactio
     if ([SwrveReceiptProvider SwrveSystemVersionGreaterOrEqualThan:@"7.0"]) {
         return [receipt base64EncodedStringWithOptions:0];
     }
-    
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return [receipt base64Encoding];
+#pragma clang diagnostic pop
 }
 
 @end
