@@ -642,7 +642,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSString * userID;                       /*!< User ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
-@property (atomic)                   SwrveLocationManager * locationManager;  /*!< Can be queried for up-to-date location campaign values. */
+@property (atomic, strong)           SwrveLocationManager * locationManager;  /*!< Can be queried for up-to-date location campaign values. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 
