@@ -2383,7 +2383,7 @@ enum HttpStatus {
             continue;
         }
 
-        if([locationCampaign.startDate compare:now] == NSOrderedAscending && ([locationCampaign endDate] == nil || [locationCampaign.endDate compare:now] == NSOrderedDescending)) { // todo check end date
+        if([locationCampaign.startDate compare:now] == NSOrderedAscending && ([locationCampaign endDate] == nil || [locationCampaign.endDate compare:now] == NSOrderedDescending)) {
             NSTimeInterval startInterval = [[locationCampaign startDate] timeIntervalSince1970];
             NSString *startIntervalString = [NSString stringWithFormat:@"%f", startInterval];
             [locationCampaignsMatched setValue:(localNotification) forKey:startIntervalString]; // store localNotification keyed on start time of campaign

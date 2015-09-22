@@ -11,12 +11,13 @@
     if (self = [super init]) {
         NSError *error = nil;
         NSData *objectData = [payload dataUsingEncoding:NSUTF8StringEncoding];
-        NSMutableDictionary *jsonPayLoad = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&error];
+        NSDictionary *jsonPayLoad = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:&error];
         if (error) {
             DebugLog(@"Error parsing location campaign payload.\nError: %@\npayload: %@", error, payload);
+        } else {
+            geofenceId = [jsonPayLoad objectForKey:@"geofenceId"];
+            campaignId = [jsonPayLoad objectForKey:@"campaignId"];
         }
-        geofenceId = [jsonPayLoad objectForKey:@"geofenceId"];
-        campaignId = [jsonPayLoad objectForKey:@"campaignId"];
     }
 
     return self;
