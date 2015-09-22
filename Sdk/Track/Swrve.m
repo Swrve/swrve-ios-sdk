@@ -2405,7 +2405,7 @@ enum HttpStatus {
 
         // add locationMessageId for engagement event later
         NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:notificationToSend.userInfo];
-        [userInfoCopy setObject:locationMessage.locationMessageId forKey:@"LocationMessageId"];
+        [userInfoCopy setObject:locationMessage.locationMessageId forKey:PlotNotificationActionKey];
         [notificationToSend setUserInfo:userInfoCopy];
         [notificationsToSend addObject:notificationToSend];
         notificationToSend.alertBody = locationMessage.body;
