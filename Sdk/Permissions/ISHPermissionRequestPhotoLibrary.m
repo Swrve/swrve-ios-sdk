@@ -8,14 +8,36 @@
 //
 
 #import <AssetsLibrary/AssetsLibrary.h>
+#ifdef __IPHONE_9_0
+#import <Photos/Photos.h>
+#endif
 #import "ISHPermissionRequestPhotoLibrary.h"
 #import "ISHPermissionRequest+Private.h"
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @interface ISHPermissionRequestPhotoLibrary ()
 @end
 
 @implementation ISHPermissionRequestPhotoLibrary
 - (ISHPermissionState)permissionState {
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        PHAuthorizationStatus systemState = [PHPhotoLibrary authorizationStatus];
+        switch (systemState) {
+            case PHAuthorizationStatusAuthorized:
+                return ISHPermissionStateAuthorized;
+            case PHAuthorizationStatusDenied:
+            case PHAuthorizationStatusRestricted:
+                return ISHPermissionStateDenied;
+            default:
+                return [self internalPermissionState];
+        }
+    }
+#endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ALAuthorizationStatus systemState = [ALAssetsLibrary authorizationStatus];
     switch (systemState) {
         case ALAuthorizationStatusAuthorized:
@@ -26,6 +48,7 @@
         default:
             return [self internalPermissionState];
     }
+#pragma clang diagnostic pop
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
@@ -36,8 +59,22 @@
         return;
     }
     
-    ALAssetsLibrary *assetsLibrary = [ALAssetsLibrary new];
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+#pragma unused(status)
+            // ensure that completion is only called once
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(self, self.permissionState, nil);
+            });
+        }];
+        return;
+    }
+#endif
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    ALAssetsLibrary *assetsLibrary = [ALAssetsLibrary new];
     [assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
 #pragma unused(stop)
         if (!group) {
@@ -52,6 +89,7 @@
             completion(self, self.permissionState, nil);
         });
     }];
+#pragma clang diagnostic pop
 }
 
 @end
