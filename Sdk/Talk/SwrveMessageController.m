@@ -1089,13 +1089,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     #pragma clang diagnostic pop
             scivc.navigationItem.leftBarButtonItem = cancelButton;
 
-            self.conversationWindow.rootViewController = [[UIViewController alloc] init];
-            self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
-            [self.conversationWindow makeKeyAndVisible];
-            
-            UIViewController* rootController = self.conversationWindow.rootViewController;
-            [rootController.view endEditing:YES];
-            [rootController presentViewController:svnc animated:YES completion:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.conversationWindow.rootViewController = [[UIViewController alloc] init];
+//                self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+                [self.conversationWindow makeKeyAndVisible];
+                
+                UIViewController* rootController = self.conversationWindow.rootViewController;
+                [rootController.view endEditing:YES];
+                [rootController presentViewController:svnc animated:YES completion:nil];
+            });
         }
     }
 }
@@ -1362,7 +1364,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #pragma clang diagnostic pop
     }
     return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedDeviceName, encodedSystemName, CONVERSATION_VERSION];
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION];
 }
 
 @end
