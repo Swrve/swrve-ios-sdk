@@ -2361,6 +2361,15 @@ enum HttpStatus {
 - (NSMutableArray*)filterLocationCampaigns:(PlotFilterNotifications *)filterNotifications {
 
     // TODO: presumption for FA is that location campaigns have been refreshed from ABTS by starting the app. Fix for GA.
+    DebugLog(@"LocationCampaigns: Offered PlotFilterNotifications of size %lu.", (unsigned long)filterNotifications.uiNotifications.count);
+    if ([[locationManager locationCampaigns] count] < 20) {
+        NSMutableString *campaignIds = [[NSMutableString alloc] init];
+        for (id key in locationManager.locationCampaigns) {
+            [campaignIds appendString:key];
+            [campaignIds appendString:@","];
+        }
+        DebugLog(@"LocationCampaigns in cache:%@", campaignIds);
+    }
 
     NSDictionary *locationCampaignsMatched = [[NSMutableDictionary alloc] init];
     NSDate *now = [self getNow];
