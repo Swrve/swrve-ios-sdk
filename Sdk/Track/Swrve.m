@@ -2409,6 +2409,8 @@ enum HttpStatus {
 
         NSString *payload = [notificationToSend.userInfo objectForKey:PlotNotificationActionKey];
         SwrveLocationPayload *locationPayload = [[SwrveLocationPayload alloc] initWithPayload:payload];
+        DebugLog(@"LocationCampaigns: Matched %lu campaigns. Using campaignId:%@", (unsigned long)filterNotifications.uiNotifications.count, locationPayload.campaignId);
+
         SwrveLocationCampaign *locationCampaign = [locationManager getLocationCampaign:locationPayload.campaignId];
         SwrveLocationMessage *locationMessage = locationCampaign.message;
 
