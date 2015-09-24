@@ -19,7 +19,11 @@
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation ISHPermissionRequestAddressBook {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAddressBookRef _addressBook;
+#pragma clang diagnostic pop
+    
 #ifdef __IPHONE_9_0
     CNContactStore* _contactStore;
 #endif
@@ -33,17 +37,17 @@
         switch (status) {
             case CNAuthorizationStatusAuthorized:
                 return ISHPermissionStateAuthorized;
-                
             case CNAuthorizationStatusRestricted:
             case CNAuthorizationStatusDenied:
                 return ISHPermissionStateDenied;
-                
             case CNAuthorizationStatusNotDetermined:
                 return [self internalPermissionState];
         }
     }
 #endif
-    
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     switch (status) {
         case kABAuthorizationStatusAuthorized:
@@ -56,6 +60,7 @@
         case kABAuthorizationStatusNotDetermined:
             return [self internalPermissionState];
     }
+#pragma clang diagnostic pop
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
@@ -78,9 +83,12 @@
                 completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, error);
             });
         }];
-        return;
+        return;        
     }
 #endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAddressBookRequestAccessWithCompletion(self.addressBook, ^(bool granted, CFErrorRef error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, (__bridge NSError *)(error));
@@ -127,5 +135,6 @@
         _addressBook = NULL;
     }
 }
+#pragma clang diagnostic pop
 
 @end

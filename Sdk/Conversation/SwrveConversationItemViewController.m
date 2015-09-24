@@ -24,6 +24,7 @@
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
     SwrveMessageController* controller;
+    UIWindow* window;
 }
 
 @property (nonatomic) BOOL wasShownToUserNotified;
@@ -131,13 +132,27 @@
                 // Notify the user that the app isn't available and then just return.
                 
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL")
-                                                                message:msg
-                                                               delegate:nil
-                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
-                                                      otherButtonTitles:nil];
-                [alert show];
+                NSString *alertMessage = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
+                NSString *alertTitle = NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL");
+#ifdef __IPHONE_9_0
+                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                                   message:alertMessage
+                                                                            preferredStyle:UIAlertControllerStyleAlert];
+                    [self presentViewController:alert animated:true completion:nil];
+                } else
+#endif
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                                    message:alertMessage
+                                                                   delegate:nil
+                                                          cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
+                                                          otherButtonTitles:nil];
+                    [alert show];
+                }
+#pragma clang diagnostic pop
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
@@ -147,7 +162,7 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
-                NSLog(@"Unkown permission request %@", param);
+                DebugLog(@"Unkown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
@@ -319,10 +334,11 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
--(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl
+-(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl andWindow:(UIWindow*)win
 {
     conversation = conv;
     controller = ctrl;
+    window = win;
     // The conversation is starting now, so issue a starting event
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event

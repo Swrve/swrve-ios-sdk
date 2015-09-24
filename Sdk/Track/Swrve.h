@@ -7,7 +7,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
 
-#ifdef DEBUG
+#ifndef SWRVE_DISABLE_LOGS
 #define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
 #else
 #define DebugLog( s, ... )
