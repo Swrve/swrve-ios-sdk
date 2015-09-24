@@ -143,6 +143,8 @@ enum
 {
     UInt64 install_time;
     NSDate *lastSessionDate;
+    NSString* lastProcessedPushId;
+    
 
     SwrveEventQueuedCallback event_queued_callback;
 
@@ -1541,22 +1543,29 @@ static bool didSwizzle = false;
             return;
         }
         
-        // Process deeplink _d
-        id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
-        if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-            NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-            NSURL* url = [NSURL URLWithString:pushDeeplink];
-            if( url != nil ) {
-                DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
-                [[UIApplication sharedApplication] openURL:url];
-            } else {
-                DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+        // Only process this push if we haven't seen it before
+        if (lastProcessedPushId == nil || ![pushIdentifier isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushIdentifier;
+            
+            // Process deeplink _d
+            id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+            if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+                NSURL* url = [NSURL URLWithString:pushDeeplink];
+                if( url != nil ) {
+                    DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
+                    [[UIApplication sharedApplication] openURL:url];
+                } else {
+                    DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+                }
             }
-        }
 
-        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-        [self event:eventName];
-        DebugLog(@"Got Swrve notification with ID %@", pushId);
+            NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
+            [self event:eventName];
+            DebugLog(@"Got Swrve notification with ID %@", pushId);
+        } else {
+            DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
+        }
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
