@@ -1652,8 +1652,11 @@ static NSString* httpScheme(bool useHttps)
     
     // Optional identifiers
 #ifdef SWRVE_LOG_IDFA
-    NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-    [deviceProperties setValue:idfa               forKey:@"swrve.IDFA"];
+    if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
+    {
+        NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        [deviceProperties setValue:idfa               forKey:@"swrve.IDFA"];
+    }
 #endif
 #ifdef SWRVE_LOG_IDFV
     NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
