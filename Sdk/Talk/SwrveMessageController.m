@@ -1091,7 +1091,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.conversationWindow.rootViewController = [[UIViewController alloc] init];
-//                self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
                 [self.conversationWindow makeKeyAndVisible];
                 
                 UIViewController* rootController = self.conversationWindow.rootViewController;
