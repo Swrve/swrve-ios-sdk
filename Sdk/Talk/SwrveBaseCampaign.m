@@ -194,4 +194,9 @@ static NSDate* read_date(id d, NSDate* default_date)
     return TRUE;
 }
 
+-(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
+{
+    // Implemented in sub classes
+}
+
 @end
