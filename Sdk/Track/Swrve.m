@@ -1315,6 +1315,9 @@ static bool didSwizzle = false;
         [self sendQueuedEvents];
     }
 
+    if (config.talkEnabled) {
+        [self.talk appDidBecomeActive];
+    }
     [self resumeCampaignsAndResourcesTimer];
     lastSessionDate = [self getNow];
 }
