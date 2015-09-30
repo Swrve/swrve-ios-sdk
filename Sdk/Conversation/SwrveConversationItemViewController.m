@@ -270,8 +270,8 @@
 -(void)dismiss {
     [self stopAtoms];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
-        @synchronized(controller) {
-            [controller conversationClosed];
+        @synchronized(self->controller) {
+            [self->controller conversationClosed];
         }
     }];
 }
