@@ -33,4 +33,7 @@
 /*! PRIVATE: Set the message mimimum delay time. */
 -(void)setMessageMinDelayThrottle:(NSDate*)timeShown;
 
+/*! PRIVATE: Add the required assets to the given queue. */
+-(void)addAssetsToQueue:(NSMutableSet*)assetsQueue;
+
 @end
