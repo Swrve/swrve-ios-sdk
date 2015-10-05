@@ -18,6 +18,16 @@
     for (NSDictionary* messageDict in campaign_messages)
     {
         SwrveMessage* message = [SwrveMessage fromJSON:messageDict forCampaign:self forController:controller];
+        [loadedMessages addObject:message];
+    }
+    self.messages = [loadedMessages copy];
+    [self addAssetsToQueue:assetsQueue];
+    return instance;
+}
+
+-(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
+{
+    for (SwrveMessage* message in self.messages) {
         for (SwrveMessageFormat* format in message.formats)
         {
             // Add all images to the download queue
@@ -31,10 +41,7 @@
                 [assetsQueue addObject:image.file];
             }
         }
-        [loadedMessages addObject:message];
     }
-    self.messages = [[NSArray alloc] initWithArray:loadedMessages];
-    return instance;
 }
 
 -(void)messageWasShownToUser:(SwrveMessage *)message

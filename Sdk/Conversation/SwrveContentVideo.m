@@ -58,6 +58,12 @@
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0") && SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+        // Force inline video for iOS7
+        webview.allowsInlineMediaPlayback = YES;
+    }
+    
     [SwrveContentItem scrollView:webview].scrollEnabled = NO;
     
     NSString *rawValue = self.value;
