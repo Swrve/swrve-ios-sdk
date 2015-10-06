@@ -29,7 +29,7 @@
 -(BOOL)              willRequireLandscape;
 -(CGRect)            newFrameForOrientationChange;
 -(NSUInteger)        numberOfRowsNeeded;
--(CGFloat)           heightForRow:(NSUInteger) row;
+-(CGFloat)           heightForRow:(NSUInteger) row inTableView:(UITableView *)tableView;
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView;
 
 // Subclasses should override this

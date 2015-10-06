@@ -10,16 +10,44 @@
 #include <UIKit/UIKit.h>
 #include <objc/runtime.h>
 #import <AddressBook/AddressBook.h>
+#ifdef __IPHONE_9_0
+#import <Contacts/Contacts.h>
+#endif
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @implementation ISHPermissionRequestAddressBook {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAddressBookRef _addressBook;
+#pragma clang diagnostic pop
+    
+#ifdef __IPHONE_9_0
+    CNContactStore* _contactStore;
+#endif
 }
 
 - (ISHPermissionState)permissionState {
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // New iOS9+ framework
+        CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+        switch (status) {
+            case CNAuthorizationStatusAuthorized:
+                return ISHPermissionStateAuthorized;
+            case CNAuthorizationStatusRestricted:
+            case CNAuthorizationStatusDenied:
+                return ISHPermissionStateDenied;
+            case CNAuthorizationStatusNotDetermined:
+                return [self internalPermissionState];
+        }
+    }
+#endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     switch (status) {
         case kABAuthorizationStatusAuthorized:
@@ -32,6 +60,7 @@
         case kABAuthorizationStatusNotDetermined:
             return [self internalPermissionState];
     }
+#pragma clang diagnostic pop
 }
 
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
@@ -43,6 +72,23 @@
         return;
     }
     
+#ifdef __IPHONE_9_0
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        // New iOS9+ framework
+        if (_contactStore == nil) {
+            _contactStore = [[CNContactStore alloc] init];
+        }
+        [_contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError *__nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, error);
+            });
+        }];
+        return;        
+    }
+#endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAddressBookRequestAccessWithCompletion(self.addressBook, ^(bool granted, CFErrorRef error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, (__bridge NSError *)(error));
@@ -89,5 +135,6 @@
         _addressBook = NULL;
     }
 }
+#pragma clang diagnostic pop
 
 @end

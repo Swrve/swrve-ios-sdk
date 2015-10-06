@@ -1,5 +1,3 @@
-#include <CommonCrypto/CommonHMAC.h>
-
 @protocol SwrveSignatureErrorListener <NSObject>
 @required
 - (void)signatureError:(NSURL*)file;
