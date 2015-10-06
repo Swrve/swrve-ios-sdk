@@ -16,5 +16,7 @@ Pod::Spec.new do |s|
   s.resources = 'Sdk/Conversation/Resources/*.*'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary', 'Contacts', 'Photos'
   s.library = 'sqlite3'
-  s.dependency 'PlotPlugin'
+  #s.dependency 'PlotPlugin'
+  #s.vendored_libraries = 'Sdk/libPlot-v1_10_1.a'
+  s.vendored_libraries = 'Sdk/libPlot-v1_11_0.a'
 end
