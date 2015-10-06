@@ -123,7 +123,7 @@
                                                    options:NSStringDrawingUsesLineFragmentOrigin
                                                    context:nil];
 
-        return ceil(rect.size.height);
+        return (float)ceil(rect.size.height);
     } else {
         NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
         NSDictionary *dict = [self.values objectAtIndex:finalRow];
@@ -135,7 +135,7 @@
         CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
                                                    options:NSStringDrawingUsesLineFragmentOrigin
                                                    context:nil];
-        return ceil(rect.size.height) + 22;
+        return (float)(ceil(rect.size.height) + 22);
     }
 }
 

@@ -19,19 +19,23 @@
     self.controller = _controller;
     id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:_controller];
     NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
+    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
+    self.filters      = [dict objectForKey:@"filters"];
+    [self addAssetsToQueue:assetsQueue];
     
-    // Set up asset downloads here: for each page, scan content to find any images/assets, queue up for download as an asset
-    for (NSDictionary *page in [conversationJson objectForKey:@"pages"]) {
+    return instance;
+}
+
+-(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
+{
+    // Queue conversation images for download
+    for(NSDictionary* page in self.conversation.pages) {
         for (NSDictionary *contentItem in [page objectForKey:@"content"]) {
             if ([[contentItem objectForKey:@"type"] isEqualToString:@"image"]) {
                 [assetsQueue addObject:[contentItem objectForKey:@"value"]];
             }
         }
     }
-    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
-    self.filters      = [dict objectForKey:@"filters"];
-    
-    return instance;
 }
 
 -(void)conversationWasShownToUser:(SwrveConversation *)message

@@ -61,7 +61,6 @@
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
     }
-    [controller conversationClosed];
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -239,7 +238,11 @@
 
 -(void)dismiss {
     [self stopAtoms];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        @synchronized(self->controller) {
+            [self->controller conversationClosed];
+        }
+    }];
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
