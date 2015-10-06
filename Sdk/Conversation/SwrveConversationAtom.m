@@ -16,7 +16,6 @@
 #define kCellTag 101
 
 -(id) initWithTag:(NSString *)tag andType:(NSString *)type {
-    SwrveLogIt(@"initWithTag andType: %@ %@", tag, type);
     self = [super init];
     if(self) {
         _tag = tag;
@@ -51,7 +50,6 @@
 -(UITableViewCell *) cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
 #pragma unused (row)
     NSString *cellId = [NSString stringWithFormat:@"%@CellId", self.type];
-    SwrveLogIt(@"cellForRow :: cellId: %@", cellId);
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     if(cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
@@ -77,8 +75,8 @@
     return 0.0;
 }
 
--(CGFloat) heightForRow:(NSUInteger) row {
-#pragma unused (row)
+-(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
+#pragma unused (row, tableView)
     return _view.frame.size.height + [self verticalPadding];
 }
 

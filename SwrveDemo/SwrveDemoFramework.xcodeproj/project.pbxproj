@@ -79,6 +79,7 @@
 		1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFD19B8AFFC00F378E6 /* SwrveResourceManager.m */; };
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
+		1B37C7F21BB085D300F4E185 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		1B592CFF1B28485800908895 /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592CFE1B28485800908895 /* SwrvePermissions.m */; };
 		1B592D141B28488B00908895 /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D051B28488B00908895 /* ISHPermissionRequest+All.m */; };
 		1B592D151B28488B00908895 /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D081B28488B00908895 /* ISHPermissionRequest.m */; };
@@ -129,10 +130,12 @@
 		1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */; };
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
+		1BE609881BB162D500969382 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BE609871BB162D500969382 /* Photos.framework */; };
 		239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBB45338395EC601EF548 /* plotconfig.json */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
+		3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A52723C1BC3C11500089561 /* Contacts.framework */; };
 		3AC4DBB91B2992D1004B57CB /* SwrveContentHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */; };
 		3AC4DBBA1B2992D1004B57CB /* SwrveContentImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB911B2992D1004B57CB /* SwrveContentImage.m */; };
 		3AC4DBBB1B2992D1004B57CB /* SwrveContentItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB931B2992D1004B57CB /* SwrveContentItem.m */; };
@@ -340,12 +343,14 @@
 		1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
+		1BE609871BB162D500969382 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		239EBB45338395EC601EF548 /* plotconfig.json */ = {isa = PBXFileReference; lastKnownFileType = file.json; path = plotconfig.json; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		30A4F72416B05C2500642E8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		3AC4DB8E1B2992D1004B57CB /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
 		3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentHTML.m; sourceTree = "<group>"; };
 		3AC4DB901B2992D1004B57CB /* SwrveContentImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentImage.h; sourceTree = "<group>"; };
@@ -405,8 +410,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */,
 				3ADA44D71BA053600079A191 /* libPlot-v1_10_1.a in Frameworks */,
 				3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */,
+				1BE609881BB162D500969382 /* Photos.framework in Frameworks */,
+				1B37C7F21BB085D300F4E185 /* (null) in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
 				1B592D211B2848DF00908895 /* AssetsLibrary.framework in Frameworks */,
 				1B592D1F1B2848D700908895 /* AVFoundation.framework in Frameworks */,
@@ -901,8 +909,10 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A52723C1BC3C11500089561 /* Contacts.framework */,
 				3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */,
 				3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */,
+				1BE609871BB162D500969382 /* Photos.framework */,
 				1B592D221B2848EA00908895 /* CoreLocation.framework */,
 				1B592D201B2848DF00908895 /* AssetsLibrary.framework */,
 				1B592D1E1B2848D700908895 /* AVFoundation.framework */,
