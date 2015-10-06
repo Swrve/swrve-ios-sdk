@@ -228,5 +228,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 -(NSString*) supportsDeviceFilters:(NSArray*)filters;
 
+/*! Called internally when the app became active */
+-(void) appDidBecomeActive;
+
 @end
 
