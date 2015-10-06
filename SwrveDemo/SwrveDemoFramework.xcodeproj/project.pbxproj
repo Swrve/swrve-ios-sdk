@@ -79,7 +79,6 @@
 		1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFD19B8AFFC00F378E6 /* SwrveResourceManager.m */; };
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
-		1B37C7F21BB085D300F4E185 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5FE60C1B5FE02C00413B35 /* Contacts.framework */; };
 		1B592CFF1B28485800908895 /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592CFE1B28485800908895 /* SwrvePermissions.m */; };
 		1B592D141B28488B00908895 /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D051B28488B00908895 /* ISHPermissionRequest+All.m */; };
 		1B592D151B28488B00908895 /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D081B28488B00908895 /* ISHPermissionRequest.m */; };
@@ -136,6 +135,7 @@
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
 		3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A52723C1BC3C11500089561 /* Contacts.framework */; };
+		3A7798331BC40F2100B2A247 /* libPlot-v1_11_0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */; };
 		3AC4DBB91B2992D1004B57CB /* SwrveContentHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */; };
 		3AC4DBBA1B2992D1004B57CB /* SwrveContentImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB911B2992D1004B57CB /* SwrveContentImage.m */; };
 		3AC4DBBB1B2992D1004B57CB /* SwrveContentItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB931B2992D1004B57CB /* SwrveContentItem.m */; };
@@ -158,7 +158,6 @@
 		3AC8B74E1BAAF95600CF23ED /* SwrveLocationMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7491BAAF95600CF23ED /* SwrveLocationMessage.m */; };
 		3AC8B74F1BAAF95600CF23ED /* SwrveLocationPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B74B1BAAF95600CF23ED /* SwrveLocationPayload.m */; };
 		3AC8B7511BAAFFF000CF23ED /* SwrveConversationAtom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */; };
-		3ADA44D71BA053600079A191 /* libPlot-v1_10_1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */; };
 		3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
@@ -351,6 +350,7 @@
 		30A4F72416B05C2500642E8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPlot-v1_11_0.a"; path = "../Sdk/libPlot-v1_11_0.a"; sourceTree = "<group>"; };
 		3AC4DB8E1B2992D1004B57CB /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
 		3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentHTML.m; sourceTree = "<group>"; };
 		3AC4DB901B2992D1004B57CB /* SwrveContentImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentImage.h; sourceTree = "<group>"; };
@@ -410,8 +410,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7798331BC40F2100B2A247 /* libPlot-v1_11_0.a in Frameworks */,
 				3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */,
-				3ADA44D71BA053600079A191 /* libPlot-v1_10_1.a in Frameworks */,
 				3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */,
 				1BE609881BB162D500969382 /* Photos.framework in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
@@ -908,6 +908,7 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */,
 				3A52723C1BC3C11500089561 /* Contacts.framework */,
 				3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */,
 				3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */,
