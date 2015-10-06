@@ -4,6 +4,8 @@
 
 @implementation SwrveInputMultiValue {
     UIView* containerView;
+    UIFont* descriptionFont;
+    UIFont* cellFont;
 }
 
 @synthesize values;
@@ -18,6 +20,10 @@
         NSArray *vals = [dict objectForKey:@"values"];
         self.values = vals;
         self.selectedIndex = -1;
+        
+        // init UI
+        descriptionFont = [UIFont boldSystemFontOfSize:20.0];
+        cellFont = [UIFont fontWithName:@"Helvetica" size:17.0];
     }
     return self;
 }
@@ -37,7 +43,8 @@
         //    "answer_id" = "54264172-option";
         //    "answer_text" = "The text to show";
         // }
-        
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.font = cellFont;
         cell.textLabel.text = [dict objectForKey:@"answer_text"];
         
         if(self.selectedIndex == (NSInteger)row) {
@@ -106,23 +113,29 @@
     return cell;
 }
 
--(CGFloat) heightForRow:(NSUInteger) row {
+-(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (row == 0) {
-        UIFont *uifont = [UIFont boldSystemFontOfSize:20.0];
-        CGFloat constrainedWidth = containerView.frame.size.width;
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            constrainedWidth = (constrainedWidth - 100);
-        } else {
-            constrainedWidth = (constrainedWidth - 190);
-        }
-        
-        CGSize possibleSize = [self.description sizeWithFont:uifont
-                                           constrainedToSize:CGSizeMake(constrainedWidth, 9999)
-                                               lineBreakMode:NSLineBreakByWordWrapping];
-        CGFloat h = (float)ceil(possibleSize.height);
-        return h;
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:self.description
+                                                                             attributes:@{
+                                                                                          NSFontAttributeName:descriptionFont
+                                                                                          }];
+        CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:nil];
+
+        return ceil(rect.size.height);
     } else {
-        return 51.0;
+        NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
+        NSDictionary *dict = [self.values objectAtIndex:finalRow];
+        NSString *cellText = [dict objectForKey:@"answer_text"];
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:cellText
+                                                                             attributes:@{
+                                                                                          NSFontAttributeName: cellFont
+                                                                                          }];
+        CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:nil];
+        return ceil(rect.size.height) + 22;
     }
 }
 
@@ -131,7 +144,7 @@
     if(cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"descriptionCell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [cell.textLabel setFont:[UIFont boldSystemFontOfSize:20.0]];
+        [cell.textLabel setFont:descriptionFont];
         cell.userInteractionEnabled = NO;
     }
     cell.textLabel.text = self.description;

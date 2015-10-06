@@ -39,7 +39,10 @@
     [self updateBounds];
     [self removeAllViews];
     if(SYSTEM_VERSION_LESS_THAN(@"9.0")){
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [self addViewForOrientation:[self interfaceOrientation]];
+#pragma clang diagnostic pop
     } else {
         [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
     }
