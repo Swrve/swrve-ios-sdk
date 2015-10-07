@@ -24,6 +24,7 @@
     UITapGestureRecognizer *localRecognizer;
     SwrveConversation *conversation;
     SwrveMessageController* controller;
+    UIWindow* window;
 }
 
 @property (nonatomic) BOOL wasShownToUserNotified;
@@ -60,7 +61,6 @@
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
     }
-    [controller conversationClosed];
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -131,13 +131,27 @@
                 // Notify the user that the app isn't available and then just return.
                 
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                NSString *msg = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL")
-                                                                message:msg
-                                                               delegate:nil
-                                                      cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
-                                                      otherButtonTitles:nil];
-                [alert show];
+                NSString *alertMessage = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
+                NSString *alertTitle = NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL");
+#ifdef __IPHONE_9_0
+                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                                   message:alertMessage
+                                                                            preferredStyle:UIAlertControllerStyleAlert];
+                    [self presentViewController:alert animated:true completion:nil];
+                } else
+#endif
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                                    message:alertMessage
+                                                                   delegate:nil
+                                                          cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
+                                                          otherButtonTitles:nil];
+                    [alert show];
+                }
+#pragma clang diagnostic pop
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
@@ -147,7 +161,7 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
-                NSLog(@"Unkown permission request %@", param);
+                DebugLog(@"Unkown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
@@ -189,51 +203,6 @@
 }
 
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
-    // Check to see if all required inputs have had data applied and pop up an
-    // alert to the ufser if this is not the case.
-    NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
-    NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
-    NSError *invalidInputError = nil;
-    
-    // Gather the user responses and send them
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        if([atom isKindOfClass:[SwrveInputItem class]]) {
-            SwrveInputItem *item = (SwrveInputItem*)atom;
-            
-            if ([item isComplete]) {
-                if (![item isValid:&invalidInputError]) {
-                    [item highlight];
-                    [invalidInputs addObject:item];
-                }
-            } else {
-                if (![item isOptional]) {
-                    [item highlight];
-                    [incompleteRequiredInputs addObject:item];
-                }
-            }
-        }
-    }
-    
-    if ([incompleteRequiredInputs count] > 0) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
-                                                        message:NSLocalizedStringFromTable(@"FILL_ALL", @"Converser", @"Please fill all required fields.")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
-                                              otherButtonTitles:nil];
-        [alert show];
-        return NO;
-    }
-    
-    if ([invalidInputs count] > 0 ) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
-                                                        message:NSLocalizedStringFromTable(@"VALID_EMAIL", @"Converser", @"Please supply a valid email address.")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
-                                              otherButtonTitles:nil];
-        [alert show];
-        return NO;
-    }
-    
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
     [self stopAtoms];
@@ -269,7 +238,11 @@
 
 -(void)dismiss {
     [self stopAtoms];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        @synchronized(self->controller) {
+            [self->controller conversationClosed];
+        }
+    }];
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
@@ -364,10 +337,11 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
--(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl
+-(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl andWindow:(UIWindow*)win
 {
     conversation = conv;
     controller = ctrl;
+    window = win;
     // The conversation is starting now, so issue a starting event
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
@@ -461,9 +435,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 #pragma unused (tableView)
-    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];  // HACK
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
-    return [atom heightForRow:(NSUInteger)indexPath.row];
+    return [atom heightForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
 
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
