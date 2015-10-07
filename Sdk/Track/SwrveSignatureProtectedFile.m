@@ -1,5 +1,6 @@
 #import "Swrve.h"
 #import "SwrveSignatureProtectedFile.h"
+#import <CommonCrypto/CommonHMAC.h>
 
 @implementation SwrveSignatureProtectedFile
 

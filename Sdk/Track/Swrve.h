@@ -7,7 +7,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
 
-#ifdef DEBUG
+#ifndef SWRVE_DISABLE_LOGS
 #define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
 #else
 #define DebugLog( s, ... )
@@ -16,7 +16,7 @@
 #pragma clang diagnostic pop
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.0.2"
+#define SWRVE_SDK_VERSION "4.1"
 
 /*! Result codes for Swrve methods. */
 enum
