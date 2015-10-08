@@ -1094,7 +1094,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
-                self.conversationWindow.rootViewController = [[UIViewController alloc] init];
+                self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
                 [rootController.view endEditing:YES];
             });
