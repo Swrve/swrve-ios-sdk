@@ -8,6 +8,7 @@
 #import "SwrveTalkQA.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationItemViewController.h"
+#import "SwrveConversationContainerViewController.h"
 #import "SwrvePermissions.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -1092,13 +1093,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             scivc.navigationItem.leftBarButtonItem = cancelButton;
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.conversationWindow.rootViewController = [[UIViewController alloc] init];
-//                self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+                self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
-                
-                UIViewController* rootController = self.conversationWindow.rootViewController;
                 [rootController.view endEditing:YES];
-                [rootController presentViewController:svnc animated:YES completion:nil];
             });
         }
     }
