@@ -1077,11 +1077,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
             self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
             [scivc setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
-            
             self.swrveConversationItemViewController = scivc;
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
             SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
             self.swrveConversationsNavigationController = svnc;
+            
+            if( [self.showMessageDelegate respondsToSelector:@selector(conversationWillBeShown:)]) {
+                [self.showMessageDelegate conversationWillBeShown:svnc];
+            }
+            
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 svnc.modalPresentationStyle = UIModalPresentationFormSheet;
             }
@@ -1098,13 +1102,22 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 [self.conversationWindow makeKeyAndVisible];
                 [rootController.view endEditing:YES];
             });
+        } else {
+            DebugLog(@"A message is already displayed, ignoring new message.", nil);
         }
     }
 }
 
 - (void) conversationClosed {
-    self.conversationWindow.hidden = YES;
-    self.conversationWindow = nil;
+    if (self.conversationWindow != nil) {
+        if( [self.showMessageDelegate respondsToSelector:@selector(conversationWillBeHidden:)]) {
+            [self.showMessageDelegate conversationWillBeHidden:self.swrveConversationsNavigationController];
+        }
+        
+        self.conversationWindow.hidden = YES;
+        self.conversationWindow = nil;
+        self.swrveConversationsNavigationController = nil;
+    }
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
@@ -1114,7 +1127,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     
     if( self.inAppMessageWindow != nil ) {
-        DebugLog(@"A message is already displayed, ignoring second message.", nil);
+        DebugLog(@"A message is already displayed, ignoring new message.", nil);
         return;
     }
     
