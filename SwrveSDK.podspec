@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDK"
-  s.version          = "4.1"
+  s.version          = "4.1.0-alpha"
   s.summary          = "iOS SDK for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => "LICENSE" }
@@ -15,4 +15,8 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Sdk/**/*.h'
   s.resources = 'Sdk/Conversation/Resources/*.*'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary', 'Contacts', 'Photos'
+  s.library = 'sqlite3'
+  #s.dependency 'PlotPlugin'
+  #s.vendored_libraries = 'Sdk/libPlot-v1_10_1.a'
+  s.vendored_libraries = 'Sdk/libPlot-v1_11_0.a'
 end
