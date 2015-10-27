@@ -25,7 +25,9 @@
     NSString *apiKey = [UserSettings getAppApiKey];
     // Take the user id override from the demo settings
     NSString* userOverride = [DemoFramework getDemoResourceManager].userIdOverride;
-    swrve = [[Swrve alloc]initWithAppID:appId apiKey:apiKey userID:userOverride];
+    SwrveConfig* config = [[SwrveConfig alloc] init];
+    config.userId = userOverride;
+    swrve = [[Swrve alloc]initWithAppID:appId apiKey:apiKey config:config];
     
     // You can also initialise without a user
     // swrve = [[Swrve alloc]initWithAppID:appId apiKey:apiKey];
