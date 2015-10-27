@@ -8,6 +8,7 @@
 #import "SwrveTalkQA.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationItemViewController.h"
+#import "SwrveConversationContainerViewController.h"
 #import "SwrvePermissions.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -71,6 +72,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
+@property (nonatomic)         bool                  shouldAutoInferStatusBarAppearance;
 
 // Current Device Properties
 @property (nonatomic) int device_width;
@@ -131,6 +133,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationsNavigationController;
 @synthesize swrveConversationItemViewController;
+@synthesize shouldAutoInferStatusBarAppearance;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
@@ -152,6 +155,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_height = (int)screen_bounds.size.width;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
+    self.shouldAutoInferStatusBarAppearance = sdk.config.shouldAutoInferStatusBarAppearance;
     
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
@@ -445,7 +449,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [self.notifications removeAllObjects];
     
     NSDictionary* settings = [self getCampaignSettings];
-    
     NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in json_campaigns)
     {
@@ -513,88 +516,96 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [self.qaUser talkSession:campaignsDownloaded];
     }
     
-    for (NSString* asset in assetsQueue) {
-#pragma unused(asset)
-        DebugLog(@"Asset Set: %@", asset);
+    // Obtain assets we don't have yet
+    NSSet* downloadQueue = [self withOutExistingFiles:assetsQueue];
+    for (NSString* asset in downloadQueue) {
+        [self downloadAsset:asset];
     }
     
-    NSMutableArray* downloadQueue = [self withOutExistingFiles:assetsQueue];
-    while([downloadQueue count] > 0)
-    {
-        [self downloadAsset:[downloadQueue lastObject]];
-        [downloadQueue removeLastObject];
-    }
-    
-    self.campaigns = [[NSArray alloc] initWithArray:result];
+    self.campaigns = [result copy];
 }
 
--(NSMutableArray*)withOutExistingFiles:(NSSet*)assetSet
+-(NSSet*)withOutExistingFiles:(NSSet*)assetSet
 {
-    NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:[assetSet count]];
-    
+    NSMutableSet* result = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
     for (NSString* file in assetSet)
     {
         NSString* target = [self.cacheFolder stringByAppendingPathComponent:file];
-        
-        if (![[NSFileManager defaultManager] fileExistsAtPath:target])
+        if (![fileManager fileExistsAtPath:target])
         {
-            DebugLog(@"Adding %@ to download list" , file);
             [result addObject:file];
         }
         else
         {
-            DebugLog(@"File already exists on disk %@", file);
             [self.assetsOnDisk addObject:file];
         }
     }
     
-    return result;
+    return [result copy];
 }
 
 -(void)downloadAsset:(NSString*)asset
 {
+    BOOL mustDownload = YES;
     @synchronized([self assetsCurrentlyDownloading]) {
-        [[self assetsCurrentlyDownloading] addObject:asset];
+        mustDownload = ![assetsCurrentlyDownloading containsObject:asset];
+        if (mustDownload) {
+            [[self assetsCurrentlyDownloading] addObject:asset];
+        }
     }
     
-    NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
-    
-    DebugLog(@"Downloading asset: %@", url);
-    
-    [self.analyticsSDK sendHttpGETRequest:url
-                        completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
-     {
-#pragma unused(response)
-         if (error)
+    if (mustDownload) {
+        NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
+        DebugLog(@"Downloading asset: %@", url);
+        [self.analyticsSDK sendHttpGETRequest:url
+                            completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
          {
-             DebugLog(@"Asset Error: %@", error);
-         }
-         else
-         {
-             if (![SwrveMessageController verifySHA:data against:asset]){
-                 DebugLog(@"Error downloading %@ – SHA1 does not match.", asset);
-             } else {
-                 
-                 NSURL* dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
-                 
-                 [data writeToURL:dst atomically:YES];
-                 
-                 // Add the asset to the set of assets that we know are downloaded.
-                 [self.assetsOnDisk addObject:asset];
-                 DebugLog(@"Asset downloaded: %@", asset);
+    #pragma unused(response)
+             if (error)
+             {
+                 DebugLog(@"Could not download asset: %@", error);
              }
-         }
-         
-         // This asset has finished downloading
-         // Check if all assets are finished and if so call autoShowMessage
-         @synchronized([self assetsCurrentlyDownloading]) {
-             [[self assetsCurrentlyDownloading] removeObject:asset];
+             else
+             {
+                 if (![SwrveMessageController verifySHA:data against:asset]){
+                     DebugLog(@"Error downloading %@ – SHA1 does not match.", asset);
+                 } else {
+                     
+                     NSURL* dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
+                     
+                     [data writeToURL:dst atomically:YES];
+                     
+                     // Add the asset to the set of assets that we know are downloaded.
+                     [self.assetsOnDisk addObject:asset];
+                     DebugLog(@"Asset downloaded: %@", asset);
+                 }
+             }
              
-             if ([[self assetsCurrentlyDownloading] count] == 0) {
-                 [self autoShowMessages];
+             // This asset has finished downloading
+             // Check if all assets are finished and if so call autoShowMessage
+             @synchronized([self assetsCurrentlyDownloading]) {
+                 [[self assetsCurrentlyDownloading] removeObject:asset];
+                 if ([[self assetsCurrentlyDownloading] count] == 0) {
+                     [self autoShowMessages];
+                 }
              }
-         }
-     }];
+         }];
+    }
+}
+
+-(void) appDidBecomeActive {
+    // Obtain all assets required for the available campaigns
+    NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
+    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+        [campaign addAssetsToQueue:assetsQueue];
+    }
+    
+    // Obtain assets we don't have yet
+    NSSet* downloadQueue = [self withOutExistingFiles:assetsQueue];
+    for (NSString* asset in downloadQueue) {
+        [self downloadAsset:asset];
+    }
 }
 
 -(void)autoShowMessages
@@ -905,8 +916,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return result;
 }
 
-
-
 +(bool)verifySHA:(NSData*)data against:(NSString*)expectedDigest
 {
     const static char hex[] = {'0', '1', '2', '3',
@@ -915,7 +924,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         'c', 'd', 'e', 'f'};
     
     unsigned char digest[CC_SHA1_DIGEST_LENGTH];
-    
     // SHA-1 hash has been calculated and stored in 'digest'
     unsigned int length = (unsigned int)[data length];
     if (CC_SHA1([data bytes], length, digest)) {
@@ -932,13 +940,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             e = (unsigned char)hex[e];
             
             if (c != e) {
-                DebugLog(@"SHA[%d] Expected: %d Computed %d", i, e, c);
+                DebugLog(@"Wrong asset SHA[%d]. Expected: %d Computed %d", i, e, c);
                 return false;
             }
         }
     }
-    
-    DebugLog(@"SHA Check OK %@", expectedDigest);
     
     return true;
 }
@@ -1046,6 +1052,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.backgroundColor;
             messageViewController.message = message;
+            messageViewController.shouldAutoInferStatusBarAppearance = self.shouldAutoInferStatusBarAppearance;
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
     #pragma unused(appId)
                 // Save button type and action for processing later
@@ -1090,13 +1097,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             scivc.navigationItem.leftBarButtonItem = cancelButton;
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.conversationWindow.rootViewController = [[UIViewController alloc] init];
-//                self.conversationWindow.windowLevel = UIWindowLevelAlert + 1;
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+                self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
-                
-                UIViewController* rootController = self.conversationWindow.rootViewController;
                 [rootController.view endEditing:YES];
-                [rootController presentViewController:svnc animated:YES completion:nil];
             });
         }
     }
@@ -1363,8 +1367,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 #pragma clang diagnostic pop
     }
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, LOCATION_VERSION];
 }
 
 @end

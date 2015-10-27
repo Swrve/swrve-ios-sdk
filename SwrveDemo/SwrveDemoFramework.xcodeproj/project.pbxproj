@@ -79,7 +79,6 @@
 		1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFD19B8AFFC00F378E6 /* SwrveResourceManager.m */; };
 		1B22100D19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B220FFF19B8AFFC00F378E6 /* SwrveSignatureProtectedFile.m */; };
 		1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B22100119B8AFFC00F378E6 /* SwrveSwizzleHelper.m */; };
-		1B37C7F21BB085D300F4E185 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5FE60C1B5FE02C00413B35 /* Contacts.framework */; };
 		1B592CFF1B28485800908895 /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592CFE1B28485800908895 /* SwrvePermissions.m */; };
 		1B592D141B28488B00908895 /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D051B28488B00908895 /* ISHPermissionRequest+All.m */; };
 		1B592D151B28488B00908895 /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B592D081B28488B00908895 /* ISHPermissionRequest.m */; };
@@ -131,15 +130,18 @@
 		1B9A35DA1A8CCFCA00F34406 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35D91A8CCFCA00F34406 /* SwrveBaseCampaign.m */; };
 		1B9A35DD1A8CD0A500F34406 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */; };
 		1BE609881BB162D500969382 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BE609871BB162D500969382 /* Photos.framework */; };
+		1B9B66F51BC66F0E0011425C /* SwrveConversationContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B9B66F41BC66F0E0011425C /* SwrveConversationContainerViewController.m */; };
+		239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBB45338395EC601EF548 /* plotconfig.json */; };
 		30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72016B05C2500642E8E /* UIKit.framework */; };
 		30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72216B05C2500642E8E /* Foundation.framework */; };
 		30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A4F72416B05C2500642E8E /* CoreGraphics.framework */; };
+		3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A52723C1BC3C11500089561 /* Contacts.framework */; };
+		3A7798331BC40F2100B2A247 /* libPlot-v1_11_0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */; };
 		3AC4DBB91B2992D1004B57CB /* SwrveContentHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */; };
 		3AC4DBBA1B2992D1004B57CB /* SwrveContentImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB911B2992D1004B57CB /* SwrveContentImage.m */; };
 		3AC4DBBB1B2992D1004B57CB /* SwrveContentItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB931B2992D1004B57CB /* SwrveContentItem.m */; };
 		3AC4DBBC1B2992D1004B57CB /* SwrveContentSpacer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB951B2992D1004B57CB /* SwrveContentSpacer.m */; };
 		3AC4DBBD1B2992D1004B57CB /* SwrveContentVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB971B2992D1004B57CB /* SwrveContentVideo.m */; };
-		3AC4DBBE1B2992D1004B57CB /* SwrveConversationAtom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB991B2992D1004B57CB /* SwrveConversationAtom.m */; };
 		3AC4DBBF1B2992D1004B57CB /* SwrveConversationAtomFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB9B1B2992D1004B57CB /* SwrveConversationAtomFactory.m */; };
 		3AC4DBC01B2992D1004B57CB /* SwrveConversationButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB9D1B2992D1004B57CB /* SwrveConversationButton.m */; };
 		3AC4DBC11B2992D1004B57CB /* SwrveConversationEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DB9F1B2992D1004B57CB /* SwrveConversationEvents.m */; };
@@ -152,6 +154,12 @@
 		3AC4DBC91B2992D1004B57CB /* SwrveInputMultiValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */; };
 		3AC4DBD01B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */; };
 		3AC4DBD11B2992DA004B57CB /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */; };
+		3AC8B74C1BAAF95600CF23ED /* SwrveLocationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7451BAAF95500CF23ED /* SwrveLocationCampaign.m */; };
+		3AC8B74D1BAAF95600CF23ED /* SwrveLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7471BAAF95500CF23ED /* SwrveLocationManager.m */; };
+		3AC8B74E1BAAF95600CF23ED /* SwrveLocationMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7491BAAF95600CF23ED /* SwrveLocationMessage.m */; };
+		3AC8B74F1BAAF95600CF23ED /* SwrveLocationPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B74B1BAAF95600CF23ED /* SwrveLocationPayload.m */; };
+		3AC8B7511BAAFFF000CF23ED /* SwrveConversationAtom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */; };
+		3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
 		938F98431A9260F70089168A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98421A9260F70089168A /* MessageUI.framework */; };
@@ -325,7 +333,6 @@
 		1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SwrveConversation.storyboard; sourceTree = "<group>"; };
 		1B5FE5EA1B5FDDE100413B35 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VGConversationKitResources-Info.plist"; sourceTree = "<group>"; };
-		1B5FE60C1B5FE02C00413B35 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1B68148F1B0F3C1100FCDE4F /* SwrveConversationStyler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStyler.h; sourceTree = "<group>"; };
 		1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStyler.m; sourceTree = "<group>"; };
@@ -337,11 +344,16 @@
 		1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
 		1B9A35DE1A8CE56100F34406 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
 		1BE609871BB162D500969382 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		1B9B66F31BC66F0E0011425C /* SwrveConversationContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationContainerViewController.h; sourceTree = "<group>"; };
+		1B9B66F41BC66F0E0011425C /* SwrveConversationContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationContainerViewController.m; sourceTree = "<group>"; };
+		239EBB45338395EC601EF548 /* plotconfig.json */ = {isa = PBXFileReference; lastKnownFileType = file.json; path = plotconfig.json; sourceTree = "<group>"; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		30A4F72216B05C2500642E8E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		30A4F72416B05C2500642E8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPlot-v1_11_0.a"; path = "../Sdk/libPlot-v1_11_0.a"; sourceTree = "<group>"; };
 		3AC4DB8E1B2992D1004B57CB /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
 		3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentHTML.m; sourceTree = "<group>"; };
 		3AC4DB901B2992D1004B57CB /* SwrveContentImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentImage.h; sourceTree = "<group>"; };
@@ -352,8 +364,6 @@
 		3AC4DB951B2992D1004B57CB /* SwrveContentSpacer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentSpacer.m; sourceTree = "<group>"; };
 		3AC4DB961B2992D1004B57CB /* SwrveContentVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentVideo.h; sourceTree = "<group>"; };
 		3AC4DB971B2992D1004B57CB /* SwrveContentVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentVideo.m; sourceTree = "<group>"; };
-		3AC4DB981B2992D1004B57CB /* SwrveConversationAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationAtom.h; sourceTree = "<group>"; };
-		3AC4DB991B2992D1004B57CB /* SwrveConversationAtom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationAtom.m; sourceTree = "<group>"; };
 		3AC4DB9A1B2992D1004B57CB /* SwrveConversationAtomFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationAtomFactory.h; sourceTree = "<group>"; };
 		3AC4DB9B1B2992D1004B57CB /* SwrveConversationAtomFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationAtomFactory.m; sourceTree = "<group>"; };
 		3AC4DB9C1B2992D1004B57CB /* SwrveConversationButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationButton.h; sourceTree = "<group>"; };
@@ -380,6 +390,18 @@
 		3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
 		3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+YouTubeVimeo.m"; path = "Categories/UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
+		3AC8B7441BAAF95500CF23ED /* SwrveLocationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveLocationCampaign.h; sourceTree = "<group>"; };
+		3AC8B7451BAAF95500CF23ED /* SwrveLocationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveLocationCampaign.m; sourceTree = "<group>"; };
+		3AC8B7461BAAF95500CF23ED /* SwrveLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveLocationManager.h; sourceTree = "<group>"; };
+		3AC8B7471BAAF95500CF23ED /* SwrveLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveLocationManager.m; sourceTree = "<group>"; };
+		3AC8B7481BAAF95600CF23ED /* SwrveLocationMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveLocationMessage.h; sourceTree = "<group>"; };
+		3AC8B7491BAAF95600CF23ED /* SwrveLocationMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveLocationMessage.m; sourceTree = "<group>"; };
+		3AC8B74A1BAAF95600CF23ED /* SwrveLocationPayload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveLocationPayload.h; sourceTree = "<group>"; };
+		3AC8B74B1BAAF95600CF23ED /* SwrveLocationPayload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveLocationPayload.m; sourceTree = "<group>"; };
+		3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationAtom.m; sourceTree = "<group>"; };
+		3ADA44D51BA0533C0079A191 /* Plot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Plot.h; path = ../Sdk/Plot.h; sourceTree = "<group>"; };
+		3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPlot-v1_10_1.a"; path = "../Sdk/libPlot-v1_10_1.a"; sourceTree = "<group>"; };
+		3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -391,8 +413,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7798331BC40F2100B2A247 /* libPlot-v1_11_0.a in Frameworks */,
+				3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */,
+				3AEBE1351B8E0AE100A4E60A /* libsqlite3.dylib in Frameworks */,
 				1BE609881BB162D500969382 /* Photos.framework in Frameworks */,
-				1B37C7F21BB085D300F4E185 /* Contacts.framework in Frameworks */,
 				1B592D231B2848EA00908895 /* CoreLocation.framework in Frameworks */,
 				1B592D211B2848DF00908895 /* AssetsLibrary.framework in Frameworks */,
 				1B592D1F1B2848D700908895 /* AVFoundation.framework in Frameworks */,
@@ -547,6 +571,8 @@
 		095F5E5C16D040820046D096 /* Sdk */ = {
 			isa = PBXGroup;
 			children = (
+				3AC8B7431BAAF95500CF23ED /* Locations */,
+				3ADA44D51BA0533C0079A191 /* Plot.h */,
 				1B5FE5C41B5FDDE100413B35 /* Resources */,
 				1B592D021B28488B00908895 /* Permissions */,
 				1B9A35D41A8CCF8500F34406 /* Conversation */,
@@ -769,6 +795,7 @@
 		1B9A35D41A8CCF8500F34406 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */,
 				3AC4DBCC1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.h */,
 				3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */,
 				3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */,
@@ -783,8 +810,6 @@
 				3AC4DB951B2992D1004B57CB /* SwrveContentSpacer.m */,
 				3AC4DB961B2992D1004B57CB /* SwrveContentVideo.h */,
 				3AC4DB971B2992D1004B57CB /* SwrveContentVideo.m */,
-				3AC4DB981B2992D1004B57CB /* SwrveConversationAtom.h */,
-				3AC4DB991B2992D1004B57CB /* SwrveConversationAtom.m */,
 				3AC4DB9A1B2992D1004B57CB /* SwrveConversationAtomFactory.h */,
 				3AC4DB9B1B2992D1004B57CB /* SwrveConversationAtomFactory.m */,
 				3AC4DB9C1B2992D1004B57CB /* SwrveConversationButton.h */,
@@ -813,6 +838,8 @@
 				1B9A35DC1A8CD0A500F34406 /* SwrveConversationCampaign.m */,
 				1B68148F1B0F3C1100FCDE4F /* SwrveConversationStyler.h */,
 				1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */,
+				1B9B66F31BC66F0E0011425C /* SwrveConversationContainerViewController.h */,
+				1B9B66F41BC66F0E0011425C /* SwrveConversationContainerViewController.m */,
 			);
 			name = Conversation;
 			path = ../Sdk/Conversation;
@@ -871,6 +898,7 @@
 				09EFDF50170BE82200AF3EE5 /* Default.png */,
 				0913B8CC17139051000DA83C /* swrve_icon_black.png */,
 				0913B8C517138ED4000DA83C /* swrve_icon.png */,
+				239EBB45338395EC601EF548 /* plotconfig.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -885,8 +913,11 @@
 		30A4F71F16B05C2500642E8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3A7798321BC40F2100B2A247 /* libPlot-v1_11_0.a */,
+				3A52723C1BC3C11500089561 /* Contacts.framework */,
+				3ADA44D61BA053600079A191 /* libPlot-v1_10_1.a */,
+				3AEBE1341B8E0AE100A4E60A /* libsqlite3.dylib */,
 				1BE609871BB162D500969382 /* Photos.framework */,
-				1B5FE60C1B5FE02C00413B35 /* Contacts.framework */,
 				1B592D221B2848EA00908895 /* CoreLocation.framework */,
 				1B592D201B2848DF00908895 /* AssetsLibrary.framework */,
 				1B592D1E1B2848D700908895 /* AVFoundation.framework */,
@@ -916,6 +947,22 @@
 			);
 			name = Demo;
 			path = GemPack;
+			sourceTree = "<group>";
+		};
+		3AC8B7431BAAF95500CF23ED /* Locations */ = {
+			isa = PBXGroup;
+			children = (
+				3AC8B7441BAAF95500CF23ED /* SwrveLocationCampaign.h */,
+				3AC8B7451BAAF95500CF23ED /* SwrveLocationCampaign.m */,
+				3AC8B7461BAAF95500CF23ED /* SwrveLocationManager.h */,
+				3AC8B7471BAAF95500CF23ED /* SwrveLocationManager.m */,
+				3AC8B7481BAAF95600CF23ED /* SwrveLocationMessage.h */,
+				3AC8B7491BAAF95600CF23ED /* SwrveLocationMessage.m */,
+				3AC8B74A1BAAF95600CF23ED /* SwrveLocationPayload.h */,
+				3AC8B74B1BAAF95600CF23ED /* SwrveLocationPayload.m */,
+			);
+			name = Locations;
+			path = ../Sdk/Locations;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1061,6 +1108,7 @@
 				1B5FE5FF1B5FDDE100413B35 /* cvsr_grouped_cell_single_tapped@2x.png in Resources */,
 				1B5FE5F51B5FDDE100413B35 /* cvsr_grouped_cell_mid@2x.png in Resources */,
 				0972B20B17FB85B7003CD08D /* TransparencyDemo.xib in Resources */,
+				239EBEDA9D17FD03AF9A6411 /* plotconfig.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1092,21 +1140,25 @@
 				1B592D181B28488B00908895 /* ISHPermissionRequestNotificationsRemote.m in Sources */,
 				3AC4DBC31B2992D1004B57CB /* SwrveConversationPane.m in Sources */,
 				095F5EF116D04E470046D096 /* TrackApiDemo.m in Sources */,
+				3AC8B7511BAAFFF000CF23ED /* SwrveConversationAtom.m in Sources */,
 				095F5F0516D04F9A0046D096 /* DemoResourceManager.m in Sources */,
 				092D28AD16D48F5800EB77BE /* GameAuthoritativeDemo.m in Sources */,
 				1B592CFF1B28485800908895 /* SwrvePermissions.m in Sources */,
+				3AC8B74E1BAAF95600CF23ED /* SwrveLocationMessage.m in Sources */,
 				1B592D1A1B28488B00908895 /* ISHPermissionRequestPhotoLibrary.m in Sources */,
 				1B22100319B8AFFC00F378E6 /* SwrveCampaign.m in Sources */,
 				1B22100619B8AFFC00F378E6 /* SwrveMessageController.m in Sources */,
 				1B22100C19B8AFFC00F378E6 /* SwrveResourceManager.m in Sources */,
 				1B592D161B28488B00908895 /* ISHPermissionRequestAddressBook.m in Sources */,
 				3AC4DBC51B2992D1004B57CB /* SwrveConversationsNavigationController.m in Sources */,
-				3AC4DBBE1B2992D1004B57CB /* SwrveConversationAtom.m in Sources */,
 				1B22100B19B8AFFC00F378E6 /* SwrveReceiptProvider.m in Sources */,
 				1B22100A19B8AFFC00F378E6 /* Swrve.m in Sources */,
 				1B9A35D71A8CCF8500F34406 /* SwrveConversation.m in Sources */,
 				1B22100419B8AFFC00F378E6 /* SwrveImage.m in Sources */,
+				3AC8B74C1BAAF95600CF23ED /* SwrveLocationCampaign.m in Sources */,
+				3AC8B74D1BAAF95600CF23ED /* SwrveLocationManager.m in Sources */,
 				3AC4DBB91B2992D1004B57CB /* SwrveContentHTML.m in Sources */,
+				1B9B66F51BC66F0E0011425C /* SwrveConversationContainerViewController.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
 				1B592D191B28488B00908895 /* ISHPermissionRequestPhotoCamera.m in Sources */,
@@ -1121,6 +1173,7 @@
 				1B22100819B8AFFC00F378E6 /* SwrveMessageViewController.m in Sources */,
 				3AC4DBC61B2992D1004B57CB /* SwrveConversationUIButton.m in Sources */,
 				1B22100519B8AFFC00F378E6 /* SwrveMessage.m in Sources */,
+				3AC8B74F1BAAF95600CF23ED /* SwrveLocationPayload.m in Sources */,
 				3AC4DBBD1B2992D1004B57CB /* SwrveContentVideo.m in Sources */,
 				099BF510170E6BE100345404 /* SettingsView.m in Sources */,
 				0913B8DA17139419000DA83C /* UserSettings.m in Sources */,
@@ -1230,6 +1283,8 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Demo/Resources/SwrveDemoFramework-Prefix.pch";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -1253,7 +1308,11 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PROJECT_DIR}/\"/**",
+					../../public/Sdk,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";
@@ -1282,6 +1341,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Demo/Resources/SwrveDemoFramework-Prefix.pch";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -1305,7 +1365,11 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PROJECT_DIR}/\"/**",
+					../../public/Sdk,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "c9c5c19b-f57f-4020-9131-b2c9efd38861";

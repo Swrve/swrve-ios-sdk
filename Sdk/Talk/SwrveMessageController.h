@@ -1,6 +1,7 @@
 #import "SwrveMessageViewController.h"
 
 const static int CONVERSATION_VERSION        = 2;
+const static int LOCATION_VERSION   = 1;
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 
@@ -226,6 +227,9 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \returns nil if all devices are supported or the name of the filter that is not supported.
  */
 -(NSString*) supportsDeviceFilters:(NSArray*)filters;
+
+/*! Called internally when the app became active */
+-(void) appDidBecomeActive;
 
 @end
 
