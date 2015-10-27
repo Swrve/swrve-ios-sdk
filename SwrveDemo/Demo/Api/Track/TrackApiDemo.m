@@ -33,7 +33,9 @@
     // Take the user id override from the demo settings
     NSString* userOverride = [DemoFramework getDemoResourceManager].userIdOverride;
     // Create the SDK
-    swrve = [Swrve sharedInstanceWithAppID:appId apiKey:apiKey userID:userOverride];
+    SwrveConfig* config = [[SwrveConfig alloc] init];
+    config.userId = userOverride;
+    swrve = [Swrve sharedInstanceWithAppID:appId apiKey:apiKey config:config];
     
     // You can also initialise without a user
     // swrve = [Swrve sharedInstanceWithAppID:appId apiKey:apiKey];
