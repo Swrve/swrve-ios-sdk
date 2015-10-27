@@ -8,6 +8,7 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CommonCrypto/CommonHMAC.h>
+#import <AdSupport/ASIdentifierManager.h>
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
@@ -1721,9 +1722,23 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:timezone_name          forKey:@"swrve.timezone_name"];
     [deviceProperties setValue:regionCountry          forKey:@"swrve.device_region"];
 
+    // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
     }
+    
+    // Optional identifiers
+#ifdef SWRVE_LOG_IDFA
+    if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
+    {
+        NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        [deviceProperties setValue:idfa               forKey:@"swrve.IDFA"];
+    }
+#endif
+#ifdef SWRVE_LOG_IDFV
+    NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    [deviceProperties setValue:idfv               forKey:@"swrve.IDFV"];
+#endif
     
     return deviceProperties;
 }
