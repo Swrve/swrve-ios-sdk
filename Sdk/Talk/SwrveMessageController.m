@@ -72,6 +72,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
+@property (nonatomic)         bool                  shouldAutoInferStatusBarAppearance;
 
 // Current Device Properties
 @property (nonatomic) int device_width;
@@ -132,6 +133,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationsNavigationController;
 @synthesize swrveConversationItemViewController;
+@synthesize shouldAutoInferStatusBarAppearance;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
@@ -153,6 +155,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_height = (int)screen_bounds.size.width;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
+    self.shouldAutoInferStatusBarAppearance = sdk.config.shouldAutoInferStatusBarAppearance;
     
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
@@ -1049,6 +1052,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.backgroundColor;
             messageViewController.message = message;
+            messageViewController.shouldAutoInferStatusBarAppearance = self.shouldAutoInferStatusBarAppearance;
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
     #pragma unused(appId)
                 // Save button type and action for processing later
