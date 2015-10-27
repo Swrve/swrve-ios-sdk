@@ -40,8 +40,6 @@ static Swrve *swrveTrackInternal;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    #pragma unused(launchOptions)
-    
     // Initialize global defaults used by the app
     [UserSettings init];
     
@@ -66,7 +64,8 @@ static Swrve *swrveTrackInternal;
     SwrveConfig* config = [[SwrveConfig alloc] init];
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
-    swrveTrackInternal = [[Swrve alloc] initWithAppID:swrveAppId apiKey:swrveApiKey userID:userOverride config:config];
+    config.userId = userOverride;
+    swrveTrackInternal = [[Swrve alloc] initWithAppID:swrveAppId apiKey:swrveApiKey config:config launchOptions:launchOptions];
     
     // Next create an instance of each demo
     DemoMenuNode *root = [DemoFramework buildRootMenuNode];
@@ -111,7 +110,7 @@ static Swrve *swrveTrackInternal;
 
 +(void) intializeSwrveSdk
 {
-    // Initialize the Swrve track SDK.  This is used by the demos to send data to our servers.
+    // Initialize the Swrve track SDK. This is used by the demos to send data to our servers.
     int customerAppId = [UserSettings getAppId].intValue;
     NSString* customerApiKey = [UserSettings getAppApiKey];
     // Take the user id override from the demo settings
@@ -120,8 +119,8 @@ static Swrve *swrveTrackInternal;
     SwrveConfig* config = [[SwrveConfig alloc] init];
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
-    
-    swrveTrack = [[Swrve alloc]initWithAppID:customerAppId apiKey:customerApiKey userID:userOverride config:config];
+    config.userId = userOverride;
+    swrveTrack = [[Swrve alloc]initWithAppID:customerAppId apiKey:customerApiKey config:config];
     swrveTalk = swrveTrack.talk;
 }
 

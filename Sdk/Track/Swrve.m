@@ -65,6 +65,7 @@ typedef void (^ConnectionCompletionHandler)(NSURLResponse* response, NSData* dat
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
+typedef void (*didReceiveRemoteNotificationImplSignature)(__strong id,SEL,UIApplication *, NSDictionary*);
 
 @interface SwrveSendContext : NSObject
 @property (atomic, weak)   Swrve* swrveReference;
@@ -145,6 +146,8 @@ enum
 {
     UInt64 install_time;
     NSDate *lastSessionDate;
+    NSString* lastProcessedPushId;
+    
 
     SwrveEventQueuedCallback event_queued_callback;
 
@@ -157,6 +160,7 @@ enum
 
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
+    didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
 }
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
@@ -291,6 +295,7 @@ enum
 
 @implementation SwrveConfig
 
+@synthesize userId;
 @synthesize orientation;
 @synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
@@ -323,7 +328,6 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
-@synthesize testBuffersActivated;
 
 -(id) init
 {
@@ -359,7 +363,6 @@ enum
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
         self.autoShowMessagesMaxDelay = 5000;
-        self.testBuffersActivated = NO;
         self.receiptProvider = [[SwrveReceiptProvider alloc] init];
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
@@ -372,6 +375,7 @@ enum
 
 @implementation ImmutableSwrveConfig
 
+@synthesize userId;
 @synthesize orientation;
 @synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
@@ -404,11 +408,11 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
-@synthesize testBuffersActivated;
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
     if (self = [super init]) {
+        userId = config.userId;
         orientation = config.orientation;
         shouldAutoInferStatusBarAppearance = config.shouldAutoInferStatusBarAppearance;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
@@ -441,7 +445,6 @@ enum
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         pushCategories = config.pushCategories;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
-        testBuffersActivated = config.testBuffersActivated;
     }
 
     return self;
@@ -578,15 +581,6 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
-{
-    dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID];
-    });
-    return _swrveSharedInstance;
-}
-
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
     dispatch_once(&sharedInstanceToken, ^{
@@ -596,32 +590,44 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
+// Init methods with launchOptions for push
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions
 {
     dispatch_once(&sharedInstanceToken, ^{
         _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
+        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey launchOptions:launchOptions];
+    });
+    return _swrveSharedInstance;
+}
+
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
+{
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:launchOptions];
     });
     return _swrveSharedInstance;
 }
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
 {
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil];
-}
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
-{
-    // Create a custom config object
-    SwrveConfig * newConfig = [[SwrveConfig alloc]init];
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:newConfig];
+    SwrveConfig* newConfig = [[SwrveConfig alloc] init];
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:newConfig launchOptions:nil];
 }
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
-   return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil config:swrveConfig];
+   return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:nil];
 }
 
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
+// Init methods with launchOptions for push
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions
+{
+    SwrveConfig* newConfig = [[SwrveConfig alloc] init];
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:newConfig launchOptions:launchOptions];
+}
+
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
 {
     NSCAssert(self.config == nil, @"Do not initialize Swrve instance more than once!", nil);
     if ( self = [super init] ) {
@@ -630,6 +636,7 @@ static bool didSwizzle = false;
             return self;
         }
 
+        NSString* swrveUserID = swrveConfig.userId;
         // Auto generate user id if necessary
         if (!swrveUserID) {
             swrveUserID = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key];
@@ -693,16 +700,20 @@ static bool didSwizzle = false;
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
-            SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
-            SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
+            SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
+            SEL didFailSelector = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
+            SEL didReceiveSelector = @selector(application:didReceiveRemoteNotification:);
 
             // Cast to actual method signature
-            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegister inClass:appDelegateClass withImplementationIn:self];
-            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFail inClass:appDelegateClass withImplementationIn:self];
+            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegisterSelector inClass:appDelegateClass withImplementationIn:self];
+            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFailSelector inClass:appDelegateClass withImplementationIn:self];
+            didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:didReceiveSelector inClass:appDelegateClass withImplementationIn:self];
+            
             didSwizzle = true;
         } else {
             didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
+            didReceiveRemoteNotificationImpl = NULL;
         }
         
         if (swrveConfig.talkEnabled) {
@@ -735,6 +746,14 @@ static bool didSwizzle = false;
         }
 
         [self startCampaignsAndResourcesTimer];
+        
+        // Check if the launch options of the app has any push notification in it
+        if (launchOptions != nil) {
+            NSDictionary * remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+            if (remoteNotification) {
+                [self.talk pushNotificationReceived:remoteNotification];
+            }
+        }
     }
 
     [self sendQueuedEvents];
@@ -754,6 +773,10 @@ static bool didSwizzle = false;
         SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
         [SwrveSwizzleHelper deswizzleMethod:didFail inClass:appDelegateClass originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
+        
+        SEL didReceive = @selector(application:didReceiveRemoteNotification:);
+        [SwrveSwizzleHelper deswizzleMethod:didReceive inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteNotificationImpl];
+        didReceiveRemoteNotificationImpl = NULL;
 
         didSwizzle = false;
     }
@@ -787,6 +810,23 @@ static bool didSwizzle = false;
         if( swrveInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
             swrveInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl(target, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), [UIApplication sharedApplication], error);
+        }
+    }
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+#pragma unused(application)
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Push notification can only be automatically reported if you are using the Swrve instance singleton.", nil);
+    } else {
+        if (swrveInstance.talk != nil) {
+            [swrveInstance.talk pushNotificationReceived:userInfo];
+        }
+        
+        if( swrveInstance->didReceiveRemoteNotificationImpl != NULL ) {
+            id target = [UIApplication sharedApplication].delegate;
+            swrveInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), [UIApplication sharedApplication], userInfo);
         }
     }
 }
@@ -1476,22 +1516,29 @@ static bool didSwizzle = false;
             return;
         }
         
-        // Process deeplink _d
-        id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
-        if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-            NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-            NSURL* url = [NSURL URLWithString:pushDeeplink];
-            if( url != nil ) {
-                DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
-                [[UIApplication sharedApplication] openURL:url];
-            } else {
-                DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+        // Only process this push if we haven't seen it before
+        if (lastProcessedPushId == nil || ![pushIdentifier isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushIdentifier;
+            
+            // Process deeplink _d
+            id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+            if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+                NSURL* url = [NSURL URLWithString:pushDeeplink];
+                if( url != nil ) {
+                    DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
+                    [[UIApplication sharedApplication] openURL:url];
+                } else {
+                    DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
+                }
             }
-        }
 
-        NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-        [self event:eventName];
-        DebugLog(@"Got Swrve notification with ID %@", pushId);
+            NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
+            [self event:eventName];
+            DebugLog(@"Got Swrve notification with ID %@", pushId);
+        } else {
+            DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
+        }
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
