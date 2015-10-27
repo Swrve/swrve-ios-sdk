@@ -295,6 +295,7 @@ enum
 
 @implementation SwrveConfig
 
+@synthesize userId;
 @synthesize orientation;
 @synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
@@ -376,6 +377,7 @@ enum
 
 @implementation ImmutableSwrveConfig
 
+@synthesize userId;
 @synthesize orientation;
 @synthesize shouldAutoInferStatusBarAppearance;
 @synthesize httpTimeoutSeconds;
@@ -413,6 +415,7 @@ enum
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
     if (self = [super init]) {
+        userId = config.userId;
         orientation = config.orientation;
         shouldAutoInferStatusBarAppearance = config.shouldAutoInferStatusBarAppearance;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
@@ -582,29 +585,11 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
-{
-    dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID];
-    });
-    return _swrveSharedInstance;
-}
-
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
     dispatch_once(&sharedInstanceToken, ^{
         _swrveSharedInstance = [Swrve alloc];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig];
-    });
-    return _swrveSharedInstance;
-}
-
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
-{
-    dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
     });
     return _swrveSharedInstance;
 }
@@ -619,15 +604,6 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID launchOptions:(NSDictionary*)launchOptions
-{
-    dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID launchOptions:launchOptions];
-    });
-    return _swrveSharedInstance;
-}
-
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
 {
     dispatch_once(&sharedInstanceToken, ^{
@@ -637,54 +613,25 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
-+(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
-{
-    dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
-        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig launchOptions:launchOptions];
-    });
-    return _swrveSharedInstance;
-}
-
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
 {
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil];
-}
-
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
-{
     SwrveConfig* newConfig = [[SwrveConfig alloc] init];
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:newConfig];
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:newConfig launchOptions:nil];
 }
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
-   return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil config:swrveConfig];
-}
-
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
-{
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
+   return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:nil];
 }
 
 // Init methods with launchOptions for push
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions
 {
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil launchOptions:launchOptions];
-}
-
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID launchOptions:(NSDictionary*)launchOptions
-{
     SwrveConfig* newConfig = [[SwrveConfig alloc] init];
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:newConfig launchOptions:launchOptions];
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:newConfig launchOptions:launchOptions];
 }
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
-{
-    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey userID:nil config:swrveConfig launchOptions:launchOptions];
-}
-
--(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
 {
     NSCAssert(self.config == nil, @"Do not initialize Swrve instance more than once!", nil);
     if ( self = [super init] ) {
@@ -693,6 +640,7 @@ static bool didSwizzle = false;
             return self;
         }
 
+        NSString* swrveUserID = swrveConfig.userId;
         // Auto generate user id if necessary
         if (!swrveUserID) {
             swrveUserID = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key];
