@@ -22,6 +22,7 @@
 @synthesize wasShownToUserNotified;
 @synthesize viewportWidth;
 @synthesize viewportHeight;
+@synthesize shouldAutoInferStatusBarAppearance;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -102,7 +103,11 @@
 #ifdef __IPHONE_8_0
 -(BOOL)prefersStatusBarHidden
 {
-    return YES;
+    if (shouldAutoInferStatusBarAppearance) {
+        return YES;
+    } else {
+        return [super prefersStatusBarHidden];
+    }
 }
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -170,15 +175,19 @@
 - (NSUInteger)supportedInterfaceOrientations
 #endif
 {
-    BOOL portrait = [self.message supportsOrientation:UIInterfaceOrientationPortrait];
-    BOOL landscape = [self.message supportsOrientation:UIInterfaceOrientationLandscapeLeft];
-    
-    if (portrait && landscape) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         return UIInterfaceOrientationMaskAll;
-    }
-    
-    if (landscape) {
-        return UIInterfaceOrientationMaskLandscape | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
+    } else {
+        BOOL portrait = [self.message supportsOrientation:UIInterfaceOrientationPortrait];
+        BOOL landscape = [self.message supportsOrientation:UIInterfaceOrientationLandscapeLeft];
+        
+        if (portrait && landscape) {
+            return UIInterfaceOrientationMaskAll;
+        }
+        
+        if (landscape) {
+            return UIInterfaceOrientationMaskLandscape | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
+        }
     }
     
     return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;

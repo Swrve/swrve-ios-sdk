@@ -3,6 +3,9 @@
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
+#import "Plot.h"
+
+@class SwrveLocationManager;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
@@ -97,6 +100,13 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The supported orientations of the app. */
 @property (nonatomic) SwrveInterfaceOrientation orientation;
+
+/*! By default Swrve will choose the status bar appearance
+ * when presenting any view controllers.  
+ * You can disable this functionality by setting
+ * shouldAutoInferStatusBarAppearance to false.
+ */
+@property (nonatomic) BOOL shouldAutoInferStatusBarAppearance;
 
 /*! By default Swrve will read the application version from the current
  * application bundle. This is used to allow you to test and target users with a
@@ -209,6 +219,16 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Store signature to verify content of eventCacheFile. */
 @property (nonatomic, retain) NSString * eventCacheSignatureFile;
 
+/*! The location campaign cache stores data that has not yet been sent to Swrve.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ * This path should be located in app/Libraries/Caches/, as this is where Apple
+ * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ */
+@property (nonatomic, retain) NSString * locationCampaignCacheFile;
+
+/*! Store signature to verify content of locationCampaignCacheFile. */
+@property (nonatomic, retain) NSString * locationCampaignCacheSignatureFile;
+
 /*! The user resources cache stores the result of calls to Swrve getUserResources
  * so that the results can be used when the device is offline.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
@@ -260,6 +280,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config;
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
+@property (nonatomic, readonly) BOOL shouldAutoInferStatusBarAppearance;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
 @property (nonatomic, readonly) BOOL useHttpsForEventServer;
@@ -268,6 +289,8 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheSignatureFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheSignatureFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheFile;
@@ -712,6 +735,21 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(BOOL) appInBackground;
 
+/*!
+ * Used for Location Campaigns and is called when device crosses a geofence.
+ * \param filterNotifications Contains the swrve location campaign details for which this geofence is part of.
+ * \returns the notification sent. May be empty if none sent.
+ */
+-(NSMutableArray*)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications;
+
+/*!
+ * Used for Location Campaigns and is called when user taps on notification.
+ * \param localNotification The notification that the user engaged with.
+ * \param locationMessageId The variant message ID that the user engaged with.
+ */
+-(void)engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId;
+
+
 #pragma mark -
 #pragma mark Properties
 
@@ -721,6 +759,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSString * userID;                       /*!< User ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
+@property (atomic, strong)           SwrveLocationManager * locationManager;  /*!< Can be queried for up-to-date location campaign values. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 

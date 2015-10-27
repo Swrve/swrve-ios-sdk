@@ -61,7 +61,6 @@
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
     }
-    [controller conversationClosed];
 }
 
 -(SwrveConversationPane *)conversationPane {
@@ -239,7 +238,11 @@
 
 -(void)dismiss {
     [self stopAtoms];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        @synchronized(self->controller) {
+            [self->controller conversationClosed];
+        }
+    }];
 }
 
 -(void)runControlActions:(SwrveConversationButton*)control {
@@ -432,9 +435,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 #pragma unused (tableView)
-    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];  // HACK
+    NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath];
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
-    return [atom heightForRow:(NSUInteger)indexPath.row];
+    return [atom heightForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
 
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {

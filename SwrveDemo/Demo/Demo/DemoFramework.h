@@ -1,9 +1,10 @@
 #import "Menu.h"
+#include "Plot.h"
 
 /*
  * Main entry point for demos.
  */
-@interface DemoFramework : UIResponder <UIApplicationDelegate, UINavigationControllerDelegate, UITabBarControllerDelegate>{
+@interface DemoFramework : UIResponder <UIApplicationDelegate, UINavigationControllerDelegate, UITabBarControllerDelegate, PlotDelegate>{
 }
 
 /*
