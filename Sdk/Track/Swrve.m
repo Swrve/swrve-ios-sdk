@@ -328,7 +328,6 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
-@synthesize testBuffersActivated;
 
 -(id) init
 {
@@ -364,7 +363,6 @@ enum
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
         self.autoShowMessagesMaxDelay = 5000;
-        self.testBuffersActivated = NO;
         self.receiptProvider = [[SwrveReceiptProvider alloc] init];
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
@@ -410,7 +408,6 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
-@synthesize testBuffersActivated;
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
@@ -448,7 +445,6 @@ enum
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         pushCategories = config.pushCategories;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
-        testBuffersActivated = config.testBuffersActivated;
     }
 
     return self;

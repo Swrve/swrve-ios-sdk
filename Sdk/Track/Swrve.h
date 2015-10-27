@@ -274,9 +274,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) SwrveReceiptProvider* receiptProvider;
 
-/*! Used for testing. Please do not use this property. */
-@property (nonatomic) BOOL testBuffersActivated;
-
 @end
 
 /*! Immutable copy of a SwrveConfig object */
@@ -316,7 +313,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet* pushCategories;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
-@property (nonatomic, readonly) BOOL testBuffersActivated;
 
 @end
 
