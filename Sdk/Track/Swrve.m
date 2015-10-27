@@ -700,14 +700,14 @@ static bool didSwizzle = false;
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
-            SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
-            SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
-            SEL didReceive = @selector(application:didReceiveRemoteNotification:);
+            SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
+            SEL didFailSelector = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
+            SEL didReceiveSelector = @selector(application:didReceiveRemoteNotification:);
 
             // Cast to actual method signature
-            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegister inClass:appDelegateClass withImplementationIn:self];
-            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFail inClass:appDelegateClass withImplementationIn:self];
-            didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:didReceive inClass:appDelegateClass withImplementationIn:self];
+            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegisterSelector inClass:appDelegateClass withImplementationIn:self];
+            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFailSelector inClass:appDelegateClass withImplementationIn:self];
+            didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:didReceiveSelector inClass:appDelegateClass withImplementationIn:self];
             
             didSwizzle = true;
         } else {
