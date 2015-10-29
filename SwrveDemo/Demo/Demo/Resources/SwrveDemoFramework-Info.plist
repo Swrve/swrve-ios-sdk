@@ -56,8 +56,6 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>I need location</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>

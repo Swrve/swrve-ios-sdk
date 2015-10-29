@@ -12,7 +12,6 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrveLocationPayload.h"
 #import "SwrveLocationCampaign.h"
 #import "SwrveLocationManager.h"
 
@@ -2418,90 +2417,6 @@ enum HttpStatus {
             self.shortDeviceID = shortDeviceIdDisk;
         }
     }
-}
-
-- (NSMutableArray*)filterLocationCampaigns:(PlotFilterNotifications *)filterNotifications {
-
-    // TODO: presumption for FA is that location campaigns have been refreshed from ABTS by starting the app. Fix for GA.
-    DebugLog(@"LocationCampaigns: Offered PlotFilterNotifications of size %lu.", (unsigned long)filterNotifications.uiNotifications.count);
-    if ([[locationManager locationCampaigns] count] < 20) {
-        NSMutableString *campaignIds = [[NSMutableString alloc] init];
-        for (id key in locationManager.locationCampaigns) {
-            [campaignIds appendString:key];
-            [campaignIds appendString:@","];
-        }
-        DebugLog(@"LocationCampaigns in cache:%@", campaignIds);
-    }
-
-    NSDictionary *locationCampaignsMatched = [[NSMutableDictionary alloc] init];
-    NSDate *now = [self getNow];
-    for (UILocalNotification *localNotification in filterNotifications.uiNotifications) {
-        NSString *payload = [localNotification.userInfo objectForKey:PlotNotificationActionKey];
-        if (!payload) {
-            DebugLog(@"Error in filterLocationCampaigns. No payload.", nil);
-            continue;
-        }
-
-        SwrveLocationPayload *locationPayload = [[SwrveLocationPayload alloc] initWithPayload:payload];
-        if (locationPayload == nil || locationPayload.campaignId == nil) {
-            DebugLog(@"Error in filterLocationCampaigns. Problem parsing payload: %@", payload);
-            continue;
-        }
-
-        SwrveLocationCampaign *locationCampaign = [locationManager getLocationCampaign:locationPayload.campaignId];
-        if (locationCampaign == nil || locationCampaign.message == nil || locationCampaign.message.locationMessageId == nil) {
-            DebugLog(@"LocationCampaign not downloaded, or not targeted, or invalid. Payload: %@", payload);
-            continue;
-        }
-
-        if([locationCampaign.startDate compare:now] == NSOrderedAscending && ([locationCampaign endDate] == nil || [locationCampaign.endDate compare:now] == NSOrderedDescending)) {
-            NSTimeInterval startInterval = [[locationCampaign startDate] timeIntervalSince1970];
-            NSString *startIntervalString = [NSString stringWithFormat:@"%f", startInterval];
-            [locationCampaignsMatched setValue:(localNotification) forKey:startIntervalString]; // store localNotification keyed on start time of campaign
-        } else {
-            DebugLog(@"LocationCampaign is out of date.\nnow:%@ \nlocationCampaign:%@", now, locationCampaign.description);
-        }
-    }
-
-    NSMutableArray* notificationsToSend = [NSMutableArray array];
-    if (locationCampaignsMatched.count == 0) {
-        DebugLog(@"No LocationCampaigns were matched.", nil);
-    } else {
-        UILocalNotification *notificationToSend = [self getByMostRecentlyStarted:locationCampaignsMatched];
-
-        NSString *payload = [notificationToSend.userInfo objectForKey:PlotNotificationActionKey];
-        SwrveLocationPayload *locationPayload = [[SwrveLocationPayload alloc] initWithPayload:payload];
-        DebugLog(@"LocationCampaigns: Matched %lu campaigns. Using campaignId:%@", (unsigned long)filterNotifications.uiNotifications.count, locationPayload.campaignId);
-
-        SwrveLocationCampaign *locationCampaign = [locationManager getLocationCampaign:locationPayload.campaignId];
-        SwrveLocationMessage *locationMessage = locationCampaign.message;
-
-        // add locationMessageId for engagement event later
-        NSMutableDictionary *userInfoCopy = [NSMutableDictionary dictionaryWithDictionary:notificationToSend.userInfo];
-        [userInfoCopy setObject:locationMessage.locationMessageId forKey:PlotNotificationActionKey];
-        [notificationToSend setUserInfo:userInfoCopy];
-        [notificationsToSend addObject:notificationToSend];
-        notificationToSend.alertBody = locationMessage.body;
-
-        [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.impression", locationMessage.locationMessageId]];
-    }
-
-    [filterNotifications showNotifications:notificationsToSend];
-    return notificationsToSend;
-}
-
-// Dictionary is keyed on start date, so sort into an array and pick off the last object in the array
--(UILocalNotification*) getByMostRecentlyStarted:(NSDictionary *)locationCampaignsDict {
-    NSArray *sortedKeys = [[locationCampaignsDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
-    NSUInteger last = [sortedKeys count] - 1;
-    UILocalNotification *mostRecent = [locationCampaignsDict objectForKey:[sortedKeys objectAtIndex:last]];
-    return mostRecent;
-}
-
--(void) engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId {
-#pragma unused (localNotification)
-    [self event:[NSString stringWithFormat:@"Swrve.Location.Location-%@.engaged", locationMessageId]];
-    [self sendQueuedEvents];
 }
 
 @end

@@ -46,8 +46,6 @@ static Swrve *swrveTrackInternal;
     // Initialize sdk that points to customer game
     [DemoFramework intializeSwrveSdk];
 
-    [Plot initializeWithLaunchOptions:launchOptions delegate:self];
-
     // Initialize the local resource manager.  This is used by the demos to look up values that can
     // be changed by AB tests in our dashboard.
     resourceManager = [[DemoResourceManager alloc] init];
@@ -361,20 +359,6 @@ static Swrve *swrveTrackInternal;
 {
     return swrveTrackInternal;
 }
-
--(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-#pragma unused (application)
-    [Plot handleNotification:notification];
-}
-
--(void)plotFilterNotifications:(PlotFilterNotifications*)filterNotifications {
-    [swrveTrack filterLocationCampaigns:filterNotifications];
-}
-
--(void)plotHandleNotification:(UILocalNotification*)localNotification data:(NSString*)locationMessageId {
-    [swrveTrack engageLocationCampaign:localNotification withData:locationMessageId];
-}
-
 
 @end
 
