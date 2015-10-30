@@ -3,7 +3,6 @@
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
-#import "Plot.h"
 
 @class SwrveLocationManager;
 
@@ -631,21 +630,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Used internally to detect if the app is in the background.
  */
 -(BOOL) appInBackground;
-
-/*!
- * Used for Location Campaigns and is called when device crosses a geofence.
- * \param filterNotifications Contains the swrve location campaign details for which this geofence is part of.
- * \returns the notification sent. May be empty if none sent.
- */
--(NSMutableArray*)filterLocationCampaigns:(PlotFilterNotifications*)filterNotifications;
-
-/*!
- * Used for Location Campaigns and is called when user taps on notification.
- * \param localNotification The notification that the user engaged with.
- * \param locationMessageId The variant message ID that the user engaged with.
- */
--(void)engageLocationCampaign:(UILocalNotification*)localNotification withData:(NSString*)locationMessageId;
-
 
 #pragma mark -
 #pragma mark Properties
