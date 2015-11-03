@@ -52,8 +52,7 @@
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown
 {
     #pragma unused(message)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
+    [self wasShownToUserAt:timeShown];
     
     if (![self randomOrder])
     {

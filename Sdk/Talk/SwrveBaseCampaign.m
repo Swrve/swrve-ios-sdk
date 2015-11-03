@@ -29,6 +29,9 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize initialisedTime;
 @synthesize next;
 @synthesize randomOrder;
+@synthesize inbox;
+@synthesize subject;
+@synthesize status;
 
 -(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
 {
@@ -49,6 +52,9 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     // Load from JSON
     self.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
     self.name = [dict objectForKey:@"name"];
+    self.inbox = [[dict objectForKey:@"inbox"] boolValue];
+    self.subject = [dict objectForKey:@"subject"];
+    self.status = SWRVE_CAMPAIGN_STATUS_UNSEEN;
     
     [self loadTriggersFrom:dict];
     [self loadRulesFrom:   dict];
@@ -62,9 +68,11 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     [self setShowMsgsAfterDelay:[timeShown dateByAddingTimeInterval:[self minDelayBetweenMsgs]]];
 }
 
--(void)incrementImpressions;
+-(void)wasShownToUserAt:(NSDate*)timeShown
 {
     self.impressions += 1;
+    [self setMessageMinDelayThrottle:timeShown];
+    self.status = SWRVE_CAMPAIGN_STATUS_SEEN;
 }
 
 static NSDate* read_date(id d, NSDate* default_date)
@@ -144,8 +152,8 @@ static NSDate* read_date(id d, NSDate* default_date)
 {
     if(campaignReasons != nil) {
         [campaignReasons setValue:reason forKey:[[NSNumber numberWithUnsignedInteger:self.ID] stringValue]];
+        DebugLog(@"%@",reason);
     }
-    DebugLog(@"%@",reason);
 }
 
 -(NSMutableDictionary*)campaignSettings
@@ -153,12 +161,27 @@ static NSDate* read_date(id d, NSDate* default_date)
     NSMutableDictionary* settings = [[NSMutableDictionary alloc] init];
     [settings setValue:[NSNumber numberWithUnsignedInteger:[self ID]] forKey:@"ID"];
     [settings setValue:[NSNumber numberWithUnsignedInteger:[self impressions]] forKey:@"impressions"];
+    [settings setValue:[NSNumber numberWithUnsignedInteger:[self status]] forKey:@"status"];
     return settings;
 }
 
--(BOOL)checkCampaignRulesForEvent:(NSString*)event
-                           atTime:(NSDate*)time
-                      withReasons:(NSMutableDictionary*)campaignReasons
+-(void)loadSettings:(NSDictionary *)settings
+{
+    NSNumber* nextJson = [settings objectForKey:@"next"];
+    if (nextJson) {
+        self.next = nextJson.unsignedIntegerValue;
+    }
+    NSNumber* impressionsJson = [settings objectForKey:@"impressions"];
+    if (impressionsJson) {
+        self.impressions = impressionsJson.unsignedIntegerValue;
+    }
+    NSNumber* statusJson = [settings objectForKey:@"status"];
+    if (statusJson) {
+        self.status = (SwrveCampaignStatus)statusJson.unsignedIntegerValue;
+    }
+}
+
+-(BOOL)isActive:(NSDate*)time withReasons:(NSMutableDictionary*)campaignReasons
 {
     if ([self.dateStart compare:time] != NSOrderedAscending)
     {
@@ -169,6 +192,18 @@ static NSDate* read_date(id d, NSDate* default_date)
     if ([time compare:self.dateEnd] != NSOrderedAscending)
     {
         [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has finished", (long)self.ID] withReasons:campaignReasons];
+        return FALSE;
+    }
+    
+    return TRUE;
+}
+
+-(BOOL)checkCampaignRulesForEvent:(NSString*)event
+                           atTime:(NSDate*)time
+                      withReasons:(NSMutableDictionary*)campaignReasons
+{
+    if (![self isActive:time withReasons:campaignReasons])
+    {
         return FALSE;
     }
     

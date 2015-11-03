@@ -46,8 +46,7 @@
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation at:(NSDate*)timeShown
 {
 #pragma unused(conversation)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
+    [self wasShownToUserAt:timeShown];
 }
 
 -(void)conversationDismissed:(NSDate *)timeDismissed

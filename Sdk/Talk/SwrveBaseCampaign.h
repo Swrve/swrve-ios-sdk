@@ -1,3 +1,4 @@
+#import "SwrveCampaignStatus.h"
 @class SwrveMessageController;
 
 /*! Base campaign. */
@@ -11,6 +12,9 @@
 @property (nonatomic, retain) NSDate* showMsgsAfterLaunch;          /*!< Timestamp to block messages after launch. */
 @property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
 @property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
+@property (atomic)            bool inbox;                           /*!< Flag indicating if it is an Inbox campaign. */
+@property (nonatomic, retain) NSString* subject;                    /*!< Inbox subject of the campaign. */
+@property (nonatomic)         SwrveCampaignStatus status;           /*!< The status of the Inbox campaign. */
 
 /*! Initialize the campaign.
  *
@@ -20,15 +24,21 @@
  */
 -(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary*)data withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller;
 
-/*! Increment impressions by one.
+/*! PRIVATE: Notify when the campaign was displayed.
  */
--(void)incrementImpressions;
+-(void)wasShownToUserAt:(NSDate*)timeShown;
 
-/*! Get the campaign settings.
+/*! PRIVATE: Get the campaign settings.
  *
  * \returns Stored campaign settings.
  */
 -(NSMutableDictionary*)campaignSettings;
+
+/*! PRIVATE: Load the campaign settings. */
+-(void)loadSettings:(NSDictionary*)settings;
+
+/*! PRIVATE: Returns true if the campaign is active at a given time . */
+-(BOOL)isActive:(NSDate*)date withReasons:(NSMutableDictionary*)campaignReasons;
 
 /*! PRIVATE: Set the message mimimum delay time. */
 -(void)setMessageMinDelayThrottle:(NSDate*)timeShown;
