@@ -233,11 +233,22 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 /*! Get the list active Inbox campaigns targeted for this user.
  * It will exclude campaigns that have been deleted with the
- * removeCampaign method.
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Inbox campaigns independent of their orientation support
+ * use the getCampaigns(UIInterfaceOrientationUnknown) method.
  *
  * \returns List of active Inbox campaigns.
  */
 -(NSArray*) campaigns;
+
+/*! Get the list active Inbox campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \returns List of active Inbox campaigns.
+ */
+-(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.

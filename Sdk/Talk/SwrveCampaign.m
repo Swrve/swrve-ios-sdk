@@ -146,4 +146,18 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     return [NSDictionary dictionaryWithDictionary:settings];
 }
 
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+    if (orientation == UIInterfaceOrientationUnknown) {
+        return YES;
+    }
+    
+    for (SwrveMessage* message in messages) {
+        if ([message supportsOrientation:orientation]){
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

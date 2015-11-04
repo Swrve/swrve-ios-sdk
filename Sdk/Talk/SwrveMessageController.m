@@ -1348,10 +1348,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(NSArray*) campaigns
 {
+    // iOS9+ will display with local scale
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        return [self campaignsThatSupportOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+    }
+    return [self campaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
+}
+
+-(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
+{
     NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
     for(SwrveBaseCampaign* campaign in self.campaigns) {
-        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil]) {
+        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
             [result addObject:campaign];
         }
     }
@@ -1371,13 +1380,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         });
         return YES;
     } else if ([campaign isKindOfClass:[SwrveCampaign class]]) {
-        /*SwrveMessage* message = nil;
-        if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withParameters:)]) {
-            message = [self.showMessageDelegate findMessageForEvent:eventName withParameters:event];
-        }
-        else {
-            message = [self findMessageForEvent:eventName withParameters:event];
-        }
+        SwrveMessage* message = [((SwrveCampaign*)campaign).messages objectAtIndex:0];
         
         // iOS9+ will display with local scale
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
@@ -1406,7 +1409,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 // Run in the main thread as we have been called from other thread
                 dispatch_async(dispatch_get_main_queue(), showMessageBlock);
             }
-        }*/
+        }
         
         return YES;
     }

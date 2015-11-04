@@ -118,4 +118,9 @@
     return nil;
 }
 
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+    return YES;
+}
+
 @end

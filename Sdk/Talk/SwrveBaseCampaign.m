@@ -235,4 +235,9 @@ static NSDate* read_date(id d, NSDate* default_date)
     // Implemented in sub classes
 }
 
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+    return NO;
+}
+
 @end

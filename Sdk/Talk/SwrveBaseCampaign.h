@@ -46,4 +46,10 @@
 /*! PRIVATE: Add the required assets to the given queue. */
 -(void)addAssetsToQueue:(NSMutableSet*)assetsQueue;
 
+/*! Check if the campaign supports the given orientation.
+ *
+ * \returns true if the campaign supports the given orientation.
+ */
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
+
 @end
