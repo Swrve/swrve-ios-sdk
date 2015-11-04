@@ -4,8 +4,6 @@
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
 
-@class SwrveLocationManager;
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
 
@@ -222,16 +220,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Store signature to verify content of eventCacheFile. */
 @property (nonatomic, retain) NSString * eventCacheSignatureFile;
 
-/*! The location campaign cache stores data that has not yet been sent to Swrve.
- * If you plan to change this please contact the team at Swrve who will be happy to help you out.
- * This path should be located in app/Libraries/Caches/, as this is where Apple
- * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
- */
-@property (nonatomic, retain) NSString * locationCampaignCacheFile;
-
-/*! Store signature to verify content of locationCampaignCacheFile. */
-@property (nonatomic, retain) NSString * locationCampaignCacheSignatureFile;
-
 /*! The user resources cache stores the result of calls to Swrve getUserResources
  * so that the results can be used when the device is offline.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
@@ -290,8 +278,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
-@property (nonatomic, readonly) NSString * locationCampaignCacheFile;
-@property (nonatomic, readonly) NSString * locationCampaignCacheSignatureFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheSignatureFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheFile;
@@ -640,7 +626,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSString * userID;                       /*!< User ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
-@property (atomic, strong)           SwrveLocationManager * locationManager;  /*!< Can be queried for up-to-date location campaign values. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 
