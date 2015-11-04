@@ -1332,9 +1332,11 @@ static bool didSwizzle = false;
 
 -(void) updateDeviceInfo
 {
-    NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
-    [mutableInfo removeAllObjects];
-    [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
+    @synchronized(deviceInfo) {
+        NSMutableDictionary *mutableInfo = (NSMutableDictionary*)deviceInfo;
+        [mutableInfo removeAllObjects];
+        [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
+    }
     // Send permission events
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
 }

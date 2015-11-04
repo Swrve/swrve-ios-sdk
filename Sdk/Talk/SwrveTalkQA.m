@@ -109,8 +109,10 @@ enum
         
         [talkSessionJson setValue:campaignsJson forKey:@"campaigns"];
         // Add device info to request
-        NSDictionary* deviceJson = self.swrve.deviceInfo;
-        [talkSessionJson setValue:deviceJson forKey:@"device"];
+        @synchronized(self.swrve.deviceInfo) {
+            NSDictionary* deviceJson = self.swrve.deviceInfo;
+            [talkSessionJson setValue:deviceJson forKey:@"device"];
+        }
         [self makeRequest:endpoint withJSON:talkSessionJson];
     }
 }
@@ -218,7 +220,10 @@ enum
 {
     if ([self canMakeRequest]) {
         NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/device_info", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
-        NSMutableDictionary* deviceJson = [NSMutableDictionary dictionaryWithDictionary:self.swrve.deviceInfo];
+        NSMutableDictionary* deviceJson;
+        @synchronized(self.swrve.deviceInfo) {
+            deviceJson = [NSMutableDictionary dictionaryWithDictionary:self.swrve.deviceInfo];
+        }
         [self makeRequest:endpoint withJSON:deviceJson];
     }
 }

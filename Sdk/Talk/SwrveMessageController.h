@@ -41,7 +41,6 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
 
-
 /*! Called when an event is raised by the Swrve SDK. Look up a conversation
  * to display. Return nil if no conversation should be displayed. By default
  * the SwrveMessageController will search for conversations with the provided
@@ -70,14 +69,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void)showConversation:(SwrveConversation *)conversation;
 
-/*! Called when the message will be shown to the user. The message is shown in
+/*! Called when the in-app message will be shown to the user. The message is shown in
  * a separate UIWindow. This selector is called before that UIWindow is shown.
  *
- * \param viewController Message view controller.
+ * \param viewController In-app message view controller
  */
 - (void) messageWillBeShown:(SwrveMessageViewController *) viewController;
 
-/*! Called when the message will be hidden from the user. The message is shown
+/*! Called when the in-app message will be hidden from the user. The message is shown
  * in a separate UIWindow. This selector is called before that UIWindow is
  * hidden.
  *
@@ -85,21 +84,36 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void) messageWillBeHidden:(SwrveMessageViewController*) viewController;
 
-/*! Called to animate the display of a message. Implement this selector
+/*! Called to animate the display of an in-app message. Implement this selector
  * to customize the display of the message.
  *
- * \param viewController Message view controller.
+ * \param viewController In-app message view controller.
  */
 - (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController;
 
-/*! Called to animate the hiding of a message. Implement this selector to
+/*! Called to animate the hiding of an in-app message. Implement this selector to
  * customize the hiding of the message. If you implement this you must call
  * [SwrveMessageController dismissMessageWindow] to dismiss the message window
  * after your animation is complete.
  *
- * \param viewController Message view controller.
+ * \param viewController In-app message view controller.
  */
 - (void) beginHideMessageAnimation:(SwrveMessageViewController*) viewController;
+
+/*! Called when the conversation will be shown to the user. The conversation is shown in
+ * a separate UIWindow. This selector is called before that UIWindow is shown.
+ *
+ * \param viewController Conversation view controller.
+ */
+- (void) conversationWillBeShown:(SwrveConversationsNavigationController *) viewController;
+
+/*! Called when the conversation will be hidden from the user. The conversation is shown
+ * in a separate UIWindow. This selector is called before that UIWindow is
+ * hidden.
+ *
+ * \param viewController Conversation view controller.
+ */
+- (void) conversationWillBeHidden:(SwrveConversationsNavigationController*) viewController;
 
 @end
 
