@@ -329,6 +329,7 @@
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		1B68148F1B0F3C1100FCDE4F /* SwrveConversationStyler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStyler.h; sourceTree = "<group>"; };
 		1B6814901B0F3C1100FCDE4F /* SwrveConversationStyler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStyler.m; sourceTree = "<group>"; };
+		1B89E2A91BE900740006246E /* SwrveCampaignStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCampaignStatus.h; sourceTree = "<group>"; };
 		1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversation.h; sourceTree = "<group>"; };
 		1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversation.m; sourceTree = "<group>"; };
 		1B9A35D81A8CCFC900F34406 /* SwrveBaseCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseCampaign.h; sourceTree = "<group>"; };
@@ -663,6 +664,7 @@
 				1B220FE919B8AFFC00F378E6 /* SwrveCampaign.m */,
 				1B220FEA19B8AFFC00F378E6 /* SwrveImage.h */,
 				1B220FEB19B8AFFC00F378E6 /* SwrveImage.m */,
+				1B89E2A91BE900740006246E /* SwrveCampaignStatus.h */,
 				1B220FEC19B8AFFC00F378E6 /* SwrveInterfaceOrientation.h */,
 				1B220FED19B8AFFC00F378E6 /* SwrveMessage.h */,
 				1B220FEE19B8AFFC00F378E6 /* SwrveMessage.m */,

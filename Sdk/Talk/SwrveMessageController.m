@@ -262,7 +262,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 - (void)saveSettings
 {
     NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.campaigns.count];
-    
     for (SwrveCampaign* campaign in self.campaigns)
     {
         [newSettings addObject:[campaign campaignSettings]];
@@ -488,14 +487,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
                 NSDictionary* campaignSettings = [settings objectForKey:ID];
                 if(campaignSettings) {
-                    NSNumber* next = [campaignSettings objectForKey:@"next"];
-                    if (next) {
-                        campaign.next = next.unsignedIntegerValue;
-                    }
-                    NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                    if (impressions) {
-                        campaign.impressions = impressions.unsignedIntegerValue;
-                    }
+                    [campaign loadSettings:campaignSettings];
                 }
             }
             
@@ -1352,6 +1344,83 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
             CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION];
+}
+
+-(NSArray*) campaigns
+{
+    // iOS9+ will display with local scale
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        return [self campaignsThatSupportOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+    }
+    return [self campaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
+}
+
+-(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
+{
+    NSDate* now = [self.analyticsSDK getNow];
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    for(SwrveBaseCampaign* campaign in self.campaigns) {
+        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
+            [result addObject:campaign];
+        }
+    }
+    return result;
+}
+
+-(BOOL)showCampaign:(SwrveBaseCampaign*)campaign
+{
+    if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SwrveConversation* conversation = ((SwrveConversationCampaign*)campaign).conversation;
+            if( [self.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                [self.showMessageDelegate showConversation:conversation];
+            } else {
+                [self showConversation:conversation];
+            }
+        });
+        return YES;
+    } else if ([campaign isKindOfClass:[SwrveCampaign class]]) {
+        SwrveMessage* message = [((SwrveCampaign*)campaign).messages objectAtIndex:0];
+        
+        // iOS9+ will display with local scale
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // Only show the message if it supports the given orientation
+            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
+        }
+        
+        // Show the message if it exists
+        if( message != nil ) {
+            dispatch_block_t showMessageBlock = ^{
+                if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                    [self.showMessageDelegate showMessage:message];
+                }
+                else {
+                    [self showMessage:message];
+                }
+            };
+            
+            
+            if ([NSThread isMainThread]) {
+                showMessageBlock();
+            } else {
+                // Run in the main thread as we have been called from other thread
+                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+            }
+        }
+        
+        return YES;
+    }
+
+    return NO;
+}
+
+-(void)removeCampaign:(SwrveBaseCampaign*)campaign
+{
+    [campaign setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
+    [self saveSettings];
 }
 
 @end

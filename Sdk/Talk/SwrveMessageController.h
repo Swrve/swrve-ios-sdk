@@ -4,6 +4,7 @@ const static int CONVERSATION_VERSION        = 2;
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 
+@class SwrveBaseCampaign;
 @class SwrveMessage;
 @class SwrveConversation;
 @class SwrveButton;
@@ -229,6 +230,38 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 /*! Called internally when the app became active */
 -(void) appDidBecomeActive;
+
+/*! Get the list active Inbox campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Inbox campaigns independent of their orientation support
+ * use the getCampaigns(UIInterfaceOrientationUnknown) method.
+ *
+ * \returns List of active Inbox campaigns.
+ */
+-(NSArray*) campaigns;
+
+/*! Get the list active Inbox campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \returns List of active Inbox campaigns.
+ */
+-(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \returns if the campaign was shown.
+ */
+-(BOOL)showCampaign:(SwrveBaseCampaign*)campaign;
+
+/*! Remove this campaign. It won't be returned anymore by the method getCampaigns.
+ *
+ * \param campaign Campaing that will be removed.
+ */
+-(void)removeCampaign:(SwrveBaseCampaign*)campaign;
 
 @end
 
