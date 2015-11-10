@@ -328,6 +328,7 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
+@synthesize selectedStack;
 
 -(id) init
 {
@@ -367,6 +368,7 @@ enum
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
         };
+        self.selectedStack = US;
     }
     return self;
 }
@@ -408,6 +410,7 @@ enum
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
+@synthesize selectedStack;
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
@@ -445,6 +448,7 @@ enum
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         pushCategories = config.pushCategories;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
+        selectedStack = config.selectedStack;
     }
 
     return self;
@@ -1569,18 +1573,29 @@ static NSString* httpScheme(bool useHttps)
 
 -(void) setupConfig:(SwrveConfig *)newConfig
 {
+    NSString *prefix = [self getStackHostPrefixFromConfig:newConfig];
+
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID];
+        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld%@.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID, prefix];
     }
     
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID];
+        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld%@.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID, prefix];
     }
     
     // Validate other values
     NSCAssert(newConfig.httpTimeoutSeconds > 0, @"httpTimeoutSeconds must be greater than zero or requests will fail immediately.", nil);
 }
+
+-(NSString *) getStackHostPrefixFromConfig:(SwrveConfig *)xconfig {
+    if (xconfig.selectedStack == EU) {
+        return @".eu";
+    } else {
+        return @""; // default to US which has no prefix
+    }
+}
+
 
 -(void) maybeFlushToDisk
 {
