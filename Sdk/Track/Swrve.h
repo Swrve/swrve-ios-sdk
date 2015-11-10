@@ -27,6 +27,12 @@ enum
     SWRVE_FAILURE = -1  /*!< Method did not execute successfully. */
 };
 
+/*! Swrve stack names. */
+enum SwrveStack {
+    SWRVE_STACK_US,
+    SWRVE_STACK_EU
+};
+
 /*! Defines the block signature for receiving resources after calling
  * Swrve getUserResources.
  *
@@ -273,6 +279,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) SwrveReceiptProvider* receiptProvider;
 
+/*! The currently selected stack.
+ */
+@property (nonatomic) enum SwrveStack selectedStack;
+
 @end
 
 /*! Immutable copy of a SwrveConfig object */
@@ -312,6 +322,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet* pushCategories;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
+@property (nonatomic, readonly) enum SwrveStack selectedStack;
 
 @end
 
