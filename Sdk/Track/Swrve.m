@@ -368,7 +368,7 @@ enum
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
         };
-        self.selectedStack = US;
+        self.selectedStack = SWRVE_STACK_US;
     }
     return self;
 }
@@ -1588,8 +1588,8 @@ static NSString* httpScheme(bool useHttps)
     NSCAssert(newConfig.httpTimeoutSeconds > 0, @"httpTimeoutSeconds must be greater than zero or requests will fail immediately.", nil);
 }
 
--(NSString *) getStackHostPrefixFromConfig:(SwrveConfig *)xconfig {
-    if (xconfig.selectedStack == EU) {
+-(NSString *) getStackHostPrefixFromConfig:(SwrveConfig *)newConfig {
+    if (newConfig.selectedStack == SWRVE_STACK_EU) {
         return @".eu";
     } else {
         return @""; // default to US which has no prefix

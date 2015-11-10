@@ -28,9 +28,9 @@ enum
 };
 
 /*! Swrve stack names. */
-enum Stack {
-    US,
-    EU
+enum SwrveStack {
+    SWRVE_STACK_US,
+    SWRVE_STACK_EU
 };
 
 /*! Defines the block signature for receiving resources after calling
@@ -281,7 +281,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The currently selected stack.
  */
-@property (nonatomic) enum Stack selectedStack;
+@property (nonatomic) enum SwrveStack selectedStack;
 
 @end
 
@@ -322,7 +322,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet* pushCategories;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
-@property (nonatomic, readonly) enum Stack selectedStack;
+@property (nonatomic, readonly) enum SwrveStack selectedStack;
 
 @end
 
