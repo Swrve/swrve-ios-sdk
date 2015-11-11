@@ -995,7 +995,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (button.actionType != kSwrveActionDismiss) {
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
-        [self.analyticsSDK eventWithNoCallback:clickEvent payload:nil];
+        [self.analyticsSDK eventWithNoCallback:clickEvent payload:@{@"name" : button.name}];
     }
 }
 

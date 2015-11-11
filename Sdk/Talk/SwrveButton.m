@@ -6,6 +6,7 @@
 
 @implementation SwrveButton
 
+@synthesize name;
 @synthesize image;
 @synthesize actionString;
 @synthesize controller;
@@ -24,6 +25,7 @@ static CGPoint scaled(CGPoint point, float scale)
 -(id)init
 {
     self = [super init];
+    self.name         = @"unknown";
     self.image        = @"buttonup.png";
     self.actionString = @"";
     self.appID       = 0;

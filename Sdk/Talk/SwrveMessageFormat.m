@@ -62,6 +62,7 @@
     button.controller = controller;
     button.message = message;
     
+    button.name       = [buttonData objectForKey:@"name"];
     button.center     = [SwrveMessageFormat getCenterFrom:buttonData];
     button.size       = [SwrveMessageFormat getSizeFrom:buttonData];
     button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
