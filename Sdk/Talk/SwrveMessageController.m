@@ -746,10 +746,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                         long nextMessagePriorityLong = [nextMessage.priority longValue];
                         long minPriorityLong = [minPriority longValue];
                         if (nextMessagePriorityLong <= minPriorityLong) {
-                            minPriority = nextMessage.priority;
                             if (nextMessagePriorityLong < minPriorityLong) {
+                                // If it is lower than any of the previous ones
+                                // remove those from being candidates
                                 [candidateMessages removeAllObjects];
                             }
+                            minPriority = nextMessage.priority;
                             [candidateMessages addObject:nextMessage];
                         }
                     } else {
