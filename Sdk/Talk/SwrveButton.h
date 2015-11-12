@@ -5,6 +5,7 @@
 /*! In-app message button. */
 @interface SwrveButton : NSObject
 
+@property (nonatomic, retain)            NSString* name;                        /*!< The name of the button. */
 @property (nonatomic, retain)            NSString* image;                       /*!< The cached path of the button image on disk. */
 @property (atomic)                       SwrveActionType actionType;            /*!< Type of action associated with this button. */
 @property (nonatomic, retain)            NSString* actionString;                /*!< Custom action string for the button. */
