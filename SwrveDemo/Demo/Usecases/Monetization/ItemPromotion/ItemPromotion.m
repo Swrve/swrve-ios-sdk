@@ -65,7 +65,7 @@
 - (IBAction)onShowOffer:(id)sender
 {
     #pragma unused(sender)
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.ItemPromotion"];
+    [[DemoFramework getSwrve]event:@"Demo.ItemPromotion"];
 }
 
 - (void) showStoreFrontWithDiscount:(float) currencyMultiplier

@@ -36,7 +36,7 @@
     if( menuNode != nil && menuNode.name != nil )
     {
         // [TRACK] What demos and menus do users look at
-        [[DemoFramework getSwrveInternal] event:@"Swrve.Demo.UI.Menu.Click"
+        [[DemoFramework getSwrveInternal] event:@"Demo.UI.Menu.Click"
                                        payload:[NSDictionary dictionaryWithObject:menuNode.name forKey:@"name"]];
     }
 }

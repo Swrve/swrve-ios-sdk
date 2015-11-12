@@ -1,7 +1,6 @@
 #import <CommonCrypto/CommonHMAC.h>
 #import "SwrveMessageController.h"
 #import "Swrve.h"
-#import "SwrveImage.h"
 #import "SwrveButton.h"
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
@@ -10,6 +9,7 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationContainerViewController.h"
 #import "SwrvePermissions.h"
+#import "SwrveInternalAccess.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -797,7 +797,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else {
         // Notify message has been returned
         NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:@"id",[result.messageID stringValue], nil];
-        [self.analyticsSDK event:@"Swrve.Messages.message_returned" payload:payload];
+        NSString *eventName = @"Swrve.Messages.message_returned";
+        [self.analyticsSDK eventInternal:eventName payload:payload triggerCallback:true];
     }
     return result;
 }
@@ -972,7 +973,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
     DebugLog(@"Sending view event: %@", viewEvent);
     
-    [self.analyticsSDK eventWithNoCallback:viewEvent payload:nil];
+    [self.analyticsSDK eventInternal:viewEvent payload:nil triggerCallback:false];
 }
 
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation
@@ -995,7 +996,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (button.actionType != kSwrveActionDismiss) {
         NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
-        [self.analyticsSDK eventWithNoCallback:clickEvent payload:@{@"name" : button.name}];
+        [self.analyticsSDK eventInternal:clickEvent payload:payload:@{@"name" : button.name} triggerCallback:false];
     }
 }
 

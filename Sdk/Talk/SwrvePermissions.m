@@ -1,6 +1,7 @@
 #import "SwrvePermissions.h"
 #import "ISHPermissionRequest+All.h"
 #import "ISHPermissionRequestNotificationsRemote.h"
+#import "SwrveInternalAccess.h"
 
 static ISHPermissionRequest *_locationAlwaysRequest = nil;
 static ISHPermissionRequest *_locationWhenInUseRequest = nil;
@@ -249,7 +250,8 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(Swrve*)sdk {
-    [sdk event:[eventName stringByAppendingString:((state == ISHPermissionStateAuthorized)? @".on" : @".off")]];
+    NSString *eventNameWithState = [eventName stringByAppendingString:((state == ISHPermissionStateAuthorized)? @".on" : @".off")];
+    [sdk eventInternal:eventNameWithState payload:nil triggerCallback:true];
 }
 
 @end
