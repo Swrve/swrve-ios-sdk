@@ -417,14 +417,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // QA
     NSMutableDictionary* campaignsDownloaded = nil;
     
-    BOOL wasQAUser = (self.qaUser != nil);
-    NSDictionary* json_qa = [campaignJson objectForKey:@"qa"];
-    if(json_qa) {
+    BOOL wasPreviouslyQAUser = (self.qaUser != nil);
+    NSDictionary* jsonQa = [campaignJson objectForKey:@"qa"];
+    if(jsonQa) {
         DebugLog(@"You are a QA user!", nil);
         campaignsDownloaded = [[NSMutableDictionary alloc] init];
-        self.qaUser = [[SwrveTalkQA alloc] initWithJSON:json_qa withAnalyticsSDK:self.analyticsSDK];
+        self.qaUser = [[SwrveTalkQA alloc] initWithJSON:jsonQa withAnalyticsSDK:self.analyticsSDK];
         
-        NSArray* json_qa_campaigns = [json_qa objectForKey:@"campaigns"];
+        NSArray* json_qa_campaigns = [jsonQa objectForKey:@"campaigns"];
         if(json_qa_campaigns) {
             for (NSDictionary* json_qa_campaign in json_qa_campaigns) {
                 NSNumber* campaign_id = [json_qa_campaign objectForKey:@"id"];
@@ -449,8 +449,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     [self.notifications removeAllObjects];
     
     NSDictionary* settings = [self getCampaignSettings];
-    NSArray* json_campaigns = [campaignJson objectForKey:@"campaigns"];
-    for (NSDictionary* dict in json_campaigns)
+    NSArray* jsonCampaigns = [campaignJson objectForKey:@"campaigns"];
+    for (NSDictionary* dict in jsonCampaigns)
     {
         BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
         SwrveBaseCampaign* campaign = nil;
@@ -487,7 +487,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (campaign != nil) {
             DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
             campaign.next = 0;
-            if(!(!wasQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
+            if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
                 NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
                 NSDictionary* campaignSettings = [settings objectForKey:ID];
                 if(campaignSettings) {
