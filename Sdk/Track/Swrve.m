@@ -731,7 +731,7 @@ static bool didSwizzle = false;
 
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
-            [self event:@"Swrve.first_session"];
+            [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:true];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:@"yyyyMMdd"];
             [self userUpdate:@{ @"swrve.install_date" : [dateFormatter stringFromDate:[self getNow]] } ];
@@ -871,12 +871,40 @@ static bool didSwizzle = false;
 
 -(int) event:(NSString*)eventName
 {
-    return [self eventInternal:eventName payload:nil triggerCallback:true];
+    if( [self isValidEventName:eventName]) {
+        return [self eventInternal:eventName payload:nil triggerCallback:true];
+    } else {
+        return SWRVE_FAILURE;
+    }
 }
 
 -(int) event:(NSString*)eventName payload:(NSDictionary*)eventPayload
 {
-    return [self eventInternal:eventName payload:eventPayload triggerCallback:true];
+    if( [self isValidEventName:eventName]) {
+        return [self eventInternal:eventName payload:eventPayload triggerCallback:true];
+    } else {
+        return SWRVE_FAILURE;
+    }
+}
+
+-(int) eventWithNoCallback:(NSString*)eventName payload:(NSDictionary*)eventPayload
+{
+    if( [self isValidEventName:eventName]) {
+        return [self eventInternal:eventName payload:eventPayload triggerCallback:false];
+    } else {
+        return SWRVE_FAILURE;
+    }
+}
+
+- (BOOL)isValidEventName:(NSString *)eventName {
+    NSMutableArray *restrictedNamesStartWith = [NSMutableArray arrayWithObjects:@"Swrve.", @"swrve.", nil];
+    for (NSString *restricted in restrictedNamesStartWith) {
+        if (eventName == nil || [eventName hasPrefix:restricted]) {
+            DebugLog(@"Event names cannot begin with %@* This event will not be sent. Eventname:%@", restricted, eventName);
+            return false;
+        }
+    }
+    return true;
 }
 
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product
@@ -948,7 +976,8 @@ static bool didSwizzle = false;
             if( transaction.error != nil && transaction.error.description != nil ) {
                 error = transaction.error.description;
             }
-            [self event:@"Swrve.iap.transaction_failed_on_client" payload: @{@"product_id" : product_id, @"error" : error}];
+            NSDictionary *payload = @{@"product_id" : product_id, @"error" : error};
+            [self eventInternal:@"Swrve.iap.transaction_failed_on_client" payload:payload triggerCallback:true];
         }
             break;
         case SKPaymentTransactionStateRestored:
@@ -956,7 +985,8 @@ static bool didSwizzle = false;
             if( transaction.originalTransaction != nil && transaction.originalTransaction.payment != nil && transaction.originalTransaction.payment.productIdentifier != nil){
                 product_id = transaction.originalTransaction.payment.productIdentifier;
             }
-            [self event:@"Swrve.iap.restored_on_client" payload: @{@"product_id" : product_id}];
+            NSDictionary *payload = @{@"product_id" : product_id};
+            [self eventInternal:@"Swrve.iap.restored_on_client" payload:payload triggerCallback:true];
         }
             break;
         default:
@@ -1109,7 +1139,7 @@ static bool didSwizzle = false;
                             NSDictionary* payload = @{ @"ids" : [campaignIds componentsJoinedByString:@","],
                                                        @"count" : [NSString stringWithFormat:@"%lu", (unsigned long)[self.talk.campaigns count]] };
 
-                            [self event:@"Swrve.Messages.campaigns_downloaded" payload:payload];
+                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:true];
                         }
                     }
 
@@ -1297,12 +1327,6 @@ static bool didSwizzle = false;
     UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
     return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
 }
-
--(int) eventWithNoCallback:(NSString*)eventName payload:(NSDictionary*)eventPayload
-{
-    return [self eventInternal:eventName payload:eventPayload triggerCallback:false];
-}
-
 
 #pragma mark -
 #pragma mark Private methods
@@ -1538,7 +1562,7 @@ static bool didSwizzle = false;
             }
 
             NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-            [self event:eventName];
+            [self eventInternal:eventName payload:nil triggerCallback:true];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
@@ -2300,7 +2324,7 @@ enum HttpStatus {
 {
     #pragma unused(file)
     DebugLog(@"Signature check failed for file %@", file);
-    [self event:@"Swrve.signature_invalid"];
+    [self eventInternal:@"Swrve.signature_invalid" payload:nil triggerCallback:true];
 }
 
 - (void) initResourcesDiff

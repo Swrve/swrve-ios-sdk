@@ -348,6 +348,7 @@
 		30A4F72416B05C2500642E8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		3AB3B08A1BF4C453006C6AF9 /* SwrveInternalAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInternalAccess.h; sourceTree = "<group>"; };
 		3AC4DB8E1B2992D1004B57CB /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
 		3AC4DB8F1B2992D1004B57CB /* SwrveContentHTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentHTML.m; sourceTree = "<group>"; };
 		3AC4DB901B2992D1004B57CB /* SwrveContentImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentImage.h; sourceTree = "<group>"; };
@@ -698,6 +699,7 @@
 		1B220FF719B8AFFC00F378E6 /* Track */ = {
 			isa = PBXGroup;
 			children = (
+				3AB3B08A1BF4C453006C6AF9 /* SwrveInternalAccess.h */,
 				1B220FF819B8AFFC00F378E6 /* Swrve.h */,
 				1B220FF919B8AFFC00F378E6 /* Swrve.m */,
 				1B220FFA19B8AFFC00F378E6 /* SwrveReceiptProvider.h */,

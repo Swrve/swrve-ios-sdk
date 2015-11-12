@@ -99,9 +99,9 @@
 {
     #pragma unused(sender)
     // Send demo events used to setup Swrve Talk.    
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.OfferMessage"];
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.CrossPromoMessage"];
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.ItemPromotion"];
+    [[DemoFramework getSwrve]event:@"Demo.OfferMessage"];
+    [[DemoFramework getSwrve]event:@"Demo.CrossPromoMessage"];
+    [[DemoFramework getSwrve]event:@"Demo.ItemPromotion"];
     [[DemoFramework getSwrve]sendQueuedEvents];
     
     // Send warning message first.  This will trigger a sequence of alerts.

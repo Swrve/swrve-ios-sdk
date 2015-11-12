@@ -76,7 +76,7 @@
     //
     // Use '.'s in the event name to indicate a hierarchy.  Only use letters, numbers
     // dashes, underscores and dots.  DO NOT USE SPACES.
-    [swrve event: @"Swrve.Demo.Gameplay.Player_Died"];
+    [swrve event: @"Demo.Gameplay.Player_Died"];
     
     // Use event payloads if you want to add more context to the event and understand
     // why the user is doing what they are doing.  Event payloads are key / value pairs,
@@ -101,7 +101,7 @@
     //
     // See http://dashboard.swrve.com/help/docs/events_api#events for more
     // information.
-    [swrve event:@"Swrve.Demo.Gameplay.Player_Died"
+    [swrve event:@"Demo.Gameplay.Player_Died"
          payload: [NSDictionary dictionaryWithObjectsAndKeys:
                    @"slug", @"enemy_name",
                    @"5",@"player_level",

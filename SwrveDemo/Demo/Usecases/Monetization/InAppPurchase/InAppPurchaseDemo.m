@@ -94,7 +94,7 @@
                         completion:nil];
         
         // [TRACK] How often are payments disabled on devices?
-        [[DemoFramework getSwrve] event:@"Swrve.Demo.Monetization.PaymentsDisabled"];
+        [[DemoFramework getSwrve] event:@"Demo.Monetization.PaymentsDisabled"];
         return;
     }
 
@@ -149,7 +149,7 @@
                         completion:nil];
         
         // [TRACK] How often does the app store not give us products?
-        [[DemoFramework getSwrve] event:@"Swrve.Demo.Monetization.ProductsDidNotLoad"];
+        [[DemoFramework getSwrve] event:@"Demo.Monetization.ProductsDidNotLoad"];
         //return;
     }
 
@@ -178,7 +178,7 @@
                     completion:nil];
     
     // [TRACK] How often is the store opened?
-    [[DemoFramework getSwrve] event:@"Swrve.Demo.Monetization.Store.Enter"];
+    [[DemoFramework getSwrve] event:@"Demo.Monetization.Store.Enter"];
 }
 
 - (IBAction)onBuyPack:(id)sender
@@ -205,7 +205,7 @@
     [[SKPaymentQueue defaultQueue] addPayment:payment];
     
     // [TRACK] When a transactions starts
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.Monetization.Store.Purchase"
+    [[DemoFramework getSwrve]event:@"Demo.Monetization.Store.Purchase"
                            payload:[NSDictionary dictionaryWithObject:@"start" forKey:@"progress"]];
 }
 
@@ -263,7 +263,7 @@
 - (void) leftStore
 {
     // [TRACK] How often do users leave?
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.Monetization.Store.Exit"];
+    [[DemoFramework getSwrve]event:@"Demo.Monetization.Store.Exit"];
 }
 
 - (void) scaleIAPCurrencies:(float) scale

@@ -32,7 +32,7 @@
 - (IBAction)onShowOffer:(id)sender
 {
     #pragma unused(sender)
-    [[DemoFramework getSwrve]event:@"Swrve.Demo.CrossPromoMessage"];
+    [[DemoFramework getSwrve]event:@"Demo.CrossPromoMessage"];
 }
 
 @end

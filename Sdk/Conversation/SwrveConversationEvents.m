@@ -5,6 +5,7 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentVideo.h"
+#import "SwrveInternalAccess.h"
 
 @implementation SwrveConversationEvents
 
@@ -28,8 +29,8 @@
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
     };
-
-    [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
+    NSString *eventName = [self nameOf:name for:conversation];
+    [[Swrve sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:true];
 }
 
 +(void)genericEvent:(NSString*)name forConversation:(SwrveConversation*)conversation onPage:(NSString*)pageTag {
@@ -39,8 +40,8 @@
       @"page" : pageTag,
       @"conversation" : [conversation.conversationID stringValue]
     };
-
-    [[Swrve sharedInstance] event:[self nameOf:name for:conversation] payload:eventPayload];
+    NSString *eventName = [self nameOf:name for:conversation];
+    [[Swrve sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:true];
 }
 
 +(NSString*)nameOf:(NSString*)event for:(SwrveConversation*)conversation {
@@ -61,8 +62,8 @@
       @"conversation" : [conversation.conversationID stringValue],
       @"control" : controlTag
     };
-
-    [[Swrve sharedInstance] event:[self nameOf:@"navigation" for:conversation] payload:eventPayload];
+    NSString *eventName = [self nameOf:@"navigation" for:conversation];
+    [[Swrve sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:true];
 }
 
 // Atom actions
@@ -73,7 +74,7 @@
             SwrveInputMultiValue *item = (SwrveInputMultiValue*)atom;
             NSString* result = item.userResponse;
             if (result && ![result isEqualToString:@""]) {
-                NSDictionary *userInputResult =
+                NSDictionary *payload =
                         @{
                                 @"event" : @"choice",
                                 @"page" : conversationPane.tag,
@@ -81,19 +82,21 @@
                                 @"fragment" : item.tag,
                                 @"result" : result
                         };
-                [[Swrve sharedInstance] event:[self nameOf:@"choice" for:conversation] payload:userInputResult];
+                NSString *eventName = [self nameOf:@"choice" for:conversation];
+                [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
             }
         } else if ([atom isKindOfClass:[SwrveContentVideo class]]) {
             SwrveContentVideo *item = (SwrveContentVideo*)atom;
             if (item.interactedWith) {
-                NSDictionary *userInputResult =
+                NSDictionary *payload =
                 @{
                   @"event" : @"play",
                   @"page" : conversationPane.tag,
                   @"conversation" : [conversation.conversationID stringValue],
                   @"fragment" : item.tag
                 };
-                [[Swrve sharedInstance] event:[self nameOf:@"play" for:conversation] payload:userInputResult];
+                NSString *eventName = [self nameOf:@"play" for:conversation];
+                [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
             }
         }
     }

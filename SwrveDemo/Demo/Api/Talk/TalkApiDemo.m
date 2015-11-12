@@ -46,7 +46,7 @@
 - (IBAction)onNotificationMessage:(id)sender
 {
     #pragma unused(sender)
-    [swrve event:@"Swrve.Demo.OfferMessage"];
+    [swrve event:@"Demo.OfferMessage"];
 }
 
 @end
