@@ -32,7 +32,7 @@
 
 -(void) moveToStage:(int) nextStage
 {
-    NSString* eventName = [NSString stringWithFormat:@"Swrve.Demo.Tutorial_Step_%d", nextStage];
+    NSString* eventName = [NSString stringWithFormat:@"Demo.Tutorial_Step_%d", nextStage];
     [[DemoFramework getSwrveInternal]event:eventName];
 
     if( nextStage > 4)

@@ -30,7 +30,7 @@
     {
         // [TRACK] What demos do users look at
         NSDictionary * payload = [NSDictionary dictionaryWithObject:self.title forKey:@"name"];
-        [[DemoFramework getSwrveInternal] event:@"Swrve.Demo.UI.Demo.Click" payload:payload];
+        [[DemoFramework getSwrveInternal] event:@"Demo.UI.Demo.Click" payload:payload];
         [self onEnterDemo];
     }
     
