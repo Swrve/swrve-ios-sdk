@@ -25,7 +25,7 @@ static CGPoint scaled(CGPoint point, float scale)
 -(id)init
 {
     self = [super init];
-    self.name         = @"unknown";
+    self.name         = NULL;
     self.image        = @"buttonup.png";
     self.actionString = @"";
     self.appID       = 0;
