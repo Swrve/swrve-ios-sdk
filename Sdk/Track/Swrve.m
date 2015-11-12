@@ -1577,11 +1577,11 @@ static NSString* httpScheme(bool useHttps)
 
     // Set up default server locations
     if (nil == newConfig.eventsServer) {
-        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld%@.api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID, prefix];
+        newConfig.eventsServer = [NSString stringWithFormat:@"%@://%ld.%@api.swrve.com", httpScheme(newConfig.useHttpsForEventServer), self.appID, prefix];
     }
     
     if (nil == newConfig.contentServer) {
-        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld%@.content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID, prefix];
+        newConfig.contentServer = [NSString stringWithFormat:@"%@://%ld.%@content.swrve.com", httpScheme(newConfig.useHttpsForContentServer), self.appID, prefix];
     }
     
     // Validate other values
@@ -1590,7 +1590,7 @@ static NSString* httpScheme(bool useHttps)
 
 -(NSString *) getStackHostPrefixFromConfig:(SwrveConfig *)newConfig {
     if (newConfig.selectedStack == SWRVE_STACK_EU) {
-        return @".eu";
+        return @"eu-";
     } else {
         return @""; // default to US which has no prefix
     }
