@@ -297,7 +297,7 @@ enum
 
 @synthesize userId;
 @synthesize orientation;
-@synthesize shouldAutoInferStatusBarAppearance;
+@synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -337,7 +337,7 @@ enum
         autoDownloadCampaignsAndResources = YES;
         maxConcurrentDownloads = 2;
         orientation = SWRVE_ORIENTATION_BOTH;
-        shouldAutoInferStatusBarAppearance = YES;
+        prefersIAMStatusBarHidden = YES;
         appVersion = [Swrve getAppVersion];
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
@@ -379,7 +379,7 @@ enum
 
 @synthesize userId;
 @synthesize orientation;
-@synthesize shouldAutoInferStatusBarAppearance;
+@synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize useHttpsForEventServer;
@@ -417,7 +417,7 @@ enum
     if (self = [super init]) {
         userId = config.userId;
         orientation = config.orientation;
-        shouldAutoInferStatusBarAppearance = config.shouldAutoInferStatusBarAppearance;
+        prefersIAMStatusBarHidden = config.prefersIAMStatusBarHidden;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         useHttpsForEventServer = config.useHttpsForEventServer;
