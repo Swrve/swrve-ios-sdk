@@ -113,9 +113,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! By default Swrve will choose the status bar appearance
  * when presenting any view controllers.  
  * You can disable this functionality by setting
- * shouldAutoInferStatusBarAppearance to false.
+ * prefersIAMStatusBarHidden to false.
  */
-@property (nonatomic) BOOL shouldAutoInferStatusBarAppearance;
+@property (nonatomic) BOOL prefersIAMStatusBarHidden;
 
 /*! By default Swrve will read the application version from the current
  * application bundle. This is used to allow you to test and target users with a
@@ -291,7 +291,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 - (id)initWithSwrveConfig:(SwrveConfig*)config;
 @property (nonatomic, readonly) NSString * userId;
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
-@property (nonatomic, readonly) BOOL shouldAutoInferStatusBarAppearance;
+@property (nonatomic, readonly) BOOL prefersIAMStatusBarHidden;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
 @property (nonatomic, readonly) BOOL useHttpsForEventServer;
