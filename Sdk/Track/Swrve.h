@@ -390,6 +390,33 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions;
 
+#pragma mark -
+#pragma mark Deprecated singleton methods
+
+/*! Creates and initializes the shared Swrve singleton.
+ * The userID is used by Swrve to identify unique users. It must be unique for all users
+ * of your app. The default user ID is a random UUID.
+ *
+ * \param swrveAppID The App ID for your app supplied by Swrve.
+ * \param swrveAPIKey The secret token for your app supplied by Swrve.
+ * \param swrveUserID The unique user id for your application.
+ * \returns An initialized Swrve object.
+ */
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID __deprecated_msg("Use the new userId property in SwrveConfig instead.");
+
+/*! Creates and initializes the shared Swrve singleton.
+ *
+ * Takes a SwrveConfig object that can be used to change default settings.
+ * The userID is used by Swrve to identify unique users. It must be unique for all users
+ * of your app. The default user ID is a random UUID.
+ *
+ * \param swrveAppID The App ID for your app supplied by Swrve.
+ * \param swrveAPIKey The secret token for your app supplied by Swrve.
+ * \param swrveConfig The swrve configuration object used to override default settings.
+ * \param swrveUserID The unique user id for your application.
+ * \returns An initialized Swrve object.
+ */
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig  __deprecated_msg("Use the new userId property in SwrveConfig instead.");
 
 #pragma mark -
 #pragma mark Initialization
@@ -447,6 +474,36 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \returns An initialized Swrve object.
  */
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions;
+
+
+#pragma mark -
+#pragma mark Deprecated initialization
+
+/*! Initializes a Swrve object that has already been allocated using [Swrve alloc].
+ *
+ * The userID is used by Swrve to identify unique users. It must be unique for all users
+ * of your app. The default user ID is a random UUID.
+ *
+ * \param swrveAppID The App ID for your app supplied by Swrve.
+ * \param swrveAPIKey The secret token for your app supplied by Swrve.
+ * \param swrveUserID The unique user id for your application.
+ * \returns An initialized Swrve object.
+ */
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID __deprecated_msg("Use the new userId property in SwrveConfig instead.");
+
+/*! Initializes a Swrve object that has already been allocated using [Swrve alloc].
+ *
+ * Takes a SwrveConfig object that can be used to change default settings.
+ * The userID is used by Swrve to identify unique users. It must be unique for all users
+ * of your app. The default user ID is a random UUID.
+ *
+ * \param swrveAppID The App ID for your app supplied by Swrve.
+ * \param swrveAPIKey The secret token for your app supplied by Swrve.
+ * \param swrveUserID The unique user id for your application.
+ * \param swrveConfig The swrve configuration object used to override default settings.
+ * \returns An initialized Swrve object.
+ */
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig __deprecated_msg("Use the new userId property in SwrveConfig instead.");
 
 #pragma mark -
 #pragma mark Events

@@ -613,6 +613,27 @@ static bool didSwizzle = false;
     return _swrveSharedInstance;
 }
 
+// Deprecated shared initialization methods
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
+{
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID];
+    });
+    return _swrveSharedInstance;
+}
+
++(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
+{
+    dispatch_once(&sharedInstanceToken, ^{
+        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
+    });
+    return _swrveSharedInstance;
+}
+
+
+// Non shared instance initialization methods
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
 {
     SwrveConfig* newConfig = [[SwrveConfig alloc] init];
@@ -622,6 +643,20 @@ static bool didSwizzle = false;
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:nil];
+}
+
+// Deprecated non shared instance initialization methods
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
+{
+    SwrveConfig* newConfig = [[SwrveConfig alloc] init];
+    newConfig.userId = swrveUserID;
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:newConfig launchOptions:nil];
+}
+
+-(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
+{
+    swrveConfig.userId = swrveUserID;
+    return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:nil];
 }
 
 // Init methods with launchOptions for push
@@ -798,7 +833,7 @@ static bool didSwizzle = false;
 
         if( swrveInstance->didRegisterForRemoteNotificationsWithDeviceTokenImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
-            swrveInstance->didRegisterForRemoteNotificationsWithDeviceTokenImpl(target, @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:), [UIApplication sharedApplication], newDeviceToken);
+            swrveInstance->didRegisterForRemoteNotificationsWithDeviceTokenImpl(target, @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:), application, newDeviceToken);
         }
     }
 }
@@ -813,7 +848,7 @@ static bool didSwizzle = false;
 
         if( swrveInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
-            swrveInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl(target, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), [UIApplication sharedApplication], error);
+            swrveInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl(target, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), application, error);
         }
     }
 }
@@ -830,7 +865,7 @@ static bool didSwizzle = false;
         
         if( swrveInstance->didReceiveRemoteNotificationImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
-            swrveInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), [UIApplication sharedApplication], userInfo);
+            swrveInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo);
         }
     }
 }
