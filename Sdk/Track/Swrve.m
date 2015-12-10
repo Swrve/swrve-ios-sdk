@@ -12,8 +12,6 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrveLocationCampaign.h"
-#import "SwrveLocationManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -208,9 +206,6 @@ enum
 @property (atomic) int campaignsAndResourcesTimerSeconds;
 @property (atomic) NSDate* campaignsAndResourcesLastRefreshed;
 @property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to API returns
-
-// Location Campaigns cache files
-@property (atomic) SwrveSignatureProtectedFile* locationCampaignFile;
 
 // Resource cache files
 @property (atomic) SwrveSignatureProtectedFile* resourcesFile;
@@ -529,7 +524,6 @@ static bool didSwizzle = false;
 @synthesize userID;
 @synthesize deviceInfo;
 @synthesize talk;
-@synthesize locationManager;
 @synthesize resourceManager;
 
 @synthesize userUpdates;
@@ -543,7 +537,6 @@ static bool didSwizzle = false;
 @synthesize campaignsAndResourcesTimerSeconds;
 @synthesize campaignsAndResourcesLastRefreshed;
 @synthesize campaignsAndResourcesInitialized;
-@synthesize locationCampaignFile;
 @synthesize resourcesFile;
 @synthesize resourcesDiffFile;
 @synthesize eventBuffer;
@@ -722,7 +715,6 @@ static bool didSwizzle = false;
         NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
         [self setCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
 
-        [self initLocationCampaigns];
         [self initResources];
         [self initResourcesDiff];
 
@@ -1181,7 +1173,7 @@ static bool didSwizzle = false;
                     NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
                     if (locationCampaignJson != nil) {
                         NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
-                        [self updateLocationCampaigns:campaignsJson writeToCache:YES];
+                        [self saveLocationCampaignsInCache:campaignsJson];
                     }
 
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
@@ -1900,42 +1892,24 @@ static NSString* httpScheme(bool useHttps)
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"campaigns_and_resources_etag"];
 }
 
-- (void) initLocationCampaigns
+
+- (void) saveLocationCampaignsInCache:(NSDictionary*)campaignsJson
 {
-    NSURL* fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
-    NSURL* signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
-    [self setLocationCampaignFile:[[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey] signatureErrorListener:self]];
-
-    locationManager = [[SwrveLocationManager alloc] init];
-
-    // read content of location campaigns file and update location manager if signature valid
-    NSData* data = [[self locationCampaignFile] readFromFile];
-    if (data != nil) {
-        NSError* error = nil;
-        NSDictionary* locationCampaignsDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        if (error) {
-            DebugLog(@"Error init location campaigns.\nError: %@\njson: %@", error, data);
-        } else {
-            [self updateLocationCampaigns:locationCampaignsDict writeToCache:NO];
-        }
+    NSError* error = nil;
+    NSData* locationCampaignsData = [NSJSONSerialization dataWithJSONObject:campaignsJson options:0 error:&error];
+    if (error) {
+        DebugLog(@"Error parsing/writing location campaigns.\nError: %@\njson: %@", error, campaignsJson);
     } else {
-        [self invalidateETag];
+        [[self getLocationCampaignFile] writeToFile:locationCampaignsData];
     }
 }
 
-- (void) updateLocationCampaigns:(NSDictionary*)campaignsJson writeToCache:(BOOL)writeToCache
-{
-    [[self locationManager] updateWithDictionary:campaignsJson];
-
-    if (writeToCache) {
-        NSError* error = nil;
-        NSData* locationCampaignsData = [NSJSONSerialization dataWithJSONObject:campaignsJson options:0 error:&error];
-        if (error) {
-            DebugLog(@"Error update location campaigns.\nError: %@\njson: %@", error, campaignsJson);
-        } else {
-            [[self locationCampaignFile] writeToFile:locationCampaignsData];
-        }
-    }
+- (SwrveSignatureProtectedFile *)getLocationCampaignFile {
+    NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
+    NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
+    NSString *signatureKey = [self getSignatureKey];
+    SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
+    return locationCampaignFile;
 }
 
 - (void) initResources
