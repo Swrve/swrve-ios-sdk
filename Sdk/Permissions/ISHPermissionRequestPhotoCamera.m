@@ -12,6 +12,8 @@
 #import "ISHPermissionRequestPhotoCamera.h"
 #import "ISHPermissionRequest+Private.h"
 
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
+
 @implementation ISHPermissionRequestPhotoCamera
 
 - (ISHPermissionState)permissionState {
@@ -62,3 +64,6 @@
     }
 }
 @end
+
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+
