@@ -1801,17 +1801,17 @@ static NSString* httpScheme(bool useHttps)
     }
     
     // Optional identifiers
-#ifdef SWRVE_LOG_IDFA
+#if defined(SWRVE_LOG_IDFA)
     if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
     {
         NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
         [deviceProperties setValue:idfa               forKey:@"swrve.IDFA"];
     }
-#endif
-#ifdef SWRVE_LOG_IDFV
+#endif //defined(SWRVE_LOG_IDFA)
+#if defined(SWRVE_LOG_IDFV)
     NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     [deviceProperties setValue:idfv               forKey:@"swrve.IDFV"];
-#endif
+#endif //defined(SWRVE_LOG_IDFV)
     
     return deviceProperties;
 }

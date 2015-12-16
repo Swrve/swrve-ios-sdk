@@ -44,7 +44,7 @@
 
 +(void)registerForRemoteNotifications:(UIUserNotificationSettings*)notificationSettings {
     UIApplication* app = [UIApplication sharedApplication];
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     // Check if the new push API is not available
     if (![app respondsToSelector:@selector(registerUserNotificationSettings:)])
@@ -53,7 +53,7 @@
         [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
     }
     else
-#endif
+#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     {
         NSAssert(notificationSettings, @"Requested notification settings should be set for request before requesting user permission", nil);
         [app registerUserNotificationSettings:notificationSettings];
@@ -62,7 +62,7 @@
 #else
     // Not building with the latest XCode that contains iOS 8 definitions
     [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
+#endif //defined(__IPHONE_8_0)
 }
 
 @end

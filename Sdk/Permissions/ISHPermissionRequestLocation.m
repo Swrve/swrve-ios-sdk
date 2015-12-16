@@ -13,6 +13,8 @@
 #import "ISHPermissionRequestLocation.h"
 #import "ISHPermissionRequest+Private.h"
 
+#if !defined(SWRVE_NO_LOCATION)
+
 @interface ISHPermissionRequestLocation () <CLLocationManagerDelegate>
 @property (nonatomic) CLLocationManager *_locationManager;
 @property (nonatomic) BOOL initialChangeAuthorizationStatusCallWasIgnored;
@@ -44,7 +46,7 @@
     CLAuthorizationStatus systemState = [CLLocationManager authorizationStatus];
 
     switch (systemState) {
-#ifndef __IPHONE_8_0
+#if !defined(__IPHONE_8_0)
         case kCLAuthorizationStatusAuthorized:
             return ISHPermissionStateAuthorized;
 #else
@@ -60,7 +62,7 @@
             } else {
                 return ISHPermissionStateAuthorized;
             }
-#endif
+#endif //!defined(__IPHONE_8_0)
         case kCLAuthorizationStatusDenied:
         case kCLAuthorizationStatusRestricted:
             return ISHPermissionStateDenied;
@@ -86,7 +88,7 @@
         [self.locationManager startUpdatingLocation];
         return;
     }
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
     if (self.permissionCategory == ISHPermissionCategoryLocationAlways) {
         if ([ISHPermissionRequestLocation grantedWhenInUse]) {
             /*
@@ -105,35 +107,35 @@
         [self.locationManager requestWhenInUseAuthorization];
         [self.locationManager startUpdatingLocation];
     }
-#endif
+#endif //defined(__IPHONE_8_0)
 }
 
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
 + (BOOL)grantedWhenInUse {
     return ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse);
 }
-#endif
+#endif //defined(__IPHONE_8_0)
 
 - (BOOL)useFallback {
-#ifdef __IPHONE_8_0 // only for builds with base sdk of iOS8 and higher
+#if defined(__IPHONE_8_0) // only for builds with base sdk of iOS8 and higher
     // when building for iOS8 we need to feature check if running on iOS7:
     return !([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]);
 #else
     return YES;
-#endif
+#endif //defined(__IPHONE_8_0)
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
 #pragma unused(manager)
     BOOL notDetermined = (status == kCLAuthorizationStatusNotDetermined);
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
     BOOL grantedWhenInUse = (status == kCLAuthorizationStatusAuthorizedWhenInUse);
     BOOL requestingAlways = (self.permissionCategory == ISHPermissionCategoryLocationAlways);
 #else
     // If we are building with iOS7, there is no always/whenInUse case
     BOOL grantedWhenInUse = NO;
     BOOL requestingAlways = NO;
-#endif
+#endif //defined(__IPHONE_8_0)
     
     if (notDetermined || (grantedWhenInUse && requestingAlways)) {
         /* early calls to this delegate method are ignored, if this is not the change we are waiting for.
@@ -162,7 +164,7 @@
     self.completionBlock = nil;
 }
 
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
 - (void)UIApplicationDidBecomeActiveNotification:(NSNotification *)note {
 #pragma unused(note)
     BOOL requestingAlways = (self.permissionCategory == ISHPermissionCategoryLocationAlways);
@@ -181,6 +183,8 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
-#endif
+#endif //defined(__IPHONE_8_0)
 
 @end
+
+#endif //!defined(SWRVE_NO_LOCATION)

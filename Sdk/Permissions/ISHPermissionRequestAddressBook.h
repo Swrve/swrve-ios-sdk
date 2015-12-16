@@ -8,5 +8,9 @@
 
 #import "ISHPermissionRequest.h"
 
+#if !defined(SWRVE_NO_ADDRESS_BOOK)
+
 @interface ISHPermissionRequestAddressBook : ISHPermissionRequest
 @end
+
+#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
