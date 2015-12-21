@@ -229,6 +229,8 @@ enum
 @property (atomic) NSURL* batchURL;
 @property (atomic) NSURL* campaignsAndResourcesURL;
 
+@property (atomic) NSString* locationVersion;
+
 @end
 
 // Manages unique ids for each instance of Swrve
@@ -547,6 +549,7 @@ static bool didSwizzle = false;
 @synthesize eventsWereSent;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
+@synthesize locationVersion;
 
 + (void) resetSwrveSharedInstance
 {
@@ -1750,7 +1753,6 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
-    [deviceProperties setValue:[NSNumber numberWithInteger:LOCATION_VERSION] forKey:@"swrve.location_version"];
 
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
