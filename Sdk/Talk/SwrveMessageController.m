@@ -29,6 +29,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 @interface Swrve(PrivateMethodsForMessageController)
 @property BOOL campaignsAndResourcesInitialized;
+@property (atomic) NSString* locationVersion;
 -(void) setPushNotificationsDeviceToken:(NSData*)deviceToken;
 -(void) pushNotificationReceived:(NSDictionary*)userInfo;
 -(void) invalidateETag;
@@ -1370,8 +1371,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 #pragma clang diagnostic pop
     }
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, LOCATION_VERSION];
+    NSString* locationVersion = self.analyticsSDK.locationVersion;
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%@",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, locationVersion];
 }
 
 @end
