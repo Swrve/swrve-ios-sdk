@@ -693,10 +693,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(void) shutdown;
 
-/*! Used internally to detect if the app is in the background.
- */
--(BOOL) appInBackground;
-
 /*! Used internally to read location cache.
  */
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile;

@@ -1353,11 +1353,6 @@ static bool didSwizzle = false;
     [self setEventBuffer:nil];
 }
 
-- (BOOL) appInBackground {
-    UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
-    return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
-}
-
 #pragma mark -
 #pragma mark Private methods
 
