@@ -193,11 +193,18 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void)setDeviceToken:(NSData*)deviceToken;
 
-/*! Process the given push notification.
+/*! Process the given push notification. Internally, it calls -pushNotificationReceived:atApplicationState: with current the application state.
  *
  * \param userInfo Push notification information.
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo;
+
+/*! Process the given push notification.
+ *
+ * \param userInfo Push notification information.
+ * \param applicationState Application state at the time when the push notificatin was received.
+ */
+- (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
 
 /*! Check if the user is a QA user. For internal use.
  *
