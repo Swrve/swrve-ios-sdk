@@ -193,7 +193,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void)setDeviceToken:(NSData*)deviceToken;
 
-/*! Process the given push notification. Internally, it calls -pushNotificationReceived:atApplicationState: with current the application state.
+/*! Process the given push notification. Internally, it calls -pushNotificationReceived:atApplicationState: with the current application state.
  *
  * \param userInfo Push notification information.
  */
