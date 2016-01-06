@@ -1580,8 +1580,8 @@ static bool didSwizzle = false;
         }
         
         // Only process this push if we haven't seen it before
-        if (lastProcessedPushId == nil || ![pushIdentifier isEqualToString:lastProcessedPushId]) {
-            lastProcessedPushId = pushIdentifier;
+        if (lastProcessedPushId == nil || ![pushId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushId;
             
             // Process deeplink _d
             id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
