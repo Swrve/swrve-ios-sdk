@@ -1080,31 +1080,40 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     @synchronized(self) {
         if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
             // Create a view to show the conversation
-            UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
-            SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            [scivc setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
             
-            self.swrveConversationItemViewController = scivc;
+            @try {
+                UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:self.class]];
+                SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+                self.swrveConversationItemViewController = scivc;
+            }
+            @catch (NSException *exception) {
+                //Unable to load Conversation Item View Controller
+                return;
+            }
+            
+            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            [self.swrveConversationItemViewController setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
+            
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
-            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
             self.swrveConversationsNavigationController = svnc;
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                svnc.modalPresentationStyle = UIModalPresentationFormSheet;
+                self.swrveConversationsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
             }
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wselector"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
             // Attach cancel button to the conversation navigation options
-            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
-    #pragma clang diagnostic pop
-            scivc.navigationItem.leftBarButtonItem = cancelButton;
-
+            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.swrveConversationItemViewController action:@selector(cancelButtonTapped:)];
+#pragma clang diagnostic pop
+            self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:self.swrveConversationsNavigationController];
                 self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
                 [rootController.view endEditing:YES];
             });
+            
         }
     }
 }
