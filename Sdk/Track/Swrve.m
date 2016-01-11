@@ -1353,6 +1353,7 @@ static bool didSwizzle = false;
     [self setEventBuffer:nil];
 }
 
+// Deprecated
 - (BOOL) appInBackground {
     UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
     return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);

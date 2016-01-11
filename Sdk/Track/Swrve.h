@@ -695,7 +695,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Used internally to detect if the app is in the background.
  */
--(BOOL) appInBackground;
+-(BOOL) appInBackground __deprecated;
 
 /*! Used internally to read location cache.
  */

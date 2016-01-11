@@ -1321,9 +1321,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (void) pushNotificationReceived:(NSDictionary*)userInfo
 {
+    [self pushNotificationReceived:userInfo atApplicationState:[UIApplication sharedApplication].applicationState];
+}
+
+- (void) pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState
+{
     if (self.pushEnabled) {
         // Do not process the push notification if the app was on the foreground
-        if ([self.analyticsSDK appInBackground]) {
+        BOOL appInBackground = applicationState != UIApplicationStateActive;
+        if (appInBackground) {
             [self.analyticsSDK pushNotificationReceived:userInfo];
             if (self.qaUser) {
                 [self.qaUser pushNotification:userInfo];
