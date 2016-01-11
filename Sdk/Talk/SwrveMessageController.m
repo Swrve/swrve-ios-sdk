@@ -1088,7 +1088,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 self.swrveConversationItemViewController = scivc;
             }
             @catch (NSException *exception) {
-                //Unable to load Conversation Item View Controller
+                DebugLog(@"Unable to load Conversation Item View Controller. %@", exception);
                 return;
             }
             
