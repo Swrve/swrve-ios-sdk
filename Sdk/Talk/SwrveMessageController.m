@@ -798,7 +798,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         DebugLog(@"Not showing message: no candidate messages for %@", event);
     } else {
         // Notify message has been returned
-        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:@"id",[result.messageID stringValue], nil];
+        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
         NSString *eventName = @"Swrve.Messages.message_returned";
         [self.analyticsSDK eventInternal:eventName payload:payload triggerCallback:true];
     }
