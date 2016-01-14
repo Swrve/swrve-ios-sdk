@@ -2,7 +2,6 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveConversation.h"
 
 @interface SwrveConversationCampaign()
 
@@ -46,8 +45,7 @@
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation at:(NSDate*)timeShown
 {
 #pragma unused(conversation)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
+    [super wasShownToUserAt:timeShown];
 }
 
 -(void)conversationDismissed:(NSDate *)timeDismissed
@@ -117,6 +115,11 @@
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
+}
+
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+    return YES;
 }
 
 @end
