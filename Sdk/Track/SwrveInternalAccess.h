@@ -3,7 +3,6 @@
 @interface Swrve (SwrveInternalAccess)
 
 - (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback;
-- (int)locationImpressionEvent:(int)messageId;
-- (int)locationEngagedEvent:(int)messageId;
+- (void)queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
 
 @end
