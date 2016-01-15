@@ -1376,6 +1376,24 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
+-(int) locationImpressionEvent:(int)messageId
+{
+    [self maybeFlushToDisk];
+    NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
+    [json setValue:[[NSNumber alloc] initWithInt:messageId] forKey:@"id"];
+    [self queueEvent:@"location_campaign_impression" data:json triggerCallback:NO];
+    return SWRVE_SUCCESS;
+}
+
+-(int) locationEngagedEvent:(int)messageId
+{
+    [self maybeFlushToDisk];
+    NSMutableDictionary* json = [[NSMutableDictionary alloc] init];
+    [json setValue:[[NSNumber alloc] initWithInt:messageId] forKey:@"id"];
+    [self queueEvent:@"location_campaign_engaged" data:json triggerCallback:NO];
+    return SWRVE_SUCCESS;
+}
+
 -(void) dealloc
 {
     if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == YES)
