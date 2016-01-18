@@ -48,13 +48,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 - (NSMutableDictionary *)campaignSettings;
 @end
 
-//@interface SwrveBaseCampaign(ProtectedSwrveBaseCampaign)
-//-(void)loadSettings:(NSDictionary*)settings;
-//-(BOOL)isActive:(NSDate*)date withReasons:(NSMutableDictionary*)campaignReasons;
-//@end
-
-
-
 @interface SwrveMessageController()
 
 @property (nonatomic, retain) NSString*             user;
@@ -116,7 +109,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize showMessagesAfterDelay;
 @synthesize messagesLeftToShow;
 @synthesize backgroundColor;
-@synthesize campaigns;
+@synthesize swrveCampaigns;
 @synthesize user;
 @synthesize assetsOnDisk;
 @synthesize notifications;
@@ -274,8 +267,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 - (void)saveSettings
 {
-    NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.campaigns.count];
-    for (SwrveCampaign* campaign in self.campaigns)
+    NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.swrveCampaigns.count];
+    for (SwrveCampaign* campaign in self.swrveCampaigns)
     {
         [newSettings addObject:[campaign campaignSettings]];
     }
@@ -381,7 +374,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     if ([campaignJson count] == 0) {
         DebugLog(@"Campaign JSON empty, no campaigns downloaded", nil);
-        self.campaigns = [[NSArray alloc] init];
+        self.swrveCampaigns = [[NSArray alloc] init];
         return;
     }
     
@@ -524,7 +517,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [self downloadAsset:asset];
     }
     
-    self.campaigns = [result copy];
+    self.swrveCampaigns = [result copy];
 }
 
 -(NSSet*)withOutExistingFiles:(NSSet*)assetSet
@@ -599,7 +592,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void) appDidBecomeActive {
     // Obtain all assets required for the available campaigns
     NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
-    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+    for (SwrveBaseCampaign* campaign in self.swrveCampaigns) {
         [campaign addAssetsToQueue:assetsQueue];
     }
     
@@ -622,7 +615,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
     
-    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+    for (SwrveBaseCampaign* campaign in self.swrveCampaigns) {
         if ([campaign isKindOfClass:[SwrveCampaign class]]) {
             SwrveCampaign* specificCampaign = (SwrveCampaign*)campaign;
             if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
@@ -672,7 +665,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(BOOL)checkGlobalRules:(NSString *)event {
     NSDate* now = [self.analyticsSDK getNow];
-    if ([self.campaigns count] == 0)
+    if ([self.swrveCampaigns count] == 0)
     {
         [self noMessagesWereShown:event withReason:@"No campaigns available"];
         return FALSE;
@@ -712,7 +705,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
     
-    if (self.campaigns != nil) {
+    if (self.swrveCampaigns != nil) {
         if (![self checkGlobalRules:event]) {
             return nil;
         }
@@ -730,7 +723,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSMutableArray* candidateMessages = [[NSMutableArray alloc] init];
         // Get current orientation
         UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        for (SwrveBaseCampaign* baseCampaignIt in self.campaigns)
+        for (SwrveBaseCampaign* baseCampaignIt in self.swrveCampaigns)
         {
             if ([baseCampaignIt isKindOfClass:[SwrveCampaign class]]) {
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
@@ -820,7 +813,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
     
-    if (self.campaigns != nil) {
+    if (self.swrveCampaigns != nil) {
         if (![self checkGlobalRules:event])
         {
             return nil;
@@ -834,7 +827,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
         
         NSMutableArray* availableMessages = [[NSMutableArray alloc] init];
-        for (SwrveBaseCampaign* baseCampaignIt in self.campaigns)
+        for (SwrveBaseCampaign* baseCampaignIt in self.swrveCampaigns)
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
@@ -1405,7 +1398,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 {
     NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
-    for(SwrveBaseCampaign* campaign in self.campaigns) {
+    for(SwrveBaseCampaign* campaign in self.swrveCampaigns) {
         if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
             [result addObject:campaign];
         }

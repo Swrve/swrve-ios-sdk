@@ -50,9 +50,8 @@
 
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown
 {
-    #pragma unused(message)
+#pragma unused(message)
     [self wasShownToUserAt:timeShown];
-    [super wasShownToUserAt:timeShown];
 
     if (![self randomOrder])
     {

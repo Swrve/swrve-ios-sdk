@@ -119,6 +119,7 @@
 
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
+#pragma unused(orientation)
     return YES;
 }
 

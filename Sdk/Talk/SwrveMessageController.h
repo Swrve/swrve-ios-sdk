@@ -108,7 +108,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 @property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
 @property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */
-@property (nonatomic, retain) NSArray* campaigns;                                       /*!< List of campaigns available to the user. */
+@property (nonatomic, retain) NSArray* swrveCampaigns;                                  /*!< List of campaigns available to the user. */
 @property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
 @property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;    /*!< Implement this delegate to process custom button actions. */
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
@@ -243,7 +243,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * removeCampaign method and those that do not support the current orientation.
  *
  * To obtain all Inbox campaigns independent of their orientation support
- * use the getCampaigns(UIInterfaceOrientationUnknown) method.
+ * use the campaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
  *
  * \returns List of active Inbox campaigns.
  */
@@ -253,7 +253,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * It will exclude campaigns that have been deleted with the
  * removeCampaign method and those that do not support the given orientation.
  *
- * \returns List of active Inbox campaigns.
+ * \returns List of active Inbox campaigns that support the given orientation.
  */
 -(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
 

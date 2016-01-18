@@ -237,6 +237,7 @@ static NSDate* read_date(id d, NSDate* default_date)
 
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
+#pragma unused(orientation)
     return NO;
 }
 
