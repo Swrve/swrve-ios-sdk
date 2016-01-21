@@ -1373,12 +1373,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName;
     NSString* encodedSystemName;
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     } else
-#endif
+#endif //defined(__IPHONE_9_0)
     {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

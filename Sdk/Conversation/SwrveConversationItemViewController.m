@@ -133,14 +133,14 @@
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 NSString *alertMessage = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
                 NSString *alertTitle = NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL");
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
                 if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
                     UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
                                                                                    message:alertMessage
                                                                             preferredStyle:UIAlertControllerStyleAlert];
                     [self presentViewController:alert animated:true completion:nil];
                 } else
-#endif
+#endif //defined(__IPHONE_9_0)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 {
@@ -311,11 +311,11 @@
 #pragma mark - Rotation
 
 // Rotation for iOS < 6
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
 #else
 -(NSUInteger) supportedInterfaceOrientations {
-#endif
+#endif //defined(__IPHONE_9_0)
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return UIInterfaceOrientationMaskAll;
     } else {
@@ -461,7 +461,7 @@
     }
 }
 
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
 - (BOOL)prefersStatusBarHidden
 {
     return NO;
@@ -474,6 +474,6 @@
         [atom viewWillTransitionToSize:size];
     }
 }
-#endif
+#endif //defined(__IPHONE_8_0)
 
 @end

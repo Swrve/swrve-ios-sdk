@@ -100,7 +100,7 @@
     self.block(pressed.actionType, pressed.actionString, pressed.appID);
 }
 
-#ifdef __IPHONE_8_0
+#if defined(__IPHONE_8_0)
 -(BOOL)prefersStatusBarHidden
 {
     if (prefersIAMStatusBarHidden) {
@@ -119,7 +119,7 @@
     [self removeAllViews];
     [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];    
 }
-#endif
+#endif //defined(__IPHONE_8_0)
 
 - (void) displayForViewportOfSize:(CGSize)size
 {
@@ -169,11 +169,11 @@
 }
 
 // iOS 6 and iOS 7 (to be deprecated)
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 #else
 - (NSUInteger)supportedInterfaceOrientations
-#endif
+#endif //defined(__IPHONE_9_0)
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         return UIInterfaceOrientationMaskAll;

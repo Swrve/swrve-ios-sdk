@@ -25,17 +25,25 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)compareStatusAndQueueEventsWithSDK:(Swrve*)sdk;
 + (NSArray*) currentPermissionFiltersWithSDK:(Swrve*)sdk;
 
+#if !defined(SWRVE_NO_LOCATION)
 + (ISHPermissionState)checkLocationAlways;
 + (void)requestLocationAlways:(Swrve*)sdk;
+#endif //!defined(SWRVE_NO_LOCATION)
 
+#if !defined(SWRVE_NO_PHOTO_LIBRARY)
 + (ISHPermissionState)checkPhotoLibrary;
 + (void)requestPhotoLibrary:(Swrve*)sdk;
+#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
 
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
 + (ISHPermissionState)checkCamera;
 + (void)requestCamera:(Swrve*)sdk;
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 
+#if !defined(SWRVE_NO_ADDRESS_BOOK)
 + (ISHPermissionState)checkContacts;
 + (void)requestContacts:(Swrve*)sdk;
+#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
 + (ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk;
 + (void)requestPushNotifications:(Swrve*)sdk withCallback:(BOOL)callback;
