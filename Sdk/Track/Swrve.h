@@ -1,8 +1,11 @@
-#import "SwrveMessageController.h"
-#import "SwrveInterfaceOrientation.h"
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
+
+#if !defined(TARGET_OS_TV)
+#import "SwrveMessageController.h"
+#import "SwrveInterfaceOrientation.h"
+#endif
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
@@ -105,9 +108,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * of your app. If not specified the SDK will assign a random UUID to this device. */
 @property (nonatomic, retain) NSString * userId;
 
-/*! The supported orientations of the app. */
-@property (nonatomic) SwrveInterfaceOrientation orientation;
-
 /*! By default Swrve will choose the status bar appearance
  * when presenting any view controllers.  
  * You can disable this functionality by setting
@@ -137,8 +137,33 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) BOOL autoDownloadCampaignsAndResources;
 
+#if !defined(TARGET_OS_TV)
+
+/*! The supported orientations of the app. */
+@property (nonatomic) SwrveInterfaceOrientation orientation;
+
 /*! Controls if Swrve in-app messaging is enabled. */
 @property (nonatomic) BOOL talkEnabled;
+
+/*! Controls if push notifications are enabled. */
+@property (nonatomic) BOOL pushEnabled;
+
+/*! The set of Swrve events that will trigger push notifications. */
+@property (nonatomic, retain) NSSet* pushNotificationEvents;
+
+/*! Controls if the SDK automatically collects the push device token. To
+ * manually set the device token yourself set to NO.
+ */
+@property (nonatomic) BOOL autoCollectDeviceToken;
+
+/*! Set of iOS8+ interactive push notification categories (UIMutableUserNotificationCategory).
+ * Initialize this set only if running on an iOS8+ device with the interactive actions that
+ * your app supports for push notifications. Will be used when registering for
+ * push notification permissions with UIUserNotificationSettings.
+ */
+@property (nonatomic, copy) NSSet* pushCategories;
+
+#endif
 
 /*! Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor* defaultBackgroundColor;
@@ -169,24 +194,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Controls if saveEvents is automatically called when the app resigns to the background.
  */
 @property (nonatomic) BOOL autoSaveEventsOnResign;
-
-/*! Controls if push notifications are enabled. */
-@property (nonatomic) BOOL pushEnabled;
-
-/*! The set of Swrve events that will trigger push notifications. */
-@property (nonatomic, retain) NSSet* pushNotificationEvents;
-
-/*! Controls if the SDK automatically collects the push device token. To
- * manually set the device token yourself set to NO.
- */
-@property (nonatomic) BOOL autoCollectDeviceToken;
-
-/*! Set of iOS8+ interactive push notification categories (UIMutableUserNotificationCategory).
- * Initialize this set only if running on an iOS8+ device with the interactive actions that
- * your app supports for push notifications. Will be used when registering for
- * push notification permissions with UIUserNotificationSettings. 
- */
-@property (nonatomic, copy) NSSet* pushCategories;
 
 /*! Maximum delay for in-app messages to appear after initialization. */
 @property (nonatomic) long autoShowMessagesMaxDelay;
@@ -288,7 +295,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config;
 @property (nonatomic, readonly) NSString * userId;
+#if !defined(TARGET_OS_TV)
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
+@property (nonatomic, readonly) BOOL talkEnabled;
+#endif
 @property (nonatomic, readonly) BOOL prefersIAMStatusBarHidden;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString * eventsServer;
@@ -309,7 +319,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
-@property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
@@ -709,7 +718,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         NSString * apiKey;                       /*!< Secret token used to initialize this Swrve object. */
 @property (atomic, readonly)         NSString * userID;                       /*!< User ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSDictionary * deviceInfo;               /*!< Information about the current device. */
+#if !defined(TARGET_OS_TV)
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
+#endif
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 

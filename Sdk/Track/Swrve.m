@@ -5,12 +5,14 @@
 #include <sys/time.h>
 #import "Swrve.h"
 #include <sys/sysctl.h>
+#if !defined(TARGET_OS_TV)
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import <CommonCrypto/CommonHMAC.h>
-#import <AdSupport/ASIdentifierManager.h>
 #import "SwrveCampaign.h"
+#import <AdSupport/ASIdentifierManager.h>
 #import "SwrvePermissions.h"
+#endif
+#import <CommonCrypto/CommonHMAC.h>
 #import "SwrveSwizzleHelper.h"
 
 #if SWRVE_TEST_BUILD
@@ -129,6 +131,7 @@ enum
 
 @end
 
+#if !defined(TARGET_OS_TV)
 @interface SwrveMessageController()
 
 @property (nonatomic) bool autoShowMessagesEnabled;
@@ -139,6 +142,8 @@ enum
 -(void) autoShowMessages;
 
 @end
+
+#endif
 
 @interface Swrve()
 {
@@ -293,7 +298,14 @@ enum
 @implementation SwrveConfig
 
 @synthesize userId;
+#if !defined(TARGET_OS_TV)
 @synthesize orientation;
+@synthesize talkEnabled;
+@synthesize pushEnabled;
+@synthesize pushNotificationEvents;
+@synthesize autoCollectDeviceToken;
+@synthesize pushCategories;
+#endif
 @synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
@@ -314,16 +326,11 @@ enum
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
-@synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
-@synthesize pushEnabled;
-@synthesize pushNotificationEvents;
-@synthesize autoCollectDeviceToken;
-@synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
 
@@ -333,7 +340,9 @@ enum
         httpTimeoutSeconds = 60;
         autoDownloadCampaignsAndResources = YES;
         maxConcurrentDownloads = 2;
+#if !defined(TARGET_OS_TV)
         orientation = SWRVE_ORIENTATION_BOTH;
+#endif
         prefersIAMStatusBarHidden = YES;
         appVersion = [Swrve getAppVersion];
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
@@ -356,10 +365,12 @@ enum
         self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
+#if !defined(TARGET_OS_TV)
         self.talkEnabled = YES;
         self.pushEnabled = NO;
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
+#endif
         self.autoShowMessagesMaxDelay = 5000;
         self.receiptProvider = [[SwrveReceiptProvider alloc] init];
         self.resourcesUpdatedCallback = ^() {
@@ -375,7 +386,13 @@ enum
 @implementation ImmutableSwrveConfig
 
 @synthesize userId;
+#if !defined(TARGET_OS_TV)
 @synthesize orientation;
+@synthesize talkEnabled;
+@synthesize pushEnabled;
+@synthesize pushNotificationEvents;
+@synthesize autoCollectDeviceToken;
+#endif
 @synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
@@ -396,15 +413,11 @@ enum
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
-@synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
-@synthesize pushEnabled;
-@synthesize pushNotificationEvents;
-@synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
@@ -413,7 +426,14 @@ enum
 {
     if (self = [super init]) {
         userId = config.userId;
+#if !defined(TARGET_OS_TV)
         orientation = config.orientation;
+        talkEnabled = config.talkEnabled;
+        pushEnabled = config.pushEnabled;
+        pushNotificationEvents = config.pushNotificationEvents;
+        autoCollectDeviceToken = config.autoCollectDeviceToken;
+        pushCategories = config.pushCategories;
+#endif
         prefersIAMStatusBarHidden = config.prefersIAMStatusBarHidden;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
@@ -434,16 +454,11 @@ enum
         receiptProvider = config.receiptProvider;
         maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
-        talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
-        pushEnabled = config.pushEnabled;
-        pushNotificationEvents = config.pushNotificationEvents;
-        autoCollectDeviceToken = config.autoCollectDeviceToken;
-        pushCategories = config.pushCategories;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         selectedStack = config.selectedStack;
     }
@@ -525,7 +540,9 @@ static bool didSwizzle = false;
 @synthesize apiKey;
 @synthesize userID;
 @synthesize deviceInfo;
+#if !defined(TARGET_OS_TV)
 @synthesize talk;
+#endif
 @synthesize resourceManager;
 
 @synthesize userUpdates;
@@ -731,6 +748,7 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
+#if !defined(TARGET_OS_TV)
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
@@ -755,6 +773,7 @@ static bool didSwizzle = false;
             [self disableAutoShowAfterDelay];
         }
         [self registerForNotifications];
+#endif
         
         [self queueSessionStart];
         [self queueDeviceProperties];
@@ -780,7 +799,8 @@ static bool didSwizzle = false;
         }
 
         [self startCampaignsAndResourcesTimer];
-        
+
+#if !defined(TARGET_OS_TV)
         // Check if the launch options of the app has any push notification in it
         if (launchOptions != nil) {
             NSDictionary * remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -788,6 +808,8 @@ static bool didSwizzle = false;
                 [self.talk pushNotificationReceived:remoteNotification];
             }
         }
+#endif
+
     }
 
     [self sendQueuedEvents];
@@ -816,6 +838,7 @@ static bool didSwizzle = false;
     }
 }
 
+#if !defined(TARGET_OS_TV)
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
     #pragma unused(application)
     Swrve* swrveInstance = [Swrve sharedInstance];
@@ -864,6 +887,7 @@ static bool didSwizzle = false;
         }
     }
 }
+#endif
 
 -(void) queueSessionStart
 {
@@ -1103,10 +1127,13 @@ static bool didSwizzle = false;
 
     NSMutableString* queryString = [NSMutableString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&joined=%llu",
                              self.userID, self.apiKey, self.config.appVersion, self->install_time];
+    
+#if !defined(TARGET_OS_TV)
     if (self.talk && [self.config talkEnabled]) {
         NSString* campaignQueryString = [self.talk getCampaignQueryString];
         [queryString appendFormat:@"&%@", campaignQueryString];
     }
+#endif
 
     NSString* etagValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"campaigns_and_resources_etag"];
     if (etagValue != nil) {
@@ -1150,6 +1177,7 @@ static bool didSwizzle = false;
                         [[NSUserDefaults standardUserDefaults] setDouble:self.campaignsAndResourcesFlushRefreshDelay forKey:@"swrve_cr_flush_delay"];
                     }
 
+#if !defined(TARGET_OS_TV)
                     if (self.talk && [self.config talkEnabled]) {
                         NSDictionary* campaignJson = [responseDict objectForKey:@"campaigns"];
                         if (campaignJson != nil) {
@@ -1178,6 +1206,7 @@ static bool didSwizzle = false;
                         NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
                         [self saveLocationCampaignsInCache:campaignsJson];
                     }
+#endif
 
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
                     if (resourceJson != nil) {
@@ -1196,11 +1225,13 @@ static bool didSwizzle = false;
         if (![self campaignsAndResourcesInitialized]) {
             [self setCampaignsAndResourcesInitialized:YES];
 
+#if !defined(TARGET_OS_TV)
             // Only called first time API call returns - whether failed or successful, whether new campaigns were returned or not;
             // this ensures that if API call fails or there are no changes, we call autoShowMessages with cached campaigns
             if ([self talk]) {
                 [[self talk] autoShowMessages];
             }
+#endif
 
             // Invoke listeners once to denote that the first attempt at downloading has finished
             // independent of whether the resources or campaigns have changed from cached values
@@ -1338,7 +1369,9 @@ static bool didSwizzle = false;
 
     [self stopCampaignsAndResourcesTimer];
 
+#if !defined(TARGET_OS_TV)
     talk = nil;
+#endif
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -1394,8 +1427,10 @@ static bool didSwizzle = false;
     NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
+#if !defined(TARGET_OS_TV)
     // Send permission events
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
+#endif
 }
 
 -(void) registerForNotifications
@@ -1428,21 +1463,25 @@ static bool didSwizzle = false;
         // We consider this a new session as more than newSessionInterval seconds
         // have passed.
         [self sessionStart];
+#if !defined(TARGET_OS_TV)
         // Re-enable auto show messages at session start
         if ([self talk]) {
             [[self talk] setAutoShowMessagesEnabled:YES];
             [self disableAutoShowAfterDelay];
         }
+#endif
     }
     
     [self queueDeviceProperties];
     if (self.config.autoSendEventsOnResume) {
         [self sendQueuedEvents];
     }
-
+    
+#if !defined(TARGET_OS_TV)
     if (config.talkEnabled) {
         [self.talk appDidBecomeActive];
     }
+#endif
     [self resumeCampaignsAndResourcesTimer];
     lastSessionDate = [self getNow];
 }
@@ -1531,6 +1570,7 @@ static bool didSwizzle = false;
 //If talk enabled ensure that after SWRVE_DEFAULT_AUTOSHOW_MESSAGES_MAX_DELAY autoshow is disabled
 -(void) disableAutoShowAfterDelay
 {
+#if !defined(TARGET_OS_TV)
     if ([self talk]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
@@ -1546,6 +1586,7 @@ static bool didSwizzle = false;
         [disableAutoshowInvocation setArgument:&arg atIndex:2];
         [NSTimer scheduledTimerWithTimeInterval:(self.config.autoShowMessagesMaxDelay/1000) invocation:disableAutoshowInvocation repeats:NO];
     }
+#endif
 }
 
 
@@ -1753,6 +1794,7 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
+#if !defined(TARGET_OS_TV)
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
     // Carrier info
@@ -1772,6 +1814,7 @@ static NSString* httpScheme(bool useHttps)
     // Get current state of permissions
     NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     [deviceProperties addEntriesFromDictionary:permissionStatus];
+#endif
 
     NSTimeZone* tz     = [NSTimeZone localTimeZone];
     NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
@@ -1811,12 +1854,14 @@ static NSString* httpScheme(bool useHttps)
     return deviceProperties;
 }
 
+#if !defined(TARGET_OS_TV)
 - (CTCarrier*) getCarrierInfo
 {
     // Obtain carrier info from the device
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     return [netinfo subscriberCellularProvider];
 }
+#endif
 
 - (void) queueDeviceProperties
 {
