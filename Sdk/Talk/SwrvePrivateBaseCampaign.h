@@ -24,4 +24,21 @@
 -(BOOL)checkCampaignRulesForEvent:(NSString*)event
                            atTime:(NSDate*)time
                       withReasons:(NSMutableDictionary*)campaignReasons;
+
+
+/*! PRIVATE: Notify when the campaign was displayed. */
+- (void)wasShownToUserAt:(NSDate *)timeShown;
+
+/*! PRIVATE: Get the stroed campaign settings. */
+- (NSMutableDictionary *)campaignSettings;
+
+/*! PRIVATE: Add the required assets to the given queue. */
+-(void)addAssetsToQueue:(NSMutableSet*)assetsQueue;
+
+/*! PRIVATE: Load the campaign settings. */
+-(void)loadSettings:(NSDictionary*)settings;
+
+/*! PRIVATE: Returns true if the campaign is active at a given time . */
+-(BOOL)isActive:(NSDate*)date withReasons:(NSMutableDictionary*)campaignReasons;
+
 @end

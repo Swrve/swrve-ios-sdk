@@ -2,7 +2,6 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveMessage.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
 
@@ -51,10 +50,9 @@
 
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown
 {
-    #pragma unused(message)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
-    
+#pragma unused(message)
+    [self wasShownToUserAt:timeShown];
+
     if (![self randomOrder])
     {
         NSUInteger count = [[self messages] count];
@@ -145,6 +143,20 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     NSMutableDictionary* settings = [super campaignSettings];
     [settings setValue:[NSNumber numberWithUnsignedInteger:[self next]] forKey:@"next"];
     return [NSDictionary dictionaryWithDictionary:settings];
+}
+
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+    if (orientation == UIInterfaceOrientationUnknown) {
+        return YES;
+    }
+    
+    for (SwrveMessage* message in messages) {
+        if ([message supportsOrientation:orientation]){
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end
