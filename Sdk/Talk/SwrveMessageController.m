@@ -45,7 +45,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 @interface SwrveCampaign(PrivateMethodsForMessageController)
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown;
-- (NSMutableDictionary *)campaignSettings;
 @end
 
 @interface SwrveMessageController()
@@ -53,6 +52,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             user;
 @property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
+@property (nonatomic, retain) NSArray*              swrveCampaigns; // List of campaigns available to the user.
+@property (nonatomic, retain) NSMutableDictionary*  swrveCampaignsState; // Serializable state of the campaigns.
 @property (nonatomic, retain) NSString*           	server;
 @property (nonatomic, retain) NSMutableSet*         assetsOnDisk;
 @property (nonatomic, retain) NSString*             cacheFolder;
@@ -110,6 +111,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize messagesLeftToShow;
 @synthesize backgroundColor;
 @synthesize swrveCampaigns;
+@synthesize swrveCampaignsState;
 @synthesize user;
 @synthesize assetsOnDisk;
 @synthesize notifications;
@@ -211,6 +213,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
         [self setDeviceToken:device_token];
     }
     
+    self.swrveCampaignsState = [[NSMutableDictionary alloc] init];
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
     
@@ -237,40 +240,34 @@ const static int DEFAULT_MIN_DELAY           = 55;
     [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
 }
 
-- (NSDictionary*)getCampaignSettings
+- (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
-    NSMutableDictionary* settings = [[NSMutableDictionary alloc] init];
     NSData* data = [NSData dataWithContentsOfFile:[self settingsPath]];
-    
     if(!data)
     {
-        DebugLog(@"Error: No settings loaded. [Reading from %@]", [self settingsPath]);
-        return [NSDictionary dictionaryWithDictionary:settings];
+        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", [self settingsPath]);
+        return;
     }
     
     NSError* error = NULL;
-    NSArray* loadedSettings = [NSPropertyListSerialization propertyListWithData:data
+    NSArray* loadedStates = [NSPropertyListSerialization propertyListWithData:data
                                                                         options:NSPropertyListImmutable
                                                                          format:NULL
                                                                           error:&error];
-    for (NSDictionary* setting in loadedSettings)
+    for (NSDictionary* dicState in loadedStates)
     {
-        NSString* campaignId = [setting objectForKey:@"ID"];
-        if(campaignId)
-        {
-            [settings setValue:setting forKey:campaignId];
-        }
+        SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
+        NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.ID];
+        [states setValue:state forKey:stateKey];
     }
-    
-    return [NSDictionary dictionaryWithDictionary:settings];
 }
 
-- (void)saveSettings
+- (void)saveCampaignsState
 {
     NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.swrveCampaigns.count];
     for (SwrveCampaign* campaign in self.swrveCampaigns)
     {
-        [newSettings addObject:[campaign campaignSettings]];
+        [newSettings addObject:[campaign stateDictionary]];
     }
     
     NSError*  error = NULL;
@@ -309,9 +306,11 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSURL* signatureURL = [NSURL fileURLWithPath:self.campaignCacheSignature];
     campaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self.analyticsSDK getSignatureKey]];
     
-    // read content of campaigns file and update campaigns
-    NSData* content = [campaignFile readFromFile];
+    // Read from cache the state of campaigns
+    [self campaignsStateFromDisk:self.swrveCampaignsState];
     
+    // Read content of campaigns file and update campaigns
+    NSData* content = [campaignFile readFromFile];
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -450,7 +449,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // Empty saved push notifications
     [self.notifications removeAllObjects];
     
-    NSDictionary* settings = [self getCampaignSettings];
     NSArray* jsonCampaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in jsonCampaigns)
     {
@@ -487,16 +485,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
         
         if (campaign != nil) {
-            DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-            campaign.next = 0;
+            NSString* campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long)campaign.ID];
+            DebugLog(@"Got campaign with id %@", campaignIDStr);
             if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
-                NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-                NSDictionary* campaignSettings = [settings objectForKey:ID];
-                if(campaignSettings) {
-                    [campaign loadSettings:campaignSettings];
+                SwrveCampaignState* campaignState = [self.swrveCampaignsState objectForKey:campaignIDStr];
+                if(campaignState) {
+                    [campaign setState:campaignState];
                 }
             }
-            
+            [self.swrveCampaignsState setValue:campaign.state forKey:campaignIDStr];
             [result addObject:campaign];
             
             if(self.qaUser) {
@@ -965,7 +962,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (c != nil) {
         [c messageWasShownToUser:message at:now];
     }
-    [self saveSettings];
+    [self saveCampaignsState];
     
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
     DebugLog(@"Sending view event: %@", viewEvent);
@@ -985,7 +982,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (c != nil) {
         [c conversationWasShownToUser:conversation at:now];
     }
-    [self saveSettings];
+    [self saveCampaignsState];
 }
 
 -(void)buttonWasPressedByUser:(SwrveButton*)button
@@ -1399,7 +1396,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
     for(SwrveBaseCampaign* campaign in self.swrveCampaigns) {
-        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
+        if (campaign.inbox && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
             [result addObject:campaign];
         }
     }
@@ -1458,8 +1455,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)removeCampaign:(SwrveBaseCampaign*)campaign
 {
-    [campaign setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
-    [self saveSettings];
+    [campaign.state setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
+    [self saveCampaignsState];
 }
 
 @end
