@@ -4,7 +4,7 @@
 /*! Base campaign state. */
 @interface SwrveCampaignState : NSObject
 
-@property (atomic)            NSUInteger ID;                        /*!< Unique identifier. */
+@property (atomic)            NSUInteger campaignID;                /*!< Unique identifier. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
 @property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 @property (nonatomic)         SwrveCampaignStatus status;           /*!< The status of the Inbox campaign. */

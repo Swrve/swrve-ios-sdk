@@ -8,14 +8,14 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
 @implementation SwrveCampaignState
 
-@synthesize ID;
+@synthesize campaignID;
 @synthesize next;
 @synthesize impressions;
 @synthesize status;
 
--(id)initWithID:(NSUInteger)campaignID {
+-(id)initWithID:(NSUInteger)ID {
     if (self = [super init]) {
-        self.ID = campaignID;
+        self.campaignID = ID;
         self.status = SWRVE_CAMPAIGN_STATUS_UNSEEN;
     }
     return self;
@@ -25,7 +25,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     if (self = [super init]) {
         NSNumber* idJson = [data objectForKey:@"ID"];
         if (idJson) {
-            self.ID = idJson.unsignedIntegerValue;
+            self.campaignID = idJson.unsignedIntegerValue;
         }        
         NSNumber* nextJson = [data objectForKey:@"next"];
         if (nextJson) {
@@ -46,7 +46,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
 -(NSDictionary*)asDictionary {
     NSMutableDictionary* state = [[NSMutableDictionary alloc] init];
-    [state setValue:[NSNumber numberWithUnsignedInteger:self.ID] forKey:@"ID"];
+    [state setValue:[NSNumber numberWithUnsignedInteger:self.campaignID] forKey:@"ID"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.impressions] forKey:@"impressions"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.status] forKey:@"status"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.next] forKey:@"next"];

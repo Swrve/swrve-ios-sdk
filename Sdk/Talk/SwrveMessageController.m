@@ -254,38 +254,45 @@ const static int DEFAULT_MIN_DELAY           = 55;
                                                                         options:NSPropertyListImmutable
                                                                          format:NULL
                                                                           error:&error];
-    for (NSDictionary* dicState in loadedStates)
-    {
-        SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
-        NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.ID];
-        [states setValue:state forKey:stateKey];
+    if (error) {
+        DebugLog(@"Could not load campaign states from disk.\nError: %@\njson: %@", error, data);
+    } else {
+        for (NSDictionary* dicState in loadedStates)
+        {
+            SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
+            NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
+            [states setValue:state forKey:stateKey];
+        }
     }
 }
 
 - (void)saveCampaignsState
 {
-    NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.swrveCampaigns.count];
+    NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.swrveCampaigns.count];
     for (SwrveCampaign* campaign in self.swrveCampaigns)
     {
-        [newSettings addObject:[campaign stateDictionary]];
+        [newStates addObject:[campaign stateDictionary]];
     }
     
     NSError*  error = NULL;
-    NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newSettings
+    NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-    if(data)
+    
+    if (error) {
+        DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
+    } else if(data)
     {
         BOOL success = [data writeToFile:[self settingsPath] atomically:YES];
         if (!success)
         {
-            DebugLog(@"Error writing to : %@", [self settingsPath]);
+            DebugLog(@"Error saving campaigns state to: %@", [self settingsPath]);
         }
     }
     else
     {
-        DebugLog(@"Error: %@ writing to %@", error, [self settingsPath]);
+        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, [self settingsPath]);
     }
 }
 
