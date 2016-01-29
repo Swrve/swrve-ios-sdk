@@ -1469,6 +1469,10 @@ static bool didSwizzle = false;
     } else {
         [self sendQueuedEvents];
     }
+    
+    if(self.config.talkEnabled) {
+        [self.talk saveCampaignsState];
+    }
     [self stopCampaignsAndResourcesTimer];
 }
 
