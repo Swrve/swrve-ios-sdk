@@ -108,7 +108,7 @@
         }
     }
     
-    if ([self.conversation areDownloaded:assets]) {
+    if ([self.conversation assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return conversation;
     }
@@ -121,6 +121,11 @@
 {
 #pragma unused(orientation)
     return YES;
+}
+
+-(BOOL)assetsReady:(NSSet *)assets
+{
+    return [self.conversation assetsReady:assets];
 }
 
 @end

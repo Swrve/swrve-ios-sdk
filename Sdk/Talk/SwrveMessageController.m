@@ -1399,7 +1399,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
     for(SwrveBaseCampaign* campaign in self.swrveCampaigns) {
-        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation]) {
+        if (campaign.inbox && campaign.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:self.assetsOnDisk]) {
             [result addObject:campaign];
         }
     }
@@ -1408,6 +1408,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(BOOL)showCampaign:(SwrveBaseCampaign*)campaign
 {
+    if (![campaign assetsReady:self.assetsOnDisk]) {
+        return NO;
+    }
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             SwrveConversation* conversation = ((SwrveConversationCampaign*)campaign).conversation;

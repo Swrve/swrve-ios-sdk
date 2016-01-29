@@ -24,7 +24,7 @@
  *
  * \returns TRUE if all assets have been downloaded.
  */
--(BOOL)areDownloaded:(NSSet*)assets;
+-(BOOL)assetsReady:(NSSet*)assets;
 
 /*! Notify that this message was shown to the user.
  */

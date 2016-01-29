@@ -80,7 +80,7 @@ static bool in_cache(NSString* file, NSSet* set){
     return [file length] == 0 || [set containsObject:file];
 }
 
--(BOOL)areDownloaded:(NSSet*)assets
+-(BOOL)assetsReady:(NSSet*)assets
 {
     for (SwrveMessageFormat* format in self.formats) {
         for (SwrveButton* button in format.buttons) {
