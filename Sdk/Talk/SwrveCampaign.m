@@ -56,9 +56,9 @@
     if (![self randomOrder])
     {
         NSUInteger count = [[self messages] count];
-        NSUInteger nextMessage = ([self next] + 1) % count;
-        DebugLog(@"Round Robin message in campaign %ld is %ld (next will be %ld)", (unsigned long)[self ID], (unsigned long)[self next], (unsigned long)nextMessage);
-        [self setNext:nextMessage];
+        NSUInteger nextMessage = (self.state.next + 1) % count;
+        DebugLog(@"Round Robin message in campaign %ld is %ld (next will be %ld)", (unsigned long)[self ID], (unsigned long)self.state.next, (unsigned long)nextMessage);
+        [self.state setNext:nextMessage];
     }
 }
 
@@ -126,7 +126,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
 
     if (message == nil)
     {
-        message = [self.messages objectAtIndex:(NSUInteger)self.next];
+        message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
     
     if ([message areDownloaded:assets]) {
@@ -136,13 +136,6 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
-}
-
--(NSDictionary*)campaignSettings
-{
-    NSMutableDictionary* settings = [super campaignSettings];
-    [settings setValue:[NSNumber numberWithUnsignedInteger:[self next]] forKey:@"next"];
-    return [NSDictionary dictionaryWithDictionary:settings];
 }
 
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
