@@ -47,6 +47,12 @@
  */
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
 
+/*! Check if assets are downloaded.
+ *
+ * \returns TRUE if all assets have been downloaded.
+ */
+-(BOOL)assetsReady:(NSSet*)assets;
+
 /*! PRIVATE: Return the serialized state of the campaign */
 -(NSDictionary*)stateDictionary;
 

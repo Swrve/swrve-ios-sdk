@@ -71,7 +71,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
 {
     // Return the first fully downloaded format
     for (SwrveMessage* message in messages) {
-        if ([message areDownloaded:assets]){
+        if ([message assetsReady:assets]){
             return message;
         }
     }
@@ -129,7 +129,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
         message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
     
-    if ([message areDownloaded:assets]) {
+    if ([message assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return message;
     }
@@ -150,6 +150,16 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
         }
     }
     return NO;
+}
+
+-(BOOL)assetsReady:(NSSet *)assets
+{
+    for (SwrveMessage* message in messages) {
+        if (![message assetsReady:assets]){
+            return NO;
+        }
+    }
+    return YES;
 }
 
 @end

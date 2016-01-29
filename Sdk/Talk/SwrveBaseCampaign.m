@@ -263,6 +263,13 @@ static NSDate* read_date(id d, NSDate* default_date)
     return NO;
 }
 
+-(BOOL)assetsReady:(NSSet *)assets
+{
+#pragma unused(assets)
+    // Implemented in sub classes
+    return NO;
+}
+
 -(NSDictionary*)stateDictionary
 {
     return [self.state asDictionary];
