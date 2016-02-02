@@ -77,7 +77,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize triggers;
 @synthesize initialisedTime;
 @synthesize randomOrder;
-@synthesize inbox;
+@synthesize messageCenter;
 @synthesize subject;
 
 -(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
@@ -99,7 +99,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         // Load from JSON
         self.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
         self.name = [dict objectForKey:@"name"];
-        self.inbox = [[dict objectForKey:@"inbox"] boolValue];
+        self.messageCenter = [[dict objectForKey:@"message_center"] boolValue];
         self.subject = [dict objectForKey:@"subject"];
         self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
         

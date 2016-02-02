@@ -7,7 +7,7 @@
 @property (atomic)            NSUInteger campaignID;                /*!< Unique identifier. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
 @property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
-@property (nonatomic)         SwrveCampaignStatus status;           /*!< The status of the Inbox campaign. */
+@property (nonatomic)         SwrveCampaignStatus status;           /*!< The status of the Message Center campaign. */
 
 /*! Initialize a fresh campaign status. */
 -(id)initWithID:(NSUInteger)ID;
@@ -30,8 +30,8 @@
 @property (atomic)            NSTimeInterval minDelayBetweenMsgs;   /*!< Minimum interval between different campaigns being shown. */
 @property (nonatomic, retain) NSDate* showMsgsAfterLaunch;          /*!< Timestamp to block messages after launch. */
 @property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
-@property (atomic)            bool inbox;                           /*!< Flag indicating if it is an Inbox campaign. */
-@property (nonatomic, retain) NSString* subject;                    /*!< Inbox subject of the campaign. */
+@property (atomic)            bool messageCenter;                   /*!< Flag indicating if it is a Message Center campaign. */
+@property (nonatomic, retain) NSString* subject;                    /*!< Message Center subject of the campaign. */
 
 /*! Initialize the campaign.
  *
