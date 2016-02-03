@@ -131,6 +131,7 @@ enum
 
 @interface SwrveMessageController()
 
+@property (nonatomic, retain) NSArray* campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 
 -(void) updateCampaigns:(NSDictionary*)campaignJson;

@@ -237,37 +237,37 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 /*! Called internally when the app became active */
 -(void) appDidBecomeActive;
 
-/*! Get the list active Inbox campaigns targeted for this user.
+/*! Get the list active Message Center campaigns targeted for this user.
  * It will exclude campaigns that have been deleted with the
  * removeCampaign method and those that do not support the current orientation.
  *
  * To obtain all Inbox campaigns independent of their orientation support
- * use the campaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
+ * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
  *
  * \returns List of active Inbox campaigns.
  */
--(NSArray*) campaigns;
+-(NSArray*) messageCenterCampaigns;
 
-/*! Get the list active Inbox campaigns targeted for this user.
+/*! Get the list active Message Center campaigns targeted for this user.
  * It will exclude campaigns that have been deleted with the
  * removeCampaign method and those that do not support the given orientation.
  *
- * \returns List of active Inbox campaigns that support the given orientation.
+ * \returns List of active Message Center campaigns that support the given orientation.
  */
--(NSArray*) campaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+-(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.
  * \param campaign Campaign that will be displayed.
  * \returns if the campaign was shown.
  */
--(BOOL)showCampaign:(SwrveBaseCampaign*)campaign;
+-(BOOL)showMessageCenterCampaign:(SwrveBaseCampaign*)campaign;
 
 /*! Remove this campaign. It won't be returned anymore by the method getCampaigns.
  *
  * \param campaign Campaing that will be removed.
  */
--(void)removeCampaign:(SwrveBaseCampaign*)campaign;
+-(void)removeMessageCenterCampaign:(SwrveBaseCampaign*)campaign;
 
 /*! PRIVATE: Save campaigns current state*/
 -(void)saveCampaignsState;
