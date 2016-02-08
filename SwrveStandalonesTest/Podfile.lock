@@ -6,11 +6,16 @@ PODS:
   - SwrveLocationSDK (4.2.0):
     - PlotPlugin
     - SwrveCommon
+  - SwrveSDK (4.2.0):
+    - SwrveCommon
+    - SwrveConversationSDK
+    - SwrveLocationSDK
 
 DEPENDENCIES:
   - SwrveCommon (from `../SwrveCommon`)
   - SwrveConversationSDK (from `../SwrveConversationSDK`)
   - SwrveLocationSDK (from `../SwrveLocationSDK`)
+  - SwrveSDK (from `../`)
 
 EXTERNAL SOURCES:
   SwrveCommon:
@@ -19,13 +24,16 @@ EXTERNAL SOURCES:
     :path: "../SwrveConversationSDK"
   SwrveLocationSDK:
     :path: "../SwrveLocationSDK"
+  SwrveSDK:
+    :path: "../"
 
 SPEC CHECKSUMS:
   PlotPlugin: d0614755b8e091dc7c73e7ef265a32da3cd9de85
   SwrveCommon: 2dea0e4de2946e9f048269eb5826d0b88ddcf3b2
-  SwrveConversationSDK: 9eef953ca4cededeb8d00f4b35d18ce4a33e4389
+  SwrveConversationSDK: 2fb40402e8df0736f8eafc3a1a1d3557d4d1bdaf
   SwrveLocationSDK: 6a3011336ac2dd8ef03c7bbf6cbd9f3684ccde48
+  SwrveSDK: 1632efba3e22afc7e9516563ad8c0c0c4a20be57
 
-PODFILE CHECKSUM: 6047edf952561cc84e32de431d71b7644eec98c2
+PODFILE CHECKSUM: f314a1fb432e2aed669ebbce785a3684e4b14c36
 
 COCOAPODS: 1.0.0.beta.1

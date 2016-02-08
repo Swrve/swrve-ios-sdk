@@ -1246,7 +1246,7 @@ static bool didSwizzle = false;
     return nil;
 }
 
-+ (BOOL)processPermissionRequest:(NSString*)action {
+- (BOOL)processPermissionRequest:(NSString*)action {
     return [SwrvePermissions processPermissionRequest:action withSDK:self];
 }
 

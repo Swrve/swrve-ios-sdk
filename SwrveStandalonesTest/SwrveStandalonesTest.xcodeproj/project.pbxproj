@@ -81,8 +81,8 @@
 		F596B4901C68F3BD00DDE0C8 = {
 			isa = PBXGroup;
 			children = (
-				F596B4B61C68F5FC00DDE0C8 /* Resources */,
 				F596B49B1C68F3BD00DDE0C8 /* SwrveStandalonesTest */,
+				F596B4B61C68F5FC00DDE0C8 /* Resources */,
 				F596B49A1C68F3BD00DDE0C8 /* Products */,
 				066328A23DAB0867094149F4 /* Pods */,
 				1B4B953535CB65AA1A3AE7A7 /* Frameworks */,

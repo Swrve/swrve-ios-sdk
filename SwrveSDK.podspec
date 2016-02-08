@@ -13,7 +13,6 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Sdk/**/*.{m,h}'
   s.public_header_files = 'Sdk/**/*.h'
-  s.resources = 'Sdk/Conversation/Resources/*.*'
   s.dependency 'SwrveCommon'
   s.dependency 'SwrveLocationSDK'
   s.dependency 'SwrveConversationSDK'
