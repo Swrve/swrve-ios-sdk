@@ -45,7 +45,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
  *
  * \returns TRUE if all assets have been downloaded.
  */
--(BOOL)areDownloaded:(NSSet*)assets;
+-(BOOL)assetsReady:(NSSet*)assets;
 
 /*! Check if the message has any format for the given device orientation.
  *

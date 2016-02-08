@@ -2,7 +2,6 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveMessage.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
 
@@ -51,16 +50,15 @@
 
 -(void)messageWasShownToUser:(SwrveMessage*)message at:(NSDate*)timeShown
 {
-    #pragma unused(message)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
-    
+#pragma unused(message)
+    [self wasShownToUserAt:timeShown];
+
     if (![self randomOrder])
     {
         NSUInteger count = [[self messages] count];
-        NSUInteger nextMessage = ([self next] + 1) % count;
-        DebugLog(@"Round Robin message in campaign %ld is %ld (next will be %ld)", (unsigned long)[self ID], (unsigned long)[self next], (unsigned long)nextMessage);
-        [self setNext:nextMessage];
+        NSUInteger nextMessage = (self.state.next + 1) % count;
+        DebugLog(@"Round Robin message in campaign %ld is %ld (next will be %ld)", (unsigned long)[self ID], (unsigned long)self.state.next, (unsigned long)nextMessage);
+        [self.state setNext:nextMessage];
     }
 }
 
@@ -73,7 +71,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
 {
     // Return the first fully downloaded format
     for (SwrveMessage* message in messages) {
-        if ([message areDownloaded:assets]){
+        if ([message assetsReady:assets]){
             return message;
         }
     }
@@ -128,10 +126,10 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
 
     if (message == nil)
     {
-        message = [self.messages objectAtIndex:(NSUInteger)self.next];
+        message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
     
-    if ([message areDownloaded:assets]) {
+    if ([message assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return message;
     }
@@ -140,11 +138,28 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     return nil;
 }
 
--(NSDictionary*)campaignSettings
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
-    NSMutableDictionary* settings = [super campaignSettings];
-    [settings setValue:[NSNumber numberWithUnsignedInteger:[self next]] forKey:@"next"];
-    return [NSDictionary dictionaryWithDictionary:settings];
+    if (orientation == UIInterfaceOrientationUnknown) {
+        return YES;
+    }
+    
+    for (SwrveMessage* message in messages) {
+        if ([message supportsOrientation:orientation]){
+            return YES;
+        }
+    }
+    return NO;
+}
+
+-(BOOL)assetsReady:(NSSet *)assets
+{
+    for (SwrveMessage* message in messages) {
+        if (![message assetsReady:assets]){
+            return NO;
+        }
+    }
+    return YES;
 }
 
 @end

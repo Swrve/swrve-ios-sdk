@@ -10,6 +10,7 @@
 #import "SwrveConversationContainerViewController.h"
 #import "SwrvePermissions.h"
 #import "SwrveInternalAccess.h"
+#import "SwrvePrivateBaseCampaign.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -29,6 +30,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 @interface Swrve(PrivateMethodsForMessageController)
 @property BOOL campaignsAndResourcesInitialized;
+@property (atomic) NSString* locationVersion;
 -(void) setPushNotificationsDeviceToken:(NSData*)deviceToken;
 -(void) pushNotificationReceived:(NSDictionary*)userInfo;
 -(void) invalidateETag;
@@ -50,6 +52,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             user;
 @property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
+@property (nonatomic, retain) NSArray*              campaigns; // List of campaigns available to the user.
+@property (nonatomic, retain) NSMutableDictionary*  campaignsState; // Serializable state of the campaigns.
 @property (nonatomic, retain) NSString*           	server;
 @property (nonatomic, retain) NSMutableSet*         assetsOnDisk;
 @property (nonatomic, retain) NSString*             cacheFolder;
@@ -107,6 +111,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize messagesLeftToShow;
 @synthesize backgroundColor;
 @synthesize campaigns;
+@synthesize campaignsState;
 @synthesize user;
 @synthesize assetsOnDisk;
 @synthesize notifications;
@@ -208,6 +213,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
         [self setDeviceToken:device_token];
     }
     
+    self.campaignsState = [[NSMutableDictionary alloc] init];
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
     
@@ -234,59 +240,59 @@ const static int DEFAULT_MIN_DELAY           = 55;
     [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
 }
 
-- (NSDictionary*)getCampaignSettings
+- (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
-    NSMutableDictionary* settings = [[NSMutableDictionary alloc] init];
     NSData* data = [NSData dataWithContentsOfFile:[self settingsPath]];
-    
     if(!data)
     {
-        DebugLog(@"Error: No settings loaded. [Reading from %@]", [self settingsPath]);
-        return [NSDictionary dictionaryWithDictionary:settings];
+        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", [self settingsPath]);
+        return;
     }
     
     NSError* error = NULL;
-    NSArray* loadedSettings = [NSPropertyListSerialization propertyListWithData:data
+    NSArray* loadedStates = [NSPropertyListSerialization propertyListWithData:data
                                                                         options:NSPropertyListImmutable
                                                                          format:NULL
                                                                           error:&error];
-    for (NSDictionary* setting in loadedSettings)
-    {
-        NSString* campaignId = [setting objectForKey:@"ID"];
-        if(campaignId)
+    if (error) {
+        DebugLog(@"Could not load campaign states from disk.\nError: %@\njson: %@", error, data);
+    } else {
+        for (NSDictionary* dicState in loadedStates)
         {
-            [settings setValue:setting forKey:campaignId];
+            SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
+            NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
+            [states setValue:state forKey:stateKey];
         }
     }
-    
-    return [NSDictionary dictionaryWithDictionary:settings];
 }
 
-- (void)saveSettings
+- (void)saveCampaignsState
 {
-    NSMutableArray* newSettings = [[NSMutableArray alloc] initWithCapacity:self.campaigns.count];
-    
+    NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.campaigns.count];
     for (SwrveCampaign* campaign in self.campaigns)
     {
-        [newSettings addObject:[campaign campaignSettings]];
+        [newStates addObject:[campaign stateDictionary]];
     }
     
     NSError*  error = NULL;
-    NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newSettings
+    NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-    if(data)
+    
+    if (error) {
+        DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
+    } else if(data)
     {
         BOOL success = [data writeToFile:[self settingsPath] atomically:YES];
         if (!success)
         {
-            DebugLog(@"Error writing to : %@", [self settingsPath]);
+            DebugLog(@"Error saving campaigns state to: %@", [self settingsPath]);
         }
     }
     else
     {
-        DebugLog(@"Error: %@ writing to %@", error, [self settingsPath]);
+        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, [self settingsPath]);
     }
 }
 
@@ -307,9 +313,11 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSURL* signatureURL = [NSURL fileURLWithPath:self.campaignCacheSignature];
     campaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self.analyticsSDK getSignatureKey]];
     
-    // read content of campaigns file and update campaigns
-    NSData* content = [campaignFile readFromFile];
+    // Read from cache the state of campaigns
+    [self campaignsStateFromDisk:self.campaignsState];
     
+    // Read content of campaigns file and update campaigns
+    NSData* content = [campaignFile readFromFile];
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -448,7 +456,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // Empty saved push notifications
     [self.notifications removeAllObjects];
     
-    NSDictionary* settings = [self getCampaignSettings];
     NSArray* jsonCampaigns = [campaignJson objectForKey:@"campaigns"];
     for (NSDictionary* dict in jsonCampaigns)
     {
@@ -485,23 +492,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
         
         if (campaign != nil) {
-            DebugLog(@"Got campaign with id %ld", (long)campaign.ID);
-            campaign.next = 0;
+            NSString* campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long)campaign.ID];
+            DebugLog(@"Got campaign with id %@", campaignIDStr);
             if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
-                NSNumber* ID = [NSNumber numberWithUnsignedInteger:campaign.ID];
-                NSDictionary* campaignSettings = [settings objectForKey:ID];
-                if(campaignSettings) {
-                    NSNumber* next = [campaignSettings objectForKey:@"next"];
-                    if (next) {
-                        campaign.next = next.unsignedIntegerValue;
-                    }
-                    NSNumber* impressions = [campaignSettings objectForKey:@"impressions"];
-                    if (impressions) {
-                        campaign.impressions = impressions.unsignedIntegerValue;
-                    }
+                SwrveCampaignState* campaignState = [self.campaignsState objectForKey:campaignIDStr];
+                if(campaignState) {
+                    [campaign setState:campaignState];
                 }
             }
-            
+            [self.campaignsState setValue:campaign.state forKey:campaignIDStr];
             [result addObject:campaign];
             
             if(self.qaUser) {
@@ -597,7 +596,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void) appDidBecomeActive {
     // Obtain all assets required for the available campaigns
     NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
-    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+    for (SwrveBaseCampaign* campaign in self.campaigns) {
         [campaign addAssetsToQueue:assetsQueue];
     }
     
@@ -620,7 +619,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
     
-    for (SwrveBaseCampaign* campaign in [self campaigns]) {
+    for (SwrveBaseCampaign* campaign in self.campaigns) {
         if ([campaign isKindOfClass:[SwrveCampaign class]]) {
             SwrveCampaign* specificCampaign = (SwrveCampaign*)campaign;
             if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
@@ -798,7 +797,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         DebugLog(@"Not showing message: no candidate messages for %@", event);
     } else {
         // Notify message has been returned
-        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:@"id",[result.messageID stringValue], nil];
+        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
         NSString *eventName = @"Swrve.Messages.message_returned";
         [self.analyticsSDK eventInternal:eventName payload:payload triggerCallback:true];
     }
@@ -970,7 +969,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (c != nil) {
         [c messageWasShownToUser:message at:now];
     }
-    [self saveSettings];
+    [self saveCampaignsState];
     
     NSString* viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
     DebugLog(@"Sending view event: %@", viewEvent);
@@ -990,7 +989,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (c != nil) {
         [c conversationWasShownToUser:conversation at:now];
     }
-    [self saveSettings];
+    [self saveCampaignsState];
 }
 
 -(void)buttonWasPressedByUser:(SwrveButton*)button
@@ -1080,31 +1079,40 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     @synchronized(self) {
         if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
             // Create a view to show the conversation
-            UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:nil];
-            SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            [scivc setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
             
-            self.swrveConversationItemViewController = scivc;
+            @try {
+                UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:self.class]];
+                SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+                self.swrveConversationItemViewController = scivc;
+            }
+            @catch (NSException *exception) {
+                DebugLog(@"Unable to load Conversation Item View Controller. %@", exception);
+                return;
+            }
+            
+            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            [self.swrveConversationItemViewController setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
+            
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
-            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
+            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
             self.swrveConversationsNavigationController = svnc;
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                svnc.modalPresentationStyle = UIModalPresentationFormSheet;
+                self.swrveConversationsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
             }
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wselector"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
             // Attach cancel button to the conversation navigation options
-            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:scivc action:@selector(cancelButtonTapped:)];
-    #pragma clang diagnostic pop
-            scivc.navigationItem.leftBarButtonItem = cancelButton;
-
+            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.swrveConversationItemViewController action:@selector(cancelButtonTapped:)];
+#pragma clang diagnostic pop
+            self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:self.swrveConversationsNavigationController];
                 self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
                 [rootController.view endEditing:YES];
             });
+            
         }
     }
 }
@@ -1320,9 +1328,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (void) pushNotificationReceived:(NSDictionary*)userInfo
 {
+    [self pushNotificationReceived:userInfo atApplicationState:[UIApplication sharedApplication].applicationState];
+}
+
+- (void) pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState
+{
     if (self.pushEnabled) {
         // Do not process the push notification if the app was on the foreground
-        if ([self.analyticsSDK appInBackground]) {
+        BOOL appInBackground = applicationState != UIApplicationStateActive;
+        if (appInBackground) {
             [self.analyticsSDK pushNotificationReceived:userInfo];
             if (self.qaUser) {
                 [self.qaUser pushNotification:userInfo];
@@ -1357,12 +1371,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName;
     NSString* encodedSystemName;
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     } else
-#endif
+#endif //defined(__IPHONE_9_0)
     {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1370,8 +1384,91 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 #pragma clang diagnostic pop
     }
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, LOCATION_VERSION];
+    NSString* locationVersion = self.analyticsSDK.locationVersion;
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%@",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, locationVersion];
+}
+
+-(NSArray*) messageCenterCampaigns
+{
+    // iOS9+ will display with local scale
+    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+        return [self messageCenterCampaignsThatSupportOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+    }
+    return [self messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
+}
+
+-(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
+{
+    NSDate* now = [self.analyticsSDK getNow];
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    for(SwrveBaseCampaign* campaign in self.campaigns) {
+        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:self.assetsOnDisk]) {
+            [result addObject:campaign];
+        }
+    }
+    return result;
+}
+
+-(BOOL)showMessageCenterCampaign:(SwrveBaseCampaign *)campaign
+{
+    if (!campaign.messageCenter || ![campaign assetsReady:self.assetsOnDisk]) {
+        return NO;
+    }
+    if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SwrveConversation* conversation = ((SwrveConversationCampaign*)campaign).conversation;
+            if( [self.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                [self.showMessageDelegate showConversation:conversation];
+            } else {
+                [self showConversation:conversation];
+            }
+        });
+        return YES;
+    } else if ([campaign isKindOfClass:[SwrveCampaign class]]) {
+        SwrveMessage* message = [((SwrveCampaign*)campaign).messages objectAtIndex:0];
+        
+        // iOS9+ will display with local scale
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            // Only show the message if it supports the given orientation
+            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
+                DebugLog(@"The message doesn't support the current orientation", nil);
+                return NO;
+            }
+        }
+        
+        // Show the message if it exists
+        if( message != nil ) {
+            dispatch_block_t showMessageBlock = ^{
+                if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                    [self.showMessageDelegate showMessage:message];
+                }
+                else {
+                    [self showMessage:message];
+                }
+            };
+            
+            
+            if ([NSThread isMainThread]) {
+                showMessageBlock();
+            } else {
+                // Run in the main thread as we have been called from other thread
+                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+            }
+        }
+        
+        return YES;
+    }
+
+    return NO;
+}
+
+-(void)removeMessageCenterCampaign:(SwrveBaseCampaign*)campaign
+{
+    if (campaign.messageCenter) {
+        [campaign.state setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
+        [self saveCampaignsState];
+    }
 }
 
 @end

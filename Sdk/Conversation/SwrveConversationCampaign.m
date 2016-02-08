@@ -2,7 +2,6 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveConversation.h"
 
 @interface SwrveConversationCampaign()
 
@@ -46,8 +45,7 @@
 -(void)conversationWasShownToUser:(SwrveConversation*)conversation at:(NSDate*)timeShown
 {
 #pragma unused(conversation)
-    [self incrementImpressions];
-    [self setMessageMinDelayThrottle:timeShown];
+    [super wasShownToUserAt:timeShown];
 }
 
 -(void)conversationDismissed:(NSDate *)timeDismissed
@@ -110,13 +108,24 @@
         }
     }
     
-    if ([self.conversation areDownloaded:assets]) {
+    if ([self.conversation assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return conversation;
     }
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
+}
+
+-(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
+{
+#pragma unused(orientation)
+    return YES;
+}
+
+-(BOOL)assetsReady:(NSSet *)assets
+{
+    return [self.conversation assetsReady:assets];
 }
 
 @end

@@ -21,23 +21,36 @@
     ISHPermissionRequest *request = nil;
     
     switch (category) {
+#if !defined(SWRVE_NO_LOCATION)
+
         case ISHPermissionCategoryLocationAlways:
         case ISHPermissionCategoryLocationWhenInUse: {
             request = [ISHPermissionRequestLocation new];
             break;
         }
-            
+
+#endif //!defined(SWRVE_NO_LOCATION)
+#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+
         case ISHPermissionCategoryPhotoLibrary:
             request = [ISHPermissionRequestPhotoLibrary new];
             break;
-            
+
+#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
+
         case ISHPermissionCategoryPhotoCamera:
             request = [ISHPermissionRequestPhotoCamera new];
             break;
-            
+
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+#if !defined(SWRVE_NO_ADDRESS_BOOK)
+
         case ISHPermissionCategoryAddressBook:
             request = [ISHPermissionRequestAddressBook new];
             break;
+
+#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
         case ISHPermissionCategoryNotificationRemote:
             request = [ISHPermissionRequestNotificationsRemote new];

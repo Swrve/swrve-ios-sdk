@@ -35,7 +35,7 @@
     if ([content writeToURL:[self filename] atomically:YES]) {
         NSData* signature = [self createHMACWithMD5:content];
         if (![signature writeToURL:[self signatureFilename] atomically:YES]) {
-            DebugLog(@"Coulxd not write to signature file: %@", [self signatureFilename]);
+            DebugLog(@"Could not write to signature file: %@", [self signatureFilename]);
         }
     } else {
         DebugLog(@"Could not write to file: %@", [self filename]);

@@ -10,11 +10,13 @@
 #include <UIKit/UIKit.h>
 #include <objc/runtime.h>
 #import <AddressBook/AddressBook.h>
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
 #import <Contacts/Contacts.h>
-#endif
+#endif //defined(__IPHONE_9_0)
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
+
+#if !defined(SWRVE_NO_ADDRESS_BOOK)
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -24,13 +26,13 @@
     ABAddressBookRef _addressBook;
 #pragma clang diagnostic pop
     
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
     CNContactStore* _contactStore;
-#endif
+#endif //defined(__IPHONE_9_0)
 }
 
 - (ISHPermissionState)permissionState {
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         // New iOS9+ framework
         CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
@@ -44,7 +46,7 @@
                 return [self internalPermissionState];
         }
     }
-#endif
+#endif //defined(__IPHONE_9_0)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -72,7 +74,7 @@
         return;
     }
     
-#ifdef __IPHONE_9_0
+#if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         // New iOS9+ framework
         if (_contactStore == nil) {
@@ -85,7 +87,7 @@
         }];
         return;        
     }
-#endif
+#endif //defined(__IPHONE_9_0)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -138,3 +140,5 @@
 #pragma clang diagnostic pop
 
 @end
+
+#endif //!defined(SWRVE_NO_ADDRESS_BOOK)

@@ -12,8 +12,6 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrveLocationCampaign.h"
-#import "SwrveLocationManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -133,6 +131,7 @@ enum
 
 @interface SwrveMessageController()
 
+@property (nonatomic, retain) NSArray* campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 
 -(void) updateCampaigns:(NSDictionary*)campaignJson;
@@ -209,9 +208,6 @@ enum
 @property (atomic) NSDate* campaignsAndResourcesLastRefreshed;
 @property (atomic) BOOL campaignsAndResourcesInitialized; // Set to true after first call to API returns
 
-// Location Campaigns cache files
-@property (atomic) SwrveSignatureProtectedFile* locationCampaignFile;
-
 // Resource cache files
 @property (atomic) SwrveSignatureProtectedFile* resourcesFile;
 @property (atomic) SwrveSignatureProtectedFile* resourcesDiffFile;
@@ -233,6 +229,8 @@ enum
 // URLs
 @property (atomic) NSURL* batchURL;
 @property (atomic) NSURL* campaignsAndResourcesURL;
+
+@property (atomic) NSString* locationVersion;
 
 @end
 
@@ -529,7 +527,6 @@ static bool didSwizzle = false;
 @synthesize userID;
 @synthesize deviceInfo;
 @synthesize talk;
-@synthesize locationManager;
 @synthesize resourceManager;
 
 @synthesize userUpdates;
@@ -543,7 +540,6 @@ static bool didSwizzle = false;
 @synthesize campaignsAndResourcesTimerSeconds;
 @synthesize campaignsAndResourcesLastRefreshed;
 @synthesize campaignsAndResourcesInitialized;
-@synthesize locationCampaignFile;
 @synthesize resourcesFile;
 @synthesize resourcesDiffFile;
 @synthesize eventBuffer;
@@ -554,6 +550,7 @@ static bool didSwizzle = false;
 @synthesize eventsWereSent;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
+@synthesize locationVersion;
 
 + (void) resetSwrveSharedInstance
 {
@@ -709,6 +706,8 @@ static bool didSwizzle = false;
         blockStore = [[NSMutableDictionary alloc] init];
         blockStoreId = 0;
 
+        locationVersion = @"0";
+
         config = [[ImmutableSwrveConfig alloc] initWithSwrveConfig:swrveConfig];
         [self initBuffer];
         deviceInfo = [NSMutableDictionary dictionary];
@@ -722,7 +721,6 @@ static bool didSwizzle = false;
         NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
         [self setCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
 
-        [self initLocationCampaigns];
         [self initResources];
         [self initResourcesDiff];
 
@@ -1181,7 +1179,7 @@ static bool didSwizzle = false;
                     NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
                     if (locationCampaignJson != nil) {
                         NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
-                        [self updateLocationCampaigns:campaignsJson writeToCache:YES];
+                        [self saveLocationCampaignsInCache:campaignsJson];
                     }
 
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
@@ -1358,6 +1356,7 @@ static bool didSwizzle = false;
     [self setEventBuffer:nil];
 }
 
+// Deprecated
 - (BOOL) appInBackground {
     UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
     return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
@@ -1473,6 +1472,10 @@ static bool didSwizzle = false;
     } else {
         [self sendQueuedEvents];
     }
+    
+    if(self.config.talkEnabled) {
+        [self.talk saveCampaignsState];
+    }
     [self stopCampaignsAndResourcesTimer];
 }
 
@@ -1580,8 +1583,8 @@ static bool didSwizzle = false;
         }
         
         // Only process this push if we haven't seen it before
-        if (lastProcessedPushId == nil || ![pushIdentifier isEqualToString:lastProcessedPushId]) {
-            lastProcessedPushId = pushIdentifier;
+        if (lastProcessedPushId == nil || ![pushId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushId;
             
             // Process deeplink _d
             id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
@@ -1758,7 +1761,6 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
-    [deviceProperties setValue:[NSNumber numberWithInteger:LOCATION_VERSION] forKey:@"swrve.location_version"];
 
     // Carrier info
     CTCarrier *carrier = [self getCarrierInfo];
@@ -1801,17 +1803,17 @@ static NSString* httpScheme(bool useHttps)
     }
     
     // Optional identifiers
-#ifdef SWRVE_LOG_IDFA
+#if defined(SWRVE_LOG_IDFA)
     if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
     {
         NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
         [deviceProperties setValue:idfa               forKey:@"swrve.IDFA"];
     }
-#endif
-#ifdef SWRVE_LOG_IDFV
+#endif //defined(SWRVE_LOG_IDFA)
+#if defined(SWRVE_LOG_IDFV)
     NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     [deviceProperties setValue:idfv               forKey:@"swrve.IDFV"];
-#endif
+#endif //defined(SWRVE_LOG_IDFV)
     
     return deviceProperties;
 }
@@ -1900,42 +1902,24 @@ static NSString* httpScheme(bool useHttps)
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"campaigns_and_resources_etag"];
 }
 
-- (void) initLocationCampaigns
+
+- (void) saveLocationCampaignsInCache:(NSDictionary*)campaignsJson
 {
-    NSURL* fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
-    NSURL* signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
-    [self setLocationCampaignFile:[[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey] signatureErrorListener:self]];
-
-    locationManager = [[SwrveLocationManager alloc] init];
-
-    // read content of location campaigns file and update location manager if signature valid
-    NSData* data = [[self locationCampaignFile] readFromFile];
-    if (data != nil) {
-        NSError* error = nil;
-        NSDictionary* locationCampaignsDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        if (error) {
-            DebugLog(@"Error init location campaigns.\nError: %@\njson: %@", error, data);
-        } else {
-            [self updateLocationCampaigns:locationCampaignsDict writeToCache:NO];
-        }
+    NSError* error = nil;
+    NSData* locationCampaignsData = [NSJSONSerialization dataWithJSONObject:campaignsJson options:0 error:&error];
+    if (error) {
+        DebugLog(@"Error parsing/writing location campaigns.\nError: %@\njson: %@", error, campaignsJson);
     } else {
-        [self invalidateETag];
+        [[self getLocationCampaignFile] writeToFile:locationCampaignsData];
     }
 }
 
-- (void) updateLocationCampaigns:(NSDictionary*)campaignsJson writeToCache:(BOOL)writeToCache
-{
-    [[self locationManager] updateWithDictionary:campaignsJson];
-
-    if (writeToCache) {
-        NSError* error = nil;
-        NSData* locationCampaignsData = [NSJSONSerialization dataWithJSONObject:campaignsJson options:0 error:&error];
-        if (error) {
-            DebugLog(@"Error update location campaigns.\nError: %@\njson: %@", error, campaignsJson);
-        } else {
-            [[self locationCampaignFile] writeToFile:locationCampaignsData];
-        }
-    }
+- (SwrveSignatureProtectedFile *)getLocationCampaignFile {
+    NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
+    NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
+    NSString *signatureKey = [self getSignatureKey];
+    SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
+    return locationCampaignFile;
 }
 
 - (void) initResources
