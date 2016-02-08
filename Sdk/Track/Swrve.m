@@ -711,6 +711,8 @@ static bool didSwizzle = false;
         blockStore = [[NSMutableDictionary alloc] init];
         blockStoreId = 0;
 
+        locationVersion = @"0"; // init to zero
+
         config = [[ImmutableSwrveConfig alloc] initWithSwrveConfig:swrveConfig];
         [self initBuffer];
         deviceInfo = [NSMutableDictionary dictionary];
