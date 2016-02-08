@@ -241,10 +241,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * It will exclude campaigns that have been deleted with the
  * removeCampaign method and those that do not support the current orientation.
  *
- * To obtain all Inbox campaigns independent of their orientation support
+ * To obtain all Message Center campaigns independent of their orientation support
  * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
  *
- * \returns List of active Inbox campaigns.
+ * \returns List of active Message Center campaigns.
  */
 -(NSArray*) messageCenterCampaigns;
 

@@ -100,7 +100,8 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         self.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
         self.name = [dict objectForKey:@"name"];
         self.messageCenter = [[dict objectForKey:@"message_center"] boolValue];
-        self.subject = [dict objectForKey:@"subject"];
+        NSString* subjectString = [dict objectForKey:@"subject"];
+        self.subject = (subjectString == (id)[NSNull null])? @"" : subjectString;
         self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
         
         [self loadTriggersFrom:dict];
