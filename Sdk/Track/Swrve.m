@@ -190,6 +190,11 @@ enum
 - (void) addHttpPerformanceMetrics:(NSString*) metrics;
 - (void) checkForCampaignAndResourcesUpdates:(NSTimer*)timer;
 
+-(NSData*) getCampaignData:(int)category;
+-(void) sendQueuedEvents;
+-(int) userUpdate:(NSDictionary*)attributes;
+-(void) setLocationVersion:(NSString*)version;
+
 // Used to store the merged user updates
 @property (atomic, strong) NSMutableDictionary * userUpdates;
 
@@ -1230,6 +1235,13 @@ static bool didSwizzle = false;
 
         [NSTimer scheduledTimerWithTimeInterval:self.campaignsAndResourcesFlushRefreshDelay target:self selector:@selector(refreshCampaignsAndResources:) userInfo:nil repeats:NO];
     }
+}
+
+-(NSData*) getCampaignData:(int)category {
+    if(SWRVE_CAMPAIGN_LOCATION == category) {
+        return [[self getLocationCampaignFile] readFromFile];
+    }
+    return nil;
 }
 
 -(void) setPushNotificationsDeviceToken:(NSData*)newDeviceToken

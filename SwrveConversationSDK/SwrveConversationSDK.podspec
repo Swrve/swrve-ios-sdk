@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
-  s.name             = "SwrveSDK"
+  s.name             = "SwrveConversationSDK"
   s.version          = "4.2.0"
-  s.summary          = "iOS SDK for Swrve."
+  s.summary          = "iOS Conversation SDK for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => "LICENSE" }
   s.authors          = "Swrve Mobile Inc or its licensors"
@@ -11,12 +11,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source_files = 'Sdk/**/*.{m,h}'
-  s.public_header_files = 'Sdk/**/*.h'
-  s.resources = 'Sdk/Conversation/Resources/*.*'
+  s.source_files = 'Conversation/**/*.{m,h}'
+  s.public_header_files = 'Conversation/**/*.h'
   s.dependency 'SwrveCommon'
-  s.dependency 'SwrveLocationSDK'
-  s.dependency 'SwrveConversationSDK'
-  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary', 'Contacts', 'Photos'
-  s.library = 'sqlite3'
 end
