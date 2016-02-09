@@ -14,7 +14,6 @@
 		F596B4A71C68F3BD00DDE0C8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F596B4A51C68F3BD00DDE0C8 /* Main.storyboard */; };
 		F596B4A91C68F3BD00DDE0C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F596B4A81C68F3BD00DDE0C8 /* Assets.xcassets */; };
 		F596B4AC1C68F3BD00DDE0C8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F596B4AA1C68F3BD00DDE0C8 /* LaunchScreen.storyboard */; };
-		F596B4B51C68F51700DDE0C8 /* DemoSwrveCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = F596B4B41C68F51700DDE0C8 /* DemoSwrveCommon.m */; };
 		F596B4BE1C68F60700DDE0C8 /* Dublin-AvivaStadium.gpx in Resources */ = {isa = PBXBuildFile; fileRef = F596B4B71C68F60700DDE0C8 /* Dublin-AvivaStadium.gpx */; };
 		F596B4BF1C68F60700DDE0C8 /* Dublin-BullIsland.gpx in Resources */ = {isa = PBXBuildFile; fileRef = F596B4B81C68F60700DDE0C8 /* Dublin-BullIsland.gpx */; };
 		F596B4C01C68F60700DDE0C8 /* Dublin-OConnellSt.gpx in Resources */ = {isa = PBXBuildFile; fileRef = F596B4B91C68F60700DDE0C8 /* Dublin-OConnellSt.gpx */; };
@@ -22,6 +21,7 @@
 		F596B4C21C68F60700DDE0C8 /* plotconfig.json in Resources */ = {isa = PBXBuildFile; fileRef = F596B4BB1C68F60700DDE0C8 /* plotconfig.json */; };
 		F596B4C31C68F60700DDE0C8 /* PushSound1.caf in Resources */ = {isa = PBXBuildFile; fileRef = F596B4BC1C68F60700DDE0C8 /* PushSound1.caf */; };
 		F596B4C41C68F60700DDE0C8 /* PushSound2.caf in Resources */ = {isa = PBXBuildFile; fileRef = F596B4BD1C68F60700DDE0C8 /* PushSound2.caf */; };
+		F596B4D01C6A2E2C00DDE0C8 /* campaign.json in Resources */ = {isa = PBXBuildFile; fileRef = F596B4CF1C6A2E2C00DDE0C8 /* campaign.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +38,6 @@
 		F596B4A81C68F3BD00DDE0C8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F596B4AB1C68F3BD00DDE0C8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F596B4AD1C68F3BD00DDE0C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F596B4B31C68F51700DDE0C8 /* DemoSwrveCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSwrveCommon.h; sourceTree = "<group>"; };
-		F596B4B41C68F51700DDE0C8 /* DemoSwrveCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSwrveCommon.m; sourceTree = "<group>"; };
 		F596B4B71C68F60700DDE0C8 /* Dublin-AvivaStadium.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Dublin-AvivaStadium.gpx"; sourceTree = "<group>"; };
 		F596B4B81C68F60700DDE0C8 /* Dublin-BullIsland.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Dublin-BullIsland.gpx"; sourceTree = "<group>"; };
 		F596B4B91C68F60700DDE0C8 /* Dublin-OConnellSt.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Dublin-OConnellSt.gpx"; sourceTree = "<group>"; };
@@ -47,6 +45,7 @@
 		F596B4BB1C68F60700DDE0C8 /* plotconfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = plotconfig.json; sourceTree = "<group>"; };
 		F596B4BC1C68F60700DDE0C8 /* PushSound1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PushSound1.caf; sourceTree = "<group>"; };
 		F596B4BD1C68F60700DDE0C8 /* PushSound2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PushSound2.caf; sourceTree = "<group>"; };
+		F596B4CF1C6A2E2C00DDE0C8 /* campaign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaign.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +99,6 @@
 		F596B49B1C68F3BD00DDE0C8 /* SwrveStandalonesTest */ = {
 			isa = PBXGroup;
 			children = (
-				F596B4B31C68F51700DDE0C8 /* DemoSwrveCommon.h */,
-				F596B4B41C68F51700DDE0C8 /* DemoSwrveCommon.m */,
 				F596B49F1C68F3BD00DDE0C8 /* AppDelegate.h */,
 				F596B4A01C68F3BD00DDE0C8 /* AppDelegate.m */,
 				F596B4A21C68F3BD00DDE0C8 /* ViewController.h */,
@@ -126,6 +123,7 @@
 		F596B4B61C68F5FC00DDE0C8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F596B4CF1C6A2E2C00DDE0C8 /* campaign.json */,
 				F596B4B71C68F60700DDE0C8 /* Dublin-AvivaStadium.gpx */,
 				F596B4B81C68F60700DDE0C8 /* Dublin-BullIsland.gpx */,
 				F596B4B91C68F60700DDE0C8 /* Dublin-OConnellSt.gpx */,
@@ -208,6 +206,7 @@
 				F596B4BF1C68F60700DDE0C8 /* Dublin-BullIsland.gpx in Resources */,
 				F596B4C21C68F60700DDE0C8 /* plotconfig.json in Resources */,
 				F596B4C41C68F60700DDE0C8 /* PushSound2.caf in Resources */,
+				F596B4D01C6A2E2C00DDE0C8 /* campaign.json in Resources */,
 				F596B4C01C68F60700DDE0C8 /* Dublin-OConnellSt.gpx in Resources */,
 				F596B4C11C68F60700DDE0C8 /* Dublin-SwrveOffice.gpx in Resources */,
 				F596B4A71C68F3BD00DDE0C8 /* Main.storyboard in Resources */,
@@ -271,7 +270,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F596B4A41C68F3BD00DDE0C8 /* ViewController.m in Sources */,
-				F596B4B51C68F51700DDE0C8 /* DemoSwrveCommon.m in Sources */,
 				F596B4A11C68F3BD00DDE0C8 /* AppDelegate.m in Sources */,
 				F596B49E1C68F3BD00DDE0C8 /* main.m in Sources */,
 			);

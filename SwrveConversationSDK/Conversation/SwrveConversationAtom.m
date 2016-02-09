@@ -4,7 +4,6 @@
 #endif
 
 #import "SwrveConversationAtom.h"
-#import "SwrveConversation.h"
 
 @implementation SwrveConversationAtom
 

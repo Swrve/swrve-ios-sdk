@@ -1,23 +1,22 @@
-#import "Swrve.h"
+#import "SwrveCommon.h"
+#import "SwrveCommonMessageController.h"
 #import "SwrveContentItem.h"
-#import "SwrveConversation.h"
+#import "SwrveCommonConversation.h"
 #import "SwrveConversationPane.h"
 
-@interface SwrveConversation()
+@interface SwrveCommonConversation()
 
-@property (nonatomic, weak)     SwrveMessageController* controller;
+@property (nonatomic, weak)     id<SwrveCommonMessageController> controller;
 
 @end
 
-@implementation SwrveConversation
+@implementation SwrveCommonConversation
 
-@synthesize controller, campaign, conversationID, name, pages;
+@synthesize controller, conversationID, name, pages;
 
--(SwrveConversation*) updateWithJSON:(NSDictionary*)json
-                         forCampaign:(SwrveConversationCampaign*)_campaign
-                       forController:(SwrveMessageController*)_controller
+-(SwrveCommonConversation*) updateWithJSON:(NSDictionary*)json
+                             forController:(id<SwrveCommonMessageController>)_controller
 {
-    self.campaign       = _campaign;
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
@@ -25,13 +24,10 @@
     return self;
 }
 
-+(SwrveConversation*) fromJSON:(NSDictionary*)json
-                   forCampaign:(SwrveConversationCampaign*)campaign
-                 forController:(SwrveMessageController*)controller
++(SwrveCommonConversation*) fromJSON:(NSDictionary*)json
+                       forController:(id<SwrveCommonMessageController>)controller
 {
-    return [[[SwrveConversation alloc] init] updateWithJSON:json
-                                                forCampaign:campaign
-                                              forController:controller];
+    return [[[SwrveCommonConversation alloc] init] updateWithJSON:json forController:controller];
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {
@@ -53,7 +49,7 @@
 }
 
 -(void)wasShownToUser {
-    SwrveMessageController* c = self.controller;
+    id<SwrveCommonMessageController> c = self.controller;
     if (c != nil) {
         [c conversationWasShownToUser:self];
     }

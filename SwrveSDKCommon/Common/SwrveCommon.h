@@ -16,7 +16,7 @@
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(int) userUpdate:(NSDictionary*)attributes;
 -(void) setLocationVersion:(NSString*)locationVersion;
--(BOOL)processPermissionRequest:(NSString*)action;
+-(BOOL) processPermissionRequest:(NSString*)action;
 
 @end
 
