@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = "SwrveCommon"
+  s.name             = "SwrveSDKCommon"
   s.version          = "4.2.0"
   s.summary          = "iOS Common library for Swrve."
   s.homepage         = "http://www.swrve.com"
@@ -11,6 +11,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source_files = 'SwrveCommon/**/*.{m,h}'
-  s.public_header_files = 'SwrveCommon/**/*.h'
+  s.source_files = 'Common/**/*.{m,h}'
+  s.public_header_files = 'Common/**/*.h'
 end

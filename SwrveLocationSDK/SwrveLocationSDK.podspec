@@ -11,8 +11,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source_files = 'LocationSdk/**/*.{m,h}'
-  s.public_header_files = 'LocationSdk/**/*.h'
-  s.dependency 'SwrveCommon'
+  s.source_files = 'Location/**/*.{m,h}'
+  s.public_header_files = 'Location/**/*.h'
+  s.dependency 'SwrveSDKCommon'
   s.dependency 'PlotPlugin'
 end

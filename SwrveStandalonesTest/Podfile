@@ -1,5 +1,5 @@
 target 'SwrveStandalonesTest' do
-  pod 'SwrveCommon', :path => '../SwrveCommon'
+  pod 'SwrveSDKCommon', :path => '../SwrveSDKCommon'
   pod 'SwrveLocationSDK', :path => '../SwrveLocationSDK'
   pod 'SwrveConversationSDK', :path => '../SwrveConversationSDK'
   pod 'SwrveSDK', :path => '../'

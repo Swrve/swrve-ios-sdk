@@ -1,39 +1,39 @@
 PODS:
   - PlotPlugin (1.12.0)
-  - SwrveCommon (4.2.0)
   - SwrveConversationSDK (4.2.0):
-    - SwrveCommon
+    - SwrveSDKCommon
   - SwrveLocationSDK (4.2.0):
     - PlotPlugin
-    - SwrveCommon
+    - SwrveSDKCommon
   - SwrveSDK (4.2.0):
-    - SwrveCommon
     - SwrveConversationSDK
     - SwrveLocationSDK
+    - SwrveSDKCommon
+  - SwrveSDKCommon (4.2.0)
 
 DEPENDENCIES:
-  - SwrveCommon (from `../SwrveCommon`)
   - SwrveConversationSDK (from `../SwrveConversationSDK`)
   - SwrveLocationSDK (from `../SwrveLocationSDK`)
   - SwrveSDK (from `../`)
+  - SwrveSDKCommon (from `../SwrveSDKCommon`)
 
 EXTERNAL SOURCES:
-  SwrveCommon:
-    :path: "../SwrveCommon"
   SwrveConversationSDK:
     :path: "../SwrveConversationSDK"
   SwrveLocationSDK:
     :path: "../SwrveLocationSDK"
   SwrveSDK:
     :path: "../"
+  SwrveSDKCommon:
+    :path: "../SwrveSDKCommon"
 
 SPEC CHECKSUMS:
   PlotPlugin: d0614755b8e091dc7c73e7ef265a32da3cd9de85
-  SwrveCommon: 2dea0e4de2946e9f048269eb5826d0b88ddcf3b2
-  SwrveConversationSDK: 2fb40402e8df0736f8eafc3a1a1d3557d4d1bdaf
-  SwrveLocationSDK: 6a3011336ac2dd8ef03c7bbf6cbd9f3684ccde48
-  SwrveSDK: 1632efba3e22afc7e9516563ad8c0c0c4a20be57
+  SwrveConversationSDK: 68d6cf3a4c7f35c750eaf1ef241639f1a2f7b717
+  SwrveLocationSDK: efbd13cd4a1762e711bba408d1022e64e3800300
+  SwrveSDK: 97f17c8a5ecd47a1214df007444f41a710a86025
+  SwrveSDKCommon: 2ecde2f7bc9db4913adddcebc2f7835293f678be
 
-PODFILE CHECKSUM: f314a1fb432e2aed669ebbce785a3684e4b14c36
+PODFILE CHECKSUM: 41524da1fca4c52655666383a62f5a79093bcdb0
 
 COCOAPODS: 1.0.0.beta.1
