@@ -75,50 +75,51 @@ If you are using Cocoapods, add `pod 'SwrveSDK'` to your Podfile and run `pod in
 
 If you are not using the Cocoapods, you'll need to: unzip the iOS SDK, copy the contents of the SDK folder into your project and add the frameworks listed in the requirement section above.
 
-1. (Optional): With iOS 9, by default all communications between the app and its backend or the web should use HTTPS. (See the App Transport Security section in Apple’s [What’s New in iOS 9.0](https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS9.html) guide.) Swrve’s API URL endpoints are now all HTTPS-capable and the API calls default to HTTPS. However, if you’re planning to use YouTube videos as content in your Conversations, add an Application Transport Security exception to your `<App>-Info.plist`.
+Add one of the code snippets below to the didFinishLaunchingWithOptions method of your AppDelegate, depending on whether your data will be stored in our US or EU data center.
+
+By default, Swrve stores all customer data and content in our US data center. If you require EU-only data storage, you must configure the SDK to point to Swrve’s EU-based URL endpoints.
+
+US Data Storage
+
+```
+#import "swrve.h"
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   [Swrve sharedInstanceWithAppID:<app_id> apiKey:@"<api_key>" launchOptions:launchOptions];
+}
+```
+
+EU Data Storage
+
+```
+#import "swrve.h"
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+   SwrveConfig* config = [[SwrveConfig alloc] init];
+   config.selectedStack = SWRVE_STACK_EU;
+   [Swrve sharedInstanceWithAppID:<app_id> apiKey:@"<api_key>" config:config launchOptions:launchOptions];
+}
+```
+
+For more information, see [How Do I Configure the Swrve SDK for EU Data Storage?](http://docs.swrve.com/faqs/sdk-integration/configure-sdk-for-eu-data-storage/) If you have any questions or need assistance configuring the SDK for EU data storage, please contact support@swrve.com.
+
+Replace `<app_id>` and `<api_key>` with your Swrve app ID and Swrve API key.
+
+* (Optional): With iOS 9, by default all communications between the app and its backend or the web should use HTTPS. (See the App Transport Security section in Apple’s [What’s New in iOS 9.0](https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS9.html) guide.) Swrve’s API URL endpoints are now all HTTPS-capable and the API calls default to HTTPS. However, if you’re planning to use YouTube videos as content in your Conversations, add an Application Transport Security exception to your `<App>-Info.plist`.
 
   ```
   <key>NSAppTransportSecurity</key>
   <dict>
-   <key>NSAllowsArbitraryLoads</key>
-   <true/>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
   </dict>
   ```
 
   This is needed, as even HTTPS YouTube links use non-secure endpoints that keep changing over time.
 
-2. By default, Swrve stores all customer data and content in our US data center. If you require EU-only data storage, you must configure the SDK to point to Swrve’s EU-based URL endpoints.
-
-  Add one of the following code snippets to the didFinishLaunchingWithOptions method of your AppDelegate, depending on whether your data will be stored in our US or EU data center:
-
-  US Data Storage
-
-  ```
-  #import "swrve.h"
-  - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-     [Swrve sharedInstanceWithAppID:<app_id> apiKey:@"<api_key>" launchOptions:launchOptions];
-  }
-  ```
-
-  EU Data Storage
-
-  ```
-  #import "swrve.h"
-  - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-     SwrveConfig* config = [[SwrveConfig alloc] init];
-     config.selectedStack = SWRVE_STACK_EU;
-     [Swrve sharedInstanceWithAppID:<app_id> apiKey:@"<api_key>" config:config launchOptions:launchOptions];
-  }
-  ```
-
-  For more information, see [How Do I Configure the Swrve SDK for EU Data Storage?](http://docs.swrve.com/faqs/sdk-integration/configure-sdk-for-eu-data-storage/) If you have any questions or need assistance configuring the SDK for EU data storage, please contact support@swrve.com.
-
-3. Replace <app_id> and <api_key> with your Swrve app ID and Swrve API key.
-
-4. (Optional): If you are planning to use or ask for location tracking permission, add the following keys to your `<App>-Info.plist` if not already there (edit the Value message to whatever text you want):
+* (Optional): If you are planning to use or ask for location tracking permission, add the following keys to your `<App>-Info.plist` if not already there (edit the Value message to whatever text you want):
 
   * `NSLocationAlwaysUsageDescription`. Value: “Location is needed to offer all functionality in this app”.
   * `NSLocationWhenInUseUsageDescription`. Value: “Location is needed to offer all functionality in this app”.
+
 
 In-app Messaging
 -
@@ -126,45 +127,23 @@ Integrate the in-app messaging functionality so you can use Swrve to send person
 
 Before you can test the in-app message feature in your game, you need to create an In App Message campaign in the Swrve Dashboard.
 
-For iOS, if you want to display an in-app message as soon as your view is ready, you must trigger the display event when the view controller is in the `viewDidAppear` state and not in `viewDidLoad` state.
+If you want to display an in-app message as soon as your view is ready, you must trigger the display event when the view controller is in the `viewDidAppear` state and not in `viewDidLoad` state.
 
 ### In-app Messaging Deeplinks ###
 
 When creating in-app messages in Swrve, you can configure message buttons to direct users to perform a custom action when clicked. For example, you might configure a button to direct the app user straight to your app store. To enable this feature, you must configure deeplinks by performing the actions outlined below. For more information about creating in-app messages in Swrve, see [Creating In-App Messages](http://docs.swrve.com/user-documentation/in-app-messaging/creating-in-app-messages/).
 
-Integrate deeplinks to direct users to a sale, website or other target when they click an in-app message. Before handling deeplinks in Swrve, you’ll need to register a [custom URL scheme with iOS](https://developer.apple.com/library/ios/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html).
+Swrve's default deeplink behaviour is to treat custom actions as URLs and therefore use your existing custom URL scheme. Before handling deeplinks in Swrve, you’ll need to register a [custom URL scheme with iOS](https://developer.apple.com/library/ios/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html).
 
-Once the custom URL scheme is set, your app can receive and direct users from outside of the app. By default, the Swrve SDK sends users directly to the URL. If you would like to handle query parameters from this URL, you must implement this within the app.
+Once the custom URL scheme is set, your app can receive and direct users from outside of the app.
 
-Review the code examples below if you would like to implement custom behavior.
+It is also possible to override this behavior and integrate custom actions to direct users to a sale, website or other target when they click on an in-app message. For example, if you would like to handle additional swrve query parameters from this URL, you must implement this within the app.
 
-```
-- (BOOL) application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    // Normally your app would handle url navigation here and go to the correct
-    // app location.  In this example we just print the url in an alert.
-    UIAlertView *alertView;
-    NSString *text = [[url host] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    alertView = [[UIAlertView alloc] initWithTitle:@"Text" message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
-    return YES;
-}
-```
-
-If you would like to process the custom actions directly rather than use a custom URL scheme, you can do so by setting a delegate on the Swrve SDK:
 
 ```
 [Swrve sharedInstance].talk.customButtonCallback = ^(NSString* action) {
-   // Process the custom action. For example:
-   float discount = 1.0;
-   NSError* error;
-   NSData* actionAsData = [action dataUsingEncoding:NSUTF8StringEncoding];
-   NSDictionary* actionAsJson = [NSJSONSerialization JSONObjectWithData:actionAsData options:NSJSONReadingMutableContainers error:&error];
-   if([actionAsJson objectForKey:@"currencyMultiplier"]) {
-      discount = ((NSString*)[actionAsJson objectForKey:@"currencyMultiplier"]).floatValue;
-      if(discount != 1.0) {
-         [self showStoreFrontWithDiscount:discount];
-      }
-   }
+   // Process the custom action
+   // ...
 }
 ```
 
@@ -209,12 +188,27 @@ Your app must also handle the following two situations:
 
 ```
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  // Initialize Swrve with custom events that will trigger the push notification dialog
+
+  // Initialize Swrve with custom events that will trigger the push
+  // notification dialog
+
   SwrveConfig* config = [[SwrveConfig alloc] init];
   config.pushEnabled = YES;
-  // Let the SDK know about your iOS8 Interactive Notifications if you have any in your app
+
+  // Let the SDK know about your iOS8 Interactive Notifications if you have
+  // any in your app
   config.pushCategories = [NSSet setWithObjects:YOUR_CATEGORY, nil];
-  [Swrve sharedInstanceWithAppID:your_app_id apiKey:@"your_api_key" config:config launchOptions:launchOptions];
+
+  [Swrve sharedInstanceWithAppID:your_app_id
+         apiKey:@"your_api_key"
+         config:config
+         launchOptions:launchOptions];
+
+  // ...
+}
+
+-(void) application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+  // by default - no action if the user gets a push while the app is running.
 }
 ```
 
@@ -272,7 +266,7 @@ The method above enables you specify any launch parameters that you want to capt
 
 ### Disabling method swizzling
 
-The SDK uses method swizzling by default. Use the following code if you want to disable method swizzling:
+The SDK uses method swizzling by default. Method Swizzling of Push Notification methods means that fewer code changes are required to enable push notifications. Use the following code if you want to disable method swizzling:
 
 ```
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -351,7 +345,7 @@ For example, if you want to track when a user starts the tutorial experience it 
 
 ### Send User Properties ###
 
-Assign user properties to send the status of the user. For example create a custom user property called `premium`, and then target non-premium users and premium users in the dashboard..
+Assign user properties to send the status of the user. For example create a custom user property called `premium`, and then target non-premium users and premium users in the dashboard.
 
 When configuring custom properties for iOS, you can use a variety of data types (integers, boolean, strings) which the SDK then converts to an integer (for number-based values) or string (in the case of boolean, “true/false”) before sending the data to Swrve. When creating segments or campaign audiences, depending on which data type the property is converted to, you must then select the correct operator (equals for numbers, is for strings) for the property to be properly returned.
 
@@ -365,6 +359,8 @@ When configuring custom properties for iOS, you can use a variety of data types 
 
 ### Sending Virtual Economy Events ###
 
+To ensure virtual currency events are not ignored by the server, make sure the currency name configured in your app matches exactly the Currency Name you enter in the App Currencies section on the App Settings screen (including case-sensitive). If there is any difference, or if you haven’t added the currency in Swrve, the event will be ignored and return an error event called Swrve.error.invalid_currency. Additionally, the ignored events will not be included in your KPI reports. For more information, see [Add Your App](http://docs.swrve.com/getting-started/add-your-app/).
+
 If your app has a virtual economy, send the purchase event when users purchase in-app items with virtual currency.
 
 ```
@@ -376,8 +372,6 @@ Send the currency given event when you give users virtual currency. Examples inc
 ```
 [[Swrve sharedInstance] currencyGiven:@"coins" givenAmount:25];
 ```
-
-To ensure virtual currency events are not ignored by the server, make sure the currency name configured in your app matches exactly the Currency Name you enter in the App Currencies section on the App Settings screen (including case-sensitive). If there is any difference, or if you haven’t added the currency in Swrve, the event will be ignored and return an error event called Swrve.error.invalid_currency. Additionally, the ignored events will not be included in your KPI reports. For more information, see [Add Your App](http://docs.swrve.com/getting-started/add-your-app/).
 
 ### Sending IAP Events and IAP Validation ###
 
@@ -425,7 +419,7 @@ Use the following events to monitor the success of IAP receipt validation:
 
 ### Unvalidated IAP
 
-If you want to build revenue reports for your app but don’t have or want the receipt being validated by our servers, use the following function:
+If you want to build revenue reports for your app but don’t have or want the receipt being validated by our servers, use the function below. This might be required for any purchases made from the app not via apple - this revenue should be validated before this function is called, as any revenue sent by this event will automatically count in the Swrve dashboard.
 
 ```
 // Tell Swrve what was purchased.
