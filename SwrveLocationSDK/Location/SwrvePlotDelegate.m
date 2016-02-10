@@ -4,9 +4,6 @@
 static SwrvePlotDelegate *_swrveSharedPlot = NULL;
 static dispatch_once_t sharedInstanceToken = 0;
 
-@interface SwrvePlotDelegate ()
-@end
-
 @implementation SwrvePlotDelegate
 
 +(SwrvePlotDelegate*) sharedInstance
