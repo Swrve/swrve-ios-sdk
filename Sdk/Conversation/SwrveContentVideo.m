@@ -1,9 +1,6 @@
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
-#import "SwrveSetup.h"
-#import "SwrveConversationEvents.h"
-
 #import "UIWebView+YouTubeVimeo.h"
 
 @interface SwrveContentVideo () {
@@ -45,11 +42,13 @@
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
     _containerView = containerView;
-    
+
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
     // Enable audio
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-    
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+
     // Create _view
     CGFloat vid_height = (_height) ? [_height floatValue] : 180.0;
     _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, vid_height)];
