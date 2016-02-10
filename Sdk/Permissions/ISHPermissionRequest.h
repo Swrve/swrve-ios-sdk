@@ -10,11 +10,6 @@
 #import <Foundation/Foundation.h>
 #import "ISHPermissionCategory.h"
 
-//#define SWRVE_NO_ADDRESS_BOOK
-//#define SWRVE_NO_LOCATION
-//#define SWRVE_NO_PHOTO_CAMERA
-//#define SWRVE_NO_PHOTO_LIBRARY
-
 /**
  *  Enumeration for possible permission states.
  *  These are used inlieu of the permission state values 

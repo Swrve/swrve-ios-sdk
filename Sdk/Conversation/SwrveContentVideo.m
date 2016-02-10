@@ -43,11 +43,9 @@
 -(void) loadViewWithContainerView:(UIView*)containerView {
     _containerView = containerView;
 
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
     // Enable audio
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 
     // Create _view
     CGFloat vid_height = (_height) ? [_height floatValue] : 180.0;

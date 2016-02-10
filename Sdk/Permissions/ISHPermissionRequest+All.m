@@ -37,13 +37,11 @@
             break;
 
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
 
         case ISHPermissionCategoryPhotoCamera:
             request = [ISHPermissionRequestPhotoCamera new];
             break;
 
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 
         case ISHPermissionCategoryAddressBook:
