@@ -237,7 +237,7 @@ Apple only asks for permission to receive push notifications once per app, under
   // Initialize Swrve with custom events that will trigger the push notification dialog
   SwrveConfig* config = [[SwrveConfig alloc] init];
   config.pushEnabled = YES;
-  config.pushNotificationEvents = [[NSSet alloc] initWithArray:@[@"level_up", @"battle_win"]];
+  config.pushNotificationEvents = [[NSSet alloc] initWithArray:@[@"tutorial.complete", @"subscribe"]];
   [Swrve sharedInstanceWithAppID:your_app_id apiKey:@"your_api_key" config:config launchOptions:launchOptions];
   // Initialize Swrve with custom events that will trigger the push notification dialog
   ```
