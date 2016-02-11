@@ -12,6 +12,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize next;
 @synthesize impressions;
 @synthesize status;
+@synthesize showMsgsAfterDelay;
 
 -(id)initWithID:(NSUInteger)ID {
     if (self = [super init]) {
@@ -70,7 +71,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize minDelayBetweenMsgs;
 @synthesize state;
 @synthesize showMsgsAfterLaunch;
-@synthesize showMsgsAfterDelay;
 @synthesize name;
 @synthesize dateStart;
 @synthesize dateEnd;
@@ -100,7 +100,8 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         self.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
         self.name = [dict objectForKey:@"name"];
         self.messageCenter = [[dict objectForKey:@"message_center"] boolValue];
-        self.subject = [dict objectForKey:@"subject"];
+        NSString* subjectString = [dict objectForKey:@"subject"];
+        self.subject = (subjectString == (id)[NSNull null])? @"" : subjectString;
         self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
         
         [self loadTriggersFrom:dict];
@@ -112,7 +113,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
 -(void)setMessageMinDelayThrottle:(NSDate*)timeShown
 {
-    [self setShowMsgsAfterDelay:[timeShown dateByAddingTimeInterval:[self minDelayBetweenMsgs]]];
+    self.state.showMsgsAfterDelay = [timeShown dateByAddingTimeInterval:self.minDelayBetweenMsgs];
 }
 
 -(void)wasShownToUserAt:(NSDate*)timeShown
@@ -192,7 +193,7 @@ static NSDate* read_date(id d, NSDate* default_date)
 
 -(BOOL)isTooSoonToShowMessageAfterDelay:(NSDate*)now
 {
-    return [now compare:[self showMsgsAfterDelay]] == NSOrderedAscending;
+    return [now compare:self.state.showMsgsAfterDelay] == NSOrderedAscending;
 }
 
 -(void)logAndAddReason:(NSString*)reason withReasons:(NSMutableDictionary*)campaignReasons
@@ -238,7 +239,7 @@ static NSDate* read_date(id d, NSDate* default_date)
     
     if ([self isTooSoonToShowMessageAfterDelay:time])
     {
-        [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Too soon after last message. Wait until %@", [SwrveMessageController getTimeFormatted:self.showMsgsAfterDelay]] withReasons:campaignReasons];
+        [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Too soon after last message. Wait until %@", [SwrveMessageController getTimeFormatted:self.state.showMsgsAfterDelay]] withReasons:campaignReasons];
         return FALSE;
     }
     

@@ -268,11 +268,12 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 - (void)saveCampaignsState
 {
-    NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.campaigns.count];
-    for (SwrveCampaign* campaign in self.campaigns)
+    NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
+    [self.campaignsState enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop)
     {
-        [newStates addObject:[campaign stateDictionary]];
-    }
+#pragma unused(key, stop)
+        [newStates addObject:[value asDictionary]];
+    }];
     
     NSError*  error = NULL;
     NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates

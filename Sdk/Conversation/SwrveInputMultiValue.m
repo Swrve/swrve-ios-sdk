@@ -79,7 +79,11 @@
 }
 
 -(NSUInteger) numberOfRowsNeeded {
-    return self.values.count + ([self hasDescription]? 1: 0);
+    if(self.values != ((id)[NSNull null])) {
+        return self.values.count + ([self hasDescription] ? 1 : 0);
+    } else {
+        return 0;
+    }
 }
 
 -(UITableViewCell*) styleCell:(UITableViewCell *)cell atRow:(NSUInteger) row {
