@@ -89,6 +89,10 @@
         if (error) {
             DebugLog(@"Error init location campaigns.\nError: %@\njson: %@", error, data);
         } else {
+            NSDictionary* inner = [locationCampaignsDict valueForKey:@"campaigns"];
+            if(nil != inner) {
+                locationCampaignsDict = inner;
+            }
             [locationManager updateWithDictionary:locationCampaignsDict];
         }
     }
