@@ -1,25 +1,73 @@
 #import "UnitySwrveCommon.h"
+#import "UnitySwrveHelper.h"
+#import "SwrveSignatureProtectedFile.h"
 
 static UnitySwrveCommon *_swrveSharedUnity = NULL;
 static dispatch_once_t sharedInstanceToken = 0;
 
+@interface UnitySwrveCommon()
+
+@property(atomic, strong) NSDictionary* configDict;
+
+@end
+
 @implementation UnitySwrveCommon
+
+@synthesize configDict;
 
 +(UnitySwrveCommon*) sharedInstance
 {
     dispatch_once(&sharedInstanceToken, ^{
         _swrveSharedUnity = [UnitySwrveCommon alloc];
+        [SwrveCommon setSwrveCommon:_swrveSharedUnity];
     });
     return _swrveSharedUnity;
 }
 
 +(void) init:(char*)jsonConfig {
-    [UnitySwrveCommon sharedInstance];
+    UnitySwrveCommon* swrve = [UnitySwrveCommon sharedInstance];
+    
+    NSError* error = nil;
+    swrve.configDict =
+        [NSJSONSerialization JSONObjectWithData:[[UnitySwrveHelper CStringToNSString:jsonConfig] dataUsingEncoding:NSUTF8StringEncoding]
+                                        options:NSJSONReadingMutableContainers error:&error];
+}
+
+-(NSString*) stringFromConfig:(NSString*)key {
+    return [self.configDict valueForKey:key];
+}
+
+-(NSString*) applicationPath {
+    return [self stringFromConfig:@"swrvePath"];
+}
+
+-(NSString*) locTag {
+    return [self stringFromConfig:@"locTag"];
+}
+
+-(NSString*) sigSuffix {
+    return [self stringFromConfig:@"sigSuffix"];
+}
+
+-(NSString*) userId {
+    return [self stringFromConfig:@"userId"];
+}
+
+-(NSString*) uniqueKey {
+    return [self stringFromConfig:@"uniqueKey"];
+}
+
+-(NSString*) getLocationPath {
+    return [NSString stringWithFormat:@"%@/%@%@", [self applicationPath], [self locTag], [self userId]];
 }
 
 -(NSData*) getCampaignData:(int)category {
     if(SWRVE_CAMPAIGN_LOCATION == category) {
-        return [@"{\"1\":{\"version\":1,\"message\":{\"id\":1,\"body\":\"Swrve Dublin office ENTER. This should open deeplink to ios Data tab swrve://deeplink/data\",\"payload\":\"{\\\"_sd\\\":\\\"swrve://deeplink/data\\\"}\"}},\"2\":{\"version\":1,\"message\":{\"id\":2,\"body\":\"Dom Swrve Dublin office EXIT.\",\"payload\":\"{}\"}},\"12\":{\"version\":1,\"message\":{\"id\":12,\"body\":\"Dom campaign brookwood Exit\\nLabel is: ${geofence.label}\",\"payload\":\"{}\"}},\"13\":{\"version\":1,\"message\":{\"id\":13,\"body\":\"Dundalk enter\",\"payload\":\"{}\"}},\"14\":{\"version\":1,\"message\":{\"id\":14,\"body\":\"Dundalk exit\",\"payload\":\"{}\"}},\"21\":{\"version\":1,\"message\":{\"id\":21,\"body\":\"Dom Fairview Enter\",\"payload\":\"{}\"}},\"43\":{\"version\":1,\"message\":{\"id\":39,\"body\":\"Swrve Dublin Phoenix Park Enter\",\"payload\":\"{}\"}},\"176\":{\"version\":1,\"message\":{\"id\":155,\"body\":\"Dom Bull Island Exit. Label is: ${geofence.label}\",\"payload\":\"{}\"}},\"177\":{\"version\":1,\"message\":{\"id\":156,\"body\":\"Dom campaign brookwood Enter. Label:${geofence.label}\",\"payload\":\"{}\"}}}" dataUsingEncoding:NSUTF8StringEncoding];
+        NSURL *fileURL = [NSURL fileURLWithPath:[self getLocationPath]];
+        NSURL *signatureURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@", [self getLocationPath], [self sigSuffix]]];
+        NSString *signatureKey = [self uniqueKey];
+        SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
+        return [locationCampaignFile readFromFile];
     }
     return nil;
 }

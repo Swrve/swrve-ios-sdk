@@ -28,15 +28,9 @@
 {
     // Create a view to show the conversation
     SwrveConversationItemViewController* scivc = nil;
-    //    @try {
     UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle mainBundle]];
     scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-    //    }
-    //    @catch (NSException *exception) {
-    //        DebugLog(@"Unable to load Conversation Item View Controller. %@", exception);
-    //        return;
-    //    }
-    
+
     UIWindow* conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [scivc setConversation:conversation andMessageController:self andWindow:conversationWindow];
     

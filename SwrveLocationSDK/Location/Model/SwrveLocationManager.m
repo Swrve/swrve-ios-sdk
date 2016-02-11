@@ -1,5 +1,4 @@
 #import "SwrveLocationManager.h"
-//#import "Swrve.h"
 
 @implementation SwrveLocationManager
 
