@@ -89,6 +89,8 @@
         if (error) {
             DebugLog(@"Error init location campaigns.\nError: %@\njson: %@", error, data);
         } else {
+            // if we're loading in from the Unity side, we're probably in the "outer" campaigns JSON dict,
+            // we check if there's a "campaigns" key and if so, switch in to that.
             NSDictionary* inner = [locationCampaignsDict valueForKey:@"campaigns"];
             if(nil != inner) {
                 locationCampaignsDict = inner;
