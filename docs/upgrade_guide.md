@@ -5,7 +5,7 @@ iOS SDK Upgrade Guide
 - [Upgrading to iOS SDK v4.1](#upgrading-to-ios-sdk-v41)
   - [Custom Events Starting with `Swrve.`](#custom-events-starting-with-swrve)
   - [Custom User ID](#custom-user-id)
-  - [Add Photos and Contacts Frameworks](#add-photos-and-contacts-frameworks)
+  - [Add Photos and Contactsput Frameworks](#add-photos-and-contacts-frameworks)
 - [Upgrading to iOS SDK v4.0.5](#upgrading-to-ios-sdk-v405)
 - [Upgrading to iOS SDK v4.0.4](#upgrading-to-ios-sdk-v404)
 - [Upgrading to iOS SDK v4.0.3](#upgrading-to-ios-sdk-v403)
@@ -34,11 +34,11 @@ Upgrading to iOS SDK v4.1
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v4.1.
 
-### Custom Events Starting with `Swrve.` ###
+### Custom Events Starting with `Swrve.`
 
 * Custom events that start with `Swrve.*` or `swrve.*` are now restricted. You need to rename any custom `Swrve.` events or they won’t be sent.
 
-### Custom User ID ###
+### Custom User ID
 
 If you are using a custom user ID and upgrading to iOS SDK 4.1, you need to move the configuration to the SwrveConfig object:
 
@@ -61,7 +61,7 @@ config.userId = @”<your_custom_user_id>”;
        launchOptions:launchOptions];
 ```
 
-### Add Photos and Contacts Frameworks ###
+### Add Photos and Contacts Frameworks
 
 iOS9 has deprecated several APIs in favor of the new Photos and Contacts frameworks. Please add them to your project:
 
@@ -84,11 +84,11 @@ Upgrading to iOS SDK v4.0.2
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v4.0.2.
 
-### `Contacts.framework` ###
+### `Contacts.framework`
 
 If you upgraded to SDK v4.0.1, remove the Contacts.framework from your project.
 
-### Conversations video support for iOS 9 ###
+### Conversations video support for iOS 9
 
 If you are upgrading from SDK v4.0 or prior, follow the instructions for v4.0.1 below regarding Conversations video support for iOS 9.
 
@@ -97,11 +97,11 @@ Upgrading to iOS SDK v4.0.1
 
 This section provides information to enable you to upgrade to Swrve iOS SDK v4.0.1.
 
-### iOS 9 Support ###
+### iOS 9 Support
 
 To upgrade the SDK to include support for iOS 9, include the `Contacts.framework` framework in your project and build your app using Xcode 7. If you are not using Xcode 7, then you need to exclude the Contacts.framework from your project and be aware that Conversation Campaigns aimed at asking users for permission to access their Contacts will use a deprecated API on iOS 9 devices and so may not work for much longer.
 
-### Conversations video support for iOS 9 ###
+### Conversations video support for iOS 9
 
 With iOS 9, by default all communications between the app and its backend or the web should use HTTPS. (See the App Transport Security section in Apple’s What’s New in iOS 9.0 guide.) Swrve’s API URL endpoints are now all HTTPS-capable and the API calls default to HTTPS. However, if you’re planning to use YouTube videos as content in your Conversations, add an Application Transport Security exception to your <App>.plist.
 
@@ -119,7 +119,7 @@ Upgrading to iOS SDK v4.0
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v4.0.
 
-### Conversations ###
+### Conversations
 To upgrade the SDK for Swrve’s new Conversations feature, add the following frameworks to your project:
 
 * `MessageUI.framework`
@@ -128,7 +128,7 @@ To upgrade the SDK for Swrve’s new Conversations feature, add the following fr
 * `AVFoundation.framework`
 * `AssetsLibrary.framework`
 
-### Requestion Device Permissions ###
+### Requestion Device Permissions
 
 If you are planning to use or ask for location tracking permission, add the following keys to your `<App>-Info.plist` if not already there (edit the Value message to whatever text you want):
 
@@ -139,7 +139,7 @@ Upgrading to iOS SDK v3.4
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v3.4.
 
-### In-app message background color default ###
+### In-app message background color default
 
 The in-app message background color is now transparent by default. If you want to maintain a solid black background, you must configure it before initializing the SDK as follows:
 
@@ -155,7 +155,7 @@ Upgrading to iOS SDK v3.3
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v3.3.
 
-### iOS 8 interactive push notifications ###
+### iOS 8 interactive push notifications
 
 If your application already makes use of iOS 8 interactive push notifications, add the following snippet to your SDK initialization code:
 
@@ -171,7 +171,7 @@ Upgrading to iOS SDK v3.2
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v3.2.
 
-### Notify the SDK of push notifications only when opened or running in background ###
+### Notify the SDK of push notifications only when opened or running in background
 
 To avoid notifying the SDK of push notifications that the app receives while open, change your AppDelegate `didRecieveRemoteNotification` method to:
 
@@ -184,7 +184,7 @@ To avoid notifying the SDK of push notifications that the app receives while ope
 }
 ```
 
-### iapWithRawParameters becomes unvalidatedIap ###
+### iapWithRawParameters becomes unvalidatedIap
 
 Change any calls in your code from iapWithRawParameters to unvalidatedIap:
 
@@ -195,7 +195,7 @@ Change any calls in your code from iapWithRawParameters to unvalidatedIap:
                                                 productIdQuantity:(int)productIdQuantity;
 ```
 
-### Link token and link server deprecated ###
+### Link token and link server deprecated
 
 Cross application install tracking has been deprecated. Please remove any reference to these attributes or methods:
 
@@ -258,7 +258,8 @@ Upgrading to iOS SDK v3.0
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v3.0.
 
-### Real-time targeting ###
+### Real-time targeting
+
 Swrve has the ability to update segments on a near real-time basis. Swrve now automatically downloads user resources and campaign messages and keeps them up to date in near real-time during each session in order to reflect the latest segment membership. This is useful for time-sensitive A/B tests and messaging campaigns. These updates are only run if there has been a change in the segment membership of the user, therefore resulting in minimal impact on bandwidth.
 
 Real-time refresh is enabled by default and, if you want to avail of it, you must perform the upgrade tasks detailed below.
@@ -361,7 +362,7 @@ Upgrading to iOS SDK v2.2
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v2.2.
 
-### Push Notifications disabled by default ###
+### Push Notifications disabled by default
 
 Push notifications are now disabled by default. If you enable them with the code below, push permission is requested at the start of the session:
 
@@ -371,7 +372,7 @@ swrveConfig.pushEnabled = YES;
 
 You can time the push permission request according to your own requirements. For more information, see [Integrating Push Notifications](http://docs.swrve.com/developer-documentation/advanced-integration/integrating-push-notifications/).
 
-### User resources and user resources diff callback ###
+### User resources and user resources diff callback
 
 The user resources and user resources diff callbacks now return `NSData` instead of a `CFString`. You must change any references from the following:
 
@@ -387,11 +388,11 @@ PrivateUserResourcesCallback privateCallback = ^(NSData* jsonData) {
 }
 ```
 
-### IAP Method ###
+### IAP Method
 
 You must remove all calls to the IAP method as the SDK now hooks into your purchases and sends this data automatically.
 
-### Custom action (deep link) processing ###
+### Custom action (deep link) processing
 
 Following previous versions of the in-app messaging integration documentation, you may have used code similar to the following. You must now remove this code:
 
@@ -488,7 +489,7 @@ This section provides information to enable you to upgrade to Swrve iOS SDK v2.0
 
 The new iOS SDK has been ported to Objective-C. You must now access all objects using messages instead of C functions.
 
-### Initialization ###
+### Initialization
 
 The initialization function has been simplified. The SDK now provides some static functions to initialize the SDK in a single line.
 
@@ -506,11 +507,11 @@ now becomes:
 [Swrve sharedInstanceWithAppID:appId apiKey:apiKey userId:userId];
 ```
 
-### Session start and session end ###
+### Session start and session end
 
 The SDK attaches itself to the application life cycle so there is no need to call these two methods. Remove any references to session start and session end.
 
-### Custom events ###
+### Custom events
 
 Wherever your app sends a custom event you must update the code. For example:
 
@@ -534,7 +535,7 @@ The event method can now be called without a payload:
 [swrve event:@"Swrve.Demo.Gameplay.Player_Died"];
 ```
 
-### User update event ###
+### User update event
 
 Wherever your app sends a user update event you must update the code. For example:
 
@@ -551,7 +552,7 @@ now becomes:
   nil]];
 ```
 
-### In-app purchases ###
+### In-app purchases
 
 In-app purchases have been simplified. There are now two functions. The first function reads the properties from the SKProduct and sends the receipt from the `SKPaymentTransaction` for validation to Swrve’s servers if necessary.
 
@@ -572,7 +573,7 @@ The second function provides a manual way of specifying the parameters of the pu
        receipt:receiptData];
 ```
 
-### Currency given ###
+### Currency given
 
 Wherever your app sends a currency given event you must update the code. For example:
 
@@ -586,7 +587,7 @@ now becomes:
 [swrve currencyGiven:@"gold" givenAmount:20];
 ```
 
-### Purchase Item ###
+### Purchase Item
 
 Wherever your app sends a purchase item event you must update the code. For example:
 
@@ -600,7 +601,7 @@ now becomes:
 [swrve purchaseItem:@"someItem" currency:@"gold" cost:20 quantity:1];
 ```
 
-### Send queued events ###
+### Send queued events
 
 Wherever your app sends queued events you must update the code. For example:
 
@@ -614,7 +615,7 @@ now becomes:
 [swrve sendQueuedEvents];
 ```
 
-### Flush to disk ###
+### Flush to disk
 
 Wherever your app saves events to disk you must update the code. For example:
 
@@ -628,7 +629,7 @@ now becomes:
 [swrve saveEventsToDisk];
 ```
 
-### A/B Test resources ###
+### A/B Test resources
 
 Wherever your app asks for user resources or user resources diffs, you must update the code. For example:
 
@@ -649,7 +650,7 @@ now becomes:
 }];
 ```
 
-### In-app messaging and push notifications changes ###
+### In-app messaging and push notifications changes
 
 In-app messaging and push notifications are enabled by default in the new SDK. By just initializing the SDK you enable these features.
 
@@ -696,7 +697,7 @@ Upgrading to iOS SDK v1.12
 -
 This section provides information to enable you to upgrade to Swrve iOS SDK v1.12.
 
-### Deprecation of the `swrve_buy_in` function ###
+### Deprecation of the `swrve_buy_in` function
 
 The old buy_in function was used to record purchases of in-app currency that were paid for with real-world money:
 
@@ -721,7 +722,7 @@ swrve_iap_with_rewards(swrve,
 ```
 where `paymentTransaction` is the `SDKPaymentTransaction` return from the iTunes Store after purchase has been made.
 
-### Deprecation of the old IAP function ###
+### Deprecation of the old IAP function
 
 The old `swrve_iap` function was a replacement for the deprecated buy-in function. It was also used to record purchases of in-app currency that were paid for with real money, except it included receipt validation:
 

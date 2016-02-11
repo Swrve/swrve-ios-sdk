@@ -10,8 +10,8 @@ This iOS SDK will enable your app to use all of these features.
     - [Frameworks](#frameworks)
     - [Automatic reference counting](#automatic-reference-counting)
 - [Installation Instructions](#installation-instructions)
-  - [In-app Messaging](#in-app-messaging)
-    - [In-app Messaging Deeplinks](#in-app-messaging-deeplinks)
+  - [In-App Messaging](#in-app-messaging)
+    - [In-App Messaging Deeplinks](#in-app-messaging-deeplinks)
   - [Push Notifications](#push-notifications)
     - [Timing the device token (push permission) request](#timing-the-device-token-push-permission-request)
     - [Processing custom payload](#processing-custom-payload)
@@ -117,11 +117,11 @@ Replace `<app_id>` and `<api_key>` with your Swrve app ID and Swrve API key.
 
 * (Optional): If you are planning to use or ask for location tracking permission, add the following keys to your `<App>-Info.plist` if not already there (edit the Value message to whatever text you want):
 
-  * `NSLocationAlwaysUsageDescription`. Value: “Location is needed to offer all functionality in this app”.
-  * `NSLocationWhenInUseUsageDescription`. Value: “Location is needed to offer all functionality in this app”.
+  * `NSLocationAlwaysUsageDescription`. Value: "Location is needed to offer all functionality in this app".
+  * `NSLocationWhenInUseUsageDescription`. Value: "Location is needed to offer all functionality in this app".
 
 
-In-app Messaging
+In-App Messaging
 -
 Integrate the in-app messaging functionality so you can use Swrve to send personalized messages to your app users while they’re using your app. If you’d like to find out more about in-app messaging, see [Intro to In-App Messages](http://docs.swrve.com/user-documentation/in-app-messaging/intro-to-in-app-messages/).
 
@@ -129,7 +129,7 @@ Before you can test the in-app message feature in your game, you need to create 
 
 If you want to display an in-app message as soon as your view is ready, you must trigger the display event when the view controller is in the `viewDidAppear` state and not in `viewDidLoad` state.
 
-### In-app Messaging Deeplinks ###
+### In-App Messaging Deeplinks
 
 When creating in-app messages in Swrve, you can configure message buttons to direct users to perform a custom action when clicked. For example, you might configure a button to direct the app user straight to your app store. To enable this feature, you must configure deeplinks by performing the actions outlined below. For more information about creating in-app messages in Swrve, see [Creating In-App Messages](http://docs.swrve.com/user-documentation/in-app-messaging/creating-in-app-messages/).
 
@@ -308,7 +308,7 @@ Each time your app is published for distribution, you must provision it against 
 Sending Events
 -
 
-### Sending Named Events ###
+### Sending Named Events
 
 ```
 [[Swrve sharedInstance] event:@"custom.event_name"];
@@ -324,9 +324,15 @@ Rules for sending events:
  * Do not add timestamps to event names. For example, Tutorial.Start.1454458885
 * When creating custom events, do not use the `swrve.*` or `Swrve.*` namespace for your own events. This is reserved for Swrve use only. Custom event names beginning with `Swrve.` are restricted and cannot be sent.
 
-### Event Payloads ###
+### Event Payloads
 
-An event payload can be added and sent with every event. This allows for more detailed reporting around events and funnels. The associated payload should be a dictionary of key/value pairs; it is restricted to string and integer keys and values. There is a maximum cardinality of 500 key-value pairs for this payload per event. This parameter is optional.
+An event payload can be added and sent with every event. This allows for more detailed reporting around events and funnels. 
+
+Notes on associated payloads:
+* The associated payload should be a dictionary of key/value pairs; it is restricted to string and integer keys and values. 
+* There is a maximum cardinality of 500 key-value pairs for this payload per event. This parameter is optional, but only the first 500 payloads will be seen in the dashboard. The data is still available in raw event logs.
+* It is not currently possible to use payloads as triggers or for filters in the dashboard. Events should be used for these purposes. 
+
 
 ```
 [[Swrve sharedInstance] event:@"custom.event_name" payload:@{
@@ -339,15 +345,16 @@ For example, if you want to track when a user starts the tutorial experience it 
 
 ```
 [[Swrve sharedInstance] event:@"tutorial.start" payload:@{
-  @"time": @"100"
+  @"time": @"100",
+  @"step": @"5"
 }];
 ```
 
-### Send User Properties ###
+### Send User Properties
 
 Assign user properties to send the status of the user. For example create a custom user property called `premium`, and then target non-premium users and premium users in the dashboard.
 
-When configuring custom properties for iOS, you can use a variety of data types (integers, boolean, strings) which the SDK then converts to an integer (for number-based values) or string (in the case of boolean, “true/false”) before sending the data to Swrve. When creating segments or campaign audiences, depending on which data type the property is converted to, you must then select the correct operator (equals for numbers, is for strings) for the property to be properly returned.
+When configuring custom properties for iOS, you can use a variety of data types (integers, boolean, strings) which the SDK then converts to an integer (for number-based values) or string (in the case of boolean, "true/false") before sending the data to Swrve. When creating segments or campaign audiences, depending on which data type the property is converted to, you must then select the correct operator (equals for numbers, is for strings) for the property to be properly returned.
 
 ```
 [[Swrve sharedInstance] userUpdate:@{
@@ -357,7 +364,7 @@ When configuring custom properties for iOS, you can use a variety of data types 
 }];
 ```
 
-### Sending Virtual Economy Events ###
+### Sending Virtual Economy Events
 
 To ensure virtual currency events are not ignored by the server, make sure the currency name configured in your app matches exactly the Currency Name you enter in the App Currencies section on the App Settings screen (including case-sensitive). If there is any difference, or if you haven’t added the currency in Swrve, the event will be ignored and return an error event called Swrve.error.invalid_currency. Additionally, the ignored events will not be included in your KPI reports. For more information, see [Add Your App](http://docs.swrve.com/getting-started/add-your-app/).
 
@@ -373,7 +380,7 @@ Send the currency given event when you give users virtual currency. Examples inc
 [[Swrve sharedInstance] currencyGiven:@"coins" givenAmount:25];
 ```
 
-### Sending IAP Events and IAP Validation ###
+### Sending IAP Events and IAP Validation
 
 You must notify Swrve when an in-app purchase occurs as follows:
 
