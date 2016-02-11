@@ -316,12 +316,14 @@ Sending Events
 
 Rules for sending events:
 
-* Do not send the same named event in differing case.
+* Do not send the same named event in differing case. For example, if you send `tutorial.start`, then you should ensure you never send `Tutorial.Start`.
 
 * Use '.'s in your event name to organize their layout in the Swrve dashboard. Each '.' creates a new tree in the UI which groups your events so they are easy to locate.
+
 * Do not send more than 1000 unique named events.
- * Do not add unique identifiers to event names. For example, Tutorial.Start.ServerID-ABDCEFG
- * Do not add timestamps to event names. For example, Tutorial.Start.1454458885
+ * Do not add unique identifiers to event names. For example, `Tutorial.Start.ServerID-ABDCEFG`
+ * Do not add timestamps to event names. For example, `Tutorial.Start.1454458885`
+
 * When creating custom events, do not use the `swrve.*` or `Swrve.*` namespace for your own events. This is reserved for Swrve use only. Custom event names beginning with `Swrve.` are restricted and cannot be sent.
 
 ### Event Payloads
