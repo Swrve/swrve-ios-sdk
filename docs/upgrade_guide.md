@@ -1,6 +1,7 @@
 iOS SDK Upgrade Guide
 =
 
+- [Upgrading to iOS SDK v4.2](#upgrading-to-ios-sdk-v42)
 - [Upgrading to iOS SDK v4.1.1](#upgrading-to-ios-sdk-v411)
 - [Upgrading to iOS SDK v4.1](#upgrading-to-ios-sdk-v41)
   - [Custom Events Starting with `Swrve.`](#custom-events-starting-with-swrve)
@@ -25,6 +26,17 @@ iOS SDK Upgrade Guide
   - [iOS 8 interactive push notifications](#ios-8-interactive-push-notifications)
 
 This guide provides information about how you can upgrade to the latest Swrve iOS SDK. For information about the changes that have been made in each iOS SDK release, see [iOS SDK Release Notes](/docs/release_notes.md).
+
+
+
+Upgrading to iOS SDK v4.2
+-
+No code changes are required to upgrade to Swrve iOS SDK v4.2.
+
+### `appInBackground` deprecated
+
+If you're using the internal method appInBackground, check the Application state through the sharedInstance method instead.
+
 
 Upgrading to iOS SDK v4.1.1
 -
