@@ -12,6 +12,7 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
+#import "SwrveCommonConnectionDelegate.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -19,47 +20,10 @@
 #define SWRVE_STATIC_UNLESS_TEST_BUILD static
 #endif
 
-#define NullableNSString(x) ((x == nil)? [NSNull null] : x)
-#define KB(x) (1024*(x))
-#define MB(x) (1024*KB((x)))
-
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-
-enum
-{
-    // The API version of this file.
-    // This is sent to the server on each call, and should not be modified.
-    SWRVE_VERSION = 2,
-
-    // Initial size of the in-memory queue
-    // Tweak this to avoid fragmenting memory when the queue is growing.
-    SWRVE_MEMORY_QUEUE_INITIAL_SIZE = 16,
-
-    // This is the largest number of bytes that the in-memory queue will use
-    // If more than this number of bytes are used, the entire queue will be written
-    // to disk, and the queue will be emptied.
-    SWRVE_MEMORY_QUEUE_MAX_BYTES = KB(100),
-
-    // This is the largest size that the disk-cache persists between runs of the
-    // application. The file may grow larger than this size over a very long run
-    // of the app, but then next time the app is run, the file will be truncated.
-    // To avoid losing data, you should allow enough disk space here for your app's
-    // messages.
-    SWRVE_DISK_MAX_BYTES = MB(4),
-
-    // Flush frequency for automatic campaign/user resources updates
-    SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY = 60000,
-
-    // Delay between flushing events and refreshing campaign/user resources
-    SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY = 5000,
-};
-
 const static char* swrve_trailing_comma = ",\n";
 static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 static BOOL ignoreFirstDidBecomeActive = YES;
-
-typedef void (^ConnectionCompletionHandler)(NSURLResponse* response, NSData* data, NSError* error);
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
@@ -96,14 +60,11 @@ enum
     SWRVE_TRUNCATE_IF_TOO_LARGE,
 };
 
-@interface SwrveConnectionDelegate : NSObject <NSURLConnectionDataDelegate>
+typedef void (^ConnectionCompletionHandler)(NSURLResponse* response, NSData* data, NSError* error);
+
+@interface SwrveConnectionDelegate : SwrveCommonConnectionDelegate
 
 @property (atomic, weak) Swrve* swrve;
-@property (atomic, retain) NSDate* startTime;
-@property (atomic, retain) NSMutableDictionary* metrics;
-@property (atomic, retain) NSMutableData* data;
-@property (atomic, retain) NSURLResponse* response;
-@property (atomic, strong) ConnectionCompletionHandler handler;
 
 - (id)init:(Swrve*)swrve completionHandler:(ConnectionCompletionHandler)handler;
 
@@ -1684,6 +1645,7 @@ static NSString* httpScheme(bool useHttps)
 
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback
 {
+    NSLog(@"%@", self.eventBuffer);
     if ([self eventBuffer]) {
         // Add common attributes (if not already present)
         if (![eventData objectForKey:@"type"]) {
@@ -2499,140 +2461,22 @@ enum HttpStatus {
 @implementation SwrveConnectionDelegate
 
 @synthesize swrve;
-@synthesize startTime;
-@synthesize metrics;
-@synthesize data;
-@synthesize response;
-@synthesize handler;
 
 - (id)init:(Swrve*)_swrve completionHandler:(ConnectionCompletionHandler)_handler
 {
-    self = [super init];
+    self = [super init:_handler];
     if (self) {
         [self setSwrve:_swrve];
-        [self setHandler:_handler];
-        [self setData:[[NSMutableData alloc] init]];
-        [self setMetrics:[[NSMutableDictionary alloc] init]];
-        [self setStartTime:[NSDate date]];
-        [self setResponse:nil];
     }
     return self;
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+- (void)addHttpPerformanceMetrics:(NSString *)metricsString
 {
-    NSDate* finishTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:finishTime];
-
-    NSURL* requestURL = [[connection originalRequest] URL];
-    NSString* baseURL = [NSString stringWithFormat:@"%@://%@", [requestURL scheme], [requestURL host]];
-
-    NSString* metricsString = [NSString stringWithFormat:@"u=%@", baseURL];
-
-    NSString* failedOn = @"c";
-    if ([[self metrics] objectForKey:@"sb"]) {
-        failedOn = @"rh";
-        metricsString = [metricsString stringByAppendingString:[NSString stringWithFormat:@",sb=%@", [[self metrics] valueForKey:@"sb"]]];
-    }
-    metricsString = [metricsString stringByAppendingString:[NSString stringWithFormat:@",%@=%@,%@_error=1", failedOn, interval, failedOn]];
-
     Swrve* swrveStrong = swrve;
     if (swrveStrong) {
         [swrveStrong addHttpPerformanceMetrics:metricsString];
     }
-
-    if (self.handler) {
-        self.handler([self response], [self data], error);
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
-{
-    #pragma unused(connection, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite)
-    NSDate* sendBodyTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:sendBodyTime];
-
-    [[self metrics] setValue:interval forKey:@"c"];
-    [[self metrics] setValue:interval forKey:@"sh"];
-    [[self metrics] setValue:interval forKey:@"sb"];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)receivedResponse
-{
-    #pragma unused(connection)
-    NSDate* responseTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:responseTime];
-    [self setResponse:receivedResponse];
-
-    if (![[self metrics] objectForKey:@"sb"]) {
-        [[self metrics] setValue:interval forKey:@"c"];
-        [[self metrics] setValue:interval forKey:@"sh"];
-        [[self metrics] setValue:interval forKey:@"sb"];
-    }
-    [[self metrics] setValue:interval forKey:@"rh"];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)receivedData
-{
-    #pragma unused(connection)
-    // This might be called multiple times while data is being received
-    NSDate* responseDateTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:responseDateTime];
-    [[self data] appendData:receivedData];
-
-    if (![[self metrics] objectForKey:@"sb"]) {
-        [[self metrics] setValue:interval forKey:@"c"];
-        [[self metrics] setValue:interval forKey:@"sh"];
-        [[self metrics] setValue:interval forKey:@"sb"];
-    }
-    if (![[self metrics] objectForKey:@"rh"]) {
-        [[self metrics] setValue:interval forKey:@"rh"];
-    }
-    [[self metrics] setValue:interval forKey:@"rb"];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    NSDate* finishTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:finishTime];
-
-    if (![[self metrics] objectForKey:@"sb"]) {
-        [[self metrics] setValue:interval forKey:@"c"];
-        [[self metrics] setValue:interval forKey:@"sh"];
-        [[self metrics] setValue:interval forKey:@"sb"];
-    }
-    if (![[self metrics] objectForKey:@"rh"]) {
-        [[self metrics] setValue:interval forKey:@"rh"];
-    }
-    if (![[self metrics] objectForKey:@"rb"]) {
-        [[self metrics] setValue:interval forKey:@"rb"];
-    }
-
-    NSURL* requestURL = [[connection originalRequest] URL];
-    NSString* baseURL = [NSString stringWithFormat:@"%@://%@", [requestURL scheme], [requestURL host]];
-
-    NSString* metricsString = [NSString stringWithFormat:@"u=%@,c=%@,sh=%@,sb=%@,rh=%@,rb=%@",
-                               baseURL,
-                               [[self metrics] valueForKey:@"c"],
-                               [[self metrics] valueForKey:@"sh"],
-                               [[self metrics] valueForKey:@"sb"],
-                               [[self metrics] valueForKey:@"rh"],
-                               [[self metrics] valueForKey:@"rb"]];
-
-    Swrve* swrveStrong = swrve;
-    if (swrveStrong) {
-        [swrveStrong addHttpPerformanceMetrics:metricsString];
-    }
-
-    if (self.handler) {
-        self.handler([self response], [self data], nil);
-    }
-}
-
-- (NSString*) getTimeIntervalFromStartAsString:(NSDate*)date
-{
-    NSTimeInterval interval = [date timeIntervalSinceDate:[self startTime]];
-    return [NSString stringWithFormat:@"%.0f", round(interval * 1000)];
 }
 
 @end

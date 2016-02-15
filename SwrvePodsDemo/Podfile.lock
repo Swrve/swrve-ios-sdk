@@ -1,0 +1,39 @@
+PODS:
+  - PlotPlugin (1.12.0)
+  - SwrveConversationSDK (4.2.0):
+    - SwrveSDKCommon
+  - SwrveLocationSDK (4.2.0):
+    - PlotPlugin
+    - SwrveSDKCommon
+  - SwrveSDK (4.2.0):
+    - SwrveConversationSDK
+    - SwrveLocationSDK
+    - SwrveSDKCommon
+  - SwrveSDKCommon (4.2.0)
+
+DEPENDENCIES:
+  - SwrveConversationSDK (from `../SwrveConversationSDK`)
+  - SwrveLocationSDK (from `../SwrveLocationSDK`)
+  - SwrveSDK (from `../`)
+  - SwrveSDKCommon (from `../SwrveSDKCommon`)
+
+EXTERNAL SOURCES:
+  SwrveConversationSDK:
+    :path: "../SwrveConversationSDK"
+  SwrveLocationSDK:
+    :path: "../SwrveLocationSDK"
+  SwrveSDK:
+    :path: "../"
+  SwrveSDKCommon:
+    :path: "../SwrveSDKCommon"
+
+SPEC CHECKSUMS:
+  PlotPlugin: d0614755b8e091dc7c73e7ef265a32da3cd9de85
+  SwrveConversationSDK: 68d6cf3a4c7f35c750eaf1ef241639f1a2f7b717
+  SwrveLocationSDK: efbd13cd4a1762e711bba408d1022e64e3800300
+  SwrveSDK: 97f17c8a5ecd47a1214df007444f41a710a86025
+  SwrveSDKCommon: 2ecde2f7bc9db4913adddcebc2f7835293f678be
+
+PODFILE CHECKSUM: 9f15f04454259ba4ac8b3ee66bf5f53bb407f395
+
+COCOAPODS: 1.0.0.beta.1
