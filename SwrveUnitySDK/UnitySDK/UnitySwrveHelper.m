@@ -117,27 +117,116 @@
     return [UnitySwrveHelper NSStringCopy:idfv];
 }
 
-+(void) RegisterForPushNotifications
++(NSSet*) categorySetFromJson:(NSString*)jsonString
 {
-    UIApplication* app = [UIApplication sharedApplication];
+    NSMutableSet* categorySet = nil;
+    
+    NSError* error = nil;
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    id jsonObj = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error: &error];
+    if(nil == error)
+    {
+        for (NSDictionary* categoryDict in jsonObj)
+        {
+            UIMutableUserNotificationCategory *category =
+                [[UIMutableUserNotificationCategory alloc] init];
+            
+            NSDictionary* contextActionsDict = (NSDictionary*)[categoryDict valueForKey:@"contextActions"];
+            for(NSString* key in contextActionsDict)
+            {
+                NSMutableArray* actions = [[NSMutableArray alloc] init];
+                for(NSDictionary* actionDict in [contextActionsDict objectForKey:key])
+                {
+                    UIMutableUserNotificationAction *action =
+                        [[UIMutableUserNotificationAction alloc] init];
+                    
+                    action.identifier = [actionDict valueForKey:@"identifier"];
+                    action.title = [actionDict valueForKey:@"title"];
+                    action.activationMode = (0 == [[actionDict valueForKey:@"activationMode"] intValue] ?
+                                             UIUserNotificationActivationModeForeground :
+                                             UIUserNotificationActivationModeBackground);
+
+                    UIUserNotificationActionBehavior behaviour = (0 == [[actionDict valueForKey:@"behaviour"] intValue] ?
+                                                                  UIUserNotificationActionBehaviorDefault :
+                                                                  UIUserNotificationActionBehaviorTextInput);
+
+//                    action.behavior = behaviour;
+                    action.destructive = [[actionDict valueForKey:@"destructive"] boolValue];
+                    action.authenticationRequired = [[actionDict valueForKey:@"authenticationRequired"] boolValue];
+                    
+                    [actions addObject:action];
+                }
+                
+                if(0 == [actions count])
+                {
+                    continue;
+                }
+                
+                UIUserNotificationActionContext context = (0 == [key intValue] ?
+                                                           UIUserNotificationActionContextDefault :
+                                                           UIUserNotificationActionContextMinimal);
+                category.identifier = [categoryDict valueForKey:@"identifier"];
+                [category setActions:actions forContext:context];
+            }
+            
+            if(nil == categorySet)
+            {
+                categorySet = [[NSMutableSet alloc] init];
+            }
+            [categorySet addObject:category];
+        }
+    }
+    
+    return categorySet;
+}
+
++(void) RegisterForPushNotifications:(NSString*)jsonCategorySet
+{
+    UIApplication* appDelegate = [UIApplication sharedApplication];
+    NSSet* pushCategories = nil;
 #ifdef __IPHONE_8_0
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     // Check if the new push API is not available
-    if (![app respondsToSelector:@selector(registerUserNotificationSettings:)])
+    if (![appDelegate respondsToSelector:@selector(registerUserNotificationSettings:)])
     {
-        // Use the old API
-        [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+        // Does not have iOS8 APIs
     }
     else
 #endif
     {
-        [app registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
-        [app registerForRemoteNotifications];
+        pushCategories = [self categorySetFromJson:jsonCategorySet];
+        NSLog(@"pushCategories: %@", pushCategories);
+    }
+#endif
+    
+#if defined(__IPHONE_8_0)
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+    // Check if the new push API is not available
+    if (![appDelegate respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        // Use the old API
+        [appDelegate registerForRemoteNotificationTypes:(UIUserNotificationTypeSound |
+                                                         UIUserNotificationTypeAlert |
+                                                         UIUserNotificationTypeBadge)];
+    }
+    else
+#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+    {        
+        UIUserNotificationType notifType = (UIUserNotificationTypeSound |
+                                            UIUserNotificationTypeAlert |
+                                            UIUserNotificationTypeBadge);
+        NSLog(@"\n\nregisterFornNotifications:\n\n%lu\n\n%@\n", (unsigned long)notifType, pushCategories);
+        [appDelegate registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:notifType
+                                                                                        categories:pushCategories]];
+        [appDelegate registerForRemoteNotifications];
     }
 #else
+    
     // Not building with the latest XCode that contains iOS 8 definitions
-    [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
-#endif
+    [appDelegate registerForRemoteNotificationTypes:(UIUserNotificationTypeSound |
+                                                     UIUserNotificationTypeAlert |
+                                                     UIUserNotificationTypeBadge)];
+#endif //defined(__IPHONE_8_0)
 }
 
 @end

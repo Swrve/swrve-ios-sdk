@@ -15,7 +15,7 @@ extern "C"
         return [UnitySwrveHelper GetTimeZone];
     }
     
-    char * _swrveiOSGetAppVersion()
+    char* _swrveiOSGetAppVersion()
     {
         return [UnitySwrveHelper GetAppVersion];
     }
@@ -50,9 +50,9 @@ extern "C"
         return [UnitySwrveHelper GetIDFV];
     }
     
-    void _swrveiOSRegisterForPushNotifications()
+    void _swrveiOSRegisterForPushNotifications(char* jsonCategorySet)
     {
-        return [UnitySwrveHelper RegisterForPushNotifications];
+        return [UnitySwrveHelper RegisterForPushNotifications:[UnitySwrveHelper CStringToNSString:jsonCategorySet]];
     }
     
     void _swrveiOSInitNative(char* jsonConfig)

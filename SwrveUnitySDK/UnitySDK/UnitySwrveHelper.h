@@ -15,6 +15,6 @@
 +(char*) GetCarrierCode;
 +(char*) GetLocaleCountry;
 +(char*) GetIDFV;
-+(void) RegisterForPushNotifications;
++(void) RegisterForPushNotifications:(NSString*)jsonCategorySet;
 
 @end
