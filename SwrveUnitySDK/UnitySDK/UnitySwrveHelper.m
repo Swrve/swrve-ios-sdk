@@ -117,6 +117,8 @@
     return [UnitySwrveHelper NSStringCopy:idfv];
 }
 
+#ifdef __IPHONE_8_0
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 +(NSSet*) categorySetFromJson:(NSString*)jsonString
 {
     NSMutableSet* categorySet = nil;
@@ -145,12 +147,17 @@
                     action.activationMode = (0 == [[actionDict valueForKey:@"activationMode"] intValue] ?
                                              UIUserNotificationActivationModeForeground :
                                              UIUserNotificationActivationModeBackground);
-
+                    
+#ifdef __IPHONE_9_0
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
+                    
                     UIUserNotificationActionBehavior behaviour = (0 == [[actionDict valueForKey:@"behaviour"] intValue] ?
                                                                   UIUserNotificationActionBehaviorDefault :
                                                                   UIUserNotificationActionBehaviorTextInput);
-
-//                    action.behavior = behaviour;
+                    action.behavior = behaviour;
+#endif
+#endif //defined(__IPHONE_9_0)
+                    
                     action.destructive = [[actionDict valueForKey:@"destructive"] boolValue];
                     action.authenticationRequired = [[actionDict valueForKey:@"authenticationRequired"] boolValue];
                     
@@ -179,6 +186,9 @@
     
     return categorySet;
 }
+#endif
+#endif //defined(__IPHONE_8_0)
+
 
 +(void) RegisterForPushNotifications:(NSString*)jsonCategorySet
 {
@@ -195,9 +205,9 @@
 #endif
     {
         pushCategories = [self categorySetFromJson:jsonCategorySet];
-        NSLog(@"pushCategories: %@", pushCategories);
+        // NSLog(@"pushCategories: %@", pushCategories);
     }
-#endif
+#endif //defined(__IPHONE_8_0)
     
 #if defined(__IPHONE_8_0)
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -210,12 +220,13 @@
                                                          UIUserNotificationTypeBadge)];
     }
     else
-#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+#endif
+    //__IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
     {        
         UIUserNotificationType notifType = (UIUserNotificationTypeSound |
                                             UIUserNotificationTypeAlert |
                                             UIUserNotificationTypeBadge);
-        NSLog(@"\n\nregisterFornNotifications:\n\n%lu\n\n%@\n", (unsigned long)notifType, pushCategories);
+        // NSLog(@"\n\nregisterFornNotifications:\n\n%lu\n\n%@\n", (unsigned long)notifType, pushCategories);
         [appDelegate registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:notifType
                                                                                         categories:pushCategories]];
         [appDelegate registerForRemoteNotifications];
