@@ -6,6 +6,8 @@
 #define kSwrveKeyFg @"fg"
 #define kSwrveKeyType @"type"
 #define kSwrveKeyValue @"value"
+#define kSwrveKeyBorderRadius @"border_radius"
+#define kSwrveMaxBorderRadius 22.5
 
 #define kSwrveTypeTransparent @"transparent"
 #define kSwrveTypeColor @"color"
@@ -55,7 +57,7 @@
     return uiColor;
 }
 
-+ (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style{
++ (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
 
@@ -70,6 +72,15 @@
     return html;
 }
 
++ (float) convertBorderRadius:(float)borderRadiusPercentage {
+    if(borderRadiusPercentage >= 100.0){
+        return (float)kSwrveMaxBorderRadius;
+    }else{
+        float percentage = borderRadiusPercentage / 100;
+        return (float)kSwrveMaxBorderRadius * percentage;
+    }
+}
+
 +(void) styleButton:(SwrveConversationUIButton*)button withStyle:(NSDictionary*)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     UIColor *fgUIColor = [self convertToUIColor:fgHexColor];
@@ -79,8 +90,9 @@
     }
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
+    float borderRadius = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
     
-    [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor];
+    [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
 }
 
 @end
