@@ -3,6 +3,7 @@
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
 #import "SwrveSignatureProtectedFile.h"
+#import "SwrveCommon.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
@@ -17,13 +18,6 @@
 
 /*! The release version of this SDK. */
 #define SWRVE_SDK_VERSION "4.3"
-
-/*! Result codes for Swrve methods. */
-enum
-{
-    SWRVE_SUCCESS = 0,  /*!< Method executed successfully. */
-    SWRVE_FAILURE = -1  /*!< Method did not execute successfully. */
-};
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -325,7 +319,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @end
 
 /*! Swrve SDK main class. */
-@interface Swrve : NSObject<SwrveSignatureErrorListener>
+@interface Swrve : NSObject<ISwrveCommon, SwrveSignatureErrorListener>
 
 #pragma mark -
 #pragma mark Singleton
