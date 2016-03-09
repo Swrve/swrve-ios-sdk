@@ -20,7 +20,7 @@
 @end
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#pragma clang diagnostic ignored "-Wgnu"
 
 #ifndef SWRVE_DISABLE_LOGS
 #define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)

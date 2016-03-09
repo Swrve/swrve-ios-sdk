@@ -15,17 +15,6 @@
 
 #endif
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu"
-
-#ifndef SWRVE_DISABLE_LOGS
-#define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
-#else
-#define DebugLog( s, ... )
-#endif
-
-#pragma clang diagnostic pop
-
 /*! The release version of this SDK. */
 #define SWRVE_SDK_VERSION "4.3"
 
