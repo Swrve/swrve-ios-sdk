@@ -1,4 +1,5 @@
 #import "SwrveConversationUIButton.h"
+#import "SwrveConversationStarRatingView.h"
 #import <Foundation/Foundation.h>
 
 @interface SwrveConversationStyler : NSObject

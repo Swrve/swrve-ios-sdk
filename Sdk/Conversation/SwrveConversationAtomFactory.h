@@ -3,6 +3,6 @@
 
 @interface SwrveConversationAtomFactory : NSObject
 
-+(SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict;
++ (SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict;
 
 @end

@@ -9,6 +9,7 @@
 #import "SwrveContentVideo.h"
 #import "SwrveContentSpacer.h"
 #import "SwrveConversationButton.h"
+#import "SwrveConversationStarRating.h"
 #import "SwrveInputMultiValue.h"
 
 #define kSwrveKeyTag @"tag"
@@ -16,7 +17,7 @@
 
 @implementation SwrveConversationAtomFactory
 
-+(SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict {
++ (SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict {
     NSString *tag = [dict objectForKey:kSwrveKeyTag];
     NSString *type = [dict objectForKey:kSwrveKeyType];
     if(type == nil) {
@@ -58,6 +59,10 @@
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
         swrveContentSpacer.style = [dict objectForKey:@"style"];
         return swrveContentSpacer;
+    } else if ([type isEqualToString:kSwrveControlStarRating]) {
+        SwrveConversationStarRating *swrveConversationStarRating = [[SwrveConversationStarRating alloc] initWithTag:tag andDictionary:dict];
+        swrveConversationStarRating.style = [dict objectForKey:@"style"];
+        return swrveConversationStarRating;
     }
     
     return nil;
