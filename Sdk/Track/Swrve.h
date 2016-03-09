@@ -2,8 +2,18 @@
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
+
+#if COCOAPODS
+
+#import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
+#import <SwrveSDKCommon/SwrveCommon.h>
+
+#else
+
 #import "SwrveSignatureProtectedFile.h"
 #import "SwrveCommon.h"
+
+#endif
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
