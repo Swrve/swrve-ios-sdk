@@ -19,11 +19,16 @@
 
 @end
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu"
+
 #ifndef SWRVE_DISABLE_LOGS
 #define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
 #else
 #define DebugLog( s, ... )
 #endif
+
+#pragma clang diagnostic pop
 
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)
 

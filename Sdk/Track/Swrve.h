@@ -2,19 +2,18 @@
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
+
+#if COCOAPODS
+
+#import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
+#import <SwrveSDKCommon/SwrveCommon.h>
+
+#else
+
 #import "SwrveSignatureProtectedFile.h"
 #import "SwrveCommon.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu"
-
-#ifndef SWRVE_DISABLE_LOGS
-#define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
-#else
-#define DebugLog( s, ... )
 #endif
-
-#pragma clang diagnostic pop
 
 /*! The release version of this SDK. */
 #define SWRVE_SDK_VERSION "4.3"

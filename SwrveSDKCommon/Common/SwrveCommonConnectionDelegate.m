@@ -133,7 +133,7 @@
 }
 
 - (void)addHttpPerformanceMetrics:(NSString*)metricsString {
-    
+    #pragma unused(metricsString)
 }
 
 @end
