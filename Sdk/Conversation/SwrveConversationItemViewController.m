@@ -131,27 +131,10 @@
                 // Notify the user that the app isn't available and then just return.
                 
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                NSString *alertMessage = [NSString stringWithFormat:NSLocalizedStringFromTable(@"NO_APP", @"Swrve", @"You will need to install an app to visit %@"), [target absoluteString]];
-                NSString *alertTitle = NSLocalizedStringFromTable(@"CANNOT_OPEN_URL", @"Swrve", @"Cannot open URL");
-#if defined(__IPHONE_9_0)
-                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                                   message:alertMessage
-                                                                            preferredStyle:UIAlertControllerStyleAlert];
-                    [self presentViewController:alert animated:true completion:nil];
-                } else
-#endif //defined(__IPHONE_9_0)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                                    message:alertMessage
-                                                                   delegate:nil
-                                                          cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Swrve", @"Done")
-                                                          otherButtonTitles:nil];
-                    [alert show];
-                }
-#pragma clang diagnostic pop
+                
+                
+                
+                DebugLog(@"Could not open the Conversation URL: %@", param, nil);
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
