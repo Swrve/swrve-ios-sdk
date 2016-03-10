@@ -81,7 +81,7 @@
     }
 }
 
-+(void) styleButton:(SwrveConversationUIButton*)button withStyle:(NSDictionary*)style {
++ (void) styleButton:(SwrveConversationUIButton*)button withStyle:(NSDictionary*)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     UIColor *fgUIColor = [self convertToUIColor:fgHexColor];
     NSString *styleType = kSwrveTypeSolid;
@@ -93,6 +93,19 @@
     float borderRadius = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
     
     [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
+}
+
++ (void) styleStarRating:(SwrveConversationStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
+
+    NSString *styleType = kSwrveTypeSolid;
+    if([style objectForKey:kSwrveKeyType]) {
+        styleType = [style objectForKey:kSwrveKeyType];
+    }
+    NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
+    UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
+    UIColor *starColor = [self convertToUIColor:starColorHex];
+    
+    [ratingView initRatingTypewithStarColor:starColor withBackgroundColor:bgUIColor];
 }
 
 @end

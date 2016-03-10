@@ -1,4 +1,6 @@
 #import "SwrveConversationStarRating.h"
+#import "SwrveContentHTML.h"
+#import "SwrveConversationStyler.h"
 #import "SwrveConversationStarRatingView.h"
 #import "SwrveSetup.h"
 
@@ -7,26 +9,30 @@
 
 @implementation SwrveConversationStarRating
 
-@synthesize value = _value;
+@synthesize currentRating = _currentRating;
 @synthesize starColor = _starColor;
 
--(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
+- (id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag andType:kSwrveControlStarRating];
     if(self) {
-        _value = [dict objectForKey:kSwrveKeyValue];
         _starColor = [dict objectForKey:kSwrveKeyStarColor];
     }
     return self;
 }
 
--(UIView *)view {
+- (UIView *)view {
     if(_view == nil) {
-        SwrveConversationStarRatingView *view = [[SwrveConversationStarRatingView alloc] init];
-        _view = view;
+        SwrveConversationStarRatingView *ratingView = [[SwrveConversationStarRatingView alloc] initWithDefaults];
+        [SwrveConversationStyler styleStarRating:ratingView withStyle:self.style withStarColor:_starColor];
+        _view = ratingView;
     }
     return _view;
 }
 
+- (void) ratingView:(SwrveConversationStarRatingView *)ratingView ratingDidChange:(float)rating{
+    #pragma unused (ratingView)
+    _currentRating = rating;
+}
 
 @end
 

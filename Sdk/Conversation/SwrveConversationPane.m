@@ -26,9 +26,9 @@
             NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:contentItems.count];
             for(NSDictionary *contentItemDict in contentItems) {
                 if (contentItemDict != (NSDictionary*)[NSNull null]) {
-                    SwrveConversationAtom *atom = [SwrveConversationAtomFactory atomForDictionary:contentItemDict];
-                    if(atom) {
-                        [arr addObject:atom];
+                    NSMutableArray<SwrveConversationAtom*> *atoms = [SwrveConversationAtomFactory atomsForDictionary:contentItemDict];
+                    if([atoms count] > 0) {
+                        [arr addObjectsFromArray:atoms];
                     }
                 }
                 
@@ -41,10 +41,13 @@
         if(controlItems) {
             NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:controlItems.count];
             for(NSDictionary *controlItemDict in controlItems) {
-                // Only buttons in this dictionary so cast below should always be right.
-                SwrveConversationButton *button = (SwrveConversationButton *)[SwrveConversationAtomFactory atomForDictionary:controlItemDict];
-                if(button) {
-                    [arr addObject:button];
+                NSMutableArray<SwrveConversationAtom*> *atoms = [SwrveConversationAtomFactory atomsForDictionary:controlItemDict];
+                if([atoms count] > 0){
+                    // Only buttons in this dictionary so cast below should always be right.
+                    SwrveConversationButton *button = (SwrveConversationButton *) [atoms firstObject];
+                    if(button) {
+                        [arr addObject:button];
+                    }
                 }
             }
             _controls = [NSArray arrayWithArray:arr];
@@ -59,14 +62,15 @@
     return self;
 }
 
--(SwrveConversationAtom*) contentForTag:(NSString*)tag {
+- (NSMutableArray <SwrveConversationAtom *> *) contentForTag:(NSString*)tag {
+    NSMutableArray <SwrveConversationAtom*> *atoms = [NSMutableArray array];
     for(unsigned int i=0; i < [_content count]; i++) {
         SwrveConversationAtom *atom = (SwrveConversationAtom*)_content[i];
         if ([atom.tag isEqualToString:tag]) {
-            return atom;
+            [atoms addObject:atom];
         }
     }
-    return nil;
+    return atoms;
 }
 
 

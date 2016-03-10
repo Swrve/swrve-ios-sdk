@@ -10,8 +10,7 @@
 
 @interface SwrveConversationStarRatingView : UIView
 
-- (void) initRatingTypewithStarColor:(UIColor *) starColor WithForegroundColor:(UIColor *)foregroundColor withBackgroundColor:(UIColor *)backgroundColor;
-
-- (float) swrveCurrentRating;
+- (id) initWithDefaults;
+- (void) initRatingTypewithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor;
 
 @end

@@ -1,11 +1,12 @@
 #import "SwrveConversationAtom.h"
+#import "SwrveConversationStarRatingView.h"
 
-@interface SwrveConversationStarRating : SwrveConversationAtom
+@interface SwrveConversationStarRating : SwrveConversationAtom <SwrveConversationStarRatingViewDelegate>
 
 
 - (id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *) dict;
 
-@property (readonly, nonatomic) NSString   *value;
+@property (readonly, nonatomic) float       currentRating;
 @property (readonly, nonatomic) NSString   *starColor;
 
 @end

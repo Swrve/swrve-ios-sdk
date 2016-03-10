@@ -9,5 +9,6 @@
 + (UIColor *) convertToUIColor:(NSString*)color;
 + (float) convertBorderRadius:(float)borderRadiusPercentage;
 + (void) styleButton:(SwrveConversationUIButton *)button withStyle:(NSDictionary*)style;
++ (void) styleStarRating:(SwrveConversationStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex;
 
 @end

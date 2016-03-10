@@ -5,7 +5,6 @@
 
 @property (strong, nonatomic) UIImage *swrveNotSelectedImage;
 @property (strong, nonatomic) UIImage *swrveFullSelectedImage;
-@property (assign, nonatomic) UIColor *swrveForegroundColor;
 @property (assign, nonatomic) UIColor *swrveBackgroundColor;
 @property (assign, nonatomic) UIColor *swrveStarColor;
 @property (readwrite, nonatomic) float swrveCurrentRating;
@@ -24,7 +23,6 @@
 @synthesize swrveNotSelectedImage;
 @synthesize swrveFullSelectedImage;
 @synthesize swrveStarColor;
-@synthesize swrveForegroundColor;
 @synthesize swrveBackgroundColor;
 @synthesize swrveCurrentRating;
 @synthesize swrveMaxRating;
@@ -34,41 +32,36 @@
 @synthesize delegate;
 
 
-- (id) initWithFrame:(CGRect)frame {
-    self =[super initWithFrame:frame];
+- (id) initWithDefaults {
+    self =[super init];
     
     if(self){
         self.swrveStarViews = [[NSMutableArray alloc] init];
-        self.swrveNotSelectedImage = [UIImage imageNamed:@"star-empty"];
-        self.swrveFullSelectedImage = [UIImage imageNamed:@"star-full"];
+        self.swrveNotSelectedImage = [UIImage imageNamed:@"star-empty.png"];
+        self.swrveFullSelectedImage = [UIImage imageNamed:@"star-full.png"];
+        self.swrveStarColor = [UIColor colorWithRed:253.0f/255.0f green:193.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
         self.swrveCurrentRating = 0;
         self.swrveMaxRating = 5.0f;
         self.swrveMidMargin = 5.0f;
         self.swrveLeftMargin = 0.0f;
         self.swrveMinImageSize = CGSizeMake(5, 5);
         self.delegate = nil;
-        
     }
     
     return self;
 }
 
 
-- (void) initRatingTypewithStarColor:(UIColor *) starColor WithForegroundColor:(UIColor *)foregroundColor withBackgroundColor:(UIColor *)backgroundColor
+- (void) initRatingTypewithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor
           {
               self.swrveStarColor = starColor;
-              self.swrveForegroundColor = foregroundColor;
               self.swrveBackgroundColor = backgroundColor;
-              self.swrveStarViews = [[NSMutableArray alloc] init];
-              self.swrveNotSelectedImage = [UIImage imageNamed:@"star-empty"];
-              self.swrveFullSelectedImage = [UIImage imageNamed:@"star-full"];
-              self.swrveCurrentRating = 0;
-              self.swrveMaxRating = 5.0f;
-              self.swrveMidMargin = 5.0f;
-              self.swrveLeftMargin = 0.0f;
-              self.swrveMinImageSize = CGSizeMake(5, 5);
-              self.delegate = nil;
-    
+              [[self layer] setBackgroundColor:backgroundColor.CGColor];
+              
+              // Relayout and refresh
+              [self setNeedsLayout];
+              [self refresh];
+
 }
 
 - (void) refresh {
@@ -76,12 +69,21 @@
         UIImageView *imageView = [self.swrveStarViews objectAtIndex:i];
         if (self.swrveCurrentRating >= i+1) {
             imageView.image = self.swrveFullSelectedImage;
-            imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            [imageView setTintColor:self.swrveStarColor];
+            if([imageView respondsToSelector:@selector(setTintColor:)]){
+                imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                [imageView setTintColor:self.swrveStarColor];
+            }else{
+                imageView.image = [self tintImageWithColor:self.swrveBackgroundColor withImage:imageView.image];
+            }
+
         } else {
             imageView.image = self.swrveNotSelectedImage;
-            imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            [imageView setTintColor:self.swrveStarColor];
+            if([imageView respondsToSelector:@selector(setTintColor:)]){
+                imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                [imageView setTintColor:self.swrveStarColor];
+            }else{
+                imageView.image = [self tintImageWithColor:self.swrveBackgroundColor withImage:imageView.image];
+            }
         }
     }
 }
@@ -104,51 +106,43 @@
     }
 }
 
-#pragma mark getters / setters
+#pragma mark - iOS6 change tint support
 
-- (void) setSwrveMaxRating:(float)maxRating{
-    self.swrveMaxRating = maxRating;
+- (UIImage *) tintImageWithColor:(UIColor *)color withImage:(UIImage *)image
+{
+    CGRect contextRect;
+    contextRect.origin.x = 0.0f;
+    contextRect.origin.y = 0.0f;
+    contextRect.size = [image size];
+    CGSize itemImageSize = [image size];
+    CGPoint itemImagePosition;
+    itemImagePosition.x = ceilf((contextRect.size.width - itemImageSize.width) / 2);
+    itemImagePosition.y = ceilf((contextRect.size.height - itemImageSize.height) );
     
-    // Remove old image views
-    for(NSUInteger i = 0; i < self.swrveStarViews.count; ++i) {
-        UIImageView *imageView = (UIImageView *) [self.swrveStarViews objectAtIndex:i];
-        [imageView removeFromSuperview];
-    }
-    [self.swrveStarViews removeAllObjects];
+    if ([[UIScreen mainScreen] respondsToSelector:@selector((scale))])
+        UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, [[UIScreen mainScreen] scale]);
+    else
+        UIGraphicsBeginImageContext(contextRect.size);
     
-    // Add new image views
-    for(int i = 0; i < self.swrveMaxRating; ++i) {
-        UIImageView *imageView = [[UIImageView alloc] init];
-        imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.swrveStarViews addObject:imageView];
-        [self addSubview:imageView];
-    }
+    CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextBeginTransparencyLayer(c, NULL);
+    CGContextScaleCTM(c, 1.0, -1.0);
+    CGContextClipToMask(c, CGRectMake(itemImagePosition.x, -itemImagePosition.y, itemImageSize.width, -itemImageSize.height), [image CGImage]);
     
-    // Relayout and refresh
-    [self setNeedsLayout];
-    [self refresh];
+    color = [color colorWithAlphaComponent:1.0];
+    
+    CGContextSetFillColorWithColor(c, color.CGColor);
+    
+    contextRect.size.height = -contextRect.size.height;
+    CGContextFillRect(c, contextRect);
+    CGContextEndTransparencyLayer(c);
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return resultImage;
 }
 
-- (void)setSwrveStarColor:(UIColor *)color {
-    self.swrveStarColor = color;
-    [self setNeedsDisplay];
-    [self refresh];
-}
-
-- (void)setSwrveNotSelectedImage:(UIImage *)image {
-    self.swrveNotSelectedImage = image;
-    [self refresh];
-}
-
-- (void)setSwrveFullSelectedImage:(UIImage *)image {
-    self.swrveFullSelectedImage = image;
-    [self refresh];
-}
-
-- (void)setSwrveCurrentRating:(float)rating {
-    self.swrveCurrentRating = rating;
-    [self refresh];
-}
 
 #pragma mark - User Interaction (touches)
 
@@ -163,7 +157,6 @@
             break;
         }
     }
-    
     self.swrveCurrentRating = newRating;
 }
 
@@ -172,6 +165,7 @@
     UITouch *touch = [touches anyObject];
     CGPoint touchLocation = [touch locationInView:self];
     [self handleTouchAtLocation:touchLocation];
+    [self refresh];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
