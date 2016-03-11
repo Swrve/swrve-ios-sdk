@@ -3,12 +3,12 @@
 @class SwrveConversationStarRatingView;
 
 @protocol SwrveConversationStarRatingViewDelegate
-
 - (void) ratingView:(SwrveConversationStarRatingView *) ratingView ratingDidChange:(float) rating;
-
 @end
 
 @interface SwrveConversationStarRatingView : UIView
+
+@property (strong, nonatomic) id <SwrveConversationStarRatingViewDelegate> delegate;
 
 - (id) initWithDefaults;
 - (void) initRatingTypewithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor;
