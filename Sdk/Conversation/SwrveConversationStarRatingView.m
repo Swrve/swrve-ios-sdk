@@ -93,10 +93,10 @@
     
     if (self.swrveNotSelectedImage == nil) return;
 
-    float desiredImageWidth = (self.frame.size.width - (self.swrveLeftMargin * 2) - (self.swrveMidMargin * self.swrveStarViews.count)) / self.swrveStarViews.count;
+    CGFloat desiredImageWidth = (self.frame.size.width - (self.swrveLeftMargin * 2) - (self.swrveMidMargin * self.swrveStarViews.count)) / self.swrveStarViews.count;
 
-    float imageWidth = SWRVEMAX(self.swrveMinImageSize.width, desiredImageWidth);
-    float imageHeight = SWRVEMAX(self.swrveMinImageSize.height, self.frame.size.height);
+    CGFloat imageWidth = SWRVEMAX(self.swrveMinImageSize.width, desiredImageWidth);
+    CGFloat imageHeight = SWRVEMAX(self.swrveMinImageSize.height, self.frame.size.height);
     
     for (NSUInteger i = 0; i < self.swrveStarViews.count; ++i) {
         
@@ -116,8 +116,8 @@
     contextRect.size = [image size];
     CGSize itemImageSize = [image size];
     CGPoint itemImagePosition;
-    itemImagePosition.x = ceilf((contextRect.size.width - itemImageSize.width) / 2);
-    itemImagePosition.y = ceilf((contextRect.size.height - itemImageSize.height) );
+    itemImagePosition.x = ((contextRect.size.width - itemImageSize.width) / 2);
+    itemImagePosition.y = ((contextRect.size.height - itemImageSize.height) );
     
     if ([[UIScreen mainScreen] respondsToSelector:@selector((scale))])
         UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, [[UIScreen mainScreen] scale]);
