@@ -11,6 +11,6 @@
 @property (strong, nonatomic) id <SwrveConversationStarRatingViewDelegate> swrveRatingDelegate;
 
 - (id) initWithDefaults;
-- (void) initRatingTypewithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor;
+- (void) updateWithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor;
 
 @end

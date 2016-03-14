@@ -105,7 +105,7 @@
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
     UIColor *starColor = [self convertToUIColor:starColorHex];
     
-    [ratingView initRatingTypewithStarColor:starColor withBackgroundColor:bgUIColor];
+    [ratingView updateWithStarColor:starColor withBackgroundColor:bgUIColor];
 }
 
 @end

@@ -66,7 +66,7 @@
     [self refresh];
 }
 
-- (void) initRatingTypewithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor
+- (void) updateWithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor
           {
               self.swrveStarColor = starColor;
               self.swrveBackgroundColor = backgroundColor;
