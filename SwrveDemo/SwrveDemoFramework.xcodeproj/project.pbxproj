@@ -118,7 +118,6 @@
 		1B5FE6051B5FDDE100413B35 /* cvsr_grouped_cell_top_tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5DE1B5FDDE100413B35 /* cvsr_grouped_cell_top_tapped@2x.png */; };
 		1B5FE6061B5FDDE100413B35 /* cvsr_keyboardBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5DF1B5FDDE100413B35 /* cvsr_keyboardBackground.png */; };
 		1B5FE6071B5FDDE100413B35 /* cvsr_keyboardBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5E01B5FDDE100413B35 /* cvsr_keyboardBackground@2x.png */; };
-		1B5FE6081B5FDDE100413B35 /* Converser.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5E11B5FDDE100413B35 /* Converser.strings */; };
 		1B5FE6091B5FDDE100413B35 /* SwrveConversation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */; };
 		1B5FE60A1B5FDDE100413B35 /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EA1B5FDDE100413B35 /* VERSION */; };
 		1B5FE60B1B5FDDE100413B35 /* VGConversationKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */; };
@@ -318,13 +317,6 @@
 		1B5FE5DE1B5FDDE100413B35 /* cvsr_grouped_cell_top_tapped@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cvsr_grouped_cell_top_tapped@2x.png"; sourceTree = "<group>"; };
 		1B5FE5DF1B5FDDE100413B35 /* cvsr_keyboardBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cvsr_keyboardBackground.png; sourceTree = "<group>"; };
 		1B5FE5E01B5FDDE100413B35 /* cvsr_keyboardBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cvsr_keyboardBackground@2x.png"; sourceTree = "<group>"; };
-		1B5FE5E21B5FDDE100413B35 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E31B5FDDE100413B35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E41B5FDDE100413B35 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E51B5FDDE100413B35 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E61B5FDDE100413B35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E71B5FDDE100413B35 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Converser.strings; sourceTree = "<group>"; };
-		1B5FE5E81B5FDDE100413B35 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/Converser.strings; sourceTree = "<group>"; };
 		1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SwrveConversation.storyboard; sourceTree = "<group>"; };
 		1B5FE5EA1B5FDDE100413B35 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VGConversationKitResources-Info.plist"; sourceTree = "<group>"; };
@@ -774,7 +766,6 @@
 				1B5FE5DE1B5FDDE100413B35 /* cvsr_grouped_cell_top_tapped@2x.png */,
 				1B5FE5DF1B5FDDE100413B35 /* cvsr_keyboardBackground.png */,
 				1B5FE5E01B5FDDE100413B35 /* cvsr_keyboardBackground@2x.png */,
-				1B5FE5E11B5FDDE100413B35 /* Converser.strings */,
 				1B5FE5E91B5FDDE100413B35 /* SwrveConversation.storyboard */,
 				1B5FE5EA1B5FDDE100413B35 /* VERSION */,
 				1B5FE5EB1B5FDDE100413B35 /* VGConversationKitResources-Info.plist */,
@@ -1069,7 +1060,6 @@
 				1B5FE6041B5FDDE100413B35 /* cvsr_grouped_cell_top_tapped.png in Resources */,
 				099BF4FC170E1FE200345404 /* tutorial_a.png in Resources */,
 				099BF501170E542800345404 /* SwrveAuthoritativeDemo.xib in Resources */,
-				1B5FE6081B5FDDE100413B35 /* Converser.strings in Resources */,
 				099BF506170E67DA00345404 /* ABTestViewer.xib in Resources */,
 				099BF50B170E67E500345404 /* ResourceViewer.xib in Resources */,
 				1B5FE60B1B5FDDE100413B35 /* VGConversationKitResources-Info.plist in Resources */,
@@ -1178,23 +1168,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		1B5FE5E11B5FDDE100413B35 /* Converser.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1B5FE5E21B5FDDE100413B35 /* de */,
-				1B5FE5E31B5FDDE100413B35 /* en */,
-				1B5FE5E41B5FDDE100413B35 /* es */,
-				1B5FE5E51B5FDDE100413B35 /* fr */,
-				1B5FE5E61B5FDDE100413B35 /* it */,
-				1B5FE5E71B5FDDE100413B35 /* nl */,
-				1B5FE5E81B5FDDE100413B35 /* pt */,
-			);
-			name = Converser.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		30A4F74116B05C2500642E8E /* Debug */ = {
