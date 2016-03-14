@@ -9,6 +9,7 @@
 #import "SwrveContentVideo.h"
 #import "SwrveContentSpacer.h"
 #import "SwrveConversationButton.h"
+#import "SwrveConversationStarRating.h"
 #import "SwrveInputMultiValue.h"
 
 #define kSwrveKeyTag @"tag"
@@ -16,9 +17,12 @@
 
 @implementation SwrveConversationAtomFactory
 
-+(SwrveConversationAtom *) atomForDictionary:(NSDictionary *)dict {
++ (NSMutableArray <SwrveConversationAtom *> *) atomsForDictionary:(NSDictionary *)dict {
     NSString *tag = [dict objectForKey:kSwrveKeyTag];
     NSString *type = [dict objectForKey:kSwrveKeyType];
+    
+    NSMutableArray<SwrveConversationAtom *> *atomArray = [NSMutableArray array];
+    
     if(type == nil) {
         type = kSwrveControlTypeButton;
     }
@@ -32,15 +36,15 @@
     if([type isEqualToString:kSwrveContentTypeHTML]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         swrveContentHTML.style = [dict objectForKey:@"style"];
-        return swrveContentHTML;
+        [atomArray addObject:swrveContentHTML];
     } else if([type isEqualToString:kSwrveContentTypeImage]) {
         SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
         swrveContentImage.style = [dict objectForKey:@"style"];
-        return swrveContentImage;
+        [atomArray addObject:swrveContentImage];
     } else if([type isEqualToString:kSwrveContentTypeVideo]) {
         SwrveContentVideo *swrveContentVideo = [[SwrveContentVideo alloc] initWithTag:tag andDictionary:dict];
         swrveContentVideo.style = [dict objectForKey:@"style"];
-        return swrveContentVideo;
+        [atomArray addObject:swrveContentVideo];
     } else if([type isEqualToString:kSwrveControlTypeButton]) {
         SwrveConversationButton *swrveConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
         swrveConversationButton.actions = [dict objectForKey:@"action"];
@@ -49,18 +53,26 @@
         if (target && ![target isEqualToString:@""]) {
             swrveConversationButton.target = target;
         }
-        return swrveConversationButton;
+        [atomArray addObject:swrveConversationButton];
     } else if([type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
         swrveInputMultiValue.style = [dict objectForKey:@"style"];
-        return swrveInputMultiValue;
+        [atomArray addObject:swrveInputMultiValue];
+        
     } else if ([type isEqualToString:kSwrveContentSpacer]) {
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
         swrveContentSpacer.style = [dict objectForKey:@"style"];
-        return swrveContentSpacer;
+        [atomArray addObject:swrveContentSpacer];
+    } else if ([type isEqualToString:kSwrveControlStarRating]) {
+        SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
+        swrveContentHTML.style = [dict objectForKey:@"style"];
+        [atomArray addObject:swrveContentHTML];
+        SwrveConversationStarRating *swrveConversationStarRating = [[SwrveConversationStarRating alloc] initWithTag:tag andDictionary:dict];
+        swrveConversationStarRating.style = [dict objectForKey:@"style"];
+        [atomArray addObject:swrveConversationStarRating];
     }
     
-    return nil;
+    return atomArray;
 }
 
 @end

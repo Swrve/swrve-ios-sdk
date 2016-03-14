@@ -1,8 +1,6 @@
 #import "SwrveConversationUIButton.h"
 #import "SwrveConversationButton.h"
-
-#define SWRVEMIN(a,b)    ((a) < (b) ? (a) : (b))
-#define SWRVEMAX(a,b)    ((a) > (b) ? (a) : (b))
+#import "SwrveSetup.h"
 
 @interface SwrveConversationUIButton ()
 
