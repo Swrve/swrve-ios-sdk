@@ -6,6 +6,7 @@
 
 #define kSwrveKeyStarColor @"star_color"
 #define kSwrveStarRatingHeight 40.0f
+#define kSwrveStarRatingPadding 40.0f
 
 
 @implementation SwrveConversationStarRating
@@ -23,12 +24,12 @@
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
     _view = [[SwrveConversationStarRatingView alloc] initWithDefaults];
-    [(SwrveConversationStarRatingView*)_view setDelegate:self];
+    [(SwrveConversationStarRatingView*)_view setSwrveRatingDelegate:self];
     
     _view.frame = CGRectMake(0,0, 1, 1);
     //set width
     CGRect frame = _view.frame;
-    frame.size.width = containerView.frame.size.width - 40;
+    frame.size.width = containerView.frame.size.width - kSwrveStarRatingPadding;
     _view.frame = frame;
     //set height
     frame = _view.frame;

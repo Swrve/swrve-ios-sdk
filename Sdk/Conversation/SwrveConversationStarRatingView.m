@@ -13,7 +13,6 @@
 @property (readwrite, nonatomic) float swrveMidMargin;
 @property (strong, nonatomic) NSMutableArray * swrveStarViews;
 @property (assign, atomic) CGSize swrveMinImageSize;
-@property (strong, nonatomic) id <SwrveConversationStarRatingViewDelegate> swrveDelegate;
 
 @end
 
@@ -29,7 +28,7 @@
 @synthesize swrveMidMargin;
 @synthesize swrveLeftMargin;
 @synthesize swrveMinImageSize;
-@synthesize swrveDelegate;
+@synthesize swrveRatingDelegate;
 
 
 - (id) initWithDefaults {
@@ -51,13 +50,13 @@
 }
 
 - (void) setDelegate:(id<SwrveConversationStarRatingViewDelegate>)delegate {
-    self.swrveDelegate = delegate;
+    self.swrveRatingDelegate = delegate;
 }
 
 - (void) setStarsFromMax {
     [self.swrveStarViews removeAllObjects];
     // Add new image views
-    for(int i = 0; i < self.swrveMaxRating; ++i) {
+    for(NSUInteger i = 0; i < self.swrveMaxRating; ++i) {
         UIImageView *imageView = [[UIImageView alloc] init];
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.swrveStarViews addObject:imageView];
@@ -193,7 +192,7 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 #pragma unused(event)
 #pragma unused(touches)
-    [self.swrveDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
+    [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
 }
 
 
