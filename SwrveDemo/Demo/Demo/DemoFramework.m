@@ -83,11 +83,15 @@ static Swrve *swrveTrackInternal;
     UITabBarController *tabBarController = [DemoFramework buildTabBar:root];
     UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:tabBarController];
 
-    if ([UITabBar respondsToSelector:@selector(setBarStyle:)]) {
-        navController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-        navController.navigationBar.translucent = NO;
+    navController.navigationBar.barStyle = UIBarStyleBlackOpaque;
+    navController.navigationBar.translucent = NO;
+    
+    if ([tabBarController.tabBar respondsToSelector:@selector(setBarStyle:)]) {
+     
+        tabBarController.tabBar.barStyle = UIBarStyleBlackOpaque;
+        tabBarController.tabBar.translucent = NO;
     }
-
+    
     tabBarController.delegate = self;
     navController.delegate = self;
     
