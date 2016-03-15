@@ -5,7 +5,7 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentVideo.h"
-#import "SwrveConversationStarRating.h"
+#import "SwrveContentStarRating.h"
 #import "SwrveInternalAccess.h"
 
 @implementation SwrveConversationEvents
@@ -99,8 +99,8 @@
                 NSString *eventName = [self nameOf:@"play" for:conversation];
                 [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
             }
-        }  else if ([atom isKindOfClass:[SwrveConversationStarRating class]]) {
-            SwrveConversationStarRating *item = (SwrveConversationStarRating*)atom;
+        }  else if ([atom isKindOfClass:[SwrveContentStarRating class]]) {
+            SwrveContentStarRating *item = (SwrveContentStarRating*)atom;
             if (item.currentRating > 0.0) {
                 NSDictionary *payload =
                 @{

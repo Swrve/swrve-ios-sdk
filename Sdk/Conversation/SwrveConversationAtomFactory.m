@@ -9,7 +9,7 @@
 #import "SwrveContentVideo.h"
 #import "SwrveContentSpacer.h"
 #import "SwrveConversationButton.h"
-#import "SwrveConversationStarRating.h"
+#import "SwrveContentStarRating.h"
 #import "SwrveInputMultiValue.h"
 
 #define kSwrveKeyTag @"tag"
@@ -67,7 +67,7 @@
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         swrveContentHTML.style = [dict objectForKey:@"style"];
         [atomArray addObject:swrveContentHTML];
-        SwrveConversationStarRating *swrveConversationStarRating = [[SwrveConversationStarRating alloc] initWithTag:tag andDictionary:dict];
+        SwrveContentStarRating *swrveConversationStarRating = [[SwrveContentStarRating alloc] initWithTag:tag andDictionary:dict];
         swrveConversationStarRating.style = [dict objectForKey:@"style"];
         [atomArray addObject:swrveConversationStarRating];
     }
