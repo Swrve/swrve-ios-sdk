@@ -5,7 +5,7 @@
 
 - (id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *) dict;
 
-@property (readonly, nonatomic) float       currentRating;
+@property (readwrite, nonatomic) float       currentRating;
 @property (readonly, nonatomic) NSString   *starColor;
 
 @end

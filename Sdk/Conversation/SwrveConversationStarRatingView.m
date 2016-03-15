@@ -165,11 +165,10 @@
             break;
         }
     }
-    
+
+    self.swrveCurrentRating = newRating;
     if(self.swrveCurrentRating < 1.0){
         self.swrveCurrentRating = 1.0;
-    }else{
-        self.swrveCurrentRating = newRating;
     }
 }
 
