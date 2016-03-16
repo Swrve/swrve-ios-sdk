@@ -6,7 +6,6 @@
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentVideo.h"
 #import "SwrveContentStarRating.h"
-#import "SwrveInternalAccess.h"
 
 @implementation SwrveConversationEvents
 
@@ -115,7 +114,7 @@
                   @"result" :[NSString stringWithFormat:@"%.01f", item.currentRating]
                   };
                 NSString *eventName = [self nameOf:@"star-rating" for:conversation];
-                [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
+                [[SwrveCommon getSwrveCommon] eventInternal:eventName payload:payload triggerCallback:true];
             }
         }
     }

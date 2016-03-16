@@ -1,5 +1,14 @@
 #import "SwrveMessageViewController.h"
-#import "SwrveCommonMessageController.h"
+
+#if COCOAPODS
+
+#import <SwrveConversationSDK/SwrveCommonConversation.h>
+
+#else
+
+#import "SwrveCommonConversation.h"
+
+#endif
 
 const static int CONVERSATION_VERSION = 3;
 

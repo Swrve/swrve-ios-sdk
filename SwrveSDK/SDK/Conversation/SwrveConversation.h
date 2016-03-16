@@ -1,5 +1,14 @@
 #import <Foundation/Foundation.h>
+
+#if COCOAPODS
+
+#import <SwrveConversationSDK/SwrveCommonConversation.h>
+
+#else
+
 #import "SwrveCommonConversation.h"
+
+#endif
 
 @class SwrveMessageController;
 @class SwrveConversationCampaign;
