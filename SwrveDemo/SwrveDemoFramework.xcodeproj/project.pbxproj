@@ -152,8 +152,8 @@
 		3AC4DBD11B2992DA004B57CB /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */; };
 		3AC8B7511BAAFFF000CF23ED /* SwrveConversationAtom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
-		5235E0F71C92DD68003E2A26 /* SwrveConversationStarRating.m in Sources */ = {isa = PBXBuildFile; fileRef = 5235E0F41C92DD68003E2A26 /* SwrveConversationStarRating.m */; };
-		5235E0F81C92DD68003E2A26 /* SwrveConversationStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5235E0F61C92DD68003E2A26 /* SwrveConversationStarRatingView.m */; };
+		5235E0F71C92DD68003E2A26 /* SwrveContentStarRating.m in Sources */ = {isa = PBXBuildFile; fileRef = 5235E0F41C92DD68003E2A26 /* SwrveContentStarRating.m */; };
+		5235E0F81C92DD68003E2A26 /* SwrveContentStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5235E0F61C92DD68003E2A26 /* SwrveContentStarRatingView.m */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
 		938F98431A9260F70089168A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98421A9260F70089168A /* MessageUI.framework */; };
 		F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = F5359B681C8F29A300D5E2DE /* SwrveCommon.m */; };
@@ -381,10 +381,10 @@
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5235E0F21C92DD68003E2A26 /* SwrveConversationAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationAtom.h; sourceTree = "<group>"; };
-		5235E0F31C92DD68003E2A26 /* SwrveConversationStarRating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStarRating.h; sourceTree = "<group>"; };
-		5235E0F41C92DD68003E2A26 /* SwrveConversationStarRating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStarRating.m; sourceTree = "<group>"; };
-		5235E0F51C92DD68003E2A26 /* SwrveConversationStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationStarRatingView.h; sourceTree = "<group>"; };
-		5235E0F61C92DD68003E2A26 /* SwrveConversationStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationStarRatingView.m; sourceTree = "<group>"; };
+		5235E0F31C92DD68003E2A26 /* SwrveContentStarRating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentStarRating.h; sourceTree = "<group>"; };
+		5235E0F41C92DD68003E2A26 /* SwrveContentStarRating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentStarRating.m; sourceTree = "<group>"; };
+		5235E0F51C92DD68003E2A26 /* SwrveContentStarRatingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentStarRatingView.h; sourceTree = "<group>"; };
+		5235E0F61C92DD68003E2A26 /* SwrveContentStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentStarRatingView.m; sourceTree = "<group>"; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		938F98421A9260F70089168A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		F5359B671C8F29A300D5E2DE /* SwrveCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommon.h; sourceTree = "<group>"; };
@@ -777,10 +777,10 @@
 		1B9A35D41A8CCF8500F34406 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
-				5235E0F31C92DD68003E2A26 /* SwrveConversationStarRating.h */,
-				5235E0F41C92DD68003E2A26 /* SwrveConversationStarRating.m */,
-				5235E0F51C92DD68003E2A26 /* SwrveConversationStarRatingView.h */,
-				5235E0F61C92DD68003E2A26 /* SwrveConversationStarRatingView.m */,
+				5235E0F31C92DD68003E2A26 /* SwrveContentStarRating.h */,
+				5235E0F41C92DD68003E2A26 /* SwrveContentStarRating.m */,
+				5235E0F51C92DD68003E2A26 /* SwrveContentStarRatingView.h */,
+				5235E0F61C92DD68003E2A26 /* SwrveContentStarRatingView.m */,
 				5235E0F21C92DD68003E2A26 /* SwrveConversationAtom.h */,
 				3AC8B7501BAAFFF000CF23ED /* SwrveConversationAtom.m */,
 				3AC4DBCC1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.h */,
@@ -1108,8 +1108,8 @@
 				1B22100E19B8AFFC00F378E6 /* SwrveSwizzleHelper.m in Sources */,
 				1B592D151B28488B00908895 /* ISHPermissionRequest.m in Sources */,
 				3AC4DBC01B2992D1004B57CB /* SwrveConversationButton.m in Sources */,
-				5235E0F71C92DD68003E2A26 /* SwrveConversationStarRating.m in Sources */,
-				5235E0F81C92DD68003E2A26 /* SwrveConversationStarRatingView.m in Sources */,
+				5235E0F71C92DD68003E2A26 /* SwrveContentStarRating.m in Sources */,
+				5235E0F81C92DD68003E2A26 /* SwrveContentStarRatingView.m in Sources */,
 				095F5E8616D0494E0046D096 /* DemoFramework.m in Sources */,
 				F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */,
 				095F5E8A16D0495A0046D096 /* Menu.m in Sources */,

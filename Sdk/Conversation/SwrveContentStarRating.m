@@ -1,7 +1,7 @@
-#import "SwrveConversationStarRating.h"
+#import "SwrveContentStarRating.h"
 #import "SwrveContentHTML.h"
 #import "SwrveConversationStyler.h"
-#import "SwrveConversationStarRatingView.h"
+#import "SwrveContentStarRatingView.h"
 #import "SwrveSetup.h"
 
 #define kSwrveKeyStarColor @"star_color"
@@ -9,7 +9,7 @@
 #define kSwrveStarRatingPadding 40.0f
 
 
-@implementation SwrveConversationStarRating
+@implementation SwrveContentStarRating
 
 @synthesize currentRating = _currentRating;
 @synthesize starColor = _starColor;
@@ -23,8 +23,8 @@
 }
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
-    _view = [[SwrveConversationStarRatingView alloc] initWithDefaults];
-    [(SwrveConversationStarRatingView*)_view setSwrveRatingDelegate:self];
+    _view = [[SwrveContentStarRatingView alloc] initWithDefaults];
+    [(SwrveContentStarRatingView*)_view setSwrveRatingDelegate:self];
     
     _view.frame = CGRectMake(0,0, 1, 1);
     //set width
@@ -38,11 +38,11 @@
     //center
     [_view setCenter:CGPointMake(containerView.center.x, _view.center.y)];
     
-    [SwrveConversationStyler styleStarRating:(SwrveConversationStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
+    [SwrveConversationStyler styleStarRating:(SwrveContentStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
-- (void) ratingView:(SwrveConversationStarRatingView *)ratingView ratingDidChange:(float)rating{
+- (void) ratingView:(SwrveContentStarRatingView *)ratingView ratingDidChange:(float)rating{
 #pragma unused (ratingView)
     _currentRating = rating;
 }

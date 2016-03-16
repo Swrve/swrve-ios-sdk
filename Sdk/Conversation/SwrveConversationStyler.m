@@ -95,7 +95,7 @@
     [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
 }
 
-+ (void) styleStarRating:(SwrveConversationStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
++ (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
 
     NSString *styleType = kSwrveTypeSolid;
     if([style objectForKey:kSwrveKeyType]) {

@@ -5,6 +5,7 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentVideo.h"
+#import "SwrveContentStarRating.h"
 #import "SwrveInternalAccess.h"
 
 @implementation SwrveConversationEvents
@@ -96,6 +97,20 @@
                   @"fragment" : item.tag
                 };
                 NSString *eventName = [self nameOf:@"play" for:conversation];
+                [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
+            }
+        }  else if ([atom isKindOfClass:[SwrveContentStarRating class]]) {
+            SwrveContentStarRating *item = (SwrveContentStarRating*)atom;
+            if (item.currentRating > 0.0) {
+                NSDictionary *payload =
+                @{
+                  @"event" : @"star-rating",
+                  @"page" : conversationPane.tag,
+                  @"conversation" : [conversation.conversationID stringValue],
+                  @"fragment" : item.tag,
+                  @"result" :[NSString stringWithFormat:@"%.01f", item.currentRating]
+                  };
+                NSString *eventName = [self nameOf:@"star-rating" for:conversation];
                 [[Swrve sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
             }
         }
