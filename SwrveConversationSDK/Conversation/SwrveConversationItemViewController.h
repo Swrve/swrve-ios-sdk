@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "SwrveCommonMessageController.h"
 
 @class SwrveConversationResource;
 @class SwrveConversationPane;
