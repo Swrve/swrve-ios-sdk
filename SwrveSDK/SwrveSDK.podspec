@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.source_files = 'SDK/**/*.{m,h}'
   s.public_header_files = 'SDK/**/*.h'
   s.dependency 'SwrveSDKCommon', '~> 4.3.0'
+  s.dependency 'SwrveConversationSDK', '~> 4.3.0'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary', 'Contacts', 'Photos'
   s.library = 'sqlite3'
 end
