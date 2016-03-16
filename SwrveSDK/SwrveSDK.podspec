@@ -11,9 +11,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source_files = 'Sdk/**/*.{m,h}'
-  s.public_header_files = 'Sdk/**/*.h'
-  s.resources = 'Sdk/Conversation/Resources/*.*'
+  s.source_files = 'SDK/**/*.{m,h}'
+  s.public_header_files = 'SDK/**/*.h'
   s.dependency 'SwrveSDKCommon', '~> 4.3.0'
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary', 'Contacts', 'Photos'
   s.library = 'sqlite3'
