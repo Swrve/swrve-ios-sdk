@@ -53,6 +53,7 @@
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
+    [self.contentTableView setHidden:YES];
     [self updateUI];
 }
 
@@ -243,6 +244,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
         });
+        [self.contentTableView setHidden:NO];
     }
 }
 
