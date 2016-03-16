@@ -1,5 +1,5 @@
 #import "SwrveConversationUIButton.h"
-#import "SwrveConversationStarRatingView.h"
+#import "SwrveContentStarRatingView.h"
 #import <Foundation/Foundation.h>
 
 @interface SwrveConversationStyler : NSObject
@@ -9,6 +9,6 @@
 + (UIColor *) convertToUIColor:(NSString*)color;
 + (float) convertBorderRadius:(float)borderRadiusPercentage;
 + (void) styleButton:(SwrveConversationUIButton *)button withStyle:(NSDictionary*)style;
-+ (void) styleStarRating:(SwrveConversationStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex;
++ (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex;
 
 @end

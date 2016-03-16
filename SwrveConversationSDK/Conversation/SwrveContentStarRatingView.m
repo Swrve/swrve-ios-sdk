@@ -1,7 +1,7 @@
-#import "SwrveConversationStarRatingView.h"
+#import "SwrveContentStarRatingView.h"
 #import "SwrveSetup.h"
 
-@interface SwrveConversationStarRatingView ()
+@interface SwrveContentStarRatingView ()
 
 @property (strong, nonatomic) UIImage *swrveNotSelectedImage;
 @property (strong, nonatomic) UIImage *swrveFullSelectedImage;
@@ -16,7 +16,7 @@
 
 @end
 
-@implementation SwrveConversationStarRatingView
+@implementation SwrveContentStarRatingView
 
 @synthesize swrveStarViews;
 @synthesize swrveNotSelectedImage;
@@ -165,11 +165,10 @@
             break;
         }
     }
-    
+
+    self.swrveCurrentRating = newRating;
     if(self.swrveCurrentRating < 1.0){
         self.swrveCurrentRating = 1.0;
-    }else{
-        self.swrveCurrentRating = newRating;
     }
 }
 

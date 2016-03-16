@@ -1,12 +1,12 @@
 #import <UIKit/UIKit.h>
 
-@class SwrveConversationStarRatingView;
+@class SwrveContentStarRatingView;
 
 @protocol SwrveConversationStarRatingViewDelegate
-- (void) ratingView:(SwrveConversationStarRatingView *) ratingView ratingDidChange:(float) rating;
+- (void) ratingView:(SwrveContentStarRatingView *) ratingView ratingDidChange:(float) rating;
 @end
 
-@interface SwrveConversationStarRatingView : UIView
+@interface SwrveContentStarRatingView : UIView
 
 @property (strong, nonatomic) id <SwrveConversationStarRatingViewDelegate> swrveRatingDelegate;
 
