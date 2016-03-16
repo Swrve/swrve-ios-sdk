@@ -3,7 +3,7 @@
 @class SwrveConversationResource;
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
-@class SwrveConversation;
+@class SwrveCommonConversation;
 @class SwrveConversationButton;
 
 typedef enum {
@@ -22,10 +22,10 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
-@property (strong, nonatomic) SwrveConversation *conversation;
+@property (strong, nonatomic) SwrveCommonConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
--(void)setConversation:(SwrveConversation*)conversation andMessageController:(SwrveMessageController*)controller andWindow:(UIWindow*)window;
+-(void)setConversation:(SwrveCommonConversation*)conversation andMessageController:(id<SwrveCommonMessageController>)controller andWindow:(UIWindow*)window;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;
