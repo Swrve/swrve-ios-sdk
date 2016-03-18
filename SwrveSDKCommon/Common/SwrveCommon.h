@@ -3,11 +3,10 @@
 /*! Swrve SDK shared protocol (interface) definition */
 @protocol ISwrveCommon <NSObject>
 
+@required
+
 -(NSData*) getCampaignData:(int)category;
--(void) sendQueuedEvents;
--(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(int) userUpdate:(NSDictionary*)attributes;
--(void) setLocationVersion:(NSString*)locationVersion;
 -(BOOL) processPermissionRequest:(NSString*)action;
 
 @end
