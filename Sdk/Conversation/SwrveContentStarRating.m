@@ -5,7 +5,7 @@
 #import "SwrveSetup.h"
 
 #define kSwrveKeyStarColor @"star_color"
-#define kSwrveStarRatingHeight 40.0f
+#define kSwrveStarRatingHeight 110.0f
 #define kSwrveStarRatingPadding 40.0f
 
 

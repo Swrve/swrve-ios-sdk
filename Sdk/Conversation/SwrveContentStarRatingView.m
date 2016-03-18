@@ -40,7 +40,7 @@
         self.swrveStarColor = [UIColor redColor];
         self.swrveCurrentRating = 0;
         self.swrveMaxRating = 5;
-        self.swrveMidMargin = 5.0f;
+        self.swrveMidMargin = 0.0f;
         self.swrveLeftMargin = 0.0f;
         self.swrveMinImageSize = CGSizeMake(15, 15);
         
