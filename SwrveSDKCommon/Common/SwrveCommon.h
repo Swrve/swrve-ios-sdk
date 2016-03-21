@@ -13,8 +13,8 @@
 
 @interface SwrveCommon : NSObject
 
-+(id<SwrveCommonDelegate>) getSwrveCommon;
-+(void) setSwrveCommon:(id<SwrveCommonDelegate>)swrveCommon;
++(id<SwrveCommonDelegate>) sharedInstance;
++(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
 
 @end
 

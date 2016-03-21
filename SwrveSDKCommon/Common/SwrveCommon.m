@@ -4,12 +4,12 @@ static id<SwrveCommonDelegate> _iSwrveCommon = NULL;
 
 @implementation SwrveCommon
 
-+(void) setSwrveCommon:(id<SwrveCommonDelegate>)swrveCommon
++(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon
 {
     _iSwrveCommon = swrveCommon;
 }
 
-+(id<SwrveCommonDelegate>) getSwrveCommon
++(id<SwrveCommonDelegate>) sharedInstance
 {
     return _iSwrveCommon;
 }
