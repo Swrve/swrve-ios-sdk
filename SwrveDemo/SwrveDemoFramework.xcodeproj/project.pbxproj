@@ -108,7 +108,7 @@
 		F5FAEC671C99C38A00E2F200 /* SwrveSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC4F1C99C38A00E2F200 /* SwrveSwizzleHelper.m */; };
 		F5FAEC9B1C99C39000E2F200 /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC6B1C99C39000E2F200 /* UINavigationController+KeyboardResponderFix.m */; };
 		F5FAEC9C1C99C39000E2F200 /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC6D1C99C39000E2F200 /* UIWebView+YouTubeVimeo.m */; };
-		F5FAEC9D1C99C39000E2F200 /* SwrveCommonConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC6F1C99C39000E2F200 /* SwrveCommonConversation.m */; };
+		F5FAEC9D1C99C39000E2F200 /* SwrveBaseConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC6F1C99C39000E2F200 /* SwrveBaseConversation.m */; };
 		F5FAEC9E1C99C39000E2F200 /* SwrveContentHTML.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC721C99C39000E2F200 /* SwrveContentHTML.m */; };
 		F5FAEC9F1C99C39000E2F200 /* SwrveContentImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC741C99C39000E2F200 /* SwrveContentImage.m */; };
 		F5FAECA01C99C39000E2F200 /* SwrveContentItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC761C99C39000E2F200 /* SwrveContentItem.m */; };
@@ -325,9 +325,9 @@
 		F5FAEC6B1C99C39000E2F200 /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		F5FAEC6C1C99C39000E2F200 /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
 		F5FAEC6D1C99C39000E2F200 /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
-		F5FAEC6E1C99C39000E2F200 /* SwrveCommonConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommonConversation.h; sourceTree = "<group>"; };
-		F5FAEC6F1C99C39000E2F200 /* SwrveCommonConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveCommonConversation.m; sourceTree = "<group>"; };
-		F5FAEC701C99C39000E2F200 /* SwrveCommonMessageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommonMessageController.h; sourceTree = "<group>"; };
+		F5FAEC6E1C99C39000E2F200 /* SwrveBaseConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseConversation.h; sourceTree = "<group>"; };
+		F5FAEC6F1C99C39000E2F200 /* SwrveBaseConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveBaseConversation.m; sourceTree = "<group>"; };
+		F5FAEC701C99C39000E2F200 /* SwrveMessageEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageEventHandler.h; sourceTree = "<group>"; };
 		F5FAEC711C99C39000E2F200 /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
 		F5FAEC721C99C39000E2F200 /* SwrveContentHTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveContentHTML.m; sourceTree = "<group>"; };
 		F5FAEC731C99C39000E2F200 /* SwrveContentImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentImage.h; sourceTree = "<group>"; };
@@ -876,9 +876,9 @@
 			children = (
 				F5FAECB21C99C3A200E2F200 /* Resources */,
 				F5FAEC691C99C39000E2F200 /* Categories */,
-				F5FAEC6E1C99C39000E2F200 /* SwrveCommonConversation.h */,
-				F5FAEC6F1C99C39000E2F200 /* SwrveCommonConversation.m */,
-				F5FAEC701C99C39000E2F200 /* SwrveCommonMessageController.h */,
+				F5FAEC6E1C99C39000E2F200 /* SwrveBaseConversation.h */,
+				F5FAEC6F1C99C39000E2F200 /* SwrveBaseConversation.m */,
+				F5FAEC701C99C39000E2F200 /* SwrveMessageEventHandler.h */,
 				F5FAEC711C99C39000E2F200 /* SwrveContentHTML.h */,
 				F5FAEC721C99C39000E2F200 /* SwrveContentHTML.m */,
 				F5FAEC731C99C39000E2F200 /* SwrveContentImage.h */,
@@ -1149,7 +1149,7 @@
 				F5FAEC5A1C99C38A00E2F200 /* SwrveBaseCampaign.m in Sources */,
 				F5FAEC9C1C99C39000E2F200 /* UIWebView+YouTubeVimeo.m in Sources */,
 				F5FAECA01C99C39000E2F200 /* SwrveContentItem.m in Sources */,
-				F5FAEC9D1C99C39000E2F200 /* SwrveCommonConversation.m in Sources */,
+				F5FAEC9D1C99C39000E2F200 /* SwrveBaseConversation.m in Sources */,
 				F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */,
 				F5FAEC521C99C38A00E2F200 /* ISHPermissionRequest+All.m in Sources */,
 				F5FAECA11C99C39000E2F200 /* SwrveContentSpacer.m in Sources */,
