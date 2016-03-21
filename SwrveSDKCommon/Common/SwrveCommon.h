@@ -1,21 +1,20 @@
 #import <UIKit/UIKit.h>
 
 /*! Swrve SDK shared protocol (interface) definition */
-@protocol ISwrveCommon <NSObject>
+@protocol SwrveCommonDelegate <NSObject>
+
+@required
 
 -(NSData*) getCampaignData:(int)category;
--(void) sendQueuedEvents;
--(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(int) userUpdate:(NSDictionary*)attributes;
--(void) setLocationVersion:(NSString*)locationVersion;
 -(BOOL) processPermissionRequest:(NSString*)action;
 
 @end
 
 @interface SwrveCommon : NSObject
 
-+(id<ISwrveCommon>) getSwrveCommon;
-+(void) setSwrveCommon:(id<ISwrveCommon>)swrveCommon;
++(id<SwrveCommonDelegate>) sharedInstance;
++(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
 
 @end
 
