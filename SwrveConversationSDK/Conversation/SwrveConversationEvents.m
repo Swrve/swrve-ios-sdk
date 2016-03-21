@@ -10,7 +10,7 @@
 @implementation SwrveConversationEvents
 
 +(void)eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload {
-    [[SwrveCommon getSwrveCommon] eventInternal:eventName payload:eventPayload triggerCallback:true];
+    [[SwrveCommon sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:true];
 }
 
 +(void)started:(SwrveCommonConversation*)conversation onStartPage:(NSString*)pageTag {
@@ -114,7 +114,7 @@
                   @"result" :[NSString stringWithFormat:@"%.01f", item.currentRating]
                   };
                 NSString *eventName = [self nameOf:@"star-rating" for:conversation];
-                [[SwrveCommon getSwrveCommon] eventInternal:eventName payload:payload triggerCallback:true];
+                [[SwrveCommon sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
             }
         }
     }

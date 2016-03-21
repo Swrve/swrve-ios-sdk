@@ -143,7 +143,7 @@
         }
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
-            if(![[SwrveCommon getSwrveCommon] processPermissionRequest:param]) {
+            if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
                 DebugLog(@"Unkown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
