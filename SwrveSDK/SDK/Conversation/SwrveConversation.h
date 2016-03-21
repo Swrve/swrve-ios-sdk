@@ -2,11 +2,11 @@
 
 #if COCOAPODS
 
-#import <SwrveConversationSDK/SwrveCommonConversation.h>
+#import <SwrveConversationSDK/SwrveBaseConversation.h>
 
 #else
 
-#import "SwrveCommonConversation.h"
+#import "SwrveBaseConversation.h"
 
 #endif
 
@@ -14,7 +14,7 @@
 @class SwrveConversationCampaign;
 @class SwrveConversationPane;
 
-@interface SwrveConversation : SwrveCommonConversation
+@interface SwrveConversation : SwrveBaseConversation
 
 @property (nonatomic, weak)              SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* conversationID;            /*!< Identifies the conversation in a campaign */

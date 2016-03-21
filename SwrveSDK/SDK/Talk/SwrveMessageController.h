@@ -2,7 +2,7 @@
 
 #if COCOAPODS
 
-#import <SwrveConversationSDK/SwrveCommonConversation.h>
+#import <SwrveConversationSDK/SwrveBaseConversation.h>
 
 #else
 
@@ -114,7 +114,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @end
 
 /*! In-app messages controller */
-@interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveCommonMessageController>
+@interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler>
 
 @property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
 @property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */

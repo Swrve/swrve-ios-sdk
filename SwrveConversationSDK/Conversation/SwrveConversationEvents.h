@@ -3,32 +3,32 @@
 
 #include <Foundation/Foundation.h>
 
-@class SwrveCommonConversation;
+@class SwrveBaseConversation;
 @class SwrveConversationPane;
 
 @interface SwrveConversationEvents : NSObject
 
 // Conversation related
-+(void)started:(SwrveCommonConversation*)conversation onStartPage:(NSString*)startPageTag;
-+(void)done:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
-+(void)cancel:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag;
++(void)started:(SwrveBaseConversation*)conversation onStartPage:(NSString*)startPageTag;
++(void)done:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)cancel:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag;
 
 // Page related
-+(void)impression:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag;
-+(void)pageTransition:(SwrveCommonConversation*)conversation fromPage:(NSString*)originPage toPage:(NSString*)toPage withControl:(NSString*)controlTag;
++(void)impression:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag;
++(void)pageTransition:(SwrveBaseConversation*)conversation fromPage:(NSString*)originPage toPage:(NSString*)toPage withControl:(NSString*)controlTag;
 
 // Actions
-+(void)linkVisit:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
-+(void)callNumber:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
-+(void)deeplinkVisit:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
-+(void)permissionRequest:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)linkVisit:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)callNumber:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)deeplinkVisit:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)permissionRequest:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
 
 // Atom actions
-+(void)gatherAndSendUserInputs:(SwrveConversationPane*)pane forConversation:(SwrveCommonConversation*)conversation;
++(void)gatherAndSendUserInputs:(SwrveConversationPane*)pane forConversation:(SwrveBaseConversation*)conversation;
 
 // Errors
-+(void)error:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag;
-+(void)error:(SwrveCommonConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
++(void)error:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag;
++(void)error:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;
  
 @end
 

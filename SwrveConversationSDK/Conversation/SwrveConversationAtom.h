@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "SwrveSetup.h"
 
-@class SwrveCommonConversation;
+@class SwrveBaseConversation;
 
 // Content types
 #define kSwrveContentTypeHTML @"html-fragment"

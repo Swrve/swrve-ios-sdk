@@ -1,10 +1,10 @@
 #import <UIKit/UIKit.h>
-#import "SwrveCommonMessageController.h"
+#import "SwrveMessageEventHandler.h"
 
 @class SwrveConversationResource;
 @class SwrveConversationPane;
 @class SwrveConversationItemViewController;
-@class SwrveCommonConversation;
+@class SwrveBaseConversation;
 @class SwrveConversationButton;
 
 typedef enum {
@@ -23,10 +23,10 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
-@property (strong, nonatomic) SwrveCommonConversation *conversation;
+@property (strong, nonatomic) SwrveBaseConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 
--(void)setConversation:(SwrveCommonConversation*)conversation andMessageController:(id<SwrveCommonMessageController>)controller andWindow:(UIWindow*)window;
+-(void)setConversation:(SwrveBaseConversation*)conversation andMessageController:(id<SwrveMessageEventHandler>)controller andWindow:(UIWindow*)window;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;

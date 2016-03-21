@@ -4,7 +4,7 @@
 #endif
 
 #import "SwrveConversationAtom.h"
-#import "SwrveCommonConversation.h"
+#import "SwrveBaseConversation.h"
 
 @implementation SwrveConversationAtom
 

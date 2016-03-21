@@ -1,21 +1,21 @@
 #import "SwrveCommon.h"
-#import "SwrveCommonMessageController.h"
+#import "SwrveMessageEventHandler.h"
 #import "SwrveContentItem.h"
-#import "SwrveCommonConversation.h"
+#import "SwrveBaseConversation.h"
 #import "SwrveConversationPane.h"
 
-@interface SwrveCommonConversation()
+@interface SwrveBaseConversation()
 
-@property (nonatomic, weak)     id<SwrveCommonMessageController> controller;
+@property (nonatomic, weak)     id<SwrveMessageEventHandler> controller;
 
 @end
 
-@implementation SwrveCommonConversation
+@implementation SwrveBaseConversation
 
 @synthesize controller, conversationID, name, pages;
 
--(SwrveCommonConversation*) updateWithJSON:(NSDictionary*)json
-                             forController:(id<SwrveCommonMessageController>)_controller
+-(SwrveBaseConversation*) updateWithJSON:(NSDictionary*)json
+                             forController:(id<SwrveMessageEventHandler>)_controller
 {
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
@@ -24,10 +24,10 @@
     return self;
 }
 
-+(SwrveCommonConversation*) fromJSON:(NSDictionary*)json
-                       forController:(id<SwrveCommonMessageController>)controller
++(SwrveBaseConversation*) fromJSON:(NSDictionary*)json
+                       forController:(id<SwrveMessageEventHandler>)controller
 {
-    return [[[SwrveCommonConversation alloc] init] updateWithJSON:json forController:controller];
+    return [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {
@@ -49,7 +49,7 @@
 }
 
 -(void)wasShownToUser {
-    id<SwrveCommonMessageController> c = self.controller;
+    id<SwrveMessageEventHandler> c = self.controller;
     if (c != nil) {
         [c conversationWasShownToUser:self];
     }

@@ -3,8 +3,8 @@
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
-#import "SwrveCommonConversation.h"
-#import "SwrveCommonMessageController.h"
+#import "SwrveBaseConversation.h"
+#import "SwrveMessageEventHandler.h"
 #import "SwrveConversationAtom.h"
 #import "SwrveConversationButton.h"
 #import "SwrveConversationEvents.h"
@@ -22,8 +22,8 @@
     CGFloat keyboardOffset;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
-    SwrveCommonConversation *conversation;
-    id<SwrveCommonMessageController> controller;
+    SwrveBaseConversation *conversation;
+    id<SwrveMessageEventHandler> controller;
     UIWindow* window;
 }
 
@@ -320,7 +320,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
--(void)setConversation:(SwrveCommonConversation*)conv andMessageController:(id<SwrveCommonMessageController>)ctrl andWindow:(UIWindow*)win
+-(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win
 {
     conversation = conv;
     controller = ctrl;
