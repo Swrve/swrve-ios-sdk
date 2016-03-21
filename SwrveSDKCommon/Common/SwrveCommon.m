@@ -1,15 +1,15 @@
 #import "SwrveCommon.h"
 
-static id<ISwrveCommon> _iSwrveCommon = NULL;
+static id<SwrveCommonDelegate> _iSwrveCommon = NULL;
 
 @implementation SwrveCommon
 
-+(void) setSwrveCommon:(id<ISwrveCommon>)swrveCommon
++(void) setSwrveCommon:(id<SwrveCommonDelegate>)swrveCommon
 {
     _iSwrveCommon = swrveCommon;
 }
 
-+(id<ISwrveCommon>) getSwrveCommon
++(id<SwrveCommonDelegate>) getSwrveCommon
 {
     return _iSwrveCommon;
 }

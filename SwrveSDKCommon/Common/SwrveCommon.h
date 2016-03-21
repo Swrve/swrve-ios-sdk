@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 /*! Swrve SDK shared protocol (interface) definition */
-@protocol ISwrveCommon <NSObject>
+@protocol SwrveCommonDelegate <NSObject>
 
 @required
 
@@ -13,8 +13,8 @@
 
 @interface SwrveCommon : NSObject
 
-+(id<ISwrveCommon>) getSwrveCommon;
-+(void) setSwrveCommon:(id<ISwrveCommon>)swrveCommon;
++(id<SwrveCommonDelegate>) getSwrveCommon;
++(void) setSwrveCommon:(id<SwrveCommonDelegate>)swrveCommon;
 
 @end
 
