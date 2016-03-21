@@ -6,7 +6,7 @@
 
 #else
 
-#import "SwrveCommonConversation.h"
+#import "SwrveBaseConversation.h"
 
 #endif
 
