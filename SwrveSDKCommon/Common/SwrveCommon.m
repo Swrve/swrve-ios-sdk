@@ -1,17 +1,17 @@
 #import "SwrveCommon.h"
 
-static id<SwrveCommonDelegate> _iSwrveCommon = NULL;
+static id<SwrveCommonDelegate> _sharedInstance = NULL;
 
 @implementation SwrveCommon
 
-+(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon
++(void) addSharedInstance:(id<SwrveCommonDelegate>)sharedInstance
 {
-    _iSwrveCommon = swrveCommon;
+    _sharedInstance = sharedInstance;
 }
 
 +(id<SwrveCommonDelegate>) sharedInstance
 {
-    return _iSwrveCommon;
+    return _sharedInstance;
 }
 
 @end
