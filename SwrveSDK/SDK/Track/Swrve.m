@@ -637,7 +637,7 @@ static bool didSwizzle = false;
             return self;
         }
 
-        [SwrveCommon setSwrveCommon:self];
+        [SwrveCommon addSharedInstance:self];
         NSString* swrveUserID = swrveConfig.userId;
         // Auto generate user id if necessary
         if (!swrveUserID) {

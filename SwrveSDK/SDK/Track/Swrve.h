@@ -318,7 +318,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @end
 
 /*! Swrve SDK main class. */
-@interface Swrve : NSObject<ISwrveCommon, SwrveSignatureErrorListener>
+@interface Swrve : NSObject<SwrveCommonDelegate, SwrveSignatureErrorListener>
 
 #pragma mark -
 #pragma mark Singleton
