@@ -16,7 +16,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.3"
+#define SWRVE_SDK_VERSION "4.4"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -102,7 +102,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic) SwrveInterfaceOrientation orientation;
 
 /*! By default Swrve will choose the status bar appearance
- * when presenting any view controllers.  
+ * when presenting any view controllers.
  * You can disable this functionality by setting
  * prefersIAMStatusBarHidden to false.
  */
@@ -177,7 +177,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Set of iOS8+ interactive push notification categories (UIMutableUserNotificationCategory).
  * Initialize this set only if running on an iOS8+ device with the interactive actions that
  * your app supports for push notifications. Will be used when registering for
- * push notification permissions with UIUserNotificationSettings. 
+ * push notification permissions with UIUserNotificationSettings.
  */
 @property (nonatomic, copy) NSSet* pushCategories;
 
@@ -527,7 +527,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product;
 
 /*!
- * Call this when the user has bought something using real currency.  
+ * Call this when the user has bought something using real currency.
  * Include the virtual item and currency given to the user in rewards.
  *
  * See the REST API docs for the IAP event for a detailed description of the
