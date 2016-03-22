@@ -5,11 +5,12 @@
 
 @required
 -(NSData*) getCampaignData:(int)category;
--(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(int) userUpdate:(NSDictionary*)attributes;
 -(BOOL) processPermissionRequest:(NSString*)action;
-- (void) sendQueuedEvents;
-- (void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
+
+-(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
+-(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
+-(void) sendQueuedEvents;
 
 @end
 
