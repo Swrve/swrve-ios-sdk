@@ -1,12 +1,10 @@
 #import <Foundation/Foundation.h>
+#import "SwrveMessageEventHandler.h"
 
-@class SwrveMessageController;
-@class SwrveConversationCampaign;
 @class SwrveConversationPane;
 
-@interface SwrveConversation : NSObject
+@interface SwrveBaseConversation : NSObject
 
-@property (nonatomic, weak)              SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* conversationID;            /*!< Identifies the conversation in a campaign */
 @property (nonatomic, retain)            NSString* name;                      /*!< Name of the conversation */
 @property (nonatomic, retain)            NSArray* pages;                      /*!< Pages of the message */
@@ -18,7 +16,7 @@
  * \param controller Message controller.
  * \returns Parsed conversation.
  */
-+(SwrveConversation*)fromJSON:(NSDictionary*)json forCampaign:(SwrveConversationCampaign*)campaign forController:(SwrveMessageController*)controller;
++(SwrveBaseConversation*)fromJSON:(NSDictionary*)json forController:(id<SwrveMessageEventHandler>)controller;
 
 /*! Check if assets are downloaded.
  *

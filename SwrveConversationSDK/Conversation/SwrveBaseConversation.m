@@ -1,23 +1,22 @@
-#import "Swrve.h"
+#import "SwrveCommon.h"
+#import "SwrveMessageEventHandler.h"
 #import "SwrveContentItem.h"
-#import "SwrveConversation.h"
+#import "SwrveBaseConversation.h"
 #import "SwrveConversationPane.h"
 
-@interface SwrveConversation()
+@interface SwrveBaseConversation()
 
-@property (nonatomic, weak)     SwrveMessageController* controller;
+@property (nonatomic, weak)     id<SwrveMessageEventHandler> controller;
 
 @end
 
-@implementation SwrveConversation
+@implementation SwrveBaseConversation
 
-@synthesize controller, campaign, conversationID, name, pages;
+@synthesize controller, conversationID, name, pages;
 
--(SwrveConversation*) updateWithJSON:(NSDictionary*)json
-                         forCampaign:(SwrveConversationCampaign*)_campaign
-                       forController:(SwrveMessageController*)_controller
+-(SwrveBaseConversation*) updateWithJSON:(NSDictionary*)json
+                             forController:(id<SwrveMessageEventHandler>)_controller
 {
-    self.campaign       = _campaign;
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
@@ -25,13 +24,10 @@
     return self;
 }
 
-+(SwrveConversation*) fromJSON:(NSDictionary*)json
-                   forCampaign:(SwrveConversationCampaign*)campaign
-                 forController:(SwrveMessageController*)controller
++(SwrveBaseConversation*) fromJSON:(NSDictionary*)json
+                       forController:(id<SwrveMessageEventHandler>)controller
 {
-    return [[[SwrveConversation alloc] init] updateWithJSON:json
-                                                forCampaign:campaign
-                                              forController:controller];
+    return [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {
@@ -53,7 +49,7 @@
 }
 
 -(void)wasShownToUser {
-    SwrveMessageController* c = self.controller;
+    id<SwrveMessageEventHandler> c = self.controller;
     if (c != nil) {
         [c conversationWasShownToUser:self];
     }
