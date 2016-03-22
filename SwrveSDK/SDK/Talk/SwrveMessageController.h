@@ -1,5 +1,15 @@
 #import "SwrveMessageViewController.h"
 
+#if COCOAPODS
+
+#import <SwrveConversationSDK/SwrveBaseConversation.h>
+
+#else
+
+#import "SwrveBaseConversation.h"
+
+#endif
+
 const static int CONVERSATION_VERSION = 3;
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
@@ -104,7 +114,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @end
 
 /*! In-app messages controller */
-@interface SwrveMessageController : NSObject<SwrveMessageDelegate>
+@interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler>
 
 @property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
 @property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */
@@ -152,12 +162,6 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param message Message that was shown to the user.
  */
 -(void)messageWasShownToUser:(SwrveMessage*)message;
-
-/*! Notify that a message was shown to the user.
- *
- * \param message Message that was shown to the user.
- */
--(void)conversationWasShownToUser:(SwrveConversation*)conversation;
 
 /*! Obtain the app store URL configured for the given app.
  *
@@ -223,9 +227,6 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * nothing is done.
  */
 - (void) dismissMessageWindow;
-
-/*! Notify that the latest conversation was dismissed. */
-- (void) conversationClosed;
 
 /*! Used internally to determine if the conversation filters are supporter at this moment
  *

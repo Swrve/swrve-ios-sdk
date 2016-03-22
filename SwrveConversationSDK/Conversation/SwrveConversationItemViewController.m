@@ -3,7 +3,8 @@
 // You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
 #endif
 
-#import "SwrveConversation.h"
+#import "SwrveBaseConversation.h"
+#import "SwrveMessageEventHandler.h"
 #import "SwrveConversationAtom.h"
 #import "SwrveConversationButton.h"
 #import "SwrveConversationEvents.h"
@@ -11,9 +12,8 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveSetup.h"
-#import "Swrve.h"
 #import "SwrveConversationEvents.h"
-#import "SwrvePermissions.h"
+#import "SwrveCommon.h"
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
@@ -22,8 +22,8 @@
     CGFloat keyboardOffset;
     UIDeviceOrientation currentOrientation;
     UITapGestureRecognizer *localRecognizer;
-    SwrveConversation *conversation;
-    SwrveMessageController* controller;
+    SwrveBaseConversation *conversation;
+    id<SwrveMessageEventHandler> controller;
     UIWindow* window;
 }
 
@@ -144,7 +144,7 @@
         }
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
-            if (![SwrvePermissions processPermissionRequest:param withSDK:controller.analyticsSDK]) {
+            if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
                 DebugLog(@"Unkown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
@@ -322,7 +322,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
--(void)setConversation:(SwrveConversation*)conv andMessageController:(SwrveMessageController*)ctrl andWindow:(UIWindow*)win
+-(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win
 {
     conversation = conv;
     controller = ctrl;
