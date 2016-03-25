@@ -1174,7 +1174,7 @@ static bool didSwizzle = false;
             // Invoke listeners once to denote that the first attempt at downloading has finished
             // independent of whether the resources or campaigns have changed from cached values
             if ([[self config] resourcesUpdatedCallback]) {
-                [[self config] resourcesUpdatedCallback];
+                [[[self config] resourcesUpdatedCallback] invoke];
             }
         }
     }];
