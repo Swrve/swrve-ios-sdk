@@ -1563,12 +1563,17 @@ static bool didSwizzle = false;
         if (lastProcessedPushId == nil || ![pushId isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = pushId;
             
-            // Process deeplink _d
-            id pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+            // Process deeplink _sd (and old _d)
+            id pushDeeplinkRaw = [userInfo objectForKey:@"_sd"];
+            if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                // Retrieve old push deeplink for backwards compatibility
+                pushDeeplinkRaw = [userInfo objectForKey:@"_d"];
+            }
             if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
                 NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
                 NSURL* url = [NSURL URLWithString:pushDeeplink];
-                if( url != nil ) {
+                BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:url];
+                if( url != nil && canOpen ) {
                     DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
                     [[UIApplication sharedApplication] openURL:url];
                 } else {
