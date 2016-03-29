@@ -86,7 +86,7 @@
                 imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
                 [imageView setTintColor:self.swrveStarColor];
             }else{
-                imageView.image = [self tintImageWithColor:self.swrveBackgroundColor withImage:imageView.image];
+                imageView.image = [self tintImageWithColor:self.swrveStarColor withImage:imageView.image];
             }
 
         } else {
@@ -95,7 +95,7 @@
                 imageView.image = [imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
                 [imageView setTintColor:self.swrveStarColor];
             }else{
-                imageView.image = [self tintImageWithColor:self.swrveBackgroundColor withImage:imageView.image];
+                imageView.image = [self tintImageWithColor:self.swrveStarColor withImage:imageView.image];
             }
         }
     }
