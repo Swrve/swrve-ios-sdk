@@ -82,12 +82,16 @@ static Swrve *swrveTrackInternal;
     // Finally initialize the menu and other UI.
     UITabBarController *tabBarController = [DemoFramework buildTabBar:root];
     UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:tabBarController];
+
     navController.navigationBar.barStyle = UIBarStyleBlackOpaque;
     navController.navigationBar.translucent = NO;
     
-    tabBarController.tabBar.barStyle = UIBarStyleBlackOpaque;
-    tabBarController.tabBar.translucent = NO;
-
+    if ([tabBarController.tabBar respondsToSelector:@selector(setBarStyle:)]) {
+     
+        tabBarController.tabBar.barStyle = UIBarStyleBlackOpaque;
+        tabBarController.tabBar.translucent = NO;
+    }
+    
     tabBarController.delegate = self;
     navController.delegate = self;
     
