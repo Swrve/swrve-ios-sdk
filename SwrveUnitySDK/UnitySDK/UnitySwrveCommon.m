@@ -252,14 +252,10 @@ static dispatch_once_t sharedInstanceToken = 0;
     }
 }
 
-- (void) initBuffer
-{
+- (void) initBuffer {
     [self setEventBuffer:[[NSMutableArray alloc] initWithCapacity:SWRVE_MEMORY_QUEUE_INITIAL_SIZE]];
     [self setEventBufferBytes:0];
 }
-
--(int) userUpdate:(NSDictionary*)attributes { return SWRVE_SUCCESS; }
--(void) setLocationVersion:(NSString *)version { }
 
 - (NSString*) createSessionToken
 {
@@ -338,11 +334,29 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 -(void) initLocation
 {
-    
 #ifdef SWRVE_LOCATIONSDK
     [SwrvePlot initializeWithLaunchOptions:nil delegate:self];
 #endif
+}
+
+-(void) setLocationVersion:(NSString *)version {
+    [self sendMessageUp:@"SetLocationVersion" msg:version];
+}
+
+-(int) userUpdate:(NSDictionary *)attributes {
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:attributes options:0 error:nil];
+    NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
+    [self sendMessageUp:@"UserUpdate" msg:json];
+    
+    return SWRVE_SUCCESS;
+}
+
+-(void) sendMessageUp:(NSString*)method msg:(NSString*)msg
+{
+    UnitySendMessage([UnitySwrveHelper NSStringCopy:@"SwrvePrefab"],
+                     [UnitySwrveHelper NSStringCopy:method],
+                     [UnitySwrveHelper NSStringCopy:msg]);
 }
 
 @end

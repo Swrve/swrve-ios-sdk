@@ -1,9 +1,15 @@
 #import "UnitySwrveHelper.h"
 #import "UnitySwrveCommon.h"
 #import "UnitySwrveCommonMessageController.h"
+#import "SwrveBaseConversation.h"
 
 extern "C"
 {
+    int _swrveiOSConversationVersion()
+    {
+        return CONVERSATION_VERSION;
+    }
+    
     char* _swrveiOSGetLanguage()
     {
         return [UnitySwrveHelper GetLanguage];
