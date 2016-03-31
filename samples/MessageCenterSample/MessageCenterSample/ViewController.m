@@ -39,7 +39,7 @@
     // To workaround this we can query the current UIWindow active,
     // if the window is different from the previous iteration we can
     // notify the table view that the status of one of the items changed
-    // "unread" -> "read"
+    // "unread" -> "read" which corresponds to a red -> green background
     //
     self.checkWindowTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                      target:self
@@ -73,17 +73,10 @@
 }
 
 - (void)refreshDataSource {
-    // Obtain latest campaigns and order by the campaign ID
-    self.campaigns = [[[Swrve sharedInstance].talk messageCenterCampaigns] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        int idA = (int)((SwrveBaseCampaign*)a).ID;
-        int idB = (int)((SwrveBaseCampaign*)b).ID;
-        if (idA > idB) {
-            return NSOrderedDescending;
-        } if (idA == idB) {
-            return NSOrderedAscending;
-        }
-        return NSOrderedSame;
-    }];
+    // Obtain latest campaigns and order by the campaign dateStart property
+    NSSortDescriptor *dateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"dateStart" ascending:YES];
+    NSArray *sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
+    self.campaigns = [[[Swrve sharedInstance].talk messageCenterCampaigns] sortedArrayUsingDescriptors:sortDescriptors];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -104,14 +97,23 @@
     
     // Campaign subject
     cell.textLabel.text = campaign.subject;
+    [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+    [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
     
-    // Campaign start date
+    // Format the start date for display
+    NSDateFormatter *dformat = [[NSDateFormatter alloc] init];
+    [dformat setDateFormat:@"MMMM dd, yyyy (EEEE) HH:mm:ss z Z"];
+    
+    // Campaign start date, change cell background colour based on seen / unseen status
     switch(campaign.state.status) {
         case SWRVE_CAMPAIGN_STATUS_UNSEEN:
-            cell.detailTextLabel.text = @"Unseen";
+            cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
+            [cell setBackgroundColor:[UIColor colorWithRed:255.0f/255.0f green:0.0f blue:0.0f alpha:0.4]];
+            
             break;
         case SWRVE_CAMPAIGN_STATUS_SEEN:
-            cell.detailTextLabel.text = @"Seen";
+            cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
+            [cell setBackgroundColor:[UIColor colorWithRed:0.0f green:255.0f/255.0f blue:0.0f/255.0f alpha:0.4]];
             break;
         default:
             cell.detailTextLabel.text = @"Other";
