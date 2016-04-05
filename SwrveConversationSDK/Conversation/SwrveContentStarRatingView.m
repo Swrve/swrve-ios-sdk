@@ -177,6 +177,7 @@
     UITouch *touch = [touches anyObject];
     CGPoint touchLocation = [touch locationInView:self];
     [self handleTouchAtLocation:touchLocation];
+    [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
     [self refresh];
 }
 
@@ -185,6 +186,7 @@
     UITouch *touch = [touches anyObject];
     CGPoint touchLocation = [touch locationInView:self];
     [self handleTouchAtLocation:touchLocation];
+    [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
     [self refresh];
 }
 
