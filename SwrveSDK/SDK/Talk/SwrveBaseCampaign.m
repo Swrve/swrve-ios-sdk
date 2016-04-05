@@ -57,7 +57,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @end
 
 @interface SwrveBaseCampaign()
-@property (retain, nonatomic) NSDate*       dateStart;
 @property (retain, nonatomic) NSDate*       dateEnd;
 @property (retain, nonatomic) NSMutableSet* triggers;
 @property (retain, nonatomic) NSDate* initialisedTime;
