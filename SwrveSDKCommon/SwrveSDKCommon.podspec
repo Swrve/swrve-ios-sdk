@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Common/**/*.{m,h}'
   s.public_header_files = 'Common/**/*.h'
-  s.compiler_flags = '-DSWRVE_SDK_COMOMON'
+  s.compiler_flags = '-DSWRVE_SDK_COMMON'
 end
