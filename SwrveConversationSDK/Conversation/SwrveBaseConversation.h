@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "SwrveMessageEventHandler.h"
 
+const static int CONVERSATION_VERSION = 3;
+
 @class SwrveConversationPane;
 
 @interface SwrveBaseConversation : NSObject
