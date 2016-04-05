@@ -1,6 +1,5 @@
 #import "SwrveCommon.h"
 
-// #define SWRVE_LOCATIONSDK
 void UnitySendMessage(const char* obj, const char* method, const char* msg);
 
 #ifdef SWRVE_LOCATIONSDK
