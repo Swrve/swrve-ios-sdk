@@ -1248,7 +1248,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* eventName = [self getEventName:event];
     
     if (self.pushEnabled) {
-        if ([eventName isEqualToString:@"Swrve.push_notification_permission"] || (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName])) {
+        if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
             // Ask for push notification permission
             [self registerForPushNotifications];
         }
