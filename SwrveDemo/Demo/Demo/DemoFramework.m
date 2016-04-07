@@ -40,14 +40,12 @@ static Swrve *swrveTrackInternal;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    #pragma unused(launchOptions)
-    
     // Initialize global defaults used by the app
     [UserSettings init];
     
     // Initialize sdk that points to customer game
     [DemoFramework intializeSwrveSdk];
-    
+
     // Initialize the local resource manager.  This is used by the demos to look up values that can
     // be changed by AB tests in our dashboard.
     resourceManager = [[DemoResourceManager alloc] init];
@@ -64,7 +62,8 @@ static Swrve *swrveTrackInternal;
     SwrveConfig* config = [[SwrveConfig alloc] init];
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
-    swrveTrackInternal = [[Swrve alloc] initWithAppID:swrveAppId apiKey:swrveApiKey userID:userOverride config:config];
+    config.userId = userOverride;
+    swrveTrackInternal = [[Swrve alloc] initWithAppID:swrveAppId apiKey:swrveApiKey config:config launchOptions:launchOptions];
     
     // Next create an instance of each demo
     DemoMenuNode *root = [DemoFramework buildRootMenuNode];
@@ -83,12 +82,16 @@ static Swrve *swrveTrackInternal;
     // Finally initialize the menu and other UI.
     UITabBarController *tabBarController = [DemoFramework buildTabBar:root];
     UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:tabBarController];
+
     navController.navigationBar.barStyle = UIBarStyleBlackOpaque;
     navController.navigationBar.translucent = NO;
     
-    tabBarController.tabBar.barStyle = UIBarStyleBlackOpaque;
-    tabBarController.tabBar.translucent = NO;
-
+    if ([tabBarController.tabBar respondsToSelector:@selector(setBarStyle:)]) {
+     
+        tabBarController.tabBar.barStyle = UIBarStyleBlackOpaque;
+        tabBarController.tabBar.translucent = NO;
+    }
+    
     tabBarController.delegate = self;
     navController.delegate = self;
     
@@ -109,7 +112,7 @@ static Swrve *swrveTrackInternal;
 
 +(void) intializeSwrveSdk
 {
-    // Initialize the Swrve track SDK.  This is used by the demos to send data to our servers.
+    // Initialize the Swrve track SDK. This is used by the demos to send data to our servers.
     int customerAppId = [UserSettings getAppId].intValue;
     NSString* customerApiKey = [UserSettings getAppApiKey];
     // Take the user id override from the demo settings
@@ -118,8 +121,8 @@ static Swrve *swrveTrackInternal;
     SwrveConfig* config = [[SwrveConfig alloc] init];
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
-    
-    swrveTrack = [[Swrve alloc]initWithAppID:customerAppId apiKey:customerApiKey userID:userOverride config:config];
+    config.userId = userOverride;
+    swrveTrack = [[Swrve alloc]initWithAppID:customerAppId apiKey:customerApiKey config:config];
     swrveTalk = swrveTrack.talk;
 }
 
