@@ -5,13 +5,24 @@
 #import "SwrveConversationContainerViewController.h"
 #import "SwrveCommon.h"
 
+@interface UnitySwrveMessageEventHandler()
+
+@property (nonatomic, retain) UIWindow*             conversationWindow;
+@end
+
 @implementation UnitySwrveMessageEventHandler
+
+@synthesize conversationWindow;
 
 -(void)conversationWasShownToUser:(SwrveBaseConversation*)conversation {
     NSLog(@"conversationWasShownToUser: %@", conversation);
 }
+
 - (void) conversationClosed {
-    NSLog(@"conversationClosed");
+    @synchronized(self) {
+        self.conversationWindow.hidden = YES;
+        self.conversationWindow = nil;
+    }
 }
 
 -(void) showConversationFromString:(NSString*)_conversation
@@ -31,8 +42,8 @@
     UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle mainBundle]];
     scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
 
-    UIWindow* conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [scivc setConversation:conversation andMessageController:self andWindow:conversationWindow];
+    self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [scivc setConversation:conversation andMessageController:self andWindow:[self conversationWindow]];
     
     // Create a navigation controller in which to push the conversation, and choose iPad presentation style
     SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:scivc];
