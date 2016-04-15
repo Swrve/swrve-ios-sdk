@@ -7,9 +7,9 @@ PODS:
   - SwrveSDKCommon (4.4.0)
 
 DEPENDENCIES:
-  - SwrveConversationSDK (from `../../SwrveConversationSDK`)
-  - SwrveSDK (from `../../SwrveSDK`)
-  - SwrveSDKCommon (from `../../SwrveSDKCommon`)
+  - SwrveConversationSDK (from `../..`)
+  - SwrveSDK (from `../..`)
+  - SwrveSDKCommon (from `../..`)
 
 EXTERNAL SOURCES:
   SwrveConversationSDK:
@@ -24,6 +24,6 @@ SPEC CHECKSUMS:
   SwrveSDK: 243c2713a1e22d7526512b9181b6519cb9fee4bc
   SwrveSDKCommon: 6497d8a6be0914cb4d33d803f792973397ac3635
 
-PODFILE CHECKSUM: c5fc5bc848a8b00595d6f26532942a7550d1b01c
+PODFILE CHECKSUM: 86f9342b69168166bfdbcd0328ba4af6e1bd55df
 
 COCOAPODS: 1.0.0.beta.5
