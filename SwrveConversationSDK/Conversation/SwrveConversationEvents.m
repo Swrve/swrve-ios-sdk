@@ -104,7 +104,6 @@
             }
         }  else if ([atom isKindOfClass:[SwrveContentStarRating class]]) {
             SwrveContentStarRating *item = (SwrveContentStarRating*)atom;
-            if (item.currentRating > 0.0) {
                 NSDictionary *payload =
                 @{
                   @"event" : @"star-rating",
@@ -114,9 +113,8 @@
                   @"result" :[NSString stringWithFormat:@"%.01f", item.currentRating]
                   };
                 NSString *eventName = [self nameOf:@"star-rating" for:conversation];
-                [[SwrveCommon sharedInstance] eventInternal:eventName payload:payload triggerCallback:true];
+                [self eventInternal:eventName payload:payload];
             }
-        }
     }
 
 }
