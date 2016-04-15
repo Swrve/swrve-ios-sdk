@@ -334,7 +334,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 -(void) initLocation
 {
-#ifdef SWRVE_LOCATIONSDK
+#ifdef SWRVE_LOCATION_SDK
     [SwrvePlot initializeWithLaunchOptions:nil delegate:self];
 #endif
 }

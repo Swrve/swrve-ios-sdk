@@ -2,7 +2,7 @@
 
 void UnitySendMessage(const char* obj, const char* method, const char* msg);
 
-#ifdef SWRVE_LOCATIONSDK
+#ifdef SWRVE_LOCATION_SDK
 #import "SwrvePlot.h"
 @interface UnitySwrveCommonDelegate : NSObject<SwrveCommonDelegate, PlotDelegate>
 #else
