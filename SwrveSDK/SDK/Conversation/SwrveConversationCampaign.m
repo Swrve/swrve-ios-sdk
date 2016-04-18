@@ -2,6 +2,7 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveTrigger.h"
 
 @interface SwrveConversationCampaign()
 
@@ -57,26 +58,45 @@
  * Quick check to see if this campaign might have messages matching this event trigger
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
--(BOOL)hasConversationForEvent:(NSString*)event
+- (BOOL)hasConversationForEvent:(NSString*)event withParameters:(NSDictionary *)parameters
 {
-    return [self triggers] != nil && [[self triggers] containsObject:[event lowercaseString]];
+    if([self triggers] != nil){
+        
+        for (SwrveTrigger *trigger in [self triggers]){
+            
+            if([trigger.eventName isEqualToString:[event lowercaseString]]){
+                
+                DebugLog(@"checking conditions for %@", event);
+                if(parameters) {
+                    if([trigger hasFufilledAllConditions:parameters]){
+                        DebugLog(@"conditions met for %@", event);
+                        return YES;
+                        break;
+                    }
+                }else{
+                    return YES;
+                }
+            }
+        }
+    }
+    return NO;
 }
 
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
-
 {
-    return [self getConversationForEvent:event withAssets:assets atTime:time withReasons:nil];
+    return [self getConversationForEvent:event withParameters:nil withAssets:assets atTime:time withReasons:nil];
 }
 
 
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
-                        withAssets:(NSSet*)assets
-                            atTime:(NSDate*)time
-                       withReasons:(NSMutableDictionary*)campaignReasons
+                              withParameters:(NSDictionary*)parameters
+                                  withAssets:(NSSet*)assets
+                                      atTime:(NSDate*)time
+                                 withReasons:(NSMutableDictionary*)campaignReasons
 {
-    if (![self hasConversationForEvent:event]){
+    if (![self hasConversationForEvent:event withParameters:parameters]){
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
         return nil;
     }

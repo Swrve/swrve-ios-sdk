@@ -4,6 +4,7 @@
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#import "SwrveTrigger.h"
 
 @implementation SwrveCampaign
 
@@ -82,26 +83,43 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
  * Quick check to see if this campaign might have messages matching this event trigger
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
--(BOOL)hasMessageForEvent:(NSString*)event
+-(BOOL)hasMessageForEvent:(NSString*)event withParameters:(NSDictionary*)parameters
 {
-    return [self triggers] != nil && [[self triggers] containsObject:[event lowercaseString]];
+    if([self triggers] != nil){
+        
+        for (SwrveTrigger *trigger in [self triggers]){
+            
+            if([trigger.eventName isEqualToString:[event lowercaseString]]){
+                
+                if(parameters) {
+                    if([trigger hasFufilledAllConditions:parameters]){
+                        return YES;
+                        break;
+                    }
+                }else{
+                    return YES;
+                }
+            }
+        }
+    }
+    return NO;
 }
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
-
 {
-    return [self getMessageForEvent:event withAssets:assets atTime:time withReasons:nil];
+    return [self getMessageForEvent:event withParameters:nil withAssets:assets atTime:time withReasons:nil];
 }
 
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
+                    withParameters:(NSDictionary*)parameters
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
                        withReasons:(NSMutableDictionary*)campaignReasons
 {
-    if (![self hasMessageForEvent:event]){
+    if (![self hasMessageForEvent:event withParameters:parameters]){
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
         return nil;
     }

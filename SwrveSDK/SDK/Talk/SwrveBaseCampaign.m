@@ -1,6 +1,7 @@
 #import "Swrve.h"
 #import "SwrveBaseCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveTrigger.h"
 
 const static int  DEFAULT_MAX_IMPRESSIONS        = 99999;
 const static int  DEFAULT_DELAY_FIRST_MSG        = 180;
@@ -167,21 +168,25 @@ static NSDate* read_date(id d, NSDate* default_date)
 -(void)loadTriggersFrom:(NSDictionary*)json
 {
     NSArray* jsonTriggers = [json objectForKey:@"triggers"];
+    
     if (!jsonTriggers) {
         DebugLog(@"Error loading triggers", nil);
         return;
     }
     
-    for (NSString* trigger in jsonTriggers){
+    for (NSDictionary* trigger in jsonTriggers){
         if (trigger) {
-            [self.triggers addObject:[trigger lowercaseString]];
+
+            SwrveTrigger *swrveTrigger = [[SwrveTrigger alloc] initWithDictionary:trigger];
+            [self.triggers addObject:swrveTrigger];
         }
     }
     
     DebugLog(@"Campaign Triggers:", nil);
-    for (NSString* trigger in self.triggers){
+    for (SwrveTrigger *trigger in self.triggers){
 #pragma unused(trigger)
-        DebugLog(@"- %@", trigger);
+        DebugLog(@"name:- %@", trigger.eventName);
+        DebugLog(@"conditions %ld", [trigger.conditions count]);
     }
 }
 

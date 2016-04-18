@@ -10,13 +10,14 @@
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
 /*! Check if the campaign has any conversation setup for the
- * given trigger.
+ * given trigger and parameters associated
  *
  * \param event Trigger event.
+ * \param paramters Dictionary of parameters associated (nullable)
  * \returns TRUE if the campaign contains a conversation for the
  * given trigger.
  */
--(BOOL)hasConversationForEvent:(NSString*)event;
+-(BOOL)hasConversationForEvent:(NSString*)event withParameters:(NSDictionary *)parameters;
 
 /*! Search for a conversation with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -40,9 +41,10 @@
  * \returns Message setup for the given trigger or nil.
  */
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
-                        withAssets:(NSSet*)assets
-                            atTime:(NSDate*)time
-                       withReasons:(NSMutableDictionary*)campaignReasons;
+                              withParameters:(NSDictionary*)parameters
+                                  withAssets:(NSSet*)assets
+                                      atTime:(NSDate*)time
+                                 withReasons:(NSMutableDictionary*)campaignReasons;
 
 /*! Notify that a conversation was shown to the user.
  *

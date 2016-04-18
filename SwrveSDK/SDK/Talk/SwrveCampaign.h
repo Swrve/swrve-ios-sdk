@@ -13,10 +13,11 @@
  * given trigger.
  *
  * \param event Trigger event.
+ * \param parameters parameters associated with the event.
  * \returns TRUE if the campaign contains a message for the
  * given trigger.
  */
--(BOOL)hasMessageForEvent:(NSString*)event;
+-(BOOL)hasMessageForEvent:(NSString*)event withParameters:(NSDictionary*)parameters;
 
 /*! Search for a message with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -40,6 +41,7 @@
  * \returns Message setup for the given trigger or nil.
  */
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
+                    withParameters:(NSDictionary*)parameters
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
                        withReasons:(NSMutableDictionary*)campaignReasons;
