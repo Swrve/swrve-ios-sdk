@@ -55,6 +55,11 @@ extern "C"
         return [UnitySwrveHelper GetIDFV];
     }
     
+    char* _swrveiOSIDFA()
+    {
+        return [UnitySwrveHelper GetIDFA];
+    }
+    
     void _swrveiOSRegisterForPushNotifications(char* jsonCategorySet)
     {
         return [UnitySwrveHelper RegisterForPushNotifications:[UnitySwrveHelper CStringToNSString:jsonCategorySet]];

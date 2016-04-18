@@ -2,6 +2,9 @@
 #import "UnitySwrveCommon.h"
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
+#ifndef SWRVE_NO_IDFA
+#import <AdSupport/ASIdentifierManager.h>
+#endif
 
 @implementation UnitySwrveHelper
 
@@ -116,6 +119,18 @@
 {
     NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     return [UnitySwrveHelper NSStringCopy:idfv];
+}
+
++(char*) GetIDFA
+{
+#ifndef SWRVE_NO_IDFA
+    if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
+    {
+        NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        return [UnitySwrveHelper NSStringCopy:idfa];
+    }
+#endif
+    return NULL;
 }
 
 #ifdef __IPHONE_8_0

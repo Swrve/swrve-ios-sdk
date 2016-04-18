@@ -13,6 +13,7 @@
 +(char*) GetCarrierCode;
 +(char*) GetLocaleCountry;
 +(char*) GetIDFV;
++(char*) GetIDFA;
 +(void) RegisterForPushNotifications:(NSString*)jsonCategorySet;
 +(void) InitPlot;
 
