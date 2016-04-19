@@ -186,7 +186,6 @@ static NSDate* read_date(id d, NSDate* default_date)
     for (SwrveTrigger *trigger in self.triggers){
 #pragma unused(trigger)
         DebugLog(@"name:- %@", trigger.eventName);
-        DebugLog(@"conditions %ld", [trigger.conditions count]);
     }
 }
 
@@ -254,6 +253,32 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
     
     return TRUE;
+}
+
+-(BOOL)checkCampaignTriggersForEvent:(NSString*)event
+                         withPayload:(NSDictionary*)payload
+{
+    if([self triggers] != nil) {
+        for (SwrveTrigger *trigger in [self triggers]) {
+            
+            if([trigger.eventName isEqualToString:[event lowercaseString]]) {
+                
+                DebugLog(@"checking conditions for %@", event);
+                if([trigger.conditions count] > 0) {
+                    
+                    if([trigger hasFufilledAllConditions:payload]) {
+                        DebugLog(@"conditions met for %@", event);
+                        return YES;
+                        break;
+                    }
+                }else {
+                    return YES;
+                }
+            }
+        }
+    }
+    
+    return NO;
 }
 
 -(void)addAssetsToQueue:(NSMutableSet*)assetsQueue

@@ -11,7 +11,7 @@
     self = [super init];
     if(self) {
         _eventName = [[dictionary objectForKey:kTriggerEventNameKey] lowercaseString];
-        _conditions = [self produceConditionsFromDictionary:[dictionary objectForKey:kTriggerEventConditionsKey]];
+        _conditions = [self produceConditionsFromDictionary:dictionary];
     }
     
     return self;
@@ -20,7 +20,8 @@
 - (NSArray *) produceConditionsFromDictionary:(NSDictionary *) dictionary {
     
     NSString *triggerOperator = [dictionary objectForKey:@"op"];
-    NSDictionary *arguments = [dictionary objectForKey:@"args"];
+    NSDictionary *conditionsDictionary = [dictionary objectForKey:kTriggerEventConditionsKey];
+    NSDictionary *arguments = [conditionsDictionary objectForKey:@"args"];
     
     NSMutableArray *resultantConditions = [[NSMutableArray alloc] init];
     
@@ -38,6 +39,7 @@
     BOOL fulfilled = YES;
     
     if([_conditions count] > 0){
+    
         for (SwrveTriggerCondition *condition in _conditions){
             fulfilled = [condition hasFulfilledCondition:payload];
         }

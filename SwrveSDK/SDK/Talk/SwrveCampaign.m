@@ -85,24 +85,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
  */
 -(BOOL)hasMessageForEvent:(NSString*)event withParameters:(NSDictionary*)parameters
 {
-    if([self triggers] != nil){
-        
-        for (SwrveTrigger *trigger in [self triggers]){
-            
-            if([trigger.eventName isEqualToString:[event lowercaseString]]){
-                
-                if(parameters) {
-                    if([trigger hasFufilledAllConditions:parameters]){
-                        return YES;
-                        break;
-                    }
-                }else{
-                    return YES;
-                }
-            }
-        }
-    }
-    return NO;
+    return [self checkCampaignTriggersForEvent:event withPayload:parameters];
 }
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event

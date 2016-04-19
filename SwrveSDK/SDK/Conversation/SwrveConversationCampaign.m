@@ -2,7 +2,6 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveTrigger.h"
 
 @interface SwrveConversationCampaign()
 
@@ -60,26 +59,7 @@
  */
 - (BOOL)hasConversationForEvent:(NSString*)event withParameters:(NSDictionary *)parameters
 {
-    if([self triggers] != nil){
-        
-        for (SwrveTrigger *trigger in [self triggers]){
-            
-            if([trigger.eventName isEqualToString:[event lowercaseString]]){
-                
-                DebugLog(@"checking conditions for %@", event);
-                if(parameters) {
-                    if([trigger hasFufilledAllConditions:parameters]){
-                        DebugLog(@"conditions met for %@", event);
-                        return YES;
-                        break;
-                    }
-                }else{
-                    return YES;
-                }
-            }
-        }
-    }
-    return NO;
+    return [self checkCampaignTriggersForEvent:event withPayload:parameters];
 }
 
 -(SwrveConversation*)getConversationForEvent:(NSString*)event

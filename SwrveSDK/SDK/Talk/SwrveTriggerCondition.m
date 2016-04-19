@@ -1,7 +1,5 @@
 #import "SwrveTriggerCondition.h"
 
-static const NSString *andOperator = @"and";
-
 @implementation SwrveTriggerCondition
 
 @synthesize key = _key;
@@ -15,40 +13,37 @@ static const NSString *andOperator = @"and";
         
         _key = [dictionary objectForKey:@"key"];
         _value = [dictionary objectForKey:@"value"];
-        _triggerOperator = [self determineOperator:operatorKey];
-        _conditionOperator = [self determineConditionOperator:[dictionary objectForKey:@"op"]];
+        _triggerOperator = [self determineSwrveOperator:operatorKey];
+        _conditionOperator = [self determineSwrveOperator:[dictionary objectForKey:@"op"]];
         
     }
     
     return self;
 }
 
-- (SwrveTriggerOperator) determineOperator:(NSString *)operator {
+- (SwrveTriggerOperator) determineSwrveOperator:(NSString *)op {
 
-    if([operator isEqualToString:[NSString stringWithFormat:@"%@", andOperator]]){
+    if([op isEqualToString:@"and"]){
         return SwrveTriggerOperatorAND;
+    }else if([op isEqualToString:@"eq"]){
+        return SwrveTriggerOperatorEQUALS;
     }else{
         return SwrveTriggerOperatorOTHER;
     }
 }
 
-- (SwrveConditionOperator) determineConditionOperator:(NSString *)operator {
-    
-    if([operator isEqualToString:@"eq"]){
-        return SwrveConditionOperatorEQUALS;
-    }else{
-        return SwrveConditionOperatorOTHER;
-    }
-    
-}
-
 - (BOOL) hasFulfilledCondition:(NSDictionary *)payload {
+    
+    if(!payload){
+        return NO;
+    }
     
     NSArray *payloadKeys = [payload allKeys];
     
     if([payloadKeys containsObject:_key]){
         NSString *payloadValue = [payload objectForKey:_key];
         return ([payloadValue isEqualToString:_value]);
+        
     }else{
         return NO;
     }
