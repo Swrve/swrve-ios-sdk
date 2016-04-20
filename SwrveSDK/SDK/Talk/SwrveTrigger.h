@@ -9,7 +9,6 @@
 @property (nonatomic) NSArray *conditions;
 
 - (id) initWithDictionary:(NSDictionary *)dictionary;
-
-- (BOOL) hasFufilledAllConditions:(NSDictionary *)payload;
+- (BOOL) canTriggerWithPayload:(NSDictionary *)payload;
 
 @end

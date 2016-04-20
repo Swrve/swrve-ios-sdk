@@ -266,10 +266,8 @@ static NSDate* read_date(id d, NSDate* default_date)
                 DebugLog(@"checking conditions for %@", event);
                 if([trigger.conditions count] > 0) {
                     
-                    if([trigger hasFufilledAllConditions:payload]) {
-                        DebugLog(@"conditions met for %@", event);
+                    if([trigger canTriggerWithPayload:payload]) {
                         return YES;
-                        break;
                     }
                 }else {
                     return YES;

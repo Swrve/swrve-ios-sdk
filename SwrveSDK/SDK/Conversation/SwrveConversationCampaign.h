@@ -17,7 +17,7 @@
  * \returns TRUE if the campaign contains a conversation for the
  * given trigger.
  */
--(BOOL)hasConversationForEvent:(NSString*)event withParameters:(NSDictionary *)parameters;
+-(BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload;
 
 /*! Search for a conversation with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -41,7 +41,7 @@
  * \returns Message setup for the given trigger or nil.
  */
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
-                              withParameters:(NSDictionary*)parameters
+                                 withPayload:(NSDictionary*)payload
                                   withAssets:(NSSet*)assets
                                       atTime:(NSDate*)time
                                  withReasons:(NSMutableDictionary*)campaignReasons;

@@ -2,7 +2,6 @@
 
 typedef enum SwrveTriggerOperator : NSUInteger {
     SwrveTriggerOperatorAND,
-    SwrveTriggerOperatorOR,
     SwrveTriggerOperatorEQUALS,
     SwrveTriggerOperatorOTHER
 } SwrveTriggerOperator;
@@ -15,7 +14,7 @@ typedef enum SwrveTriggerOperator : NSUInteger {
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *value;
 
-- (id) initWithDictionary:(NSDictionary *)dictionary andOperator:(NSString *) operatorKey;
+- (id) initWithDictionary:(NSDictionary *)dictionary andOperator:(NSString *)operatorKey;
 - (BOOL) hasFulfilledCondition:(NSDictionary *)payload;
 
 @end

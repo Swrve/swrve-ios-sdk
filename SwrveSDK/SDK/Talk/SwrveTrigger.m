@@ -19,28 +19,33 @@
 
 - (NSArray *) produceConditionsFromDictionary:(NSDictionary *) dictionary {
     
+    NSMutableArray *resultantConditions = [[NSMutableArray alloc] init];
+    
     NSString *triggerOperator = [dictionary objectForKey:@"op"];
     NSDictionary *conditionsDictionary = [dictionary objectForKey:kTriggerEventConditionsKey];
     NSDictionary *arguments = [conditionsDictionary objectForKey:@"args"];
     
-    NSMutableArray *resultantConditions = [[NSMutableArray alloc] init];
+    if(!arguments){
+        return nil;
+    }
     
-    for(NSDictionary *singleCondition in arguments){
+    
+    for(NSDictionary *triggerCondition in arguments){
         
-        SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:singleCondition andOperator:triggerOperator];
+        SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:triggerCondition andOperator:triggerOperator];
         [resultantConditions addObject:condition];
     }
     
     return resultantConditions;
 }
 
-- (BOOL) hasFufilledAllConditions:(NSDictionary *)payload {
+- (BOOL) canTriggerWithPayload:(NSDictionary *)payload {
     
     BOOL fulfilled = YES;
     
-    if([_conditions count] > 0){
-    
-        for (SwrveTriggerCondition *condition in _conditions){
+    if([_conditions count] > 0) {
+        
+        for (SwrveTriggerCondition *condition in _conditions) {
             fulfilled = [condition hasFulfilledCondition:payload];
         }
     }
