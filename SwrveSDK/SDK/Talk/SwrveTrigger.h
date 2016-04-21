@@ -7,6 +7,8 @@
 
 @property (nonatomic, readonly) NSString *eventName;
 @property (nonatomic) NSArray *conditions;
+@property (nonatomic, readwrite) BOOL isValidTrigger;
+
 
 - (id) initWithDictionary:(NSDictionary *)dictionary;
 - (BOOL) canTriggerWithPayload:(NSDictionary *)payload;

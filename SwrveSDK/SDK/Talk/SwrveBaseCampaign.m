@@ -178,7 +178,9 @@ static NSDate* read_date(id d, NSDate* default_date)
         if (trigger) {
 
             SwrveTrigger *swrveTrigger = [[SwrveTrigger alloc] initWithDictionary:trigger];
-            [self.triggers addObject:swrveTrigger];
+            if([swrveTrigger isValidTrigger]) {
+                [self.triggers addObject:swrveTrigger];
+            }
         }
     }
     
