@@ -83,9 +83,14 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
  * Quick check to see if this campaign might have messages matching this event trigger
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
--(BOOL)hasMessageForEvent:(NSString*)event withPayload:(NSDictionary *)payload
-{
-    return [self checkCampaignTriggersForEvent:event withPayload:payload];
+-(BOOL)hasMessageForEvent:(NSString*)event {
+    
+    return [self hasMessageForEvent:event withPayload:nil];
+}
+
+-(BOOL)hasMessageForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
+    
+    return [self canTriggerWithEvent:event andPayload:payload];
 }
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
@@ -103,7 +108,9 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
                        withReasons:(NSMutableDictionary*)campaignReasons {
     
     if (![self hasMessageForEvent:event withPayload:payload]){
+        
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
+        [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
         return nil;
     }
 

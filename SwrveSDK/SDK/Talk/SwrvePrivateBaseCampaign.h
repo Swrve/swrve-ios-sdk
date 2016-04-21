@@ -26,8 +26,7 @@
                       withReasons:(NSMutableDictionary*)campaignReasons;
 
 /*! PRIVATE: Check that Triggers are valid. */
--(BOOL)checkCampaignTriggersForEvent:(NSString*)event
-                         withPayload:(NSDictionary*)payload;
+-(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload;
 
 /*! PRIVATE: Notify when the campaign was displayed. */
 - (void)wasShownToUserAt:(NSDate *)timeShown;

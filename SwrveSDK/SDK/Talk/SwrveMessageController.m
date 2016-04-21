@@ -23,8 +23,8 @@ static NSArray* SUPPORTED_DEVICE_FILTERS;
 static NSArray* SUPPORTED_STATIC_DEVICE_FILTERS;
 static NSArray* ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS;
     
-const static int CAMPAIGN_VERSION            = 5;
-const static int CAMPAIGN_RESPONSE_VERSION   = 1;
+const static int CAMPAIGN_VERSION            = 6;
+const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
 const static int DEFAULT_MIN_DELAY           = 55;
@@ -801,14 +801,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 }
 
--(SwrveMessage*)getMessageForEvent:(NSString *)event
-{
-    // By default does a simple by name look up.
+-(SwrveMessage*)getMessageForEvent:(NSString *)event {
+
     return [self findMessageForEvent:event withPayload:nil];
 }
 
-- (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload
-{
+- (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload {
     
     NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;

@@ -9,6 +9,16 @@
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
+
+/*! Check if the campaign has any conversation setup for the
+ * given trigger and parameters associated
+ *
+ * \param event Trigger event.
+ * \returns TRUE if the campaign contains a conversation for the
+ * given trigger.
+ */
+-(BOOL)hasConversationForEvent:(NSString*)event;
+
 /*! Check if the campaign has any conversation setup for the
  * given trigger and parameters associated
  *

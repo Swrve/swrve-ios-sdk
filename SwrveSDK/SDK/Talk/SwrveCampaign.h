@@ -13,6 +13,16 @@
  * given trigger.
  *
  * \param event Trigger event.
+ * \param parameters parameters associated with the event.
+ * \returns TRUE if the campaign contains a message for the
+ * given trigger.
+ */
+-(BOOL)hasMessageForEvent:(NSString*)event;
+
+/*! Check if the campaign has any message setup for the
+ * given trigger.
+ *
+ * \param event Trigger event.
  * \param payload Payload for verifying conditions
  * \param parameters parameters associated with the event.
  * \returns TRUE if the campaign contains a message for the

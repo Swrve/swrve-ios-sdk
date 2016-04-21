@@ -57,9 +57,15 @@
  * Quick check to see if this campaign might have messages matching this event trigger
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
-- (BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload
-{
-    return [self checkCampaignTriggersForEvent:event withPayload:payload];
+
+-(BOOL)hasConversationForEvent:(NSString*)event {
+    
+    return [self hasConversationForEvent:event withPayload:nil];
+}
+
+- (BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
+    
+    return [self canTriggerWithEvent:event andPayload:payload];
 }
 
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
@@ -76,8 +82,11 @@
                                       atTime:(NSDate*)time
                                  withReasons:(NSMutableDictionary*)campaignReasons {
     
-    if (![self hasConversationForEvent:event withPayload:payload]){
+    if (![self hasConversationForEvent:event withPayload:payload]) {
+        
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
+        [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
+        
         return nil;
     }
     

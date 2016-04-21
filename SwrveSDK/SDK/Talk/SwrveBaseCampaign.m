@@ -183,12 +183,6 @@ static NSDate* read_date(id d, NSDate* default_date)
             }
         }
     }
-    
-    DebugLog(@"Campaign Triggers:", nil);
-    for (SwrveTrigger *trigger in self.triggers){
-#pragma unused(trigger)
-        DebugLog(@"name:- %@", trigger.eventName);
-    }
 }
 
 -(BOOL)isTooSoonToShowMessageAfterLaunch:(NSDate*)now
@@ -257,9 +251,8 @@ static NSDate* read_date(id d, NSDate* default_date)
     return TRUE;
 }
 
--(BOOL)checkCampaignTriggersForEvent:(NSString*)event
-                         withPayload:(NSDictionary*)payload
-{
+-(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload {
+    
     if([self triggers] != nil) {
         for (SwrveTrigger *trigger in [self triggers]) {
             
