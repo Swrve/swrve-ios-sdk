@@ -801,8 +801,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 }
 
--(SwrveMessage*)getMessageForEvent:(NSString *)event {
-
+-(SwrveMessage*)getMessageForEvent:(NSString *)event
+{
+    // By default does a simple by name look up.
     return [self findMessageForEvent:event withPayload:nil];
 }
 

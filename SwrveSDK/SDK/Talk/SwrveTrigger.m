@@ -35,12 +35,21 @@
         SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:triggerCondition andOperator:triggerOperator];
         [resultantConditions addObject:condition];
         
+    }
+    
+    for (SwrveTriggerCondition *condition in resultantConditions){
+        
         switch (condition.triggerOperator) {
             case SwrveTriggerOperatorAND:
+                if([resultantConditions count] <= 1){
+                    _isValidTrigger = NO;
+                }
                 break;
                 
             case SwrveTriggerOperatorOTHER:
-                _isValidTrigger = NO;
+                if([resultantConditions count] > 1){
+                    _isValidTrigger = NO;
+                }
                 break;
                 
             default:
