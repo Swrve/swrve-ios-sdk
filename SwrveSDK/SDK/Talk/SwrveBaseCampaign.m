@@ -165,23 +165,14 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
 }
 
--(void)loadTriggersFrom:(NSDictionary*)json
-{
-    NSArray* jsonTriggers = [json objectForKey:@"triggers"];
+-(void)loadTriggersFrom:(NSDictionary*)json {
     
-    if (!jsonTriggers) {
+    NSArray *triggerArray = [SwrveTrigger initTriggersFromDictionary:json];
+    if (!triggerArray){
         DebugLog(@"Error loading triggers", nil);
         return;
-    }
-    
-    for (NSDictionary* trigger in jsonTriggers){
-        if (trigger) {
-
-            SwrveTrigger *swrveTrigger = [[SwrveTrigger alloc] initWithDictionary:trigger];
-            if([swrveTrigger isValidTrigger]) {
-                [self.triggers addObject:swrveTrigger];
-            }
-        }
+    }else{
+        [self.triggers addObjectsFromArray:triggerArray];
     }
 }
 

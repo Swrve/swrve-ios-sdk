@@ -15,10 +15,13 @@
         _value = [dictionary objectForKey:@"value"];
         _triggerOperator = [self determineSwrveOperator:operatorKey];
         _conditionOperator = [self determineSwrveOperator:[dictionary objectForKey:@"op"]];
-        
     }
     
-    return self;
+    if(_key && _value && _conditionOperator){
+        return self;
+    }else{
+        return nil;
+    }
 }
 
 - (SwrveTriggerOperator) determineSwrveOperator:(NSString *)op {
