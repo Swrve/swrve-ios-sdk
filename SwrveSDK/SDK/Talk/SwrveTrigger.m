@@ -54,7 +54,7 @@
         return nil;
     }
     
-    if([triggerOperator isEqualToString:@"eq"]){
+    if([triggerOperator isEqualToString:@"eq"]) {
 
         SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:dictionary andOperator:nil];
         if(condition){
@@ -63,7 +63,7 @@
             _isValidTrigger = NO;
             return nil;
         }
-    }else if([triggerOperator isEqualToString:@"and"]){
+    }else if([triggerOperator isEqualToString:@"and"]) {
 
         NSDictionary *arguments = [dictionary objectForKey:@"args"];
         if(!arguments){
@@ -71,7 +71,7 @@
             return nil;
         }
         
-        for(NSDictionary *triggerCondition in arguments){
+        for(NSDictionary *triggerCondition in arguments) {
             
             SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:triggerCondition andOperator:triggerOperator];
             [resultantConditions addObject:condition];
@@ -81,7 +81,7 @@
         return nil;
     }
     
-    for (SwrveTriggerCondition *condition in resultantConditions){
+    for (SwrveTriggerCondition *condition in resultantConditions) {
         
         switch (condition.triggerOperator) {
             case SwrveTriggerOperatorAND:
@@ -89,13 +89,11 @@
                     _isValidTrigger = NO;
                 }
                 break;
-                
             case SwrveTriggerOperatorOTHER:
                 if([resultantConditions count] > 1){
                     _isValidTrigger = NO;
                 }
                 break;
-                
             default:
                 break;
         }
@@ -103,11 +101,9 @@
         switch (condition.conditionOperator) {
             case SwrveTriggerOperatorEQUALS:
                 break;
-                
             case SwrveTriggerOperatorOTHER:
                 _isValidTrigger = NO;
                 break;
-                
             default:
                 _isValidTrigger = NO;
                 break;
@@ -119,16 +115,16 @@
 
 - (BOOL) canTriggerWithPayload:(NSDictionary *)payload {
     
-    BOOL fulfilled = YES;
+    BOOL canTrigger = YES;
     
     if([_conditions count] > 0) {
         
         for (SwrveTriggerCondition *condition in _conditions) {
-            fulfilled = [condition hasFulfilledCondition:payload];
+            canTrigger = [condition hasFulfilledCondition:payload];
         }
     }
     
-    return fulfilled;
+    return canTrigger;
 }
 
 - (BOOL) isValidTrigger {

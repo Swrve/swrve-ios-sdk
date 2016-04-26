@@ -873,9 +873,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return result;
 }
 
--(SwrveConversation*)getConversationForEvent:(NSString *)event
-{
-    // By default does a simple by name look up.
+-(SwrveConversation*)getConversationForEvent:(NSString *)event {
+ 
     return [self getConversationForEvent:event withPayload:nil];
 }
 
