@@ -1,7 +1,7 @@
 PODS:
   - SwrveConversationSDK (4.3.1):
     - SwrveSDKCommon (~> 4.3.1)
-  - SwrveSDK (4.3.0):
+  - SwrveSDK (4.3.1):
     - SwrveConversationSDK (~> 4.3.1)
     - SwrveSDKCommon (~> 4.3.1)
   - SwrveSDKCommon (4.3.1)
