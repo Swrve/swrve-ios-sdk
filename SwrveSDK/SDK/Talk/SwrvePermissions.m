@@ -247,8 +247,8 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         // We have a token, at some point the user said yes. We still have to check
         // that the user hasn't disabled push notifications in the settings.
         bool pushSettingsEnabled = NO;
-#if defined(__IPHONE_8_0)
         UIApplication* app = [UIApplication sharedApplication];
+#if defined(__IPHONE_8_0)
         if ([app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
             pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
         } else
