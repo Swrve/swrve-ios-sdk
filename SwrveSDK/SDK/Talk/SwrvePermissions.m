@@ -255,7 +255,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #endif //defined(__IPHONE_8_0)
         if ([app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
             UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
-            pushSettingsEnabled = (types == UIRemoteNotificationTypeNone);
+            pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
         }
         
         if (pushSettingsEnabled) {
