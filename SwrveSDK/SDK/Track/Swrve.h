@@ -163,6 +163,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) BOOL autoSaveEventsOnResign;
 
+#if !defined(SWRVE_NO_PUSH)
 /*! Controls if push notifications are enabled. */
 @property (nonatomic) BOOL pushEnabled;
 
@@ -180,6 +181,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * push notification permissions with UIUserNotificationSettings.
  */
 @property (nonatomic, copy) NSSet* pushCategories;
+#endif //!defined(SWRVE_NO_PUSH)
 
 /*! Maximum delay for in-app messages to appear after initialization. */
 @property (nonatomic) long autoShowMessagesMaxDelay;
@@ -308,10 +310,12 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
+#if !defined(SWRVE_NO_PUSH)
 @property (nonatomic, readonly) BOOL pushEnabled;
 @property (nonatomic, readonly) NSSet* pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet* pushCategories;
+#endif //!defined(SWRVE_NO_PUSH)
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
 @property (nonatomic, readonly) enum SwrveStack selectedStack;
 
