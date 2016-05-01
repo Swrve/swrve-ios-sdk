@@ -115,7 +115,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler>
 
 @property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
-@property (nonatomic, retain) UIColor* backgroundColor;                                 /*!< Background color of in-app messages. */
+@property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;                     /*!< Background color of in-app messages. */
+@property (nonatomic, retain) UIColor* conversationLightboxColor;                       /*!< Background color of conversations. */
 @property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
 @property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;    /*!< Implement this delegate to process custom button actions. */
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */

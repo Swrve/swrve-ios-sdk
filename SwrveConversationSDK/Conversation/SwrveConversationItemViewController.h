@@ -22,6 +22,10 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UIImageView *fullScreenBackgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *contentTableView;
 @property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
+
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonViewTop;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *contentTableViewTop;
+
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
 @property (strong, nonatomic) SwrveBaseConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;

@@ -1,5 +1,9 @@
+Pods/
+DerivedData/
+xcuserdata/
+build/
+
 *.xcarchive
 *.ipa
 .DS_Store
-build/
 .idea

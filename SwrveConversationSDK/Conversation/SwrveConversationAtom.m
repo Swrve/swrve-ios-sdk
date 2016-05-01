@@ -1,8 +1,3 @@
-#if !__has_feature(objc_arc)
-#error ConverserSDK must be built with ARC.
-// You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
-#endif
-
 #import "SwrveConversationAtom.h"
 #import "SwrveBaseConversation.h"
 

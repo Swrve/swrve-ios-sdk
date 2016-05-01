@@ -109,7 +109,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize showMessagesAfterLaunch;
 @synthesize showMessagesAfterDelay;
 @synthesize messagesLeftToShow;
-@synthesize backgroundColor;
+@synthesize inAppMessageBackgroundColor;
+@synthesize conversationLightboxColor;
 @synthesize campaigns;
 @synthesize campaignsState;
 @synthesize user;
@@ -172,7 +173,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.cdnRoot            = nil;
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
-    self.backgroundColor    = sdk.config.defaultBackgroundColor;
+    self.inAppMessageBackgroundColor    = sdk.config.defaultBackgroundColor;
+    self.conversationLightboxColor = sdk.config.conversationLightBoxColor;
     
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     self.settingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
@@ -1053,7 +1055,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     @synchronized(self) {
         if ( message && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
-            messageViewController.view.backgroundColor = self.backgroundColor;
+            messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
             messageViewController.message = message;
             messageViewController.prefersIAMStatusBarHidden = self.prefersIAMStatusBarHidden;
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
@@ -1097,9 +1099,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
             SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
             self.swrveConversationsNavigationController = svnc;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                self.swrveConversationsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-            }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
             // Attach cancel button to the conversation navigation options
@@ -1108,7 +1107,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:self.swrveConversationsNavigationController];
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:self.swrveConversationsNavigationController andLightboxColor:self.conversationLightboxColor];
                 self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
                 [rootController.view endEditing:YES];
