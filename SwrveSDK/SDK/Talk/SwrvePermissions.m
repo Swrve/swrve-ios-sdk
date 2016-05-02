@@ -256,7 +256,25 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 +(ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk {
     NSString* deviceToken = sdk.deviceToken;
     if (deviceToken != nil && deviceToken.length > 0) {
-        return ISHPermissionStateAuthorized;
+        // We have a token, at some point the user said yes. We still have to check
+        // that the user hasn't disabled push notifications in the settings.
+        bool pushSettingsEnabled = YES;
+        UIApplication* app = [UIApplication sharedApplication];
+#if defined(__IPHONE_8_0)
+        if ([app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+            pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
+        } else
+#endif //defined(__IPHONE_8_0)
+        if ([app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
+            UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
+            pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
+        }
+        
+        if (pushSettingsEnabled) {
+            return ISHPermissionStateAuthorized;
+        } else {
+            return ISHPermissionStateDenied;
+        }
     }
     return ISHPermissionStateUnknown;
 }
