@@ -10,6 +10,7 @@
 -(BOOL) processPermissionRequest:(NSString*)action;
 - (void) sendQueuedEvents;
 - (void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
+-(NSString*) swrveSDKVersion;
 
 @end
 
