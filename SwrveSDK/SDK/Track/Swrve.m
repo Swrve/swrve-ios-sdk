@@ -195,7 +195,7 @@ enum
 @property (atomic) NSURL* batchURL;
 @property (atomic) NSURL* campaignsAndResourcesURL;
 
-@property (atomic) NSString* locationVersion;
+@property (atomic) int locationSegmentVersion;
 
 @end
 
@@ -515,7 +515,7 @@ static bool didSwizzle = false;
 @synthesize eventsWereSent;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
-@synthesize locationVersion;
+@synthesize locationSegmentVersion;
 
 + (void) resetSwrveSharedInstance
 {
@@ -672,7 +672,7 @@ static bool didSwizzle = false;
         blockStore = [[NSMutableDictionary alloc] init];
         blockStoreId = 0;
 
-        locationVersion = @"0"; // init to zero
+        locationSegmentVersion = 0; // init to zero
 
         config = [[ImmutableSwrveConfig alloc] initWithSwrveConfig:swrveConfig];
         [self initBuffer];
