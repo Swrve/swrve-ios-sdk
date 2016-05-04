@@ -50,9 +50,12 @@
 
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
+#if !defined(SWRVE_NO_PUSH)
         case ISHPermissionCategoryNotificationRemote:
             request = [ISHPermissionRequestNotificationsRemote new];
             break;
+            
+#endif //!defined(SWRVE_NO_PUSH)
             
         default:
             break;
