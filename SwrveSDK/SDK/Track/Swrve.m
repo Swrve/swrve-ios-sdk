@@ -1681,6 +1681,10 @@ static NSString* httpScheme(bool useHttps)
     return @SWRVE_SDK_VERSION;
 }
 
+-(NSString*) appVersion {
+    return self.config.appVersion;
+}
+
 - (float) _estimate_dpi
 {
     float scale = (float)[[UIScreen mainScreen] scale];
