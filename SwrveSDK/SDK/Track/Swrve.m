@@ -720,14 +720,15 @@ static bool didSwizzle = false;
         }
         [self registerForNotifications];
         [self updateDeviceInfo];
-        [self queueSessionStart];
-        [self queueDeviceProperties];
         
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc] initWithSwrve:self];
             [self disableAutoShowAfterDelay];
         }
 
+        [self queueSessionStart];
+        [self queueDeviceProperties];
+                
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
             [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:true];
