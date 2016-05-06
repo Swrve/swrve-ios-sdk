@@ -718,15 +718,15 @@ static bool didSwizzle = false;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
             didReceiveRemoteNotificationImpl = NULL;
         }
-        
-        if (swrveConfig.talkEnabled) {
-            talk = [[SwrveMessageController alloc]initWithSwrve:self];
-            [self disableAutoShowAfterDelay];
-        }
         [self registerForNotifications];
-        
+        [self updateDeviceInfo];
         [self queueSessionStart];
         [self queueDeviceProperties];
+        
+        if (swrveConfig.talkEnabled) {
+            talk = [[SwrveMessageController alloc] initWithSwrve:self];
+            [self disableAutoShowAfterDelay];
+        }
 
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
@@ -1838,7 +1838,6 @@ static NSString* httpScheme(bool useHttps)
         [formattedDeviceData appendFormat:@"  %24s: %@\n", [key UTF8String], [deviceProperties objectForKey:key]];
     }
     DebugLog(@"Swrve config:\n%@", formattedDeviceData);
-
     [self updateDeviceInfo];
     [self userUpdate:deviceInfo];
 }
