@@ -1325,6 +1325,7 @@
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
 				);
+				OTHER_CFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "";

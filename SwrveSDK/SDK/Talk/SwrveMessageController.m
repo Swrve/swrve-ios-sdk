@@ -69,8 +69,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSDate*               initialisedTime; // SDK init time
 @property (nonatomic, retain) NSDate*               showMessagesAfterLaunch; // Only show messages after this time.
 @property (nonatomic, retain) NSDate*               showMessagesAfterDelay; // Only show messages after this time.
+#if !defined(SWRVE_NO_PUSH)
 @property (nonatomic)         bool                  pushEnabled; // Decide if push notification is enabled
 @property (nonatomic, retain) NSSet*                pushNotificationEvents; // Events that trigger the push notification dialog
+#endif //!defined(SWRVE_NO_PUSH)
 @property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
@@ -118,8 +120,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize notifications;
 @synthesize language;
 @synthesize appStoreURLs;
+#if !defined(SWRVE_NO_PUSH)
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
+#endif //!defined(SWRVE_NO_PUSH)
 @synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
 @synthesize conversationWindow;
@@ -168,8 +172,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.apiKey             = sdk.apiKey;
     self.server             = sdk.config.contentServer;
     self.analyticsSDK       = sdk;
+#if !defined(SWRVE_NO_PUSH)
     self.pushEnabled        = sdk.config.pushEnabled;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
+#endif //!defined(SWRVE_NO_PUSH)
     self.cdnRoot            = nil;
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
@@ -207,12 +213,14 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSAssert1([self.user     length] > 0, @"Invalid username specified %@", self.user);
     NSAssert(self.analyticsSDK != NULL,   @"Swrve Analytics SDK is null", nil);
     
+#if !defined(SWRVE_NO_PUSH)
     NSData* device_token = [[NSUserDefaults standardUserDefaults] objectForKey:swrve_device_token_key];
     if (self.pushEnabled && device_token) {
         // Once we have a device token, ask for it every time
         [self registerForPushNotifications];
         [self setDeviceToken:device_token];
     }
+#endif //!defined(SWRVE_NO_PUSH)
     
     self.campaignsState = [[NSMutableDictionary alloc] init];
     // Initialize campaign cache file
@@ -236,10 +244,12 @@ const static int DEFAULT_MIN_DELAY           = 55;
     return self;
 }
 
+#if !defined(SWRVE_NO_PUSH)
 -(void)registerForPushNotifications
 {
     [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
 }
+#endif //!defined(SWRVE_NO_PUSH)
 
 - (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
@@ -1247,12 +1257,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // Get event name
     NSString* eventName = [self getEventName:event];
     
+#if !defined(SWRVE_NO_PUSH)
     if (self.pushEnabled) {
         if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
             // Ask for push notification permission
             [self registerForPushNotifications];
         }
     }
+#endif //!defined(SWRVE_NO_PUSH)
     
     // Find a conversation that should be displayed
     SwrveConversation* conversation = nil;
@@ -1315,6 +1327,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
+#if !defined(SWRVE_NO_PUSH)
 - (void) setDeviceToken:(NSData*)deviceToken
 {
     if (self.pushEnabled && deviceToken) {
@@ -1348,6 +1361,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
 }
+#endif //!defined(SWRVE_NO_PUSH)
 
 - (BOOL) isQaUser
 {

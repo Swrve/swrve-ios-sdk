@@ -60,8 +60,10 @@ static Swrve *swrveTrackInternal;
     NSString* userOverride = [DemoFramework getDemoResourceManager].userIdOverride;
 
     SwrveConfig* config = [[SwrveConfig alloc] init];
+#if !defined(SWRVE_NO_PUSH)
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
+#endif
     config.userId = userOverride;
     swrveTrackInternal = [[Swrve alloc] initWithAppID:swrveAppId apiKey:swrveApiKey config:config launchOptions:launchOptions];
     
@@ -119,8 +121,10 @@ static Swrve *swrveTrackInternal;
     NSString* userOverride = [DemoFramework getDemoResourceManager].userIdOverride;
     
     SwrveConfig* config = [[SwrveConfig alloc] init];
+#if !defined(SWRVE_NO_PUSH)
     config.autoCollectDeviceToken = NO;
     config.pushNotificationEvents = nil;
+#endif
     config.userId = userOverride;
     swrveTrack = [[Swrve alloc]initWithAppID:customerAppId apiKey:customerApiKey config:config];
     swrveTalk = swrveTrack.talk;

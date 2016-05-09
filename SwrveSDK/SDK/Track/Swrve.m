@@ -286,10 +286,12 @@ enum
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
+#if !defined(SWRVE_NO_PUSH)
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
+#endif //!defined(SWRVE_NO_PUSH)
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
 
@@ -323,9 +325,11 @@ enum
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
         self.talkEnabled = YES;
+#if !defined(SWRVE_NO_PUSH)
         self.pushEnabled = NO;
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
+#endif //!defined(SWRVE_NO_PUSH)
         self.autoShowMessagesMaxDelay = 5000;
         self.receiptProvider = [[SwrveReceiptProvider alloc] init];
         self.resourcesUpdatedCallback = ^() {
@@ -368,10 +372,12 @@ enum
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
+#if !defined(SWRVE_NO_PUSH)
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
+#endif //!defined(SWRVE_NO_PUSH)
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
 
@@ -406,10 +412,12 @@ enum
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
+#if !defined(SWRVE_NO_PUSH)
         pushEnabled = config.pushEnabled;
         pushNotificationEvents = config.pushNotificationEvents;
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         pushCategories = config.pushCategories;
+#endif //!defined(SWRVE_NO_PUSH)
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         selectedStack = config.selectedStack;
     }
@@ -484,7 +492,9 @@ enum
 
 static Swrve * _swrveSharedInstance = nil;
 static dispatch_once_t sharedInstanceToken = 0;
+#if !defined(SWRVE_NO_PUSH)
 static bool didSwizzle = false;
+#endif //!defined(SWRVE_NO_PUSH)
 
 @synthesize config;
 @synthesize appID;
@@ -700,6 +710,7 @@ static bool didSwizzle = false;
         [self.userUpdates setValue:@"user" forKey:@"type"];
         [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
 
+#if !defined(SWRVE_NO_PUSH)
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
@@ -718,6 +729,7 @@ static bool didSwizzle = false;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
             didReceiveRemoteNotificationImpl = NULL;
         }
+#endif //!defined(SWRVE_NO_PUSH)
         
         if (swrveConfig.talkEnabled) {
             talk = [[SwrveMessageController alloc]initWithSwrve:self];
@@ -750,6 +762,7 @@ static bool didSwizzle = false;
 
         [self startCampaignsAndResourcesTimer];
         
+#if !defined(SWRVE_NO_PUSH)
         // Check if the launch options of the app has any push notification in it
         if (launchOptions != nil) {
             NSDictionary * remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -757,6 +770,9 @@ static bool didSwizzle = false;
                 [self.talk pushNotificationReceived:remoteNotification];
             }
         }
+#else
+#pragma unused(launchOptions)
+#endif //!defined(SWRVE_NO_PUSH)
     }
 
     [self sendQueuedEvents];
@@ -764,6 +780,7 @@ static bool didSwizzle = false;
     return self;
 }
 
+#if !defined(SWRVE_NO_PUSH)
 - (void)_deswizzlePushMethods
 {
     if(_swrveSharedInstance == self && didSwizzle) {
@@ -833,6 +850,8 @@ static bool didSwizzle = false;
         }
     }
 }
+
+#endif //!defined(SWRVE_NO_PUSH)
 
 -(void) queueSessionStart
 {

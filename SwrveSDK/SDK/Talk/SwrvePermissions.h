@@ -43,8 +43,10 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)requestContacts:(Swrve*)sdk;
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
+#if !defined(SWRVE_NO_PUSH)
 + (ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk;
 + (void)requestPushNotifications:(Swrve*)sdk withCallback:(BOOL)callback;
+#endif //!defined(SWRVE_NO_PUSH)
 
 @end
 

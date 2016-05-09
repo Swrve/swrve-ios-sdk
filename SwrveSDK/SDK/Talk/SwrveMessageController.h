@@ -189,6 +189,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 -(BOOL)eventRaised:(NSDictionary*)event;
 
+#if !defined(SWRVE_NO_PUSH)
+
 /*! Call this method when you get a push notification device token from Apple.
  *
  * \param deviceToken Apple device token for your app.
@@ -207,6 +209,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param applicationState Application state at the time when the push notificatin was received.
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
+#endif //!defined(SWRVE_NO_PUSH)
 
 /*! Check if the user is a QA user. For internal use.
  *
