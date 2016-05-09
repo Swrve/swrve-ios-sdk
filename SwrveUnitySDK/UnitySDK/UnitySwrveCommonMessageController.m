@@ -1,5 +1,4 @@
 #import "UnitySwrveCommonMessageController.h"
-#import "SwrveBaseConversation.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationContainerViewController.h"
@@ -7,7 +6,7 @@
 
 @interface UnitySwrveMessageEventHandler()
 
-@property (nonatomic, retain) UIWindow*             conversationWindow;
+@property (nonatomic, retain) UIWindow* conversationWindow;
 @end
 
 @implementation UnitySwrveMessageEventHandler
@@ -25,14 +24,22 @@
     }
 }
 
--(void) showConversationFromString:(NSString*)_conversation
+-(SwrveBaseConversation*) conversationFromString:(NSString*)conversation
 {
     NSError* jsonError;
-    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:[_conversation dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&jsonError];
-    
-    SwrveBaseConversation* conversation = [SwrveBaseConversation fromJSON:jsonDict forController:self];
-    
-    [self showConversation:conversation];
+    NSDictionary *jsonDict =
+        [NSJSONSerialization JSONObjectWithData:[conversation dataUsingEncoding:NSUTF8StringEncoding]
+                                        options:0
+                                          error:&jsonError];
+    if(nil == jsonDict) {
+        return nil;
+    }
+    return [SwrveBaseConversation fromJSON:jsonDict forController:self];
+}
+
+-(void) showConversationFromString:(NSString*)conversation
+{
+    [self showConversation:[self conversationFromString:conversation]];
 }
 
 -(void) showConversation:(SwrveBaseConversation*)conversation
@@ -59,8 +66,8 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
-        conversationWindow.rootViewController = rootController;
-        [conversationWindow makeKeyAndVisible];
+        [self conversationWindow].rootViewController = rootController;
+        [[self conversationWindow] makeKeyAndVisible];
         [rootController.view endEditing:YES];
     });
 }

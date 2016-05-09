@@ -27,7 +27,12 @@
 +(SwrveBaseConversation*) fromJSON:(NSDictionary*)json
                        forController:(id<SwrveMessageEventHandler>)controller
 {
-    return [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
+    SwrveBaseConversation* conversation = [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
+    
+    if((nil == controller) || (nil == conversation.conversationID) || (nil == conversation.name) || (nil == conversation.pages)) {
+        return nil;
+    }
+    return conversation;
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {

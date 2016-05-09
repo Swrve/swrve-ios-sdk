@@ -45,6 +45,12 @@ static dispatch_once_t sharedInstanceToken = 0;
     return _swrveSharedUnity;
 }
 
+-(void) shutdown {
+    [SwrveCommon addSharedInstance:nil];
+    sharedInstanceToken = 0;
+    _swrveSharedUnity = nil;
+}
+
 +(void) init:(char*)jsonConfig {
     UnitySwrveCommonDelegate* swrve = [UnitySwrveCommonDelegate sharedInstance];
     
@@ -157,7 +163,6 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback
 {
-    NSLog(@"%@", self.eventBuffer);
     if ([self eventBuffer]) {
         // Add common attributes (if not already present)
         if (![eventData objectForKey:@"type"]) {
@@ -320,7 +325,6 @@ static dispatch_once_t sharedInstanceToken = 0;
     
     NSMutableDictionary* jsonPacket = [[NSMutableDictionary alloc] init];
     [jsonPacket setValue:[self userId] forKey:@"user"];
-//    [jsonPacket setValue:[self shortDeviceId] forKey:@"short_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
     [jsonPacket setValue:NullableNSString([self appVersion]) forKey:@"app_version"];
     [jsonPacket setValue:NullableNSString(sessionToken) forKey:@"session_token"];
@@ -354,7 +358,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 -(void) sendMessageUp:(NSString*)method msg:(NSString*)msg
 {
-    UnitySendMessage([UnitySwrveHelper NSStringCopy:@"SwrvePrefab"],
+    UnitySendMessage("SwrvePrefab",
                      [UnitySwrveHelper NSStringCopy:method],
                      [UnitySwrveHelper NSStringCopy:msg]);
 }

@@ -3,8 +3,11 @@
 #import "UnitySwrveCommonMessageController.h"
 #import "SwrveBaseConversation.h"
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
+    
     int _swrveiOSConversationVersion()
     {
         return CONVERSATION_VERSION;
@@ -70,11 +73,6 @@ extern "C"
         [UnitySwrveCommonDelegate init:jsonConfig];
     }
     
-    const char* _swrveiOSGetConversationResult()
-    {
-        return [UnitySwrveHelper NSStringCopy:@"[]"];
-    }
-    
     void _swrveiOSShowConversation(char* conversation)
     {
         [[UnitySwrveMessageEventHandler alloc] showConversationFromString:[UnitySwrveHelper CStringToNSString:conversation]];
@@ -84,4 +82,7 @@ extern "C"
     {
         [[UnitySwrveCommonDelegate sharedInstance] initLocation];
     }
+
+#ifdef __cplusplus
 }
+#endif

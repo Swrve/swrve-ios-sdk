@@ -1,6 +1,6 @@
 #import "SwrveCommon.h"
 
-void UnitySendMessage(const char* obj, const char* method, const char* msg);
+void UnitySendMessage(const char *, const char *, const char *);
 
 #ifdef SWRVE_LOCATION_SDK
 #import "SwrvePlot.h"
@@ -13,5 +13,28 @@ void UnitySendMessage(const char* obj, const char* method, const char* msg);
 +(void) init:(char*)jsonConfig;
 
 -(void) initLocation;
+
+-(long) appId;
+-(NSString*) apiKey;
+
+-(NSString*) applicationPath;
+-(NSString*) locTag;
+-(NSString*) sigSuffix;
+-(NSString*) userId;
+-(NSString*) appVersion;
+-(NSString*) uniqueKey;
+-(NSString*) getLocationPath;
+
+-(NSString*) batchUrl;
+-(NSString*) eventsServer;
+
+-(NSURL*) getBatchUrl;
+-(int) httpTimeout;
+
+-(NSData*) getCampaignData:(int)category;
+
+-(void) setLocationVersion:(NSString *)version;
+-(int) userUpdate:(NSDictionary *)attributes;
+-(void) shutdown;
 
 @end
