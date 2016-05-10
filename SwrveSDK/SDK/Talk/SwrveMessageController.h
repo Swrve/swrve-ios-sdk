@@ -209,6 +209,12 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param applicationState Application state at the time when the push notificatin was received.
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
+
+/*! Process the given silent push notification.
+ *
+ * \param userInfo Silent push notification information.
+ */
+- (void)silentPushNotificationReceived:(NSDictionary*)userInfo;
 #endif //!defined(SWRVE_NO_PUSH)
 
 /*! Check if the user is a QA user. For internal use.
