@@ -34,7 +34,6 @@ static BOOL ignoreFirstDidBecomeActive = YES;
 
 NSString *const SWRVE_TRACKING_KEY = @"_p";
 NSString *const SWRVE_SILENT_TRACKING_KEY = @"_sp";
-NSString *const SWRVE_SILENT_PUSH_CAMPAIGN_RECEIVED_EVENT = @"silent_push_campaign_received";
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
@@ -802,7 +801,7 @@ static bool didSwizzle = false;
 
         [SwrveSwizzleHelper deswizzleMethod:@selector(application:didReceiveRemoteNotification:) inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteNotificationImpl];
         didReceiveRemoteNotificationImpl = NULL;
-        
+
         [SwrveSwizzleHelper deswizzleMethod:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:) inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteSilentNotificationImpl];
         didReceiveRemoteSilentNotificationImpl = NULL;
 
@@ -868,7 +867,7 @@ static bool didSwizzle = false;
         if (swrveInstance.talk != nil) {
             [swrveInstance.talk silentPushNotificationReceived:userInfo];
         }
-        
+
         if( swrveInstance->didReceiveRemoteSilentNotificationImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
             swrveInstance->didReceiveRemoteSilentNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo, completionHandler);
@@ -1646,17 +1645,8 @@ static bool didSwizzle = false;
                 DebugLog(@"Unknown Swrve notification ID class for _sp attribute", nil);
                 return;
             }
-            
-            // Only process this push if we haven't seen it before
-            if (lastProcessedPushId == nil || ![pushId isEqualToString:lastProcessedPushId]) {
-                lastProcessedPushId = pushId;
-                
-                NSMutableDictionary* eventJson = [[NSMutableDictionary alloc] init];
-                [eventJson setValue:pushId forKey:@"id"];
-                id<SwrveLocationDelegate> extended = (id<SwrveLocationDelegate>) [SwrveCommon sharedInstance];
-                [extended queueEvent:SWRVE_SILENT_PUSH_CAMPAIGN_RECEIVED_EVENT data:eventJson triggerCallback:NO];
-                [extended sendQueuedEvents];
-            }
+
+            DebugLog(@"Got Swrve silent notification with ID %@", pushId);
         } else {
             DebugLog(@"Got unidentified notification", nil);
         }
