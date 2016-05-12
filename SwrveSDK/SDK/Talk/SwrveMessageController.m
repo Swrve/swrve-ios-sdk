@@ -1256,6 +1256,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 {
     // Get event name
     NSString* eventName = [self getEventName:event];
+    NSDictionary *payload = [event objectForKey:@"payload"];
     
 #if !defined(SWRVE_NO_PUSH)
     if (self.pushEnabled) {
@@ -1268,11 +1269,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     // Find a conversation that should be displayed
     SwrveConversation* conversation = nil;
+    
     if( [self.showMessageDelegate respondsToSelector:@selector(getConversationForEvent: withPayload:)]) {
-        conversation = [self.showMessageDelegate getConversationForEvent:eventName withPayload:event];
+        conversation = [self.showMessageDelegate getConversationForEvent:eventName withPayload:payload];
     }
     else {
-        conversation = [self getConversationForEvent:eventName withPayload:event];
+        conversation = [self getConversationForEvent:eventName withPayload:payload];
     }
     
     if (conversation != nil) {
@@ -1288,10 +1290,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Find a message that should be displayed
         SwrveMessage* message = nil;
         if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withPayload:)]) {
-            message = [self.showMessageDelegate findMessageForEvent:eventName withPayload:event];
+            message = [self.showMessageDelegate findMessageForEvent:eventName withPayload:payload];
         }
         else {
-            message = [self findMessageForEvent:eventName withPayload:event];
+            message = [self findMessageForEvent:eventName withPayload:payload];
         }
         
         // iOS9+ will display with local scale
