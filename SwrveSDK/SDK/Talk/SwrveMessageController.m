@@ -11,6 +11,7 @@
 #import "SwrvePermissions.h"
 #import "SwrveInternalAccess.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveTrigger.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -22,8 +23,8 @@ static NSArray* SUPPORTED_DEVICE_FILTERS;
 static NSArray* SUPPORTED_STATIC_DEVICE_FILTERS;
 static NSArray* ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS;
     
-const static int CAMPAIGN_VERSION            = 5;
-const static int CAMPAIGN_RESPONSE_VERSION   = 1;
+const static int CAMPAIGN_VERSION            = 6;
+const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
 const static int DEFAULT_MIN_DELAY           = 55;
@@ -618,8 +619,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
--(void)autoShowMessages
-{
+-(void)autoShowMessages {
+    
     // Don't do anything if we've already shown a message or if it is too long after session start
     if (![self autoShowMessagesEnabled]) {
         return;
@@ -633,7 +634,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     for (SwrveBaseCampaign* campaign in self.campaigns) {
         if ([campaign isKindOfClass:[SwrveCampaign class]]) {
             SwrveCampaign* specificCampaign = (SwrveCampaign*)campaign;
-            if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
+            if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
                 @synchronized(self) {
                     if ([self autoShowMessagesEnabled]) {
                         NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
@@ -647,7 +648,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             }
         } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
             SwrveConversationCampaign* specificCampaign = (SwrveConversationCampaign*)campaign;
-            if ([specificCampaign hasConversationForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER]) {
+            if ([specificCampaign hasConversationForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
                 @synchronized(self) {
                     if ([self autoShowMessagesEnabled]) {
                         NSDictionary* event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
@@ -707,21 +708,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return TRUE;
 }
 
-- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
-{
-#pragma unused(parameters)
-    // By default does a simple by name look up.
-    return [self getMessageForEvent:eventName];
-}
-
--(SwrveMessage*)getMessageForEvent:(NSString *)event
+- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload
 {
     NSDate* now = [self.analyticsSDK getNow];
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
     
     if (self.campaigns != nil) {
-        if (![self checkGlobalRules:event]) {
+        if (![self checkGlobalRules:eventName]) {
             return nil;
         }
         
@@ -742,7 +736,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveCampaign class]]) {
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
-                SwrveMessage* nextMessage = [campaignIt getMessageForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                SwrveMessage* nextMessage = [campaignIt getMessageForEvent:eventName withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
                     BOOL canBeChosen = YES;
                     // iOS9+ will display with local scale
@@ -800,36 +794,37 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         // If QA enabled, send message selection information
         if(self.qaUser != nil) {
-            [self.qaUser trigger:event withMessage:result withReason:campaignReasons withMessages:campaignMessages];
+            [self.qaUser trigger:eventName withMessage:result withReason:campaignReasons withMessages:campaignMessages];
         }
     }
     
     if (result == nil) {
-        DebugLog(@"Not showing message: no candidate messages for %@", event);
+        DebugLog(@"Not showing message: no candidate messages for %@", eventName);
     } else {
         // Notify message has been returned
-        NSDictionary *payload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
-        NSString *eventName = @"Swrve.Messages.message_returned";
-        [self.analyticsSDK eventInternal:eventName payload:payload triggerCallback:true];
+        NSDictionary *returningPayload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
+        NSString *returningEventName = @"Swrve.Messages.message_returned";
+        [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:true];
     }
     return result;
+    
+
 }
 
-- (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+-(SwrveMessage*)getMessageForEvent:(NSString *)event
 {
-#pragma unused(parameters)
     // By default does a simple by name look up.
-    return [self getConversationForEvent:eventName];
+    return [self findMessageForEvent:event withPayload:nil];
 }
 
--(SwrveConversation*)getConversationForEvent:(NSString *)event
-{
+- (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload {
+    
     NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
     
     if (self.campaigns != nil) {
-        if (![self checkGlobalRules:event])
+        if (![self checkGlobalRules:eventName])
         {
             return nil;
         }
@@ -846,7 +841,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
-                SwrveConversation* conversation = [campaignIt getConversationForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                SwrveConversation* conversation = [campaignIt getConversationForEvent:eventName withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (conversation != nil) {
                     [availableMessages addObject:conversation];
                 }
@@ -878,14 +873,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         // If QA enabled, send message selection information
         if(self.qaUser != nil) {
-            [self.qaUser trigger:event withConversation:result withReason:campaignReasons];
+            [self.qaUser trigger:eventName withConversation:result withReason:campaignReasons];
         }
     }
     
     if (result == nil) {
-        DebugLog(@"Not showing message: no candidate messages for %@", event);
+        DebugLog(@"Not showing message: no candidate messages for %@", eventName);
     }
     return result;
+}
+
+-(SwrveConversation*)getConversationForEvent:(NSString *)event {
+ 
+    return [self getConversationForEvent:event withPayload:nil];
 }
 
 -(void)noMessagesWereShown:(NSString*)event withReason:(NSString*)reason
@@ -1256,6 +1256,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 {
     // Get event name
     NSString* eventName = [self getEventName:event];
+    NSDictionary *payload = [event objectForKey:@"payload"];
     
 #if !defined(SWRVE_NO_PUSH)
     if (self.pushEnabled) {
@@ -1268,11 +1269,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     // Find a conversation that should be displayed
     SwrveConversation* conversation = nil;
-    if( [self.showMessageDelegate respondsToSelector:@selector(findConversationForEvent: withParameters:)]) {
-        conversation = [self.showMessageDelegate findConversationForEvent:eventName withParameters:event];
+    
+    if( [self.showMessageDelegate respondsToSelector:@selector(getConversationForEvent: withPayload:)]) {
+        conversation = [self.showMessageDelegate getConversationForEvent:eventName withPayload:payload];
     }
     else {
-        conversation = [self findConversationForEvent:eventName withParameters:event];
+        conversation = [self getConversationForEvent:eventName withPayload:payload];
     }
     
     if (conversation != nil) {
@@ -1287,11 +1289,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else {
         // Find a message that should be displayed
         SwrveMessage* message = nil;
-        if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withParameters:)]) {
-            message = [self.showMessageDelegate findMessageForEvent:eventName withParameters:event];
+        if( [self.showMessageDelegate respondsToSelector:@selector(findMessageForEvent: withPayload:)]) {
+            message = [self.showMessageDelegate findMessageForEvent:eventName withPayload:payload];
         }
         else {
-            message = [self findMessageForEvent:eventName withParameters:event];
+            message = [self findMessageForEvent:eventName withPayload:payload];
         }
         
         // iOS9+ will display with local scale
