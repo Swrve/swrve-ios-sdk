@@ -9,14 +9,25 @@
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
+
 /*! Check if the campaign has any conversation setup for the
- * given trigger.
+ * given trigger and parameters associated
  *
  * \param event Trigger event.
  * \returns TRUE if the campaign contains a conversation for the
  * given trigger.
  */
 -(BOOL)hasConversationForEvent:(NSString*)event;
+
+/*! Check if the campaign has any conversation setup for the
+ * given trigger and parameters associated
+ *
+ * \param event Trigger event.
+ * \param paramters Dictionary of parameters associated (nullable)
+ * \returns TRUE if the campaign contains a conversation for the
+ * given trigger.
+ */
+-(BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload;
 
 /*! Search for a conversation with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -40,9 +51,10 @@
  * \returns Message setup for the given trigger or nil.
  */
 -(SwrveConversation*)getConversationForEvent:(NSString*)event
-                        withAssets:(NSSet*)assets
-                            atTime:(NSDate*)time
-                       withReasons:(NSMutableDictionary*)campaignReasons;
+                                 withPayload:(NSDictionary*)payload
+                                  withAssets:(NSSet*)assets
+                                      atTime:(NSDate*)time
+                                 withReasons:(NSMutableDictionary*)campaignReasons;
 
 /*! Notify that a conversation was shown to the user.
  *
