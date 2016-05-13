@@ -45,8 +45,8 @@
     self.controller   = _controller;
     self.messageID    = [json objectForKey:@"id"];
     self.name         = [json objectForKey:@"name"];
-    if ([json objectForKey:@"name"]) {
-        self.priority     = [json objectForKey:@"priority"];
+    if ([json objectForKey:@"priority"]) {
+        self.priority = [json objectForKey:@"priority"];
     } else {
         self.priority = [NSNumber numberWithInt:9999];
     }

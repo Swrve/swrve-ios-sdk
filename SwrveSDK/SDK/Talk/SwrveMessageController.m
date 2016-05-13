@@ -841,19 +841,34 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             campaignMessages = [[NSMutableDictionary alloc] init];
         }
         
-        NSMutableArray* availableMessages = [[NSMutableArray alloc] init];
+        NSMutableArray* availableConversations = [[NSMutableArray alloc] init];
+        // Select conversations with higher priority
+        NSNumber* minPriority = [NSNumber numberWithInteger:INT_MAX];
+        NSMutableArray* candidateConversations = [[NSMutableArray alloc] init];
         for (SwrveBaseCampaign* baseCampaignIt in self.campaigns)
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
-                SwrveConversation* conversation = [campaignIt getConversationForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
-                if (conversation != nil) {
-                    [availableMessages addObject:conversation];
+                SwrveConversation* nextConversation = [campaignIt getConversationForEvent:event withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                if (nextConversation != nil) {
+                    [availableConversations addObject:nextConversation];
+                    // Check if it is a candidate to be shown
+                    long nextMessagePriorityLong = [nextConversation.priority longValue];
+                    long minPriorityLong = [minPriority longValue];
+                    if (nextMessagePriorityLong <= minPriorityLong) {
+                        if (nextMessagePriorityLong < minPriorityLong) {
+                            // If it is lower than any of the previous ones
+                            // remove those from being candidates
+                            [candidateConversations removeAllObjects];
+                        }
+                        minPriority = nextConversation.priority;
+                        [candidateConversations addObject:nextConversation];
+                    }
                 }
             }
         }
         
-        NSArray* shuffledCandidates = [SwrveMessageController shuffled:availableMessages];
+        NSArray* shuffledCandidates = [SwrveMessageController shuffled:candidateConversations];
         if ([shuffledCandidates count] > 0) {
             result = [shuffledCandidates objectAtIndex:0];
             campaign = result.campaign;
@@ -861,7 +876,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         
         if (self.qaUser != nil && campaign != nil && result != nil) {
             // A message was chosen, set the reason for the others
-            for (SwrveConversation* otherConversation in availableMessages)
+            for (SwrveConversation* otherConversation in availableConversations)
             {
                 if (result != otherConversation)
                 {
