@@ -121,6 +121,10 @@
         
         for (SwrveTriggerCondition *condition in _conditions) {
             canTrigger = [condition hasFulfilledCondition:payload];
+            
+            if(!canTrigger){
+                return NO;
+            }
         }
     }
     
