@@ -4,6 +4,9 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+NSString *const SWRVE_TRACKING_KEY = @"_p";
+NSString *const SWRVE_SILENT_TRACKING_KEY = @"_sp";
+
 enum
 {
     // The API version of this file.
@@ -237,9 +240,14 @@ enum
         [note setValue:[aps valueForKey:@"badge"] forKey:@"badge"];
 
         // Notify push notification id if available
-        id push_identifier = [notification objectForKey:@"_p"];
+        id push_identifier = [notification objectForKey:SWRVE_TRACKING_KEY];
         if (push_identifier && ![push_identifier isKindOfClass:[NSNull class]]) {
             [note setValue:push_identifier forKey:@"id"];
+        } else {
+            push_identifier = [notification objectForKey:SWRVE_SILENT_TRACKING_KEY];
+            if (push_identifier && ![push_identifier isKindOfClass:[NSNull class]]) {
+                [note setValue:push_identifier forKey:@"id"];
+            }
         }
     
         [self makeRequest:endpoint withJSON:note];
