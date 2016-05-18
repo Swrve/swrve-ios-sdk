@@ -1,10 +1,10 @@
 PODS:
-  - SwrveConversationSDK (4.4.0):
+  - SwrveConversationSDK (4.5.0):
     - SwrveSDKCommon
-  - SwrveSDK (4.4.0):
-    - SwrveConversationSDK (~> 4.4.0)
-    - SwrveSDKCommon (~> 4.4.0)
-  - SwrveSDKCommon (4.4.0)
+  - SwrveSDK (4.5.0):
+    - SwrveConversationSDK (~> 4.5.0)
+    - SwrveSDKCommon (~> 4.5.0)
+  - SwrveSDKCommon (4.5.0)
 
 DEPENDENCIES:
   - SwrveConversationSDK (from `../..`)

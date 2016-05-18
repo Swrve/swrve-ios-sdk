@@ -66,8 +66,7 @@
     [self refresh];
 }
 
-- (void) updateWithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor
-          {
+- (void) updateWithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor {
               self.swrveStarColor = starColor;
               self.swrveBackgroundColor = backgroundColor;
               [[self layer] setBackgroundColor:backgroundColor.CGColor];
@@ -117,8 +116,8 @@
 }
 
 #pragma mark - iOS6 change tint support
-- (UIImage *) tintImageWithColor:(UIColor *)color withImage:(UIImage *)image
-{
+- (UIImage *) tintImageWithColor:(UIColor *)color withImage:(UIImage *)image {
+    
     CGRect contextRect;
     contextRect.origin.x = 0.0f;
     contextRect.origin.y = 0.0f;

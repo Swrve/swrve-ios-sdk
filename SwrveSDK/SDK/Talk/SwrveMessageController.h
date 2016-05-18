@@ -44,10 +44,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * trigger.
  *
  * \param eventName Trigger event.
- * \param parameters Event parameters.
+ * \param payload Event payload.
  * \returns Message with the given trigger event.
  */
-- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
 
 
 /*! Called when an event is raised by the Swrve SDK. Look up a conversation
@@ -56,10 +56,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * trigger.
  *
  * \param eventName Trigger event.
- * \param parameters Event parameters.
+ * \param payload Event payload.
  * \returns Conversation with the given trigger event.
  */
-- (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+- (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
 
 /*! Called when a message should be shown. Should show and react to the action
  * in the message. By default the SwrveMessageController will display the

@@ -1,6 +1,7 @@
 #import "Swrve.h"
 #import "SwrveBaseCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveTrigger.h"
 
 const static int  DEFAULT_MAX_IMPRESSIONS        = 99999;
 const static int  DEFAULT_DELAY_FIRST_MSG        = 180;
@@ -164,24 +165,14 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
 }
 
--(void)loadTriggersFrom:(NSDictionary*)json
-{
-    NSArray* jsonTriggers = [json objectForKey:@"triggers"];
-    if (!jsonTriggers) {
+-(void)loadTriggersFrom:(NSDictionary*)json {
+    
+    NSArray *triggerArray = [SwrveTrigger initTriggersFromDictionary:json];
+    if (!triggerArray){
         DebugLog(@"Error loading triggers", nil);
         return;
-    }
-    
-    for (NSString* trigger in jsonTriggers){
-        if (trigger) {
-            [self.triggers addObject:[trigger lowercaseString]];
-        }
-    }
-    
-    DebugLog(@"Campaign Triggers:", nil);
-    for (NSString* trigger in self.triggers){
-#pragma unused(trigger)
-        DebugLog(@"- %@", trigger);
+    }else{
+        [self.triggers addObjectsFromArray:triggerArray];
     }
 }
 
@@ -249,6 +240,29 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
     
     return TRUE;
+}
+
+-(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload {
+    
+    if([self triggers] != nil) {
+        for (SwrveTrigger *trigger in [self triggers]) {
+            
+            if([trigger.eventName isEqualToString:[event lowercaseString]]) {
+                
+                DebugLog(@"checking conditions for %@", event);
+                if([trigger.conditions count] > 0) {
+                    
+                    if([trigger canTriggerWithPayload:payload]) {
+                        return YES;
+                    }
+                }else {
+                    return YES;
+                }
+            }
+        }
+    }
+    
+    return NO;
 }
 
 -(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
