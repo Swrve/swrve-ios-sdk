@@ -1363,6 +1363,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
 }
+
+- (void) silentPushNotificationReceived:(NSDictionary*)userInfo
+{
+    if (self.pushEnabled) {
+        [self.analyticsSDK pushNotificationReceived:userInfo];
+        if (self.qaUser) {
+            [self.qaUser pushNotification:userInfo];
+        } else {
+            DebugLog(@"Queuing silent push notification for later", nil);
+            [self.notifications addObject:userInfo];
+        }
+    }
+}
 #endif //!defined(SWRVE_NO_PUSH)
 
 - (BOOL) isQaUser

@@ -13,6 +13,7 @@
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCommonConnectionDelegate.h"
+#import "SwrveLocationDelegate.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -31,9 +32,15 @@ static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 static BOOL ignoreFirstDidBecomeActive = YES;
 
+NSString *const SWRVE_TRACKING_KEY = @"_p";
+NSString *const SWRVE_SILENT_TRACKING_KEY = @"_sp";
+
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
 typedef void (*didReceiveRemoteNotificationImplSignature)(__strong id,SEL,UIApplication *, NSDictionary*);
+typedef void (^silentPushHandler)(UIBackgroundFetchResult);
+typedef void (*didReceiveRemoteSilentNotificationImplSignature)(__strong id,SEL,UIApplication *, NSDictionary*, silentPushHandler);
+
 
 @interface SwrveSendContext : NSObject
 @property (atomic, weak)   Swrve* swrveReference;
@@ -125,6 +132,7 @@ enum
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
     didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
+    didReceiveRemoteSilentNotificationImplSignature didReceiveRemoteSilentNotificationImpl;
 }
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
@@ -713,21 +721,18 @@ static bool didSwizzle = false;
 #if !defined(SWRVE_NO_PUSH)
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
             Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
-
-            SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
-            SEL didFailSelector = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
-            SEL didReceiveSelector = @selector(application:didReceiveRemoteNotification:);
-
             // Cast to actual method signature
-            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegisterSelector inClass:appDelegateClass withImplementationIn:self];
-            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFailSelector inClass:appDelegateClass withImplementationIn:self];
-            didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:didReceiveSelector inClass:appDelegateClass withImplementationIn:self];
+            didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:) inClass:appDelegateClass withImplementationIn:self];
+            didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:@selector(application:didFailToRegisterForRemoteNotificationsWithError:) inClass:appDelegateClass withImplementationIn:self];
+            didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:@selector(application:didReceiveRemoteNotification:) inClass:appDelegateClass withImplementationIn:self];
+            didReceiveRemoteSilentNotificationImpl = (didReceiveRemoteSilentNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:) inClass:appDelegateClass withImplementationIn:self];
 
             didSwizzle = true;
         } else {
             didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
             didReceiveRemoteNotificationImpl = NULL;
+            didReceiveRemoteSilentNotificationImpl = NULL;
         }
 
         [self registerForNotifications];
@@ -788,17 +793,17 @@ static bool didSwizzle = false;
     if(_swrveSharedInstance == self && didSwizzle) {
         Class appDelegateClass = [[UIApplication sharedApplication].delegate class];
 
-        SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
-        [SwrveSwizzleHelper deswizzleMethod:didRegister inClass:appDelegateClass originalImplementation:(IMP)didRegisterForRemoteNotificationsWithDeviceTokenImpl];
+        [SwrveSwizzleHelper deswizzleMethod:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:) inClass:appDelegateClass originalImplementation:(IMP)didRegisterForRemoteNotificationsWithDeviceTokenImpl];
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
 
-        SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
-        [SwrveSwizzleHelper deswizzleMethod:didFail inClass:appDelegateClass originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
+        [SwrveSwizzleHelper deswizzleMethod:@selector(application:didFailToRegisterForRemoteNotificationsWithError:) inClass:appDelegateClass originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
 
-        SEL didReceive = @selector(application:didReceiveRemoteNotification:);
-        [SwrveSwizzleHelper deswizzleMethod:didReceive inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteNotificationImpl];
+        [SwrveSwizzleHelper deswizzleMethod:@selector(application:didReceiveRemoteNotification:) inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteNotificationImpl];
         didReceiveRemoteNotificationImpl = NULL;
+
+        [SwrveSwizzleHelper deswizzleMethod:@selector(application:didReceiveRemoteNotification:fetchCompletionHandler:) inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteSilentNotificationImpl];
+        didReceiveRemoteSilentNotificationImpl = NULL;
 
         didSwizzle = false;
     }
@@ -849,6 +854,23 @@ static bool didSwizzle = false;
         if( swrveInstance->didReceiveRemoteNotificationImpl != NULL ) {
             id target = [UIApplication sharedApplication].delegate;
             swrveInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo);
+        }
+    }
+}
+
+-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+#pragma unused(application)
+    Swrve* swrveInstance = [Swrve sharedInstance];
+    if( swrveInstance == NULL) {
+        DebugLog(@"Error: Push notification can only be automatically reported if you are using the Swrve instance singleton.", nil);
+    } else {
+        if (swrveInstance.talk != nil) {
+            [swrveInstance.talk silentPushNotificationReceived:userInfo];
+        }
+
+        if( swrveInstance->didReceiveRemoteSilentNotificationImpl != NULL ) {
+            id target = [UIApplication sharedApplication].delegate;
+            swrveInstance->didReceiveRemoteSilentNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo, completionHandler);
         }
     }
 }
@@ -1565,8 +1587,8 @@ static bool didSwizzle = false;
 
 -(void) pushNotificationReceived:(NSDictionary *)userInfo
 {
-    // Try to get the identifier _p
-    id pushIdentifier = [userInfo objectForKey:@"_p"];
+    // Try to get the Swrve push identifier
+    id pushIdentifier = [userInfo objectForKey:SWRVE_TRACKING_KEY];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
         NSString* pushId = @"-1";
         if ([pushIdentifier isKindOfClass:[NSString class]]) {
@@ -1609,7 +1631,25 @@ static bool didSwizzle = false;
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
         }
     } else {
-        DebugLog(@"Got unidentified notification", nil);
+        id pushIdentifier = [userInfo objectForKey:SWRVE_SILENT_TRACKING_KEY];
+        // Try to get the silent push identifier
+        if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+            NSString* pushId = @"-1";
+            if ([pushIdentifier isKindOfClass:[NSString class]]) {
+                pushId = (NSString*)pushIdentifier;
+            }
+            else if ([pushIdentifier isKindOfClass:[NSNumber class]]) {
+                pushId = [((NSNumber*)pushIdentifier) stringValue];
+            }
+            else {
+                DebugLog(@"Unknown Swrve notification ID class for _sp attribute", nil);
+                return;
+            }
+
+            DebugLog(@"Got Swrve silent notification with ID %@", pushId);
+        } else {
+            DebugLog(@"Got unidentified notification", nil);
+        }
     }
 }
 
