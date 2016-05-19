@@ -1630,7 +1630,7 @@ static bool didSwizzle = false;
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
         }
     } else {
-        id pushIdentifier = [userInfo objectForKey:SWRVE_SILENT_TRACKING_KEY];
+        pushIdentifier = [userInfo objectForKey:SWRVE_SILENT_TRACKING_KEY];
         // Try to get the silent push identifier
         if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
             NSString* pushId = @"-1";
