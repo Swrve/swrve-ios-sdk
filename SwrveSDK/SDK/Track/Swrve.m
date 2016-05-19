@@ -13,7 +13,6 @@
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCommonConnectionDelegate.h"
-#import "SwrveLocationDelegate.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
