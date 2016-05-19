@@ -18,6 +18,9 @@
 /*! The release version of this SDK. */
 #define SWRVE_SDK_VERSION "4.5"
 
+#define SWRVE_TRACKING_KEY @"_p"
+#define SWRVE_SILENT_TRACKING_KEY @"_sp"
+
 /*! Swrve stack names. */
 enum SwrveStack {
     SWRVE_STACK_US,

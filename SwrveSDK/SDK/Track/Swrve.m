@@ -31,9 +31,6 @@ static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 static BOOL ignoreFirstDidBecomeActive = YES;
 
-NSString *const SWRVE_TRACKING_KEY = @"_p";
-NSString *const SWRVE_SILENT_TRACKING_KEY = @"_sp";
-
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
 typedef void (*didReceiveRemoteNotificationImplSignature)(__strong id,SEL,UIApplication *, NSDictionary*);

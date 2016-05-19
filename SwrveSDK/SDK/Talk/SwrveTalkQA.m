@@ -4,15 +4,12 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-NSString *const SWRVE_TRACKING_KEY = @"_p";
-NSString *const SWRVE_SILENT_TRACKING_KEY = @"_sp";
-
 enum
 {
     // The API version of this file.
     // This is sent to the server on each call, and should not be modified.
     QA_API_VERSION = 1,
-    
+
     // This is the minimum time between session requests
     REST_SESSION_INTERVAL = 1000,
 
@@ -51,14 +48,14 @@ enum
 {
     self = [super init];
     self.swrve = _swrve;
-    
+
     self.resetDevice = [[qaJson objectForKey:@"reset_device_state"] boolValue];
     self.logging = [[qaJson objectForKey:@"logging"] boolValue];
     if (self.logging) {
         self.loggingUrl = [qaJson objectForKey:@"logging_url"];;
         self.queue = [[NSOperationQueue alloc] init];
     }
-    
+
     return self;
 }
 
@@ -74,7 +71,7 @@ enum
             return TRUE;
         }
     }
-    
+
     return NO;
 }
 
@@ -86,7 +83,7 @@ enum
             return TRUE;
         }
     }
-    
+
     return NO;
 }
 
@@ -95,21 +92,21 @@ enum
     if ([self canMakeSessionRequest]) {
         NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/session", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
         NSMutableDictionary* talkSessionJson = [[NSMutableDictionary alloc] init];
-        
+
         // Add campaigns (downloaded or not) to request
         NSMutableArray* campaignsJson = [[NSMutableArray alloc] init];
-        
+
         for (id campaignId in campaignsDownloaded) {
             NSString* reason = [campaignsDownloaded objectForKey:campaignId];
-            
+
             NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
             [campaignInfo setValue:campaignId forKey:@"id"];
             [campaignInfo setValue:((reason == NULL)? @"" : reason) forKey:@"reason"];
             [campaignInfo setValue:[NSNumber numberWithBool:(reason == NULL || [reason length] == 0)] forKey:@"loaded"];
-            
+
             [campaignsJson addObject:campaignInfo];
         }
-        
+
         [talkSessionJson setValue:campaignsJson forKey:@"campaigns"];
         // Add device info to request
         NSDictionary* deviceJson = self.swrve.deviceInfo;
@@ -122,7 +119,7 @@ enum
 {
     if ([self canMakeTriggerRequest]) {
         NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/trigger", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
-        
+
         NSMutableArray* emptyCampaigns = [[NSMutableArray alloc] init];
         NSMutableDictionary* triggerJson = [[NSMutableDictionary alloc] init];
         [triggerJson setValue:event forKey:@"trigger_name"];
@@ -137,12 +134,12 @@ enum
 {
     if ([self canMakeTriggerRequest]) {
         NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/trigger", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
-        
+
         NSMutableDictionary* triggerJson = [[NSMutableDictionary alloc] init];
         [triggerJson setValue:event forKey:@"trigger_name"];
         [triggerJson setValue:[NSNumber numberWithBool:(messageShown != NULL)] forKey:@"displayed"];
         [triggerJson setValue:(messageShown == NULL)? @"The loaded campaigns returned no message" : @"" forKey:@"reason"];
-        
+
         // Add campaigns that were not displayed
         NSMutableArray* campaignsJson = [[NSMutableArray alloc] init];
         for (id campaignId in campaignReasons) {
@@ -159,7 +156,7 @@ enum
             [campaignInfo setValue:reason forKey:@"reason"];
             [campaignsJson addObject:campaignInfo];
         }
-        
+
         // Add campaign that was shown, if available
         if (messageShown != NULL) {
             NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
@@ -172,7 +169,7 @@ enum
             [campaignInfo setValue:@"" forKey:@"reason"];
             [campaignsJson addObject:campaignInfo];
         }
-        
+
         [triggerJson setValue:campaignsJson forKey:@"campaigns"];
         [self makeRequest:endpoint withJSON:triggerJson];
     }
@@ -182,12 +179,12 @@ enum
 {
     if ([self canMakeTriggerRequest]) {
         NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/trigger", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
-        
+
         NSMutableDictionary* triggerJson = [[NSMutableDictionary alloc] init];
         [triggerJson setValue:event forKey:@"trigger_name"];
         [triggerJson setValue:[NSNumber numberWithBool:(conversationShow != NULL)] forKey:@"displayed"];
         [triggerJson setValue:(conversationShow == NULL)? @"The loaded campaigns returned no conversation" : @"" forKey:@"reason"];
-        
+
         // Add campaigns that were not displayed
         NSMutableArray* campaignsJson = [[NSMutableArray alloc] init];
         for (id campaignId in campaignReasons) {
@@ -198,7 +195,7 @@ enum
             [campaignInfo setValue:reason forKey:@"reason"];
             [campaignsJson addObject:campaignInfo];
         }
-        
+
         // Add campaign that was shown, if available
         if (conversationShow != NULL) {
             NSMutableDictionary* campaignInfo = [[NSMutableDictionary alloc] init];
@@ -211,7 +208,7 @@ enum
             [campaignInfo setValue:@"" forKey:@"reason"];
             [campaignsJson addObject:campaignInfo];
         }
-        
+
         [triggerJson setValue:campaignsJson forKey:@"campaigns"];
         [self makeRequest:endpoint withJSON:triggerJson];
     }
@@ -249,7 +246,7 @@ enum
                 [note setValue:push_identifier forKey:@"id"];
             }
         }
-    
+
         [self makeRequest:endpoint withJSON:note];
     }
 }
@@ -259,7 +256,7 @@ enum
     NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     [dateFormatter setLocale:enUSPOSIXLocale];
     [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZ"];
-    
+
     NSDate *now = [NSDate date];
     return [dateFormatter stringFromDate:now];
 }
@@ -269,10 +266,10 @@ enum
     // Add common parameters
     [json setValue:[NSNumber numberWithInt:QA_API_VERSION] forKey:@"version"];
     [json setValue:[self getTimeFormatted] forKey:@"client_time"];
-    
+
     NSURL* requestURL = [NSURL URLWithString:endpoint];
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
-    
+
     [[self swrve] sendHttpPOSTRequest:requestURL
                              jsonData:jsonData
                     completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
@@ -286,7 +283,7 @@ enum
                             long status = [httpResponse statusCode];
                             NSString* responseBody = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                             DebugLog(@"HTTP Send to QA Log %ld", status);
-                                           
+
                             if (status != 200){
                                 #pragma unused(responseBody)
                                 DebugLog(@"HTTP Error %ld while doing Talk QA", status);
