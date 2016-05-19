@@ -135,7 +135,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 /*! Find an in-app message for the given trigger event that also satisfies the rules
  * set up in the dashboard.
- * 
+ *
  * \param event Trigger event name.
  * \returns In-app message for the given tirgger.
  */
@@ -210,11 +210,6 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
 
-/*! Process the given silent push notification.
- *
- * \param userInfo Silent push notification information.
- */
-- (void)silentPushNotificationReceived:(NSDictionary*)userInfo;
 #endif //!defined(SWRVE_NO_PUSH)
 
 /*! Check if the user is a QA user. For internal use.
@@ -281,4 +276,3 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 -(void)saveCampaignsState;
 
 @end
-
