@@ -12,7 +12,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
-#define SWRVE_CONVERSATION_MAX_WIDTH 320 // 414 for another iPhone
+#define SWRVE_CONVERSATION_MAX_WIDTH 414 // iPhone6+ width
 #define SWRVE_CONVERSATION_MODAL_MARGIN 20
 
 @interface SwrveConversationItemViewController() {
