@@ -1,5 +1,7 @@
 
 target 'SwrveDemoFramework' do
-pod 'SwrveSDK', '~> 4.4.0'
-
+    pod 'SwrveSDKCommon', :path => '../'
+    pod 'SwrveConversationSDK', :path => '../'
+    pod 'SwrveSDK', :path => '../'
+    #pod 'SwrveSDK', '~> 4.5.0'
 end
