@@ -14,7 +14,7 @@
 		52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7D1CF70D5E00151035 /* Assets.xcassets */; };
 		52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7F1CF70D5E00151035 /* LaunchScreen.storyboard */; };
 		52740A8C1CF70D5E00151035 /* SwrveSDKTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A8B1CF70D5E00151035 /* SwrveSDKTestTests.m */; };
-		52740A981CF72BE000151035 /* SwrveTestTriggerConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A971CF72BE000151035 /* SwrveTestTriggerConditions.m */; };
+		52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */; };
 		B9B78621AF27ACDEC19F6ED5 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */; };
 		BC26DFB089078A4F0C6BEA19 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */; };
 /* End PBXBuildFile section */
@@ -44,7 +44,7 @@
 		52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwrveSDKTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52740A8B1CF70D5E00151035 /* SwrveSDKTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveSDKTestTests.m; sourceTree = "<group>"; };
 		52740A8D1CF70D5E00151035 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52740A971CF72BE000151035 /* SwrveTestTriggerConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggerConditions.m; sourceTree = "<group>"; };
+		52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggersAndConditions.m; sourceTree = "<group>"; };
 		7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E8496B3BEA2DED0F559729 /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DA08B873CAF76C1581D05929 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
@@ -130,7 +130,7 @@
 			children = (
 				52740A8D1CF70D5E00151035 /* Info.plist */,
 				52740A8B1CF70D5E00151035 /* SwrveSDKTestTests.m */,
-				52740A971CF72BE000151035 /* SwrveTestTriggerConditions.m */,
+				52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */,
 			);
 			path = SwrveSDKTestTests;
 			sourceTree = "<group>";
@@ -355,7 +355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52740A981CF72BE000151035 /* SwrveTestTriggerConditions.m in Sources */,
+				52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */,
 				52740A8C1CF70D5E00151035 /* SwrveSDKTestTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
