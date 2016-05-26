@@ -1,0 +1,5 @@
+
+target 'SwrveDemoFramework' do
+pod 'SwrveSDK', '~> 4.4.0'
+
+end
