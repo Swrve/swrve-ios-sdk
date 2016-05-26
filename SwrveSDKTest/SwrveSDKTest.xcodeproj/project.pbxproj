@@ -79,11 +79,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		523EE2211CF73C0400496FEA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				52740A8D1CF70D5E00151035 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		52740A651CF70D5E00151035 = {
 			isa = PBXGroup;
 			children = (
-				52740A8A1CF70D5E00151035 /* SwrveSDKTestTests */,
-				52740A701CF70D5E00151035 /* SwrveSDKTest */,
+				52740A8A1CF70D5E00151035 /* SwrveSDKTest */,
+				52740A701CF70D5E00151035 /* Empty App */,
 				52740A6F1CF70D5E00151035 /* Products */,
 				A5FA7BA7C6D20F1D7DBAF9AA /* Pods */,
 				2A06BA70A6452113C8BA4A37 /* Frameworks */,
@@ -99,7 +107,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		52740A701CF70D5E00151035 /* SwrveSDKTest */ = {
+		52740A701CF70D5E00151035 /* Empty App */ = {
 			isa = PBXGroup;
 			children = (
 				52740A741CF70D5E00151035 /* AppDelegate.h */,
@@ -112,6 +120,7 @@
 				52740A821CF70D5E00151035 /* Info.plist */,
 				52740A711CF70D5E00151035 /* Supporting Files */,
 			);
+			name = "Empty App";
 			path = SwrveSDKTest;
 			sourceTree = "<group>";
 		};
@@ -123,12 +132,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		52740A8A1CF70D5E00151035 /* SwrveSDKTestTests */ = {
+		52740A8A1CF70D5E00151035 /* SwrveSDKTest */ = {
 			isa = PBXGroup;
 			children = (
 				52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */,
-				52740A8D1CF70D5E00151035 /* Info.plist */,
+				523EE2211CF73C0400496FEA /* Supporting Files */,
 			);
+			name = SwrveSDKTest;
 			path = SwrveSDKTestTests;
 			sourceTree = "<group>";
 		};
@@ -476,7 +486,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -489,7 +499,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
