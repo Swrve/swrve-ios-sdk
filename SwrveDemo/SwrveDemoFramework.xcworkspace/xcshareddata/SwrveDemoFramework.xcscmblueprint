@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "B529E579E82E3055CAC89B0C47FBDC346B032D64",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "B529E579E82E3055CAC89B0C47FBDC346B032D64" : 0,
+    "D9A80FC0172759C27A6C76AA9506ABF956ED1B2C" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "DA13CA1B-2B9B-4941-ABD6-E8479607F724",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "B529E579E82E3055CAC89B0C47FBDC346B032D64" : "public\/",
+    "D9A80FC0172759C27A6C76AA9506ABF956ED1B2C" : ".."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "SwrveDemoFramework",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "SwrveDemo\/SwrveDemoFramework.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Swrve\/swrve-ios-sdk.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B529E579E82E3055CAC89B0C47FBDC346B032D64"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Swrve\/swrve-sdk.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D9A80FC0172759C27A6C76AA9506ABF956ED1B2C"
+    }
+  ]
+}
