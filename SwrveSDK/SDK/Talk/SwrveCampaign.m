@@ -4,6 +4,7 @@
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#import "SwrveTrigger.h"
 
 @implementation SwrveCampaign
 
@@ -82,27 +83,34 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
  * Quick check to see if this campaign might have messages matching this event trigger
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
--(BOOL)hasMessageForEvent:(NSString*)event
-{
-    return [self triggers] != nil && [[self triggers] containsObject:[event lowercaseString]];
+-(BOOL)hasMessageForEvent:(NSString*)event {
+    
+    return [self hasMessageForEvent:event withPayload:nil];
+}
+
+-(BOOL)hasMessageForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
+    
+    return [self canTriggerWithEvent:event andPayload:payload];
 }
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
-
 {
-    return [self getMessageForEvent:event withAssets:assets atTime:time withReasons:nil];
+    return [self getMessageForEvent:event withPayload:nil withAssets:assets atTime:time withReasons:nil];
 }
 
 
 -(SwrveMessage*)getMessageForEvent:(NSString*)event
+                       withPayload:(NSDictionary *)payload
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
-                       withReasons:(NSMutableDictionary*)campaignReasons
-{
-    if (![self hasMessageForEvent:event]){
+                       withReasons:(NSMutableDictionary*)campaignReasons {
+    
+    if (![self hasMessageForEvent:event withPayload:payload]){
+        
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
+        [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
         return nil;
     }
 
