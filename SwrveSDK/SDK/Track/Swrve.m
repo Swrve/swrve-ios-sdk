@@ -1706,6 +1706,10 @@ static NSString* httpScheme(bool useHttps)
     return self.config.appVersion;
 }
 
+-(NSSet*) pushCategories {
+    return self.config.pushCategories;
+}
+
 - (float) _estimate_dpi
 {
     float scale = (float)[[UIScreen mainScreen] scale];
