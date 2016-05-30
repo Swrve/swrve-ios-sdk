@@ -1707,7 +1707,11 @@ static NSString* httpScheme(bool useHttps)
 }
 
 -(NSSet*) pushCategories {
+#if !defined(SWRVE_NO_PUSH)
     return self.config.pushCategories;
+#else
+    return nil;
+#endif
 }
 
 - (float) _estimate_dpi

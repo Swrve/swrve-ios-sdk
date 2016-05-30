@@ -84,16 +84,17 @@
 		F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = F5359B681C8F29A300D5E2DE /* SwrveCommon.m */; };
 		F5359B6E1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5359B6A1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m */; };
 		F5359B6F1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F5359B6C1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.m */; };
+		F5BEFAA61CF8A29800836CAC /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFA971CF8A29800836CAC /* ISHPermissionRequest+All.m */; };
+		F5BEFAA71CF8A29800836CAC /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFA9A1CF8A29800836CAC /* ISHPermissionRequest.m */; };
+		F5BEFAA81CF8A29800836CAC /* ISHPermissionRequestAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFA9C1CF8A29800836CAC /* ISHPermissionRequestAddressBook.m */; };
+		F5BEFAA91CF8A29800836CAC /* ISHPermissionRequestLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFA9E1CF8A29800836CAC /* ISHPermissionRequestLocation.m */; };
+		F5BEFAAA1CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFAA01CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.m */; };
+		F5BEFAAB1CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFAA21CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.m */; };
+		F5BEFAAC1CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFAA41CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.m */; };
+		F5BEFAAD1CF8A29800836CAC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFAA51CF8A29800836CAC /* LICENSE */; };
+		F5BEFAB01CF8A29F00836CAC /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F5BEFAAF1CF8A29F00836CAC /* SwrvePermissions.m */; };
 		F5FAEC501C99C38A00E2F200 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC191C99C38A00E2F200 /* SwrveConversation.m */; };
 		F5FAEC511C99C38A00E2F200 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC1B1C99C38A00E2F200 /* SwrveConversationCampaign.m */; };
-		F5FAEC521C99C38A00E2F200 /* ISHPermissionRequest+All.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC1F1C99C38A00E2F200 /* ISHPermissionRequest+All.m */; };
-		F5FAEC531C99C38A00E2F200 /* ISHPermissionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC221C99C38A00E2F200 /* ISHPermissionRequest.m */; };
-		F5FAEC541C99C38A00E2F200 /* ISHPermissionRequestAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC241C99C38A00E2F200 /* ISHPermissionRequestAddressBook.m */; };
-		F5FAEC551C99C38A00E2F200 /* ISHPermissionRequestLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC261C99C38A00E2F200 /* ISHPermissionRequestLocation.m */; };
-		F5FAEC561C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC281C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.m */; };
-		F5FAEC571C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC2A1C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.m */; };
-		F5FAEC581C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC2C1C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.m */; };
-		F5FAEC591C99C38A00E2F200 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F5FAEC2D1C99C38A00E2F200 /* LICENSE */; };
 		F5FAEC5A1C99C38A00E2F200 /* SwrveBaseCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC301C99C38A00E2F200 /* SwrveBaseCampaign.m */; };
 		F5FAEC5B1C99C38A00E2F200 /* SwrveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC321C99C38A00E2F200 /* SwrveButton.m */; };
 		F5FAEC5C1C99C38A00E2F200 /* SwrveCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC341C99C38A00E2F200 /* SwrveCampaign.m */; };
@@ -102,7 +103,6 @@
 		F5FAEC5F1C99C38A00E2F200 /* SwrveMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC3C1C99C38A00E2F200 /* SwrveMessageController.m */; };
 		F5FAEC601C99C38A00E2F200 /* SwrveMessageFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC3E1C99C38A00E2F200 /* SwrveMessageFormat.m */; };
 		F5FAEC611C99C38A00E2F200 /* SwrveMessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC401C99C38A00E2F200 /* SwrveMessageViewController.m */; };
-		F5FAEC621C99C38A00E2F200 /* SwrvePermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC421C99C38A00E2F200 /* SwrvePermissions.m */; };
 		F5FAEC631C99C38A00E2F200 /* SwrveTalkQA.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC451C99C38A00E2F200 /* SwrveTalkQA.m */; };
 		F5FAEC641C99C38A00E2F200 /* Swrve.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC481C99C38A00E2F200 /* Swrve.m */; };
 		F5FAEC651C99C38A00E2F200 /* SwrveReceiptProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FAEC4B1C99C38A00E2F200 /* SwrveReceiptProvider.m */; };
@@ -274,27 +274,29 @@
 		F5359B6A1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveCommonConnectionDelegate.m; sourceTree = "<group>"; };
 		F5359B6B1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSignatureProtectedFile.h; sourceTree = "<group>"; };
 		F5359B6C1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSignatureProtectedFile.m; sourceTree = "<group>"; };
+		F5BEFA951CF8A29800836CAC /* ISHPermissionCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionCategory.h; sourceTree = "<group>"; };
+		F5BEFA961CF8A29800836CAC /* ISHPermissionRequest+All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ISHPermissionRequest+All.h"; sourceTree = "<group>"; };
+		F5BEFA971CF8A29800836CAC /* ISHPermissionRequest+All.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ISHPermissionRequest+All.m"; sourceTree = "<group>"; };
+		F5BEFA981CF8A29800836CAC /* ISHPermissionRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ISHPermissionRequest+Private.h"; sourceTree = "<group>"; };
+		F5BEFA991CF8A29800836CAC /* ISHPermissionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequest.h; sourceTree = "<group>"; };
+		F5BEFA9A1CF8A29800836CAC /* ISHPermissionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequest.m; sourceTree = "<group>"; };
+		F5BEFA9B1CF8A29800836CAC /* ISHPermissionRequestAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestAddressBook.h; sourceTree = "<group>"; };
+		F5BEFA9C1CF8A29800836CAC /* ISHPermissionRequestAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestAddressBook.m; sourceTree = "<group>"; };
+		F5BEFA9D1CF8A29800836CAC /* ISHPermissionRequestLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestLocation.h; sourceTree = "<group>"; };
+		F5BEFA9E1CF8A29800836CAC /* ISHPermissionRequestLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestLocation.m; sourceTree = "<group>"; };
+		F5BEFA9F1CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestNotificationsRemote.h; sourceTree = "<group>"; };
+		F5BEFAA01CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestNotificationsRemote.m; sourceTree = "<group>"; };
+		F5BEFAA11CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestPhotoCamera.h; sourceTree = "<group>"; };
+		F5BEFAA21CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestPhotoCamera.m; sourceTree = "<group>"; };
+		F5BEFAA31CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestPhotoLibrary.h; sourceTree = "<group>"; };
+		F5BEFAA41CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestPhotoLibrary.m; sourceTree = "<group>"; };
+		F5BEFAA51CF8A29800836CAC /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		F5BEFAAE1CF8A29F00836CAC /* SwrvePermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePermissions.h; sourceTree = "<group>"; };
+		F5BEFAAF1CF8A29F00836CAC /* SwrvePermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrvePermissions.m; sourceTree = "<group>"; };
 		F5FAEC181C99C38A00E2F200 /* SwrveConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversation.h; sourceTree = "<group>"; };
 		F5FAEC191C99C38A00E2F200 /* SwrveConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversation.m; sourceTree = "<group>"; };
 		F5FAEC1A1C99C38A00E2F200 /* SwrveConversationCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveConversationCampaign.h; sourceTree = "<group>"; };
 		F5FAEC1B1C99C38A00E2F200 /* SwrveConversationCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationCampaign.m; sourceTree = "<group>"; };
-		F5FAEC1D1C99C38A00E2F200 /* ISHPermissionCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionCategory.h; sourceTree = "<group>"; };
-		F5FAEC1E1C99C38A00E2F200 /* ISHPermissionRequest+All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ISHPermissionRequest+All.h"; sourceTree = "<group>"; };
-		F5FAEC1F1C99C38A00E2F200 /* ISHPermissionRequest+All.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ISHPermissionRequest+All.m"; sourceTree = "<group>"; };
-		F5FAEC201C99C38A00E2F200 /* ISHPermissionRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ISHPermissionRequest+Private.h"; sourceTree = "<group>"; };
-		F5FAEC211C99C38A00E2F200 /* ISHPermissionRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequest.h; sourceTree = "<group>"; };
-		F5FAEC221C99C38A00E2F200 /* ISHPermissionRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequest.m; sourceTree = "<group>"; };
-		F5FAEC231C99C38A00E2F200 /* ISHPermissionRequestAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestAddressBook.h; sourceTree = "<group>"; };
-		F5FAEC241C99C38A00E2F200 /* ISHPermissionRequestAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestAddressBook.m; sourceTree = "<group>"; };
-		F5FAEC251C99C38A00E2F200 /* ISHPermissionRequestLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestLocation.h; sourceTree = "<group>"; };
-		F5FAEC261C99C38A00E2F200 /* ISHPermissionRequestLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestLocation.m; sourceTree = "<group>"; };
-		F5FAEC271C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestNotificationsRemote.h; sourceTree = "<group>"; };
-		F5FAEC281C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestNotificationsRemote.m; sourceTree = "<group>"; };
-		F5FAEC291C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestPhotoCamera.h; sourceTree = "<group>"; };
-		F5FAEC2A1C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestPhotoCamera.m; sourceTree = "<group>"; };
-		F5FAEC2B1C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISHPermissionRequestPhotoLibrary.h; sourceTree = "<group>"; };
-		F5FAEC2C1C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISHPermissionRequestPhotoLibrary.m; sourceTree = "<group>"; };
-		F5FAEC2D1C99C38A00E2F200 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F5FAEC2F1C99C38A00E2F200 /* SwrveBaseCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseCampaign.h; sourceTree = "<group>"; };
 		F5FAEC301C99C38A00E2F200 /* SwrveBaseCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveBaseCampaign.m; sourceTree = "<group>"; };
 		F5FAEC311C99C38A00E2F200 /* SwrveButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveButton.h; sourceTree = "<group>"; };
@@ -313,8 +315,6 @@
 		F5FAEC3E1C99C38A00E2F200 /* SwrveMessageFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageFormat.m; sourceTree = "<group>"; };
 		F5FAEC3F1C99C38A00E2F200 /* SwrveMessageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageViewController.h; sourceTree = "<group>"; };
 		F5FAEC401C99C38A00E2F200 /* SwrveMessageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageViewController.m; sourceTree = "<group>"; };
-		F5FAEC411C99C38A00E2F200 /* SwrvePermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePermissions.h; sourceTree = "<group>"; };
-		F5FAEC421C99C38A00E2F200 /* SwrvePermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrvePermissions.m; sourceTree = "<group>"; };
 		F5FAEC431C99C38A00E2F200 /* SwrvePrivateBaseCampaign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateBaseCampaign.h; sourceTree = "<group>"; };
 		F5FAEC441C99C38A00E2F200 /* SwrveTalkQA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTalkQA.h; sourceTree = "<group>"; };
 		F5FAEC451C99C38A00E2F200 /* SwrveTalkQA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTalkQA.m; sourceTree = "<group>"; };
@@ -711,9 +711,9 @@
 		30A4F71116B05C2500642E8E = {
 			isa = PBXGroup;
 			children = (
+				F5359B661C8F29A300D5E2DE /* SwrveSDKCommon */,
 				F5FAEC681C99C39000E2F200 /* SwrveConversationSDK */,
 				F5FAEC161C99C38A00E2F200 /* SwrveSDK */,
-				F5359B661C8F29A300D5E2DE /* SwrveSDKCommon */,
 				492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */,
 				30A4F72616B05C2500642E8E /* Demo */,
 				30A4F71F16B05C2500642E8E /* Frameworks */,
@@ -773,22 +773,48 @@
 		F5359B661C8F29A300D5E2DE /* SwrveSDKCommon */ = {
 			isa = PBXGroup;
 			children = (
+				F5BEFA941CF8A29800836CAC /* Permissions */,
 				F5359B671C8F29A300D5E2DE /* SwrveCommon.h */,
 				F5359B681C8F29A300D5E2DE /* SwrveCommon.m */,
 				F5359B691C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.h */,
 				F5359B6A1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m */,
 				F5359B6B1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.h */,
 				F5359B6C1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.m */,
+				F5BEFAAE1CF8A29F00836CAC /* SwrvePermissions.h */,
+				F5BEFAAF1CF8A29F00836CAC /* SwrvePermissions.m */,
 			);
 			name = SwrveSDKCommon;
 			path = ../SwrveSDKCommon/Common;
 			sourceTree = SOURCE_ROOT;
 		};
+		F5BEFA941CF8A29800836CAC /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				F5BEFA951CF8A29800836CAC /* ISHPermissionCategory.h */,
+				F5BEFA961CF8A29800836CAC /* ISHPermissionRequest+All.h */,
+				F5BEFA971CF8A29800836CAC /* ISHPermissionRequest+All.m */,
+				F5BEFA981CF8A29800836CAC /* ISHPermissionRequest+Private.h */,
+				F5BEFA991CF8A29800836CAC /* ISHPermissionRequest.h */,
+				F5BEFA9A1CF8A29800836CAC /* ISHPermissionRequest.m */,
+				F5BEFA9B1CF8A29800836CAC /* ISHPermissionRequestAddressBook.h */,
+				F5BEFA9C1CF8A29800836CAC /* ISHPermissionRequestAddressBook.m */,
+				F5BEFA9D1CF8A29800836CAC /* ISHPermissionRequestLocation.h */,
+				F5BEFA9E1CF8A29800836CAC /* ISHPermissionRequestLocation.m */,
+				F5BEFA9F1CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.h */,
+				F5BEFAA01CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.m */,
+				F5BEFAA11CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.h */,
+				F5BEFAA21CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.m */,
+				F5BEFAA31CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.h */,
+				F5BEFAA41CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.m */,
+				F5BEFAA51CF8A29800836CAC /* LICENSE */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
 		F5FAEC161C99C38A00E2F200 /* SwrveSDK */ = {
 			isa = PBXGroup;
 			children = (
 				F5FAEC171C99C38A00E2F200 /* Conversation */,
-				F5FAEC1C1C99C38A00E2F200 /* Permissions */,
 				F5FAEC2E1C99C38A00E2F200 /* Talk */,
 				F5FAEC461C99C38A00E2F200 /* Track */,
 			);
@@ -805,30 +831,6 @@
 				F5FAEC1B1C99C38A00E2F200 /* SwrveConversationCampaign.m */,
 			);
 			path = Conversation;
-			sourceTree = "<group>";
-		};
-		F5FAEC1C1C99C38A00E2F200 /* Permissions */ = {
-			isa = PBXGroup;
-			children = (
-				F5FAEC1D1C99C38A00E2F200 /* ISHPermissionCategory.h */,
-				F5FAEC1E1C99C38A00E2F200 /* ISHPermissionRequest+All.h */,
-				F5FAEC1F1C99C38A00E2F200 /* ISHPermissionRequest+All.m */,
-				F5FAEC201C99C38A00E2F200 /* ISHPermissionRequest+Private.h */,
-				F5FAEC211C99C38A00E2F200 /* ISHPermissionRequest.h */,
-				F5FAEC221C99C38A00E2F200 /* ISHPermissionRequest.m */,
-				F5FAEC231C99C38A00E2F200 /* ISHPermissionRequestAddressBook.h */,
-				F5FAEC241C99C38A00E2F200 /* ISHPermissionRequestAddressBook.m */,
-				F5FAEC251C99C38A00E2F200 /* ISHPermissionRequestLocation.h */,
-				F5FAEC261C99C38A00E2F200 /* ISHPermissionRequestLocation.m */,
-				F5FAEC271C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.h */,
-				F5FAEC281C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.m */,
-				F5FAEC291C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.h */,
-				F5FAEC2A1C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.m */,
-				F5FAEC2B1C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.h */,
-				F5FAEC2C1C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.m */,
-				F5FAEC2D1C99C38A00E2F200 /* LICENSE */,
-			);
-			path = Permissions;
 			sourceTree = "<group>";
 		};
 		F5FAEC2E1C99C38A00E2F200 /* Talk */ = {
@@ -856,8 +858,6 @@
 				F5FAEC3E1C99C38A00E2F200 /* SwrveMessageFormat.m */,
 				F5FAEC3F1C99C38A00E2F200 /* SwrveMessageViewController.h */,
 				F5FAEC401C99C38A00E2F200 /* SwrveMessageViewController.m */,
-				F5FAEC411C99C38A00E2F200 /* SwrvePermissions.h */,
-				F5FAEC421C99C38A00E2F200 /* SwrvePermissions.m */,
 				F5FAEC431C99C38A00E2F200 /* SwrvePrivateBaseCampaign.h */,
 				F5FAEC441C99C38A00E2F200 /* SwrveTalkQA.h */,
 				F5FAEC451C99C38A00E2F200 /* SwrveTalkQA.m */,
@@ -1098,6 +1098,7 @@
 				096C9405170D041E002ADF90 /* tabbar.png in Resources */,
 				F5FAECE61C99C3A200E2F200 /* cvsr_grouped_cell_single_ios7.png in Resources */,
 				F5FAECD61C99C3A200E2F200 /* close_button.png in Resources */,
+				F5BEFAAD1CF8A29800836CAC /* LICENSE in Resources */,
 				096C9419170DBAD9002ADF90 /* ItemPromotion.xib in Resources */,
 				099BF4FB170E1FE200345404 /* tutorial_b.png in Resources */,
 				F5FAECDA1C99C3A200E2F200 /* cvsr_grouped_cell_bottom_ios7.png in Resources */,
@@ -1114,7 +1115,6 @@
 				0913B8C717138FB3000DA83C /* Default-568h@2x.png in Resources */,
 				0913B8CB17139047000DA83C /* swrve_icon_large.png in Resources */,
 				0913B8CD17139051000DA83C /* swrve_icon_black.png in Resources */,
-				F5FAEC591C99C38A00E2F200 /* LICENSE in Resources */,
 				F5FAECD71C99C3A200E2F200 /* close_button@2x.png in Resources */,
 				0913B8DC171497E1000DA83C /* arrow.png in Resources */,
 				F5FAECE01C99C3A200E2F200 /* cvsr_grouped_cell_mid_ios7.png in Resources */,
@@ -1150,29 +1150,34 @@
 				095F5E8016D049260046D096 /* InAppPurchaseDemo.m in Sources */,
 				F5FAECAC1C99C39000E2F200 /* SwrveConversationResource.m in Sources */,
 				F5FAECA81C99C39000E2F200 /* SwrveConversationContainerViewController.m in Sources */,
+				F5BEFAA61CF8A29800836CAC /* ISHPermissionRequest+All.m in Sources */,
 				F5FAEC5C1C99C38A00E2F200 /* SwrveCampaign.m in Sources */,
 				095F5E8516D0494E0046D096 /* Demo.m in Sources */,
-				F5FAEC551C99C38A00E2F200 /* ISHPermissionRequestLocation.m in Sources */,
 				F5FAEC601C99C38A00E2F200 /* SwrveMessageFormat.m in Sources */,
+				F5BEFAAC1CF8A29800836CAC /* ISHPermissionRequestPhotoLibrary.m in Sources */,
+				F5BEFAA71CF8A29800836CAC /* ISHPermissionRequest.m in Sources */,
 				095F5E8616D0494E0046D096 /* DemoFramework.m in Sources */,
 				F5FAEC651C99C38A00E2F200 /* SwrveReceiptProvider.m in Sources */,
 				F5FAEC5A1C99C38A00E2F200 /* SwrveBaseCampaign.m in Sources */,
 				F5FAEC9C1C99C39000E2F200 /* UIWebView+YouTubeVimeo.m in Sources */,
+				F5BEFAAA1CF8A29800836CAC /* ISHPermissionRequestNotificationsRemote.m in Sources */,
 				F5FAECA01C99C39000E2F200 /* SwrveContentItem.m in Sources */,
 				F5FAEC9D1C99C39000E2F200 /* SwrveBaseConversation.m in Sources */,
 				F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */,
-				F5FAEC521C99C38A00E2F200 /* ISHPermissionRequest+All.m in Sources */,
 				F5FAECA11C99C39000E2F200 /* SwrveContentSpacer.m in Sources */,
 				F5FAEC501C99C38A00E2F200 /* SwrveConversation.m in Sources */,
 				F5FAEC661C99C38A00E2F200 /* SwrveResourceManager.m in Sources */,
 				095F5E8A16D0495A0046D096 /* Menu.m in Sources */,
 				F5FAECAA1C99C39000E2F200 /* SwrveConversationItemViewController.m in Sources */,
 				095F5E9416D049680046D096 /* OnboardingFlow.m in Sources */,
+				F5BEFAA91CF8A29800836CAC /* ISHPermissionRequestLocation.m in Sources */,
 				F5FAECA71C99C39000E2F200 /* SwrveConversationButton.m in Sources */,
+				F5BEFAB01CF8A29F00836CAC /* SwrvePermissions.m in Sources */,
 				F5FAECAD1C99C39000E2F200 /* SwrveConversationsNavigationController.m in Sources */,
 				52C81DF81CC67D3A001ABD46 /* SwrveTriggerCondition.m in Sources */,
 				F5FAECA21C99C39000E2F200 /* SwrveContentStarRating.m in Sources */,
 				F5359B6E1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m in Sources */,
+				F5BEFAAB1CF8A29800836CAC /* ISHPermissionRequestPhotoCamera.m in Sources */,
 				F5FAEC5B1C99C38A00E2F200 /* SwrveButton.m in Sources */,
 				095F5EF116D04E470046D096 /* TrackApiDemo.m in Sources */,
 				F5FAEC9F1C99C39000E2F200 /* SwrveContentImage.m in Sources */,
@@ -1184,19 +1189,14 @@
 				F5FAEC5D1C99C38A00E2F200 /* SwrveImage.m in Sources */,
 				093B596E16E027220028A4E1 /* TalkApiDemo.m in Sources */,
 				F5FAECAF1C99C39000E2F200 /* SwrveConversationUIButton.m in Sources */,
-				F5FAEC581C99C38A00E2F200 /* ISHPermissionRequestPhotoLibrary.m in Sources */,
 				F5FAECAE1C99C39000E2F200 /* SwrveConversationStyler.m in Sources */,
 				F5FAEC9B1C99C39000E2F200 /* UINavigationController+KeyboardResponderFix.m in Sources */,
 				098C798116E93EF60080B266 /* TutorialDemo.m in Sources */,
-				F5FAEC571C99C38A00E2F200 /* ISHPermissionRequestPhotoCamera.m in Sources */,
 				F5FAEC631C99C38A00E2F200 /* SwrveTalkQA.m in Sources */,
 				096C941A170DBAD9002ADF90 /* ItemPromotion.m in Sources */,
-				F5FAEC531C99C38A00E2F200 /* ISHPermissionRequest.m in Sources */,
 				F5FAEC611C99C38A00E2F200 /* SwrveMessageViewController.m in Sources */,
 				F5FAEC5F1C99C38A00E2F200 /* SwrveMessageController.m in Sources */,
-				F5FAEC561C99C38A00E2F200 /* ISHPermissionRequestNotificationsRemote.m in Sources */,
 				F5359B6F1C8F29A300D5E2DE /* SwrveSignatureProtectedFile.m in Sources */,
-				F5FAEC621C99C38A00E2F200 /* SwrvePermissions.m in Sources */,
 				F5FAECA51C99C39000E2F200 /* SwrveConversationAtom.m in Sources */,
 				F5FAEC671C99C38A00E2F200 /* SwrveSwizzleHelper.m in Sources */,
 				F5FAECA61C99C39000E2F200 /* SwrveConversationAtomFactory.m in Sources */,
@@ -1211,8 +1211,8 @@
 				F5FAEC511C99C38A00E2F200 /* SwrveConversationCampaign.m in Sources */,
 				F5FAEC9E1C99C39000E2F200 /* SwrveContentHTML.m in Sources */,
 				099BF510170E6BE100345404 /* SettingsView.m in Sources */,
-				F5FAEC541C99C38A00E2F200 /* ISHPermissionRequestAddressBook.m in Sources */,
 				0913B8DA17139419000DA83C /* UserSettings.m in Sources */,
+				F5BEFAA81CF8A29800836CAC /* ISHPermissionRequestAddressBook.m in Sources */,
 				0972B20A17FB85B7003CD08D /* TransparencyDemo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
