@@ -72,7 +72,7 @@
         CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
         if (!CGRectEqualToRect(self.view.frame, newFrame)) {
             
-            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)){
+            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
                 
                 newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
                 newFrame.origin.y =  contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2);
@@ -287,12 +287,22 @@
     if(numViewsReady == self.conversationPane.content.count) {
         
         for(SwrveConversationAtom *atom in self.conversationPane.content) {
-            contentHeight = contentHeight + atom.view.frame.size.height;
+            
+            if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+                SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
+                contentHeight = contentHeight + ([multValue numberOfRowsNeeded] * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                
+            }else{
+                contentHeight = contentHeight + atom.view.frame.size.height;
+            }
+            
+
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
             contentHeight = contentHeight + atom.view.frame.size.height;
         }
+        
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"RESULTANT CONTENT HEIGHT: %f", contentHeight);
