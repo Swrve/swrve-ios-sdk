@@ -53,6 +53,8 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
+    
+    [[super view] setHidden:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -82,12 +84,15 @@
             // Add border
             self.view.layer.borderColor = [UIColor blackColor].CGColor;
             self.view.layer.borderWidth = 1.0f;
+            self.view.layer.cornerRadius = 20.0f;
+            self.view.layer.masksToBounds = YES;
             // Remove top margin of close button and content.
             self.contentTableViewTop.constant = 0;
             [self.contentTableView setNeedsUpdateConstraints];
             self.cancelButtonViewTop.constant = 0;
             [self.cancelButtonView setNeedsUpdateConstraints];
             [self.view setNeedsLayout];
+            
         }
     } else {
         CGRect newFrame = CGRectMake(0, 0, wholeSize.width, wholeSize.height);
@@ -307,6 +312,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"RESULTANT CONTENT HEIGHT: %f", contentHeight);
             [self.contentTableView reloadData];
+             self.view.hidden = NO;
         });
     }
 }
