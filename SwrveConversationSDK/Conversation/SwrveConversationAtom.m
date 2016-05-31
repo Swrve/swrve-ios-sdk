@@ -27,8 +27,7 @@
     // By default, does nothing. Specialize in subclass
 }
 
--(void) viewDidDisappear
-{
+-(void) viewDidDisappear {
     // By default, does nothing. Specialize in subclass
 }
 
@@ -82,8 +81,7 @@
 }
 
 // iOS8+
--(void)viewWillTransitionToSize:(CGSize)size
-{
+-(void)viewWillTransitionToSize:(CGSize)size {
 #pragma unused(size)
     // By default, does nothing. Specialize in subclass
 }

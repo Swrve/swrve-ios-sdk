@@ -44,10 +44,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * trigger.
  *
  * \param eventName Trigger event.
- * \param parameters Event parameters.
+ * \param payload Event payload.
  * \returns Message with the given trigger event.
  */
-- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+- (SwrveMessage*)findMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
 
 
 /*! Called when an event is raised by the Swrve SDK. Look up a conversation
@@ -56,10 +56,10 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * trigger.
  *
  * \param eventName Trigger event.
- * \param parameters Event parameters.
+ * \param payload Event payload.
  * \returns Conversation with the given trigger event.
  */
-- (SwrveConversation*)findConversationForEvent:(NSString*) eventName withParameters:(NSDictionary *)parameters;
+- (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
 
 /*! Called when a message should be shown. Should show and react to the action
  * in the message. By default the SwrveMessageController will display the
@@ -190,6 +190,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 -(BOOL)eventRaised:(NSDictionary*)event;
 
+#if !defined(SWRVE_NO_PUSH)
+
 /*! Call this method when you get a push notification device token from Apple.
  *
  * \param deviceToken Apple device token for your app.
@@ -208,6 +210,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param applicationState Application state at the time when the push notificatin was received.
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
+#endif //!defined(SWRVE_NO_PUSH)
 
 /*! Check if the user is a QA user. For internal use.
  *

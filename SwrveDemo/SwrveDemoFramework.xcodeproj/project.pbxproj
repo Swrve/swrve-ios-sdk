@@ -77,6 +77,8 @@
 		3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A52723C1BC3C11500089561 /* Contacts.framework */; };
 		3AB3B0801BE3801B006C6AF9 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B592D221B2848EA00908895 /* CoreLocation.framework */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
+		52C81DF71CC67D3A001ABD46 /* SwrveTrigger.m in Sources */ = {isa = PBXBuildFile; fileRef = 52C81DF31CC67D3A001ABD46 /* SwrveTrigger.m */; };
+		52C81DF81CC67D3A001ABD46 /* SwrveTriggerCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 52C81DF41CC67D3A001ABD46 /* SwrveTriggerCondition.m */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
 		938F98431A9260F70089168A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98421A9260F70089168A /* MessageUI.framework */; };
 		F5359B6D1C8F29A300D5E2DE /* SwrveCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = F5359B681C8F29A300D5E2DE /* SwrveCommon.m */; };
@@ -260,6 +262,10 @@
 		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		52C81DF31CC67D3A001ABD46 /* SwrveTrigger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTrigger.m; sourceTree = "<group>"; };
+		52C81DF41CC67D3A001ABD46 /* SwrveTriggerCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTriggerCondition.m; sourceTree = "<group>"; };
+		52C81DF51CC67D3A001ABD46 /* SwrveTriggerCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTriggerCondition.h; sourceTree = "<group>"; };
+		52C81DF61CC67D3A001ABD46 /* SwrveTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTrigger.h; sourceTree = "<group>"; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		938F98421A9260F70089168A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		F5359B671C8F29A300D5E2DE /* SwrveCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommon.h; sourceTree = "<group>"; };
@@ -828,6 +834,10 @@
 		F5FAEC2E1C99C38A00E2F200 /* Talk */ = {
 			isa = PBXGroup;
 			children = (
+				52C81DF61CC67D3A001ABD46 /* SwrveTrigger.h */,
+				52C81DF31CC67D3A001ABD46 /* SwrveTrigger.m */,
+				52C81DF51CC67D3A001ABD46 /* SwrveTriggerCondition.h */,
+				52C81DF41CC67D3A001ABD46 /* SwrveTriggerCondition.m */,
 				F5FAEC2F1C99C38A00E2F200 /* SwrveBaseCampaign.h */,
 				F5FAEC301C99C38A00E2F200 /* SwrveBaseCampaign.m */,
 				F5FAEC311C99C38A00E2F200 /* SwrveButton.h */,
@@ -1160,6 +1170,7 @@
 				095F5E9416D049680046D096 /* OnboardingFlow.m in Sources */,
 				F5FAECA71C99C39000E2F200 /* SwrveConversationButton.m in Sources */,
 				F5FAECAD1C99C39000E2F200 /* SwrveConversationsNavigationController.m in Sources */,
+				52C81DF81CC67D3A001ABD46 /* SwrveTriggerCondition.m in Sources */,
 				F5FAECA21C99C39000E2F200 /* SwrveContentStarRating.m in Sources */,
 				F5359B6E1C8F29A300D5E2DE /* SwrveCommonConnectionDelegate.m in Sources */,
 				F5FAEC5B1C99C38A00E2F200 /* SwrveButton.m in Sources */,
@@ -1191,6 +1202,7 @@
 				F5FAECA61C99C39000E2F200 /* SwrveConversationAtomFactory.m in Sources */,
 				F5FAEC5E1C99C38A00E2F200 /* SwrveMessage.m in Sources */,
 				099BF500170E542800345404 /* SwrveAuthoritativeDemo.m in Sources */,
+				52C81DF71CC67D3A001ABD46 /* SwrveTrigger.m in Sources */,
 				F5FAECA31C99C39000E2F200 /* SwrveContentStarRatingView.m in Sources */,
 				F5FAECA91C99C39000E2F200 /* SwrveConversationEvents.m in Sources */,
 				099BF505170E67DA00345404 /* ABTestViewer.m in Sources */,
@@ -1313,6 +1325,7 @@
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
 				);
+				OTHER_CFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.demoframework;
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "";

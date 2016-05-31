@@ -3,8 +3,10 @@
 #import "ISHPermissionRequestNotificationsRemote.h"
 #import "SwrveInternalAccess.h"
 
+#if !defined(SWRVE_NO_LOCATION)
 static ISHPermissionRequest *_locationAlwaysRequest = nil;
 static ISHPermissionRequest *_locationWhenInUseRequest = nil;
+#endif //!defined(SWRVE_NO_LOCATION)
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
 static ISHPermissionRequest *_photoLibraryRequest = nil;
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
@@ -12,19 +14,25 @@ static ISHPermissionRequest *_cameraRequest = nil;
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 static ISHPermissionRequest *_contactsRequest = nil;
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#if !defined(SWRVE_NO_PUSH)
 static ISHPermissionRequest *_remoteNotifications = nil;
+#endif //!defined(SWRVE_NO_PUSH)
 
 static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 @implementation SwrvePermissions
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)sdk {
+#if !defined(SWRVE_NO_PUSH)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
         [SwrvePermissions requestPushNotifications:sdk withCallback:YES];
         return YES;
     }
+#else
+#pragma unused(sdk)
+#endif //!defined(SWRVE_NO_PUSH)
 #if !defined(SWRVE_NO_LOCATION)
-    else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.location.always"] == NSOrderedSame) {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.location.always"] == NSOrderedSame) {
         [SwrvePermissions requestLocationAlways:sdk];
         return YES;
     }
@@ -34,22 +42,21 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 #endif //!defined(SWRVE_NO_LOCATION)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
-    else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.contacts"] == NSOrderedSame) {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.contacts"] == NSOrderedSame) {
         [SwrvePermissions requestContacts:sdk];
         return YES;
     }
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
-    else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.photos"] == NSOrderedSame) {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.photos"] == NSOrderedSame) {
         [SwrvePermissions requestPhotoLibrary:sdk];
         return YES;
     }
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
-    else if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         [SwrvePermissions requestCamera:sdk];
         return YES;
     }
-    
     return NO;
 }
 
@@ -66,7 +73,11 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts]) forKey:swrve_permission_contacts];
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#if !defined(SWRVE_NO_PUSH)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPushNotificationsWithSDK:sdk]) forKey:swrve_permission_push_notifications];
+#else
+#pragma unused(sdk)
+#endif //!defined(SWRVE_NO_PUSH)
     return permissionsStatus;
 }
 
@@ -234,6 +245,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
+#if !defined(SWRVE_NO_PUSH)
 +(ISHPermissionRequest*)pushNotificationsRequest {
     if (!_remoteNotifications) {
         _remoteNotifications = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryNotificationRemote];
@@ -244,7 +256,25 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 +(ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk {
     NSString* deviceToken = sdk.deviceToken;
     if (deviceToken != nil && deviceToken.length > 0) {
-        return ISHPermissionStateAuthorized;
+        // We have a token, at some point the user said yes. We still have to check
+        // that the user hasn't disabled push notifications in the settings.
+        bool pushSettingsEnabled = YES;
+        UIApplication* app = [UIApplication sharedApplication];
+#if defined(__IPHONE_8_0)
+        if ([app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+            pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
+        } else
+#endif //defined(__IPHONE_8_0)
+        if ([app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
+            UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
+            pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
+        }
+        
+        if (pushSettingsEnabled) {
+            return ISHPermissionStateAuthorized;
+        } else {
+            return ISHPermissionStateDenied;
+        }
     }
     return ISHPermissionStateUnknown;
 }
@@ -275,6 +305,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     // Remember we asked for push permissions
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:asked_for_push_flag_key];
 }
+#endif //!defined(SWRVE_NO_PUSH)
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(Swrve*)sdk {
     NSString *eventNameWithState = [eventName stringByAppendingString:((state == ISHPermissionStateAuthorized)? @".on" : @".off")];

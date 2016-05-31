@@ -12,15 +12,22 @@
 }
 
 - (BOOL)shouldAutorotate {
-    return YES;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        // This does not work if conversation is of type UIModalPresentationFormSheet
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    /*[UIView animateWithDuration:1 animations:^{
-     self.view.backgroundColor = [UIColor clearColor];
-     } completion:NULL];*/
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return [self.topViewController preferredInterfaceOrientationForPresentation];
+    } else {
+        return UIInterfaceOrientationPortrait;
+    }
 }
 
 @end
