@@ -102,6 +102,7 @@
             self.view.frame = newFrame;
             // Hide border
             self.view.layer.borderWidth = 0;
+            self.view.layer.cornerRadius = 0.0f;
             // Add top margin of close button and content
             // to take into account the status bar.
             self.contentTableViewTop.constant = self.topLayoutGuide.length;
