@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "Swrve.h"
+#import "SwrveCommon.h"
 #import "ISHPermissionRequest.h"
 
 static NSString* swrve_permission_status_unknown        = @"unknown";
@@ -20,32 +20,32 @@ static NSString* swrve_permission_requestable           = @".requestable";
 /*! Used internally to offer permission request support */
 @interface SwrvePermissions : NSObject
 
-+ (BOOL)processPermissionRequest:(NSString*)action withSDK:(Swrve*)sdk;
-+ (NSDictionary*) currentStatusWithSDK:(Swrve*)sdk;
-+ (void)compareStatusAndQueueEventsWithSDK:(Swrve*)sdk;
-+ (NSArray*) currentPermissionFiltersWithSDK:(Swrve*)sdk;
++ (BOOL)processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk;
++ (NSDictionary*) currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk;
++ (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk;
++ (NSArray*) currentPermissionFiltersWithSDK:(id<SwrveCommonDelegate>)sdk;
 
 #if !defined(SWRVE_NO_LOCATION)
 + (ISHPermissionState)checkLocationAlways;
-+ (void)requestLocationAlways:(Swrve*)sdk;
++ (void)requestLocationAlways:(id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_LOCATION)
 
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
 + (ISHPermissionState)checkPhotoLibrary;
-+ (void)requestPhotoLibrary:(Swrve*)sdk;
++ (void)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
 
 + (ISHPermissionState)checkCamera;
-+ (void)requestCamera:(Swrve*)sdk;
++ (void)requestCamera:(id<SwrveCommonDelegate>)sdk;
 
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 + (ISHPermissionState)checkContacts;
-+ (void)requestContacts:(Swrve*)sdk;
++ (void)requestContacts:(id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
 #if !defined(SWRVE_NO_PUSH)
-+ (ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk;
-+ (void)requestPushNotifications:(Swrve*)sdk withCallback:(BOOL)callback;
++ (ISHPermissionState)checkPushNotificationsWithSDK:(id<SwrveCommonDelegate>)sdk;
++ (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback;
 #endif //!defined(SWRVE_NO_PUSH)
 
 @end

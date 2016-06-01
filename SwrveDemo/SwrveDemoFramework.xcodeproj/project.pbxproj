@@ -77,9 +77,9 @@
 		3A52723D1BC3C11500089561 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A52723C1BC3C11500089561 /* Contacts.framework */; };
 		3AB3B0801BE3801B006C6AF9 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B592D221B2848EA00908895 /* CoreLocation.framework */; };
 		492A808D18E082B3006D5D97 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 492A808C18E082B3006D5D97 /* StoreKit.framework */; };
+		637CB345DD5F22363F6D5F85 /* libPods-SwrveDemoFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A58B03C8EF4B7BA37A209AD3 /* libPods-SwrveDemoFramework.a */; };
 		938F98411A9260AB0089168A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98401A9260AB0089168A /* SystemConfiguration.framework */; };
 		938F98431A9260F70089168A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938F98421A9260F70089168A /* MessageUI.framework */; };
-		DC49AF2B452D607674A5A9F3 /* libPods-SwrveDemoFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A910E9DD6D33C0623C2B30BD /* libPods-SwrveDemoFramework.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -176,11 +176,11 @@
 		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		6E8173883634362C330310ED /* Pods-SwrveDemoFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveDemoFramework.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework.release.xcconfig"; sourceTree = "<group>"; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		938F98421A9260F70089168A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		A910E9DD6D33C0623C2B30BD /* libPods-SwrveDemoFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveDemoFramework.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF6FC74A752EC62C9A581C3F /* Pods-SwrveDemoFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveDemoFramework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework.debug.xcconfig"; sourceTree = "<group>"; };
+		A58B03C8EF4B7BA37A209AD3 /* libPods-SwrveDemoFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveDemoFramework.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD93FCB0F20291287017244D /* Pods-SwrveDemoFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveDemoFramework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework.debug.xcconfig"; sourceTree = "<group>"; };
+		B42E7FCF1EDDB62CBFA5D5B5 /* Pods-SwrveDemoFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveDemoFramework.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,7 +203,7 @@
 				30A4F72116B05C2500642E8E /* UIKit.framework in Frameworks */,
 				30A4F72316B05C2500642E8E /* Foundation.framework in Frameworks */,
 				30A4F72516B05C2500642E8E /* CoreGraphics.framework in Frameworks */,
-				DC49AF2B452D607674A5A9F3 /* libPods-SwrveDemoFramework.a in Frameworks */,
+				637CB345DD5F22363F6D5F85 /* libPods-SwrveDemoFramework.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,7 +491,7 @@
 				09EFDF50170BE82200AF3EE5 /* Default.png */,
 				0913B8CC17139051000DA83C /* swrve_icon_black.png */,
 				0913B8C517138ED4000DA83C /* swrve_icon.png */,
-				9F41138E20CAD8C28D62493D /* Pods */,
+				8EC1361F5A8E5AF027EB2F99 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -523,7 +523,7 @@
 				30A4F72016B05C2500642E8E /* UIKit.framework */,
 				30A4F72216B05C2500642E8E /* Foundation.framework */,
 				30A4F72416B05C2500642E8E /* CoreGraphics.framework */,
-				A910E9DD6D33C0623C2B30BD /* libPods-SwrveDemoFramework.a */,
+				A58B03C8EF4B7BA37A209AD3 /* libPods-SwrveDemoFramework.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -540,11 +540,11 @@
 			path = GemPack;
 			sourceTree = "<group>";
 		};
-		9F41138E20CAD8C28D62493D /* Pods */ = {
+		8EC1361F5A8E5AF027EB2F99 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				FF6FC74A752EC62C9A581C3F /* Pods-SwrveDemoFramework.debug.xcconfig */,
-				6E8173883634362C330310ED /* Pods-SwrveDemoFramework.release.xcconfig */,
+				AD93FCB0F20291287017244D /* Pods-SwrveDemoFramework.debug.xcconfig */,
+				B42E7FCF1EDDB62CBFA5D5B5 /* Pods-SwrveDemoFramework.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -556,12 +556,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 30A4F74316B05C2500642E8E /* Build configuration list for PBXNativeTarget "SwrveDemoFramework" */;
 			buildPhases = (
-				FACA6B030FA516F1AB7DF718 /* 📦 Check Pods Manifest.lock */,
+				B7E4066059CF509E4938FD4F /* 📦 Check Pods Manifest.lock */,
 				30A4F71816B05C2500642E8E /* Sources */,
 				30A4F71916B05C2500642E8E /* Frameworks */,
 				30A4F71A16B05C2500642E8E /* Resources */,
-				49BBECB41DC6848BE903DFA2 /* 📦 Embed Pods Frameworks */,
-				BEA84CEC81053877E42A92E1 /* 📦 Copy Pods Resources */,
+				D42204226F884C27B273546E /* 📦 Embed Pods Frameworks */,
+				6ED4BF262FA189418B1ED6AE /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -668,22 +668,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		49BBECB41DC6848BE903DFA2 /* 📦 Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "📦 Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BEA84CEC81053877E42A92E1 /* 📦 Copy Pods Resources */ = {
+		6ED4BF262FA189418B1ED6AE /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -698,7 +683,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FACA6B030FA516F1AB7DF718 /* 📦 Check Pods Manifest.lock */ = {
+		B7E4066059CF509E4938FD4F /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -711,6 +696,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		D42204226F884C27B273546E /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -802,7 +802,7 @@
 		};
 		30A4F74416B05C2500642E8E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF6FC74A752EC62C9A581C3F /* Pods-SwrveDemoFramework.debug.xcconfig */;
+			baseConfigurationReference = AD93FCB0F20291287017244D /* Pods-SwrveDemoFramework.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -861,7 +861,7 @@
 		};
 		30A4F74516B05C2500642E8E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6E8173883634362C330310ED /* Pods-SwrveDemoFramework.release.xcconfig */;
+			baseConfigurationReference = B42E7FCF1EDDB62CBFA5D5B5 /* Pods-SwrveDemoFramework.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
