@@ -16,7 +16,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.4"
+#define SWRVE_SDK_VERSION "4.5"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -135,6 +135,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor* defaultBackgroundColor;
+
+/*! Color of the conversation lightbox. By default it is back 70% transparent. */
+@property (nonatomic, retain) UIColor* conversationLightBoxColor;
 
 /*! Session timeout time in seconds. User activity after this time will be considered a new session. */
 @property (nonatomic) double newSessionInterval;
@@ -306,6 +309,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;
+@property (nonatomic, readonly) UIColor* conversationLightBoxColor;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;

@@ -1,8 +1,3 @@
-#if !__has_feature(objc_arc)
-#error ConverserSDK must be built with ARC.
-// You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
-#endif
-
 #import "SwrveBaseConversation.h"
 #import "SwrveMessageEventHandler.h"
 #import "SwrveConversationAtom.h"
@@ -16,6 +11,9 @@
 #import "SwrveCommon.h"
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
+
+#define SWRVE_CONVERSATION_MAX_WIDTH 414 // iPhone6+ width
+#define SWRVE_CONVERSATION_MODAL_MARGIN 20
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -40,6 +38,7 @@
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
 @synthesize wasShownToUserNotified;
+@synthesize contentHeight;
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -54,12 +53,64 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
+    
+    [[super view] setHidden:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
+    }
+}
+
+
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    CGSize wholeSize = self.view.superview.bounds.size;
+    if (wholeSize.width > SWRVE_CONVERSATION_MAX_WIDTH) {
+        float centerx = (wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
+        CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
+        if (!CGRectEqualToRect(self.view.frame, newFrame)) {
+            
+            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
+                
+                newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
+                newFrame.origin.y =  contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2);
+            }
+            
+            self.view.frame = newFrame;
+            // Add border
+            self.view.layer.borderColor = [UIColor blackColor].CGColor;
+            self.view.layer.borderWidth = 1.0f;
+            self.view.layer.cornerRadius = 20.0f;
+            self.view.layer.masksToBounds = YES;
+            // Remove top margin of close button and content.
+            self.contentTableViewTop.constant = 0;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = 0;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+            [self.view setNeedsLayout];
+            
+        }
+    } else {
+        CGRect newFrame = CGRectMake(0, 0, wholeSize.width, wholeSize.height);
+        if (!CGRectEqualToRect(self.view.frame, newFrame)
+            || self.contentTableViewTop.constant != self.topLayoutGuide.length
+            || self.cancelButtonViewTop.constant != self.topLayoutGuide.length) {
+            self.view.frame = newFrame;
+            // Hide border
+            self.view.layer.borderWidth = 0;
+            self.view.layer.cornerRadius = 0.0f;
+            // Add top margin of close button and content
+            // to take into account the status bar.
+            self.contentTableViewTop.constant = self.topLayoutGuide.length;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+            [self.view setNeedsLayout];
+        }
     }
 }
 
@@ -240,8 +291,29 @@
 #pragma unused (notification)
     numViewsReady++;
     if(numViewsReady == self.conversationPane.content.count) {
+        
+        for(SwrveConversationAtom *atom in self.conversationPane.content) {
+            
+            if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+                SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
+                contentHeight = contentHeight + ([multValue numberOfRowsNeeded] * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                
+            }else{
+                contentHeight = contentHeight + atom.view.frame.size.height;
+            }
+            
+
+        }
+        
+        for (SwrveConversationAtom *atom in self.conversationPane.controls) {
+            contentHeight = contentHeight + atom.view.frame.size.height;
+        }
+        
+        
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"RESULTANT CONTENT HEIGHT: %f", contentHeight);
             [self.contentTableView reloadData];
+             self.view.hidden = NO;
         });
     }
 }
@@ -299,11 +371,7 @@
 #else
 -(NSUInteger) supportedInterfaceOrientations {
 #endif //defined(__IPHONE_9_0)
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return UIInterfaceOrientationMaskAll;
-    } else {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
+    return UIInterfaceOrientationMaskAll;
 }
 
 // Orientation Detection
@@ -454,7 +522,7 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        [atom viewWillTransitionToSize:size];
+        [atom viewWillTransitionToSize:self.view.frame.size];
     }
 }
 #endif //defined(__IPHONE_8_0)
