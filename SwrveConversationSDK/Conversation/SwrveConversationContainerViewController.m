@@ -4,6 +4,7 @@
 
 @property (nonatomic, retain) UIViewController* childController;
 @property (nonatomic) BOOL displayedChildrenViewController;
+@property (nonatomic, retain) NSDictionary *lightBoxStyle;
 @property (nonatomic, retain) UIColor* lightBoxColor;
 
 @end
@@ -12,11 +13,13 @@
 
 @synthesize childController;
 @synthesize displayedChildrenViewController;
+@synthesize lightBoxStyle = _lightBoxStyle;
+@synthesize lightBoxColor = _lightBoxColor;
 
--(id) initWithChildViewController:(UIViewController*)child andLightboxColor:(UIColor*)lightBoxColor {
+-(id) initWithChildViewController:(UIViewController*)child andStyle:(NSDictionary*)style {
     if (self = [super init]) {
         self.childController = child;
-        self.lightBoxColor = lightBoxColor;
+        self.lightBoxStyle = style;
     }
     return self;
 }

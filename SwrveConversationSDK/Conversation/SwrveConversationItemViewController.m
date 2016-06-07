@@ -38,6 +38,8 @@
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
 @synthesize wasShownToUserNotified;
+@synthesize cancelButtonViewTop;
+@synthesize contentTableViewTop;
 @synthesize contentHeight;
 
 - (void)viewDidAppear:(BOOL)animated
@@ -195,7 +197,7 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
-                DebugLog(@"Unkown permission request %@", param, nil);
+                DebugLog(@"Unknown permission request %@", param, nil);
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
             }
@@ -301,8 +303,6 @@
             }else{
                 contentHeight = contentHeight + atom.view.frame.size.height;
             }
-            
-
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
@@ -311,7 +311,6 @@
         
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"RESULTANT CONTENT HEIGHT: %f", contentHeight);
             [self.contentTableView reloadData];
              self.view.hidden = NO;
         });

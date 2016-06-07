@@ -4,6 +4,7 @@
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
+#define kSwrveKeyLb @"lb"
 #define kSwrveKeyType @"type"
 #define kSwrveKeyValue @"value"
 #define kSwrveKeyBorderRadius @"border_radius"
