@@ -2,6 +2,6 @@
 
 @interface SwrveConversationContainerViewController : UIViewController
 
--(id) initWithChildViewController:(UIViewController*)childController andStyle:(NSDictionary*)style;
+-(id) initWithChildViewController:(UIViewController*)childController;
 
 @end

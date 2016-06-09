@@ -16,10 +16,9 @@
 @synthesize lightBoxStyle = _lightBoxStyle;
 @synthesize lightBoxColor = _lightBoxColor;
 
--(id) initWithChildViewController:(UIViewController*)child andStyle:(NSDictionary*)style {
+-(id) initWithChildViewController:(UIViewController*)child {
     if (self = [super init]) {
         self.childController = child;
-        self.lightBoxStyle = style;
     }
     return self;
 }
@@ -33,9 +32,6 @@
         childController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
         [self presentViewController:childController animated:YES completion:nil];
     }
-    [UIView animateWithDuration:0.5 animations:^{
-        self.view.backgroundColor = self.lightBoxColor;
-    } completion:NULL];
 }
 
 -(void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion

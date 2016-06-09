@@ -88,6 +88,8 @@
             self.view.layer.borderWidth = 1.0f;
             self.view.layer.cornerRadius = 20.0f;
             self.view.layer.masksToBounds = YES;
+            self.view.layer.backgroundColor = [UIColor redColor].CGColor;
+            
             // Remove top margin of close button and content.
             self.contentTableViewTop.constant = 0;
             [self.contentTableView setNeedsUpdateConstraints];
