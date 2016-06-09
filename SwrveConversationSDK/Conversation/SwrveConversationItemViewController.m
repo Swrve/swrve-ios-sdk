@@ -12,8 +12,8 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
-#define SWRVE_CONVERSATION_MAX_WIDTH 414 // iPhone6+ width
-#define SWRVE_CONVERSATION_MODAL_MARGIN 20
+#define SWRVE_CONVERSATION_MAX_WIDTH 414.0f // iPhone6+ width
+#define SWRVE_CONVERSATION_MODAL_MARGIN 20.0f
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -72,7 +72,7 @@
     [super viewWillLayoutSubviews];
     CGSize wholeSize = self.view.superview.bounds.size;
     if (wholeSize.width > SWRVE_CONVERSATION_MAX_WIDTH) {
-        float centerx = (wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
+        float centerx = ((float)wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
         CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
         if (!CGRectEqualToRect(self.view.frame, newFrame)) {
             
@@ -81,14 +81,11 @@
                 newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
                 newFrame.origin.y =  contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2);
             }
-            
             self.view.frame = newFrame;
-            // Add border
-            self.view.layer.borderColor = [UIColor blackColor].CGColor;
-            self.view.layer.borderWidth = 1.0f;
-            self.view.layer.cornerRadius = 20.0f;
+            
+            // Apply styles from conversationPane
+            [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
             self.view.layer.masksToBounds = YES;
-            self.view.layer.backgroundColor = [UIColor redColor].CGColor;
             
             // Remove top margin of close button and content.
             self.contentTableViewTop.constant = 0;
@@ -300,15 +297,15 @@
             
             if([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-                contentHeight = contentHeight + ([multValue numberOfRowsNeeded] * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                contentHeight = (float)contentHeight + (float)([multValue numberOfRowsNeeded] * [multValue heightForRow:0 inTableView:self.contentTableView]);
                 
             }else{
-                contentHeight = contentHeight + atom.view.frame.size.height;
+                contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
             }
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
-            contentHeight = contentHeight + atom.view.frame.size.height;
+            contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
         }
         
         

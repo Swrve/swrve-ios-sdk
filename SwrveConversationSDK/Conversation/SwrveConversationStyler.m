@@ -31,6 +31,25 @@
     uiView.backgroundColor = bgUIColor;
 }
 
++ (void)styleModalView:(UIView *)uiView withStyle:(NSDictionary*)style {
+    
+    if([style.allKeys containsObject:kSwrveKeyBorderRadius]){
+        float border = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
+        uiView.layer.cornerRadius = border;
+        
+        // Add border
+        uiView.layer.borderColor = [UIColor blackColor].CGColor;
+        uiView.layer.borderWidth = 1.0f;
+    }
+    
+    if([style.allKeys containsObject:kSwrveKeyLb]){
+        NSDictionary *lightBox = [style objectForKey:kSwrveKeyLb];
+        NSString *color = [self colorFromStyle:lightBox withDefault:kSwrveDefaultColorBg];
+       // uiView.superview.backgroundColor = [[self convertToUIColor:color]colorWithAlphaComponent:0.5];
+        uiView.superview.backgroundColor = [self convertToUIColor:color];
+    }
+}
+
 + (NSString *)colorFromStyle:(NSDictionary *)dict withDefault:(NSString*) defaultColor {
     if (dict) {
         NSString *type = [dict objectForKey:kSwrveKeyType];
@@ -49,13 +68,37 @@
     if ([color isEqualToString:kSwrveTypeTransparent]) {
         uiColor = [UIColor clearColor];
     } else {
-        unsigned int hexInt = 0;
-        NSScanner *scanner = [NSScanner scannerWithString:color];
-        [scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"#"]];
-        [scanner scanHexInt:&hexInt];
-        uiColor = Swrve_UIColorFromRGB(hexInt);
+        uiColor = [self processHexColorValue:color];
     }
     return uiColor;
+}
+
++ (UIColor *) processHexColorValue:(NSString *)color {
+    NSString *colorString = [[color stringByReplacingOccurrencesOfString: @"#" withString: @""] uppercaseString];
+    UIColor *returnColor;
+    
+    if([colorString length] == 6) {
+        unsigned int hexInt = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:colorString];
+        [scanner scanHexInt:&hexInt];
+        returnColor = Swrve_UIColorFromRGB(hexInt, 1.0f);
+        
+    }else if([colorString length] == 8) {
+        
+        NSString *alphaSub = [colorString substringWithRange: NSMakeRange(0, 2)];
+        NSString *colorSub = [colorString substringWithRange: NSMakeRange(2, 6)];
+        
+        unsigned hexComponent;
+        unsigned int hexInt = 0;
+        [[NSScanner scannerWithString: alphaSub] scanHexInt: &hexComponent];
+        float alpha = hexComponent / 255.0f;
+        
+        NSScanner *scanner = [NSScanner scannerWithString:colorSub];
+        [scanner scanHexInt:&hexInt];
+        returnColor = Swrve_UIColorFromRGB(hexInt, alpha);
+    }
+    
+    return returnColor;
 }
 
 + (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style {
