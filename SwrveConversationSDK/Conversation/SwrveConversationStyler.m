@@ -36,16 +36,11 @@
     if([style.allKeys containsObject:kSwrveKeyBorderRadius]){
         float border = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
         uiView.layer.cornerRadius = border;
-        
-        // Add border
-        uiView.layer.borderColor = [UIColor blackColor].CGColor;
-        uiView.layer.borderWidth = 1.0f;
     }
     
     if([style.allKeys containsObject:kSwrveKeyLb]){
         NSDictionary *lightBox = [style objectForKey:kSwrveKeyLb];
         NSString *color = [self colorFromStyle:lightBox withDefault:kSwrveDefaultColorBg];
-       // uiView.superview.backgroundColor = [[self convertToUIColor:color]colorWithAlphaComponent:0.5];
         uiView.superview.backgroundColor = [self convertToUIColor:color];
     }
 }
