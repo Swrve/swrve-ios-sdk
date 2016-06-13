@@ -844,7 +844,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
-                SwrveConversation* nextConversation = [campaignIt getConversationForEvent:event withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
+                SwrveConversation* nextConversation = [campaignIt getConversationForEvent:eventName withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextConversation != nil) {
                     [availableConversations addObject:nextConversation];
                     // Check if it is a candidate to be shown
