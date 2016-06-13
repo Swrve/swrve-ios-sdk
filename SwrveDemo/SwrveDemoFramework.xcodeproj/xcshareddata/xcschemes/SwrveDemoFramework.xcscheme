@@ -14,6 +14,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2FE2CD2B017905FA9BEB34227A460C71"
+               BuildableName = "libPods-SwrveDemoFramework.a"
+               BlueprintName = "Pods-SwrveDemoFramework"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "30A4F71B16B05C2500642E8E"
                BuildableName = "SwrveDemoFramework.app"
                BlueprintName = "SwrveDemoFramework"

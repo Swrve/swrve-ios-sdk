@@ -1,7 +1,6 @@
 #import "SwrvePermissions.h"
 #import "ISHPermissionRequest+All.h"
 #import "ISHPermissionRequestNotificationsRemote.h"
-#import "SwrveInternalAccess.h"
 
 #if !defined(SWRVE_NO_LOCATION)
 static ISHPermissionRequest *_locationAlwaysRequest = nil;
@@ -22,7 +21,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 @implementation SwrvePermissions
 
-+(BOOL) processPermissionRequest:(NSString*)action withSDK:(Swrve*)sdk {
++(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
 #if !defined(SWRVE_NO_PUSH)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
         [SwrvePermissions requestPushNotifications:sdk withCallback:YES];
@@ -60,7 +59,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return NO;
 }
 
-+(NSDictionary*)currentStatusWithSDK:(Swrve*)sdk {
++(NSDictionary*)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
 #if !defined(SWRVE_NO_LOCATION)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationAlways]) forKey:swrve_permission_location_always];
@@ -81,7 +80,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return permissionsStatus;
 }
 
-+(void)compareStatusAndQueueEventsWithSDK:(Swrve*)sdk {
++(void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSDictionary* lastStatus = [[NSUserDefaults standardUserDefaults] dictionaryForKey:swrve_permission_status];
     NSDictionary* currentStatus = [self currentStatusWithSDK:sdk];
     if (lastStatus != nil) {
@@ -122,7 +121,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 }
 
-+(void)compareStatusAndQueueEvent:(NSString*)permissioName lastStatus:(NSDictionary*)lastStatus currentStatus:(NSDictionary*)currentStatus withSDK:(Swrve*)sdk {
++(void)compareStatusAndQueueEvent:(NSString*)permissioName lastStatus:(NSDictionary*)lastStatus currentStatus:(NSDictionary*)currentStatus withSDK:(id<SwrveCommonDelegate>)sdk {
     NSString* lastStatusString = [lastStatus objectForKey:permissioName];
     NSString* currentStatusString = [currentStatus objectForKey:permissioName];
     if (![lastStatusString isEqualToString:swrve_permission_status_authorized] && [currentStatusString isEqualToString:swrve_permission_status_authorized]) {
@@ -147,7 +146,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return [r permissionState];
 }
 
-+(void)requestLocationAlways:(Swrve*)sdk {
++(void)requestLocationAlways:(id<SwrveCommonDelegate>)sdk {
     ISHPermissionRequest *r = [SwrvePermissions locationAlwaysRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -168,7 +167,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return [r permissionState];
 }
 
-+(void)requestLocationWhenInUse:(Swrve*)sdk {
++(void)requestLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
     ISHPermissionRequest *r = [SwrvePermissions locationWhenInUseRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -191,7 +190,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return [r permissionState];
 }
 
-+(void)requestPhotoLibrary:(Swrve*)sdk {
++(void)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
     ISHPermissionRequest *r = [SwrvePermissions photoLibraryRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -213,7 +212,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return [r permissionState];
 }
 
-+(void)requestCamera:(Swrve*)sdk {
++(void)requestCamera:(id<SwrveCommonDelegate>)sdk {
     ISHPermissionRequest *r = [SwrvePermissions cameraRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -235,7 +234,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return [r permissionState];
 }
 
-+(void)requestContacts:(Swrve*)sdk {
++(void)requestContacts:(id<SwrveCommonDelegate>)sdk {
     ISHPermissionRequest *r = [SwrvePermissions contactsRequest];
     [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -253,7 +252,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return _remoteNotifications;
 }
 
-+(ISHPermissionState)checkPushNotificationsWithSDK:(Swrve*)sdk {
++(ISHPermissionState)checkPushNotificationsWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSString* deviceToken = sdk.deviceToken;
     if (deviceToken != nil && deviceToken.length > 0) {
         // We have a token, at some point the user said yes. We still have to check
@@ -279,7 +278,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return ISHPermissionStateUnknown;
 }
 
-+(void)requestPushNotifications:(Swrve*)sdk withCallback:(BOOL)callback {
++(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
 #if defined(__IPHONE_8_0)
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -288,7 +287,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     if ([app respondsToSelector:@selector(registerUserNotificationSettings:)])
 #endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
     {
-        ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.config.pushCategories];
+        ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
     }
 #endif //defined(__IPHONE_8_0)
     
@@ -307,7 +306,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 #endif //!defined(SWRVE_NO_PUSH)
 
-+(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(Swrve*)sdk {
++(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(id<SwrveCommonDelegate>)sdk {
     NSString *eventNameWithState = [eventName stringByAppendingString:((state == ISHPermissionStateAuthorized)? @".on" : @".off")];
     [sdk eventInternal:eventNameWithState payload:nil triggerCallback:true];
 }
