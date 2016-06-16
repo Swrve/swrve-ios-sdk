@@ -1107,7 +1107,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             // Create a view to show the conversation
 
             @try {
-                UIStoryboard* storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:self.class]];
+                UIStoryboard* storyBoard = [SwrveBaseConversation loadStoryboard];
                 SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
                 self.swrveConversationItemViewController = scivc;
             }
