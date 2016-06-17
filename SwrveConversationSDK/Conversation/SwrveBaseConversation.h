@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "SwrveMessageEventHandler.h"
+#include <UIKit/UIKit.h>
 
 const static int CONVERSATION_VERSION = 3;
 
@@ -19,6 +20,12 @@ const static int CONVERSATION_VERSION = 3;
  * \returns Parsed conversation.
  */
 +(SwrveBaseConversation*)fromJSON:(NSDictionary*)json forController:(id<SwrveMessageEventHandler>)controller;
+
+/*! Load the storyboard resource.
+ *
+ * \returns UIStoryboard if loaded successfully.
+ */
++(UIStoryboard*)loadStoryboard;
 
 /*! Check if assets are downloaded.
  *
