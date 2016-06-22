@@ -2,6 +2,9 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveConversationPane.h"
+#import "SwrveConversationAtom.h"
+#import "SwrveContentItem.h"
 
 @interface SwrveConversationCampaign()
 
@@ -28,10 +31,10 @@
 -(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
 {
     // Queue conversation images for download
-    for(NSDictionary* page in self.conversation.pages) {
-        for (NSDictionary *contentItem in [page objectForKey:@"content"]) {
-            if ([[contentItem objectForKey:@"type"] isEqualToString:@"image"]) {
-                [assetsQueue addObject:[contentItem objectForKey:@"value"]];
+    for(SwrveConversationPane* page in self.conversation.pages) {
+        for(SwrveContentItem* contentItem in page.content) {
+            if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
+                [assetsQueue addObject:contentItem.value];
             }
         }
     }
