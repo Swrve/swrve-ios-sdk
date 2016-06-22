@@ -36,9 +36,8 @@
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {
-    for (NSDictionary* page in self.pages) {
-        SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
-        for (SwrveContentItem* contentItem in pane.content) {
+    for (SwrveConversationPane* page in self.pages) {
+        for (SwrveContentItem* contentItem in page.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
                     return true;
@@ -64,14 +63,14 @@
     if (index > self.pages.count - 1) {
         return nil;
     } else {
-        return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
+        return [self.pages objectAtIndex:index];
     }
 }
 
 -(SwrveConversationPane*)pageForTag:(NSString*)tag {
-    for (NSDictionary *page in self.pages) {
-        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
-            return [[SwrveConversationPane alloc] initWithDictionary:page];
+    for (SwrveConversationPane *page in self.pages) {
+        if ([tag isEqualToString:page.tag]) {
+            return page;
         }
     }
     return nil;
