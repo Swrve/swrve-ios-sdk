@@ -20,6 +20,7 @@
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
     _height = [dict objectForKey:@"height"];
+    NSLog(@"alloc - %@ tag: %@", self, tag);
     return self;
 }
 
@@ -71,7 +72,6 @@
     // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     // Get notified if the view should change dimensions
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -86,33 +86,33 @@
 
 -(void) sizeTheWebView {
     
-    
     if (webview.frame.size.width != 0) {
-    
+
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             // Make the webview full width on iPad
             webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
-        } else {
+            } else {
             // Cope with phone rotation
             // Too big or same size?
             if (webview.frame.size.width > 0 && webview.frame.size.width >= _view.frame.size.width) {
-                webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
+            webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
             }
             // Too small?
             if(webview.frame.size.width < _view.frame.size.width) {
-                webview.frame = CGRectMake((_view.frame.size.width-webview.frame.size.width)/2, webview.frame.origin.y, webview.frame.size.width, webview.frame.size.height);
+            webview.frame = CGRectMake((_view.frame.size.width-webview.frame.size.width)/2, webview.frame.origin.y, webview.frame.size.width, webview.frame.size.height);
             }
         }
-        
-        // Adjust the containing view around this too
-        _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
+
+    // Adjust the containing view around this too
+    _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
     }
 
 }
 
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
--(void) deviceOrientationDidChange {
+-(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+#pragma unused (orientation)
     _view.frame = [self newFrameForOrientationChange];
     [self sizeTheWebView];
 }
@@ -138,10 +138,11 @@
 }
 
 - (void)dealloc {
+
+    NSLog(@"dealloc - %@ tag: %@", self, self.tag);
     if (webview.delegate == self) {
         webview.delegate = nil; // Unassign self from being the delegate, in case we get deallocated before the webview!
     }
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 
 @end

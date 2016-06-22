@@ -17,6 +17,14 @@
 // Notifications
 #define kSwrveNotificationViewReady @"SwrveNotificationViewReady"
 
+// Orientation Change delegate
+@protocol SwrveConversationAtomDelegate <NSObject>
+
+@required
+- (void) respondToDeviceOrientationChange:(UIDeviceOrientation) orientation;
+
+@end
+
 @interface SwrveConversationAtom : NSObject {
     UIView *_view;
 }
@@ -25,6 +33,7 @@
 @property (readonly, nonatomic) NSString *type;
 @property (readonly, nonatomic) UIView *view;
 @property (strong, nonatomic)   NSDictionary *style;
+@property (strong, nonatomic) id <SwrveConversationAtomDelegate> delegate;
 
 -(id)                initWithTag:(NSString *)tag andType:(NSString *)type;
 -(BOOL)              willRequireLandscape;

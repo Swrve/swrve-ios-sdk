@@ -384,8 +384,16 @@
         return;
     }
     currentOrientation = orientation;
+    
     // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        
+        if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]){
+            [atom.delegate respondToDeviceOrientationChange:orientation];
+        }
+    }
+    
+    
 }
 
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win

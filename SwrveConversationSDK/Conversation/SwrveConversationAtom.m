@@ -7,6 +7,7 @@
 @synthesize type = _type;
 @synthesize view = _view;
 @synthesize style;
+@synthesize delegate;
 
 #define kCellTag 101
 

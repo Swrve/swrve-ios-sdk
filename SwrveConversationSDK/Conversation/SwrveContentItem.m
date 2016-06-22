@@ -10,8 +10,13 @@
     self = [super initWithTag:tag andType:type];
     if(self) {
         _value = [dict objectForKey:kSwrveKeyValue];
+        self.delegate = self;
     }
     return self;
+}
+
+- (void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+#pragma unused (orientation)
 }
 
 +(UIScrollView*) scrollView:(UIWebView*)web {

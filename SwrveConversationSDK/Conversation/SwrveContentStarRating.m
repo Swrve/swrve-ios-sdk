@@ -42,6 +42,11 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
+-(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+#pragma unused(orientation)
+    _view.frame = [self newFrameForOrientationChange];
+}
+
 - (void) ratingView:(SwrveContentStarRatingView *)ratingView ratingDidChange:(float)rating{
 #pragma unused (ratingView)
     _currentRating = rating;
