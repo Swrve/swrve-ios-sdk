@@ -80,10 +80,7 @@
             }
             
             if((self.contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) && (self.contentHeight >= 0)) {
-                
-                //TODO: self.contentHeight seems to cause issues when setting the height. I've made it an arbitrary value of 200, now it passes. oddly CALayer
-                newFrame = CGRectMake(centerx, self.contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2), SWRVE_CONVERSATION_MAX_WIDTH,  200);
-//                newFrame = CGRectMake(centerx, self.contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2), SWRVE_CONVERSATION_MAX_WIDTH, self.contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN);
+                newFrame = CGRectMake(centerx, self.contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2), SWRVE_CONVERSATION_MAX_WIDTH, self.contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN);
             }
             
             self.view.frame = newFrame;
