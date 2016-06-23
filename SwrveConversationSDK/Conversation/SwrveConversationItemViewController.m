@@ -74,13 +74,9 @@
         CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
         if (!CGRectEqualToRect(self.view.frame, newFrame)) {
             
-            //check if contentHeight is NaN
-            if(self.contentHeight != self.contentHeight){
-                self.contentHeight = 0.0f;
-            }
-            
-            if((self.contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) && (self.contentHeight >= 0)) {
-                newFrame = CGRectMake(centerx, self.contentHeight - (SWRVE_CONVERSATION_MODAL_MARGIN*2), SWRVE_CONVERSATION_MAX_WIDTH, self.contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN);
+            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
+                newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
+                newFrame.origin.y =  (wholeSize.height / 2) - (newFrame.size.height / 2);
             }
             
             self.view.frame = newFrame;
@@ -183,11 +179,7 @@
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
-                
                 [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                
-                
-                
                 DebugLog(@"Could not open the Conversation URL: %@", param, nil);
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
@@ -292,6 +284,7 @@
 
 -(void) viewReady:(NSNotification *)notification {
 #pragma unused (notification)
+    contentHeight = 0; //reset the contentHeight before we reload
     numViewsReady++;
     if(numViewsReady == self.conversationPane.content.count) {
         
@@ -299,20 +292,21 @@
             
             if([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-                self.contentHeight = (float)self.contentHeight + (float)([multValue numberOfRowsNeeded] * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                contentHeight = (float)contentHeight + (float)(([multValue numberOfRowsNeeded]+1) * [multValue heightForRow:0 inTableView:self.contentTableView]);
                 
             }else{
-                self.contentHeight = (float)self.contentHeight + (float)atom.view.frame.size.height;
+                contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
             }
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
-            self.contentHeight = (float)self.contentHeight + (float)atom.view.frame.size.height;
+            contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
         }
         
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
+            [self viewWillLayoutSubviews];
              self.view.hidden = NO;
         });
     }
@@ -392,8 +386,6 @@
             [atom.delegate respondToDeviceOrientationChange:orientation];
         }
     }
-    
-    
 }
 
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win

@@ -5,7 +5,7 @@
 #import "SwrveSetup.h"
 
 #define kSwrveKeyStarColor @"star_color"
-#define kSwrveStarRatingHeight 110.0f
+#define kSwrveStarRatingHeight 60.0f
 #define kSwrveStarRatingPadding 40.0f
 
 
@@ -19,6 +19,8 @@
     if(self) {
         _starColor = [dict objectForKey:kSwrveKeyStarColor];
     }
+    
+    self.delegate = self;
     return self;
 }
 
@@ -26,17 +28,24 @@
     _view = [[SwrveContentStarRatingView alloc] initWithDefaults];
     [(SwrveContentStarRatingView*)_view setSwrveRatingDelegate:self];
     
+    
+    CGFloat containerWidth = containerView.bounds.size.width;
+    
+    if(containerWidth >= 414.0f){
+        containerWidth = 414.0f;
+    }
+    
     _view.frame = CGRectMake(0,0, 1, 1);
     //set width
     CGRect frame = _view.frame;
-    frame.size.width = containerView.frame.size.width - kSwrveStarRatingPadding;
+    frame.size.width = containerWidth - kSwrveStarRatingPadding;
     _view.frame = frame;
     //set height
     frame = _view.frame;
     frame.size.height = kSwrveStarRatingHeight;
     _view.frame = frame;
     //center
-    [_view setCenter:CGPointMake(containerView.center.x, _view.center.y)];
+    //[_view setCenter:CGPointMake(containerView.center.x, _view.center.y)];
     
     [SwrveConversationStyler styleStarRating:(SwrveContentStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
