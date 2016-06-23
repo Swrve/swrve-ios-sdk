@@ -1142,6 +1142,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) conversationClosed {
+    NSLog(@"conversationClosed");
     self.conversationWindow.hidden = YES;
     self.conversationWindow = nil;
 }

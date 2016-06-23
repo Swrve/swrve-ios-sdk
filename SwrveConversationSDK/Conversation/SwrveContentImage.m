@@ -10,6 +10,7 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeImage andDictionary:dict];
+    NSLog(@"self: %@, %@", self, dict[@"tag"]);
     return self;
 }
 
@@ -26,6 +27,7 @@
 
 - (void)sizeAndDisplayInContainer:(UIView*)containerView
 {
+    NSLog(@"sizeAndDisplayInContainer %@ %@", self, image);
     if (image != nil) {
         // Create _view and add image to it
         _view = iv = [[UIImageView alloc] init];
@@ -45,6 +47,7 @@
 // Subviews of this should be flexible using AutoResizing masks
 -(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
     #pragma unused(orientation)
+    NSLog(@"respondToDeviceOrientationChange %@", self);
     _view.frame = [self newFrameForOrientationChange];
 }
 
@@ -57,6 +60,7 @@
 }
 
 - (void)dealloc {
+    NSLog(@"dealloc %@", self);
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 

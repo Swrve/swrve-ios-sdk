@@ -19,8 +19,8 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
+    NSLog(@"self: %@, %@", self, dict[@"tag"]);
     _height = [dict objectForKey:@"height"];
-    NSLog(@"alloc - %@ tag: %@", self, tag);
     return self;
 }
 
@@ -85,26 +85,27 @@
 }
 
 -(void) sizeTheWebView {
+    NSLog(@"sizeTheWebView %@", self);
     
     if (webview.frame.size.width != 0) {
 
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             // Make the webview full width on iPad
             webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
-            } else {
+        } else {
             // Cope with phone rotation
             // Too big or same size?
             if (webview.frame.size.width > 0 && webview.frame.size.width >= _view.frame.size.width) {
-            webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
+                webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
             }
             // Too small?
             if(webview.frame.size.width < _view.frame.size.width) {
-            webview.frame = CGRectMake((_view.frame.size.width-webview.frame.size.width)/2, webview.frame.origin.y, webview.frame.size.width, webview.frame.size.height);
+                webview.frame = CGRectMake((_view.frame.size.width-webview.frame.size.width)/2, webview.frame.origin.y, webview.frame.size.width, webview.frame.size.height);
             }
         }
 
-    // Adjust the containing view around this too
-    _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
+        // Adjust the containing view around this too
+        _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
     }
 
 }
