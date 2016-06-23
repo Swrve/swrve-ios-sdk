@@ -61,7 +61,6 @@
 
 - (void)dealloc {
     NSLog(@"dealloc %@", self);
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 
 @end

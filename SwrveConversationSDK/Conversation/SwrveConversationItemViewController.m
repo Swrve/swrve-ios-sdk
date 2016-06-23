@@ -6,6 +6,7 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
+#import "SwrveContentImage.h"
 #import "SwrveSetup.h"
 #import "SwrveConversationEvents.h"
 #import "SwrveCommon.h"
@@ -85,6 +86,8 @@
             [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
             self.view.layer.masksToBounds = YES;
             
+            NSLog(@"ContentHeight : %f", contentHeight);
+            
             // Remove top margin of close button and content.
             self.contentTableViewTop.constant = 0;
             [self.contentTableView setNeedsUpdateConstraints];
@@ -102,6 +105,7 @@
             // Hide border
             self.view.layer.borderWidth = 0;
             self.view.layer.cornerRadius = 0.0f;
+            
             // Add top margin of close button and content
             // to take into account the status bar.
             self.contentTableViewTop.constant = self.topLayoutGuide.length;
@@ -284,25 +288,29 @@
 
 -(void) viewReady:(NSNotification *)notification {
 #pragma unused (notification)
-    contentHeight = 0; //reset the contentHeight before we reload
     numViewsReady++;
     if(numViewsReady == self.conversationPane.content.count) {
+        contentHeight = 0; //reset the contentHeight before we reload
         
         for(SwrveConversationAtom *atom in self.conversationPane.content) {
             
             if([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-                contentHeight = (float)contentHeight + (float)(([multValue numberOfRowsNeeded]+1) * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                contentHeight += (float)(([multValue numberOfRowsNeeded]+1) * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                
+            }else if([atom.type isEqualToString:kSwrveContentTypeImage]) {
+                SwrveContentImage *imageAtom = (SwrveContentImage *)atom;
+                contentHeight += (float)imageAtom.view.frame.size.height;
+                NSLog(@"image Atom height - %f:", imageAtom.view.frame.size.height);
                 
             }else{
-                contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
+                contentHeight += (float)atom.view.frame.size.height;
             }
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
             contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
         }
-        
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
@@ -436,6 +444,8 @@
     }
     return v;
 }
+    
+#pragma mark ViewDidLoad
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -466,6 +476,8 @@
                                                   object:nil];
 }
 
+#pragma mark TableViewDelegate Methods
+    
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #pragma unused (tableView)
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)section];
