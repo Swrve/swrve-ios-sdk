@@ -14,6 +14,7 @@
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
     if(self) {
+        NSLog(@"self: %@", self);
         _tag = [dict objectForKey:@"tag"];
         _title = [dict objectForKey:@"title"];
         NSArray *contentItems = [dict objectForKey:@"content"];
@@ -66,6 +67,10 @@
         }
     }
     return atoms;
+}
+
+- (void)dealloc {
+    NSLog(@"dealloc %@", self);
 }
 
 @end

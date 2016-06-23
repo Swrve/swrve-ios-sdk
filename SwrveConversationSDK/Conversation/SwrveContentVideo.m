@@ -19,8 +19,8 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
+    NSLog(@"self: %@, %@", self, dict[@"tag"]);
     _height = [dict objectForKey:@"height"];
-    NSLog(@"alloc - %@ tag: %@", self, tag);
     return self;
 }
 
@@ -85,6 +85,7 @@
 }
 
 -(void) sizeTheWebView {
+    NSLog(@"sizeTheWebView %@", self);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // Make the webview full width on iPad
@@ -100,10 +101,8 @@
         webview.frame = CGRectMake((_view.frame.size.width-webview.frame.size.width)/2, webview.frame.origin.y, webview.frame.size.width, webview.frame.size.height);
         }
     }
-
-    // Adjust the containing view around this too
-    _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
-
+        // Adjust the containing view around this too
+        _view.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, webview.frame.size.height);
 }
 
 // Respond to device orientation changes by resizing the width of the view
