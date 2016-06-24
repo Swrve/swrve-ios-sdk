@@ -1141,10 +1141,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
+
+- (void) cleanupConversationUI {
+    NSLog(@"cleanupConversationUI");
+    [self.swrveConversationItemViewController dismiss];
+}
+
+
 - (void) conversationClosed {
     NSLog(@"conversationClosed");
     self.conversationWindow.hidden = YES;
     self.conversationWindow = nil;
+    self.swrveConversationItemViewController = nil;
+    self.swrveConversationsNavigationController = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {

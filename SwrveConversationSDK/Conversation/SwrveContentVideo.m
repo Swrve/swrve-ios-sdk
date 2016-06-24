@@ -2,6 +2,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
 #import "UIWebView+YouTubeVimeo.h"
+#import "SwrveCommon.h"
 
 @interface SwrveContentVideo () {
     NSString *_height;

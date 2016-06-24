@@ -67,6 +67,39 @@
     }
 }
 
+- (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kSwrveNotificationViewReady
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIDeviceOrientationDidChangeNotification
+                                                  object:nil];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+}
+
+#pragma mark ViewDidLoad
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    }
+    self.navigationController.navigationBar.translucent = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(viewReady:)
+                                                 name:kSwrveNotificationViewReady
+                                               object:nil];
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceOrientationDidChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object: nil];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     CGSize wholeSize = self.view.superview.bounds.size;
@@ -271,6 +304,7 @@
 
 -(void)dismiss {
     [self stopAtoms];
+    _conversationPane = nil; //kill last page
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
             [self->controller conversationClosed];
@@ -296,12 +330,14 @@
             
             if([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-                contentHeight += (float)(([multValue numberOfRowsNeeded]+1) * [multValue heightForRow:0 inTableView:self.contentTableView]);
+                
+                for(uint i = 0; i < (uint)[multValue.values count]; i++){
+                    contentHeight += (float)[multValue heightForRow:(uint)i inTableView:self.contentTableView];
+                }
                 
             }else if([atom.type isEqualToString:kSwrveContentTypeImage]) {
                 SwrveContentImage *imageAtom = (SwrveContentImage *)atom;
                 contentHeight += (float)imageAtom.view.frame.size.height;
-                NSLog(@"image Atom height - %f:", imageAtom.view.frame.size.height);
                 
             }else{
                 contentHeight += (float)atom.view.frame.size.height;
@@ -309,7 +345,7 @@
         }
         
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
-            contentHeight = (float)contentHeight + (float)atom.view.frame.size.height;
+            contentHeight +=(float)atom.view.frame.size.height + SWRVE_CONVERSATION_MODAL_MARGIN;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -445,37 +481,6 @@
     return v;
 }
     
-#pragma mark ViewDidLoad
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    }
-    self.navigationController.navigationBar.translucent = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(viewReady:)
-                                                 name:kSwrveNotificationViewReady
-                                               object:nil];
-
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object: nil];
-}
-
--(void) dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kSwrveNotificationViewReady
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
-                                                  object:nil];
-}
-
 #pragma mark TableViewDelegate Methods
     
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

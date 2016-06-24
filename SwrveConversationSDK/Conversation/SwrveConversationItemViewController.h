@@ -36,5 +36,5 @@ typedef enum {
 
 -(IBAction)cancelButtonTapped:(id)sender;
 -(void)updateUI;
-
+-(void)dismiss;
 @end

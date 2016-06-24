@@ -1336,15 +1336,18 @@ static bool didSwizzle = false;
 
 -(void) shutdown
 {
+    NSLog(@"shutting down swrveInstance..");
     if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == NO)
     {
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
         return;
     }
-
+    
     [self stopCampaignsAndResourcesTimer];
 
+    [talk cleanupConversationUI];
     talk = nil;
+    
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];

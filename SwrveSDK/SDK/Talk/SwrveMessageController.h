@@ -275,5 +275,8 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 /*! PRIVATE: Save campaigns current state*/
 -(void)saveCampaignsState;
 
+/*! PRIVATE: ensure any currently displaying conversations are dismissed*/
+-(void) cleanupConversationUI;
+
 @end
 

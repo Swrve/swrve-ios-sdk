@@ -36,10 +36,11 @@
             self->iv.image = self->image;
             CGFloat containerWidth = containerView.frame.size.width;
             CGSize imageSize = self->image.size;
+            NSLog(@"image height: %f", imageSize.height);
             self->iv.frame = CGRectMake(0, 0, containerWidth, ((imageSize.height/imageSize.width)*containerWidth));
+            // Notify that the view is ready to be displayed
+            [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
         });
-        // Notify that the view is ready to be displayed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
     }
 }
 
