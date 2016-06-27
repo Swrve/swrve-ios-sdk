@@ -44,9 +44,7 @@
     frame = _view.frame;
     frame.size.height = kSwrveStarRatingHeight;
     _view.frame = frame;
-    //center
-    //[_view setCenter:CGPointMake(containerView.center.x, _view.center.y)];
-    
+
     [SwrveConversationStyler styleStarRating:(SwrveContentStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
@@ -62,4 +60,3 @@
 }
 
 @end
-

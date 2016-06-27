@@ -86,7 +86,6 @@
 }
 
 -(void) sizeTheWebView {
-    NSLog(@"sizeTheWebView %@", self);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // Make the webview full width on iPad

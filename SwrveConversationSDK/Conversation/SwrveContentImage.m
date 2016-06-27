@@ -60,8 +60,4 @@
     self->iv.frame = CGRectMake(0, 0, size.width, ((imageSize.height/imageSize.width)*size.width));
 }
 
-- (void)dealloc {
-    NSLog(@"dealloc %@", self);
-}
-
 @end

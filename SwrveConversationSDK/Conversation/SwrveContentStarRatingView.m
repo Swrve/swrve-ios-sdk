@@ -195,6 +195,4 @@
     [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
 }
 
-
-
 @end

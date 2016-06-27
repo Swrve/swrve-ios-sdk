@@ -1345,7 +1345,9 @@ static bool didSwizzle = false;
     
     [self stopCampaignsAndResourcesTimer];
 
+    //ensure UI isn't displaying during shutdown
     [talk cleanupConversationUI];
+    [talk dismissMessageWindow];
     talk = nil;
     
     resourceManager = nil;

@@ -1144,7 +1144,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (void) cleanupConversationUI {
     NSLog(@"cleanupConversationUI");
-    [self.swrveConversationItemViewController dismiss];
+    if(self.swrveConversationItemViewController != nil){
+        [self.swrveConversationItemViewController dismiss];
+    }
 }
 
 
