@@ -165,7 +165,6 @@
 		1B26FC791CB6C17700322FF2 /* SwrveConversation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC191CB6C17700322FF2 /* SwrveConversation.storyboard */; };
 		1B26FC7A1CB6C17700322FF2 /* VERSION in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC1A1CB6C17700322FF2 /* VERSION */; };
 		1B26FC7B1CB6C17700322FF2 /* VGConversationKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC1B1CB6C17700322FF2 /* VGConversationKitResources-Info.plist */; };
-		1B26FC7C1CB6C17700322FF2 /* SwrveConversationSDK.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC1C1CB6C17700322FF2 /* SwrveConversationSDK.podspec */; };
 		1B26FC7D1CB6C17700322FF2 /* SwrveCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B26FC1F1CB6C17700322FF2 /* SwrveCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1B26FC7E1CB6C17700322FF2 /* SwrveCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B26FC201CB6C17700322FF2 /* SwrveCommon.m */; };
 		1B26FC7F1CB6C17700322FF2 /* SwrveCommonConnectionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B26FC211CB6C17700322FF2 /* SwrveCommonConnectionDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -174,6 +173,10 @@
 		1B26FC821CB6C17700322FF2 /* SwrveSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B26FC241CB6C17700322FF2 /* SwrveSignatureProtectedFile.m */; };
 		1B26FC831CB6C17700322FF2 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC251CB6C17700322FF2 /* LICENSE */; };
 		1B26FC841CB6C17700322FF2 /* SwrveSDKCommon.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 1B26FC261CB6C17700322FF2 /* SwrveSDKCommon.podspec */; };
+		1BD7B31F1D214EE300D4649D /* SwrveTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BD7B31B1D214EE300D4649D /* SwrveTrigger.h */; };
+		1BD7B3201D214EE300D4649D /* SwrveTrigger.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BD7B31C1D214EE300D4649D /* SwrveTrigger.m */; };
+		1BD7B3211D214EE300D4649D /* SwrveTriggerCondition.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BD7B31D1D214EE300D4649D /* SwrveTriggerCondition.h */; };
+		1BD7B3221D214EE300D4649D /* SwrveTriggerCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BD7B31E1D214EE300D4649D /* SwrveTriggerCondition.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -323,7 +326,6 @@
 		1B26FC191CB6C17700322FF2 /* SwrveConversation.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SwrveConversation.storyboard; sourceTree = "<group>"; };
 		1B26FC1A1CB6C17700322FF2 /* VERSION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
 		1B26FC1B1CB6C17700322FF2 /* VGConversationKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VGConversationKitResources-Info.plist"; sourceTree = "<group>"; };
-		1B26FC1C1CB6C17700322FF2 /* SwrveConversationSDK.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwrveConversationSDK.podspec; sourceTree = "<group>"; };
 		1B26FC1F1CB6C17700322FF2 /* SwrveCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommon.h; sourceTree = "<group>"; };
 		1B26FC201CB6C17700322FF2 /* SwrveCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveCommon.m; sourceTree = "<group>"; };
 		1B26FC211CB6C17700322FF2 /* SwrveCommonConnectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCommonConnectionDelegate.h; sourceTree = "<group>"; };
@@ -332,6 +334,10 @@
 		1B26FC241CB6C17700322FF2 /* SwrveSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSignatureProtectedFile.m; sourceTree = "<group>"; };
 		1B26FC251CB6C17700322FF2 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1B26FC261CB6C17700322FF2 /* SwrveSDKCommon.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwrveSDKCommon.podspec; sourceTree = "<group>"; };
+		1BD7B31B1D214EE300D4649D /* SwrveTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTrigger.h; sourceTree = "<group>"; };
+		1BD7B31C1D214EE300D4649D /* SwrveTrigger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTrigger.m; sourceTree = "<group>"; };
+		1BD7B31D1D214EE300D4649D /* SwrveTriggerCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTriggerCondition.h; sourceTree = "<group>"; };
+		1BD7B31E1D214EE300D4649D /* SwrveTriggerCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTriggerCondition.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -445,6 +451,10 @@
 				1B26FB961CB6C15E00322FF2 /* SwrvePrivateBaseCampaign.h */,
 				1B26FB971CB6C15E00322FF2 /* SwrveTalkQA.h */,
 				1B26FB981CB6C15E00322FF2 /* SwrveTalkQA.m */,
+				1BD7B31B1D214EE300D4649D /* SwrveTrigger.h */,
+				1BD7B31C1D214EE300D4649D /* SwrveTrigger.m */,
+				1BD7B31D1D214EE300D4649D /* SwrveTriggerCondition.h */,
+				1BD7B31E1D214EE300D4649D /* SwrveTriggerCondition.m */,
 			);
 			name = Talk;
 			path = SDK/Talk;
@@ -473,7 +483,6 @@
 				1B26FBC41CB6C17700322FF2 /* Conversation */,
 				1B26FBF71CB6C17700322FF2 /* LICENSE */,
 				1B26FBF81CB6C17700322FF2 /* Resources */,
-				1B26FC1C1CB6C17700322FF2 /* SwrveConversationSDK.podspec */,
 				1B26FC1D1CB6C17700322FF2 /* SwrveSDKCommon */,
 			);
 			name = SwrveConversationSDK;
@@ -647,6 +656,7 @@
 				1B26FB9B1CB6C15E00322FF2 /* SwrveButton.h in Headers */,
 				1B26FBA21CB6C15E00322FF2 /* SwrveInterfaceOrientation.h in Headers */,
 				1B26FC351CB6C17700322FF2 /* SwrveContentStarRating.h in Headers */,
+				1BD7B31F1D214EE300D4649D /* SwrveTrigger.h in Headers */,
 				1B26FBA31CB6C15E00322FF2 /* SwrveMessage.h in Headers */,
 				1B26FC541CB6C17700322FF2 /* SwrveInputMultiValue.h in Headers */,
 				1B26FC4A1CB6C17700322FF2 /* SwrveConversationResource.h in Headers */,
@@ -658,6 +668,7 @@
 				1B26FBAE1CB6C15E00322FF2 /* SwrveTalkQA.h in Headers */,
 				1B26FC291CB6C17700322FF2 /* UIWebView+YouTubeVimeo.h in Headers */,
 				1B26FC521CB6C17700322FF2 /* SwrveInputItem.h in Headers */,
+				1BD7B3211D214EE300D4649D /* SwrveTriggerCondition.h in Headers */,
 				1B26FB701CB6C14300322FF2 /* ISHPermissionCategory.h in Headers */,
 				1B26FBA71CB6C15E00322FF2 /* SwrveMessageFormat.h in Headers */,
 				1B26FBA01CB6C15E00322FF2 /* SwrveImage.h in Headers */,
@@ -769,7 +780,6 @@
 				1B26FC5D1CB6C17700322FF2 /* cvsr_grouped_cell_bottom_ios7.png in Resources */,
 				1B26FC791CB6C17700322FF2 /* SwrveConversation.storyboard in Resources */,
 				1B26FC831CB6C17700322FF2 /* LICENSE in Resources */,
-				1B26FC7C1CB6C17700322FF2 /* SwrveConversationSDK.podspec in Resources */,
 				1B26FC7B1CB6C17700322FF2 /* VGConversationKitResources-Info.plist in Resources */,
 				1B26FB351CB6BCC400322FF2 /* SwrveConversationSDK in Resources */,
 				1B26FC781CB6C17700322FF2 /* star-full@2x.png in Resources */,
@@ -823,7 +833,9 @@
 				1B26FC381CB6C17700322FF2 /* SwrveContentStarRatingView.m in Sources */,
 				1B26FC441CB6C17700322FF2 /* SwrveConversationEvents.m in Sources */,
 				1B26FB791CB6C14300322FF2 /* ISHPermissionRequestLocation.m in Sources */,
+				1BD7B3221D214EE300D4649D /* SwrveTriggerCondition.m in Sources */,
 				1B26FC401CB6C17700322FF2 /* SwrveConversationButton.m in Sources */,
+				1BD7B3201D214EE300D4649D /* SwrveTrigger.m in Sources */,
 				1B26FC2C1CB6C17700322FF2 /* SwrveBaseConversation.m in Sources */,
 				1B26FB9E1CB6C15E00322FF2 /* SwrveCampaign.m in Sources */,
 				1B26FBAC1CB6C15E00322FF2 /* SwrvePermissions.m in Sources */,
