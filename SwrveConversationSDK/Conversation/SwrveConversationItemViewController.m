@@ -118,9 +118,6 @@
             // Apply styles from conversationPane
             [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
             self.view.layer.masksToBounds = YES;
-            
-            NSLog(@"ContentHeight : %f", contentHeight);
-            
             // Remove top margin of close button and content.
             self.contentTableViewTop.constant = 0;
             [self.contentTableView setNeedsUpdateConstraints];
@@ -158,13 +155,16 @@
     _conversationPane = conversationPane;
     numViewsReady = 0;
     [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
+    if(_conversationPane){
+        NSLog(@"set ConversationPane");
+    }
 }
 
 -(CGFloat) buttonHorizontalPadding {
     return 6.0;
 }
 
--(void) performActions:(SwrveConversationButton *)control {
+-(void) performActions:(SwrveConversationButton *)control onPage:(NSString *)conversationPaneTag {
     NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
@@ -190,20 +190,20 @@
             NSDictionary *permissionDict = [actions objectForKey:@"permission_request"];
             param = [permissionDict objectForKey:@"permission"];
         } else {
-            [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
         }
     }
     
     switch (actionType) {
         case SwrveCallNumberActionType: {
-            [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents callNumber:conversation onPage:conversationPaneTag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
         }
         case SwrveVisitURLActionType: {
             if (!param) {
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 return;
             }
             
@@ -216,10 +216,10 @@
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 DebugLog(@"Could not open the Conversation URL: %@", param, nil);
             } else {
-                [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents linkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
             }
             break;
@@ -229,17 +229,17 @@
             if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
                 DebugLog(@"Unknown permission request %@", param, nil);
             } else {
-                [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents permissionRequest:conversation onPage:conversationPaneTag withControl:control.tag];
             }
             break;
         }
         case SwrveDeeplinkActionType: {
             if (!param) {
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 return;
             }
             NSURL *target = [NSURL URLWithString:param];
-            [SwrveConversationEvents deeplinkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents deeplinkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
             [[UIApplication sharedApplication] openURL:target];
         }
         default:
@@ -273,26 +273,30 @@
     // Bit of a band-aid for videos continuing to play in the background for now.
     [self stopAtoms];
     
-    // Issue events for data from the user
-    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
-    
-    // Move onto the next page in the conversation - fetch the next Convseration pane
-    if ([control endsConversation]) {
-        [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self dismiss];
-        });
-    } else {
-        SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
-        [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
-
-        self.conversationPane = nextPage;
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self updateUI];
-        });
+    if(control != nil) {
+        // Issue events for data from the user
+        [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
+        
+        // Move onto the next page in the conversation - fetch the next Convseration pane
+        if ([control endsConversation]) {
+            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [self runControlActions:control onPage:self.conversationPane.tag];
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [self dismiss];
+            });
+        } else {
+            SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
+            [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
+            
+            self.conversationPane = nextPage;
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [self updateUI];
+            });
+            
+            [self runControlActions:control onPage:self.conversationPane.tag];
+        }
     }
-
-    [self runControlActions:control];
+    
     return YES;
 }
 
@@ -312,10 +316,10 @@
     }];
 }
 
--(void)runControlActions:(SwrveConversationButton*)control {
+-(void)runControlActions:(SwrveConversationButton*)control onPage:(NSString *)tag{
     if (control.actions != nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [self performActions:control];
+            [self performActions:control onPage:tag];
         });
     }
 }
@@ -441,7 +445,7 @@
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
     // Assigment will issue an impression event
-    self.conversationPane = firstPage;
+    [self setConversationPane:firstPage];
 }
 
 // Tapping the content view outside the context of any

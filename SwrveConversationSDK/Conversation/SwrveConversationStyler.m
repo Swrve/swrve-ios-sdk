@@ -15,6 +15,7 @@
 
 #define kSwrveDefaultColorBg @"#ffffff"
 #define kSwrveDefaultColorFg @"#000000"
+#define kSwrveDefaultColorLb @"#80000000"
 
 @implementation SwrveConversationStyler : NSObject
 
@@ -38,11 +39,9 @@
         uiView.layer.cornerRadius = border;
     }
     
-    if([style.allKeys containsObject:kSwrveKeyLb]){
-        NSDictionary *lightBox = [style objectForKey:kSwrveKeyLb];
-        NSString *color = [self colorFromStyle:lightBox withDefault:kSwrveDefaultColorBg];
-        uiView.superview.backgroundColor = [self convertToUIColor:color];
-    }
+    NSDictionary *lightBox = [style objectForKey:kSwrveKeyLb];
+    NSString *color = [self colorFromStyle:lightBox withDefault:kSwrveDefaultColorLb];
+    uiView.superview.backgroundColor = [self convertToUIColor:color];
 }
 
 + (NSString *)colorFromStyle:(NSDictionary *)dict withDefault:(NSString*) defaultColor {
