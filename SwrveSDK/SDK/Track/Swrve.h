@@ -255,10 +255,18 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The install-time cache caches the time that the user first installed the app.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
- * This path should be located in app/Libraries/Caches/, as this is where Apple
- * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ * This path should be located in the Documents folder.
  */
 @property (nonatomic, retain) NSString * installTimeCacheFile;
+
+/*! The install-time cache caches the time that the user first installed the app.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ * This path should be located in app/Libraries/Caches/, as this is where Apple
+ * recommend that persistent data should be stored. http://bit.ly/nCe9Zy.
+ *
+ * This contains the pre iOS SDK 4.5 location of the install time for migration purposes.
+ */
+@property (nonatomic, retain) NSString * installTimeCacheSecondaryFile;
 
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
  */
@@ -300,6 +308,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheSignatureFile;
 @property (nonatomic, readonly) NSString * installTimeCacheFile;
+@property (nonatomic, readonly) NSString * installTimeCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
 @property (nonatomic, readonly) int maxConcurrentDownloads;
