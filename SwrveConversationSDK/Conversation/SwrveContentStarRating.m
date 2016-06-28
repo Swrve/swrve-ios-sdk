@@ -34,15 +34,12 @@
         containerWidth = SWRVE_CONVERSATION_MAX_WIDTH;
     }
     
-    _view.backgroundColor = [UIColor greenColor];
-    _view.frame = CGRectMake(0,0, 1, 1);
+    _view.frame = CGRectMake(10,0, 1, 1);
     //set width
     CGRect frame = _view.frame;
     frame.size.width = containerWidth - kSwrveStarRatingPadding;
     frame.size.height = kSwrveStarRatingHeight;
     _view.frame = frame;
-    _view.autoresizesSubviews = YES;
-    _view.autoresizingMask = UIViewAutoresizingFlexibleWidth |  UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     
     [SwrveConversationStyler styleStarRating:(SwrveContentStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
@@ -50,7 +47,22 @@
 
 -(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
 #pragma unused(orientation)
-
+    
+    CGRect newFrame = [self newFrameForOrientationChange];
+    
+    CGFloat containerWidth = newFrame.size.width;
+    
+    if(containerWidth >= SWRVE_CONVERSATION_MAX_WIDTH){
+        containerWidth = SWRVE_CONVERSATION_MAX_WIDTH;
+    }
+    
+    _view.frame = CGRectMake(10,0, 1, 1);
+    //set width
+    CGRect frame = _view.frame;
+    frame.size.width = containerWidth - kSwrveStarRatingPadding;
+    frame.size.height = kSwrveStarRatingHeight;
+    _view.frame = frame;
+    
 }
 
 - (void) ratingView:(SwrveContentStarRatingView *)ratingView ratingDidChange:(float)rating{

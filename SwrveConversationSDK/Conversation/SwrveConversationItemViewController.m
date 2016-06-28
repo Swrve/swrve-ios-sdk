@@ -427,14 +427,15 @@
             return;
         }
         currentOrientation = orientation;
-        
-        // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
-        for(SwrveConversationAtom *atom in self.conversationPane.content) {
-            
-            if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]){
-                [atom.delegate respondToDeviceOrientationChange:orientation];
+        //delay for .01ms to account for rotation frame returned being out of date
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
+            for(SwrveConversationAtom *atom in self.conversationPane.content) {
+                if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]) {
+                    [atom.delegate respondToDeviceOrientationChange:orientation];
+                }
             }
-        }
+        });
     }
 }
 

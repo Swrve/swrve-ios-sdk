@@ -20,7 +20,6 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
-    NSLog(@"self: %@, %@", self, dict[@"tag"]);
     _height = [dict objectForKey:@"height"];
     return self;
 }
@@ -134,8 +133,6 @@
 }
 
 - (void)dealloc {
-
-    NSLog(@"dealloc - %@ tag: %@", self, self.tag);
     if (webview.delegate == self) {
         webview.delegate = nil; // Unassign self from being the delegate, in case we get deallocated before the webview!
     }

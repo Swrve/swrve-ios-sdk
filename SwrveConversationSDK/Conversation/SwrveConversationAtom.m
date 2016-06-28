@@ -78,8 +78,9 @@
 // Return the new frame that this view needs to sit correctly
 // on the screen after an orientation change
 -(CGRect) newFrameForOrientationChange {
-    return CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.superview.frame.size.width, _view.frame.size.height);
+    return CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.superview.frame.size.width, _view.superview.frame.size.height);
 }
+
 
 // iOS8+
 -(void)viewWillTransitionToSize:(CGSize)size {
