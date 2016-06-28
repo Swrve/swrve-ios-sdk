@@ -54,7 +54,7 @@
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
     
-    [[super view] setHidden:YES];
+    [self.view setHidden:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -158,11 +158,9 @@
     return 6.0;
 }
 
-
 -(void) performActions:(SwrveConversationButton *)control {
     [self performActions:control withConversationPaneTag:self.conversationPane.tag];
 }
-
 
 -(void) performActions:(SwrveConversationButton *)control withConversationPaneTag:(NSString *)conversationPaneTag {
     NSDictionary *actions = control.actions;
