@@ -146,7 +146,7 @@ enum
 - (void) sendCrashlyticsMetadata;
 - (BOOL) isValidJson:(NSData*) json;
 - (void) initResources;
-- (UInt64) getInstallTime:(NSString*)fileName;
+- (UInt64) getInstallTime:(NSString*)fileName withSecondaryFile:(NSString*)secondaryFileName;
 - (void) sendLogfile;
 - (NSOutputStream*) createLogfile:(int)mode;
 - (UInt64) getTime;
@@ -276,6 +276,7 @@ enum
 @synthesize userResourcesDiffCacheFile;
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
+@synthesize installTimeCacheSecondaryFile;
 @synthesize appVersion;
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
@@ -321,7 +322,9 @@ enum
 
         self.useHttpsForEventServer = YES;
         self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
-        self.installTimeCacheFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
+        NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        self.installTimeCacheFile = [documents stringByAppendingPathComponent: @"swrve_install.txt"];
+        self.installTimeCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
         self.talkEnabled = YES;
@@ -362,6 +365,7 @@ enum
 @synthesize userResourcesDiffCacheFile;
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
+@synthesize installTimeCacheSecondaryFile;
 @synthesize appVersion;
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
@@ -402,6 +406,7 @@ enum
         userResourcesDiffCacheFile = config.userResourcesDiffCacheFile;
         userResourcesDiffCacheSignatureFile = config.userResourcesDiffCacheSignatureFile;
         installTimeCacheFile = config.installTimeCacheFile;
+        installTimeCacheSecondaryFile = config.installTimeCacheSecondaryFile;
         appVersion = config.appVersion;
         receiptProvider = config.receiptProvider;
         maxConcurrentDownloads = config.maxConcurrentDownloads;
@@ -688,7 +693,7 @@ static bool didSwizzle = false;
         [self initBuffer];
         deviceInfo = [NSMutableDictionary dictionary];
 
-        install_time = [self getInstallTime:swrveConfig.installTimeCacheFile];
+        install_time = [self getInstallTime:swrveConfig.installTimeCacheFile withSecondaryFile:swrveConfig.installTimeCacheSecondaryFile];
         lastSessionDate = [self getNow];
 
         NSURL* base_events_url = [NSURL URLWithString:swrveConfig.eventsServer];
@@ -745,9 +750,6 @@ static bool didSwizzle = false;
         // If this is the first time this user has been seen send install analytics
         if(didSetUserId) {
             [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:true];
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"yyyyMMdd"];
-            [self userUpdate:@{ @"swrve.install_date" : [dateFormatter stringFromDate:[self getNow]] } ];
         }
 
         [self setCampaignsAndResourcesInitialized:NO];
@@ -1779,6 +1781,12 @@ static NSString* httpScheme(bool useHttps)
     [deviceProperties setValue:[device systemName]    forKey:@"swrve.os"];
     [deviceProperties setValue:[device systemVersion] forKey:@"swrve.os_version"];
     [deviceProperties setValue:dpi                    forKey:@"swrve.device_dpi"];
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:self->install_time];
+    [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:@"swrve.install_date"];
+
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
 
     // Carrier info
@@ -1872,12 +1880,13 @@ static NSString* httpScheme(bool useHttps)
 }
 
 // Get the time that the application was first installed.
-// This value is stored in a file. If this file is not available, then we assume
-// that the application was installed now, and save the current time to the file.
-- (UInt64) getInstallTimeHelper:(NSString*)fileName
+// This value is stored in a file. If this file is not available in any of the files (new and legacy),
+// then we assume that the application was installed now, and save the current time to the file.
+- (UInt64) getInstallTime:(NSString*)fileName withSecondaryFile:(NSString*)secondaryFileName
 {
     unsigned long long seconds = 0;
 
+    // Primary install file (defaults to documents path)
     NSError* error = NULL;
     NSString* file_contents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
 
@@ -1885,6 +1894,22 @@ static NSString* httpScheme(bool useHttps)
         seconds = (unsigned long long)[file_contents longLongValue];
     } else {
         DebugLog(@"could not read file: %@", fileName);
+    }
+
+    // Migration from Cache folder to Documents to prevent the file from being deleted
+    // Secondary install file (defaults to cache path, legacy from < iOS SDK 4.5)
+    if (seconds <= 0) {
+        error = NULL;
+        file_contents = [[NSString alloc] initWithContentsOfFile:secondaryFileName encoding:NSUTF8StringEncoding error:&error];
+        if (!error && file_contents) {
+            seconds = (unsigned long long)[file_contents longLongValue];
+            if (seconds > 0) {
+                // Write to new path
+                [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            }
+        } else {
+            DebugLog(@"could not read file: %@", fileName);
+        }
     }
 
     // If we loaded a non-zero value we're done.
@@ -1898,17 +1923,6 @@ static NSString* httpScheme(bool useHttps)
     NSString* currentTime = [NSString stringWithFormat:@"%llu", time/(UInt64)1000L];
     [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
     return (time / 1000 * 1000);
-}
-
-- (UInt64) getInstallTime:(NSString*)fileName
-{
-    UInt64 result = [self getInstallTimeHelper:fileName];
-
-    NSDate* install_date = [NSDate dateWithTimeIntervalSince1970:(result/1000)];
-    #pragma unused(install_date)
-    DebugLog(@"Install Time: %@", install_date);
-
-    return result;
 }
 
 /*

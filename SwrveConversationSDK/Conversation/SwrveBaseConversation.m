@@ -35,6 +35,11 @@
     return conversation;
 }
 
++(UIStoryboard*) loadStoryboard
+{
+    return [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
+}
+
 -(BOOL)assetsReady:(NSSet*)assets {
     for (NSDictionary* page in self.pages) {
         SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
