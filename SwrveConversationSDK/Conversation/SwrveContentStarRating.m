@@ -30,8 +30,8 @@
     
     CGFloat containerWidth = containerView.bounds.size.width;
     
-    if(containerWidth >= 414.0f){
-        containerWidth = 414.0f;
+    if(containerWidth >= SWRVE_CONVERSATION_MAX_WIDTH){
+        containerWidth = SWRVE_CONVERSATION_MAX_WIDTH;
     }
     
     _view.backgroundColor = [UIColor greenColor];

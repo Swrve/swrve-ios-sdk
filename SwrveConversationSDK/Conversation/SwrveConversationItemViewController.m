@@ -13,9 +13,6 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationUIButton.h"
 
-#define SWRVE_CONVERSATION_MAX_WIDTH 414.0f // iPhone6+ width
-#define SWRVE_CONVERSATION_MODAL_MARGIN 20.0f
-
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
