@@ -155,16 +155,19 @@
     _conversationPane = conversationPane;
     numViewsReady = 0;
     [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
-    if(_conversationPane){
-        NSLog(@"set ConversationPane");
-    }
 }
 
 -(CGFloat) buttonHorizontalPadding {
     return 6.0;
 }
 
--(void) performActions:(SwrveConversationButton *)control onPage:(NSString *)conversationPaneTag {
+
+-(void) performActions:(SwrveConversationButton *)control {
+    [self performActions:control withConversationPaneTag:self.conversationPane.tag];
+}
+
+
+-(void) performActions:(SwrveConversationButton *)control withConversationPaneTag:(NSString *)conversationPaneTag {
     NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
@@ -268,35 +271,32 @@
     return self.conversationPane.controls[(NSUInteger)tag];
 }
 
+
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
     [self stopAtoms];
     
-    if(control != nil) {
-        // Issue events for data from the user
-        [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
+    // Issue events for data from the user
+    [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
+    
+    // Move onto the next page in the conversation - fetch the next Convseration pane
+    if ([control endsConversation]) {
+        [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self dismiss];
+        });
+    } else {
+        SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
+        [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
         
-        // Move onto the next page in the conversation - fetch the next Convseration pane
-        if ([control endsConversation]) {
-            [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
-            [self runControlActions:control onPage:self.conversationPane.tag];
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self dismiss];
-            });
-        } else {
-            SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
-            [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
-            
-            self.conversationPane = nextPage;
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self updateUI];
-            });
-            
-            [self runControlActions:control onPage:self.conversationPane.tag];
-        }
+        self.conversationPane = nextPage;
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            [self updateUI];
+        });
     }
     
+    [self runControlActions:control onPage:self.conversationPane.tag];
     return YES;
 }
 
@@ -308,7 +308,7 @@
 
 -(void)dismiss {
     [self stopAtoms];
-    _conversationPane = nil; //kill last page
+    self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
             [self->controller conversationClosed];
@@ -319,7 +319,7 @@
 -(void)runControlActions:(SwrveConversationButton*)control onPage:(NSString *)tag{
     if (control.actions != nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [self performActions:control onPage:tag];
+            [self performActions:control withConversationPaneTag:tag];
         });
     }
 }
@@ -355,6 +355,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
             [self viewWillLayoutSubviews];
+             self.conversationPane.isActive = YES;
              self.view.hidden = NO;
         });
     }
@@ -419,19 +420,23 @@
 // Orientation Detection
 - (void)deviceOrientationDidChange:(NSNotification *)notification {
 #pragma unused (notification)
-    // Obtaining the current device orientation
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    // Ignoring specific orientations or if hasn't actually changed
-    if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
-        return;
-    }
-    currentOrientation = orientation;
     
-    // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+    //unless conversationPane is Active. Do nothing
+    if(self.conversationPane.isActive) {
+        // Obtaining the current device orientation
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        // Ignoring specific orientations or if hasn't actually changed
+        if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
+            return;
+        }
+        currentOrientation = orientation;
         
-        if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]){
-            [atom.delegate respondToDeviceOrientationChange:orientation];
+        // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
+        for(SwrveConversationAtom *atom in self.conversationPane.content) {
+            
+            if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]){
+                [atom.delegate respondToDeviceOrientationChange:orientation];
+            }
         }
     }
 }
@@ -445,7 +450,7 @@
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
     [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
     // Assigment will issue an impression event
-    [self setConversationPane:firstPage];
+    self.conversationPane = firstPage;
 }
 
 // Tapping the content view outside the context of any

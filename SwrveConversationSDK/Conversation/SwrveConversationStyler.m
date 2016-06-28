@@ -13,9 +13,9 @@
 #define kSwrveTypeTransparent @"transparent"
 #define kSwrveTypeColor @"color"
 
-#define kSwrveDefaultColorBg @"#ffffff"
-#define kSwrveDefaultColorFg @"#000000"
-#define kSwrveDefaultColorLb @"#80000000"
+#define kSwrveDefaultColorBg @"#ffffff"   // white
+#define kSwrveDefaultColorFg @"#000000"   // black
+#define kSwrveDefaultColorLb @"#B3000000" // 70% alpha black
 
 @implementation SwrveConversationStyler : NSObject
 
