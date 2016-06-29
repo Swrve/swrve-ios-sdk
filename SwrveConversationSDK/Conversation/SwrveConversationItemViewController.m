@@ -1,8 +1,3 @@
-#if !__has_feature(objc_arc)
-#error ConverserSDK must be built with ARC.
-// You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
-#endif
-
 #import "SwrveBaseConversation.h"
 #import "SwrveMessageEventHandler.h"
 #import "SwrveConversationAtom.h"
@@ -11,6 +6,7 @@
 #import "SwrveConversationItemViewController.h"
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
+#import "SwrveContentImage.h"
 #import "SwrveSetup.h"
 #import "SwrveConversationEvents.h"
 #import "SwrveCommon.h"
@@ -40,6 +36,9 @@
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
 @synthesize wasShownToUserNotified;
+@synthesize cancelButtonViewTop;
+@synthesize contentTableViewTop;
+@synthesize contentHeight;
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -54,12 +53,94 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
+    
+    [self.view setHidden:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewDidDisappear];
+    }
+}
+
+- (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kSwrveNotificationViewReady
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIDeviceOrientationDidChangeNotification
+                                                  object:nil];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+}
+
+#pragma mark ViewDidLoad
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    }
+    self.navigationController.navigationBar.translucent = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(viewReady:)
+                                                 name:kSwrveNotificationViewReady
+                                               object:nil];
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceOrientationDidChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object: nil];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    CGSize wholeSize = self.view.superview.bounds.size;
+    if (wholeSize.width > SWRVE_CONVERSATION_MAX_WIDTH) {
+        float centerx = ((float)wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
+        CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
+        if (!CGRectEqualToRect(self.view.frame, newFrame)) {
+            
+            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
+                newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
+                newFrame.origin.y =  (wholeSize.height / 2) - (newFrame.size.height / 2);
+            }
+            
+            self.view.frame = newFrame;
+            
+            // Apply styles from conversationPane
+            [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
+            self.view.layer.masksToBounds = YES;
+            // Remove top margin of close button and content.
+            self.contentTableViewTop.constant = 0;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = 0;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+            [self.view setNeedsLayout];
+            
+        }
+    } else {
+        CGRect newFrame = CGRectMake(0, 0, wholeSize.width, wholeSize.height);
+        if (!CGRectEqualToRect(self.view.frame, newFrame)
+            || self.contentTableViewTop.constant != self.topLayoutGuide.length
+            || self.cancelButtonViewTop.constant != self.topLayoutGuide.length) {
+            self.view.frame = newFrame;
+            // Hide border
+            self.view.layer.borderWidth = 0;
+            self.view.layer.cornerRadius = 0.0f;
+            
+            // Add top margin of close button and content
+            // to take into account the status bar.
+            self.contentTableViewTop.constant = self.topLayoutGuide.length;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+            [self.view setNeedsLayout];
+        }
     }
 }
 
@@ -78,6 +159,10 @@
 }
 
 -(void) performActions:(SwrveConversationButton *)control {
+    [self performActions:control withConversationPaneTag:self.conversationPane.tag];
+}
+
+-(void) performActions:(SwrveConversationButton *)control withConversationPaneTag:(NSString *)conversationPaneTag {
     NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
@@ -103,20 +188,20 @@
             NSDictionary *permissionDict = [actions objectForKey:@"permission_request"];
             param = [permissionDict objectForKey:@"permission"];
         } else {
-            [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
         }
     }
     
     switch (actionType) {
         case SwrveCallNumberActionType: {
-            [SwrveConversationEvents callNumber:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents callNumber:conversation onPage:conversationPaneTag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             [[UIApplication sharedApplication] openURL:callUrl];
             break;
         }
         case SwrveVisitURLActionType: {
             if (!param) {
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 return;
             }
             
@@ -129,14 +214,10 @@
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
-                
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
-                
-                
-                
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 DebugLog(@"Could not open the Conversation URL: %@", param, nil);
             } else {
-                [SwrveConversationEvents linkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents linkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
                 [[UIApplication sharedApplication] openURL:target];
             }
             break;
@@ -144,19 +225,19 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
-                DebugLog(@"Unkown permission request %@", param, nil);
+                DebugLog(@"Unknown permission request %@", param, nil);
             } else {
-                [SwrveConversationEvents permissionRequest:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents permissionRequest:conversation onPage:conversationPaneTag withControl:control.tag];
             }
             break;
         }
         case SwrveDeeplinkActionType: {
             if (!param) {
-                [SwrveConversationEvents error:conversation onPage:self.conversationPane.tag withControl:control.tag];
+                [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 return;
             }
             NSURL *target = [NSURL URLWithString:param];
-            [SwrveConversationEvents deeplinkVisit:conversation onPage:self.conversationPane.tag withControl:control.tag];
+            [SwrveConversationEvents deeplinkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
             [[UIApplication sharedApplication] openURL:target];
         }
         default:
@@ -185,6 +266,7 @@
     return self.conversationPane.controls[(NSUInteger)tag];
 }
 
+
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
@@ -202,14 +284,14 @@
     } else {
         SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
         [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
-
+        
         self.conversationPane = nextPage;
         dispatch_async(dispatch_get_main_queue(), ^ {
             [self updateUI];
         });
     }
-
-    [self runControlActions:control];
+    
+    [self runControlActions:control onPage:self.conversationPane.tag];
     return YES;
 }
 
@@ -221,6 +303,7 @@
 
 -(void)dismiss {
     [self stopAtoms];
+    self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
             [self->controller conversationClosed];
@@ -228,10 +311,10 @@
     }];
 }
 
--(void)runControlActions:(SwrveConversationButton*)control {
+-(void)runControlActions:(SwrveConversationButton*)control onPage:(NSString *)tag{
     if (control.actions != nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            [self performActions:control];
+            [self performActions:control withConversationPaneTag:tag];
         });
     }
 }
@@ -240,8 +323,35 @@
 #pragma unused (notification)
     numViewsReady++;
     if(numViewsReady == self.conversationPane.content.count) {
+        contentHeight = 0; //reset the contentHeight before we reload
+        
+        for(SwrveConversationAtom *atom in self.conversationPane.content) {
+            
+            if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+                SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
+                
+                for(uint i = 0; i < (uint)[multValue.values count]; i++){
+                    contentHeight += (float)[multValue heightForRow:(uint)i inTableView:self.contentTableView];
+                }
+                
+            }else if([atom.type isEqualToString:kSwrveContentTypeImage]) {
+                SwrveContentImage *imageAtom = (SwrveContentImage *)atom;
+                contentHeight += (float)imageAtom.view.frame.size.height;
+                
+            }else{
+                contentHeight += (float)atom.view.frame.size.height;
+            }
+        }
+        
+        for (SwrveConversationAtom *atom in self.conversationPane.controls) {
+            contentHeight +=(float)atom.view.frame.size.height + SWRVE_CONVERSATION_MODAL_MARGIN;
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
+            [self viewWillLayoutSubviews];
+             self.conversationPane.isActive = YES;
+             self.view.hidden = NO;
         });
     }
 }
@@ -299,25 +409,32 @@
 #else
 -(NSUInteger) supportedInterfaceOrientations {
 #endif //defined(__IPHONE_9_0)
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return UIInterfaceOrientationMaskAll;
-    } else {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
+    return UIInterfaceOrientationMaskAll;
 }
 
 // Orientation Detection
 - (void)deviceOrientationDidChange:(NSNotification *)notification {
 #pragma unused (notification)
-    // Obtaining the current device orientation
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    // Ignoring specific orientations or if hasn't actually changed
-    if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
-        return;
+    
+    //unless conversationPane is Active. Do nothing
+    if(self.conversationPane.isActive) {
+        // Obtaining the current device orientation
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        // Ignoring specific orientations or if hasn't actually changed
+        if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
+            return;
+        }
+        currentOrientation = orientation;
+        //delay for .01ms to account for rotation frame returned being out of date
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
+            for(SwrveConversationAtom *atom in self.conversationPane.content) {
+                if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]) {
+                    [atom.delegate respondToDeviceOrientationChange:orientation];
+                }
+            }
+        });
     }
-    currentOrientation = orientation;
-    // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotifyOrientationChange object:nil];
 }
 
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win
@@ -368,36 +485,9 @@
     }
     return v;
 }
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    }
-    self.navigationController.navigationBar.translucent = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(viewReady:)
-                                                 name:kSwrveNotificationViewReady
-                                               object:nil];
-
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object: nil];
-}
-
--(void) dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kSwrveNotificationViewReady
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
-                                                  object:nil];
-}
-
+    
+#pragma mark TableViewDelegate Methods
+    
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #pragma unused (tableView)
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)section];
@@ -454,7 +544,7 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        [atom viewWillTransitionToSize:size];
+        [atom viewWillTransitionToSize:self.view.frame.size];
     }
 }
 #endif //defined(__IPHONE_8_0)
