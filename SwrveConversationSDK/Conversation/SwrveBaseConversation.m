@@ -82,8 +82,4 @@
     return nil;
 }
 
-- (void)dealloc {
-    NSLog(@"dealloc %@", self);
-}
-
 @end
