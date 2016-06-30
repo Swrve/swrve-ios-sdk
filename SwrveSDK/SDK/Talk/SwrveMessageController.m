@@ -142,7 +142,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize installButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
-@synthesize swrveConversationsNavigationController;
 @synthesize swrveConversationItemViewController;
 @synthesize prefersIAMStatusBarHidden;
 
@@ -1118,23 +1117,22 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             }
 
             self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            [self.swrveConversationItemViewController setConversation:conversation andMessageController:self andWindow:self.conversationWindow];
+            [self.swrveConversationItemViewController setConversation:conversation andMessageController:self];
 
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
             SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
-            self.swrveConversationsNavigationController = svnc;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
             // Attach cancel button to the conversation navigation options
             UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.swrveConversationItemViewController action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
             self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
-
+            
             dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:self.swrveConversationsNavigationController];
+                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
                 self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
-                [rootController.view endEditing:YES];
+                [self.conversationWindow.rootViewController.view endEditing:YES];
             });
 
         }
@@ -1143,7 +1141,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 
 - (void) cleanupConversationUI {
-    NSLog(@"cleanupConversationUI");
     if(self.swrveConversationItemViewController != nil){
         [self.swrveConversationItemViewController dismiss];
     }
@@ -1151,11 +1148,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 
 - (void) conversationClosed {
-    NSLog(@"conversationClosed");
     self.conversationWindow.hidden = YES;
     self.conversationWindow = nil;
     self.swrveConversationItemViewController = nil;
-    self.swrveConversationsNavigationController = nil;
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {

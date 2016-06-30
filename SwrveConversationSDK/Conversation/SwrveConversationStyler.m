@@ -33,7 +33,6 @@
 }
 
 + (void)styleModalView:(UIView *)uiView withStyle:(NSDictionary*)style {
-    
     if([style.allKeys containsObject:kSwrveKeyBorderRadius]){
         float border = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
         uiView.layer.cornerRadius = border;

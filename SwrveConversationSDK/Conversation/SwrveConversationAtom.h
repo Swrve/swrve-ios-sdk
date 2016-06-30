@@ -50,5 +50,7 @@
 // this is notice to cease it. Defaults to doing nothing.
 -(void) stop;
 -(void) viewDidDisappear;
+// Temporal fix to remove views from model.
+-(void) removeView;
 
 @end
