@@ -31,7 +31,7 @@ typedef enum {
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 @property (readwrite, nonatomic) float contentHeight;
 
--(void)setConversation:(SwrveBaseConversation*)conversation andMessageController:(id<SwrveMessageEventHandler>)controller andWindow:(UIWindow*)window;
+-(void)setConversation:(SwrveBaseConversation*)conversation andMessageController:(id<SwrveMessageEventHandler>)controller;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 
 -(IBAction)cancelButtonTapped:(id)sender;

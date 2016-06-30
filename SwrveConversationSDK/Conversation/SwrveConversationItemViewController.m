@@ -20,7 +20,6 @@
     UITapGestureRecognizer *localRecognizer;
     SwrveBaseConversation *conversation;
     id<SwrveMessageEventHandler> controller;
-    UIWindow* window;
 }
 
 @property (nonatomic) BOOL wasShownToUserNotified;
@@ -51,9 +50,20 @@
 
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    // Subscrite to internal notifications and orientation changes
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(viewReady:)
+                                                 name:kSwrveNotificationViewReady
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceOrientationDidChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object: nil];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
-    
     [self.view setHidden:YES];
 }
 
@@ -64,8 +74,10 @@
     }
 }
 
-- (void)dealloc {
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     
+    // Unsubscribe from internal notifications and orientation changes
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kSwrveNotificationViewReady
                                                   object:nil];
@@ -73,6 +85,16 @@
                                                     name:UIDeviceOrientationDidChangeNotification
                                                   object:nil];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+
+    // Cleanup views for all panes
+    for(SwrveConversationPane* page in self.conversation.pages) {
+        for(SwrveConversationAtom* contentItem in page.content) {
+            [contentItem removeView];
+        }
+        for(SwrveConversationAtom* contentItem in page.controls) {
+            [contentItem removeView];
+        }
+    }
 }
 
 #pragma mark ViewDidLoad
@@ -85,16 +107,6 @@
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     }
     self.navigationController.navigationBar.translucent = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(viewReady:)
-                                                 name:kSwrveNotificationViewReady
-                                               object:nil];
-    
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object: nil];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -111,7 +123,6 @@
             }
             
             self.view.frame = newFrame;
-            
             // Apply styles from conversationPane
             [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
             self.view.layer.masksToBounds = YES;
@@ -152,6 +163,8 @@
     _conversationPane = conversationPane;
     numViewsReady = 0;
     [SwrveConversationEvents impression:conversation onPage:_conversationPane.tag];
+    // Apply styles from conversationPane
+    [SwrveConversationStyler styleModalView:self.view withStyle:conversationPane.pageStyle];
 }
 
 -(CGFloat) buttonHorizontalPadding {
@@ -266,7 +279,6 @@
     return self.conversationPane.controls[(NSUInteger)tag];
 }
 
-
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
@@ -302,7 +314,9 @@
 }
 
 -(void)dismiss {
+    // Stop videos etc
     [self stopAtoms];
+    // Close the view controller
     self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
@@ -357,6 +371,7 @@
 }
 
 -(void) updateUI {
+    self.navigationItem.title = self.conversationPane.title;
     [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
     
@@ -365,22 +380,18 @@
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     self.contentTableView.separatorColor = [UIColor clearColor];
-    
-    // Only called once the conversation has been retrieved
-    for (UIView *view in buttonsView.subviews) {
-        if (![view isKindOfClass:[UIImageView class]]) {
-            [view removeFromSuperview];
-        }
-    }
 
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {
         [atom loadViewWithContainerView:self.view];
     }
-    
-    self.navigationItem.title = self.conversationPane.title;
+     
+    // Remove current buttons
+    for (UIView *view in buttonsView.subviews) {
+        [view removeFromSuperview];
+    }
+     
     NSArray *buttons = self.conversationPane.controls;
-
     // Buttons need to fit into width - 2*button padding
     // When there are n buttons, there are n-1 gaps between them
     // So, the buttons each take up (width-(n+1)*gapwidth)/numbuttons
@@ -415,8 +426,7 @@
 // Orientation Detection
 - (void)deviceOrientationDidChange:(NSNotification *)notification {
 #pragma unused (notification)
-    
-    //unless conversationPane is Active. Do nothing
+    // Do nothing unless conversationPane is Active
     if(self.conversationPane.isActive) {
         // Obtaining the current device orientation
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
@@ -425,7 +435,7 @@
             return;
         }
         currentOrientation = orientation;
-        //delay for .01ms to account for rotation frame returned being out of date
+        // Delay for .01ms to account for rotation frame returned being out of date
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
             for(SwrveConversationAtom *atom in self.conversationPane.content) {
@@ -437,14 +447,13 @@
     }
 }
 
--(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl andWindow:(UIWindow*)win
+-(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl
 {
     conversation = conv;
     controller = ctrl;
-    window = win;
     // The conversation is starting now, so issue a starting event
     SwrveConversationPane *firstPage = [conversation pageAtIndex:0];
-    [SwrveConversationEvents started:conversation onStartPage:firstPage.tag]; // Issues a start event
+    [SwrveConversationEvents started:conversation onStartPage:firstPage.tag];
     // Assigment will issue an impression event
     self.conversationPane = firstPage;
 }
