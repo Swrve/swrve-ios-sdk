@@ -17,16 +17,8 @@
                          forCampaign:(SwrveConversationCampaign*)_campaign
                        forController:(SwrveMessageController*)_controller
 {
+    [self updateWithJSON:json forController:_controller];
     self.campaign       = _campaign;
-    self.controller     = _controller;
-    self.conversationID = [json objectForKey:@"id"];
-    self.name           = [json objectForKey:@"name"];
-    NSArray* jsonPages  = [json objectForKey:@"pages"];
-    NSMutableArray* loadedPages = [[NSMutableArray alloc] init];
-    for (NSDictionary* pageJson in jsonPages) {
-        [loadedPages addObject:[[SwrveConversationPane alloc] initWithDictionary:pageJson]];
-    }
-    self.pages = loadedPages;
     
     if ([json objectForKey:@"priority"]) {
         self.priority   = [json objectForKey:@"priority"];
