@@ -123,7 +123,6 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
 @property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
 
-@property (nonatomic, retain) SwrveConversationsNavigationController* swrveConversationsNavigationController;
 @property (nonatomic, retain) SwrveConversationItemViewController* swrveConversationItemViewController;
 
 
