@@ -42,7 +42,7 @@
         self.swrveMaxRating = 5;
         self.swrveMidMargin = 5.0f;
         self.swrveLeftMargin = 0.0f;
-        self.swrveMinImageSize = CGSizeMake(15, 15);
+        self.swrveMinImageSize = CGSizeMake(40, 40);
         
         [self setStarsFromMax];
     }
@@ -194,7 +194,5 @@
 #pragma unused(touches)
     [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
 }
-
-
 
 @end

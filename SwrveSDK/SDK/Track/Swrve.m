@@ -283,6 +283,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize conversationLightBoxColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -339,6 +340,8 @@ enum
             // Do nothing by default.
         };
         self.selectedStack = SWRVE_STACK_US;
+        
+        self.conversationLightBoxColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.70f];
     }
     return self;
 }
@@ -372,6 +375,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize conversationLightBoxColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -413,6 +417,7 @@ enum
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
+        conversationLightBoxColor = config.conversationLightBoxColor;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
@@ -1333,15 +1338,20 @@ static bool didSwizzle = false;
 
 -(void) shutdown
 {
+    NSLog(@"shutting down swrveInstance..");
     if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == NO)
     {
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
         return;
     }
-
+    
     [self stopCampaignsAndResourcesTimer];
 
+    //ensure UI isn't displaying during shutdown
+    [talk cleanupConversationUI];
+    [talk dismissMessageWindow];
     talk = nil;
+    
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];

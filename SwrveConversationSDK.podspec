@@ -16,5 +16,6 @@ Pod::Spec.new do |s|
   s.resources = s.name.to_s + '/Resources/**/*.*'
 
   s.dependency 'SwrveSDKCommon', '~> 4.5.0'
+  
   s.compiler_flags = '-DSWRVE_CONVERSATION_SDK'
 end

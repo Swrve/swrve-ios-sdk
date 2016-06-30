@@ -17,15 +17,15 @@
 
 -(void) onEnterDemo
 {
-    self.oldBackgroundColor = [DemoFramework getSwrveTalk].backgroundColor;
+    self.oldBackgroundColor = [DemoFramework getSwrveTalk].inAppMessageBackgroundColor;
     
     // Change the default background color to clear
-    [DemoFramework getSwrveTalk].backgroundColor = [UIColor clearColor];
+    [DemoFramework getSwrveTalk].inAppMessageBackgroundColor = [UIColor clearColor];
 }
 
 -(void) onExitDemo
 {
-    [DemoFramework getSwrveTalk].backgroundColor = self.oldBackgroundColor;
+    [DemoFramework getSwrveTalk].inAppMessageBackgroundColor = self.oldBackgroundColor;
     
 }
 

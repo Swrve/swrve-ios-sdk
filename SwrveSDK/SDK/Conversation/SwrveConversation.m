@@ -21,7 +21,13 @@
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
-    self.pages          = [json objectForKey:@"pages"];
+    NSArray* jsonPages  = [json objectForKey:@"pages"];
+    NSMutableArray* loadedPages = [[NSMutableArray alloc] init];
+    for (NSDictionary* pageJson in jsonPages) {
+        [loadedPages addObject:[[SwrveConversationPane alloc] initWithDictionary:pageJson]];
+    }
+    self.pages = loadedPages;
+    
     if ([json objectForKey:@"priority"]) {
         self.priority   = [json objectForKey:@"priority"];
     } else {

@@ -1,8 +1,3 @@
-#if !__has_feature(objc_arc)
-#error ConverserSDK must be built with ARC.
-// You can turn on ARC for only ConverserSDK files by adding -fobjc-arc to the build phase for each of its files.
-#endif
-
 #import "SwrveConversationPane.h"
 #import "SwrveConversationAtom.h"
 #import "SwrveConversationAtomFactory.h"
@@ -15,6 +10,7 @@
 @synthesize tag = _tag;
 @synthesize title = _title;
 @synthesize pageStyle = _pageStyle;
+@synthesize isActive = _isActive;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
@@ -72,6 +68,5 @@
     }
     return atoms;
 }
-
 
 @end
