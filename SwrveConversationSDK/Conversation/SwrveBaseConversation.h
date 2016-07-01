@@ -12,6 +12,8 @@ const static int CONVERSATION_VERSION = 3;
 @property (nonatomic, retain)            NSString* name;                      /*!< Name of the conversation */
 @property (nonatomic, retain)            NSArray* pages;                      /*!< Pages of the message */
 
+-(SwrveBaseConversation*) updateWithJSON:(NSDictionary*)json forController:(id<SwrveMessageEventHandler>)_controller;
+
 /*! Create an in-app conversation from the JSON content.
  *
  * \param json In-app conversation JSON content.
