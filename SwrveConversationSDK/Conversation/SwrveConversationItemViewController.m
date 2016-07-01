@@ -85,7 +85,7 @@
                                                     name:UIDeviceOrientationDidChangeNotification
                                                   object:nil];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-
+    
     // Cleanup views for all panes
     for(SwrveConversationPane* page in self.conversation.pages) {
         for(SwrveConversationAtom* contentItem in page.content) {
@@ -111,7 +111,9 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    
     CGSize wholeSize = self.view.superview.bounds.size;
+    
     if (wholeSize.width > SWRVE_CONVERSATION_MAX_WIDTH) {
         float centerx = ((float)wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
         CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
@@ -222,7 +224,7 @@
             if (![target scheme]) {
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
             }
-
+            
             if (![[UIApplication sharedApplication] canOpenURL:target]) {
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
@@ -255,7 +257,7 @@
         }
         default:
             break;
-    }    
+    }
 }
 
 - (IBAction)cancelButtonTapped:(id)sender {
@@ -364,8 +366,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
             [self viewWillLayoutSubviews];
-             self.conversationPane.isActive = YES;
-             self.view.hidden = NO;
+            self.conversationPane.isActive = YES;
+            self.view.hidden = NO;
         });
     }
 }
@@ -380,17 +382,17 @@
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     self.contentTableView.separatorColor = [UIColor clearColor];
-
+    
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {
         [atom loadViewWithContainerView:self.view];
     }
-     
+    
     // Remove current buttons
     for (UIView *view in buttonsView.subviews) {
         [view removeFromSuperview];
     }
-     
+    
     NSArray *buttons = self.conversationPane.controls;
     // Buttons need to fit into width - 2*button padding
     // When there are n buttons, there are n-1 gaps between them
@@ -422,10 +424,11 @@
 #endif //defined(__IPHONE_9_0)
     return UIInterfaceOrientationMaskAll;
 }
-
+    
 // Orientation Detection
 - (void)deviceOrientationDidChange:(NSNotification *)notification {
 #pragma unused (notification)
+    
     // Do nothing unless conversationPane is Active
     if(self.conversationPane.isActive) {
         // Obtaining the current device orientation
@@ -434,6 +437,7 @@
         if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
             return;
         }
+        
         currentOrientation = orientation;
         // Delay for .01ms to account for rotation frame returned being out of date
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -446,7 +450,7 @@
         });
     }
 }
-
+    
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl
 {
     conversation = conv;
@@ -461,7 +465,7 @@
 // Tapping the content view outside the context of any
 // interactive input views requests the current first
 // responder to relinquish its status. Gesture recognizer
-// is then removed. 
+// is then removed.
 - (void)contentViewTapped:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded)     {
         for(SwrveConversationAtom *atom in self.conversationPane.content) {
@@ -475,7 +479,7 @@
         }
     }
 }
-
+    
 -(NSIndexPath *) indexPathForAtom:(SwrveConversationAtom *)atom {
     for(NSUInteger i = 0; i < self.conversationPane.content.count; i++) {
         if(atom == [self.conversationPane.content objectAtIndex:i]) {
@@ -502,13 +506,13 @@
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)section];
     return (NSInteger)[atom numberOfRowsNeeded];
 }
-
+    
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath]; // HACK
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom cellForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
-
+    
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #pragma unused (tableView)
     // Each item is a "section"
@@ -521,7 +525,7 @@
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom heightForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
-
+    
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
     NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
     NSUInteger paneCount = [self.conversationPane.content count];
@@ -544,18 +548,16 @@
 }
 
 #if defined(__IPHONE_8_0)
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden {
     return NO;
 }
-    
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         [atom viewWillTransitionToSize:self.view.frame.size];
     }
 }
 #endif //defined(__IPHONE_8_0)
-
+    
 @end
