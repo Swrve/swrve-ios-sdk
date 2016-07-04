@@ -1134,7 +1134,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 [self.conversationWindow makeKeyAndVisible];
                 [self.conversationWindow.rootViewController.view endEditing:YES];
             });
-
         }
     }
 }

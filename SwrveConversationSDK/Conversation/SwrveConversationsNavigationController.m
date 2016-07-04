@@ -12,22 +12,11 @@
 }
 
 - (BOOL)shouldAutorotate {
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        // This does not work if conversation is of type UIModalPresentationFormSheet
-        return YES;
-    } else {
-        return NO;
-    }
+    return YES;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return [self.topViewController preferredInterfaceOrientationForPresentation];
-    } else {
-        return UIInterfaceOrientationPortrait;
-    }
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
 }
 
 @end
