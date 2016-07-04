@@ -15,8 +15,6 @@
     return YES;
 }
 
-
-// Rotation for iOS < 6
 #if defined(__IPHONE_9_0)
 #else
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
