@@ -15,8 +15,12 @@
     return YES;
 }
 
+#if defined(__IPHONE_9_0)
+#else
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+#pragma unused(interfaceOrientation)
     return YES;
 }
+#endif
 
 @end
