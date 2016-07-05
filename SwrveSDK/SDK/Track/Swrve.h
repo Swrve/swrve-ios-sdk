@@ -16,7 +16,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.5"
+#define SWRVE_SDK_VERSION "4.6"
 
 /*! Swrve stack names. */
 enum SwrveStack {
