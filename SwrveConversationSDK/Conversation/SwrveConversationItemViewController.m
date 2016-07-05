@@ -322,7 +322,10 @@
     self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
-            [self->controller conversationClosed];
+            // Delay for .01ms to account for killing the conversation stuff (iOS6) 
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self->controller conversationClosed];
+            });
         }
     }];
 }
