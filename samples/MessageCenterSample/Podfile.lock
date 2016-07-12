@@ -1,10 +1,10 @@
 PODS:
-  - SwrveConversationSDK (4.5.0):
-    - SwrveSDKCommon
-  - SwrveSDK (4.5.0):
-    - SwrveConversationSDK (~> 4.5.0)
-    - SwrveSDKCommon (~> 4.5.0)
-  - SwrveSDKCommon (4.5.0)
+  - SwrveConversationSDK (4.5.1):
+    - SwrveSDKCommon (~> 4.5.1)
+  - SwrveSDK (4.5.1):
+    - SwrveConversationSDK (~> 4.5.1)
+    - SwrveSDKCommon (~> 4.5.1)
+  - SwrveSDKCommon (4.5.1)
 
 DEPENDENCIES:
   - SwrveConversationSDK (from `../..`)
@@ -13,17 +13,17 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   SwrveConversationSDK:
-    :path: "../../SwrveConversationSDK"
+    :path: "../.."
   SwrveSDK:
-    :path: "../../SwrveSDK"
+    :path: "../.."
   SwrveSDKCommon:
-    :path: "../../SwrveSDKCommon"
+    :path: "../.."
 
 SPEC CHECKSUMS:
-  SwrveConversationSDK: d58f6c78856075d64efcdca0b4c62d47d0b82ac1
-  SwrveSDK: 243c2713a1e22d7526512b9181b6519cb9fee4bc
-  SwrveSDKCommon: 6497d8a6be0914cb4d33d803f792973397ac3635
+  SwrveConversationSDK: 52cd96fc93f972ab45b59378c8ee270f621323f1
+  SwrveSDK: 9e82c6f398e0c63d27e2be0ca506458a204314c3
+  SwrveSDKCommon: 81bc8950e4c195ce0c802cf7ecee3a87c177bdaf
 
 PODFILE CHECKSUM: 86f9342b69168166bfdbcd0328ba4af6e1bd55df
 
-COCOAPODS: 1.0.0.beta.5
+COCOAPODS: 1.0.1
