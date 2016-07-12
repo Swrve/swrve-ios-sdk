@@ -33,18 +33,17 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-#pragma unused (webView)
     // Set real width
     CGRect frame = _view.frame;
     frame.size.width = _containerView.frame.size.width;
     _view.frame = frame;
     // Measure height
-    NSString *output = [(UIWebView*)_view
-                        stringByEvaluatingJavaScriptFromString:
-                        @"document.height;"];
     frame = _view.frame;
-    frame.size.height = [output floatValue];
+    
+    NSString *scrollHeight = [webView stringByEvaluatingJavaScriptFromString:@"document.body.scrollHeight;"];
+    frame.size.height = [scrollHeight floatValue];
     _view.frame = frame;
+    
     // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
