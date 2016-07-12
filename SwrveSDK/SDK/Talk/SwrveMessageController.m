@@ -181,11 +181,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
     self.inAppMessageBackgroundColor    = sdk.config.defaultBackgroundColor;
     self.conversationLightboxColor = sdk.config.conversationLightBoxColor;
-    NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    self.settingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
-    self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
-    self.campaignCache      = [self.cacheFolder stringByAppendingPathComponent:swrve_campaign_cache];
-    self.campaignCacheSignature = [self.cacheFolder stringByAppendingPathComponent:swrve_campaign_cache_signature];
+    [self migrateAndSetFileLocations];
     self.manager            = [NSFileManager defaultManager];
     self.notifications      = [[NSMutableArray alloc] init];
     self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
@@ -242,6 +238,32 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.hideMessageTransition.delegate = self;
 
     return self;
+}
+
+-(void)migrateAndSetFileLocations {
+    NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
+    
+    self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
+    self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
+    self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
+    
+    // Files were in this locations in lowe than 4.5.1 (caches dir) and we need to move them to the new location
+    NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
+    NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache];
+    NSString* oldCampaignCacheSignature = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache_signature];
+    [SwrveMessageController migrateOldCacheFile:oldSettingsPath withNewPath:self.settingsPath];
+    [SwrveMessageController migrateOldCacheFile:oldCampaignCache withNewPath:self.campaignCache];
+    [SwrveMessageController migrateOldCacheFile:oldCampaignCacheSignature withNewPath:self.campaignCacheSignature];
+}
+
++ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
+    // Old file defaults to cache directory, should be moved to new location
+    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
+        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:newPath error:nil];
+    }
 }
 
 #if !defined(SWRVE_NO_PUSH)
