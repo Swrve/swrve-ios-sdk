@@ -24,7 +24,6 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
-    
 }
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
@@ -33,13 +32,11 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    // Set real width
+    // Measure and set width
     CGRect frame = _view.frame;
     frame.size.width = _containerView.frame.size.width;
     _view.frame = frame;
-    // Measure height
-    frame = _view.frame;
-    
+    // Measure and set height
     NSString *scrollHeight = [webView stringByEvaluatingJavaScriptFromString:@"document.body.scrollHeight;"];
     frame.size.height = [scrollHeight floatValue];
     _view.frame = frame;
