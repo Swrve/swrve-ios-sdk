@@ -373,6 +373,7 @@ enum
 @synthesize language;
 @synthesize eventCacheFile;
 @synthesize eventCacheSecondaryFile;
+@synthesize eventCacheSignatureFile;
 @synthesize locationCampaignCacheFile;
 @synthesize locationCampaignCacheSecondaryFile;
 @synthesize locationCampaignCacheSignatureFile;
