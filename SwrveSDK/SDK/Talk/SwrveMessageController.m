@@ -240,9 +240,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
     return self;
 }
 
--(void)migrateAndSetFileLocations {
+- (void)migrateAndSetFileLocations {
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
     self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
     
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
