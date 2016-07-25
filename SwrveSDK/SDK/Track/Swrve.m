@@ -1998,6 +1998,7 @@ static NSString* httpScheme(bool useHttps)
     [SwrveFileManagement applicationSupportPathWithBackupExclusion:config.includeSettingsFileInBackup];
     
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
+    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
     
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
@@ -2010,6 +2011,7 @@ static NSString* httpScheme(bool useHttps)
 {
     // Migrate event data from cache to application data (4.5.1+)
     [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
+    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
     
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
