@@ -13,6 +13,7 @@
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCommonConnectionDelegate.h"
+#import "SwrveFileManagement.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -316,9 +317,10 @@ enum
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
 
+        self.includeSettingsFileInBackup = YES;
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString* applicationSupport = [self getOrCreateApplicationSupportPath];
+        NSString* applicationSupport = [SwrveFileManagement applicationSupportPathWithBackupExclusion:self.includeSettingsFileInBackup];
         eventCacheFile = [applicationSupport stringByAppendingPathComponent: @"swrve_events.txt"];
         eventCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
 
@@ -331,7 +333,7 @@ enum
         userResourcesCacheSecondaryFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
         userResourcesCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"srcngtsgt2.txt"];
         userResourcesCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
-        self.includeSettingsFileInBackup = YES;
+
         
         userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
@@ -358,33 +360,6 @@ enum
         self.conversationLightBoxColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.70f];
     }
     return self;
-}
-
-
-- (NSString *) getOrCreateApplicationSupportPath {
-    
-    NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:appSupportDir isDirectory:NULL]) {
-        NSError *error = nil;
-        //Create one
-        if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:&error]) {
-            DebugLog(@"Error Creating an Application Support Directory %@", error.localizedDescription);
-        } else {
-            if(includeSettingsFileInBackup){
-                NSURL *url = [NSURL fileURLWithPath:appSupportDir];
-                if (![url setResourceValue:@YES
-                                    forKey:NSURLIsExcludedFromBackupKey
-                                     error:&error])
-                {
-                    NSLog(@"Error excluding %@ from backup %@", url.lastPathComponent, error.localizedDescription);
-                }
-                else {
-                    
-                }
-            }
-        }
-    }
-    return appSupportDir;
 }
 
 @end
@@ -2020,6 +1995,8 @@ static NSString* httpScheme(bool useHttps)
 
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
+    [SwrveFileManagement applicationSupportPathWithBackupExclusion:config.includeSettingsFileInBackup];
+    
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
     
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];

@@ -249,7 +249,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
     self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
     
-    // Files were in this locations in lowe than 4.5.1 (caches dir) and we need to move them to the new location
+    // Files were in this locations in lower than 4.5.1 (caches dir) and we need to move them to the new location
     NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache];
     NSString* oldCampaignCacheSignature = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache_signature];
