@@ -3,6 +3,6 @@
 
 @interface SwrveFileManagement : NSObject
 
-+ (NSString *) applicationSupportPathWithBackupExclusion:(BOOL)backupExclusion;
++ (NSString *) applicationSupportPathWhichExcludesBackup:(BOOL)excludeBackup;
 
 @end

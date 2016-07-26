@@ -320,7 +320,7 @@ enum
         self.includeSettingsFileInBackup = YES;
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString* applicationSupport = [SwrveFileManagement applicationSupportPathWithBackupExclusion:self.includeSettingsFileInBackup];
+        NSString* applicationSupport = [SwrveFileManagement applicationSupportPathWhichExcludesBackup:self.includeSettingsFileInBackup];
         eventCacheFile = [applicationSupport stringByAppendingPathComponent: @"swrve_events.txt"];
         eventCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
 
@@ -1996,7 +1996,7 @@ static NSString* httpScheme(bool useHttps)
 
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
-    [SwrveFileManagement applicationSupportPathWithBackupExclusion:config.includeSettingsFileInBackup];
+    [SwrveFileManagement applicationSupportPathWhichExcludesBackup:config.includeSettingsFileInBackup];
     
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
