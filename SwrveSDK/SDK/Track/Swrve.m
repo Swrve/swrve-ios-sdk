@@ -1599,13 +1599,14 @@ static bool didSwizzle = false;
 {
     NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
+        [self.userUpdates setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
     }
 }
 
--(void) pushNotificationReceived:(NSDictionary *)userInfo
-{
+- (void) pushNotificationReceived:(NSDictionary *)userInfo {
+    
     // Try to get the identifier _p
     id pushIdentifier = [userInfo objectForKey:@"_p"];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
