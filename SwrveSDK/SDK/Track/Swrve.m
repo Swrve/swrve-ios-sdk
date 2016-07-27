@@ -284,7 +284,6 @@ enum
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
 @synthesize installTimeCacheSecondaryFile;
-@synthesize includeSettingsFileInBackup;
 @synthesize appVersion;
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
@@ -317,10 +316,9 @@ enum
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
 
-        self.includeSettingsFileInBackup = YES;
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString* applicationSupport = [SwrveFileManagement applicationSupportPathWhichExcludesBackup:self.includeSettingsFileInBackup];
+        NSString* applicationSupport = [SwrveFileManagement applicationSupportPath];
         eventCacheFile = [applicationSupport stringByAppendingPathComponent: @"swrve_events.txt"];
         eventCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
 
@@ -390,7 +388,6 @@ enum
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
 @synthesize installTimeCacheSecondaryFile;
-@synthesize includeSettingsFileInBackup;
 @synthesize appVersion;
 @synthesize receiptProvider;
 @synthesize maxConcurrentDownloads;
@@ -432,7 +429,6 @@ enum
         userResourcesCacheFile = config.userResourcesCacheFile;
         userResourcesCacheSecondaryFile = config.userResourcesCacheSecondaryFile;
         userResourcesCacheSignatureFile = config.userResourcesCacheSignatureFile;
-        includeSettingsFileInBackup = config.includeSettingsFileInBackup;
         userResourcesCacheSignatureSecondaryFile = config.userResourcesCacheSignatureSecondaryFile;
         userResourcesDiffCacheFile = config.userResourcesDiffCacheFile;
         userResourcesDiffCacheSignatureFile = config.userResourcesDiffCacheSignatureFile;
@@ -1996,7 +1992,7 @@ static NSString* httpScheme(bool useHttps)
 
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
-    [SwrveFileManagement applicationSupportPathWhichExcludesBackup:config.includeSettingsFileInBackup];
+    [SwrveFileManagement applicationSupportPath];
     
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];

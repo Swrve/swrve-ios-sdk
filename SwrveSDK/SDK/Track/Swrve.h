@@ -308,12 +308,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic, retain) NSString * installTimeCacheSecondaryFile;
 
-/*! This determines if the settings saved by the Swrve SDK should be included in an iCloud Backup
- *  along with the other Application Data.
- *
- */
-@property (nonatomic) BOOL includeSettingsFileInBackup;
-
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
  */
 @property (nonatomic) int maxConcurrentDownloads;
@@ -360,7 +354,6 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheSignatureFile;
 @property (nonatomic, readonly) NSString * installTimeCacheFile;
 @property (nonatomic, readonly) NSString * installTimeCacheSecondaryFile;
-@property (nonatomic, readonly) BOOL includeSettingsFileInBackup;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
 @property (nonatomic, readonly) int maxConcurrentDownloads;
