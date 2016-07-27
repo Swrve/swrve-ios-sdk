@@ -344,7 +344,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, int defaultValue)
 {
     NSNumber* result = [json objectForKey:key];
-    if (!result){
+    if (result == nil) {
         result = [NSNumber numberWithInt:defaultValue];
     }
     return result;

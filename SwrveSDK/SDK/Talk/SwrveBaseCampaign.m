@@ -26,19 +26,19 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 -(id)initWithJSON:(NSDictionary*)data {
     if (self = [super init]) {
         NSNumber* idJson = [data objectForKey:@"ID"];
-        if (idJson) {
+        if (idJson != nil) {
             self.campaignID = idJson.unsignedIntegerValue;
         }        
         NSNumber* nextJson = [data objectForKey:@"next"];
-        if (nextJson) {
+        if (nextJson != nil) {
             self.next = nextJson.unsignedIntegerValue;
         }
         NSNumber* impressionsJson = [data objectForKey:@"impressions"];
-        if (impressionsJson) {
+        if (impressionsJson != nil) {
             self.impressions = impressionsJson.unsignedIntegerValue;
         }
         NSNumber* statusJson = [data objectForKey:@"status"];
-        if (statusJson) {
+        if (statusJson != nil) {
             self.status = (SwrveCampaignStatus)statusJson.unsignedIntegerValue;
         }
     }
@@ -147,19 +147,19 @@ static NSDate* read_date(id d, NSDate* default_date)
     DebugLog(@"Rules: %@", rules);
     self.randomOrder = [[rules objectForKey:@"display_order"] isEqualToString: @"random"];
     NSNumber* jsonMaxImpressions = [rules objectForKey:@"dismiss_after_views"];
-    if (jsonMaxImpressions)
+    if (jsonMaxImpressions != nil)
     {
         self.maxImpressions = jsonMaxImpressions.unsignedIntegerValue;
     }
     
     NSNumber* delayFirstMsg = [rules objectForKey:@"delay_first_message"];
-    if (delayFirstMsg)
+    if (delayFirstMsg != nil)
     {
         self.showMsgsAfterLaunch = [self.initialisedTime dateByAddingTimeInterval:delayFirstMsg.integerValue];
     }
     
     NSNumber* jsonMinDelayBetweenMsgs = [rules objectForKey:@"min_delay_between_messages"];
-    if (jsonMinDelayBetweenMsgs)
+    if (jsonMinDelayBetweenMsgs != nil)
     {
         self.minDelayBetweenMsgs = [jsonMinDelayBetweenMsgs doubleValue];
     }

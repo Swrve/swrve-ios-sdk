@@ -93,7 +93,7 @@
         return nil;
     }
     
-    if (conversation == nil)
+    if (self.conversation == nil)
     {
         [self logAndAddReason:[NSString stringWithFormat:@"No conversations in campaign %ld", (long)self.ID] withReasons:campaignReasons];
         return nil;
@@ -122,7 +122,7 @@
     
     if ([self.conversation assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
-        return conversation;
+        return self.conversation;
     }
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];

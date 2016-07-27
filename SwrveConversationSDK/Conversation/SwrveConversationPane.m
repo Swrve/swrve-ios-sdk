@@ -60,8 +60,8 @@
 
 - (NSMutableArray <SwrveConversationAtom *> *) contentForTag:(NSString*)tag {
     NSMutableArray <SwrveConversationAtom*> *atoms = [NSMutableArray array];
-    for(unsigned int i=0; i < [_content count]; i++) {
-        SwrveConversationAtom *atom = (SwrveConversationAtom*)_content[i];
+    for(unsigned int i=0; i < [self.content count]; i++) {
+        SwrveConversationAtom *atom = (SwrveConversationAtom*)self.content[i];
         if ([atom.tag isEqualToString:tag]) {
             [atoms addObject:atom];
         }
