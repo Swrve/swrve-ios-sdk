@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.public_header_files = s.name.to_s + '/Conversation/**/*.h'
   s.resources = s.name.to_s + '/Resources/**/*.*'
 
-  s.dependency 'SwrveSDKCommon', '~> 4.6.0'
+  s.dependency 'SwrveSDKCommon', '4.6.0'
   
   s.compiler_flags = '-DSWRVE_CONVERSATION_SDK'
 end
