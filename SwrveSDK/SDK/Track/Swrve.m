@@ -1910,7 +1910,10 @@ static NSString* httpScheme(bool useHttps)
     for (NSString* key in deviceProperties) {
         [formattedDeviceData appendFormat:@"  %24s: %@\n", [key UTF8String], [deviceProperties objectForKey:key]];
     }
-    DebugLog(@"Swrve config:\n%@", formattedDeviceData);
+    
+    if (!getenv("RUNNING_UNIT_TESTS")) {
+        DebugLog(@"Swrve config:\n%@", formattedDeviceData);
+    }
     [self updateDeviceInfo];
     [self userUpdate:self.deviceInfo];
 }
