@@ -2,6 +2,9 @@
 #import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
+#import "SwrveConversationPane.h"
+#import "SwrveConversationAtom.h"
+#import "SwrveContentItem.h"
 
 @interface SwrveConversationCampaign()
 
@@ -28,10 +31,10 @@
 -(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
 {
     // Queue conversation images for download
-    for(NSDictionary* page in self.conversation.pages) {
-        for (NSDictionary *contentItem in [page objectForKey:@"content"]) {
-            if ([[contentItem objectForKey:@"type"] isEqualToString:@"image"]) {
-                [assetsQueue addObject:[contentItem objectForKey:@"value"]];
+    for(SwrveConversationPane* page in self.conversation.pages) {
+        for(SwrveContentItem* contentItem in page.content) {
+            if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
+                [assetsQueue addObject:contentItem.value];
             }
         }
     }
@@ -90,7 +93,7 @@
         return nil;
     }
     
-    if (conversation == nil)
+    if (self.conversation == nil)
     {
         [self logAndAddReason:[NSString stringWithFormat:@"No conversations in campaign %ld", (long)self.ID] withReasons:campaignReasons];
         return nil;
@@ -119,7 +122,7 @@
     
     if ([self.conversation assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
-        return conversation;
+        return self.conversation;
     }
     
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];

@@ -44,7 +44,9 @@
     NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block", nil);
     ISHPermissionState currentState = self.permissionState;
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
-        completion(self, currentState, nil);
+        if (completion != nil) {
+            completion(self, currentState, nil);
+        }
         return;
     }
     
@@ -52,13 +54,17 @@
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 ISHPermissionState state = granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied;
-                completion(self, state, nil);
+                if (completion != nil) {
+                    completion(self, state, nil);
+                }
             });
         }];
     } else {
         AVCaptureDevice *inputDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
-        completion(self, self.permissionState, nil);
+        if (completion != nil) {
+            completion(self, self.permissionState, nil);
+        }
     }
 }
 @end

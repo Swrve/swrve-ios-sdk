@@ -43,10 +43,15 @@
     
     NSArray *payloadKeys = [payload allKeys];
     
-    if([payloadKeys containsObject:_key]){
-        NSString *payloadValue = [payload objectForKey:_key];
-        return ([payloadValue isEqualToString:_value]);
+    if([payloadKeys containsObject:_key]) {
         
+        if([payload objectForKey:_key] != [NSNull null]) {
+            
+            NSString *payloadValue = [payload objectForKey:_key];
+            return (payloadValue && [payloadValue isEqualToString:_value]);
+        }else{
+            return NO;
+        }
     }else{
         return NO;
     }

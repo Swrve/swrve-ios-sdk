@@ -16,7 +16,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.5"
+#define SWRVE_SDK_VERSION "4.6"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -136,6 +136,9 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /*! Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor* defaultBackgroundColor;
 
+/*! Color of the conversation lightbox. By default it is back 70% transparent. */
+@property (nonatomic, retain) UIColor* conversationLightBoxColor;
+
 /*! Session timeout time in seconds. User activity after this time will be considered a new session. */
 @property (nonatomic) double newSessionInterval;
 
@@ -213,34 +216,71 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The event cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
- * This path should be located in app/Libraries/Caches/, as this is where Apple
- * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
 @property (nonatomic, retain) NSString * eventCacheFile;
 
-/*! Store signature to verify content of eventCacheFile. */
+/*! The event cache stores data that has not yet been sent to Swrve.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ * This path should be located in app/Libraries/Caches/, as this is where Apple
+ * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * eventCacheSecondaryFile;
+
+/**
+ * \deprecated
+ * Store signature to verify content of eventCacheFile. */
 @property (nonatomic, retain) NSString * eventCacheSignatureFile;
+
+
+/*! The location campaign cache stores data that has not yet been sent to Swrve.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ */
+@property (nonatomic, retain) NSString * locationCampaignCacheFile;
 
 /*! The location campaign cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
  */
-@property (nonatomic, retain) NSString * locationCampaignCacheFile;
+@property (nonatomic, retain) NSString * locationCampaignCacheSecondaryFile;
 
 /*! Store signature to verify content of locationCampaignCacheFile. */
 @property (nonatomic, retain) NSString * locationCampaignCacheSignatureFile;
+
+/*! Store signature to verify content of locationCampaignCacheFile.
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * locationCampaignCacheSignatureSecondaryFile;
+
+/*! The user resources cache stores the result of calls to Swrve getUserResources
+ * so that the results can be used when the device is offline.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ */
+@property (nonatomic, retain) NSString * userResourcesCacheFile;
 
 /*! The user resources cache stores the result of calls to Swrve getUserResources
  * so that the results can be used when the device is offline.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
  */
-@property (nonatomic, retain) NSString * userResourcesCacheFile;
+@property (nonatomic, retain) NSString * userResourcesCacheSecondaryFile;
 
 /*! Store signature to verify content of userResourcesCacheFile. */
 @property (nonatomic, retain) NSString * userResourcesCacheSignatureFile;
+
+/*! Store signature to verify content of userResourcesCacheFile.
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * userResourcesCacheSignatureSecondaryFile;
 
 /*! The user resources diff cache stores the result of calls to Swrve getUserResourcesDiff
  * so that the results can be used when the device is offline.
@@ -255,10 +295,18 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The install-time cache caches the time that the user first installed the app.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
- * This path should be located in app/Libraries/Caches/, as this is where Apple
- * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ * This path should be located in the Documents folder.
  */
 @property (nonatomic, retain) NSString * installTimeCacheFile;
+
+/*! The install-time cache caches the time that the user first installed the app.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ * This path should be located in app/Libraries/Caches/, as this is where Apple
+ * recommend that persistent data should be stored. http://bit.ly/nCe9Zy.
+ *
+ * This contains the pre iOS SDK 4.5 location of the install time for migration purposes.
+ */
+@property (nonatomic, retain) NSString * installTimeCacheSecondaryFile;
 
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
  */
@@ -292,20 +340,27 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL useHttpsForContentServer;
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
+@property (nonatomic, readonly) NSString * eventCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
 @property (nonatomic, readonly) NSString * locationCampaignCacheFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * locationCampaignCacheSignatureFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheSignatureSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheFile;
+@property (nonatomic, readonly) NSString * userResourcesCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheSignatureFile;
+@property (nonatomic, readonly) NSString * userResourcesCacheSignatureSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheSignatureFile;
 @property (nonatomic, readonly) NSString * installTimeCacheFile;
+@property (nonatomic, readonly) NSString * installTimeCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;
+@property (nonatomic, readonly) UIColor* conversationLightBoxColor;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;

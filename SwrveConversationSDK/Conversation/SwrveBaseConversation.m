@@ -20,20 +20,36 @@
     self.controller     = _controller;
     self.conversationID = [json objectForKey:@"id"];
     self.name           = [json objectForKey:@"name"];
-    self.pages          = [json objectForKey:@"pages"];
+    
+    NSArray* jsonPages  = [json objectForKey:@"pages"];
+    NSMutableArray* loadedPages = [[NSMutableArray alloc] init];
+    for (NSDictionary* pageJson in jsonPages) {
+        [loadedPages addObject:[[SwrveConversationPane alloc] initWithDictionary:pageJson]];
+    }
+    self.pages = loadedPages;
     return self;
 }
 
 +(SwrveBaseConversation*) fromJSON:(NSDictionary*)json
                        forController:(id<SwrveMessageEventHandler>)controller
 {
-    return [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
+    SwrveBaseConversation* conversation = [[[SwrveBaseConversation alloc] init] updateWithJSON:json forController:controller];
+    
+    if((nil == controller) || (nil == conversation.conversationID) || (nil == conversation.name) || (nil == conversation.pages)) {
+        return nil;
+    }
+    
+    return conversation;
+}
+
++(UIStoryboard*) loadStoryboard
+{
+    return [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
 }
 
 -(BOOL)assetsReady:(NSSet*)assets {
-    for (NSDictionary* page in self.pages) {
-        SwrveConversationPane *pane = [[SwrveConversationPane alloc] initWithDictionary:page];
-        for (SwrveContentItem* contentItem in pane.content) {
+    for (SwrveConversationPane* page in self.pages) {
+        for (SwrveContentItem* contentItem in page.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
                     return true;
@@ -59,14 +75,14 @@
     if (index > self.pages.count - 1) {
         return nil;
     } else {
-        return [[SwrveConversationPane alloc] initWithDictionary:[self.pages objectAtIndex:index]];
+        return [self.pages objectAtIndex:index];
     }
 }
 
 -(SwrveConversationPane*)pageForTag:(NSString*)tag {
-    for (NSDictionary *page in self.pages) {
-        if ([tag isEqualToString:[page objectForKey:@"tag"]]) {
-            return [[SwrveConversationPane alloc] initWithDictionary:page];
+    for (SwrveConversationPane *page in self.pages) {
+        if ([tag isEqualToString:page.tag]) {
+            return page;
         }
     }
     return nil;

@@ -131,7 +131,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     
     // If doesn't exist default to 1.0
     NSNumber * jsonScale = [json objectForKey:@"scale"];
-    if (jsonScale)
+    if (jsonScale != nil)
     {
         self.scale = [jsonScale floatValue];
     }

@@ -11,17 +11,20 @@
 
 @implementation SwrveConversation
 
-@synthesize controller, campaign, conversationID, name, pages;
+@synthesize controller, campaign, conversationID, name, pages, priority;
 
 -(SwrveConversation*) updateWithJSON:(NSDictionary*)json
                          forCampaign:(SwrveConversationCampaign*)_campaign
                        forController:(SwrveMessageController*)_controller
 {
+    [self updateWithJSON:json forController:_controller];
     self.campaign       = _campaign;
-    self.controller     = _controller;
-    self.conversationID = [json objectForKey:@"id"];
-    self.name           = [json objectForKey:@"name"];
-    self.pages          = [json objectForKey:@"pages"];
+    
+    if ([json objectForKey:@"priority"]) {
+        self.priority   = [json objectForKey:@"priority"];
+    } else {
+        self.priority   = [NSNumber numberWithInt:9999];
+    }
     return self;
 }
 

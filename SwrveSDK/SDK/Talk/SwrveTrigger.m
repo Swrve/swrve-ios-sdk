@@ -57,13 +57,13 @@
     if([triggerOperator isEqualToString:@"eq"]) {
 
         SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:dictionary andOperator:nil];
-        if(condition){
+        if(condition) {
             [resultantConditions addObject:condition];
-        }else{
+        } else {
             _isValidTrigger = NO;
             return nil;
         }
-    }else if([triggerOperator isEqualToString:@"and"]) {
+    } else if([triggerOperator isEqualToString:@"and"]) {
 
         NSDictionary *arguments = [dictionary objectForKey:@"args"];
         if(!arguments){
@@ -74,9 +74,11 @@
         for(NSDictionary *triggerCondition in arguments) {
             
             SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:triggerCondition andOperator:triggerOperator];
-            [resultantConditions addObject:condition];
+            if (condition) {
+                [resultantConditions addObject:condition];
+            }
         }
-    }else{
+    } else {
         _isValidTrigger = NO;
         return nil;
     }
