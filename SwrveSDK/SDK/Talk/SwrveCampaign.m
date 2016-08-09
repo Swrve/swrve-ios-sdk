@@ -152,7 +152,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
         return YES;
     }
     
-    for (SwrveMessage* message in messages) {
+    for (SwrveMessage* message in self.messages) {
         if ([message supportsOrientation:orientation]){
             return YES;
         }
@@ -162,7 +162,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
 
 -(BOOL)assetsReady:(NSSet *)assets
 {
-    for (SwrveMessage* message in messages) {
+    for (SwrveMessage* message in self.messages) {
         if (![message assetsReady:assets]){
             return NO;
         }

@@ -16,7 +16,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.5"
+#define SWRVE_SDK_VERSION "4.6"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -216,34 +216,71 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 
 /*! The event cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
- * This path should be located in app/Libraries/Caches/, as this is where Apple
- * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
  */
 @property (nonatomic, retain) NSString * eventCacheFile;
 
-/*! Store signature to verify content of eventCacheFile. */
+/*! The event cache stores data that has not yet been sent to Swrve.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ * This path should be located in app/Libraries/Caches/, as this is where Apple
+ * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * eventCacheSecondaryFile;
+
+/**
+ * \deprecated
+ * Store signature to verify content of eventCacheFile. */
 @property (nonatomic, retain) NSString * eventCacheSignatureFile;
+
+
+/*! The location campaign cache stores data that has not yet been sent to Swrve.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ */
+@property (nonatomic, retain) NSString * locationCampaignCacheFile;
 
 /*! The location campaign cache stores data that has not yet been sent to Swrve.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
  */
-@property (nonatomic, retain) NSString * locationCampaignCacheFile;
+@property (nonatomic, retain) NSString * locationCampaignCacheSecondaryFile;
 
 /*! Store signature to verify content of locationCampaignCacheFile. */
 @property (nonatomic, retain) NSString * locationCampaignCacheSignatureFile;
+
+/*! Store signature to verify content of locationCampaignCacheFile.
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * locationCampaignCacheSignatureSecondaryFile;
+
+/*! The user resources cache stores the result of calls to Swrve getUserResources
+ * so that the results can be used when the device is offline.
+ * If you plan to change this please contact the team at Swrve who will be happy to help you out.
+ */
+@property (nonatomic, retain) NSString * userResourcesCacheFile;
 
 /*! The user resources cache stores the result of calls to Swrve getUserResources
  * so that the results can be used when the device is offline.
  * If you plan to change this please contact the team at Swrve who will be happy to help you out.
  * This path should be located in app/Libraries/Caches/, as this is where Apple
  * recommend that persistent data should be stored. http://bit.ly/nCe9Zy
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
  */
-@property (nonatomic, retain) NSString * userResourcesCacheFile;
+@property (nonatomic, retain) NSString * userResourcesCacheSecondaryFile;
 
 /*! Store signature to verify content of userResourcesCacheFile. */
 @property (nonatomic, retain) NSString * userResourcesCacheSignatureFile;
+
+/*! Store signature to verify content of userResourcesCacheFile.
+ *
+ * This contains the pre iOS SDK 4.5.1 location for migration purposes.
+ */
+@property (nonatomic, retain) NSString * userResourcesCacheSignatureSecondaryFile;
 
 /*! The user resources diff cache stores the result of calls to Swrve getUserResourcesDiff
  * so that the results can be used when the device is offline.
@@ -303,11 +340,16 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) BOOL useHttpsForContentServer;
 @property (nonatomic, readonly) NSString * language;
 @property (nonatomic, readonly) NSString * eventCacheFile;
+@property (nonatomic, readonly) NSString * eventCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * eventCacheSignatureFile;
 @property (nonatomic, readonly) NSString * locationCampaignCacheFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * locationCampaignCacheSignatureFile;
+@property (nonatomic, readonly) NSString * locationCampaignCacheSignatureSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheFile;
+@property (nonatomic, readonly) NSString * userResourcesCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesCacheSignatureFile;
+@property (nonatomic, readonly) NSString * userResourcesCacheSignatureSecondaryFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheFile;
 @property (nonatomic, readonly) NSString * userResourcesDiffCacheSignatureFile;
 @property (nonatomic, readonly) NSString * installTimeCacheFile;

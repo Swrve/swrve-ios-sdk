@@ -77,7 +77,9 @@
     ISHPermissionState currentState = self.permissionState;
 
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
-        completion(self, currentState, nil);
+        if (completion != nil) {
+            completion(self, currentState, nil);
+        }
         return;
     }
 
