@@ -57,7 +57,9 @@
     NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block", nil);
     ISHPermissionState currentState = self.permissionState;
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
-        completion(self, currentState, nil);
+        if (completion != nil) {
+            completion(self, currentState, nil);
+        }
         return;
     }
     
@@ -67,7 +69,9 @@
 #pragma unused(status)
             // ensure that completion is only called once
             dispatch_async(dispatch_get_main_queue(), ^{
-                completion(self, self.permissionState, nil);
+                if (completion != nil) {
+                    completion(self, self.permissionState, nil);
+                }
             });
         }];
         return;
@@ -82,13 +86,17 @@
         if (!group) {
             // ensure that completion is only called once
             dispatch_async(dispatch_get_main_queue(), ^{
-                completion(self, self.permissionState, nil);
+                if (completion != nil) {
+                    completion(self, self.permissionState, nil);
+                }
             });
         }
     } failureBlock:^(NSError *error) {
 #pragma unused(error)
         dispatch_async(dispatch_get_main_queue(), ^{
-            completion(self, self.permissionState, nil);
+            if (completion != nil) {
+                completion(self, self.permissionState, nil);
+            }
         });
     }];
 #pragma clang diagnostic pop
