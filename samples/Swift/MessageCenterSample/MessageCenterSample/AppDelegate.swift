@@ -7,12 +7,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+
         let config = SwrveConfig()
         config.pushEnabled = true
         config.prefersIAMStatusBarHidden = true
-        //TODO: change that to be generic
-        Swrve .sharedInstanceWithAppID(-1, apiKey: "<API_KEY>", config: config)
+        Swrve .sharedInstanceWithAppID(YOUR_APP_ID, apiKey: "YOUR_API_KEY", config: config)
         
         if let launchOptions = launchOptions {
             let remoteNotification: [NSObject : AnyObject]? = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] as! [NSObject : AnyObject]!
