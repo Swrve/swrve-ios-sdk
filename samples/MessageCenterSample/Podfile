@@ -1,5 +1,0 @@
-target 'MessageCenterSample' do
-  pod 'SwrveSDKCommon', :path => '../..'
-  pod 'SwrveConversationSDK', :path => '../..'
-  pod 'SwrveSDK', :path => '../..'
-end
