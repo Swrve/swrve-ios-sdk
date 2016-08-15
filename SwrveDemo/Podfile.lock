@@ -1,0 +1,29 @@
+PODS:
+  - SwrveConversationSDK (4.5.0):
+    - SwrveSDKCommon (~> 4.5.0)
+  - SwrveSDK (4.5.0):
+    - SwrveConversationSDK (~> 4.5.0)
+    - SwrveSDKCommon (~> 4.5.0)
+  - SwrveSDKCommon (4.5.0)
+
+DEPENDENCIES:
+  - SwrveConversationSDK (from `../`)
+  - SwrveSDK (from `../`)
+  - SwrveSDKCommon (from `../`)
+
+EXTERNAL SOURCES:
+  SwrveConversationSDK:
+    :path: ../
+  SwrveSDK:
+    :path: ../
+  SwrveSDKCommon:
+    :path: ../
+
+SPEC CHECKSUMS:
+  SwrveConversationSDK: a231dd741b2d38f61722be54a1db1c284074172c
+  SwrveSDK: 93f6358e694b67f5f870398ec5f93ed2b88f4105
+  SwrveSDKCommon: baebcd3834e6963d3b7da353bacfa6132559b95d
+
+PODFILE CHECKSUM: 201de5b4f10182fafdf33376773a5af9813b8bb0
+
+COCOAPODS: 1.0.0
