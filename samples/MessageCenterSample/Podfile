@@ -2,4 +2,7 @@ target 'MessageCenterSample' do
   pod 'SwrveSDKCommon', :path => '../..'
   pod 'SwrveConversationSDK', :path => '../..'
   pod 'SwrveSDK', :path => '../..'
+
+  #comment out above and uncomment below to switch to remote CocoaPods
+  #pod 'SwrveSDK', '4.5.2'
 end
