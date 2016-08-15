@@ -2,6 +2,7 @@
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveReceiptProvider.h"
 #import "SwrveResourceManager.h"
+#import "SwrveBaseCampaign.h"
 
 #if COCOAPODS
 
