@@ -337,7 +337,7 @@ enum
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
-        self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
+        self.useHttpsForContentServer = YES;
         self.installTimeCacheFile = [documents stringByAppendingPathComponent: @"swrve_install.txt"];
         self.installTimeCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
