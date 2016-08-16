@@ -337,7 +337,7 @@ enum
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
-        self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
+        self.useHttpsForContentServer = YES;
         self.installTimeCacheFile = [documents stringByAppendingPathComponent: @"swrve_install.txt"];
         self.installTimeCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
@@ -1373,8 +1373,8 @@ static bool didSwizzle = false;
     [self stopCampaignsAndResourcesTimer];
 
     //ensure UI isn't displaying during shutdown
-    [talk cleanupConversationUI];
-    [talk dismissMessageWindow];
+    [self.talk cleanupConversationUI];
+    [self.talk dismissMessageWindow];
     talk = nil;
     
     resourceManager = nil;
@@ -1429,7 +1429,7 @@ static bool didSwizzle = false;
 
 -(void) updateDeviceInfo
 {
-    NSMutableDictionary * mutableInfo = (NSMutableDictionary*)deviceInfo;
+    NSMutableDictionary * mutableInfo = (NSMutableDictionary*)self.deviceInfo;
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self getDeviceProperties]];
     // Send permission events
@@ -1462,7 +1462,7 @@ static bool didSwizzle = false;
 
     NSDate* now = [self getNow];
     NSTimeInterval secondsPassed = [now timeIntervalSinceDate:lastSessionDate];
-    if (secondsPassed >= config.newSessionInterval) {
+    if (secondsPassed >= self.config.newSessionInterval) {
         // We consider this a new session as more than newSessionInterval seconds
         // have passed.
         [self sessionStart];
@@ -1478,7 +1478,7 @@ static bool didSwizzle = false;
         [self sendQueuedEvents];
     }
 
-    if (config.talkEnabled) {
+    if (self.config.talkEnabled) {
         [self.talk appDidBecomeActive];
     }
     [self resumeCampaignsAndResourcesTimer];
@@ -1910,9 +1910,12 @@ static NSString* httpScheme(bool useHttps)
     for (NSString* key in deviceProperties) {
         [formattedDeviceData appendFormat:@"  %24s: %@\n", [key UTF8String], [deviceProperties objectForKey:key]];
     }
-    DebugLog(@"Swrve config:\n%@", formattedDeviceData);
+    
+    if (!getenv("RUNNING_UNIT_TESTS")) {
+        DebugLog(@"Swrve config:\n%@", formattedDeviceData);
+    }
     [self updateDeviceInfo];
-    [self userUpdate:deviceInfo];
+    [self userUpdate:self.deviceInfo];
 }
 
 // Get the time that the application was first installed.
@@ -2331,7 +2334,7 @@ enum HttpStatus {
 
 - (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:config.httpTimeoutSeconds];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:self.config.httpTimeoutSeconds];
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:json];
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
@@ -2468,11 +2471,13 @@ enum HttpStatus {
     }
     [jsonString appendString:@"]"];
 
-    @try {
-        callbackBlock(resourcesDict, jsonString);
-    }
-    @catch (NSException * e) {
-        DebugLog(@"Exception in getUserResources callback. %@", e);
+    if (callbackBlock != nil) {
+        @try {
+            callbackBlock(resourcesDict, jsonString);
+        }
+        @catch (NSException * e) {
+            DebugLog(@"Exception in getUserResources callback. %@", e);
+        }
     }
 }
 
@@ -2589,7 +2594,7 @@ enum HttpStatus {
 
 - (void)addHttpPerformanceMetrics:(NSString *)metricsString
 {
-    Swrve* swrveStrong = swrve;
+    Swrve* swrveStrong = self.swrve;
     if (swrveStrong) {
         [swrveStrong addHttpPerformanceMetrics:metricsString];
     }
