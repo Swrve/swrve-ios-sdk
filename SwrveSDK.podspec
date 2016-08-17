@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'SwrveSDKCommon', '4.5.2'
   s.dependency 'SwrveConversationSDK', '4.5.2'
 
-  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AddressBook', 'AVFoundation', 'AssetsLibrary'
-  s.weak_frameworks = 'Contacts', 'Photos'
+  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AVFoundation'
+  s.weak_frameworks = 'Contacts', 'Photos', 'AssetsLibrary', 'AddressBook'
   s.library = 'sqlite3'
 end
