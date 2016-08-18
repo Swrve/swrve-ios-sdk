@@ -14,7 +14,9 @@
         // New campaigns are available
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SwrveUserResourcesUpdated" object:self];
     };
-    [Swrve sharedInstanceWithAppID:YOUR_APP_ID apiKey:@"YOUR_API_KEY" config:config launchOptions:launchOptions];
+    
+    //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
+    [Swrve sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
     return YES;
 }
 
