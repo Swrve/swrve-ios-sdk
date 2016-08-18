@@ -32,6 +32,9 @@
     CGRect screenRect = [[[UIApplication sharedApplication] keyWindow] bounds];
     self.viewportWidth = screenRect.size.width;
     self.viewportHeight = screenRect.size.height;
+    if(SYSTEM_VERSION_LESS_THAN(@"8.0")){
+        [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -197,12 +200,22 @@
 {
     return YES;
 }
-// ---------------
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)orientationChanged:(NSNotification *)notification {
+    #pragma unused (notification)
+    //After a given delay to allow for the correct orientation and view.frame to be calculated. Redraw the Message
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self viewDidAppear:NO];
+    });
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+    if(SYSTEM_VERSION_LESS_THAN(@"8.0")){
+        [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    }
 }
 
 @end

@@ -176,7 +176,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.pushEnabled        = sdk.config.pushEnabled;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
-    self.cdnRoot            = nil;
+    self.cdnRoot            = @"https://content-cdn.swrve.com/messaging/message_image/";
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
     self.assetsOnDisk       = [[NSMutableSet alloc] init];
     self.inAppMessageBackgroundColor    = sdk.config.defaultBackgroundColor;
