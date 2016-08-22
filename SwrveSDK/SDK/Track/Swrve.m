@@ -1089,8 +1089,10 @@ static bool didSwizzle = false;
             id attribute = [attributes objectForKey:attributeKey];
             [currentAttributes setObject:attribute forKey:attributeKey];
         }
+        
+        [self queueUserUpdates];
     }
-
+    
     return SWRVE_SUCCESS;
 }
 
