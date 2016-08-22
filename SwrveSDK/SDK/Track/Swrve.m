@@ -13,6 +13,7 @@
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCommonConnectionDelegate.h"
+#import "SwrveFileManagement.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -184,6 +185,7 @@ enum
 @property (atomic) bool eventFileHasData;
 @property (atomic) NSOutputStream* eventStream;
 @property (atomic) NSURL* eventFilename;
+@property (atomic) NSURL* eventSecondaryFilename;
 
 // Count the number of UTF-16 code points stored in buffer
 @property (atomic) int eventBufferBytes;
@@ -268,11 +270,16 @@ enum
 @synthesize useHttpsForContentServer;
 @synthesize language;
 @synthesize eventCacheFile;
+@synthesize eventCacheSecondaryFile;
 @synthesize eventCacheSignatureFile;
 @synthesize locationCampaignCacheFile;
+@synthesize locationCampaignCacheSecondaryFile;
 @synthesize locationCampaignCacheSignatureFile;
+@synthesize locationCampaignCacheSignatureSecondaryFile;
 @synthesize userResourcesCacheFile;
+@synthesize userResourcesCacheSecondaryFile;
 @synthesize userResourcesCacheSignatureFile;
+@synthesize userResourcesCacheSignatureSecondaryFile;
 @synthesize userResourcesDiffCacheFile;
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
@@ -283,6 +290,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize conversationLightBoxColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -309,20 +317,27 @@ enum
         newSessionInterval = 30;
 
         NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        eventCacheFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
+        NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSString* applicationSupport = [SwrveFileManagement applicationSupportPath];
+        eventCacheFile = [applicationSupport stringByAppendingPathComponent: @"swrve_events.txt"];
+        eventCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
 
-        locationCampaignCacheFile = [caches stringByAppendingPathComponent: @"lc.txt"];
-        locationCampaignCacheSignatureFile = [caches stringByAppendingPathComponent: @"lcsgt.txt"];
+        locationCampaignCacheFile = [applicationSupport stringByAppendingPathComponent: @"lc.txt"];
+        locationCampaignCacheSecondaryFile = [caches stringByAppendingPathComponent: @"lc.txt"];
+        locationCampaignCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"lcsgt.txt"];
+        locationCampaignCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"lcsgt.txt"];
 
-        userResourcesCacheFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
-        userResourcesCacheSignatureFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
+        userResourcesCacheFile = [applicationSupport stringByAppendingPathComponent: @"srcngt2.txt"];
+        userResourcesCacheSecondaryFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
+        userResourcesCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"srcngtsgt2.txt"];
+        userResourcesCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
 
+        
         userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
         self.useHttpsForEventServer = YES;
         self.useHttpsForContentServer = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
-        NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         self.installTimeCacheFile = [documents stringByAppendingPathComponent: @"swrve_install.txt"];
         self.installTimeCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
         self.autoSendEventsOnResume = YES;
@@ -339,6 +354,8 @@ enum
             // Do nothing by default.
         };
         self.selectedStack = SWRVE_STACK_US;
+        
+        self.conversationLightBoxColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.70f];
     }
     return self;
 }
@@ -357,11 +374,16 @@ enum
 @synthesize useHttpsForContentServer;
 @synthesize language;
 @synthesize eventCacheFile;
+@synthesize eventCacheSecondaryFile;
 @synthesize eventCacheSignatureFile;
 @synthesize locationCampaignCacheFile;
+@synthesize locationCampaignCacheSecondaryFile;
 @synthesize locationCampaignCacheSignatureFile;
+@synthesize locationCampaignCacheSignatureSecondaryFile;
 @synthesize userResourcesCacheFile;
+@synthesize userResourcesCacheSecondaryFile;
 @synthesize userResourcesCacheSignatureFile;
+@synthesize userResourcesCacheSignatureSecondaryFile;
 @synthesize userResourcesDiffCacheFile;
 @synthesize userResourcesDiffCacheSignatureFile;
 @synthesize installTimeCacheFile;
@@ -372,6 +394,7 @@ enum
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
+@synthesize conversationLightBoxColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -398,11 +421,15 @@ enum
         useHttpsForContentServer = config.useHttpsForContentServer;
         language = config.language;
         eventCacheFile = config.eventCacheFile;
-        eventCacheSignatureFile = config.eventCacheSignatureFile;
+        eventCacheSecondaryFile = config.eventCacheSecondaryFile;
         locationCampaignCacheFile = config.locationCampaignCacheFile;
+        locationCampaignCacheSecondaryFile = config.locationCampaignCacheSecondaryFile;
         locationCampaignCacheSignatureFile = config.locationCampaignCacheSignatureFile;
+        locationCampaignCacheSignatureSecondaryFile = config.locationCampaignCacheSignatureSecondaryFile;
         userResourcesCacheFile = config.userResourcesCacheFile;
+        userResourcesCacheSecondaryFile = config.userResourcesCacheSecondaryFile;
         userResourcesCacheSignatureFile = config.userResourcesCacheSignatureFile;
+        userResourcesCacheSignatureSecondaryFile = config.userResourcesCacheSignatureSecondaryFile;
         userResourcesDiffCacheFile = config.userResourcesDiffCacheFile;
         userResourcesDiffCacheSignatureFile = config.userResourcesDiffCacheSignatureFile;
         installTimeCacheFile = config.installTimeCacheFile;
@@ -413,6 +440,7 @@ enum
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
+        conversationLightBoxColor = config.conversationLightBoxColor;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
@@ -526,6 +554,7 @@ static bool didSwizzle = false;
 @synthesize eventFileHasData;
 @synthesize eventStream;
 @synthesize eventFilename;
+@synthesize eventSecondaryFilename;
 @synthesize eventBufferBytes;
 @synthesize eventsWereSent;
 @synthesize batchURL;
@@ -706,6 +735,7 @@ static bool didSwizzle = false;
         [self initResourcesDiff];
 
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
+        [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
         [self generateShortDeviceId];
@@ -1333,15 +1363,20 @@ static bool didSwizzle = false;
 
 -(void) shutdown
 {
+    NSLog(@"shutting down swrveInstance..");
     if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == NO)
     {
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
         return;
     }
-
+    
     [self stopCampaignsAndResourcesTimer];
 
+    //ensure UI isn't displaying during shutdown
+    [talk cleanupConversationUI];
+    [talk dismissMessageWindow];
     talk = nil;
+    
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -1560,13 +1595,14 @@ static bool didSwizzle = false;
 {
     NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
+        [self.userUpdates setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
     }
 }
 
--(void) pushNotificationReceived:(NSDictionary *)userInfo
-{
+- (void) pushNotificationReceived:(NSDictionary *)userInfo {
+    
     // Try to get the identifier _p
     id pushIdentifier = [userInfo objectForKey:@"_p"];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
@@ -1706,6 +1742,14 @@ static NSString* httpScheme(bool useHttps)
 
 -(NSString*) appVersion {
     return self.config.appVersion;
+}
+
+-(NSSet*) pushCategories {
+#if !defined(SWRVE_NO_PUSH)
+    return self.config.pushCategories;
+#else
+    return nil;
+#endif
 }
 
 - (float) _estimate_dpi
@@ -1938,7 +1982,21 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
++ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
+    // Old file defaults to cache directory, should be moved to new location
+    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
+        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:oldPath error:nil];
+    }
+}
+
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
+    // Migrate event data from cache to application data (4.5.1+)
+    [SwrveFileManagement applicationSupportPath];
+    
+    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
+    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
+    
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
@@ -1948,6 +2006,10 @@ static NSString* httpScheme(bool useHttps)
 
 - (void) initResources
 {
+    // Migrate event data from cache to application data (4.5.1+)
+    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
+    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
+    
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
     NSURL* signatureURL = [NSURL fileURLWithPath:self.config.userResourcesCacheSignatureFile];
@@ -2018,6 +2080,14 @@ enum HttpStatus {
     {
         [[self eventStream] close];
     }
+    
+    // Migrate event data from cache to application data (4.5.1+)
+    // Old file defaults to cache directory, should be moved to new location
+    if ([[NSFileManager defaultManager] isReadableFileAtPath:[self.eventSecondaryFilename path]]) {
+        [[NSFileManager defaultManager] copyItemAtURL:self.eventSecondaryFilename toURL:self.eventFilename error:nil];
+        [[NSFileManager defaultManager] removeItemAtURL:self.eventSecondaryFilename error:nil];
+    }
+    
 
     NSOutputStream* newFile = NULL;
     [self setEventFileHasData:NO];

@@ -25,8 +25,6 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
     [webview loadHTMLString:html baseURL:nil];
     
-    // Get notified if the view should change dimensions
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
 }
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
@@ -66,25 +64,16 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
--(void) deviceOrientationDidChange
-{
+-(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+    #pragma unused (orientation)
     _view.frame = [self newFrameForOrientationChange];
-    
-    NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
-    [webview loadHTMLString:html baseURL:nil];
-    
     _view = webview;
 }
 
 // iOS8+
--(void)viewWillTransitionToSize:(CGSize)size
-{
+-(void)viewWillTransitionToSize:(CGSize)size {
     // Mantain full width
     _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 
 -(void) stop {
@@ -94,8 +83,8 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     }
 }
 
--(void)viewDidDisappear
-{
+-(void)viewDidDisappear {
+    
     if (webview.isLoading) {
         [webview stopLoading];
     }

@@ -12,22 +12,15 @@
 }
 
 - (BOOL)shouldAutorotate {
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        // This does not work if conversation is of type UIModalPresentationFormSheet
-        return YES;
-    } else {
-        return NO;
-    }
+    return YES;
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return [self.topViewController preferredInterfaceOrientationForPresentation];
-    } else {
-        return UIInterfaceOrientationPortrait;
-    }
+#if defined(__IPHONE_9_0)
+#else
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+#pragma unused(interfaceOrientation)
+    return YES;
 }
+#endif
 
 @end

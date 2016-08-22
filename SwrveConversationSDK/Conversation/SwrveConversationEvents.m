@@ -25,7 +25,7 @@
     [self genericEvent:@"cancel" forConversation:conversation onPage:pageTag];
 }
 
-+(void)genericEvent:(NSString*)name forConversation:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:controlTag{
++(void)genericEvent:(NSString*)name forConversation:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:controlTag {
     NSDictionary *eventPayload =
     @{
       @"event" : name,

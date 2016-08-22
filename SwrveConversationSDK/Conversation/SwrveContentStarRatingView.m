@@ -1,4 +1,5 @@
 #import "SwrveContentStarRatingView.h"
+#import "SwrveConversationResourceManagement.h"
 #import "SwrveSetup.h"
 
 @interface SwrveContentStarRatingView ()
@@ -35,14 +36,14 @@
     self =[super init];
     if(self){
         self.swrveStarViews = [[NSMutableArray alloc] init];
-        self.swrveNotSelectedImage = [UIImage imageNamed:@"star-empty.png"];
-        self.swrveFullSelectedImage = [UIImage imageNamed:@"star-full.png"];
+        self.swrveNotSelectedImage =  [SwrveConversationResourceManagement imageWithName:@"star-empty"];
+        self.swrveFullSelectedImage = [SwrveConversationResourceManagement imageWithName:@"star-full"];
         self.swrveStarColor = [UIColor redColor];
         self.swrveCurrentRating = 0;
         self.swrveMaxRating = 5;
         self.swrveMidMargin = 5.0f;
         self.swrveLeftMargin = 0.0f;
-        self.swrveMinImageSize = CGSizeMake(15, 15);
+        self.swrveMinImageSize = CGSizeMake(40, 40);
         
         [self setStarsFromMax];
     }
@@ -194,7 +195,5 @@
 #pragma unused(touches)
     [self.swrveRatingDelegate ratingView:self ratingDidChange:self.swrveCurrentRating];
 }
-
-
 
 @end

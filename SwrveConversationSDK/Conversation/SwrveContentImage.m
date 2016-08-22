@@ -35,17 +35,16 @@
             CGFloat containerWidth = containerView.frame.size.width;
             CGSize imageSize = self->image.size;
             self->iv.frame = CGRectMake(0, 0, containerWidth, ((imageSize.height/imageSize.width)*containerWidth));
+            // Notify that the view is ready to be displayed
+            [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
         });
-        // Notify that the view is ready to be displayed
-        [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
-        // Get notified if the view should change dimensions
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:kSwrveNotifyOrientationChange object:nil];
     }
 }
 
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
--(void) deviceOrientationDidChange {
+-(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+    #pragma unused(orientation)
     _view.frame = [self newFrameForOrientationChange];
 }
 
@@ -55,10 +54,6 @@
     // Mantain full width
     CGSize imageSize = image.size;
     self->iv.frame = CGRectMake(0, 0, size.width, ((imageSize.height/imageSize.width)*size.width));
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kSwrveNotifyOrientationChange object:nil];
 }
 
 @end
