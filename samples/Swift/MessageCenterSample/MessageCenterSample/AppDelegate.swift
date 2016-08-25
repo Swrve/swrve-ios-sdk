@@ -12,6 +12,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.pushEnabled = true
         config.prefersIAMStatusBarHidden = true
         
+        config.resourcesUpdatedCallback = {(SwrveResourcesUpdatedListener) -> Void in
+            NSNotificationCenter.defaultCenter().postNotificationName("SwrveUserResourcesUpdated", object: self);
+        }
+        
         //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
         Swrve.sharedInstanceWithAppID(-1, apiKey: "<API_KEY>", config: config)
         
