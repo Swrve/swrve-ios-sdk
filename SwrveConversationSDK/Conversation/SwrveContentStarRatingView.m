@@ -36,8 +36,8 @@
     self =[super init];
     if(self){
         self.swrveStarViews = [[NSMutableArray alloc] init];
-        self.swrveNotSelectedImage =  [SwrveConversationResourceManagement imageWithName:@"star-empty"];
-        self.swrveFullSelectedImage = [SwrveConversationResourceManagement imageWithName:@"star-full"];
+        self.swrveNotSelectedImage =  [SwrveConversationResourceManagement imageWithName:@"star_empty"];
+        self.swrveFullSelectedImage = [SwrveConversationResourceManagement imageWithName:@"star_full"];
         self.swrveStarColor = [UIColor redColor];
         self.swrveCurrentRating = 0;
         self.swrveMaxRating = 5;
