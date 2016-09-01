@@ -244,11 +244,11 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
     self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
-    
+
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
     self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
-    
+
     // Files were in this locations in lower than 4.5.1 (caches dir) and we need to move them to the new location
     NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache];
@@ -1122,7 +1122,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
--(void) showConversation:(SwrveConversation*)conversation
+-(void)showConversation:(SwrveConversation *)conversation
 {
     @synchronized(self) {
         if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
@@ -1138,8 +1138,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 return;
             }
 
-            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
             [self.swrveConversationItemViewController setConversation:conversation andMessageController:self];
+
+            if( [self.showMessageDelegate respondsToSelector:@selector(conversationWillBeShown:)]) {
+                [self.showMessageDelegate conversationWillBeShown:self.swrveConversationItemViewController];
+            }
+
+            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
             // Create a navigation controller in which to push the conversation, and choose iPad presentation style
             SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
@@ -1149,7 +1154,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.swrveConversationItemViewController action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
             self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
-            
+
             dispatch_async(dispatch_get_main_queue(), ^{
                 SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
                 self.conversationWindow.rootViewController = rootController;
@@ -1160,15 +1165,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
-
-- (void) cleanupConversationUI {
-    if(self.swrveConversationItemViewController != nil){
+- (void)cleanupConversationUI {
+    if (self.swrveConversationItemViewController != nil) {
         [self.swrveConversationItemViewController dismiss];
     }
 }
 
-
-- (void) conversationClosed {
+- (void)conversationClosed {
+    if([self.showMessageDelegate respondsToSelector:@selector(conversationWillBeHidden:)]) {
+        [self.showMessageDelegate conversationWillBeHidden:(SwrveConversationItemViewController *)self.swrveConversationItemViewController];
+    }
     self.conversationWindow.hidden = YES;
     self.conversationWindow = nil;
     self.swrveConversationItemViewController = nil;

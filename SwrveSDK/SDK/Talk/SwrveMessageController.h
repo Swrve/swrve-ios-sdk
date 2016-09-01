@@ -83,7 +83,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  *
  * \param viewController Message view controller.
  */
-- (void) messageWillBeShown:(SwrveMessageViewController *) viewController;
+- (void)messageWillBeShown:(SwrveMessageViewController *)viewController;
 
 /*! Called when the message will be hidden from the user. The message is shown
  * in a separate UIWindow. This selector is called before that UIWindow is
@@ -91,14 +91,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  *
  * \param viewController Message view controller.
  */
-- (void) messageWillBeHidden:(SwrveMessageViewController*) viewController;
+- (void)messageWillBeHidden:(SwrveMessageViewController*)viewController;
 
 /*! Called to animate the display of a message. Implement this selector
  * to customize the display of the message.
  *
  * \param viewController Message view controller.
  */
-- (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController;
+- (void)beginShowMessageAnimation:(SwrveMessageViewController*)viewController;
 
 /*! Called to animate the hiding of a message. Implement this selector to
  * customize the hiding of the message. If you implement this you must call
@@ -107,7 +107,22 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  *
  * \param viewController Message view controller.
  */
-- (void) beginHideMessageAnimation:(SwrveMessageViewController*) viewController;
+- (void)beginHideMessageAnimation:(SwrveMessageViewController*)viewController;
+
+/*! Called when the conversation will be shown to the user. The conversation is shown in
+ * a separate UIWindow. This selector is called before that UIWindow is shown.
+ *
+ * \param viewController Conversation item view controller.
+ */
+- (void)conversationWillBeShown:(SwrveConversationItemViewController *)viewController;
+
+/*! Called when the conversation will be hidden from the user. The conversation is shown
+ * in a separate UIWindow. This selector is called before that UIWindow is
+ * hidden.
+ *
+ * \param viewController Conversation item view controller.
+ */
+- (void)conversationWillBeHidden:(SwrveConversationItemViewController*)viewController;
 
 @end
 
@@ -135,7 +150,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 /*! Find an in-app message for the given trigger event that also satisfies the rules
  * set up in the dashboard.
- * 
+ *
  * \param event Trigger event name.
  * \returns In-app message for the given tirgger.
  */
@@ -278,4 +293,3 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 -(void) cleanupConversationUI;
 
 @end
-
