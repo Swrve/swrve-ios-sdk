@@ -2564,7 +2564,7 @@ enum HttpStatus {
         [[NSUserDefaults standardUserDefaults] setObject:self.shortDeviceID forKey:@"short_device_id"];
     } else {
         id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
-        if (shortDeviceIdDisk == nil || [shortDeviceIdDisk class] != [NSNumber class]) {
+        if (shortDeviceIdDisk == nil || ![shortDeviceIdDisk isKindOfClass:[NSNumber class]]) {
             // This is the first time we see this device, assign a UUID to it
             NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
             unsigned short newShortDeviceID = (unsigned short)deviceUUID;
