@@ -10,18 +10,15 @@
 - (id) initWithDictionary:(NSDictionary *)dictionary andOperator:(NSString *) operatorKey {
     self = [super init];
     if(self) {
-        
         _key = [dictionary objectForKey:@"key"];
         _value = [dictionary objectForKey:@"value"];
         _triggerOperator = [self determineSwrveOperator:operatorKey];
         _conditionOperator = [self determineSwrveOperator:[dictionary objectForKey:@"op"]];
+        if(_key && _value && _conditionOperator){
+            return self;
+        }
     }
-    
-    if(_key && _value && _conditionOperator){
-        return self;
-    }else{
-        return nil;
-    }
+    return nil;
 }
 
 - (SwrveTriggerOperator) determineSwrveOperator:(NSString *)op {

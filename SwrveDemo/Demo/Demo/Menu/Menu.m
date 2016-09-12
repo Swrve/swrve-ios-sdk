@@ -32,7 +32,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    #pragma unused(animated)
+    [super viewWillAppear:animated];
     if( menuNode != nil && menuNode.name != nil )
     {
         // [TRACK] What demos and menus do users look at
@@ -43,7 +43,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    #pragma unused(animated)
+    [super viewWillDisappear:animated];
     if( menuNode != nil && menuNode.name != nil )
     {
         // [TRACK] Send events to swrve when a user exits a demo so it's a little easier to debug
