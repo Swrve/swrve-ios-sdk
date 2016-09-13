@@ -1,6 +1,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
 #import "SwrveSetup.h"
+@import CoreText;
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
@@ -97,6 +98,8 @@
 + (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
+    
+    NSString *newCSS = [NSString stringWithFormat:@"%@ %@",pageCSS, [self applyDownloadedFont:@"SourceSansPro-Black"]];
 
     NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">%@ html { color: %@; } \
                           body { background-color: %@; } \
@@ -104,7 +107,7 @@
                           </head> \
                           <body> \
                           %@ \
-                          </body></html>", pageCSS, fgHexColor, bgHexColor, content];
+                          </body></html>", newCSS, fgHexColor, bgHexColor, content];
     
     return html;
 }
@@ -130,6 +133,33 @@
     float borderRadius = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
     
     [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
+}
+
++ (NSString *) applyDownloadedFont:(NSString*) fontName {
+    
+    NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    NSString* fontPath = [cache stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.otf", fontName]];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
+    if(fileExists){
+        NSLog(@"\n %@.otf found at:%@ \n", fontName, fontPath);
+        
+        NSData *inData = [[NSFileManager defaultManager] contentsAtPath:fontPath];
+        CFErrorRef error;
+        CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)inData);
+        CGFontRef font = CGFontCreateWithDataProvider(provider);
+        if (! CTFontManagerRegisterGraphicsFont(font, &error)) {
+            CFStringRef errorDescription = CFErrorCopyDescription(error);
+            NSLog(@"Failed to load font: %@", errorDescription);
+            CFRelease(errorDescription);
+        }
+        CFRelease(font);
+        CFRelease(provider);
+        
+        return [NSString stringWithFormat:@" @font-face{ font-family:'%@'; src: url('%@')} body { font-family: %@; } ",fontName, fontPath, fontName];
+    }
+    
+    //return @"body { font-family:Bodoni Ornaments; }";
 }
 
 + (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
