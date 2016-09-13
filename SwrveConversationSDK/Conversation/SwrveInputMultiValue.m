@@ -22,8 +22,8 @@
         self.selectedIndex = -1;
         
         // init UI
-        descriptionFont = [UIFont boldSystemFontOfSize:20.0];
-        cellFont = [UIFont fontWithName:@"Helvetica" size:17.0];
+        descriptionFont = [SwrveConversationStyler applyDownloadedFont:@"SourceSansPro-Black" withSize:20.0];
+        cellFont = [SwrveConversationStyler applyDownloadedFont:@"SourceSansPro-Black" withSize:17.0];
     }
     return self;
 }
@@ -114,6 +114,7 @@
         cell.backgroundView = [[UIImageView alloc] initWithImage:img];
         cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:nil];
     }
+    
     return cell;
 }
 

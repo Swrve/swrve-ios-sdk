@@ -99,7 +99,7 @@
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     
-    NSString *newCSS = [NSString stringWithFormat:@"%@ %@",pageCSS, [self applyDownloadedFont:@"SourceSansPro-Black"]];
+    NSString *newCSS = [NSString stringWithFormat:@"%@ %@",pageCSS, [self applyDownloadedFontToHTML:@"SourceSansPro-Black"]];
 
     NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">%@ html { color: %@; } \
                           body { background-color: %@; } \
@@ -133,9 +133,40 @@
     float borderRadius = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
     
     [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
+    
+    NSMutableAttributedString *atttext=[[NSMutableAttributedString alloc] initWithString:button.titleLabel.text];
+    
+    NSRange attRange = NSMakeRange(0, button.titleLabel.text.length);
+
+    //font
+    UIFont *downloaded = [self applyDownloadedFont:@"SourceSansPro-Black" withSize:[UIFont buttonFontSize]];
+
+    if(downloaded){
+        [atttext addAttribute:NSFontAttributeName value:downloaded range:attRange];
+    }
+
+    //color
+    [atttext addAttribute:NSForegroundColorAttributeName value:fgUIColor range:attRange];
+
+//    //kern (letter spacing)
+//    [atttext addAttribute:NSKernAttributeName value:@(1.4) range:attRange];
+//
+//    //strikethrough
+//    [atttext addAttribute:NSStrikethroughStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:attRange];
+//
+//    //strikethrough color
+//    [atttext addAttribute:NSStrikethroughColorAttributeName value:[UIColor greenColor] range:attRange];
+//
+//    //underline
+//    [atttext addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:attRange];
+//
+//    //underline color
+//    [atttext addAttribute:NSUnderlineColorAttributeName value:[UIColor redColor] range:attRange];
+    
+    button.titleLabel.attributedText = atttext;
 }
 
-+ (NSString *) applyDownloadedFont:(NSString*) fontName {
++ (NSString *) applyDownloadedFontToHTML:(NSString *) fontName {
     
     NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* fontPath = [cache stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.otf", fontName]];
@@ -159,7 +190,35 @@
         return [NSString stringWithFormat:@" @font-face{ font-family:'%@'; src: url('%@')} body { font-family: %@; } ",fontName, fontPath, fontName];
     }
     
-    //return @"body { font-family:Bodoni Ornaments; }";
+    //since there's no fonts to load
+    return @"";
+}
+
++ (UIFont *) applyDownloadedFont:(NSString *) fontName withSize:(CGFloat) size {
+    NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    NSString* fontPath = [cache stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.otf", fontName]];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
+    if(fileExists){
+        NSLog(@"\n %@.otf found at:%@ \n", fontName, fontPath);
+        
+        NSData *inData = [[NSFileManager defaultManager] contentsAtPath:fontPath];
+        CFErrorRef error;
+        CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)inData);
+        CGFontRef font = CGFontCreateWithDataProvider(provider);
+        if (! CTFontManagerRegisterGraphicsFont(font, &error)) {
+            CFStringRef errorDescription = CFErrorCopyDescription(error);
+            NSLog(@"Failed to load font: %@", errorDescription);
+            CFRelease(errorDescription);
+        }
+        CFRelease(font);
+        CFRelease(provider);
+        
+        return  [UIFont fontWithName:fontName size:size];
+    }
+    
+    //if there's no font
+    return nil;
 }
 
 + (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
