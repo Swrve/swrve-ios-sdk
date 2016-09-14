@@ -112,7 +112,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @end
 
 /*! In-app messages controller */
-@interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler>
+@interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
 
 @property (nonatomic) Swrve*  analyticsSDK;                                             /*!< Analytics SDK reference. */
 @property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;                     /*!< Background color of in-app messages. */
