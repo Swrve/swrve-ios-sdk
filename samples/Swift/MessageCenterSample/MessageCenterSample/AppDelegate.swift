@@ -6,21 +6,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         let config = SwrveConfig()
         config.pushEnabled = true
         config.prefersIAMStatusBarHidden = true
         
         config.resourcesUpdatedCallback = {(SwrveResourcesUpdatedListener) -> Void in
-            NSNotificationCenter.defaultCenter().postNotificationName("SwrveUserResourcesUpdated", object: self);
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "SwrveUserResourcesUpdated"), object: self);
         }
         
         //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-        Swrve.sharedInstanceWithAppID(-1, apiKey: "<API_KEY>", config: config)
+        Swrve.sharedInstance(withAppID: 1030, apiKey: "SwrveDevApple", config: config)
         
         if let launchOptions = launchOptions {
-            let remoteNotification: [NSObject : AnyObject]? = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] as! [NSObject : AnyObject]!
+            let remoteNotification: [AnyHashable: Any]? = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as! [AnyHashable: Any]!
             if (remoteNotification != nil) {
                 Swrve.sharedInstance().talk.pushNotificationReceived(remoteNotification)
             }
@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         Swrve.sharedInstance().talk.pushNotificationReceived(userInfo)
     }
 
