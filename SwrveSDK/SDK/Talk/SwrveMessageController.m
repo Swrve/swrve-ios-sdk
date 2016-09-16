@@ -1428,10 +1428,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     const NSString* orientationName = [self orientationName];
     UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName;
+    NSString *encodedSystemVersion;
     NSString* encodedSystemName;
 #if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        encodedSystemVersion = [[device systemVersion] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     } else
 #endif //defined(__IPHONE_9_0)
@@ -1439,11 +1441,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+        encodedSystemVersion = [[device systemVersion] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
         encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
 #pragma clang diagnostic pop
     }
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, self.analyticsSDK.locationSegmentVersion];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&sdk_version=%@&os_version=%@&system_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, self.analyticsSDK.swrveSDKVersion, encodedSystemName, encodedSystemVersion, encodedDeviceName, CONVERSATION_VERSION, self.analyticsSDK.locationSegmentVersion];
 }
 
 -(NSArray*) messageCenterCampaigns
