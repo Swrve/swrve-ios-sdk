@@ -20,6 +20,7 @@ static NSString *swrve_folder = @"com.ngt.msgs";
         NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
         self.cacheFolder = [cacheRoot stringByAppendingPathComponent:swrve_folder];
         self.assetsOnDisk = [[NSMutableSet alloc] init];
+        self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
     }
     return self;
 }
@@ -27,13 +28,11 @@ static NSString *swrve_folder = @"com.ngt.msgs";
 - (void)downloadAssets:(NSSet *)assetsQueue withCompletionHandler:(void (^)(void))completionHandler {
     NSSet *assetsToDownload = [self filterExistingFiles:assetsQueue];
     for (NSString *asset in assetsToDownload) {
-        [self downloadAsset:asset];
+        [self downloadAsset:asset withCompletionHandler:completionHandler];
     }
-
-    completionHandler();
 }
 
-- (void)downloadAsset:(NSString *)asset {
+- (void)downloadAsset:(NSString *)asset withCompletionHandler:(void (^)(void))completionHandler {
 
     BOOL mustDownload = YES;
     @synchronized ([self assetsCurrentlyDownloading]) {
@@ -71,7 +70,7 @@ static NSString *swrve_folder = @"com.ngt.msgs";
                          @synchronized ([self assetsCurrentlyDownloading]) {
                              [[self assetsCurrentlyDownloading] removeObject:asset];
                              if ([[self assetsCurrentlyDownloading] count] == 0) {
-                                 // [self autoShowMessages]; TODO use a callback here to call autoShowMessages
+                                 completionHandler();
                              }
                          }
                      }];
