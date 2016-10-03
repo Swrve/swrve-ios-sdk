@@ -38,7 +38,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property(atomic) SwrveRESTClient *restClient;
 - (CGRect) getDeviceScreenBounds;
 - (NSString*) getSignatureKey;
-//- (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 @end
 
 @interface SwrveCampaign(PrivateMethodsForMessageController)
@@ -53,7 +52,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSArray*              campaigns; // List of campaigns available to the user.
 @property (nonatomic, retain) NSMutableDictionary*  campaignsState; // Serializable state of the campaigns.
 @property (nonatomic, retain) NSString*           	server;
-//@property (nonatomic, retain) NSString*             cacheFolder;
 @property (nonatomic, retain) NSString*             campaignCache;
 @property (nonatomic, retain) NSString*             campaignCacheSignature;
 @property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
@@ -95,7 +93,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @implementation SwrveMessageController
 
 @synthesize server, apiKey;
-//@synthesize cacheFolder;
 @synthesize campaignCache;
 @synthesize campaignCacheSignature;
 @synthesize campaignFile;
