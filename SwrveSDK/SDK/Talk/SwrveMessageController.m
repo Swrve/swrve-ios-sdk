@@ -1,3 +1,6 @@
+#import <CommonCrypto/CommonHMAC.h>
+#import "SwrveMessageController.h"
+#import "Swrve.h"
 #import "SwrveButton.h"
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
@@ -8,10 +11,11 @@
 #import "SwrvePermissions.h"
 #import "SwrveInternalAccess.h"
 #import "SwrvePrivateBaseCampaign.h"
-#import "SwrveAssetsManager.h"
+#import "SwrveTrigger.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
@@ -35,10 +39,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @end
 
 @interface Swrve (SwrveHelperMethods)
-@property(atomic) SwrveRESTClient *restClient;
 - (CGRect) getDeviceScreenBounds;
 - (NSString*) getSignatureKey;
-//- (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 @end
 
 @interface SwrveCampaign(PrivateMethodsForMessageController)
@@ -47,13 +50,14 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 @interface SwrveMessageController()
 
-@property (nonatomic, retain) SwrveAssetsManager*   assetsManager;
 @property (nonatomic, retain) NSString*             user;
+@property (nonatomic, retain) NSString*             cdnRoot;
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSArray*              campaigns; // List of campaigns available to the user.
 @property (nonatomic, retain) NSMutableDictionary*  campaignsState; // Serializable state of the campaigns.
 @property (nonatomic, retain) NSString*           	server;
-//@property (nonatomic, retain) NSString*             cacheFolder;
+@property (nonatomic, retain) NSMutableSet*         assetsOnDisk;
+@property (nonatomic, retain) NSString*             cacheFolder;
 @property (nonatomic, retain) NSString*             campaignCache;
 @property (nonatomic, retain) NSString*             campaignCacheSignature;
 @property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
@@ -69,6 +73,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic)         bool                  pushEnabled; // Decide if push notification is enabled
 @property (nonatomic, retain) NSSet*                pushNotificationEvents; // Events that trigger the push notification dialog
 #endif //!defined(SWRVE_NO_PUSH)
+@property (nonatomic, retain) NSMutableSet*         assetsCurrentlyDownloading;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
@@ -81,7 +86,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic) int device_height;
 @property (nonatomic) SwrveInterfaceOrientation orientation;
 
-// Only ever show this many messages. This number is decremented each time a message is shown.
+
+// Only ever show this many messages. This number is decremented each time a
+// message is shown.
 @property (atomic) long messagesLeftToShow;
 @property (atomic) NSTimeInterval minDelayBetweenMessage;
 
@@ -94,8 +101,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 @implementation SwrveMessageController
 
-@synthesize server, apiKey;
-//@synthesize cacheFolder;
+@synthesize server, cdnRoot, apiKey;
+@synthesize cacheFolder;
 @synthesize campaignCache;
 @synthesize campaignCacheSignature;
 @synthesize campaignFile;
@@ -109,8 +116,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize conversationLightboxColor;
 @synthesize campaigns;
 @synthesize campaignsState;
-@synthesize assetsManager;
 @synthesize user;
+@synthesize assetsOnDisk;
 @synthesize notifications;
 @synthesize language;
 @synthesize appStoreURLs;
@@ -118,6 +125,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
+@synthesize assetsCurrentlyDownloading;
 @synthesize inAppMessageWindow;
 @synthesize conversationWindow;
 @synthesize inAppMessageActionType;
@@ -158,7 +166,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
     self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
-    self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient];
+
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
     self.apiKey             = sdk.apiKey;
@@ -168,12 +176,15 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.pushEnabled        = sdk.config.pushEnabled;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
+    self.cdnRoot            = @"https://content-cdn.swrve.com/messaging/message_image/";
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
+    self.assetsOnDisk       = [[NSMutableSet alloc] init];
     self.inAppMessageBackgroundColor    = sdk.config.defaultBackgroundColor;
     self.conversationLightboxColor = sdk.config.conversationLightBoxColor;
     [self migrateAndSetFileLocations];
     self.manager            = [NSFileManager defaultManager];
     self.notifications      = [[NSMutableArray alloc] init];
+    self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
     self.autoShowMessagesEnabled = YES;
 
     // Game rule defaults
@@ -232,7 +243,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 - (void)migrateAndSetFileLocations {
     NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-
+    self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
+    
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
     self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
@@ -321,14 +333,13 @@ const static int DEFAULT_MIN_DELAY           = 55;
 - (void) initCampaignsFromCacheFile
 {
     // Create campaign cache folder
-    NSString *cacheFolder = [assetsManager cacheFolder];
     NSError* error;
-    if (![manager createDirectoryAtPath:cacheFolder
+    if (![manager createDirectoryAtPath:self.cacheFolder
             withIntermediateDirectories:YES
                              attributes:nil
                                   error:&error])
     {
-        DebugLog(@"Error creating %@: %@", cacheFolder, error);
+        DebugLog(@"Error creating %@: %@", self.cacheFolder, error);
     }
 
     // Create signature protected cache file
@@ -418,9 +429,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     // CDN
-    NSString* cdnRoot = [campaignJson objectForKey:@"cdn_root"];
-    [assetsManager setCdnRoot:cdnRoot];
-    DebugLog(@"CDN URL %@", cdnRoot);
+    self.cdnRoot = [campaignJson objectForKey:@"cdn_root"];
+    DebugLog(@"CDN URL %@", self.cdnRoot);
 
     // Game Data
     NSDictionary* gameData = [campaignJson objectForKey:@"game_data"];
@@ -540,13 +550,82 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     // Obtain assets we don't have yet
-    [assetsManager downloadAssets:assetsQueue withCompletionHandler:^ {
-        [self autoShowMessages];
-    }];
+    NSSet* downloadQueue = [self withOutExistingFiles:assetsQueue];
+    for (NSString* asset in downloadQueue) {
+        [self downloadAsset:asset];
+    }
 
     self.campaigns = [result copy];
 }
 
+-(NSSet*)withOutExistingFiles:(NSSet*)assetSet
+{
+    NSMutableSet* result = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    for (NSString* file in assetSet)
+    {
+        NSString* target = [self.cacheFolder stringByAppendingPathComponent:file];
+        if (![fileManager fileExistsAtPath:target])
+        {
+            [result addObject:file];
+        }
+        else
+        {
+            [self.assetsOnDisk addObject:file];
+        }
+    }
+
+    return [result copy];
+}
+
+-(void)downloadAsset:(NSString*)asset
+{
+    BOOL mustDownload = YES;
+    @synchronized([self assetsCurrentlyDownloading]) {
+        mustDownload = ![assetsCurrentlyDownloading containsObject:asset];
+        if (mustDownload) {
+            [[self assetsCurrentlyDownloading] addObject:asset];
+        }
+    }
+
+    if (mustDownload) {
+        NSURL* url = [NSURL URLWithString: asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
+        DebugLog(@"Downloading asset: %@", url);
+        [self.analyticsSDK sendHttpGETRequest:url
+                            completionHandler:^(NSURLResponse* response, NSData* data, NSError* error)
+         {
+    #pragma unused(response)
+             if (error)
+             {
+                 DebugLog(@"Could not download asset: %@", error);
+             }
+             else
+             {
+                 if (![SwrveMessageController verifySHA:data against:asset]){
+                     DebugLog(@"Error downloading %@ – SHA1 does not match.", asset);
+                 } else {
+
+                     NSURL* dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
+
+                     [data writeToURL:dst atomically:YES];
+
+                     // Add the asset to the set of assets that we know are downloaded.
+                     [self.assetsOnDisk addObject:asset];
+                     DebugLog(@"Asset downloaded: %@", asset);
+                 }
+             }
+
+             // This asset has finished downloading
+             // Check if all assets are finished and if so call autoShowMessage
+             @synchronized([self assetsCurrentlyDownloading]) {
+                 [[self assetsCurrentlyDownloading] removeObject:asset];
+                 if ([[self assetsCurrentlyDownloading] count] == 0) {
+                     [self autoShowMessages];
+                 }
+             }
+         }];
+    }
+}
 
 -(void) appDidBecomeActive {
     // Obtain all assets required for the available campaigns
@@ -556,9 +635,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     // Obtain assets we don't have yet
-    [assetsManager downloadAssets:assetsQueue withCompletionHandler:^ {
-        [self autoShowMessages];
-    }];
+    NSSet* downloadQueue = [self withOutExistingFiles:assetsQueue];
+    for (NSString* asset in downloadQueue) {
+        [self downloadAsset:asset];
+    }
 }
 
 -(void)autoShowMessages {
@@ -678,8 +758,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveCampaign class]]) {
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
-                NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
-                SwrveMessage* nextMessage = [campaignIt getMessageForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
+                SwrveMessage* nextMessage = [campaignIt getMessageForEvent:eventName withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
                     BOOL canBeChosen = YES;
                     // iOS9+ will display with local scale
@@ -787,8 +866,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
-                NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
-                SwrveConversation* nextConversation = [campaignIt getConversationForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
+                SwrveConversation* nextConversation = [campaignIt getConversationForEvent:eventName withPayload:payload withAssets:self.assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextConversation != nil) {
                     [availableConversations addObject:nextConversation];
                     // Check if it is a candidate to be shown
@@ -886,6 +964,39 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     return result;
+}
+
++(bool)verifySHA:(NSData*)data against:(NSString*)expectedDigest
+{
+    const static char hex[] = {'0', '1', '2', '3',
+        '4', '5', '6', '7',
+        '8', '9', 'a', 'b',
+        'c', 'd', 'e', 'f'};
+
+    unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+    // SHA-1 hash has been calculated and stored in 'digest'
+    unsigned int length = (unsigned int)[data length];
+    if (CC_SHA1([data bytes], length, digest)) {
+        for (unsigned int i = 0; i < [expectedDigest length]; i++) {
+            unichar c = [expectedDigest characterAtIndex:i];
+            unsigned char e = digest[i>>1];
+
+            if (i&1) {
+                e = e & 0xF;
+            } else {
+                e = e >> 4;
+            }
+
+            e = (unsigned char)hex[e];
+
+            if (c != e) {
+                DebugLog(@"Wrong asset SHA[%d]. Expected: %d Computed %d", i, e, c);
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 -(void)setMessageMinDelayThrottle
@@ -1349,8 +1460,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
     for(SwrveBaseCampaign* campaign in self.campaigns) {
-        NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
-        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:assetsOnDisk]) {
+        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:self.assetsOnDisk]) {
             [result addObject:campaign];
         }
     }
@@ -1359,8 +1469,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(BOOL)showMessageCenterCampaign:(SwrveBaseCampaign *)campaign
 {
-    NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
-    if (!campaign.messageCenter || ![campaign assetsReady:assetsOnDisk]) {
+    if (!campaign.messageCenter || ![campaign assetsReady:self.assetsOnDisk]) {
         return NO;
     }
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
