@@ -279,7 +279,7 @@ enum
 @synthesize installTimeCacheSecondaryFile;
 @synthesize appVersion;
 @synthesize receiptProvider;
-@synthesize maxConcurrentDownloads; // TODO possibly remove this as its not used? deprecate at least?
+@synthesize maxConcurrentDownloads;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize talkEnabled;
 @synthesize defaultBackgroundColor;
