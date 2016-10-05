@@ -8,7 +8,7 @@
 @property(nonatomic, retain) NSString *cacheFolder;
 @property(nonatomic, retain) NSMutableSet *assetsOnDisk;
 
-- (id)initWithRestClient:(SwrveRESTClient *)restClient;
+- (id)initWithRestClient:(SwrveRESTClient *)swrveRESTClient andCacheFolder:(NSString *)cacheFolder;
 
 - (void)downloadAssets:(NSSet *)assetsQueue withCompletionHandler:(void (^)(void))completionHandler;
 

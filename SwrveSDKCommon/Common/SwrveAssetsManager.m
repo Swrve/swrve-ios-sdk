@@ -2,8 +2,6 @@
 #import "SwrveAssetsManager.h"
 #import "SwrveCommon.h"
 
-static NSString *swrve_folder = @"com.ngt.msgs";
-
 @implementation SwrveAssetsManager
 
 @synthesize restClient;
@@ -12,13 +10,12 @@ static NSString *swrve_folder = @"com.ngt.msgs";
 @synthesize cacheFolder;
 @synthesize assetsOnDisk;
 
-- (id)initWithRestClient:(SwrveRESTClient *)swrveRESTClient {
+- (id)initWithRestClient:(SwrveRESTClient *)swrveRESTClient andCacheFolder:(NSString *)cache{
     self = [super init];
     if (self) {
         [self setRestClient:swrveRESTClient];
-        self.cdnRoot = @"https://content-cdn.swrve.com/messaging/message_image/";
-        NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-        self.cacheFolder = [cacheRoot stringByAppendingPathComponent:swrve_folder];
+        self.cdnRoot = @"https://content-cdn.swrve.com/messaging/message_image/"; // default
+        self.cacheFolder = cache;
         self.assetsOnDisk = [[NSMutableSet alloc] init];
         self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
     }

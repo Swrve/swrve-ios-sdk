@@ -12,6 +12,7 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
@@ -150,12 +151,16 @@ const static int DEFAULT_MIN_DELAY           = 55;
 - (id)initWithSwrve:(Swrve*)sdk
 {
     self = [super init];
+
+    NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *cacheFolder = [cacheRoot stringByAppendingPathComponent:swrve_folder];
+    self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
+
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
     self.device_height = (int)screen_bounds.size.width;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
     self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
-    self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient];
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
     self.apiKey             = sdk.apiKey;
