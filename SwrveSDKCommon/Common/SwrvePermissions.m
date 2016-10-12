@@ -9,7 +9,9 @@ static ISHPermissionRequest *_locationWhenInUseRequest = nil;
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
 static ISHPermissionRequest *_photoLibraryRequest = nil;
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_CAMERA)
 static ISHPermissionRequest *_cameraRequest = nil;
+#endif //!defined(SWRVE_NO_CAMERA)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 static ISHPermissionRequest *_contactsRequest = nil;
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
@@ -52,10 +54,12 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         return YES;
     }
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_CAMERA)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         [SwrvePermissions requestCamera:sdk];
         return YES;
     }
+#endif //!defined(SWRVE_NO_CAMERA)
     return NO;
 }
 
@@ -68,7 +72,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPhotoLibrary]) forKey:swrve_permission_photos];
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_CAMERA)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkCamera]) forKey:swrve_permission_camera];
+#endif //!defined(SWRVE_NO_CAMERA)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts]) forKey:swrve_permission_contacts];
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
@@ -200,6 +206,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
 
+#if !defined(SWRVE_NO_CAMERA)
 +(ISHPermissionRequest*)cameraRequest {
     if (!_cameraRequest) {
         _cameraRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryPhotoCamera];
@@ -220,6 +227,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
+#endif //!defined(SWRVE_NO_CAMERA)
 
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 +(ISHPermissionRequest*)contactsRequest {
