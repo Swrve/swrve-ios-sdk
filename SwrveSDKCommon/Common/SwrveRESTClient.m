@@ -1,7 +1,6 @@
 #import "SwrveRESTClient.h"
 #import "SwrveCommonConnectionDelegate.h"
 #import "SwrveCommon.h"
-#import "SwrveAssetsManager.h"
 
 @interface SwrveConnectionDelegate : SwrveCommonConnectionDelegate
 
@@ -59,7 +58,7 @@
 }
 
 - (void)sendHttpGETRequest:(NSURL *)url completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:timeoutInterval]; // TODO self.config.httpTimeoutSeconds
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:timeoutInterval];
     if (handler == nil) {
         [request setHTTPMethod:@"HEAD"];
     } else {
@@ -73,7 +72,7 @@
 }
 
 - (void)sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:timeoutInterval]; // TODO self.config.httpTimeoutSeconds
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:timeoutInterval];
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:json];
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
