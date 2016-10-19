@@ -12,8 +12,8 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrveCommonConnectionDelegate.h"
 #import "SwrveFileManagement.h"
+#import "SwrveRESTClient.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -66,14 +66,6 @@ enum
     SWRVE_APPEND_TO_FILE,
     SWRVE_TRUNCATE_IF_TOO_LARGE,
 };
-
-@interface SwrveConnectionDelegate : SwrveCommonConnectionDelegate
-
-@property (atomic, weak) Swrve* swrve;
-
-- (id)init:(Swrve*)swrve completionHandler:(ConnectionCompletionHandler)handler;
-
-@end
 
 @interface SwrveInstanceIDRecorder : NSObject
 {
@@ -153,7 +145,6 @@ enum
 - (UInt64) getTime;
 - (NSString*) createStringWithMD5:(NSString*)source;
 - (void) initBuffer;
-- (void) addHttpPerformanceMetrics:(NSString*) metrics;
 - (void) checkForCampaignAndResourcesUpdates:(NSTimer*)timer;
 
 // Used to store the merged user updates
@@ -198,6 +189,8 @@ enum
 @property (atomic) NSURL* campaignsAndResourcesURL;
 
 @property (atomic) int locationSegmentVersion;
+
+@property(atomic) SwrveRESTClient *restClient;
 
 @end
 
@@ -560,6 +553,7 @@ static bool didSwizzle = false;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
 @synthesize locationSegmentVersion;
+@synthesize restClient;
 
 + (void) resetSwrveSharedInstance
 {
@@ -725,6 +719,8 @@ static bool didSwizzle = false;
         install_time = [self getInstallTime:swrveConfig.installTimeCacheFile withSecondaryFile:swrveConfig.installTimeCacheSecondaryFile];
         lastSessionDate = [self getNow];
 
+        [self initSwrveRestClient:config.httpTimeoutSeconds];
+
         NSURL* base_events_url = [NSURL URLWithString:swrveConfig.eventsServer];
         [self setBatchURL:[NSURL URLWithString:@"1/batch" relativeToURL:base_events_url]];
 
@@ -812,6 +808,10 @@ static bool didSwizzle = false;
     [self sendQueuedEvents];
 
     return self;
+}
+
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut {
+    [self setRestClient:[[SwrveRESTClient alloc] initWithTimeoutInterval:timeOut]];
 }
 
 #if !defined(SWRVE_NO_PUSH)
@@ -1138,7 +1138,7 @@ static bool didSwizzle = false;
 
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
     DebugLog(@"Refreshing campaigns from URL %@", url);
-    [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+    [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (!error) {
             NSInteger statusCode = 200;
             enum HttpStatus status = HTTP_SUCCESS;
@@ -1306,7 +1306,7 @@ static bool didSwizzle = false;
 
     [self setEventsWereSent:YES];
 
-    [self sendHttpPOSTRequest:[self batchURL]
+    [restClient sendHttpPOSTRequest:[self batchURL]
                      jsonData:json_data
             completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
 
@@ -2258,7 +2258,7 @@ enum HttpStatus {
 
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
 
-    [self sendHttpPOSTRequest:[self batchURL]
+    [restClient sendHttpPOSTRequest:[self batchURL]
                       jsonData:json_data
              completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (error) {
@@ -2298,86 +2298,6 @@ enum HttpStatus {
         DebugLog(@"Error with json.\nError:%@", err);
     }
     return obj != nil;
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url queryString:(NSString*)query
-{
-    [self sendHttpGETRequest:url queryString:query completionHandler:nil];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url
-{
-    [self sendHttpGETRequest:url completionHandler:nil];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)baseUrl queryString:(NSString*)query completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSURL* url = [NSURL URLWithString:query relativeToURL:baseUrl];
-    [self sendHttpGETRequest:url completionHandler:handler];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:self.config.httpTimeoutSeconds];
-    if (handler == nil) {
-        [request setHTTPMethod:@"HEAD"];
-    } else {
-        [request setHTTPMethod:@"GET"];
-    }
-    [self sendHttpRequest:request completionHandler:handler];
-}
-
-- (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json
-{
-    [self sendHttpPOSTRequest:url jsonData:json completionHandler:nil];
-}
-
-- (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:self.config.httpTimeoutSeconds];
-    [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:json];
-    [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[json length]] forHTTPHeaderField:@"Content-Length"];
-
-    [self sendHttpRequest:request completionHandler:handler];
-}
-
-- (void) sendHttpRequest:(NSMutableURLRequest*)request completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    // Add http request performance metrics for any previous requests into the header of this request (see JIRA SWRVE-5067 for more details)
-    NSArray* allMetricsToSend;
-
-    @synchronized([self httpPerformanceMetrics]) {
-        allMetricsToSend = [[self httpPerformanceMetrics] copy];
-        [[self httpPerformanceMetrics] removeAllObjects];
-    }
-
-    if (allMetricsToSend != nil && [allMetricsToSend count] > 0) {
-        NSString* fullHeader = [allMetricsToSend componentsJoinedByString:@";"];
-        [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            handler(response, data, error);
-        }];
-        [task resume];
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
-        [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
-#pragma clang diagnostic pop
-    }
-}
-
-- (void) addHttpPerformanceMetrics:(NSString*) metrics
-{
-    @synchronized([self httpPerformanceMetrics]) {
-        [[self httpPerformanceMetrics] addObject:metrics];
-    }
 }
 
 - (void) initBuffer
@@ -2491,7 +2411,7 @@ enum HttpStatus {
                              self.userID, self.apiKey, self.config.appVersion, self->install_time];
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"?%@", queryString] relativeToURL:resourcesDiffURL];
 
-    [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+    [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         NSData* resourcesDiffCacheContent = [[self resourcesDiffFile] readFromFile];
 
         if (!error) {
@@ -2573,30 +2493,6 @@ enum HttpStatus {
         } else {
             self.shortDeviceID = shortDeviceIdDisk;
         }
-    }
-}
-
-@end
-
-// This connection delegate tracks performance metrics for each request (see JIRA SWRVE-5067 for more details)
-@implementation SwrveConnectionDelegate
-
-@synthesize swrve;
-
-- (id)init:(Swrve*)_swrve completionHandler:(ConnectionCompletionHandler)_handler
-{
-    self = [super init:_handler];
-    if (self) {
-        [self setSwrve:_swrve];
-    }
-    return self;
-}
-
-- (void)addHttpPerformanceMetrics:(NSString *)metricsString
-{
-    Swrve* swrveStrong = self.swrve;
-    if (swrveStrong) {
-        [swrveStrong addHttpPerformanceMetrics:metricsString];
     }
 }
 
