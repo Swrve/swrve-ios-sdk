@@ -1,6 +1,5 @@
 #import "SwrveConversationButton.h"
 #import "SwrveConversationUIButton.h"
-#import "SwrveSetup.h"
 
 @implementation SwrveConversationButton
 
@@ -8,11 +7,33 @@
 @synthesize actions = _actions;
 @synthesize target = _target;
 
--(id) initWithTag:(NSString *)tag andDescription:(NSString *)description {
+-(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag andType:kSwrveControlTypeButton];
     if(self) {
-        _description = description;
+        if([dict objectForKey:kSwrveKeyDescription]) {
+            _description = [dict objectForKey:kSwrveKeyDescription];
+        }
         _target = nil;
+        NSString *target = [dict objectForKey:@"target"]; // Leave the target nil if this a conversation ender (i.e. no following state)
+        if (target && ![target isEqualToString:@""]) {
+            _target = target;
+        }
+        if([dict objectForKey:@"action"]) {
+            _actions = [dict objectForKey:@"action"];
+        }
+
+        NSDictionary *immutableStyle = [dict objectForKey:kSwrveKeyStyle];
+        NSMutableDictionary *style = [immutableStyle mutableCopy];
+        if (style && ![style objectForKey:kSwrveKeyFontFile]) {
+            [style setObject:@"" forKey:kSwrveKeyFontFile];
+        }
+        if (style && ![style objectForKey:kSwrveKeyTextSize]) {
+            [style setObject:kSwrveDefaultButtonFontSize forKey:kSwrveKeyTextSize];
+        }
+        if (style && ![style objectForKey:kSwrveKeyAlignment]) {
+            [style setObject:kSwrveDefaultButtonAlignment forKey:kSwrveKeyAlignment];
+        }
+        self.style = style;
     }
     return self;
 }

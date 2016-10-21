@@ -1,17 +1,18 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
-#import "SwrveSetup.h"
+#import "SwrveCommon.h"
+@import CoreText;
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
 #define kSwrveKeyLb @"lb"
 #define kSwrveKeyType @"type"
-#define kSwrveKeyValue @"value"
+#define kSwrveKeyColorValue @"value"
 #define kSwrveKeyBorderRadius @"border_radius"
 #define kSwrveMaxBorderRadius 22.5
 
-#define kSwrveTypeTransparent @"transparent"
-#define kSwrveTypeColor @"color"
+#define kSwrveColorTypeTransparent @"transparent"
+#define kSwrveColorTypeColor @"color"
 
 #define kSwrveDefaultColorBg @"#ffffff"   // white
 #define kSwrveDefaultColorFg @"#000000"   // black
@@ -46,19 +47,18 @@
 + (NSString *)colorFromStyle:(NSDictionary *)dict withDefault:(NSString*) defaultColor {
     if (dict) {
         NSString *type = [dict objectForKey:kSwrveKeyType];
-        if ([type isEqualToString:kSwrveTypeTransparent]) {
-            return kSwrveTypeTransparent;
-        } else if ([type isEqualToString:kSwrveTypeColor]) {
-            return [dict objectForKey:kSwrveKeyValue];
+        if ([type isEqualToString:kSwrveColorTypeTransparent]) {
+            return kSwrveColorTypeTransparent;
+        } else if ([type isEqualToString:kSwrveColorTypeColor]) {
+            return [dict objectForKey:kSwrveKeyColorValue];
         }
     }
     return defaultColor;
 }
 
-
 + (UIColor *) convertToUIColor:(NSString*)color {
     UIColor *uiColor;
-    if ([color isEqualToString:kSwrveTypeTransparent]) {
+    if ([color isEqualToString:kSwrveColorTypeTransparent]) {
         uiColor = [UIColor clearColor];
     } else {
         uiColor = [self processHexColorValue:color];
@@ -118,30 +118,90 @@
     }
 }
 
-+ (void) styleButton:(SwrveConversationUIButton*)button withStyle:(NSDictionary*)style {
++ (void)styleButton:(SwrveConversationUIButton *)button withStyle:(NSDictionary *)style {
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     UIColor *fgUIColor = [self convertToUIColor:fgHexColor];
-    NSString *styleType = kSwrveTypeSolid;
-    if([style objectForKey:kSwrveKeyType]) {
+    NSString *styleType = kSwrveStyleTypeSolid;
+    if ([style objectForKey:kSwrveKeyType]) {
         styleType = [style objectForKey:kSwrveKeyType];
     }
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
     float borderRadius = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
-    
+
     [button initButtonType:styleType withForegroundColor:fgUIColor withBackgroundColor:bgUIColor withBorderRadius:borderRadius];
+
+    UIFont *fallbackFont = [UIFont boldSystemFontOfSize:[kSwrveDefaultButtonFontSize floatValue]];
+    UIFont *buttonFont = [SwrveConversationStyler fontFromStyle:style withFallback:fallbackFont];
+    [[button titleLabel] setFont:buttonFont];
+
+    NSString *styleAlignment = [style objectForKey:kSwrveKeyAlignment];
+    if (styleAlignment) {
+        if ([styleAlignment isEqualToString:@"left"]) {
+            [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+            [button setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 0.0)];
+        } else if ([styleAlignment isEqualToString:@"center"]) {
+            [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+        } else if ([styleAlignment isEqualToString:@"right"]) {
+            [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
+            [button setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, 0.0, 5.0)];
+        }
+    } else {
+        [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+    }
+
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    [button.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+    [button.titleLabel setNumberOfLines:1];
+}
+
++ (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont {
+
+    NSString *fontName = [style objectForKey:kSwrveKeyFontFile];
+    NSNumber *fontSize = [style objectForKey:kSwrveKeyTextSize];
+
+    UIFont *uiFont;
+    if (fontName && [fontName length] == 0) { // will be blank for system font and for v1/v2/v3 of conversations
+        uiFont = [fallbackUIFont fontWithSize:[fontSize floatValue]];
+    } else {
+        uiFont = [UIFont fontWithName:fontName size:[fontSize floatValue]];
+        if (!uiFont) {
+            NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+            NSString *fontPath = [cache stringByAppendingPathComponent:fontName];
+            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
+            if (fileExists) {
+                NSURL *url = [NSURL fileURLWithPath:fontPath];
+                CGDataProviderRef fontDataProvider = CGDataProviderCreateWithURL((__bridge CFURLRef) url);
+                CGFontRef cgFont = CGFontCreateWithDataProvider(fontDataProvider);
+                NSString *newFontName = (__bridge NSString *) CGFontCopyPostScriptName(cgFont);
+                uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]]; // check again if already registered
+                if (uiFont == NULL) {
+                    CGDataProviderRelease(fontDataProvider);
+                    CFErrorRef error;
+                    CTFontManagerRegisterGraphicsFont(cgFont, &error);
+                    if (error) {
+                        DebugLog(@"Error registering font: %@.\nError: %@", fontName, error);
+                    } else {
+                        CGFontRelease(cgFont);
+                        uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]];
+                    }
+                }
+            } else {
+                DebugLog(@"Swrve: font %@ could not be loaded.Using default/fallback.", fontName);
+            }
+        }
+    }
+
+    if (!uiFont) {
+        uiFont = fallbackUIFont;
+    }
+    return uiFont;
 }
 
 + (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
-
-    NSString *styleType = kSwrveTypeSolid;
-    if([style objectForKey:kSwrveKeyType]) {
-        styleType = [style objectForKey:kSwrveKeyType];
-    }
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
     UIColor *starColor = [self convertToUIColor:starColorHex];
-    
     [ratingView updateWithStarColor:starColor withBackgroundColor:bgUIColor];
 }
 

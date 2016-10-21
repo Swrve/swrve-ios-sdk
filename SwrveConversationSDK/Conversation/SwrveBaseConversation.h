@@ -2,7 +2,7 @@
 #import "SwrveMessageEventHandler.h"
 #include <UIKit/UIKit.h>
 
-const static int CONVERSATION_VERSION = 3;
+const static int CONVERSATION_VERSION = 4;
 
 @class SwrveConversationPane;
 
