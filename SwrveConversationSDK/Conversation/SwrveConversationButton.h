@@ -2,6 +2,8 @@
 #import "SwrveConversationAtom.h"
 
 #define kSwrveKeyDescription @"description"
+#define kSwrveKeyTarget @"target"
+#define kSwrveKeyAction @"action"
 #define kSwrveDefaultButtonAlignment @"center"
 #define kSwrveDefaultButtonFontSize [NSNumber numberWithDouble:18.0]
 #define kSwrveStyleTypeSolid @"solid"

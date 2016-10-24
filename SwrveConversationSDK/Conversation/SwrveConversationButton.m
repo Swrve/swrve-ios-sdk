@@ -10,20 +10,25 @@
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag andType:kSwrveControlTypeButton];
     if(self) {
-        if([dict objectForKey:kSwrveKeyDescription]) {
-            _description = [dict objectForKey:kSwrveKeyDescription];
+
+        NSString *description = [dict objectForKey:kSwrveKeyDescription];
+        if ([description length] != 0) {
+            _description = description;
         }
-        _target = nil;
-        NSString *target = [dict objectForKey:@"target"]; // Leave the target nil if this a conversation ender (i.e. no following state)
-        if (target && ![target isEqualToString:@""]) {
+
+        NSString *target = [dict objectForKey:kSwrveKeyTarget];
+        if ([target length] != 0) {
             _target = target;
         }
-        if([dict objectForKey:@"action"]) {
-            _actions = [dict objectForKey:@"action"];
+
+        NSString *action = [dict objectForKey:kSwrveKeyAction];
+        if ([action length] != 0) {
+            _actions = action;
         }
 
         NSDictionary *immutableStyle = [dict objectForKey:kSwrveKeyStyle];
         NSMutableDictionary *style = [immutableStyle mutableCopy];
+        // v1,v2,v3 won't have font details and a blank font file means using system font
         if (style && ![style objectForKey:kSwrveKeyFontFile]) {
             [style setObject:@"" forKey:kSwrveKeyFontFile];
         }
