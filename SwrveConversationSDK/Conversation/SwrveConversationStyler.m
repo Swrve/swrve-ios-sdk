@@ -174,7 +174,9 @@
                 CGDataProviderRef fontDataProvider = CGDataProviderCreateWithURL((__bridge CFURLRef) url);
                 CGFontRef cgFont = CGFontCreateWithDataProvider(fontDataProvider);
                 NSString *newFontName = (__bridge NSString *) CGFontCopyPostScriptName(cgFont);
-                uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]]; // check again if already registered
+                if(newFontName) {
+                    uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]]; // check again if already registered
+                }
                 if (uiFont == NULL) {
                     CGDataProviderRelease(fontDataProvider);
                     CFErrorRef error;
