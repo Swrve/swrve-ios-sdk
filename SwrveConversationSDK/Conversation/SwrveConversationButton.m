@@ -21,8 +21,8 @@
             _target = target;
         }
 
-        NSString *action = [dict objectForKey:kSwrveKeyAction];
-        if ([action length] != 0) {
+        NSDictionary *action = [dict objectForKey:kSwrveKeyAction];
+        if (action) {
             _actions = action;
         }
 
