@@ -2,19 +2,31 @@
 #import "SwrveAssetsManager.h"
 #import "SwrveCommon.h"
 
+static NSString* const ASSETQ_ITEM_NAME = @"name";
+static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
+
 @implementation SwrveAssetsManager
 
 @synthesize restClient;
 @synthesize assetsCurrentlyDownloading;
-@synthesize cdnRoot;
+@synthesize cdnImages;
+@synthesize cdnFonts;
 @synthesize cacheFolder;
 @synthesize assetsOnDisk;
+
++ (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest {
+    NSMutableDictionary *assetQItem = [[NSMutableDictionary alloc] init];
+    [assetQItem setObject:name forKey:ASSETQ_ITEM_NAME];
+    [assetQItem setObject:digest forKey:ASSETQ_ITEM_DIGEST];
+    return assetQItem;
+}
 
 - (id)initWithRestClient:(SwrveRESTClient *)swrveRESTClient andCacheFolder:(NSString *)cache{
     self = [super init];
     if (self) {
         [self setRestClient:swrveRESTClient];
-        self.cdnRoot = @"https://content-cdn.swrve.com/messaging/message_image/"; // default
+        self.cdnImages = @"";
+        self.cdnFonts = @"";
         self.cacheFolder = cache;
         self.assetsOnDisk = [[NSMutableSet alloc] init];
         self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
@@ -22,25 +34,41 @@
     return self;
 }
 
-- (void)downloadAssets:(NSSet *)assetsQueue withCompletionHandler:(void (^)(void))completionHandler {
-    NSSet *assetsToDownload = [self filterExistingFiles:assetsQueue];
-    for (NSString *asset in assetsToDownload) {
-        [self downloadAsset:asset withCompletionHandler:completionHandler];
+- (void)downloadImageAssets:(NSSet *)assetsQueueImages andFontAssets:(NSSet *)assetsQueueFonts withCompletionHandler:(void (^)(void))completionHandler {
+    [self downloadAssets:assetsQueueImages withCdn:cdnImages withCompletionHandler:completionHandler];
+    [self downloadAssets:assetsQueueFonts withCdn:cdnFonts withCompletionHandler:completionHandler];
+}
+
+- (void)downloadAssets:(NSSet *)assetsQueue withCdn:(NSString *)cdn withCompletionHandler:(void (^)(void))completionHandler {
+    if ([cdn length] == 0) {
+        DebugLog(@"No cdn configured");
+        return;
+    }
+    if (!assetsQueue || [assetsQueue count] == 0) {
+        DebugLog(@"assetsQueue is empty for cdn:%@", cdn);
+        return;
+    }
+
+    NSSet *assetItemsToDownload = [self filterExistingFiles:assetsQueue];
+    for (NSDictionary *assetItem in assetItemsToDownload) {
+        [self downloadAsset:assetItem withCdn:cdn withCompletionHandler:completionHandler];
     }
 }
 
-- (void)downloadAsset:(NSString *)asset withCompletionHandler:(void (^)(void))completionHandler {
+- (void)downloadAsset:(NSDictionary *)assetItem withCdn:(NSString *)cdn withCompletionHandler:(void (^)(void))completionHandler {
+
+    NSString *assetItemName = [assetItem objectForKey:ASSETQ_ITEM_NAME];
 
     BOOL mustDownload = YES;
     @synchronized ([self assetsCurrentlyDownloading]) {
-        mustDownload = ![assetsCurrentlyDownloading containsObject:asset];
+        mustDownload = ![assetsCurrentlyDownloading containsObject:assetItemName];
         if (mustDownload) {
-            [[self assetsCurrentlyDownloading] addObject:asset];
+            [[self assetsCurrentlyDownloading] addObject:assetItemName];
         }
     }
 
     if (mustDownload) {
-        NSURL *url = [NSURL URLWithString:asset relativeToURL:[NSURL URLWithString:self.cdnRoot]];
+        NSURL *url = [NSURL URLWithString:assetItemName relativeToURL:[NSURL URLWithString:cdn]];
         DebugLog(@"Downloading asset: %@", url);
         [restClient sendHttpGETRequest:url
                      completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -48,24 +76,25 @@
                          if (error) {
                              DebugLog(@"Could not download asset: %@", error);
                          } else {
-                             if (![self verifySHA:data against:asset]) {
-                                 DebugLog(@"Error downloading %@ – SHA1 does not match.", asset);
+                             NSString *assetItemDigest = [assetItem objectForKey:ASSETQ_ITEM_DIGEST];
+                             if (![self verifySHA:data against:assetItemDigest]) {
+                                 DebugLog(@"Error downloading %@ – SHA1 does not match.", assetItemName);
                              } else {
 
-                                 NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, asset, nil]];
+                                 NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, assetItemName, nil]];
 
                                  [data writeToURL:dst atomically:YES];
 
                                  // Add the asset to the set of assets that we know are downloaded.
-                                 [self.assetsOnDisk addObject:asset];
-                                 DebugLog(@"Asset downloaded: %@", asset);
+                                 [self.assetsOnDisk addObject:assetItemName];
+                                 DebugLog(@"Asset downloaded: %@", assetItemName);
                              }
                          }
 
                          // This asset has finished downloading
                          // Check if all assets are finished and if so call autoShowMessage
                          @synchronized ([self assetsCurrentlyDownloading]) {
-                             [[self assetsCurrentlyDownloading] removeObject:asset];
+                             [[self assetsCurrentlyDownloading] removeObject:assetItemName];
                              if ([[self assetsCurrentlyDownloading] count] == 0) {
                                  completionHandler();
                              }
@@ -75,18 +104,19 @@
 }
 
 - (NSSet *)filterExistingFiles:(NSSet *)assetSet {
-    NSMutableSet *result = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
+    NSMutableSet *assetItemsToDownload = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *file in assetSet) {
-        NSString *target = [self.cacheFolder stringByAppendingPathComponent:file];
+    for (NSDictionary *assetItem in assetSet) {
+        NSString *assetItemName = [assetItem objectForKey:ASSETQ_ITEM_NAME];
+        NSString *target = [self.cacheFolder stringByAppendingPathComponent:assetItemName];
         if (![fileManager fileExistsAtPath:target]) {
-            [result addObject:file];
+            [assetItemsToDownload addObject:assetItem]; // add the item, not the name
         } else {
-            [self.assetsOnDisk addObject:file];
+            [self.assetsOnDisk addObject:assetItemName]; // store the font name
         }
     }
 
-    return [result copy];
+    return [assetItemsToDownload copy];
 }
 
 - (bool)verifySHA:(NSData *)data against:(NSString *)expectedDigest {

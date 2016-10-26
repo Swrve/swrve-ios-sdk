@@ -29,6 +29,6 @@
  * \param controller Message controller.
  * \returns Parsed conversation.
  */
-+(SwrveConversation*)fromJSON:(NSDictionary*)json forCampaign:(SwrveConversationCampaign*)campaign forController:(SwrveMessageController*)controller;
+- (id)initWithJSON:(NSDictionary *)json forCampaign:(SwrveConversationCampaign *)campaign forController:(SwrveMessageController *)controller;
 
 @end

@@ -40,7 +40,7 @@
  * \data json blob containing the campaign data.
  * \returns Initialized campaign.
  */
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary*)data withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller;
+-(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict;
 
 /*! Check if the campaign supports the given orientation.
  *

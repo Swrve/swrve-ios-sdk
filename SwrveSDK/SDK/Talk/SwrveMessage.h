@@ -32,7 +32,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
  * \param controller Message controller.
  * \returns Parsed in-app message.
  */
-+(SwrveMessage*)fromJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)campaign forController:(SwrveMessageController*)controller;
+-(id) initWithJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)_campaign forController:(SwrveMessageController*)controller;
 
 /*! Obtain the best format for the given orientation.
  *

@@ -409,7 +409,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
 
-    NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
+    NSMutableSet* imageAssetsQ = [[NSMutableSet alloc] init];
+    NSMutableSet* fontAssetsQ = [[NSMutableSet alloc] init];
     NSMutableArray* result    = [[NSMutableArray alloc] init];
 
     // Version check
@@ -419,10 +420,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
 
-    // CDN
-    NSString* cdnRoot = [campaignJson objectForKey:@"cdn_root"];
-    [assetsManager setCdnRoot:cdnRoot];
-    DebugLog(@"CDN URL %@", cdnRoot);
+    [self updateCdnPaths:campaignJson];
 
     // Game Data
     NSDictionary* gameData = [campaignJson objectForKey:@"game_data"];
@@ -506,7 +504,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 // Conversation version check
                 NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
                 if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
-                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withImageAssetsQ:imageAssetsQ andFontAssetsQ:fontAssetsQ forController:self];
                 } else {
                     DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
                 }
@@ -514,7 +512,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
             }
         } else {
-            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:assetsQueue forController:self];
+            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:imageAssetsQ forController:self];
         }
 
         if (campaign != nil) {
@@ -542,23 +540,44 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     // Obtain assets we don't have yet
-    [assetsManager downloadAssets:assetsQueue withCompletionHandler:^ {
+    [assetsManager downloadImageAssets:imageAssetsQ andFontAssets:fontAssetsQ withCompletionHandler:^ {
         [self autoShowMessages];
     }];
 
     self.campaigns = [result copy];
 }
 
+-(void) updateCdnPaths:(NSDictionary*)campaignJson {
+    NSDictionary *cdnPaths = [campaignJson objectForKey:@"cdn_paths"];
+    if (cdnPaths) {
+        NSString *cdnImages = [cdnPaths objectForKey:@"message_images"];
+        [assetsManager setCdnImages:cdnImages];
+        NSString *cdnFonts = [cdnPaths objectForKey:@"message_fonts"];
+        [assetsManager setCdnFonts:cdnFonts];
+        DebugLog(@"CDN URL images:%@ fonts:%@", cdnImages, cdnFonts);
+    } else {
+        NSString *cdnRoot = [campaignJson objectForKey:@"cdn_root"];
+        [assetsManager setCdnImages:cdnRoot];
+        DebugLog(@"CDN URL %@", cdnRoot);
+    }
+}
 
 -(void) appDidBecomeActive {
     // Obtain all assets required for the available campaigns
-    NSMutableSet* assetsQueue = [[NSMutableSet alloc] init];
-    for (SwrveBaseCampaign* campaign in self.campaigns) {
-        [campaign addAssetsToQueue:assetsQueue];
+    NSMutableSet* imageAssetsQ = [[NSMutableSet alloc] init];
+    NSMutableSet* fontAssetsQ = [[NSMutableSet alloc] init];
+    for (SwrveBaseCampaign *campaign in self.campaigns) {
+        if ([campaign isKindOfClass:[SwrveCampaign class]]) {
+            SwrveCampaign *swrveCampaign = (SwrveCampaign *) campaign;
+            [swrveCampaign addAssetsToQueueForImages:imageAssetsQ];
+        } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+            SwrveConversationCampaign *swrveConversationCampaign = (SwrveConversationCampaign *) campaign;
+            [swrveConversationCampaign addAssetsToQueueForImages:imageAssetsQ andFonts:fontAssetsQ];
+        }
     }
 
     // Obtain assets we don't have yet
-    [assetsManager downloadAssets:assetsQueue withCompletionHandler:^ {
+    [assetsManager downloadImageAssets:imageAssetsQ andFontAssets:fontAssetsQ withCompletionHandler:^{
         [self autoShowMessages];
     }];
 }

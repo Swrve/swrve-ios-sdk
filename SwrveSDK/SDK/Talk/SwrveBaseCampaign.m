@@ -1,5 +1,4 @@
 #import "Swrve.h"
-#import "SwrveBaseCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveTrigger.h"
 
@@ -80,9 +79,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize messageCenter;
 @synthesize subject;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
-{
-    #pragma unused(assetsQueue, controller)
+-(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict {
     if (self = [super init]) {
         // Default both dates to now
         NSDate* now = [NSDate date];
@@ -263,12 +260,6 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
     
     return NO;
-}
-
--(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
-{
-#pragma unused(assetsQueue)
-    // Implemented in sub classes
 }
 
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation

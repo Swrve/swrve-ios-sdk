@@ -13,6 +13,34 @@
 
 @synthesize controller, campaign, messageID, name, priority, formats;
 
+-(id) initWithJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)_campaign forController:(SwrveMessageController*)_controller {
+    self.campaign     = _campaign;
+    self.controller   = _controller;
+    self.messageID    = [json objectForKey:@"id"];
+    self.name         = [json objectForKey:@"name"];
+    if ([json objectForKey:@"priority"]) {
+        self.priority = [json objectForKey:@"priority"];
+    } else {
+        self.priority = [NSNumber numberWithInt:9999];
+    }
+
+    NSDictionary* messageTemplate = (NSDictionary*)[json objectForKey:@"template"];
+
+    NSArray* jsonFormats = [messageTemplate objectForKey:@"formats"];
+
+    NSMutableArray* loadedFormats = [[NSMutableArray alloc] init];
+
+    for (NSDictionary* jsonFormat in jsonFormats)
+    {
+        SwrveMessageFormat* format = [[SwrveMessageFormat alloc] initFromJson:jsonFormat
+                                                                forController:controller
+                                                                   forMessage:self];
+        [loadedFormats addObject:format];
+    }
+
+    self.formats = [[NSArray alloc] initWithArray:loadedFormats];
+    return self;
+}
 -(SwrveMessageFormat*)getBestFormatFor:(UIInterfaceOrientation)orientation
 {    
     for (SwrveMessageFormat* format in formats)
@@ -35,45 +63,6 @@
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
     return (nil != [self getBestFormatFor:orientation]);
-}
-
--(SwrveMessage*)updateWithJSON:(NSDictionary*)json
-                 forCampaign:(SwrveCampaign*)_campaign
-                 forController:(SwrveMessageController*)_controller
-{
-    self.campaign     = _campaign;
-    self.controller   = _controller;
-    self.messageID    = [json objectForKey:@"id"];
-    self.name         = [json objectForKey:@"name"];
-    if ([json objectForKey:@"priority"]) {
-        self.priority = [json objectForKey:@"priority"];
-    } else {
-        self.priority = [NSNumber numberWithInt:9999];
-    }
-
-    NSDictionary* messageTemplate = (NSDictionary*)[json objectForKey:@"template"];
-    
-    NSArray* jsonFormats = [messageTemplate objectForKey:@"formats"];
-    
-    NSMutableArray* loadedFormats = [[NSMutableArray alloc] init];
-    
-    for (NSDictionary* jsonFormat in jsonFormats)
-    {
-        SwrveMessageFormat* format = [[SwrveMessageFormat alloc] initFromJson:jsonFormat
-                                                                forController:controller
-                                                                   forMessage:self];
-        [loadedFormats addObject:format];
-    }
-
-    self.formats = [[NSArray alloc] initWithArray:loadedFormats];
-    return self;
-}
-
-+(SwrveMessage*)fromJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)campaign forController:(SwrveMessageController*)controller
-{
-    return [[[SwrveMessage alloc] init] updateWithJSON:json
-                                         forCampaign: campaign
-                                         forController:controller];
 }
 
 static bool in_cache(NSString* file, NSSet* set){
