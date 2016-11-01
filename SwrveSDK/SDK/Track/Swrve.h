@@ -651,6 +651,19 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) userUpdate:(NSDictionary*)attributes;
 
+
+/*! Sends the user states related to specific Dates to Swrve.
+ * The only value that should be added should be NSDate. That is only way to ensure Swrve will recognise
+ * and parse them correctly
+ * 
+ * See the REST API docs for the user event for a detailed description of the
+ * semantics of this call.
+ *
+ * \param attributes The attributes to be set for the user. (NSDate only)
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ */
+-(int) userUpdateWithDate:(NSDictionary<NSString *, NSDate *> *)attributes;
+
 #pragma mark -
 #pragma mark User Resources
 

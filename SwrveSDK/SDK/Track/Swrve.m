@@ -1094,6 +1094,40 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
+
+-(int) userUpdateWithDate:(NSDictionary<NSString *, NSDate*>*)attributes {
+    [self maybeFlushToDisk];
+    
+    
+    // Merge attributes with current set of attributes
+    if (attributes) {
+        NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+        [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+        for (id attributeKey in attributes) {
+            
+            id attribute = [attributes objectForKey:attributeKey];
+            
+            // check if the attribute is of type NSDate
+            if([attribute isKindOfClass:[NSDate class]]){
+                attribute = [self convertDateToAcceptedFormat:(NSDate *)attribute];
+            }
+            
+            [currentAttributes setObject:attribute forKey:attributeKey];
+        }
+    }
+    
+    return SWRVE_SUCCESS;
+}
+
+- (NSString *) convertDateToAcceptedFormat:(NSDate* )date {
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+
+    return [dateFormatter stringFromDate:date];
+}
+
 -(SwrveResourceManager*) getSwrveResourceManager
 {
     return [self resourceManager];
