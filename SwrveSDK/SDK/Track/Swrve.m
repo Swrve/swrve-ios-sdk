@@ -1095,9 +1095,8 @@ static bool didSwizzle = false;
 }
 
 
--(int) userUpdateWithDate:(NSDictionary<NSString *, NSDate*>*)attributes {
+- (int) userUpdateWithDate:(NSDictionary<NSString *, NSDate*>*)attributes {
     [self maybeFlushToDisk];
-    
     
     // Merge attributes with current set of attributes
     if (attributes) {
@@ -1107,9 +1106,10 @@ static bool didSwizzle = false;
             
             id attribute = [attributes objectForKey:attributeKey];
             
-            // check if the attribute is of type NSDate
-            if([attribute isKindOfClass:[NSDate class]]){
-                attribute = [self convertDateToAcceptedFormat:(NSDate *)attribute];
+            if([attribute isKindOfClass:[NSDate class]]) {
+                attribute = [self convertDateToString:(NSDate *)attribute];
+            }else {
+                DebugLog(@"Invalid Object Type submitted as attribute to UserUpdateWithDate: %@", attribute);
             }
             
             [currentAttributes setObject:attribute forKey:attributeKey];
@@ -1119,7 +1119,7 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
-- (NSString *) convertDateToAcceptedFormat:(NSDate* )date {
+- (NSString *) convertDateToString:(NSDate* )date {
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
