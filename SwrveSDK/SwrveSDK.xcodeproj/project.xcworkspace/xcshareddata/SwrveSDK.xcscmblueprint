@@ -9,8 +9,8 @@
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3E38C44E-8965-4A7A-9F70-9E182A0F62C1",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "B529E579E82E3055CAC89B0C47FBDC346B032D64" : "public",
-    "D9A80FC0172759C27A6C76AA9506ABF956ED1B2C" : ""
+    "B529E579E82E3055CAC89B0C47FBDC346B032D64" : "public\/",
+    "D9A80FC0172759C27A6C76AA9506ABF956ED1B2C" : ".."
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "SwrveSDK",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
