@@ -51,10 +51,7 @@
     for (SwrveConversationPane* page in self.pages) {
         for (SwrveContentItem* contentItem in page.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
-                if([assets containsObject:contentItem.value]) {
-                    // conversation asset found, checking next asset
-                }
-                else {
+                if (![assets containsObject:contentItem.value]) {
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
                     return false;
                 }
