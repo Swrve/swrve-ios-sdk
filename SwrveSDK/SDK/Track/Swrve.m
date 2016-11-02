@@ -1094,7 +1094,6 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
-
 - (int) userUpdateWithDate:(NSDictionary<NSString *, NSDate*>*)attributes {
     [self maybeFlushToDisk];
     
@@ -1117,6 +1116,16 @@ static bool didSwizzle = false;
     }
     
     return SWRVE_SUCCESS;
+}
+
+- (int) userUpdateWithDate:(NSDate *) date name:(NSString *) name {
+    
+    if(name && date){
+        return [self userUpdateWithDate:[NSDictionary dictionaryWithObjectsAndKeys:date, name, nil]];
+    }else{
+        DebugLog(@"Nil Object passed into userUpdateWithDate:name:");
+        return SWRVE_FAILURE;
+    }
 }
 
 - (NSString *) convertDateToString:(NSDate* )date {
