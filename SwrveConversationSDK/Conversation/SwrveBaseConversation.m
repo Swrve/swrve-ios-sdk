@@ -52,7 +52,7 @@
         for (SwrveContentItem* contentItem in page.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if([assets containsObject:contentItem.value]) {
-                    return true;
+                    // conversation asset found, checking next asset
                 }
                 else {
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
