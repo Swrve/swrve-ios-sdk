@@ -656,8 +656,8 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * See the REST API docs for the user event for a detailed description of the
  * semantics of this call.
  *
- * \param date The NSDate value associated
  * \param name The identifier for the user update
+ * \param date The NSDate value associated
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
 - (int) userUpdate:(NSString *)name withDate:(NSDate *) date;
