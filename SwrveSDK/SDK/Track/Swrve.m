@@ -1094,38 +1094,19 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
-- (int) userUpdateWithDate:(NSDictionary<NSString *, NSDate*>*)attributes {
-    [self maybeFlushToDisk];
+- (int) userUpdate:(NSString *)name withDate:(NSDate *) date {
     
-    // Merge attributes with current set of attributes
-    if (attributes) {
+    if(name && date){
         NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
         [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
-        for (id attributeKey in attributes) {
-            
-            id attribute = [attributes objectForKey:attributeKey];
-            
-            if([attribute isKindOfClass:[NSDate class]]) {
-                attribute = [self convertDateToString:(NSDate *)attribute];
-            }else {
-                DebugLog(@"Invalid Object Type submitted as attribute to UserUpdateWithDate: %@", attribute);
-            }
-            
-            [currentAttributes setObject:attribute forKey:attributeKey];
-        }
+        [currentAttributes setObject:[self convertDateToString:date] forKey:name];
+        
+    }else{
+        DebugLog(@"nil object passed into userUpdate:withDate");
+        return SWRVE_FAILURE;
     }
     
     return SWRVE_SUCCESS;
-}
-
-- (int) userUpdateWithDate:(NSDate *) date name:(NSString *) name {
-    
-    if(name && date){
-        return [self userUpdateWithDate:[NSDictionary dictionaryWithObjectsAndKeys:date, name, nil]];
-    }else{
-        DebugLog(@"Nil Object passed into userUpdateWithDate:name:");
-        return SWRVE_FAILURE;
-    }
 }
 
 - (NSString *) convertDateToString:(NSDate* )date {
