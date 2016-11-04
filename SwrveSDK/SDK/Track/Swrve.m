@@ -1094,6 +1094,30 @@ static bool didSwizzle = false;
     return SWRVE_SUCCESS;
 }
 
+- (int) userUpdate:(NSString *)name withDate:(NSDate *) date {
+    
+    if(name && date){
+        NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+        [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+        [currentAttributes setObject:[self convertDateToString:date] forKey:name];
+        
+    }else{
+        DebugLog(@"nil object passed into userUpdate:withDate");
+        return SWRVE_FAILURE;
+    }
+    
+    return SWRVE_SUCCESS;
+}
+
+- (NSString *) convertDateToString:(NSDate* )date {
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+
+    return [dateFormatter stringFromDate:date];
+}
+
 -(SwrveResourceManager*) getSwrveResourceManager
 {
     return [self resourceManager];
