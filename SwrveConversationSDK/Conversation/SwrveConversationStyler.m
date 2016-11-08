@@ -133,11 +133,6 @@
 }
 
 + (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex {
-
-    NSString *styleType = kSwrveTypeSolid;
-    if([style objectForKey:kSwrveKeyType]) {
-        styleType = [style objectForKey:kSwrveKeyType];
-    }
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
     UIColor *starColor = [self convertToUIColor:starColorHex];

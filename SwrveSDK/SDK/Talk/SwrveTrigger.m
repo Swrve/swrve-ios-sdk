@@ -36,13 +36,11 @@
         _isValidTrigger = YES;
         _eventName = [[dictionary objectForKey:kTriggerEventNameKey] lowercaseString];
         _conditions = [self produceConditionsFromDictionary: [dictionary objectForKey:kTriggerEventConditionsKey]];
+        if(_isValidTrigger){
+            return self;
+        }
     }
-    
-    if(_isValidTrigger){
-        return self;
-    }else{
-        return nil;
-    }
+    return nil;
 }
 
 - (NSArray *) produceConditionsFromDictionary:(NSDictionary *) dictionary {
