@@ -1595,7 +1595,6 @@ static bool didSwizzle = false;
 {
     NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
-        [self.userUpdates setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
     }
@@ -1717,9 +1716,7 @@ static NSString* httpScheme(bool useHttps)
         if (![eventData objectForKey:@"time"]) {
             [eventData setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
         }
-        if (![eventData objectForKey:@"seqnum"]) {
-            [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
-        }
+        [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
 
         // Convert to string
         NSData* json_data = [NSJSONSerialization dataWithJSONObject:eventData options:0 error:nil];
