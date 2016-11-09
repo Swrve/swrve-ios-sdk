@@ -1952,13 +1952,13 @@ static NSString* httpScheme(bool useHttps)
     if (seconds > 0)
     {
         UInt64 result = seconds;
-        return result * 1000;
+        return result;
     }
 
     UInt64 time = [self getTime];
     NSString* currentTime = [NSString stringWithFormat:@"%llu", time/(UInt64)1000L];
     [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    return (time / 1000 * 1000);
+    return (time / 1000);
 }
 
 /*
