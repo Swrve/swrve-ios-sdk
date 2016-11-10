@@ -6,7 +6,7 @@ target 'MessageCenterSample' do
   pod 'SwrveSDK', :path => '../../..'
 
   # use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDK', '4.6.1'
+  #pod 'SwrveSDK', '4.7'
 end
 
 post_install do |installer|
