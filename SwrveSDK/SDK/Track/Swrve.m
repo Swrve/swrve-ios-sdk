@@ -1042,7 +1042,7 @@ static bool didSwizzle = false;
                 error = transaction.error.description;
             }
             NSDictionary *payload = @{@"product_id" : product_id, @"error" : error};
-            [self eventInternal:@"Swrve.iap.transaction_failed_on_client" payload:payload triggerCallback:true];
+            [self eventInternal:@"Swrve.iap.transaction_failed_on_client" payload:payload triggerCallback:NO];
         }
             break;
         case SKPaymentTransactionStateRestored:
@@ -1204,12 +1204,12 @@ static bool didSwizzle = false;
                             [payload setValue:[campaignIds componentsJoinedByString:@","] forKey:@"ids"];
                             [payload setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[self.talk.campaigns count]] forKey:@"count"];
                             [payload setValue:etagValue forKey:@"etag"];
-                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:true];
+                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:NO];
                         } else if (self->extraLogs) {
                             // Inform that we received no campigns in debug mode
                             NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
                             [payload setValue:etagValue forKey:@"etag"];
-                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded_none" payload:payload triggerCallback:true];
+                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded_none" payload:payload triggerCallback:NO];
                         }
                     }
                     NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
@@ -1657,7 +1657,7 @@ static bool didSwizzle = false;
             }
 
             NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-            [self eventInternal:eventName payload:nil triggerCallback:true];
+            [self eventInternal:eventName payload:nil triggerCallback:NO];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
@@ -2506,7 +2506,7 @@ enum HttpStatus {
 {
     #pragma unused(file)
     DebugLog(@"Signature check failed for file %@", file);
-    [self eventInternal:@"Swrve.signature_invalid" payload:nil triggerCallback:true];
+    [self eventInternal:@"Swrve.signature_invalid" payload:nil triggerCallback:NO];
 }
 
 - (void) initResourcesDiff

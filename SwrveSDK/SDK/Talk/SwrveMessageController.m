@@ -843,7 +843,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Notify message has been returned
         NSDictionary *returningPayload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
         NSString *returningEventName = @"Swrve.Messages.message_returned";
-        [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:true];
+        [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:NO];
     }
     return result;
 
