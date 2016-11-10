@@ -4,5 +4,6 @@
 @interface SwrveFileManagement : NSObject
 
 + (NSString *) applicationSupportPath;
++ (NSError*) createApplicationSupportPath;
 
 @end
