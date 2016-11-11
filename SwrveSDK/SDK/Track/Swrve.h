@@ -772,4 +772,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
 
+#if !defined(SWRVE_NO_PUSH)
+/*! Called to send the push engaged event to Swrve
+ */
+-(void) sendPushEngagedEvent:(NSString*)pushId;
+#endif //!defined(SWRVE_NO_PUSH)
+
 @end
