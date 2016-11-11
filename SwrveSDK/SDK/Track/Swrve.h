@@ -310,6 +310,8 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, retain) NSString * installTimeCacheSecondaryFile;
 
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
+ * \deprecated
+ * No longer used.
  */
 @property (nonatomic) int maxConcurrentDownloads;
 
@@ -357,6 +359,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * installTimeCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
+/*!
+ * \deprecated
+ * No longer used.
+ */
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
