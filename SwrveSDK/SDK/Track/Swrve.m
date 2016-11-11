@@ -708,7 +708,7 @@ static bool didSwizzle = false;
         NSCAssert(userID != nil, @"@UserID must not be nil.", nil);
 
         // Load if we need to send more information for debugging
-        self->extraLogs = YES; // TODO
+        self->extraLogs = [[NSUserDefaults standardUserDefaults] boolForKey:@"swrve_extra_logs"];
         
         NSError* appSupportError = [SwrveFileManagement createApplicationSupportPath];
         
@@ -1222,6 +1222,13 @@ static bool didSwizzle = false;
                     if (resourceJson != nil) {
                         [self updateResources:resourceJson writeToCache:YES];
                     }
+                    
+                    // Identifty if we have to send extra debug logs
+                    BOOL extraDebug = [responseDict objectForKey:@"extra_debug"];
+                    if (extraDebug != self->extraLogs) {
+                        [[NSUserDefaults standardUserDefaults] setBool:extraDebug forKey:@"swrve_extra_logs"];
+                    }
+                    self->extraLogs = extraDebug;
                 } else {
                     DebugLog(@"Invalid JSON received for user resources and campaigns", nil);
                 }
