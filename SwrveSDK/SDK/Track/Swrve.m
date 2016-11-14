@@ -112,6 +112,7 @@ enum
     UInt64 install_time;
     NSDate *lastSessionDate;
     NSString* lastProcessedPushId;
+    BOOL extraLogs;
 
 
     SwrveEventQueuedCallback event_queued_callback;
@@ -257,6 +258,9 @@ enum
 
 @end
 
+@interface SwrveMessageController()
+@property (nonatomic, retain) NSError* applicationSupportError;
+@end
 
 @implementation SwrveConfig
 
@@ -330,7 +334,6 @@ enum
         userResourcesCacheSecondaryFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
         userResourcesCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"srcngtsgt2.txt"];
         userResourcesCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
-
         
         userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
@@ -702,6 +705,11 @@ static bool didSwizzle = false;
         NSCAssert(apiKey.length > 1, @"API Key is invalid (too short): %@", apiKey);
         NSCAssert(userID != nil, @"@UserID must not be nil.", nil);
 
+        // Load if we need to send more information for debugging
+        self->extraLogs = [[NSUserDefaults standardUserDefaults] boolForKey:@"swrve_extra_logs_13896"];
+        
+        NSError* appSupportError = [SwrveFileManagement createApplicationSupportPath];
+        
         BOOL didSetUserId = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key] == nil;
         [[NSUserDefaults standardUserDefaults] setValue:userID forKey:swrve_user_id_key];
 
@@ -734,6 +742,7 @@ static bool didSwizzle = false;
 
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
+        [self migrateLogFile];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
 
         [self generateShortDeviceId];
@@ -805,9 +814,13 @@ static bool didSwizzle = false;
 #else
 #pragma unused(launchOptions)
 #endif //!defined(SWRVE_NO_PUSH)
+        
+        // Check if there was an error when creating the application support directory
+        if (appSupportError) {
+            [self extraLogEvent:@"application_support_error" payload:@{ @"path": [SwrveFileManagement applicationSupportPath], @"error": appSupportError.localizedDescription }];
+        }
+        [self sendQueuedEvents];
     }
-
-    [self sendQueuedEvents];
 
     return self;
 }
@@ -1027,7 +1040,7 @@ static bool didSwizzle = false;
                 error = transaction.error.description;
             }
             NSDictionary *payload = @{@"product_id" : product_id, @"error" : error};
-            [self eventInternal:@"Swrve.iap.transaction_failed_on_client" payload:payload triggerCallback:true];
+            [self eventInternal:@"Swrve.iap.transaction_failed_on_client" payload:payload triggerCallback:NO];
         }
             break;
         case SKPaymentTransactionStateRestored:
@@ -1133,7 +1146,6 @@ static bool didSwizzle = false;
         [queryString appendFormat:@"&etag=%@", etagValue];
     }
 
-
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
     DebugLog(@"Refreshing campaigns from URL %@", url);
     [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
@@ -1186,13 +1198,13 @@ static bool didSwizzle = false;
                                 [campaignIds addObject:[NSNumber numberWithUnsignedInteger:campaign.ID]];
                             }
 
-                            NSDictionary* payload = @{ @"ids" : [campaignIds componentsJoinedByString:@","],
-                                                       @"count" : [NSString stringWithFormat:@"%lu", (unsigned long)[self.talk.campaigns count]] };
-
-                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:true];
+                            NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
+                            [payload setValue:[campaignIds componentsJoinedByString:@","] forKey:@"ids"];
+                            [payload setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[self.talk.campaigns count]] forKey:@"count"];
+                            [payload setValue:etagValue forKey:@"etag"];
+                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:NO];
                         }
                     }
-
                     NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
                     if (locationCampaignJson != nil) {
                         NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
@@ -1203,6 +1215,13 @@ static bool didSwizzle = false;
                     if (resourceJson != nil) {
                         [self updateResources:resourceJson writeToCache:YES];
                     }
+                    
+                    // Identifty if we have to send extra debug logs for issue 13896
+                    BOOL extraDebug = [responseDict objectForKey:@"ios_extra_debug_13896"];
+                    if (extraDebug != self->extraLogs) {
+                        [[NSUserDefaults standardUserDefaults] setBool:extraDebug forKey:@"swrve_extra_logs_13896"];
+                    }
+                    self->extraLogs = extraDebug;
                 } else {
                     DebugLog(@"Invalid JSON received for user resources and campaigns", nil);
                 }
@@ -1638,7 +1657,7 @@ static bool didSwizzle = false;
             }
 
             NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-            [self eventInternal:eventName payload:nil triggerCallback:true];
+            [self eventInternal:eventName payload:nil triggerCallback:NO];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
@@ -1872,7 +1891,7 @@ static NSString* httpScheme(bool useHttps)
     NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     [deviceProperties setValue:idfv               forKey:@"swrve.IDFV"];
 #endif //defined(SWRVE_LOG_IDFV)
-
+    
     return deviceProperties;
 }
 
@@ -1913,6 +1932,20 @@ static NSString* httpScheme(bool useHttps)
     [self userUpdate:self.deviceInfo];
 }
 
+- (BOOL) canSendExtraLogs {
+    return self->extraLogs;
+}
+
+- (void) extraLogEvent:(NSString*)name payload:(NSDictionary*)payload {
+    if (self->extraLogs) {
+        if (!payload) {
+            payload = [[NSDictionary alloc]init];
+        }
+        [payload setValue:name forKey:@"extra_name"];
+        [self eventInternal:[@"Swrve.extra_log_13896" stringByAppendingString:name] payload:payload triggerCallback:NO];
+    }
+}
+
 // Get the time that the application was first installed.
 // This value is stored in a file. If this file is not available in any of the files (new and legacy),
 // then we assume that the application was installed now, and save the current time to the file.
@@ -1921,28 +1954,32 @@ static NSString* httpScheme(bool useHttps)
     unsigned long long seconds = 0;
 
     // Primary install file (defaults to documents path)
-    NSError* error = NULL;
-    NSString* file_contents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
-
-    if (!error && file_contents) {
-        seconds = (unsigned long long)[file_contents longLongValue];
+    NSError* primaryFileReadError = NULL;
+    NSString* fileContents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&primaryFileReadError];
+    if (!primaryFileReadError && fileContents) {
+        seconds = (unsigned long long)[fileContents longLongValue];
     } else {
         DebugLog(@"could not read file: %@", fileName);
+        [self extraLogEvent:@"install_time_primary_file_read_error" payload:@{ @"file": fileName, @"error": primaryFileReadError.localizedDescription }];
     }
 
     // Migration from Cache folder to Documents to prevent the file from being deleted
     // Secondary install file (defaults to cache path, legacy from < iOS SDK 4.5)
     if (seconds <= 0) {
-        error = NULL;
-        file_contents = [[NSString alloc] initWithContentsOfFile:secondaryFileName encoding:NSUTF8StringEncoding error:&error];
-        if (!error && file_contents) {
-            seconds = (unsigned long long)[file_contents longLongValue];
+        NSError* secondaryFileReadError = NULL;
+        fileContents = [[NSString alloc] initWithContentsOfFile:secondaryFileName encoding:NSUTF8StringEncoding error:&secondaryFileReadError];
+        if (!secondaryFileReadError && fileContents) {
+            seconds = (unsigned long long)[fileContents longLongValue];
             if (seconds > 0) {
                 // Write to new path
-                [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+                NSError* primaryFileWriteError = NULL;
+                if (![fileContents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&primaryFileWriteError]) {
+                    [self extraLogEvent:@"install_time_primary_file_write_error" payload:@{ @"file": fileName, @"error": primaryFileWriteError.localizedDescription }];
+                }
             }
         } else {
-            DebugLog(@"could not read file: %@", fileName);
+            DebugLog(@"could not read file: %@", secondaryFileName);
+            [self extraLogEvent:@"install_time_secondary_file_read_error" payload:@{ @"file": secondaryFileName, @"error": secondaryFileReadError.localizedDescription }];
         }
     }
 
@@ -1955,7 +1992,10 @@ static NSString* httpScheme(bool useHttps)
 
     UInt64 time = [self getTime];
     NSString* currentTime = [NSString stringWithFormat:@"%llu", time/(UInt64)1000L];
-    [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    NSError* installTimeWriteError = NULL;
+    if (![currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&installTimeWriteError]) {
+        [self extraLogEvent:@"install_time_write_error" payload:@{ @"file": fileName, @"error": installTimeWriteError.localizedDescription }];
+    }
     return (time / 1000 * 1000);
 }
 
@@ -1980,23 +2020,46 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
-+ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
-    // Old file defaults to cache directory, should be moved to new location
-    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
-        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:oldPath error:nil];
+- (BOOL) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
+    // Old file path defaults to cache directory, should be moved to application data
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSError* fileMoveError = NULL;
+    if ([fileManager isReadableFileAtPath:oldPath]) {
+        if ([fileManager isReadableFileAtPath:newPath]) {
+            // Old file should not be present, we have the new file in the correct location
+            NSError* extraRemoveError = NULL;
+            if (![fileManager removeItemAtPath:oldPath error:&extraRemoveError]) {
+                // Old file that should not be present could not be removed
+                [self extraLogEvent:@"file_migration_old_file_delete_failed" payload:@{ @"old_path": oldPath, @"new_path": newPath, @"error": extraRemoveError.localizedDescription }];
+            }
+        } else {
+            if (![fileManager moveItemAtPath:oldPath toPath:newPath error:&fileMoveError]) {
+                // File could not be moved to the new path
+                [self extraLogEvent:@"file_migration_failed" payload:@{ @"old_path": oldPath, @"new_path": newPath, @"error": fileMoveError.localizedDescription }];
+                return NO;
+            }
+        }
     }
+    // Use the new path if old file doesn't exist, this covers for first clean init, bad migration, etc
+    return ![fileManager isReadableFileAtPath:oldPath];
 }
 
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
-    [SwrveFileManagement applicationSupportPath];
+    NSString *locationCampaignCacheFile = self.config.locationCampaignCacheFile;
+    NSString *locationCampaignCacheSignatureFile = self.config.locationCampaignCacheSignatureFile;
     
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
+    if (![self migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:locationCampaignCacheFile]) {
+        // Migration failed, keep the old file
+        locationCampaignCacheFile = self.config.locationCampaignCacheSecondaryFile;
+    }
+    if (![self migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:locationCampaignCacheSignatureFile]) {
+        // Migration failed, keep the old file
+        locationCampaignCacheSignatureFile = self.config.locationCampaignCacheSignatureSecondaryFile;
+    }
     
-    NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
-    NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
+    NSURL *fileURL = [NSURL fileURLWithPath:locationCampaignCacheFile];
+    NSURL *signatureURL = [NSURL fileURLWithPath:locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
     SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
     return locationCampaignFile;
@@ -2005,18 +2068,27 @@ static NSString* httpScheme(bool useHttps)
 - (void) initResources
 {
     // Migrate event data from cache to application data (4.5.1+)
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
+    NSString *userResourcesCacheFile = self.config.userResourcesCacheFile;
+    NSString *userResourcesCacheSignatureFile = self.config.userResourcesCacheSignatureFile;
+    
+    if (![self migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:userResourcesCacheFile]) {
+        // Migration failed, keep the old file
+        userResourcesCacheFile = self.config.userResourcesCacheSecondaryFile;
+    }
+    if (![self migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:userResourcesCacheSignatureFile]) {
+        // Migration failed, keep the old file
+        userResourcesCacheSignatureFile = self.config.userResourcesCacheSignatureSecondaryFile;
+    }
     
     // Create signature protected cache file
-    NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
-    NSURL* signatureURL = [NSURL fileURLWithPath:self.config.userResourcesCacheSignatureFile];
+    NSURL* fileURL = [NSURL fileURLWithPath:userResourcesCacheFile];
+    NSURL* signatureURL = [NSURL fileURLWithPath:userResourcesCacheSignatureFile];
     [self setResourcesFile:[[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey] signatureErrorListener:self]];
 
     // Initialize resource manager
     resourceManager = [[SwrveResourceManager alloc] init];
 
-    // read content of resources file and update resource manager if signature valid
+    // Read content of resources file and update resource manager if signature valid
     NSData* content = [[self resourcesFile] readFromFile];
 
     if (content != nil) {
@@ -2071,21 +2143,25 @@ enum HttpStatus {
     return HTTP_SERVER_ERROR;
 }
 
+- (BOOL) migrateLogFile
+{
+    // Migrate event data from cache to application data (4.5.1+)
+    // Old file path defaults to cache directory, should be moved to application data
+    if (![self migrateOldCacheFile:[self.eventSecondaryFilename path] withNewPath:[self.eventFilename path]]) {
+        // Keep the old file as it failed the migration
+        self.eventFilename = self.eventSecondaryFilename;
+        return NO;
+    }
+    return YES;
+}
+
 - (NSOutputStream*) createLogfile:(int)mode
 {
     // If the file already exists, close it.
-    if ([self eventStream])
+    if (self.eventStream)
     {
-        [[self eventStream] close];
+        [self.eventStream close];
     }
-    
-    // Migrate event data from cache to application data (4.5.1+)
-    // Old file defaults to cache directory, should be moved to new location
-    if ([[NSFileManager defaultManager] isReadableFileAtPath:[self.eventSecondaryFilename path]]) {
-        [[NSFileManager defaultManager] copyItemAtURL:self.eventSecondaryFilename toURL:self.eventFilename error:nil];
-        [[NSFileManager defaultManager] removeItemAtURL:self.eventSecondaryFilename error:nil];
-    }
-    
 
     NSOutputStream* newFile = NULL;
     [self setEventFileHasData:NO];
@@ -2093,28 +2169,28 @@ enum HttpStatus {
     switch (mode)
     {
         case SWRVE_TRUNCATE_FILE:
-            newFile = [NSOutputStream outputStreamWithURL:[self eventFilename] append:NO];
+            newFile = [NSOutputStream outputStreamWithURL:self.eventFilename append:NO];
             break;
 
         case SWRVE_APPEND_TO_FILE:
-            newFile = [NSOutputStream outputStreamWithURL:[self eventFilename] append:YES];
+            newFile = [NSOutputStream outputStreamWithURL:self.eventFilename append:YES];
             break;
 
         case SWRVE_TRUNCATE_IF_TOO_LARGE:
         {
-            NSData* cacheContent = [NSData dataWithContentsOfURL:[self eventFilename]];
+            NSData* cacheContent = [NSData dataWithContentsOfURL:self.eventFilename];
 
             if (cacheContent == nil)
             {
-                newFile = [NSOutputStream outputStreamWithURL:[self eventFilename] append:NO];
+                newFile = [NSOutputStream outputStreamWithURL:self.eventFilename append:NO];
             } else {
                 NSUInteger cacheLength = [cacheContent length];
                 [self setEventFileHasData:(cacheLength > 0)];
 
                 if (cacheLength < SWRVE_DISK_MAX_BYTES) {
-                    newFile = [NSOutputStream outputStreamWithURL:[self eventFilename] append:YES];
+                    newFile = [NSOutputStream outputStreamWithURL:self.eventFilename append:YES];
                 } else {
-                    newFile = [NSOutputStream outputStreamWithURL:[self eventFilename] append:NO];
+                    newFile = [NSOutputStream outputStreamWithURL:self.eventFilename append:NO];
                     DebugLog(@"Swrve log file too large (%lu)... truncating", (unsigned long)cacheLength);
                     [self setEventFileHasData:NO];
                 }
@@ -2125,7 +2201,6 @@ enum HttpStatus {
     }
 
     [newFile open];
-
     return newFile;
 }
 
@@ -2224,14 +2299,14 @@ enum HttpStatus {
     if (![self eventStream]) return;
     if (![self eventFileHasData]) return;
 
-    DebugLog(@"Sending log file %@", [self eventFilename]);
+    DebugLog(@"Sending log file %@", self.eventFilename);
 
     // Close the write stream and set it to null
     // No more appending will happen while it is null
     [[self eventStream] close];
     [self setEventStream:NULL];
 
-    NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
+    NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:self.eventFilename];
     if (contents == nil)
     {
         [self resetEventCache];
@@ -2435,7 +2510,7 @@ enum HttpStatus {
 {
     #pragma unused(file)
     DebugLog(@"Signature check failed for file %@", file);
-    [self eventInternal:@"Swrve.signature_invalid" payload:nil triggerCallback:true];
+    [self eventInternal:@"Swrve.signature_invalid" payload:nil triggerCallback:NO];
 }
 
 - (void) initResourcesDiff

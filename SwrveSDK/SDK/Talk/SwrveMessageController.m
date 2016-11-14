@@ -32,16 +32,16 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @interface Swrve(PrivateMethodsForMessageController)
 @property BOOL campaignsAndResourcesInitialized;
 @property (atomic) int locationSegmentVersion;
--(void) setPushNotificationsDeviceToken:(NSData*)deviceToken;
--(void) pushNotificationReceived:(NSDictionary*)userInfo;
--(void) invalidateETag;
--(NSDate*) getNow;
-@end
-
-@interface Swrve (SwrveHelperMethods)
+- (void) setPushNotificationsDeviceToken:(NSData*)deviceToken;
+- (void) pushNotificationReceived:(NSDictionary*)userInfo;
+- (void) invalidateETag;
+- (NSDate*) getNow;
 - (CGRect) getDeviceScreenBounds;
 - (NSString*) getSignatureKey;
 - (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (BOOL) canSendExtraLogs;
+- (BOOL) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath;
+- (void) extraLogEvent:(NSString*)name payload:(NSDictionary*)payload;
 @end
 
 @interface SwrveCampaign(PrivateMethodsForMessageController)
@@ -241,28 +241,37 @@ const static int DEFAULT_MIN_DELAY           = 55;
 }
 
 - (void)migrateAndSetFileLocations {
-    NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
-    
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
     self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
     
     // Files were in this locations in lower than 4.5.1 (caches dir) and we need to move them to the new location
+    NSString* cacheRoot     = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    self.cacheFolder        = [cacheRoot stringByAppendingPathComponent:swrve_folder];
     NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache];
     NSString* oldCampaignCacheSignature = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache_signature];
-    [SwrveMessageController migrateOldCacheFile:oldSettingsPath withNewPath:self.settingsPath];
-    [SwrveMessageController migrateOldCacheFile:oldCampaignCache withNewPath:self.campaignCache];
-    [SwrveMessageController migrateOldCacheFile:oldCampaignCacheSignature withNewPath:self.campaignCacheSignature];
-}
-
-+ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
-    // Old file defaults to cache directory, should be moved to new location
-    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
-        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:newPath error:nil];
+    
+    // Try migrate files, if we can't for some reason, keep the old file location
+    if (![self.analyticsSDK migrateOldCacheFile:oldSettingsPath withNewPath:self.settingsPath]) {
+        // Migration failed, keep the old file
+        self.settingsPath = oldSettingsPath;
+    }
+    
+    if (![self.analyticsSDK migrateOldCacheFile:oldCampaignCache withNewPath:self.campaignCache]) {
+        // Migration failed, keep the old file
+        self.campaignCache = oldCampaignCache;
+    }
+    
+    if (![self.analyticsSDK migrateOldCacheFile:oldCampaignCacheSignature withNewPath:self.campaignCacheSignature]) {
+        // Migration failed, keep the old file
+        self.campaignCacheSignature = oldCampaignCacheSignature;
+    }
+    
+    if (self.analyticsSDK.canSendExtraLogs) {
+        // Log final paths
+        [self.analyticsSDK userUpdate:@{ @"settings_path": self.settingsPath, @"campaign_cache": self.campaignCache, @"campaign_cache_signature": self.campaignCacheSignature }];
     }
 }
 
@@ -275,10 +284,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 - (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
-    NSData* data = [NSData dataWithContentsOfFile:[self settingsPath]];
+    NSData* data = [NSData dataWithContentsOfFile:self.settingsPath];
     if(!data)
     {
-        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", [self settingsPath]);
+        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", self.settingsPath);
         return;
     }
 
@@ -295,6 +304,11 @@ const static int DEFAULT_MIN_DELAY           = 55;
             SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
             NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
             [states setValue:state forKey:stateKey];
+        }
+        
+        if (self.analyticsSDK.canSendExtraLogs) {
+            // Send loaded state
+            [self.analyticsSDK extraLogEvent:@"campaign_state_from_disk" payload:@{ @"states": loadedStates }];
         }
     }
 }
@@ -316,17 +330,20 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
+        [self.analyticsSDK extraLogEvent:@"campaign_state_serialization_error" payload:@{ @"error": error.localizedDescription }];
     } else if(data)
     {
-        BOOL success = [data writeToFile:[self settingsPath] atomically:YES];
-        if (!success)
+        NSError* writeError = NULL;
+        BOOL success = [data writeToFile:self.settingsPath options:0 error:&writeError];
+        if (success)
         {
-            DebugLog(@"Error saving campaigns state to: %@", [self settingsPath]);
+            // Log the state for debuggig purposes
+            [self.analyticsSDK extraLogEvent:@"campaign_state" payload:@{ @"states": [newStates componentsJoinedByString:@","] }];
+        } else {
+            // Log the write error
+            [self.analyticsSDK extraLogEvent:@"campaign_state_write_error" payload:@{ @"error": writeError.localizedDescription }];
+            DebugLog(@"Error saving campaigns state to: %@ with error %@", self.settingsPath, writeError);
         }
-    }
-    else
-    {
-        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, [self settingsPath]);
     }
 }
 
@@ -826,7 +843,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Notify message has been returned
         NSDictionary *returningPayload = [NSDictionary dictionaryWithObjectsAndKeys:[result.messageID stringValue], @"id", nil];
         NSString *returningEventName = @"Swrve.Messages.message_returned";
-        [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:true];
+        [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:NO];
     }
     return result;
 
