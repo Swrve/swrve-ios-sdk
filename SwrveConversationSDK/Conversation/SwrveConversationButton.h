@@ -2,12 +2,16 @@
 #import "SwrveConversationAtom.h"
 
 #define kSwrveKeyDescription @"description"
-#define kSwrveTypeSolid @"solid"
-#define kSwrveTypeOutline @"outline"
+#define kSwrveKeyTarget @"target"
+#define kSwrveKeyAction @"action"
+#define kSwrveDefaultButtonAlignment @"center"
+#define kSwrveDefaultButtonFontSize [NSNumber numberWithDouble:18.0]
+#define kSwrveStyleTypeSolid @"solid"
+#define kSwrveStyleTypeOutline @"outline"
 
 @interface SwrveConversationButton : SwrveConversationAtom
 
--(id) initWithTag:(NSString *)tag andDescription:(NSString *)description;
+-(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict;
 -(BOOL) endsConversation;
 
 @property (readonly, nonatomic) NSString     *description;

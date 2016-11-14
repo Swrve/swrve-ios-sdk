@@ -3,6 +3,16 @@
 
 @class SwrveBaseConversation;
 
+#define kSwrveKeyTag @"tag"
+#define kSwrveKeyType @"type"
+#define kSwrveKeyValues @"values"
+#define kSwrveKeyAnswerId @"answer_id"
+#define kSwrveKeyAnswerText @"answer_text"
+#define kSwrveKeyStyle @"style"
+#define kSwrveKeyFontFile @"font_file"
+#define kSwrveKeyTextSize @"text_size"
+#define kSwrveKeyAlignment @"alignment"
+
 // Content types
 #define kSwrveContentTypeHTML @"html-fragment"
 #define kSwrveContentTypeImage @"image"
@@ -36,7 +46,6 @@
 @property (strong, nonatomic) id <SwrveConversationAtomDelegate> delegate;
 
 -(id)                initWithTag:(NSString *)tag andType:(NSString *)type;
--(BOOL)              willRequireLandscape;
 -(CGRect)            newFrameForOrientationChange;
 -(NSUInteger)        numberOfRowsNeeded;
 -(CGFloat)           heightForRow:(NSUInteger) row inTableView:(UITableView *)tableView;
