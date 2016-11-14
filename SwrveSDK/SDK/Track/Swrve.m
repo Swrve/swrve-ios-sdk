@@ -708,7 +708,7 @@ static bool didSwizzle = false;
         NSCAssert(userID != nil, @"@UserID must not be nil.", nil);
 
         // Load if we need to send more information for debugging
-        self->extraLogs = [[NSUserDefaults standardUserDefaults] boolForKey:@"swrve_extra_logs"];
+        self->extraLogs = [[NSUserDefaults standardUserDefaults] boolForKey:@"swrve_extra_logs_13896"];
         
         NSError* appSupportError = [SwrveFileManagement createApplicationSupportPath];
         
@@ -1205,11 +1205,6 @@ static bool didSwizzle = false;
                             [payload setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[self.talk.campaigns count]] forKey:@"count"];
                             [payload setValue:etagValue forKey:@"etag"];
                             [self eventInternal:@"Swrve.Messages.campaigns_downloaded" payload:payload triggerCallback:NO];
-                        } else if (self->extraLogs) {
-                            // Inform that we received no campigns in debug mode
-                            NSMutableDictionary* payload = [[NSMutableDictionary alloc] init];
-                            [payload setValue:etagValue forKey:@"etag"];
-                            [self eventInternal:@"Swrve.Messages.campaigns_downloaded_none" payload:payload triggerCallback:NO];
                         }
                     }
                     NSDictionary* locationCampaignJson = [responseDict objectForKey:@"location_campaigns"];
@@ -1223,10 +1218,10 @@ static bool didSwizzle = false;
                         [self updateResources:resourceJson writeToCache:YES];
                     }
                     
-                    // Identifty if we have to send extra debug logs
-                    BOOL extraDebug = [responseDict objectForKey:@"extra_debug"];
+                    // Identifty if we have to send extra debug logs for issue 13896
+                    BOOL extraDebug = [responseDict objectForKey:@"ios_extra_debug_13896"];
                     if (extraDebug != self->extraLogs) {
-                        [[NSUserDefaults standardUserDefaults] setBool:extraDebug forKey:@"swrve_extra_logs"];
+                        [[NSUserDefaults standardUserDefaults] setBool:extraDebug forKey:@"swrve_extra_logs_13896"];
                     }
                     self->extraLogs = extraDebug;
                 } else {
@@ -1945,7 +1940,11 @@ static NSString* httpScheme(bool useHttps)
 
 - (void) extraLogEvent:(NSString*)name payload:(NSDictionary*)payload {
     if (self->extraLogs) {
-        [self eventInternal:[@"Swrve.extra_log." stringByAppendingString:name] payload:payload triggerCallback:NO];
+        if (!payload) {
+            payload = [[NSDictionary alloc]init];
+        }
+        [payload setValue:name forKey:@"extra_name"];
+        [self eventInternal:[@"Swrve.extra_log_13896" stringByAppendingString:name] payload:payload triggerCallback:NO];
     }
 }
 
