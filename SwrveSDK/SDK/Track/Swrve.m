@@ -309,7 +309,6 @@ enum
     if ( self = [super init] ) {
         httpTimeoutSeconds = 60;
         autoDownloadCampaignsAndResources = YES;
-        maxConcurrentDownloads = 2;
         orientation = SWRVE_ORIENTATION_BOTH;
         prefersIAMStatusBarHidden = YES;
         appVersion = [Swrve getAppVersion];
@@ -436,7 +435,6 @@ enum
         installTimeCacheSecondaryFile = config.installTimeCacheSecondaryFile;
         appVersion = config.appVersion;
         receiptProvider = config.receiptProvider;
-        maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
