@@ -1637,8 +1637,7 @@ static bool didSwizzle = false;
                 }
             }
 
-            NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-            [self eventInternal:eventName payload:nil triggerCallback:true];
+            [self sendPushEngagedEvent:pushId];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
@@ -1646,6 +1645,11 @@ static bool didSwizzle = false;
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
+}
+
+-(void) sendPushEngagedEvent:(NSString*)pushId {
+    NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
+    [self eventInternal:eventName payload:nil triggerCallback:true];
 }
 
 // Get a string that represents the current App Version
