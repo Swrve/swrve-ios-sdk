@@ -79,7 +79,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize messageCenter;
 @synthesize subject;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict {
+-(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json {
     if (self = [super init]) {
         // Default both dates to now
         NSDate* now = [NSDate date];
@@ -94,16 +94,16 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         [self setTriggers:[[NSMutableSet alloc] init]];
         
         // Load from JSON
-        self.ID   = [[dict objectForKey:@"id"] unsignedIntegerValue];
-        self.name = [dict objectForKey:@"name"];
-        self.messageCenter = [[dict objectForKey:@"message_center"] boolValue];
-        NSString* subjectString = [dict objectForKey:@"subject"];
+        self.ID   = [[json objectForKey:@"id"] unsignedIntegerValue];
+        self.name = [json objectForKey:@"name"];
+        self.messageCenter = [[json objectForKey:@"message_center"] boolValue];
+        NSString* subjectString = [json objectForKey:@"subject"];
         self.subject = (subjectString == (id)[NSNull null])? @"" : subjectString;
         self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
         
-        [self loadTriggersFrom:dict];
-        [self loadRulesFrom:   dict];
-        [self loadDatesFrom:   dict];
+        [self loadTriggersFrom:json];
+        [self loadRulesFrom:   json];
+        [self loadDatesFrom:   json];
     }
     return self;
 }

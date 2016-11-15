@@ -13,7 +13,7 @@
 
 @synthesize controller, campaign, messageID, name, priority, formats;
 
--(id) initWithJSON:(NSDictionary*)json forCampaign:(SwrveCampaign*)_campaign forController:(SwrveMessageController*)_controller {
+-(id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveCampaign *)_campaign forController:(SwrveMessageController*)_controller {
     self.campaign     = _campaign;
     self.controller   = _controller;
     self.messageID    = [json objectForKey:@"id"];
@@ -41,27 +41,22 @@
     self.formats = [[NSArray alloc] initWithArray:loadedFormats];
     return self;
 }
--(SwrveMessageFormat*)getBestFormatFor:(UIInterfaceOrientation)orientation
-{    
-    for (SwrveMessageFormat* format in formats)
-    {
+
+- (SwrveMessageFormat *)getBestFormatFor:(UIInterfaceOrientation)orientation {
+    for (SwrveMessageFormat *format in formats) {
         bool format_is_landscape = format.orientation == SWRVE_ORIENTATION_LANDSCAPE;
-        if (UIInterfaceOrientationIsLandscape(orientation))
-        {
+        if (UIInterfaceOrientationIsLandscape(orientation)) {
             // device is landscape
             if (format_is_landscape) return format;
-        }
-        else
-        {
+        } else {
             // device is portrait
-            if(!format_is_landscape) return format;
+            if (!format_is_landscape) return format;
         }
     }
     return nil;
 }
 
--(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
-{
+- (BOOL)supportsOrientation:(UIInterfaceOrientation)orientation {
     return (nil != [self getBestFormatFor:orientation]);
 }
 

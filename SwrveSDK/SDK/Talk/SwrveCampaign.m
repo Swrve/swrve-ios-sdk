@@ -9,22 +9,22 @@
 
 @synthesize messages;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
+-(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
 {
-    id instance = [super initAtTime:time fromJSON:dict];
+    id instance = [super initAtTime:time fromDictionary:json];
     NSMutableArray* loadedMessages = [[NSMutableArray alloc] init];
-    NSArray* campaign_messages = [dict objectForKey:@"messages"];
+    NSArray* campaign_messages = [json objectForKey:@"messages"];
     for (NSDictionary* messageDict in campaign_messages)
     {
-        SwrveMessage* message = [[SwrveMessage alloc] initWithJSON:messageDict forCampaign: self forController:controller];
+        SwrveMessage* message = [[SwrveMessage alloc] initWithDictionary:messageDict forCampaign:self forController:controller];
         [loadedMessages addObject:message];
     }
     self.messages = [loadedMessages copy];
-    [self addAssetsToQueueForImages:assetsQueue];
+    [self addImageAssetsToQueue:assetsQueue];
     return instance;
 }
 
-- (void)addAssetsToQueueForImages:(NSMutableSet *)assetsQueue {
+- (void)addImageAssetsToQueue:(NSMutableSet *)assetsQueue {
     for (SwrveMessage *message in self.messages) {
         for (SwrveMessageFormat *format in message.formats) {
             // Add all images to the download queue

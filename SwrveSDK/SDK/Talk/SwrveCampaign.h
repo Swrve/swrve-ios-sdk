@@ -9,9 +9,9 @@
 
 @property (atomic, retain)    NSArray*  messages;                   /*!< List of messages. */
 
-- (id)initAtTime:(NSDate *)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)controller;
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)controller;
 
-- (void)addAssetsToQueueForImages:(NSMutableSet *)assetsQueue;
+- (void)addImageAssetsToQueue:(NSMutableSet *)assetsQueue;
 
 /*! Check if the campaign has any message setup for the
  * given trigger.

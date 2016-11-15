@@ -9,7 +9,7 @@
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withImageAssetsQ:(NSMutableSet*)imageAssetsQ andFontAssetsQ:(NSMutableSet*)fontAssetsQ forController:(SwrveMessageController*)_controller;
+-(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)dict withImageAssetsQ:(NSMutableSet *)imageAssetsQ andFontAssetsQ:(NSMutableSet *)fontAssetsQ forController:(SwrveMessageController*)_controller;
 
 - (void)addAssetsToQueueForImages:(NSMutableSet *)imageAssetsQ andFonts:(NSMutableSet *)fontAssetsQ;
 

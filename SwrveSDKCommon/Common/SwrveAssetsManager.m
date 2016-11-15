@@ -2,8 +2,8 @@
 #import "SwrveAssetsManager.h"
 #import "SwrveCommon.h"
 
-static NSString* const ASSETQ_ITEM_NAME = @"name";
-static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
+static NSString* const SWRVE_ASSETQ_ITEM_NAME = @"name";
+static NSString* const SWRVE_ASSETQ_ITEM_DIGEST = @"digest";
 
 @implementation SwrveAssetsManager
 
@@ -16,8 +16,8 @@ static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
 
 + (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest {
     NSMutableDictionary *assetQItem = [[NSMutableDictionary alloc] init];
-    [assetQItem setObject:name forKey:ASSETQ_ITEM_NAME];
-    [assetQItem setObject:digest forKey:ASSETQ_ITEM_DIGEST];
+    [assetQItem setObject:name forKey:SWRVE_ASSETQ_ITEM_NAME];
+    [assetQItem setObject:digest forKey:SWRVE_ASSETQ_ITEM_DIGEST];
     return assetQItem;
 }
 
@@ -57,7 +57,7 @@ static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
 
 - (void)downloadAsset:(NSDictionary *)assetItem withCdn:(NSString *)cdn withCompletionHandler:(void (^)(void))completionHandler {
 
-    NSString *assetItemName = [assetItem objectForKey:ASSETQ_ITEM_NAME];
+    NSString *assetItemName = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_NAME];
 
     BOOL mustDownload = YES;
     @synchronized ([self assetsCurrentlyDownloading]) {
@@ -76,7 +76,7 @@ static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
                          if (error) {
                              DebugLog(@"Could not download asset: %@", error);
                          } else {
-                             NSString *assetItemDigest = [assetItem objectForKey:ASSETQ_ITEM_DIGEST];
+                             NSString *assetItemDigest = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_DIGEST];
                              if (![self verifySHA:data against:assetItemDigest]) {
                                  DebugLog(@"Error downloading %@ – SHA1 does not match.", assetItemName);
                              } else {
@@ -107,7 +107,7 @@ static NSString* const ASSETQ_ITEM_DIGEST = @"digest";
     NSMutableSet *assetItemsToDownload = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSDictionary *assetItem in assetSet) {
-        NSString *assetItemName = [assetItem objectForKey:ASSETQ_ITEM_NAME];
+        NSString *assetItemName = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_NAME];
         NSString *target = [self.cacheFolder stringByAppendingPathComponent:assetItemName];
         if (![fileManager fileExistsAtPath:target]) {
             [assetItemsToDownload addObject:assetItem]; // add the item, not the name

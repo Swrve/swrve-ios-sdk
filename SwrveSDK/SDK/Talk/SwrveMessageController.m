@@ -504,7 +504,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 // Conversation version check
                 NSNumber* conversationVersion = [dict objectForKey:@"conversation_version"];
                 if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
-                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withImageAssetsQ:imageAssetsQ andFontAssetsQ:fontAssetsQ forController:self];
+                    campaign = [[SwrveConversationCampaign alloc] initAtTime:self.initialisedTime fromDictionary:dict withImageAssetsQ:imageAssetsQ andFontAssetsQ:fontAssetsQ forController:self];
                 } else {
                     DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
                 }
@@ -512,7 +512,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
             }
         } else {
-            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromJSON:dict withAssetsQueue:imageAssetsQ forController:self];
+            campaign = [[SwrveCampaign alloc] initAtTime:self.initialisedTime fromDictionary:dict withAssetsQueue:imageAssetsQ forController:self];
         }
 
         if (campaign != nil) {
