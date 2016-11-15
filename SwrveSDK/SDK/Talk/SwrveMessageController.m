@@ -569,7 +569,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     for (SwrveBaseCampaign *campaign in self.campaigns) {
         if ([campaign isKindOfClass:[SwrveCampaign class]]) {
             SwrveCampaign *swrveCampaign = (SwrveCampaign *) campaign;
-            [swrveCampaign addAssetsToQueueForImages:imageAssetsQ];
+            [swrveCampaign addImageAssetsToQueue:imageAssetsQ];
         } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
             SwrveConversationCampaign *swrveConversationCampaign = (SwrveConversationCampaign *) campaign;
             [swrveConversationCampaign addAssetsToQueueForImages:imageAssetsQ andFonts:fontAssetsQ];
