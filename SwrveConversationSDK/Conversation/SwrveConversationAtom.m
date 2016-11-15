@@ -20,10 +20,6 @@
     return self;
 }
 
--(BOOL) willRequireLandscape {
-    return YES;
-}
-
 -(void) stop {
     // By default, does nothing. Specialize in subclass
 }

@@ -1,6 +1,5 @@
 #import "SwrveConversationUIButton.h"
 #import "SwrveConversationButton.h"
-#import "SwrveSetup.h"
 
 @interface SwrveConversationUIButton ()
 
@@ -31,7 +30,6 @@
     // Calculate pressed colors
     self.swrveForegroundPressedColor = [SwrveConversationUIButton lighterOrDarkerColor:self.swrveForegroundColor];
     self.swrveBackgroundPressedColor = [SwrveConversationUIButton lighterOrDarkerColor:self.swrveBackgroundColor];
-    self.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
     [self updateButtonType:self.swrveButtonType withForegroundColor:self.swrveForegroundColor withBackgroundColor:self.swrveBackgroundColor withBorderRadius:self.swrveBorderRadius];
 }
 
@@ -43,9 +41,9 @@
     //apply curved edges to button
     [[self layer] setCornerRadius:borderRadius];
     
-    if ([buttonType isEqualToString:kSwrveTypeSolid]) {
+    if ([buttonType isEqualToString:kSwrveStyleTypeSolid]) {
         [self setBackgroundColor:backgroundColor];
-    } else if ([buttonType isEqualToString:kSwrveTypeOutline]) {
+    } else if ([buttonType isEqualToString:kSwrveStyleTypeOutline]) {
         [[self layer] setBorderWidth:1.5f];
         [[self layer] setBorderColor:foregroundColor.CGColor];
         [self setBackgroundColor:backgroundColor];

@@ -24,10 +24,6 @@
     return self;
 }
 
--(BOOL) willRequireLandscape {
-    return YES;
-}
-
 -(void) stop {
     [webview setDelegate:nil];
     // Stop the running video - this will happen on a page change.
