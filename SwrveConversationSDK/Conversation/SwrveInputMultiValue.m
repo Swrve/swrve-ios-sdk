@@ -1,10 +1,6 @@
 #import "SwrveInputMultiValue.h"
 #import "SwrveConversationStyler.h"
 
-#define kSwrveDefaultMultiValueDescriptionFontSize [NSNumber numberWithDouble:20.0]
-#define kSwrveDefaultMultiValueCellFontName @"Helvetica"
-#define kSwrveDefaultMultiValueCellFontSize [NSNumber numberWithDouble:17.0]
-
 @implementation SwrveInputMultiValue
 
 @synthesize values;

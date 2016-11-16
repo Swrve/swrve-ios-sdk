@@ -61,20 +61,20 @@
                     return false;
                 }
             } else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
-                if(![self isFontAsset:contentItem.style inCache: assets]) {
+                if([self isFontAssetMissing:contentItem.style inCache: assets]) {
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.style);
                     return false;
                 }
             } else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
                 SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
-                if(![self isFontAsset:inputMultiValue.style inCache: assets]) {
+                if([self isFontAssetMissing:inputMultiValue.style inCache: assets]) {
                     DebugLog(@"Conversation asset not yet downloaded: %@", inputMultiValue.style);
                     return false;
                 }
 
                 for (NSDictionary *value in inputMultiValue.values) {
                     NSDictionary *style = [value objectForKey:@"style"];
-                    if(![self isFontAsset:style inCache: assets]) {
+                    if([self isFontAssetMissing:style inCache: assets]) {
                         DebugLog(@"Conversation asset not yet downloaded: %@", style);
                         return false;
                     }
@@ -84,7 +84,7 @@
 
         // check font asset in button
         for (SwrveConversationButton *button in page.controls) {
-            if(![self isFontAsset:button.style inCache: assets]) {
+            if([self isFontAssetMissing:button.style inCache: assets]) {
                 DebugLog(@"Conversation asset not yet downloaded: %@", button.style);
                 return false;
             }
@@ -94,16 +94,21 @@
     return true;
 }
 
-
-- (BOOL)isFontAsset:(NSDictionary *)style inCache:(NSSet *)assets {
-    BOOL isFontAssetInCache = NO;
-    if (style && [style objectForKey:@"font_file"]) {
-        NSString *fontFile = [style objectForKey:@"font_file"];
-        if (fontFile && [assets containsObject:fontFile]) {
-            isFontAssetInCache = YES;
+- (BOOL)isFontAssetMissing:(NSDictionary *)style inCache:(NSSet *)assets {
+    BOOL isFontAssetMissing = YES;
+    if (!style || ![style objectForKey:kSwrveKeyFontFile]) {
+        isFontAssetMissing = NO; // doesn't need a font asset
+    } else {
+        NSString *fontFile = [style objectForKey:kSwrveKeyFontFile];
+        if (fontFile && [fontFile isEqualToString:kSwrveDefaultMultiValueCellFontName]) {
+            isFontAssetMissing = NO;
+        } else if (fontFile && fontFile.length == 0) {
+            isFontAssetMissing = NO; // System font can be empty
+        } else if (fontFile && [assets containsObject:fontFile]) {
+            isFontAssetMissing = NO;
         }
     }
-    return isFontAssetInCache;
+    return isFontAssetMissing;
 }
 
 -(void)wasShownToUser {
