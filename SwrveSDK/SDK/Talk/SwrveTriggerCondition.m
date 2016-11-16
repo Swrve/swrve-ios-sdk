@@ -39,15 +39,15 @@
     }
     
     NSArray *payloadKeys = [payload allKeys];
-    
     if([payloadKeys containsObject:_key]) {
-        
         if([payload objectForKey:_key] != [NSNull null]) {
-            
-            NSString *payloadValue = [payload objectForKey:_key];
-            if (![payloadValue isKindOfClass:NSString.class]) {
-                if ([payloadValue respondsToSelector:@selector(stringValue)]) {
-                    payloadValue = [(id)payloadValue stringValue];
+            id payloadObject = [payload objectForKey:_key];
+            NSString *payloadValue = nil;
+            if ([payloadObject isKindOfClass:[NSString class]]) {
+                payloadValue = payloadObject;
+            }else{
+                if ([payloadObject respondsToSelector:@selector(stringValue)]) {
+                    payloadValue = [(id)payloadObject stringValue];
                 }else{
                     return NO;
                 }
