@@ -1,5 +1,9 @@
 #import "SwrveInputItem.h"
 
+#define kSwrveDefaultMultiValueDescriptionFontSize [NSNumber numberWithDouble:20.0]
+#define kSwrveDefaultMultiValueCellFontName @"Helvetica"
+#define kSwrveDefaultMultiValueCellFontSize [NSNumber numberWithDouble:17.0]
+
 @interface SwrveInputMultiValue : SwrveInputItem
 
 @property (nonatomic, strong) NSArray *values;

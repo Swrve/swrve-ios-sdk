@@ -47,7 +47,7 @@
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
         swrveContentSpacer.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentSpacer];
-    } else if ([type isEqualToString:kSwrveControlStarRating]) {
+    } else if ([type isEqualToString:kSwrveContentStarRating]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         swrveContentHTML.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentHTML];

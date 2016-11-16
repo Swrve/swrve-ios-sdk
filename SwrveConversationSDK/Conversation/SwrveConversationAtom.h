@@ -22,7 +22,7 @@
 #define kSwrveInputMultiValue @"multi-value-input"
 // Control types
 #define kSwrveControlTypeButton @"button"
-#define kSwrveControlStarRating @"star-rating"
+#define kSwrveContentStarRating @"star-rating"
 
 // Notifications
 #define kSwrveNotificationViewReady @"SwrveNotificationViewReady"
