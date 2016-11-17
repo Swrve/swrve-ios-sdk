@@ -1506,9 +1506,6 @@ static bool didSwizzle = false;
         [self sendQueuedEvents];
     }
 
-    if(self.config.talkEnabled) {
-        [self.talk saveCampaignsState];
-    }
     [self stopCampaignsAndResourcesTimer];
 }
 
@@ -2347,12 +2344,12 @@ enum HttpStatus {
     // Add http request performance metrics for any previous requests into the header of this request (see JIRA SWRVE-5067 for more details)
     NSArray* allMetricsToSend;
 
-    @synchronized([self httpPerformanceMetrics]) {
-        allMetricsToSend = [[self httpPerformanceMetrics] copy];
-        [[self httpPerformanceMetrics] removeAllObjects];
+    @synchronized(self.httpPerformanceMetrics) {
+        allMetricsToSend = [self.httpPerformanceMetrics copy];
+        [self.httpPerformanceMetrics removeAllObjects];
     }
 
-    if (allMetricsToSend != nil && [allMetricsToSend count] > 0) {
+    if (allMetricsToSend != nil && allMetricsToSend.count > 0) {
         NSString* fullHeader = [allMetricsToSend componentsJoinedByString:@";"];
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
@@ -2360,7 +2357,9 @@ enum HttpStatus {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            handler(response, data, error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(response, data, error);
+            });
         }];
         [task resume];
     } else {

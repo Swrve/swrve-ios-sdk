@@ -313,7 +313,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-
+    
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
     } else if(data)
