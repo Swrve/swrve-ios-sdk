@@ -15,6 +15,7 @@
 @synthesize displayedChildrenViewController;
 @synthesize lightBoxStyle = _lightBoxStyle;
 @synthesize lightBoxColor = _lightBoxColor;
+@synthesize prefersStatusBarHidden;
 
 -(id) initWithChildViewController:(UIViewController*)child {
     if (self = [super init]) {
@@ -41,5 +42,16 @@
         self.view.backgroundColor = [UIColor clearColor];
     } completion:NULL];
 }
+
+#if defined(__IPHONE_8_0)
+-(BOOL)prefersStatusBarHidden
+{
+    if (prefersStatusBarHidden) {
+        return YES;
+    } else {
+        return [super prefersStatusBarHidden];
+    }
+}
+#endif //defined(__IPHONE_8_0)
 
 @end

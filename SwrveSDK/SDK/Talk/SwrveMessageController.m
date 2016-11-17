@@ -79,7 +79,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
-@property (nonatomic)         bool                  prefersIAMStatusBarHidden;
+@property (nonatomic)         bool                  prefersStatusBarHidden;
 
 // Current Device Properties
 @property (nonatomic) int device_width;
@@ -143,7 +143,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
-@synthesize prefersIAMStatusBarHidden;
+@synthesize prefersStatusBarHidden;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
@@ -165,7 +165,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_height = (int)screen_bounds.size.width;
     self.device_width  = (int)screen_bounds.size.height;
     self.orientation   = sdk.config.orientation;
-    self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
+    self.prefersStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
 
     self.language           = sdk.config.language;
     self.user               = sdk.userID;
@@ -1102,7 +1102,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
             messageViewController.message = message;
-            messageViewController.prefersIAMStatusBarHidden = self.prefersIAMStatusBarHidden;
+            messageViewController.prefersIAMStatusBarHidden = self.prefersStatusBarHidden;
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
     #pragma unused(appId)
                 // Save button type and action for processing later
@@ -1152,6 +1152,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+                rootController.prefersStatusBarHidden = self.prefersStatusBarHidden;
                 self.conversationWindow.rootViewController = rootController;
                 [self.conversationWindow makeKeyAndVisible];
                 [self.conversationWindow.rootViewController.view endEditing:YES];

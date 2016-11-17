@@ -551,10 +551,6 @@
 }
 
 #if defined(__IPHONE_8_0)
-- (BOOL)prefersStatusBarHidden {
-    return NO;
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
