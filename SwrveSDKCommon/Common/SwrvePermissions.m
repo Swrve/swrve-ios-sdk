@@ -263,11 +263,17 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         if ([app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
             pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
         } else
-#endif //defined(__IPHONE_8_0)
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         if ([app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
             UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
             pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
         }
+#pragma GCC diagnostic pop
+#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+#endif //defined(__IPHONE_8_0)
+        
         
         if (pushSettingsEnabled) {
             return ISHPermissionStateAuthorized;

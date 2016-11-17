@@ -17,7 +17,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.6.1"
+#define SWRVE_SDK_VERSION "4.7"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -310,6 +310,8 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, retain) NSString * installTimeCacheSecondaryFile;
 
 /*! Maximum number of simultaneous asset downloads for Swrve in-app messages.
+ * \deprecated
+ * No longer used.
  */
 @property (nonatomic) int maxConcurrentDownloads;
 
@@ -357,6 +359,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSString * installTimeCacheSecondaryFile;
 @property (nonatomic, readonly) NSString * appVersion;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
+/*!
+ * \deprecated
+ * No longer used.
+ */
 @property (nonatomic, readonly) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
@@ -765,5 +771,11 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
+
+#if !defined(SWRVE_NO_PUSH)
+/*! Called to send the push engaged event to Swrve
+ */
+-(void) sendPushEngagedEvent:(NSString*)pushId;
+#endif //!defined(SWRVE_NO_PUSH)
 
 @end

@@ -302,7 +302,6 @@ enum
     if ( self = [super init] ) {
         httpTimeoutSeconds = 60;
         autoDownloadCampaignsAndResources = YES;
-        maxConcurrentDownloads = 2;
         orientation = SWRVE_ORIENTATION_BOTH;
         prefersIAMStatusBarHidden = YES;
         appVersion = [Swrve getAppVersion];
@@ -429,7 +428,6 @@ enum
         installTimeCacheSecondaryFile = config.installTimeCacheSecondaryFile;
         appVersion = config.appVersion;
         receiptProvider = config.receiptProvider;
-        maxConcurrentDownloads = config.maxConcurrentDownloads;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         talkEnabled = config.talkEnabled;
         defaultBackgroundColor = config.defaultBackgroundColor;
@@ -1595,7 +1593,6 @@ static bool didSwizzle = false;
 {
     NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
     if (currentAttributes.count > 0) {
-        [self.userUpdates setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
         [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
         [currentAttributes removeAllObjects];
     }
@@ -1640,8 +1637,7 @@ static bool didSwizzle = false;
                 }
             }
 
-            NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-            [self eventInternal:eventName payload:nil triggerCallback:true];
+            [self sendPushEngagedEvent:pushId];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@ but it was already processed", pushId);
@@ -1649,6 +1645,11 @@ static bool didSwizzle = false;
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
+}
+
+-(void) sendPushEngagedEvent:(NSString*)pushId {
+    NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
+    [self eventInternal:eventName payload:nil triggerCallback:true];
 }
 
 // Get a string that represents the current App Version
@@ -1717,9 +1718,7 @@ static NSString* httpScheme(bool useHttps)
         if (![eventData objectForKey:@"time"]) {
             [eventData setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
         }
-        if (![eventData objectForKey:@"seqnum"]) {
-            [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
-        }
+        [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
 
         // Convert to string
         NSData* json_data = [NSJSONSerialization dataWithJSONObject:eventData options:0 error:nil];
