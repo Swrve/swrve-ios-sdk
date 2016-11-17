@@ -1,10 +1,18 @@
 #import "Swrve.h"
-#import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveConversationPane.h"
-#import "SwrveConversationAtom.h"
 #import "SwrveContentItem.h"
+#import "SwrveInputMultiValue.h"
+#import "SwrveConversationButton.h"
+#import "SwrveAssetsManager.h"
+#import "SwrveContentImage.h"
+#import "SwrveContentHTML.h"
+#import "SwrveContentStarRating.h"
+
+static NSString* const SWRVE_STYLE = @"style";
+static NSString* const SWRVE_FONT_FILE = @"font_file";
+static NSString* const SWRVE_FONT_DIGEST = @"font_digest";
 
 @interface SwrveConversationCampaign()
 
@@ -16,27 +24,54 @@
 
 @synthesize controller, conversation, filters;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)_controller
-{
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withImageAssetsQ:(NSMutableSet *)imageAssetsQ andFontAssetsQ:(NSMutableSet *)fontAssetsQ forController:(SwrveMessageController *)_controller {
     self.controller = _controller;
-    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:_controller];
-    NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
-    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
-    self.filters      = [dict objectForKey:@"filters"];
-    [self addAssetsToQueue:assetsQueue];
-    
+    id instance = [super initAtTime:time fromDictionary:json];
+    NSDictionary *conversationJson = [json objectForKey:@"conversation"];
+    self.conversation = [[SwrveConversation alloc] initWithJSON:conversationJson forCampaign:self forController:controller];
+
+    self.filters = [json objectForKey:@"filters"];
+    [self addAssetsToQueueForImages:imageAssetsQ andFonts:fontAssetsQ];
+
     return instance;
 }
 
--(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
-{
-    // Queue conversation images for download
-    for(SwrveConversationPane* page in self.conversation.pages) {
-        for(SwrveContentItem* contentItem in page.content) {
-            if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
-                [assetsQueue addObject:contentItem.value];
+- (void)addAssetsToQueueForImages:(NSMutableSet *)imageAssetsQ andFonts:(NSMutableSet *)fontAssetsQ {
+    for (SwrveConversationPane *page in self.conversation.pages) {
+
+        // Add image and font assets to queue from content
+        for (SwrveContentItem *contentItem in page.content) {
+            if ([contentItem isKindOfClass:[SwrveContentImage class]]) {
+                [self addImageToQ:imageAssetsQ withAsset:contentItem];
+            } else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
+                [self addFontToQ:fontAssetsQ withAsset:contentItem.style];
+            } else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
+                SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
+                [self addFontToQ:fontAssetsQ withAsset:inputMultiValue.style];
+
+                for (NSDictionary *value in inputMultiValue.values) {
+                    NSDictionary *style = [value objectForKey:SWRVE_STYLE];
+                    [self addFontToQ:fontAssetsQ withAsset:style];
+                }
             }
         }
+
+        // Add font assets to queue from button control
+        for (SwrveConversationButton *button in page.controls) {
+            [self addFontToQ:fontAssetsQ withAsset:button.style];
+        }
+    }
+}
+
+- (void)addImageToQ:(NSMutableSet *)assetQueue withAsset:(SwrveContentItem *)contentItem {
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:contentItem.value andDigest:contentItem.value];
+    [assetQueue addObject:assetQueueItem];
+}
+
+- (void)addFontToQ:(NSMutableSet *)assetQueue withAsset:(NSDictionary *)style {
+    if (style && [style objectForKey:SWRVE_FONT_FILE] && [style objectForKey:SWRVE_FONT_DIGEST]) {
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:[style objectForKey:SWRVE_FONT_FILE] andDigest:[style objectForKey:SWRVE_FONT_DIGEST]];
+        [assetQueue addObject:assetQueueItem];
     }
 }
 

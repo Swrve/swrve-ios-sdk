@@ -1,44 +1,41 @@
 #import "Swrve.h"
-#import "SwrveBaseCampaign.h"
 #import "SwrveCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
-#import "SwrveTrigger.h"
+#import "SwrveAssetsManager.h"
 
 @implementation SwrveCampaign
 
 @synthesize messages;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)controller
+-(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
 {
-    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:controller];
+    id instance = [super initAtTime:time fromDictionary:json];
     NSMutableArray* loadedMessages = [[NSMutableArray alloc] init];
-    NSArray* campaign_messages = [dict objectForKey:@"messages"];
+    NSArray* campaign_messages = [json objectForKey:@"messages"];
     for (NSDictionary* messageDict in campaign_messages)
     {
-        SwrveMessage* message = [SwrveMessage fromJSON:messageDict forCampaign:self forController:controller];
+        SwrveMessage* message = [[SwrveMessage alloc] initWithDictionary:messageDict forCampaign:self forController:controller];
         [loadedMessages addObject:message];
     }
     self.messages = [loadedMessages copy];
-    [self addAssetsToQueue:assetsQueue];
+    [self addImageAssetsToQueue:assetsQueue];
     return instance;
 }
 
--(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
-{
-    for (SwrveMessage* message in self.messages) {
-        for (SwrveMessageFormat* format in message.formats)
-        {
+- (void)addImageAssetsToQueue:(NSMutableSet *)assetsQueue {
+    for (SwrveMessage *message in self.messages) {
+        for (SwrveMessageFormat *format in message.formats) {
             // Add all images to the download queue
-            for (SwrveButton* button in format.buttons)
-            {
-                [assetsQueue addObject:button.image];
+            for (SwrveButton *button in format.buttons) {
+                NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:button.image andDigest:button.image];
+                [assetsQueue addObject:assetQueueItem];
             }
-            
-            for (SwrveImage* image in format.images)
-            {
-                [assetsQueue addObject:image.file];
+
+            for (SwrveImage *image in format.images) {
+                NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:image.file andDigest:image.file];
+                [assetsQueue addObject:assetQueueItem];
             }
         }
     }

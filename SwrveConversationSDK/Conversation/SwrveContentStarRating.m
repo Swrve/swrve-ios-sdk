@@ -1,8 +1,5 @@
 #import "SwrveContentStarRating.h"
-#import "SwrveContentHTML.h"
 #import "SwrveConversationStyler.h"
-#import "SwrveContentStarRatingView.h"
-#import "SwrveSetup.h"
 
 #define kSwrveKeyStarColor @"star_color"
 #define kSwrveStarRatingHeight 60.0f
@@ -15,7 +12,7 @@
 @synthesize starColor = _starColor;
 
 - (id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
-    self = [super initWithTag:tag andType:kSwrveControlStarRating];
+    self = [super initWithTag:tag andType:kSwrveContentStarRating];
     if(self) {
         _starColor = [dict objectForKey:kSwrveKeyStarColor];
     }

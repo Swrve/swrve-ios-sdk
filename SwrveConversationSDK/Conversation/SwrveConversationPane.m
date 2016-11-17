@@ -1,8 +1,6 @@
 #import "SwrveConversationPane.h"
-#import "SwrveConversationAtom.h"
 #import "SwrveConversationAtomFactory.h"
 #import "SwrveConversationButton.h"
-#import "SwrveSetup.h"
 
 @implementation SwrveConversationPane
 @synthesize content = _content;
@@ -15,7 +13,7 @@
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];
     if(self) {
-        _tag = [dict objectForKey:@"tag"];
+        _tag = [dict objectForKey:kSwrveKeyTag];
         _title = [dict objectForKey:@"title"];
         NSArray *contentItems = [dict objectForKey:@"content"];
         if(contentItems) {
@@ -27,7 +25,6 @@
                         [arr addObjectsFromArray:atoms];
                     }
                 }
-                
             }
             _content = [NSArray arrayWithArray:arr];
         } else {
@@ -50,7 +47,7 @@
         } else {
             _controls = nil;
         }
-        NSDictionary *pagesJson = [dict objectForKey:@"style"];
+        NSDictionary *pagesJson = [dict objectForKey:kSwrveKeyStyle];
         if(pagesJson) {
             _pageStyle = pagesJson;
         }

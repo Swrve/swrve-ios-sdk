@@ -7,9 +7,6 @@
 #import "SwrveContentStarRating.h"
 #import "SwrveInputMultiValue.h"
 
-#define kSwrveKeyTag @"tag"
-#define kSwrveKeyType @"type"
-
 @implementation SwrveConversationAtomFactory
 
 + (NSMutableArray <SwrveConversationAtom *> *) atomsForDictionary:(NSDictionary *)dict {
@@ -30,40 +27,32 @@
     
     if([type isEqualToString:kSwrveContentTypeHTML]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
-        swrveContentHTML.style = [dict objectForKey:@"style"];
+        swrveContentHTML.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentHTML];
     } else if([type isEqualToString:kSwrveContentTypeImage]) {
         SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
-        swrveContentImage.style = [dict objectForKey:@"style"];
+        swrveContentImage.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentImage];
     } else if([type isEqualToString:kSwrveContentTypeVideo]) {
         SwrveContentVideo *swrveContentVideo = [[SwrveContentVideo alloc] initWithTag:tag andDictionary:dict];
-        swrveContentVideo.style = [dict objectForKey:@"style"];
+        swrveContentVideo.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentVideo];
     } else if([type isEqualToString:kSwrveControlTypeButton]) {
-        SwrveConversationButton *swrveConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDescription:[dict objectForKey:kSwrveKeyDescription]];
-        swrveConversationButton.actions = [dict objectForKey:@"action"];
-        swrveConversationButton.style = [dict objectForKey:@"style"];
-        NSString *target = [dict objectForKey:@"target"]; // Leave the target nil if this a conversation ender (i.e. no following state)
-        if (target && ![target isEqualToString:@""]) {
-            swrveConversationButton.target = target;
-        }
+        SwrveConversationButton *swrveConversationButton = [[SwrveConversationButton alloc] initWithTag:tag andDictionary:dict];
         [atomArray addObject:swrveConversationButton];
     } else if([type isEqualToString:kSwrveInputMultiValue]) {
         SwrveInputMultiValue *swrveInputMultiValue = [[SwrveInputMultiValue alloc] initWithTag:tag andDictionary:dict];
-        swrveInputMultiValue.style = [dict objectForKey:@"style"];
         [atomArray addObject:swrveInputMultiValue];
-        
     } else if ([type isEqualToString:kSwrveContentSpacer]) {
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
-        swrveContentSpacer.style = [dict objectForKey:@"style"];
+        swrveContentSpacer.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentSpacer];
-    } else if ([type isEqualToString:kSwrveControlStarRating]) {
+    } else if ([type isEqualToString:kSwrveContentStarRating]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
-        swrveContentHTML.style = [dict objectForKey:@"style"];
+        swrveContentHTML.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentHTML];
         SwrveContentStarRating *swrveConversationStarRating = [[SwrveContentStarRating alloc] initWithTag:tag andDictionary:dict];
-        swrveConversationStarRating.style = [dict objectForKey:@"style"];
+        swrveConversationStarRating.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveConversationStarRating];
     }
     

@@ -1,5 +1,9 @@
 #import "SwrveInputItem.h"
 
+#define kSwrveDefaultMultiValueDescriptionFontSize [NSNumber numberWithDouble:20.0]
+#define kSwrveDefaultMultiValueCellFontName @"Helvetica"
+#define kSwrveDefaultMultiValueCellFontSize [NSNumber numberWithDouble:17.0]
+
 @interface SwrveInputMultiValue : SwrveInputItem
 
 @property (nonatomic, strong) NSArray *values;
@@ -8,12 +12,7 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict;
 -(void) loadViewWithContainerView:(UIView*)containerView;
--(BOOL) hasDescription;
 -(NSUInteger) numberOfRowsNeeded;
 -(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView;
-
--(UITableViewCell*) fetchDescriptionCell:(UITableView*)tableView;
--(UITableViewCell*) fetchStandardCell:(UITableView*)tableView;
--(UITableViewCell*) styleCell:(UITableViewCell *)cell atRow:(NSUInteger)row;
 
 @end
