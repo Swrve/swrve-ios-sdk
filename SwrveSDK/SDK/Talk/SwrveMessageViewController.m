@@ -22,7 +22,7 @@
 @synthesize wasShownToUserNotified;
 @synthesize viewportWidth;
 @synthesize viewportHeight;
-@synthesize prefersStatusBarHidden;
+@synthesize prefersIAMStatusBarHidden;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -106,7 +106,7 @@
 #if defined(__IPHONE_8_0)
 -(BOOL)prefersStatusBarHidden
 {
-    if (prefersStatusBarHidden) {
+    if (prefersIAMStatusBarHidden) {
         return YES;
     } else {
         return [super prefersStatusBarHidden];

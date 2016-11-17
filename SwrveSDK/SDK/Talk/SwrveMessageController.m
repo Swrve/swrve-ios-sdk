@@ -1102,7 +1102,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
             messageViewController.message = message;
-            messageViewController.prefersStatusBarHidden = self.prefersStatusBarHidden;
+            messageViewController.prefersIAMStatusBarHidden = self.prefersStatusBarHidden;
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
     #pragma unused(appId)
                 // Save button type and action for processing later
