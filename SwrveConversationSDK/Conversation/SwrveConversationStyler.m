@@ -179,13 +179,13 @@
                 }
                 if (uiFont == NULL) {
                     CGDataProviderRelease(fontDataProvider);
-                    CFErrorRef error;
-                    CTFontManagerRegisterGraphicsFont(cgFont, &error);
-                    if (error) {
-                        DebugLog(@"Error registering font: %@.\nError: %@", fontName, error);
-                    } else {
-                        CGFontRelease(cgFont);
+                    CFErrorRef cfError;
+                    BOOL success = CTFontManagerRegisterGraphicsFont(cgFont, &cfError);
+                    CGFontRelease(cgFont);
+                    if (success) {
                         uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]];
+                    } else {
+                        DebugLog(@"Error registering font: %@ fontPath:%@", fontName, fontPath);
                     }
                 }
             } else {
