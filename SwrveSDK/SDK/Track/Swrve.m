@@ -1930,12 +1930,14 @@ static NSString* httpScheme(bool useHttps)
         
         // ensure the install time is stored in seconds, legacy from < iOS SDK 4.7
         if(seconds > [self secondsSinceEpoch]){
+            DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
             seconds = seconds / 1000;
             if(seconds > [self secondsSinceEpoch]){
-                //it is totally corrupted and must be added again.
+                DebugLog(@"install_time from current file_contents was corrupted. setting as today");
+                //install time stored was corrupted and must be added as today.
                 seconds = [self secondsSinceEpoch];
             }
-            DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
+            
             file_contents = [NSString stringWithFormat:@"%llu", seconds];
             [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
@@ -1975,10 +1977,6 @@ static NSString* httpScheme(bool useHttps)
 
 - (UInt64) secondsSinceEpoch {
     return (unsigned long long)([[NSDate date] timeIntervalSince1970]);
-}
-
-- (UInt64) millisecondsSinceEpoch {
-    return [self secondsSinceEpoch] * 1000;
 }
 
 /*
