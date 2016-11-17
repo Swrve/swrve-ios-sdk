@@ -1817,8 +1817,6 @@ static NSString* httpScheme(bool useHttps)
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyyMMdd"];
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:install_time];
-    NSString *dateString = [dateFormatter stringFromDate:date];
-    NSLog(@"Install Date String : %@", dateString);
     [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:@"swrve.install_date"];
 
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
