@@ -562,6 +562,11 @@ static bool didSwizzle = false;
 
 + (void) resetSwrveSharedInstance
 {
+    if (_swrveSharedInstance) {
+        [_swrveSharedInstance shutdown];
+    }
+    [SwrveCommon addSharedInstance:nil];
+
     _swrveSharedInstance = nil;
     sharedInstanceToken = 0;
 }
@@ -1388,6 +1393,10 @@ static bool didSwizzle = false;
     }
 
     [self setEventBuffer:nil];
+    
+#if !defined(SWRVE_NO_PUSH)
+    [self _deswizzlePushMethods];
+#endif
 }
 
 // Deprecated
@@ -2379,10 +2388,13 @@ enum HttpStatus {
 
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSURLSessionDataTask* task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             handler(response, data, error);
         }];
-        [task resume];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [task resume];
+        });
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
