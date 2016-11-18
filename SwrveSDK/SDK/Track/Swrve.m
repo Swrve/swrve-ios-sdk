@@ -151,6 +151,7 @@ enum
 - (void) sendLogfile;
 - (NSOutputStream*) createLogfile:(int)mode;
 - (UInt64) getTime;
+- (UInt64) secondsSinceEpoch;
 - (NSString*) createStringWithMD5:(NSString*)source;
 - (void) initBuffer;
 - (void) addHttpPerformanceMetrics:(NSString*) metrics;
@@ -1775,8 +1776,8 @@ static NSString* httpScheme(bool useHttps)
 #endif
 }
 
-- (float) _estimate_dpi
-{
+- (float) _estimate_dpi {
+    
     float scale = (float)[[UIScreen mainScreen] scale];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
@@ -1789,8 +1790,8 @@ static NSString* httpScheme(bool useHttps)
     return 160.0f * scale;
 }
 
-- (void) sendCrashlyticsMetadata
-{
+- (void) sendCrashlyticsMetadata {
+    
     // Check if Crashlytics is used in this project
     Class crashlyticsClass = NSClassFromString(@"Crashlytics");
     if (crashlyticsClass != nil) {
@@ -1803,8 +1804,8 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
-- (CGRect) getDeviceScreenBounds
-{
+- (CGRect) getDeviceScreenBounds {
+    
     UIScreen* screen   = [UIScreen mainScreen];
     CGRect bounds = [screen bounds];
     float screen_scale = (float)[[UIScreen mainScreen] scale];
@@ -1827,8 +1828,8 @@ static NSString* httpScheme(bool useHttps)
     return platform;
 }
 
-- (NSDictionary*) getDeviceProperties
-{
+- (NSDictionary*) getDeviceProperties {
+    
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
 
     UIDevice* device = [UIDevice currentDevice];
@@ -1843,7 +1844,7 @@ static NSString* httpScheme(bool useHttps)
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:self->install_time];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:install_time];
     [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:@"swrve.install_date"];
 
     [deviceProperties setValue:[NSNumber numberWithInteger:CONVERSATION_VERSION] forKey:@"swrve.conversation_version"];
@@ -1904,15 +1905,15 @@ static NSString* httpScheme(bool useHttps)
     return deviceProperties;
 }
 
-- (CTCarrier*) getCarrierInfo
-{
+- (CTCarrier*) getCarrierInfo {
+    
     // Obtain carrier info from the device
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     return [netinfo subscriberCellularProvider];
 }
 
-- (void) queueDeviceProperties
-{
+- (void) queueDeviceProperties {
+    
     NSDictionary* deviceProperties = [self getDeviceProperties];
     NSMutableString* formattedDeviceData = [[NSMutableString alloc] initWithFormat:
     @"                      User: %@\n"
@@ -1944,8 +1945,8 @@ static NSString* httpScheme(bool useHttps)
 // Get the time that the application was first installed.
 // This value is stored in a file. If this file is not available in any of the files (new and legacy),
 // then we assume that the application was installed now, and save the current time to the file.
-- (UInt64) getInstallTime:(NSString*)fileName withSecondaryFile:(NSString*)secondaryFileName
-{
+- (UInt64) getInstallTime:(NSString*)fileName withSecondaryFile:(NSString*)secondaryFileName {
+    
     unsigned long long seconds = 0;
 
     // Primary install file (defaults to documents path)
@@ -1954,6 +1955,21 @@ static NSString* httpScheme(bool useHttps)
 
     if (!error && file_contents) {
         seconds = (unsigned long long)[file_contents longLongValue];
+        
+        // ensure the install time is stored in seconds, legacy from < iOS SDK 4.7
+        if(seconds > [self secondsSinceEpoch]){
+            DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
+            seconds = seconds / 1000;
+            if(seconds > [self secondsSinceEpoch]){
+                DebugLog(@"install_time from current file_contents was corrupted. setting as today");
+                //install time stored was corrupted and must be added as today.
+                seconds = [self secondsSinceEpoch];
+            }
+            
+            file_contents = [NSString stringWithFormat:@"%llu", seconds];
+            [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        }
+        
     } else {
         DebugLog(@"could not read file: %@", fileName);
     }
@@ -1978,13 +1994,17 @@ static NSString* httpScheme(bool useHttps)
     if (seconds > 0)
     {
         UInt64 result = seconds;
-        return result * 1000;
+        return result;
     }
 
-    UInt64 time = [self getTime];
-    NSString* currentTime = [NSString stringWithFormat:@"%llu", time/(UInt64)1000L];
+    UInt64 time = [self secondsSinceEpoch];
+    NSString* currentTime = [NSString stringWithFormat:@"%llu", time];
     [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    return (time / 1000 * 1000);
+    return time;
+}
+
+- (UInt64) secondsSinceEpoch {
+    return (unsigned long long)([[NSDate date] timeIntervalSince1970]);
 }
 
 /*
@@ -2308,7 +2328,7 @@ enum HttpStatus {
 
 - (UInt64) getTime
 {
-    // Get the time since the epoch in seconds
+    // Get the time since the epoch in milliseconds
     struct timeval time;
     gettimeofday(&time, NULL);
     return (((UInt64)time.tv_sec) * 1000) + (((UInt64)time.tv_usec) / 1000);
