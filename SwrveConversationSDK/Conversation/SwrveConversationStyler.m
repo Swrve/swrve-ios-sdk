@@ -95,6 +95,7 @@
 }
 
 + (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style {
+    [SwrveConversationStyler fontFromStyle:style withFallback:nil]; // register any custom font
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
 
@@ -105,7 +106,7 @@
                           <body> \
                           %@ \
                           </body></html>", pageCSS, fgHexColor, bgHexColor, content];
-    
+
     return html;
 }
 
@@ -167,6 +168,7 @@
         uiFont = [UIFont fontWithName:fontName size:[fontSize floatValue]];
         if (!uiFont) {
             NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+            cache = [cache stringByAppendingPathComponent:@"com.ngt.msgs"];
             NSString *fontPath = [cache stringByAppendingPathComponent:fontName];
             BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
             if (fileExists) {
@@ -180,13 +182,14 @@
                 if (uiFont == NULL) {
                     CGDataProviderRelease(fontDataProvider);
                     CFErrorRef cfError;
-                    BOOL success = CTFontManagerRegisterGraphicsFont(cgFont, &cfError);
-                    CGFontRelease(cgFont);
-                    if (success) {
+                    if (CTFontManagerRegisterGraphicsFont(cgFont, &cfError)) {
                         uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]];
                     } else {
-                        DebugLog(@"Error registering font: %@ fontPath:%@", fontName, fontPath);
+                        CFStringRef errorDescription = CFErrorCopyDescription(cfError);
+                        DebugLog(@"Error registering font: %@ fontPath:%@ errorDescription:%@", fontName, fontPath, errorDescription);
+                        CFRelease(errorDescription);
                     }
+                    CGFontRelease(cgFont);
                 }
             } else {
                 DebugLog(@"Swrve: font %@ could not be loaded.Using default/fallback.", fontName);
