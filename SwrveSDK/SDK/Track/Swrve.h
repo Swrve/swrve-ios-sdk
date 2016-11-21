@@ -657,6 +657,17 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) userUpdate:(NSDictionary*)attributes;
 
+/*! Sends a single Date based user state to Swrve
+ *
+ * See the REST API docs for the user event for a detailed description of the
+ * semantics of this call.
+ *
+ * \param name The identifier for the user update
+ * \param date The NSDate value associated
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ */
+- (int) userUpdate:(NSString *)name withDate:(NSDate *) date;
+
 #pragma mark -
 #pragma mark User Resources
 
