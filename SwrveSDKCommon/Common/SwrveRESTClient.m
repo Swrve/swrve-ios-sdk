@@ -97,7 +97,9 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            handler(response, data, error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(response, data, error);
+            });
         }];
         [task resume];
     } else {
