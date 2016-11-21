@@ -332,7 +332,7 @@ enum
         userResourcesCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"srcngtsgt2.txt"];
         userResourcesCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
 
-        
+
         userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
         userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
 
@@ -354,7 +354,7 @@ enum
             // Do nothing by default.
         };
         self.selectedStack = SWRVE_STACK_US;
-        
+
         self.conversationLightBoxColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.70f];
     }
     return self;
@@ -1397,14 +1397,14 @@ static bool didSwizzle = false;
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
         return;
     }
-    
+
     [self stopCampaignsAndResourcesTimer];
 
     //ensure UI isn't displaying during shutdown
     [self.talk cleanupConversationUI];
     [self.talk dismissMessageWindow];
     talk = nil;
-    
+
     resourceManager = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -1417,7 +1417,7 @@ static bool didSwizzle = false;
     }
 
     [self setEventBuffer:nil];
-    
+
 #if !defined(SWRVE_NO_PUSH)
     [self _deswizzlePushMethods];
 #endif
@@ -1540,9 +1540,6 @@ static bool didSwizzle = false;
         [self sendQueuedEvents];
     }
 
-    if(self.config.talkEnabled) {
-        [self.talk saveCampaignsState];
-    }
     [self stopCampaignsAndResourcesTimer];
 }
 
@@ -1633,7 +1630,7 @@ static bool didSwizzle = false;
 }
 
 - (void) pushNotificationReceived:(NSDictionary *)userInfo {
-    
+
     // Try to get the identifier _p
     id pushIdentifier = [userInfo objectForKey:@"_p"];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
@@ -1786,7 +1783,7 @@ static NSString* httpScheme(bool useHttps)
 }
 
 - (float) _estimate_dpi {
-    
+
     float scale = (float)[[UIScreen mainScreen] scale];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
@@ -1800,7 +1797,7 @@ static NSString* httpScheme(bool useHttps)
 }
 
 - (void) sendCrashlyticsMetadata {
-    
+
     // Check if Crashlytics is used in this project
     Class crashlyticsClass = NSClassFromString(@"Crashlytics");
     if (crashlyticsClass != nil) {
@@ -1814,7 +1811,7 @@ static NSString* httpScheme(bool useHttps)
 }
 
 - (CGRect) getDeviceScreenBounds {
-    
+
     UIScreen* screen   = [UIScreen mainScreen];
     CGRect bounds = [screen bounds];
     float screen_scale = (float)[[UIScreen mainScreen] scale];
@@ -1838,7 +1835,7 @@ static NSString* httpScheme(bool useHttps)
 }
 
 - (NSDictionary*) getDeviceProperties {
-    
+
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
 
     UIDevice* device = [UIDevice currentDevice];
@@ -1915,14 +1912,14 @@ static NSString* httpScheme(bool useHttps)
 }
 
 - (CTCarrier*) getCarrierInfo {
-    
+
     // Obtain carrier info from the device
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     return [netinfo subscriberCellularProvider];
 }
 
 - (void) queueDeviceProperties {
-    
+
     NSDictionary* deviceProperties = [self getDeviceProperties];
     NSMutableString* formattedDeviceData = [[NSMutableString alloc] initWithFormat:
     @"                      User: %@\n"
@@ -1943,7 +1940,7 @@ static NSString* httpScheme(bool useHttps)
     for (NSString* key in deviceProperties) {
         [formattedDeviceData appendFormat:@"  %24s: %@\n", [key UTF8String], [deviceProperties objectForKey:key]];
     }
-    
+
     if (!getenv("RUNNING_UNIT_TESTS")) {
         DebugLog(@"Swrve config:\n%@", formattedDeviceData);
     }
@@ -1955,7 +1952,7 @@ static NSString* httpScheme(bool useHttps)
 // This value is stored in a file. If this file is not available in any of the files (new and legacy),
 // then we assume that the application was installed now, and save the current time to the file.
 - (UInt64) getInstallTime:(NSString*)fileName withSecondaryFile:(NSString*)secondaryFileName {
-    
+
     unsigned long long seconds = 0;
 
     // Primary install file (defaults to documents path)
@@ -1964,7 +1961,7 @@ static NSString* httpScheme(bool useHttps)
 
     if (!error && file_contents) {
         seconds = (unsigned long long)[file_contents longLongValue];
-        
+
         // ensure the install time is stored in seconds, legacy from < iOS SDK 4.7
         if(seconds > [self secondsSinceEpoch]){
             DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
@@ -1974,11 +1971,11 @@ static NSString* httpScheme(bool useHttps)
                 //install time stored was corrupted and must be added as today.
                 seconds = [self secondsSinceEpoch];
             }
-            
+
             file_contents = [NSString stringWithFormat:@"%llu", seconds];
             [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
-        
+
     } else {
         DebugLog(@"could not read file: %@", fileName);
     }
@@ -2048,10 +2045,10 @@ static NSString* httpScheme(bool useHttps)
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
     [SwrveFileManagement applicationSupportPath];
-    
+
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
     [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
-    
+
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
@@ -2064,7 +2061,7 @@ static NSString* httpScheme(bool useHttps)
     // Migrate event data from cache to application data (4.5.1+)
     [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
     [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
-    
+
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
     NSURL* signatureURL = [NSURL fileURLWithPath:self.config.userResourcesCacheSignatureFile];
@@ -2135,14 +2132,14 @@ enum HttpStatus {
     {
         [[self eventStream] close];
     }
-    
+
     // Migrate event data from cache to application data (4.5.1+)
     // Old file defaults to cache directory, should be moved to new location
     if ([[NSFileManager defaultManager] isReadableFileAtPath:[self.eventSecondaryFilename path]]) {
         [[NSFileManager defaultManager] copyItemAtURL:self.eventSecondaryFilename toURL:self.eventFilename error:nil];
         [[NSFileManager defaultManager] removeItemAtURL:self.eventSecondaryFilename error:nil];
     }
-    
+
 
     NSOutputStream* newFile = NULL;
     [self setEventFileHasData:NO];
@@ -2400,25 +2397,25 @@ enum HttpStatus {
     // Add http request performance metrics for any previous requests into the header of this request (see JIRA SWRVE-5067 for more details)
     NSArray* allMetricsToSend;
 
-    @synchronized([self httpPerformanceMetrics]) {
-        allMetricsToSend = [[self httpPerformanceMetrics] copy];
-        [[self httpPerformanceMetrics] removeAllObjects];
+    @synchronized(self.httpPerformanceMetrics) {
+        allMetricsToSend = [self.httpPerformanceMetrics copy];
+        [self.httpPerformanceMetrics removeAllObjects];
     }
 
-    if (allMetricsToSend != nil && [allMetricsToSend count] > 0) {
+    if (allMetricsToSend != nil && allMetricsToSend.count > 0) {
         NSString* fullHeader = [allMetricsToSend componentsJoinedByString:@";"];
         [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
     }
 
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask* task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            handler(response, data, error);
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(response, data, error);
+            });
         }];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [task resume];
-        });
+        [task resume];
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

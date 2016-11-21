@@ -55,6 +55,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSArray*              campaigns; // List of campaigns available to the user.
 @property (nonatomic, retain) NSMutableDictionary*  campaignsState; // Serializable state of the campaigns.
+@property (nonatomic, retain) NSLock*               campaignsStateLock;
 @property (nonatomic, retain) NSString*           	server;
 @property (nonatomic, retain) NSMutableSet*         assetsOnDisk;
 @property (nonatomic, retain) NSString*             cacheFolder;
@@ -144,6 +145,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize campaignsStateLock;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
@@ -219,6 +221,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 #endif //!defined(SWRVE_NO_PUSH)
 
     self.campaignsState = [[NSMutableDictionary alloc] init];
+    self.campaignsStateLock = [[NSLock alloc] init];
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
 
@@ -275,10 +278,10 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 - (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
-    NSData* data = [NSData dataWithContentsOfFile:[self settingsPath]];
+    NSData* data = [NSData dataWithContentsOfFile:self.settingsPath];
     if(!data)
     {
-        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", [self settingsPath]);
+        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", self.settingsPath);
         return;
     }
 
@@ -290,43 +293,47 @@ const static int DEFAULT_MIN_DELAY           = 55;
     if (error) {
         DebugLog(@"Could not load campaign states from disk.\nError: %@\njson: %@", error, data);
     } else {
+        [self.campaignsStateLock lock];
         for (NSDictionary* dicState in loadedStates)
         {
             SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
             NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
             [states setValue:state forKey:stateKey];
         }
+        [self.campaignsStateLock unlock];
     }
 }
 
 - (void)saveCampaignsState
 {
+    [self.campaignsStateLock lock];
     NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
     [self.campaignsState enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop)
     {
 #pragma unused(key, stop)
         [newStates addObject:[value asDictionary]];
     }];
+    [self.campaignsStateLock unlock];
 
     NSError*  error = NULL;
     NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-
+    
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
     } else if(data)
     {
-        BOOL success = [data writeToFile:[self settingsPath] atomically:YES];
+        BOOL success = [data writeToFile:self.settingsPath atomically:YES];
         if (!success)
         {
-            DebugLog(@"Error saving campaigns state to: %@", [self settingsPath]);
+            DebugLog(@"Error saving campaigns state to: %@", self.settingsPath);
         }
     }
     else
     {
-        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, [self settingsPath]);
+        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, self.settingsPath);
     }
 }
 
@@ -526,6 +533,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
 
         if (campaign != nil) {
+            [self.campaignsStateLock lock];
             NSString* campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long)campaign.ID];
             DebugLog(@"Got campaign with id %@", campaignIDStr);
             if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
@@ -535,6 +543,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 }
             }
             [self.campaignsState setValue:campaign.state forKey:campaignIDStr];
+            [self.campaignsStateLock unlock];
             [result addObject:campaign];
 
             if(self.qaUser) {
