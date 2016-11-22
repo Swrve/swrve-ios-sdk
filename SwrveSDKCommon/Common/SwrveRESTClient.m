@@ -101,7 +101,9 @@
                 handler(response, data, error);
             });
         }];
-        [task resume];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [task resume];
+        });
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
