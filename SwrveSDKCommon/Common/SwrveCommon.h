@@ -33,7 +33,11 @@
 #pragma clang diagnostic ignored "-Wgnu"
 
 #ifndef SWRVE_DISABLE_LOGS
+#if SWRVE_VERBOSE_LOGS
+#define DebugLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
 #define DebugLog( s, ... ) NSLog(s, ##__VA_ARGS__)
+#endif
 #else
 #define DebugLog( s, ... )
 #endif
