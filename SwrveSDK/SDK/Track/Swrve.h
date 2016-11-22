@@ -648,7 +648,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) currencyGiven:(NSString*)givenCurrency givenAmount:(double)givenAmount;
 
-/*! Sends the user state to Swrve.
+/*! Sends a group of custom user properties to Swrve.
  * See the REST API docs for the user event for a detailed description of the
  * semantics of this call.
  *
@@ -657,7 +657,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 -(int) userUpdate:(NSDictionary*)attributes;
 
-/*! Sends a single Date based user state to Swrve
+/*! Sends a single Date based custom user property to Swrve
  *
  * See the REST API docs for the user event for a detailed description of the
  * semantics of this call.
