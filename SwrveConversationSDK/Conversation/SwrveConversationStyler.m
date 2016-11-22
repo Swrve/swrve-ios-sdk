@@ -1,7 +1,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
-@import CoreText;
+#import <CoreText/CoreText.h>
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
