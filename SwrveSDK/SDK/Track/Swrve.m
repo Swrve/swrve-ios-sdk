@@ -1099,17 +1099,17 @@ static bool didSwizzle = false;
 }
 
 - (int) userUpdate:(NSString *)name withDate:(NSDate *) date {
-    
+
     if(name && date){
         NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
         [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
         [currentAttributes setObject:[self convertDateToString:date] forKey:name];
-        
+
     }else{
         DebugLog(@"nil object passed into userUpdate:withDate");
         return SWRVE_FAILURE;
     }
-    
+
     return SWRVE_SUCCESS;
 }
 
@@ -2414,8 +2414,9 @@ enum HttpStatus {
                 handler(response, data, error);
             });
         }];
-        
-        [task resume];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [task resume];
+        });
     } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
