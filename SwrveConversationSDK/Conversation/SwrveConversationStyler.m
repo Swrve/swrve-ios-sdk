@@ -2,6 +2,7 @@
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
 #import <CoreText/CoreText.h>
+#import <CoreText/CTFontManager.h>
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
