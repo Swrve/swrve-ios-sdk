@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'SwrveSDKCommon', '4.7.0'
   s.dependency 'SwrveConversationSDK', '4.7.0'
 
-  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AVFoundation'
+  s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'CoreTelephony', 'MessageUI', 'CoreLocation', 'AVFoundation', 'CoreText'
   # weak frameworks mark them as optional in xcode allowing for backwards compatibility with iOS7 and iOS8
   s.weak_frameworks = 'Contacts', 'Photos', 'AssetsLibrary', 'AddressBook'
   s.library = 'sqlite3'
