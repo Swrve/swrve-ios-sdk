@@ -112,7 +112,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @end
 
 /*! In-app messages controller */
-#if defined(__IPHONE_10_0)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
 #else
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler>
