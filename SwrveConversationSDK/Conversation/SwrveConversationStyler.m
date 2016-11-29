@@ -1,6 +1,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
+#import "SwrveUtils.h"
 #import <CoreText/CoreText.h>
 
 #define kSwrveKeyBg @"bg"
@@ -158,13 +159,14 @@
 + (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont {
 
     NSString *fontName = [style objectForKey:kSwrveKeyFontFile];
-    NSNumber *fontSize = [style objectForKey:kSwrveKeyTextSize];
+    CGFloat fontSizePixels = [[style objectForKey:kSwrveKeyTextSize] floatValue];
+    CGFloat fontSizePoints = [SwrveUtils convertPixelsToPoints:fontSizePixels];
 
     UIFont *uiFont;
     if (fontName && [fontName length] == 0) { // will be blank for system font and for v1/v2/v3 of conversations
-        uiFont = [fallbackUIFont fontWithSize:[fontSize floatValue]];
+        uiFont = [fallbackUIFont fontWithSize:fontSizePoints];
     } else {
-        uiFont = [UIFont fontWithName:fontName size:[fontSize floatValue]];
+        uiFont = [UIFont fontWithName:fontName size:fontSizePoints];
         if (!uiFont) {
             NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
             NSString *fontPath = [cacheFolder stringByAppendingPathComponent:fontName];
@@ -175,7 +177,7 @@
                 CGFontRef cgFont = CGFontCreateWithDataProvider(fontDataProvider);
                 NSString *newFontName = (__bridge NSString *) CGFontCopyPostScriptName(cgFont);
                 if(newFontName) {
-                    uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]]; // check again if already registered
+                    uiFont = [UIFont fontWithName:newFontName size:fontSizePoints]; // check again if already registered
                 }
                 if (uiFont == NULL) {
                     CGDataProviderRelease(fontDataProvider);
@@ -183,7 +185,7 @@
                     BOOL success = CTFontManagerRegisterGraphicsFont(cgFont, &cfError);
                     CGFontRelease(cgFont);
                     if (success) {
-                        uiFont = [UIFont fontWithName:newFontName size:[fontSize floatValue]];
+                        uiFont = [UIFont fontWithName:newFontName size:fontSizePoints];
                     } else {
                         DebugLog(@"Error registering font: %@ fontPath:%@", fontName, fontPath);
                     }
