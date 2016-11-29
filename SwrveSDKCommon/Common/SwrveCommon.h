@@ -26,6 +26,7 @@
 
 +(id<SwrveCommonDelegate>) sharedInstance;
 +(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
++ (NSString *)swrveCacheFolder;
 
 @end
 

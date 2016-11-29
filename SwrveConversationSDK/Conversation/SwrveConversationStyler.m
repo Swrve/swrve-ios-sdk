@@ -2,7 +2,6 @@
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
 #import <CoreText/CoreText.h>
-#import <CoreText/CTFontManager.h>
 
 #define kSwrveKeyBg @"bg"
 #define kSwrveKeyFg @"fg"
@@ -167,8 +166,8 @@
     } else {
         uiFont = [UIFont fontWithName:fontName size:[fontSize floatValue]];
         if (!uiFont) {
-            NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-            NSString *fontPath = [cache stringByAppendingPathComponent:fontName];
+            NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
+            NSString *fontPath = [cacheFolder stringByAppendingPathComponent:fontName];
             BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
             if (fileExists) {
                 NSURL *url = [NSURL fileURLWithPath:fontPath];

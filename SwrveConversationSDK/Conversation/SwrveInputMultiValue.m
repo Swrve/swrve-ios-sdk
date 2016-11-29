@@ -115,7 +115,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"descriptionCell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.userInteractionEnabled = NO;
     }
 
     UIFont *fallbackFont = [UIFont boldSystemFontOfSize:[kSwrveDefaultMultiValueDescriptionFontSize floatValue]];
@@ -154,13 +153,7 @@
     [cell.textLabel setFont:cellFont];
     [cell.textLabel setText:[dict objectForKey:kSwrveKeyAnswerText]];
     [cell.textLabel setNumberOfLines:0];
-
-    if (cellStyle) {
-        [SwrveConversationStyler styleView:cell withStyle:cellStyle];
-    } else {
-        [SwrveConversationStyler styleView:cell withStyle:self.style];
-    }
-
+    [SwrveConversationStyler styleView:cell withStyle:cellStyle];
     return cell;
 }
 

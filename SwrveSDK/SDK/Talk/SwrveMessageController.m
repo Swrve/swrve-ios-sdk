@@ -12,7 +12,6 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-static NSString* swrve_folder         = @"com.ngt.msgs";
 static NSString* swrve_campaign_cache = @"cmcc2.json";
 static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
@@ -154,8 +153,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 {
     self = [super init];
 
-    NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *cacheFolder = [cacheRoot stringByAppendingPathComponent:swrve_folder];
+    NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
     self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
 
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
