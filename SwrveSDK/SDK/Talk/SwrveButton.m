@@ -1,4 +1,5 @@
 #import "SwrveButton.h"
+#import "SwrveCommon.h"
 
 @interface SwrveButton()
 
@@ -41,10 +42,8 @@ static CGPoint scaled(CGPoint point, float scale)
                              andCenterX:(float)cx
                              andCenterY:(float)cy
 {
-    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString* swrve_folder = @"com.ngt.msgs";
-    
-    NSURL* url_up = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, image, nil]];
+    NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
+    NSURL* url_up = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, image, nil]];
     UIImage* up   = [UIImage imageWithData:[NSData dataWithContentsOfURL:url_up]];
 
     UIButton* result;
