@@ -184,7 +184,7 @@ enum
 @property (atomic) NSMutableArray* eventBuffer;
 
 @property (atomic) bool eventFileHasData;
-@property (atomic) NSOutputStream* eventStream;
+@property (atomic) NSOutputStream* eventStream; //FIXME: place for output Stream
 @property (atomic) NSURL* eventFilename;
 @property (atomic) NSURL* eventSecondaryFilename;
 
@@ -1302,8 +1302,8 @@ static bool didSwizzle = false;
     [self sendQueuedEvents];
 }
 
--(void) sendQueuedEvents
-{
+-(void) sendQueuedEvents {
+    
     if (!self.userID)
     {
         DebugLog(@"Swrve user_id is null. Not sending data.", nil);
@@ -1329,10 +1329,9 @@ static bool didSwizzle = false;
     NSString* session_token = [self createSessionToken];
     NSString* array_body = [self copyBufferToJson:buffer];
     NSString* json_string = [self createJSON:session_token events:array_body];
-
+    NSLog(@"[ARRAY_BODY]: %@", json_string);
+    
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
-
-    [self setEventsWereSent:YES];
 
     [self sendHttpPOSTRequest:[self batchURL]
                      jsonData:json_data
@@ -1342,6 +1341,8 @@ static bool didSwizzle = false;
                     DebugLog(@"Error opening HTTP stream: %@ %@", [error localizedDescription], [error localizedFailureReason]);
                     [self setEventBufferBytes:[self eventBufferBytes] + bytes];
                     [[self eventBuffer] addObjectsFromArray:buffer];
+                    [self saveEventsToDisk];
+                    [self setEventsWereSent:NO];
                     return;
                 }
 
@@ -1365,23 +1366,33 @@ static bool didSwizzle = false;
     }];
 }
 
--(void) saveEventsToDisk
-{
+-(void) saveEventsToDisk { //TODO: currently using this
     DebugLog(@"Writing unsent event data to file", nil);
 
     [self queueUserUpdates];
 
-    if ([self eventStream] && [[self eventBuffer] count] > 0)
-    {
+    NSLog(@" EventBuffer: %@", [self eventBuffer]);
+    
+    if ([self eventStream] && [[self eventBuffer] count] > 0) {
+        
         NSString* json = [self copyBufferToJson:[self eventBuffer]];
         NSData* buffer = [json dataUsingEncoding:NSUTF8StringEncoding];
         [[self eventStream] write:(const uint8_t *)[buffer bytes] maxLength:[buffer length]];
-        [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
-        [self setEventFileHasData:YES];
+        long bytes = [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
+        
+        if(bytes == 0){
+            DebugLog(@"nothing is written to the event file");
+        }else{
+            DebugLog(@"written to the event file");
+            NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
+            NSString* file_contents = [[NSString alloc] initWithData:contents encoding:NSUTF8StringEncoding];
+            NSLog(@"[IN_FILE]: %@", file_contents);
+            [self setEventFileHasData:YES];
+            [self initBuffer];
+        }
     }
 
-    // Always empty the buffer
-    [self initBuffer];
+
 }
 
 -(void) setEventQueuedCallback:(SwrveEventQueuedCallback)callbackBlock
@@ -1417,6 +1428,9 @@ static bool didSwizzle = false;
     }
 
     [self setEventBuffer:nil];
+    
+    [[self eventStream] removeFromRunLoop:[NSRunLoop currentRunLoop]
+                      forMode:NSDefaultRunLoopMode];
 
 #if !defined(SWRVE_NO_PUSH)
     [self _deswizzlePushMethods];
@@ -1739,7 +1753,7 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
--(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback
+-(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback //TODO:queueEvent here?
 {
     if ([self eventBuffer]) {
         // Add common attributes (if not already present)
@@ -2193,6 +2207,7 @@ enum HttpStatus {
             case HTTP_REDIRECTION:
             case HTTP_SUCCESS:
                 DebugLog(@"Success sending events to Swrve", nil);
+                [self setEventsWereSent:YES];
                 break;
             case HTTP_CLIENT_ERROR:
                 DebugLog(@"HTTP Error - not adding events back into the queue: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -2273,8 +2288,8 @@ enum HttpStatus {
     }
 }
 
-- (void) sendLogfile
-{
+- (void) sendLogfile { //TODO: sendLogFile
+    
     if (![self eventStream]) return;
     if (![self eventFileHasData]) return;
 
@@ -2288,6 +2303,7 @@ enum HttpStatus {
     NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
     if (contents == nil)
     {
+        NSLog(@"no events found in the file");
         [self resetEventCache];
         return;
     }
@@ -2302,6 +2318,7 @@ enum HttpStatus {
     // Remove trailing comma
     [contents setLength:[contents length] - 2];
     NSString* file_contents = [[NSString alloc] initWithData:contents encoding:NSUTF8StringEncoding];
+    NSLog(@"file contents in sendLogFile: %@", file_contents);
     NSString* session_token = [self createSessionToken];
     NSString* json_string = [self createJSON:session_token events:file_contents];
 
@@ -2311,7 +2328,7 @@ enum HttpStatus {
                       jsonData:json_data
              completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (error) {
-            DebugLog(@"Error opening HTTP stream", nil);
+            DebugLog(@"Error opening HTTP stream when sending the contents of the log file", nil);
             return;
         }
 
@@ -2327,8 +2344,8 @@ enum HttpStatus {
     }];
 }
 
-- (void) resetEventCache
-{
+- (void) resetEventCache {
+    NSLog(@"resetting event cache..");
     [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_FILE]];
 }
 
