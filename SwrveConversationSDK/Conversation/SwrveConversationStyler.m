@@ -1,7 +1,6 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
-#import "SwrveUtils.h"
 #import <CoreText/CoreText.h>
 
 #define kSwrveKeyBg @"bg"
@@ -160,7 +159,7 @@
 
     NSString *fontName = [style objectForKey:kSwrveKeyFontFile];
     CGFloat fontSizePixels = [[style objectForKey:kSwrveKeyTextSize] floatValue];
-    CGFloat fontSizePoints = [SwrveUtils convertPixelsToPoints:fontSizePixels];
+    CGFloat fontSizePoints = fontSizePixels;
 
     UIFont *uiFont;
     if (fontName && [fontName length] == 0) { // will be blank for system font and for v1/v2/v3 of conversations
