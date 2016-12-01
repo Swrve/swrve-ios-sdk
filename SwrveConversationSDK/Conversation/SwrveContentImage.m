@@ -1,4 +1,5 @@
 #import "SwrveContentImage.h"
+#import "SwrveCommon.h"
 
 @interface SwrveContentImage () {
     UIImageView *iv;
@@ -16,9 +17,8 @@
 -(void) loadViewWithContainerView:(UIView*)containerView {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
-        NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-        NSString* swrve_folder = @"com.ngt.msgs";
-        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cache, swrve_folder, self.value, nil]];
+        NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
+        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, self.value, nil]];
         self->image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
         [self sizeAndDisplayInContainer:containerView];
     });

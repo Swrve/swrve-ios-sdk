@@ -194,9 +194,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
     
-    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString* swrve_folder = @"com.ngt.msgs";
-    [self addImageViews:containerView cachePath:cache swrveFolderPath:swrve_folder centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
+    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
     [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
     
     if (rotated) {
@@ -229,10 +227,8 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
-    
-    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString* swrve_folder = @"com.ngt.msgs";
-    [self addImageViews:containerView cachePath:cache swrveFolderPath:swrve_folder centerX:centerX centerY:centerY scale:renderScale];
+
+    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale];
     [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale];
     
     [containerView setCenter:CGPointMake(centerX, centerY)];
@@ -271,11 +267,12 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addImageViews:(UIView*)containerView cachePath:(NSString*)cachePath swrveFolderPath:(NSString*)swrveFolderPath centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
+-(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
 {
+    NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
     for (SwrveImage* backgroundImage in self.images)
     {
-        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cachePath, swrveFolderPath, backgroundImage.file, nil]];
+        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, backgroundImage.file, nil]];
         UIImage* background = [UIImage imageWithData:[NSData dataWithContentsOfURL:bgurl]];
         
         CGRect frame = CGRectMake(0, 0,
