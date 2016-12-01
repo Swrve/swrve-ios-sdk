@@ -27,7 +27,6 @@
     
     if([type isEqualToString:kSwrveContentTypeHTML]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
-        swrveContentHTML.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentHTML];
     } else if([type isEqualToString:kSwrveContentTypeImage]) {
         SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
@@ -49,7 +48,6 @@
         [atomArray addObject:swrveContentSpacer];
     } else if ([type isEqualToString:kSwrveContentStarRating]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
-        swrveContentHTML.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentHTML];
         SwrveContentStarRating *swrveConversationStarRating = [[SwrveContentStarRating alloc] initWithTag:tag andDictionary:dict];
         swrveConversationStarRating.style = [dict objectForKey:kSwrveKeyStyle];

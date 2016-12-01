@@ -28,6 +28,18 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeHTML andDictionary:dict];
+    if(self) {
+        NSDictionary *immutableStyle = [dict objectForKey:kSwrveKeyStyle];
+        NSMutableDictionary *style = [immutableStyle mutableCopy];
+        // v1,v2,v3 won't have font details and a blank font file means using system font
+        if (style && ![style objectForKey:kSwrveKeyFontFile]) {
+            [style setObject:@"" forKey:kSwrveKeyFontFile];
+        }
+        if (style && ![style objectForKey:kSwrveKeyTextSize]) {
+            [style setObject:@"" forKey:kSwrveKeyTextSize];
+        }
+        self.style = style;
+    }
     return self;
 }
 
