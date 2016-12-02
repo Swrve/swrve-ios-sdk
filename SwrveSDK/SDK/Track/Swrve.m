@@ -814,8 +814,48 @@ static bool didSwizzle = false;
     }
 
     [self sendQueuedEvents];
-
+    
+    // legacy from 4.7
+    [self migrateFileProtection];
+    
     return self;
+}
+
+- (BOOL) isProtectedItemAtPath:(NSString *)path {
+    BOOL            result                      = YES;
+    NSDictionary    *attributes                 = nil;
+    NSString        *protectionAttributeValue   = nil;
+    NSFileManager   *fileManager                = nil;
+    NSError         *error                      = nil;
+    
+    fileManager = [[NSFileManager alloc] init];
+    attributes = [fileManager attributesOfItemAtPath:path error:&error];
+    if (attributes != nil){
+        protectionAttributeValue = [attributes valueForKey:NSFileProtectionKey];
+        if ((protectionAttributeValue == nil) || [protectionAttributeValue isEqualToString:NSFileProtectionNone]){
+            result = NO;
+        }
+    } else {
+        // handle the error
+    }
+    return result;
+}
+
+
+- (void) migrateFileProtection {
+    
+    NSDictionary *appSupportattributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[SwrveFileManagement applicationSupportPath] error:NULL];
+    NSLog(@"Application Support Directory Protection: %@", appSupportattributes);
+    
+    if([self isProtectedItemAtPath:[SwrveFileManagement applicationSupportPath]]){
+        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:[SwrveFileManagement applicationSupportPath] error:NULL];
+    }
+    
+    if([self isProtectedItemAtPath:[[self eventFilename] path]]) {
+        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:[[self eventFilename] path] error:NULL];
+    }
+
+
 }
 
 #if !defined(SWRVE_NO_PUSH)
@@ -1304,15 +1344,13 @@ static bool didSwizzle = false;
 
 -(void) sendQueuedEvents {
     
-    if (!self.userID)
-    {
+    if (!self.userID) {
         DebugLog(@"Swrve user_id is null. Not sending data.", nil);
         return;
     }
 
     DebugLog(@"Sending queued events", nil);
-    if ([self eventFileHasData])
-    {
+    if ([self eventFileHasData]) {
         [self sendLogfile];
     }
 
@@ -1329,7 +1367,7 @@ static bool didSwizzle = false;
     NSString* session_token = [self createSessionToken];
     NSString* array_body = [self copyBufferToJson:buffer];
     NSString* json_string = [self createJSON:session_token events:array_body];
-    NSLog(@"[ARRAY_BODY]: %@", json_string);
+    NSLog(@"[BUFFER]: %@", json_string);
     
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -1366,22 +1404,21 @@ static bool didSwizzle = false;
     }];
 }
 
--(void) saveEventsToDisk { //TODO: currently using this
+-(void) saveEventsToDisk {
     DebugLog(@"Writing unsent event data to file", nil);
-
+    
     [self queueUserUpdates];
 
-    NSLog(@" EventBuffer: %@", [self eventBuffer]);
+    DebugLog(@"There are items in EventStream: %@ and EventBuffer has items: %@",(([self eventStream]) ? @"YES" : @"NO"), (([[self eventBuffer] count]) ? @"YES" : @"NO"), nil);
     
     if ([self eventStream] && [[self eventBuffer] count] > 0) {
-        
         NSString* json = [self copyBufferToJson:[self eventBuffer]];
         NSData* buffer = [json dataUsingEncoding:NSUTF8StringEncoding];
         [[self eventStream] write:(const uint8_t *)[buffer bytes] maxLength:[buffer length]];
         long bytes = [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
         
         if(bytes == 0){
-            DebugLog(@"nothing is written to the event file");
+            DebugLog(@"Nothing was written to the event file");
         }else{
             DebugLog(@"written to the event file");
             NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
@@ -1428,7 +1465,6 @@ static bool didSwizzle = false;
     }
 
     [self setEventBuffer:nil];
-    
     [[self eventStream] removeFromRunLoop:[NSRunLoop currentRunLoop]
                       forMode:NSDefaultRunLoopMode];
 
@@ -2142,8 +2178,7 @@ enum HttpStatus {
 - (NSOutputStream*) createLogfile:(int)mode
 {
     // If the file already exists, close it.
-    if ([self eventStream])
-    {
+    if ([self eventStream]) {
         [[self eventStream] close];
     }
 
@@ -2301,8 +2336,7 @@ enum HttpStatus {
     [self setEventStream:NULL];
 
     NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
-    if (contents == nil)
-    {
+    if (contents == nil) {
         NSLog(@"no events found in the file");
         [self resetEventCache];
         return;
@@ -2327,14 +2361,16 @@ enum HttpStatus {
     [self sendHttpPOSTRequest:[self batchURL]
                       jsonData:json_data
              completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+                 
+                 SwrveSendLogfileContext* logfileContext = [[SwrveSendLogfileContext alloc] init];
+                 [logfileContext setSwrveReference:self];
+                 [logfileContext setSwrveInstanceID:self->instanceID];
+                 
         if (error) {
             DebugLog(@"Error opening HTTP stream when sending the contents of the log file", nil);
+            [self logfileSentCallback:HTTP_SERVER_ERROR withData:data andContext:logfileContext];
             return;
         }
-
-        SwrveSendLogfileContext* logfileContext = [[SwrveSendLogfileContext alloc] init];
-        [logfileContext setSwrveReference:self];
-        [logfileContext setSwrveInstanceID:self->instanceID];
 
         enum HttpStatus status = HTTP_SUCCESS;
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {

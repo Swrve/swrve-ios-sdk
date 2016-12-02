@@ -9,8 +9,6 @@
     NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
     if (![[NSFileManager defaultManager] fileExistsAtPath:appSupportDir isDirectory:NULL]) {
         NSError *error = nil;
-//        if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:
-//              nil error:&error]) {
         if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:
               [NSDictionary dictionaryWithObject:NSFileProtectionNone forKey:NSFileProtectionKey] error:&error]) {
             DebugLog(@"Error Creating an Application Support Directory %@", error.localizedDescription);

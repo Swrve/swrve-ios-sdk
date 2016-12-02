@@ -151,7 +151,7 @@
     }
     
     [self handleCompletionBlock];
-
+    
     if ([self useFallback]) {
         [self.locationManager stopUpdatingLocation];
     }
