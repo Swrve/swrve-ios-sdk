@@ -38,7 +38,7 @@ typedef void (^SwrveUserResourcesCallback) (NSDictionary* resources,
  * Swrve getUserResourcesDiff.
  *
  * \param oldResourcesValues    A dictionary containing the old values of changed resources.
- * \param oldResourcesValues    A dictionary containing the new values of changed resources.
+ * \param newResourcesValues    A dictionary containing the new values of changed resources.
  * \param resourcesAsJSON       A string containing the resources diff as returned by the Swrve REST API.
  */
 typedef void (^SwrveUserResourcesDiffCallback) (NSDictionary * oldResourcesValues,
