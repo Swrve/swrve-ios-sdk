@@ -1420,8 +1420,6 @@ static bool didSwizzle = false;
     }
 
     [self setEventBuffer:nil];
-    [[self eventStream] removeFromRunLoop:[NSRunLoop currentRunLoop]
-                      forMode:NSDefaultRunLoopMode];
 
 #if !defined(SWRVE_NO_PUSH)
     [self _deswizzlePushMethods];
