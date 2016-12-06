@@ -14,6 +14,7 @@
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCommonConnectionDelegate.h"
 #import "SwrveFileManagement.h"
+#import "SwrveMigrationsManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -812,45 +813,14 @@ static bool didSwizzle = false;
 #pragma unused(launchOptions)
 #endif //!defined(SWRVE_NO_PUSH)
     }
-
+    
     [self sendQueuedEvents];
     
     // legacy from 4.7
-    [self migrateFileProtection];
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[SwrveFileManagement applicationSupportPath]];
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
     
     return self;
-}
-
-- (BOOL) isProtectedItemAtPath:(NSString *)path {
-    BOOL            result                      = YES;
-    NSDictionary    *attributes                 = nil;
-    NSString        *protectionAttributeValue   = nil;
-    NSFileManager   *fileManager                = nil;
-    NSError         *error                      = nil;
-    
-    fileManager = [[NSFileManager alloc] init];
-    attributes = [fileManager attributesOfItemAtPath:path error:&error];
-    if (attributes != nil){
-        protectionAttributeValue = [attributes valueForKey:NSFileProtectionKey];
-        if ((protectionAttributeValue == nil) || [protectionAttributeValue isEqualToString:NSFileProtectionNone]){
-            result = NO;
-        }
-    } else {
-        DebugLog(@"There was an issue finding the level of file protection for : %@  \nError: %@" , path , error);
-    }
-    return result;
-}
-
-
-- (void) migrateFileProtection {
-
-    if([self isProtectedItemAtPath:[SwrveFileManagement applicationSupportPath]]){
-        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:[SwrveFileManagement applicationSupportPath] error:NULL];
-    }
-    
-    if([self isProtectedItemAtPath:[[self eventFilename] path]]) {
-        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:[[self eventFilename] path] error:NULL];
-    }
 }
 
 #if !defined(SWRVE_NO_PUSH)
@@ -2068,21 +2038,12 @@ static NSString* httpScheme(bool useHttps)
         [[self getLocationCampaignFile] writeToFile:locationCampaignsData];
     }
 }
-
-+ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
-    // Old file defaults to cache directory, should be moved to new location
-    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
-        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:oldPath error:nil];
-    }
-}
-
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
     [SwrveFileManagement applicationSupportPath];
 
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
 
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
@@ -2094,8 +2055,8 @@ static NSString* httpScheme(bool useHttps)
 - (void) initResources
 {
     // Migrate event data from cache to application data (4.5.1+)
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
 
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
