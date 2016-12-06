@@ -1364,6 +1364,7 @@ static bool didSwizzle = false;
     NSString* json_string = [self createJSON:session_token events:array_body];
     
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
+    [self setEventsWereSent:YES];
 
     [self sendHttpPOSTRequest:[self batchURL]
                      jsonData:json_data
@@ -2226,7 +2227,6 @@ enum HttpStatus {
             case HTTP_REDIRECTION:
             case HTTP_SUCCESS:
                 DebugLog(@"Success sending events to Swrve", nil);
-                [self setEventsWereSent:YES];
                 break;
             case HTTP_CLIENT_ERROR:
                 DebugLog(@"HTTP Error - not adding events back into the queue: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -2236,7 +2236,6 @@ enum HttpStatus {
                 [[swrve eventBuffer] addObjectsFromArray:[client_info buffer]];
                 [swrve setEventBufferBytes:[swrve eventBufferBytes] + [client_info bufferLength]];
                 [swrve saveEventsToDisk];
-                [self setEventsWereSent:NO];
                 break;
         }
     }
