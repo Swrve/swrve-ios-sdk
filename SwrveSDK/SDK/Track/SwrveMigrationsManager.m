@@ -7,8 +7,12 @@
 + (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
     // Old file defaults to cache directory, should be moved to new location
     if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
-        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:oldPath error:nil];
+        
+        NSError *error;
+        [[NSFileManager defaultManager] moveItemAtPath:oldPath toPath:newPath error:&error];
+        if(error){
+            DebugLog(@"File migration failed with the following error: %@", error);
+        }
     }
 }
 
