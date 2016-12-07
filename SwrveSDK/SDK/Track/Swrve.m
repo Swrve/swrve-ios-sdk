@@ -817,7 +817,6 @@ static bool didSwizzle = false;
     [self sendQueuedEvents];
     
     // legacy from 4.7
-    [SwrveMigrationsManager migrateFileProtectionAtPath:[SwrveFileManagement applicationSupportPath]];
     [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
     
     return self;

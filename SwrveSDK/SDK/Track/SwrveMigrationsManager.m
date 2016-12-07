@@ -32,11 +32,9 @@
     BOOL            result                      = YES;
     NSDictionary    *attributes                 = nil;
     NSString        *protectionAttributeValue   = nil;
-    NSFileManager   *fileManager                = nil;
     NSError         *error                      = nil;
-    
-    fileManager = [[NSFileManager alloc] init];
-    attributes = [fileManager attributesOfItemAtPath:path error:&error];
+
+    attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
     if (attributes != nil){
         protectionAttributeValue = [attributes valueForKey:NSFileProtectionKey];
         if ((protectionAttributeValue == nil) || [protectionAttributeValue isEqualToString:NSFileProtectionNone]){
