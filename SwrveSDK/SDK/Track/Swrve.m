@@ -742,6 +742,9 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
+        
+        // legacy from 4.7 mirgrate the event file to suitable protection in background
+        [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
 
         [self generateShortDeviceId];
 
@@ -815,9 +818,6 @@ static bool didSwizzle = false;
     }
     
     [self sendQueuedEvents];
-    
-    // legacy from 4.7
-    [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
     
     return self;
 }
