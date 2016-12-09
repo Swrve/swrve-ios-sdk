@@ -745,6 +745,7 @@ static bool didSwizzle = false;
         
         // legacy from 4.7 mirgrate the event file to suitable protection in background
         [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
+        [SwrveMigrationsManager migrateFileProtectionAtPath:swrveConfig.installTimeCacheFile];
 
         [self generateShortDeviceId];
 
@@ -2045,6 +2046,11 @@ static NSString* httpScheme(bool useHttps)
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
+    
+    // legacy 4.7 migration
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[fileURL path]];
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[signatureURL path]];
+    
     SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
     return locationCampaignFile;
 }
