@@ -13,7 +13,6 @@
  * given trigger.
  *
  * \param event Trigger event.
- * \param parameters parameters associated with the event.
  * \returns TRUE if the campaign contains a message for the
  * given trigger.
  */
@@ -24,7 +23,6 @@
  *
  * \param event Trigger event.
  * \param payload Payload for verifying conditions
- * \param parameters parameters associated with the event.
  * \returns TRUE if the campaign contains a message for the
  * given trigger.
  */
@@ -34,7 +32,7 @@
  * the specific rules for the campaign.
  *
  * \param event Trigger event.
- * \param withAssets Set of downloaded assets.
+ * \param assets Set of downloaded assets.
  * \param time Device time.
  * \returns Message setup for the given trigger or nil.
  */
@@ -47,7 +45,7 @@
  *
  * \param event Trigger event.
  * \param payload Payload
- * \param withAssets Set of downloaded assets.
+ * \param assets Set of downloaded assets.
  * \param time Device time.
  * \param campaignReasons Will contain the reason the campaign returned no message.
  * \returns Message setup for the given trigger or nil.
