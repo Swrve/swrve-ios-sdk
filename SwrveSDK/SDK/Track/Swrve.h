@@ -38,7 +38,7 @@ typedef void (^SwrveUserResourcesCallback) (NSDictionary* resources,
  * Swrve getUserResourcesDiff.
  *
  * \param oldResourcesValues    A dictionary containing the old values of changed resources.
- * \param oldResourcesValues    A dictionary containing the new values of changed resources.
+ * \param newResourcesValues    A dictionary containing the new values of changed resources.
  * \param resourcesAsJSON       A string containing the resources diff as returned by the Swrve REST API.
  */
 typedef void (^SwrveUserResourcesDiffCallback) (NSDictionary * oldResourcesValues,
@@ -232,7 +232,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /**
  * \deprecated
  * Store signature to verify content of eventCacheFile. */
-@property (nonatomic, retain) NSString * eventCacheSignatureFile;
+@property (nonatomic, retain) NSString * eventCacheSignatureFile DEPRECATED_ATTRIBUTE;
 
 
 /*! The location campaign cache stores data that has not yet been sent to Swrve.
@@ -313,7 +313,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \deprecated
  * No longer used.
  */
-@property (nonatomic) int maxConcurrentDownloads;
+@property (nonatomic) int maxConcurrentDownloads DEPRECATED_ATTRIBUTE;
 
 /*! Internal Only.
  * Used to get a base64 encoded string of the receipt associated
@@ -363,7 +363,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \deprecated
  * No longer used.
  */
-@property (nonatomic, readonly) int maxConcurrentDownloads;
+@property (nonatomic, readonly) int maxConcurrentDownloads DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;

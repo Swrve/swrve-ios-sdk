@@ -17,7 +17,6 @@ const static int CONVERSATION_VERSION = 3;
 /*! Create an in-app conversation from the JSON content.
  *
  * \param json In-app conversation JSON content.
- * \param campaign Parent conversationcampaign.
  * \param controller Message controller.
  * \returns Parsed conversation.
  */
