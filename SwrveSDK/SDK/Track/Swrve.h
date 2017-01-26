@@ -17,7 +17,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.7"
+#define SWRVE_SDK_VERSION "4.8"
 
 /*! Swrve stack names. */
 enum SwrveStack {
@@ -38,7 +38,7 @@ typedef void (^SwrveUserResourcesCallback) (NSDictionary* resources,
  * Swrve getUserResourcesDiff.
  *
  * \param oldResourcesValues    A dictionary containing the old values of changed resources.
- * \param oldResourcesValues    A dictionary containing the new values of changed resources.
+ * \param newResourcesValues    A dictionary containing the new values of changed resources.
  * \param resourcesAsJSON       A string containing the resources diff as returned by the Swrve REST API.
  */
 typedef void (^SwrveUserResourcesDiffCallback) (NSDictionary * oldResourcesValues,

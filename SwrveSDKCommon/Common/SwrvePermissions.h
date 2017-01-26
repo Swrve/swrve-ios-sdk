@@ -35,10 +35,8 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
 
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
 + (ISHPermissionState)checkCamera;
 + (void)requestCamera:(id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 + (ISHPermissionState)checkContacts;

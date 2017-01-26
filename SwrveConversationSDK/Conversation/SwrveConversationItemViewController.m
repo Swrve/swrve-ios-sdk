@@ -1,5 +1,4 @@
 #import "SwrveBaseConversation.h"
-#import "SwrveMessageEventHandler.h"
 #import "SwrveConversationAtom.h"
 #import "SwrveConversationButton.h"
 #import "SwrveConversationEvents.h"
@@ -7,11 +6,8 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentImage.h"
-#import "SwrveSetup.h"
-#import "SwrveConversationEvents.h"
 #import "SwrveCommon.h"
 #import "SwrveConversationStyler.h"
-#import "SwrveConversationUIButton.h"
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -407,9 +403,6 @@
         UIButton *buttonUIView = (UIButton*)button.view;
         buttonUIView.frame = CGRectMake(xOffset, 10, buttonWidth, 45.0);
         buttonUIView.tag = (NSInteger)i;
-        buttonUIView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        [buttonUIView.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-        [buttonUIView.titleLabel setNumberOfLines:1];
         [buttonUIView addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
         [SwrveConversationStyler styleButton:(SwrveConversationUIButton *)buttonUIView withStyle:button.style];
         [buttonsView addSubview:buttonUIView];

@@ -5,5 +5,5 @@ target 'SwrveDemoFramework' do
     pod 'SwrveSDK', :path => '../'
 
     #comment out above and uncomment below to switch to remote CocoaPods
-    #pod 'SwrveSDK', '~> 4.7.0'
+    #pod 'SwrveSDK', '~> 4.8.0'
 end

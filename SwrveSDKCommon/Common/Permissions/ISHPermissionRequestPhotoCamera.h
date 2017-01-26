@@ -8,9 +8,6 @@
 
 #import "ISHPermissionRequest.h"
 
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
-
 @interface ISHPermissionRequestPhotoCamera : ISHPermissionRequest
 
 @end
-#endif

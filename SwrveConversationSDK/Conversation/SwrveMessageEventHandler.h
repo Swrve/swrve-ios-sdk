@@ -6,7 +6,7 @@
 
 /*! Notify that a message was shown to the user.
  *
- * \param message Message that was shown to the user.
+ * \param conversation Conversation that was shown to the user.
  */
 - (void)conversationWasShownToUser:(SwrveBaseConversation*)conversation;
 

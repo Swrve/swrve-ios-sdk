@@ -21,7 +21,7 @@
  *
  * \param json In-app message format JSON content.
  * \param controller Message controller.
- * \param campaign Parent in-app message.
+ * \param message Parent in-app message.
  * \returns Parsed in-app message format.
  */
 -(id)initFromJson:(NSDictionary*)json forController:(SwrveMessageController*)controller forMessage:(SwrveMessage*)message;
@@ -36,13 +36,13 @@
 -(UIView*)createViewToFit:(UIView*)view
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)size
-                  rotated:(BOOL) rotated;
+                  rotated:(BOOL)rotated;
 
 /*! Create a view to display this format.
  *
  * \param view Parent view.
  * \param delegate View delegate.
- * \param size Expected size of the view.
+ * \param sizeParent Expected size of the view.
  * \returns View representing this in-app message format.
  */
 -(UIView*)createViewToFit:(UIView*)view
@@ -50,4 +50,3 @@
                  withSize:(CGSize)sizeParent;
 
 @end
-

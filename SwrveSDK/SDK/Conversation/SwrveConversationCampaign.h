@@ -9,6 +9,9 @@
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
 
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)_controller;
+
+- (void)addAssetsToQueue:(NSMutableSet *)assetsQueue;
 
 /*! Check if the campaign has any conversation setup for the
  * given trigger and parameters associated

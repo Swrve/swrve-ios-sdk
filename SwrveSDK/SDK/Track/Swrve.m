@@ -12,8 +12,9 @@
 #import "SwrveCampaign.h"
 #import "SwrvePermissions.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrveCommonConnectionDelegate.h"
 #import "SwrveFileManagement.h"
+#import "SwrveRESTClient.h"
+#import "SwrveMigrationsManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -66,14 +67,6 @@ enum
     SWRVE_APPEND_TO_FILE,
     SWRVE_TRUNCATE_IF_TOO_LARGE,
 };
-
-@interface SwrveConnectionDelegate : SwrveCommonConnectionDelegate
-
-@property (atomic, weak) Swrve* swrve;
-
-- (id)init:(Swrve*)swrve completionHandler:(ConnectionCompletionHandler)handler;
-
-@end
 
 @interface SwrveInstanceIDRecorder : NSObject
 {
@@ -154,7 +147,6 @@ enum
 - (UInt64) secondsSinceEpoch;
 - (NSString*) createStringWithMD5:(NSString*)source;
 - (void) initBuffer;
-- (void) addHttpPerformanceMetrics:(NSString*) metrics;
 - (void) checkForCampaignAndResourcesUpdates:(NSTimer*)timer;
 
 // Used to store the merged user updates
@@ -199,6 +191,8 @@ enum
 @property (atomic) NSURL* campaignsAndResourcesURL;
 
 @property (atomic) int locationSegmentVersion;
+
+@property(atomic) SwrveRESTClient *restClient;
 
 @end
 
@@ -559,6 +553,7 @@ static bool didSwizzle = false;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
 @synthesize locationSegmentVersion;
+@synthesize restClient;
 
 + (void) resetSwrveSharedInstance
 {
@@ -729,6 +724,8 @@ static bool didSwizzle = false;
         install_time = [self getInstallTime:swrveConfig.installTimeCacheFile withSecondaryFile:swrveConfig.installTimeCacheSecondaryFile];
         lastSessionDate = [self getNow];
 
+        [self initSwrveRestClient:config.httpTimeoutSeconds];
+
         NSURL* base_events_url = [NSURL URLWithString:swrveConfig.eventsServer];
         [self setBatchURL:[NSURL URLWithString:@"1/batch" relativeToURL:base_events_url]];
 
@@ -741,6 +738,10 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
+        
+        // legacy from 4.7 mirgrate the event file to suitable protection in background
+        [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
+        [SwrveMigrationsManager migrateFileProtectionAtPath:swrveConfig.installTimeCacheFile];
 
         [self generateShortDeviceId];
 
@@ -812,10 +813,14 @@ static bool didSwizzle = false;
 #pragma unused(launchOptions)
 #endif //!defined(SWRVE_NO_PUSH)
     }
-
+    
     [self sendQueuedEvents];
-
+    
     return self;
+}
+
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut {
+    [self setRestClient:[[SwrveRESTClient alloc] initWithTimeoutInterval:timeOut]];
 }
 
 #if !defined(SWRVE_NO_PUSH)
@@ -1166,7 +1171,7 @@ static bool didSwizzle = false;
 
     NSURL* url = [NSURL URLWithString:queryString relativeToURL:[self campaignsAndResourcesURL]];
     DebugLog(@"Refreshing campaigns from URL %@", url);
-    [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+    [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         if (!error) {
             NSInteger statusCode = 200;
             enum HttpStatus status = HTTP_SUCCESS;
@@ -1302,17 +1307,15 @@ static bool didSwizzle = false;
     [self sendQueuedEvents];
 }
 
--(void) sendQueuedEvents
-{
-    if (!self.userID)
-    {
+-(void) sendQueuedEvents {
+    
+    if (!self.userID) {
         DebugLog(@"Swrve user_id is null. Not sending data.", nil);
         return;
     }
 
     DebugLog(@"Sending queued events", nil);
-    if ([self eventFileHasData])
-    {
+    if ([self eventFileHasData]) {
         [self sendLogfile];
     }
 
@@ -1329,21 +1332,13 @@ static bool didSwizzle = false;
     NSString* session_token = [self createSessionToken];
     NSString* array_body = [self copyBufferToJson:buffer];
     NSString* json_string = [self createJSON:session_token events:array_body];
-
+    
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
-
     [self setEventsWereSent:YES];
 
-    [self sendHttpPOSTRequest:[self batchURL]
+    [restClient sendHttpPOSTRequest:[self batchURL]
                      jsonData:json_data
             completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
-
-                if (error){
-                    DebugLog(@"Error opening HTTP stream: %@ %@", [error localizedDescription], [error localizedFailureReason]);
-                    [self setEventBufferBytes:[self eventBufferBytes] + bytes];
-                    [[self eventBuffer] addObjectsFromArray:buffer];
-                    return;
-                }
 
                 // Schedule the stream on the current run loop, then open the stream (which
                 // automatically sends the request).  Wait for at least one byte of data to
@@ -1355,7 +1350,14 @@ static bool didSwizzle = false;
                 [sendContext setSwrveInstanceID:self->instanceID];
                 [sendContext setBuffer:buffer];
                 [sendContext setBufferLength:bytes];
-
+                
+                if (error){
+                    DebugLog(@"Error opening HTTP stream: %@ %@", [error localizedDescription], [error localizedFailureReason]);
+                    [self eventsSentCallback:HTTP_SERVER_ERROR withData:data andContext:sendContext]; //503 network error
+                    return;
+                }
+                
+                
                 enum HttpStatus status = HTTP_SUCCESS;
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
@@ -1365,23 +1367,24 @@ static bool didSwizzle = false;
     }];
 }
 
--(void) saveEventsToDisk
-{
+-(void) saveEventsToDisk {
     DebugLog(@"Writing unsent event data to file", nil);
-
+    
     [self queueUserUpdates];
-
-    if ([self eventStream] && [[self eventBuffer] count] > 0)
-    {
+    
+    if ([self eventStream] && [[self eventBuffer] count] > 0) {
         NSString* json = [self copyBufferToJson:[self eventBuffer]];
         NSData* buffer = [json dataUsingEncoding:NSUTF8StringEncoding];
         [[self eventStream] write:(const uint8_t *)[buffer bytes] maxLength:[buffer length]];
-        [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
-        [self setEventFileHasData:YES];
+        long bytes = [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
+        if(bytes == 0){
+            DebugLog(@"Nothing was written to the event file");
+        }else{
+            DebugLog(@"Written to the event file");
+            [self setEventFileHasData:YES];
+            [self initBuffer];
+        }
     }
-
-    // Always empty the buffer
-    [self initBuffer];
 }
 
 -(void) setEventQueuedCallback:(SwrveEventQueuedCallback)callbackBlock
@@ -1391,7 +1394,7 @@ static bool didSwizzle = false;
 
 -(void) shutdown
 {
-    NSLog(@"shutting down swrveInstance..");
+    DebugLog(@"shutting down swrveInstance..", nil);
     if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == NO)
     {
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
@@ -1739,8 +1742,8 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
--(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback
-{
+-(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback {
+    
     if ([self eventBuffer]) {
         // Add common attributes (if not already present)
         if (![eventData objectForKey:@"type"]) {
@@ -1758,8 +1761,8 @@ static NSString* httpScheme(bool useHttps)
             [self setEventBufferBytes:[self eventBufferBytes] + (int)[json_string length]];
             [[self eventBuffer] addObject:json_string];
 
-            if (triggerCallback && event_queued_callback != NULL )
-            {
+            if (triggerCallback && event_queued_callback != NULL ) {
+                
                 event_queued_callback(eventData, json_string);
             }
         }
@@ -2033,25 +2036,21 @@ static NSString* httpScheme(bool useHttps)
         [[self getLocationCampaignFile] writeToFile:locationCampaignsData];
     }
 }
-
-+ (void) migrateOldCacheFile:(NSString*)oldPath withNewPath:(NSString*)newPath {
-    // Old file defaults to cache directory, should be moved to new location
-    if ([[NSFileManager defaultManager] isReadableFileAtPath:oldPath]) {
-        [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:oldPath error:nil];
-    }
-}
-
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile {
     // Migrate event data from cache to application data (4.5.1+)
     [SwrveFileManagement applicationSupportPath];
 
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
-    [Swrve migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.locationCampaignCacheSecondaryFile withNewPath:self.config.locationCampaignCacheFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.locationCampaignCacheSignatureSecondaryFile withNewPath:self.config.locationCampaignCacheSignatureFile];
 
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
+    
+    // legacy 4.7 migration
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[fileURL path]];
+    [SwrveMigrationsManager migrateFileProtectionAtPath:[signatureURL path]];
+    
     SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
     return locationCampaignFile;
 }
@@ -2059,8 +2058,8 @@ static NSString* httpScheme(bool useHttps)
 - (void) initResources
 {
     // Migrate event data from cache to application data (4.5.1+)
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
-    [Swrve migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.userResourcesCacheSecondaryFile withNewPath:self.config.userResourcesCacheFile];
+    [SwrveMigrationsManager migrateOldCacheFile:self.config.userResourcesCacheSignatureSecondaryFile withNewPath:self.config.userResourcesCacheSignatureFile];
 
     // Create signature protected cache file
     NSURL* fileURL = [NSURL fileURLWithPath:self.config.userResourcesCacheFile];
@@ -2128,8 +2127,7 @@ enum HttpStatus {
 - (NSOutputStream*) createLogfile:(int)mode
 {
     // If the file already exists, close it.
-    if ([self eventStream])
-    {
+    if ([self eventStream]) {
         [[self eventStream] close];
     }
 
@@ -2201,6 +2199,7 @@ enum HttpStatus {
                 DebugLog(@"Error sending event data to Swrve (%@) Adding data back onto unsent message buffer", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
                 [[swrve eventBuffer] addObjectsFromArray:[client_info buffer]];
                 [swrve setEventBufferBytes:[swrve eventBufferBytes] + [client_info bufferLength]];
+                [swrve saveEventsToDisk];
                 break;
         }
     }
@@ -2273,12 +2272,10 @@ enum HttpStatus {
     }
 }
 
-- (void) sendLogfile
-{
+- (void) sendLogfile {
+    
     if (![self eventStream]) return;
     if (![self eventFileHasData]) return;
-
-    DebugLog(@"Sending log file %@", [self eventFilename]);
 
     // Close the write stream and set it to null
     // No more appending will happen while it is null
@@ -2286,8 +2283,7 @@ enum HttpStatus {
     [self setEventStream:NULL];
 
     NSMutableData* contents = [[NSMutableData alloc] initWithContentsOfURL:[self eventFilename]];
-    if (contents == nil)
-    {
+    if (contents == nil) {
         [self resetEventCache];
         return;
     }
@@ -2304,20 +2300,21 @@ enum HttpStatus {
     NSString* file_contents = [[NSString alloc] initWithData:contents encoding:NSUTF8StringEncoding];
     NSString* session_token = [self createSessionToken];
     NSString* json_string = [self createJSON:session_token events:file_contents];
-
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
 
-    [self sendHttpPOSTRequest:[self batchURL]
+    [restClient sendHttpPOSTRequest:[self batchURL]
                       jsonData:json_data
              completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+                 
+                 SwrveSendLogfileContext* logfileContext = [[SwrveSendLogfileContext alloc] init];
+                 [logfileContext setSwrveReference:self];
+                 [logfileContext setSwrveInstanceID:self->instanceID];
+                 
         if (error) {
-            DebugLog(@"Error opening HTTP stream", nil);
+            DebugLog(@"Error opening HTTP stream when sending the contents of the log file", nil);
+            [self logfileSentCallback:HTTP_SERVER_ERROR withData:data andContext:logfileContext]; //HTTP 503 Error, service not available
             return;
         }
-
-        SwrveSendLogfileContext* logfileContext = [[SwrveSendLogfileContext alloc] init];
-        [logfileContext setSwrveReference:self];
-        [logfileContext setSwrveInstanceID:self->instanceID];
 
         enum HttpStatus status = HTTP_SUCCESS;
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -2327,8 +2324,7 @@ enum HttpStatus {
     }];
 }
 
-- (void) resetEventCache
-{
+- (void) resetEventCache {
     [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_FILE]];
 }
 
@@ -2347,90 +2343,6 @@ enum HttpStatus {
         DebugLog(@"Error with json.\nError:%@", err);
     }
     return obj != nil;
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url queryString:(NSString*)query
-{
-    [self sendHttpGETRequest:url queryString:query completionHandler:nil];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url
-{
-    [self sendHttpGETRequest:url completionHandler:nil];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)baseUrl queryString:(NSString*)query completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSURL* url = [NSURL URLWithString:query relativeToURL:baseUrl];
-    [self sendHttpGETRequest:url completionHandler:handler];
-}
-
-- (void) sendHttpGETRequest:(NSURL*)url completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:self.config.httpTimeoutSeconds];
-    if (handler == nil) {
-        [request setHTTPMethod:@"HEAD"];
-    } else {
-        [request setHTTPMethod:@"GET"];
-    }
-    [self sendHttpRequest:request completionHandler:handler];
-}
-
-- (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json
-{
-    [self sendHttpPOSTRequest:url jsonData:json completionHandler:nil];
-}
-
-- (void) sendHttpPOSTRequest:(NSURL*)url jsonData:(NSData*)json completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:self.config.httpTimeoutSeconds];
-    [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:json];
-    [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[json length]] forHTTPHeaderField:@"Content-Length"];
-
-    [self sendHttpRequest:request completionHandler:handler];
-}
-
-- (void) sendHttpRequest:(NSMutableURLRequest*)request completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
-{
-    // Add http request performance metrics for any previous requests into the header of this request (see JIRA SWRVE-5067 for more details)
-    NSArray* allMetricsToSend;
-
-    @synchronized(self.httpPerformanceMetrics) {
-        allMetricsToSend = [self.httpPerformanceMetrics copy];
-        [self.httpPerformanceMetrics removeAllObjects];
-    }
-
-    if (allMetricsToSend != nil && allMetricsToSend.count > 0) {
-        NSString* fullHeader = [allMetricsToSend componentsJoinedByString:@";"];
-        [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                handler(response, data, error);
-            });
-        }];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [task resume];
-        });
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        SwrveConnectionDelegate* connectionDelegate = [[SwrveConnectionDelegate alloc] init:self completionHandler:handler];
-        [NSURLConnection connectionWithRequest:request delegate:connectionDelegate];
-#pragma clang diagnostic pop
-    }
-}
-
-- (void) addHttpPerformanceMetrics:(NSString*) metrics
-{
-    @synchronized([self httpPerformanceMetrics]) {
-        [[self httpPerformanceMetrics] addObject:metrics];
-    }
 }
 
 - (void) initBuffer
@@ -2544,7 +2456,7 @@ enum HttpStatus {
                              self.userID, self.apiKey, self.config.appVersion, self->install_time];
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"?%@", queryString] relativeToURL:resourcesDiffURL];
 
-    [self sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
+    [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
         NSData* resourcesDiffCacheContent = [[self resourcesDiffFile] readFromFile];
 
         if (!error) {
@@ -2626,30 +2538,6 @@ enum HttpStatus {
         } else {
             self.shortDeviceID = shortDeviceIdDisk;
         }
-    }
-}
-
-@end
-
-// This connection delegate tracks performance metrics for each request (see JIRA SWRVE-5067 for more details)
-@implementation SwrveConnectionDelegate
-
-@synthesize swrve;
-
-- (id)init:(Swrve*)_swrve completionHandler:(ConnectionCompletionHandler)_handler
-{
-    self = [super init:_handler];
-    if (self) {
-        [self setSwrve:_swrve];
-    }
-    return self;
-}
-
-- (void)addHttpPerformanceMetrics:(NSString *)metricsString
-{
-    Swrve* swrveStrong = self.swrve;
-    if (swrveStrong) {
-        [swrveStrong addHttpPerformanceMetrics:metricsString];
     }
 }
 

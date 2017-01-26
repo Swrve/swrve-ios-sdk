@@ -1,10 +1,14 @@
 #import "Swrve.h"
-#import "SwrveBaseCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveConversationPane.h"
-#import "SwrveConversationAtom.h"
 #import "SwrveContentItem.h"
+#import "SwrveInputMultiValue.h"
+#import "SwrveConversationButton.h"
+#import "SwrveAssetsManager.h"
+#import "SwrveContentImage.h"
+#import "SwrveContentHTML.h"
+#import "SwrveContentStarRating.h"
 
 @interface SwrveConversationCampaign()
 
@@ -16,27 +20,56 @@
 
 @synthesize controller, conversation, filters;
 
--(id)initAtTime:(NSDate*)time fromJSON:(NSDictionary *)dict withAssetsQueue:(NSMutableSet*)assetsQueue forController:(SwrveMessageController*)_controller
-{
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)_controller {
     self.controller = _controller;
-    id instance = [super initAtTime:time fromJSON:dict withAssetsQueue:assetsQueue forController:_controller];
-    NSDictionary* conversationJson = [dict objectForKey:@"conversation"];
-    self.conversation = [SwrveConversation fromJSON:conversationJson forCampaign:self forController:_controller];
-    self.filters      = [dict objectForKey:@"filters"];
+    id instance = [super initAtTime:time fromDictionary:json];
+    NSDictionary *conversationJson = [json objectForKey:@"conversation"];
+    self.conversation = [[SwrveConversation alloc] initWithJSON:conversationJson forCampaign:self forController:controller];
+
+    self.filters = [json objectForKey:@"filters"];
     [self addAssetsToQueue:assetsQueue];
-    
+
     return instance;
 }
 
--(void)addAssetsToQueue:(NSMutableSet*)assetsQueue
-{
-    // Queue conversation images for download
-    for(SwrveConversationPane* page in self.conversation.pages) {
-        for(SwrveContentItem* contentItem in page.content) {
-            if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
-                [assetsQueue addObject:contentItem.value];
+- (void)addAssetsToQueue:(NSMutableSet *)assetsQueue {
+    for (SwrveConversationPane *page in self.conversation.pages) {
+
+        // Add image and font assets to queue from content
+        for (SwrveContentItem *contentItem in page.content) {
+            if ([contentItem isKindOfClass:[SwrveContentImage class]]) {
+                [self addImageToQ:assetsQueue withAsset:contentItem];
+            } else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
+                [self addFontToQ:assetsQueue withAsset:contentItem.style];
+            } else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
+                SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
+                [self addFontToQ:assetsQueue withAsset:inputMultiValue.style];
+
+                for (NSDictionary *value in inputMultiValue.values) {
+                    NSDictionary *style = [value objectForKey:kSwrveKeyStyle];
+                    [self addFontToQ:assetsQueue withAsset:style];
+                }
             }
         }
+
+        // Add font assets to queue from button control
+        for (SwrveConversationButton *button in page.controls) {
+            [self addFontToQ:assetsQueue withAsset:button.style];
+        }
+    }
+}
+
+- (void)addImageToQ:(NSMutableSet *)assetQueue withAsset:(SwrveContentItem *)contentItem {
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:contentItem.value andDigest:contentItem.value andIsImage:YES];
+    [assetQueue addObject:assetQueueItem];
+}
+
+- (void)addFontToQ:(NSMutableSet *)assetQueue withAsset:(NSDictionary *)style {
+    if (style && [style objectForKey:kSwrveKeyFontFile] && [style objectForKey:kSwrveKeyFontDigest] && ![SwrveBaseConversation isSystemFont:style]) {
+        NSString *name = [style objectForKey:kSwrveKeyFontFile];
+        NSString *digest = [style objectForKey:kSwrveKeyFontDigest];
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:name andDigest:digest andIsImage:NO];
+        [assetQueue addObject:assetQueueItem];
     }
 }
 

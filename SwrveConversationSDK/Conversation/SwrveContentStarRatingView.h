@@ -12,5 +12,6 @@
 
 - (id) initWithDefaults;
 - (void) updateWithStarColor:(UIColor *) starColor withBackgroundColor:(UIColor *)backgroundColor;
+- (void) setAvailableWidth:(CGFloat) width;
 
 @end
