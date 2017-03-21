@@ -22,12 +22,6 @@ const static int CONVERSATION_VERSION = 4;
  */
 +(SwrveBaseConversation*)fromJSON:(NSDictionary*)json forController:(id<SwrveMessageEventHandler>)controller;
 
-/*! Load the storyboard resource.
- *
- * \returns UIStoryboard if loaded successfully.
- */
-+(UIStoryboard*)loadStoryboard;
-
 /*! Check if assets are downloaded.
  *
  * \returns TRUE if all assets have been downloaded.

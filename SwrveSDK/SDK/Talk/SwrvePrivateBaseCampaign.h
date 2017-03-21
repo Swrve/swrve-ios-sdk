@@ -1,3 +1,5 @@
+#import "SwrveBaseCampaign.h"
+
 @class SwrveMessageController;
 
 /*! PRIVATE: Base campaign methods. */

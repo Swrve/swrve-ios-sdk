@@ -51,7 +51,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSArray*              campaigns; // List of campaigns available to the user.
 @property (nonatomic, retain) NSMutableDictionary*  campaignsState; // Serializable state of the campaigns.
-@property (nonatomic, retain) NSLock*               campaignsStateLock;
 @property (nonatomic, retain) NSString*           	server;
 @property (nonatomic, retain) NSString*             campaignCache;
 @property (nonatomic, retain) NSString*             campaignCacheSignature;
@@ -134,7 +133,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
 @synthesize prefersIAMStatusBarHidden;
-@synthesize campaignsStateLock;
 
 + (void)initialize {
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
@@ -153,6 +151,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
 {
     self = [super init];
 
+    if (sdk == nil) {
+        return self;
+    }
     NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
     self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
 
@@ -210,7 +211,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
 #endif //!defined(SWRVE_NO_PUSH)
 
     self.campaignsState = [[NSMutableDictionary alloc] init];
-    self.campaignsStateLock = [[NSLock alloc] init];
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
 
@@ -281,27 +281,28 @@ const static int DEFAULT_MIN_DELAY           = 55;
     if (error) {
         DebugLog(@"Could not load campaign states from disk.\nError: %@\njson: %@", error, data);
     } else {
-        [self.campaignsStateLock lock];
-        for (NSDictionary* dicState in loadedStates)
-        {
-            SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
-            NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
-            [states setValue:state forKey:stateKey];
+        @synchronized (states) {
+            for (NSDictionary* dicState in loadedStates)
+            {
+                SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
+                NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
+                [states setValue:state forKey:stateKey];
+            }
         }
-        [self.campaignsStateLock unlock];
     }
 }
 
 - (void)saveCampaignsState
 {
-    [self.campaignsStateLock lock];
-    NSMutableArray* newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
-    [self.campaignsState enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop)
-    {
-#pragma unused(key, stop)
-        [newStates addObject:[value asDictionary]];
-    }];
-    [self.campaignsStateLock unlock];
+    NSMutableArray* newStates;
+    @synchronized (self.campaignsState) {
+        newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
+        [self.campaignsState enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop)
+        {
+    #pragma unused(key, stop)
+            [newStates addObject:[value asDictionary]];
+        }];
+    }
 
     NSError*  error = NULL;
     NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
@@ -520,17 +521,17 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
 
         if (campaign != nil) {
-            [self.campaignsStateLock lock];
-            NSString* campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long)campaign.ID];
-            DebugLog(@"Got campaign with id %@", campaignIDStr);
-            if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
-                SwrveCampaignState* campaignState = [self.campaignsState objectForKey:campaignIDStr];
-                if(campaignState) {
-                    [campaign setState:campaignState];
+            @synchronized (self.campaignsState) {
+                NSString* campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long)campaign.ID];
+                DebugLog(@"Got campaign with id %@", campaignIDStr);
+                if(!(!wasPreviouslyQAUser && self.qaUser != nil && self.qaUser.resetDevice)) {
+                    SwrveCampaignState* campaignState = [self.campaignsState objectForKey:campaignIDStr];
+                    if(campaignState) {
+                        [campaign setState:campaignState];
+                    }
                 }
+                [self.campaignsState setValue:campaign.state forKey:campaignIDStr];
             }
-            [self.campaignsState setValue:campaign.state forKey:campaignIDStr];
-            [self.campaignsStateLock unlock];
             [result addObject:campaign];
 
             if(self.qaUser) {
@@ -678,6 +679,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (SwrveMessage*)findMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload
 {
+    if (analyticsSDK == nil) {
+        return nil;
+    }
+    
     NSDate* now = [self.analyticsSDK getNow];
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
@@ -704,7 +709,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveCampaign class]]) {
                 SwrveCampaign* campaignIt = (SwrveCampaign*)baseCampaignIt;
-                NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
+                NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
                 SwrveMessage* nextMessage = [campaignIt getMessageForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
                     BOOL canBeChosen = YES;
@@ -776,8 +781,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [self.analyticsSDK eventInternal:returningEventName payload:returningPayload triggerCallback:true];
     }
     return result;
-
-
 }
 
 -(SwrveMessage*)getMessageForEvent:(NSString *)event
@@ -788,6 +791,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (SwrveConversation*)getConversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload {
 
+    if (analyticsSDK == nil) {
+        return nil;
+    }
+    
     NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
@@ -813,7 +820,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         {
             if ([baseCampaignIt isKindOfClass:[SwrveConversationCampaign class]]) {
                 SwrveConversationCampaign* campaignIt = (SwrveConversationCampaign*)baseCampaignIt;
-                NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
+                NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
                 SwrveConversation* nextConversation = [campaignIt getConversationForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextConversation != nil) {
                     [availableConversations addObject:nextConversation];
@@ -863,7 +870,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     if (result == nil) {
-        DebugLog(@"Not showing message: no candidate messages for %@", eventName);
+        DebugLog(@"Not showing conversation: no candidate conversations for %@", eventName);
     }
     return result;
 }
@@ -1037,51 +1044,27 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
--(void) showConversation:(SwrveConversation*)conversation
-{
-    @synchronized(self) {
-        if ( conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
-            // Create a view to show the conversation
-
-            @try {
-                UIStoryboard* storyBoard = [SwrveBaseConversation loadStoryboard];
-                SwrveConversationItemViewController* scivc = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-                self.swrveConversationItemViewController = scivc;
-            }
-            @catch (NSException *exception) {
-                DebugLog(@"Unable to load Conversation Item View Controller. %@", exception);
-                return;
-            }
-
+- (void)showConversation:(SwrveConversation *)conversation {
+    @synchronized (self) {
+        if (conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil) {
             self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            [self.swrveConversationItemViewController setConversation:conversation andMessageController:self];
-
-            // Create a navigation controller in which to push the conversation, and choose iPad presentation style
-            SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:self.swrveConversationItemViewController];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wselector"
-            // Attach cancel button to the conversation navigation options
-            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.swrveConversationItemViewController action:@selector(cancelButtonTapped:)];
-#pragma clang diagnostic pop
-            self.swrveConversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
-                self.conversationWindow.rootViewController = rootController;
-                [self.conversationWindow makeKeyAndVisible];
-                [self.conversationWindow.rootViewController.view endEditing:YES];
-            });
+            self.swrveConversationItemViewController = [SwrveConversationItemViewController initFromStoryboard];
+            bool success = [SwrveConversationItemViewController showConversation:conversation
+                                  withItemController:self.swrveConversationItemViewController
+                                    withEventHandler:(id<SwrveMessageEventHandler>)self
+                                            inWindow:self.conversationWindow];
+            if(!success) {
+                self.conversationWindow = nil;
+            }
         }
     }
 }
-
 
 - (void) cleanupConversationUI {
     if(self.swrveConversationItemViewController != nil){
         [self.swrveConversationItemViewController dismiss];
     }
 }
-
 
 - (void) conversationClosed {
     self.conversationWindow.hidden = YES;
@@ -1210,6 +1193,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(BOOL) eventRaised:(NSDictionary*)event;
 {
+    if (analyticsSDK == nil) {
+        return NO;
+    }
+    
     // Get event name
     NSString* eventName = [self getEventName:event];
     NSDictionary *payload = [event objectForKey:@"payload"];
@@ -1372,10 +1359,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
 {
-    NSDate* now = [self.analyticsSDK getNow];
     NSMutableArray* result = [[NSMutableArray alloc] init];
+    if (analyticsSDK == nil) {
+        return result;
+    }
+    
+    NSDate* now = [self.analyticsSDK getNow];
     for(SwrveBaseCampaign* campaign in self.campaigns) {
-        NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
+        NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
         if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:assetsOnDisk]) {
             [result addObject:campaign];
         }
@@ -1385,7 +1376,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(BOOL)showMessageCenterCampaign:(SwrveBaseCampaign *)campaign
 {
-    NSMutableSet* assetsOnDisk = [assetsManager assetsOnDisk];
+    if (analyticsSDK == nil) {
+        return NO;
+    }
+    
+    NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
     if (!campaign.messageCenter || ![campaign assetsReady:assetsOnDisk]) {
         return NO;
     }
@@ -1439,6 +1434,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(void)removeMessageCenterCampaign:(SwrveBaseCampaign*)campaign
 {
+    if (analyticsSDK == nil) {
+        return;
+    }
     if (campaign.messageCenter) {
         [campaign.state setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
         [self saveCampaignsState];

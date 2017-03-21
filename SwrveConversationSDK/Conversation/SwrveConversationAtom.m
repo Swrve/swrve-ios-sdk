@@ -82,8 +82,7 @@
 }
 
 
-// iOS8+
--(void)viewWillTransitionToSize:(CGSize)size {
+-(void)parentViewChangedSize:(CGSize)size {
 #pragma unused(size)
     // By default, does nothing. Specialize in subclass
 }

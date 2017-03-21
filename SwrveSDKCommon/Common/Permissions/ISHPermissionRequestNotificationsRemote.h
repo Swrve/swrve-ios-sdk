@@ -13,5 +13,6 @@
 @property (nonatomic) UIUserNotificationSettings *notificationSettings;
 
 -(void)requestUserPermissionWithoutCompleteBlock;
++(void)registerForRemoteNotifications:(UIUserNotificationSettings*)notificationSettings;
 
 @end

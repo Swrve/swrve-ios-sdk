@@ -27,4 +27,9 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
 
+-(void)parentViewChangedSize:(CGSize)size {
+    // Mantain full width
+    _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
+}
+
 @end

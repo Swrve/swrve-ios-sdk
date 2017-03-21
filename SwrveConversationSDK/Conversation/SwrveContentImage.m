@@ -48,8 +48,7 @@
     _view.frame = [self newFrameForOrientationChange];
 }
 
-// iOS8+
--(void)viewWillTransitionToSize:(CGSize)size
+-(void)parentViewChangedSize:(CGSize)size
 {
     // Mantain full width
     CGSize imageSize = image.size;

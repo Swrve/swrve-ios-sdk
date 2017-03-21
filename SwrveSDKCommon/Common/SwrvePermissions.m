@@ -9,7 +9,9 @@ static ISHPermissionRequest *_locationWhenInUseRequest = nil;
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
 static ISHPermissionRequest *_photoLibraryRequest = nil;
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
 static ISHPermissionRequest *_cameraRequest = nil;
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 static ISHPermissionRequest *_contactsRequest = nil;
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
@@ -52,10 +54,12 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         return YES;
     }
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         [SwrvePermissions requestCamera:sdk];
         return YES;
     }
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
     return NO;
 }
 
@@ -68,7 +72,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #if !defined(SWRVE_NO_PHOTO_LIBRARY)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPhotoLibrary]) forKey:swrve_permission_photos];
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkCamera]) forKey:swrve_permission_camera];
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts]) forKey:swrve_permission_contacts];
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
@@ -94,7 +100,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     [[NSUserDefaults standardUserDefaults] setObject:currentStatus forKey:swrve_permission_status];
 }
 
-+(NSArray*)currentPermissionFiltersWithSDK:sdk {
++(NSArray*)currentPermissionFiltersWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSMutableArray* filters = [[NSMutableArray alloc] init];
     NSDictionary* currentStatus = [SwrvePermissions currentStatusWithSDK:sdk];
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:currentStatus];
@@ -102,7 +108,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:currentStatus];
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:currentStatus];
     [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:currentStatus];
-    
+
     // Check that we haven't already asked for push permissions
     if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_push_notifications to:filters withCurrentStatus:currentStatus];
@@ -200,6 +206,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 #endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
 
+#if !defined(SWRVE_NO_PHOTO_CAMERA)
 +(ISHPermissionRequest*)cameraRequest {
     if (!_cameraRequest) {
         _cameraRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryPhotoCamera];
@@ -220,6 +227,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
+#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
 
 #if !defined(SWRVE_NO_ADDRESS_BOOK)
 +(ISHPermissionRequest*)contactsRequest {
@@ -260,21 +268,21 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         bool pushSettingsEnabled = YES;
         UIApplication* app = [UIApplication sharedApplication];
 #if defined(__IPHONE_8_0)
-        if ([app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
+        if (pushSettingsEnabled && [app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
             pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
-        } else
+        }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        if ([app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
+        if (pushSettingsEnabled && [app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
             UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
             pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
         }
 #pragma GCC diagnostic pop
 #endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 #endif //defined(__IPHONE_8_0)
-        
-        
+
+
         if (pushSettingsEnabled) {
             return ISHPermissionStateAuthorized;
         } else {
@@ -296,7 +304,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
     }
 #endif //defined(__IPHONE_8_0)
-    
+
     if (callback) {
         [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -306,7 +314,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     } else {
         [(ISHPermissionRequestNotificationsRemote*)r requestUserPermissionWithoutCompleteBlock];
     }
-    
+
     // Remember we asked for push permissions
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:asked_for_push_flag_key];
 }

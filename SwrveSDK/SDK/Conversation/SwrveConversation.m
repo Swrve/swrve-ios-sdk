@@ -1,7 +1,5 @@
 #import "Swrve.h"
-#import "SwrveContentItem.h"
 #import "SwrveConversation.h"
-#import "SwrveConversationPane.h"
 
 @interface SwrveConversation()
 

@@ -59,10 +59,6 @@
 }
 
 - (void) setAvailableWidth:(CGFloat)width {
-    if(width >= SWRVE_CONVERSATION_MAX_WIDTH){
-        width = SWRVE_CONVERSATION_MAX_WIDTH;
-    }
-
     CGRect frame = CGRectMake(kSwrveStarRatingPadding/2, 0, 0, 0);
     frame.size.width = width - kSwrveStarRatingPadding;
     frame.size.height = [self starHeightFromWidth:frame.size.width];

@@ -6,14 +6,15 @@ static NSString* const SWRVE_ASSETQ_ITEM_NAME = @"name";
 static NSString* const SWRVE_ASSETQ_ITEM_DIGEST = @"digest";
 static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 
-@implementation SwrveAssetsManager
+@implementation SwrveAssetsManager {
+    NSMutableSet *assetsOnDiskSet; // contains both image and font assets
+    NSMutableSet* assetsCurrentlyDownloading;
+}
 
 @synthesize restClient;
-@synthesize assetsCurrentlyDownloading;
 @synthesize cdnImages;
 @synthesize cdnFonts;
 @synthesize cacheFolder;
-@synthesize assetsOnDisk;
 
 + (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsImage:(BOOL)isImage {
     NSMutableDictionary *assetQItem = [[NSMutableDictionary alloc] init];
@@ -30,8 +31,8 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
         self.cdnImages = @"";
         self.cdnFonts = @"";
         self.cacheFolder = cache;
-        self.assetsOnDisk = [[NSMutableSet alloc] init];
-        self.assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
+        self->assetsOnDiskSet = [[NSMutableSet alloc] init];
+        self->assetsCurrentlyDownloading = [[NSMutableSet alloc] init];
     }
     return self;
 }
@@ -48,14 +49,13 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 }
 
 - (void)downloadAsset:(NSDictionary *)assetItem withCompletionHandler:(void (^)(void))completionHandler {
-
     NSString *assetItemName = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_NAME];
 
     BOOL mustDownload = YES;
-    @synchronized ([self assetsCurrentlyDownloading]) {
+    @synchronized (self->assetsCurrentlyDownloading) {
         mustDownload = ![assetsCurrentlyDownloading containsObject:assetItemName];
         if (mustDownload) {
-            [[self assetsCurrentlyDownloading] addObject:assetItemName];
+            [self->assetsCurrentlyDownloading addObject:assetItemName];
         }
     }
 
@@ -85,16 +85,18 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
                                  [data writeToURL:dst atomically:YES];
 
                                  // Add the asset to the set of assets that we know are downloaded.
-                                 [self.assetsOnDisk addObject:assetItemName];
+                                 @synchronized (self->assetsOnDiskSet) {
+                                     [self->assetsOnDiskSet addObject:assetItemName];
+                                 }
                                  DebugLog(@"Asset downloaded: %@", assetItemName);
                              }
                          }
 
                          // This asset has finished downloading
                          // Check if all assets are finished and if so call autoShowMessage
-                         @synchronized ([self assetsCurrentlyDownloading]) {
-                             [[self assetsCurrentlyDownloading] removeObject:assetItemName];
-                             if ([[self assetsCurrentlyDownloading] count] == 0) {
+                         @synchronized (self->assetsCurrentlyDownloading) {
+                             [self->assetsCurrentlyDownloading removeObject:assetItemName];
+                             if ([self->assetsCurrentlyDownloading count] == 0) {
                                  completionHandler();
                              }
                          }
@@ -111,7 +113,9 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
         if (![fileManager fileExistsAtPath:target]) {
             [assetItemsToDownload addObject:assetItem]; // add the item, not the name
         } else {
-            [self.assetsOnDisk addObject:assetItemName]; // store the font name
+            @synchronized (self->assetsOnDiskSet) {
+                [self->assetsOnDiskSet addObject:assetItemName]; // store the font name
+            }
         }
     }
 
@@ -148,6 +152,10 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     }
 
     return true;
+}
+
+- (NSSet*) assetsOnDisk {
+    return [self->assetsOnDiskSet copy];
 }
 
 @end

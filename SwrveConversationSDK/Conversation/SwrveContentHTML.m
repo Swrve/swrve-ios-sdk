@@ -78,8 +78,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     _view = webview;
 }
 
-// iOS8+
--(void)viewWillTransitionToSize:(CGSize)size {
+-(void)parentViewChangedSize:(CGSize)size {
     // Mantain full width
     _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
 }

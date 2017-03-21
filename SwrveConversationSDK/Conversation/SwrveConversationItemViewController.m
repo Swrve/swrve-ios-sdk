@@ -8,6 +8,8 @@
 #import "SwrveContentImage.h"
 #import "SwrveCommon.h"
 #import "SwrveConversationStyler.h"
+#import "SwrveConversationsNavigationController.h"
+#import "SwrveConversationContainerViewController.h"
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -35,6 +37,75 @@
 @synthesize contentTableViewTop;
 @synthesize contentHeight;
 
++ (SwrveConversationItemViewController *)initFromStoryboard {
+
+    SwrveConversationItemViewController *itemViewController;
+    @try {
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
+        itemViewController = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
+    }
+    @catch (NSException *exception) {
+        DebugLog(@"Unable to showConversation. Error loading SwrveConversationItemViewController. %@", exception);
+    }
+    return itemViewController;
+}
+
++ (bool)showConversation:(SwrveBaseConversation *)conversation
+    withItemController:(SwrveConversationItemViewController *)conversationItemViewController
+        withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
+                inWindow:(UIWindow *)conversationWindow {
+
+    if (!conversation || conversationItemViewController == nil || conversationWindow == nil) {
+        DebugLog(@"Unable to showConversation.");
+        return false;
+    }
+
+    if ([SwrveConversationItemViewController hasUnknownContentAtoms:conversation]) {
+        DebugLog(@"Unable to showConversation. Conversation %i contains unknown atoms", [conversation.conversationID intValue]);
+        return false;
+    }
+
+    [conversationItemViewController setConversation:conversation andMessageController:eventHandler];
+
+    // Create a navigation controller in which to push the conversation, and choose iPad presentation style
+    SwrveConversationsNavigationController *svnc = [[SwrveConversationsNavigationController alloc] initWithRootViewController:conversationItemViewController];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
+    // Attach cancel button to the conversation navigation options
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                  target:conversationItemViewController
+                                                                                  action:@selector(cancelButtonTapped:)];
+#pragma clang diagnostic pop
+    conversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+        conversationWindow.rootViewController = rootController;
+        [conversationWindow makeKeyAndVisible];
+        [conversationWindow.rootViewController.view endEditing:YES];
+    });
+
+    return true;
+}
+
++ (bool)hasUnknownContentAtoms:(SwrveBaseConversation *)conversation {
+    bool hasUnknownContentAtoms = false;
+    for (SwrveConversationPane *page in conversation.pages) {
+
+        for (SwrveContentItem *contentItem in page.content) {
+            if ([[contentItem type] isEqualToString:kSwrveContentUnknown]) {
+                hasUnknownContentAtoms = true;
+                break;
+            }
+        }
+        if(hasUnknownContentAtoms) {
+            break;
+        }
+    }
+
+    return hasUnknownContentAtoms;
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -52,10 +123,6 @@
                                              selector:@selector(viewReady:)
                                                  name:kSwrveNotificationViewReady
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object: nil];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     
     self.navigationController.navigationBarHidden = YES;
@@ -76,9 +143,6 @@
     // Unsubscribe from internal notifications and orientation changes
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kSwrveNotificationViewReady
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
                                                   object:nil];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
@@ -107,49 +171,45 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    CGSize wholeSize = self.view.superview.bounds.size;
-    
-    if (wholeSize.width > SWRVE_CONVERSATION_MAX_WIDTH) {
-        float centerx = ((float)wholeSize.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
-        CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, wholeSize.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
-        if (!CGRectEqualToRect(self.view.frame, newFrame)) {
-            
-            if(contentHeight < (wholeSize.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
-                newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
-                newFrame.origin.y =  (wholeSize.height / 2) - (newFrame.size.height / 2);
-            }
-            
-            self.view.frame = newFrame;
-            // Apply styles from conversationPane
-            [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
-            self.view.layer.masksToBounds = YES;
-            // Remove top margin of close button and content.
-            self.contentTableViewTop.constant = 0;
-            [self.contentTableView setNeedsUpdateConstraints];
-            self.cancelButtonViewTop.constant = 0;
-            [self.cancelButtonView setNeedsUpdateConstraints];
-            [self.view setNeedsLayout];
-            
+    [self resizeUIView:self.view.superview.bounds.size];
+}
+
+-(void)resizeUIView:(CGSize)size {
+    if (size.width > SWRVE_CONVERSATION_MAX_WIDTH) {
+        float centerx = ((float)size.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
+        CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, size.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
+        if(contentHeight < (size.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
+            newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
+            newFrame.origin.y =  (size.height / 2) - (newFrame.size.height / 2);
         }
+        
+        self.view.frame = newFrame;
+        // Apply styles from conversationPane
+        [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
+        self.view.layer.masksToBounds = YES;
+        // Remove top margin of close button and content.
+        self.contentTableViewTop.constant = 0;
+        [self.contentTableView setNeedsUpdateConstraints];
+        self.cancelButtonViewTop.constant = 0;
+        [self.cancelButtonView setNeedsUpdateConstraints];
     } else {
-        CGRect newFrame = CGRectMake(0, 0, wholeSize.width, wholeSize.height);
-        if (!CGRectEqualToRect(self.view.frame, newFrame)
-            || self.contentTableViewTop.constant != self.topLayoutGuide.length
-            || self.cancelButtonViewTop.constant != self.topLayoutGuide.length) {
-            self.view.frame = newFrame;
-            // Hide border
-            self.view.layer.borderWidth = 0;
-            self.view.layer.cornerRadius = 0.0f;
-            
-            // Add top margin of close button and content
-            // to take into account the status bar.
-            self.contentTableViewTop.constant = self.topLayoutGuide.length;
-            [self.contentTableView setNeedsUpdateConstraints];
-            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
-            [self.cancelButtonView setNeedsUpdateConstraints];
-            [self.view setNeedsLayout];
-        }
+        CGRect newFrame = CGRectMake(0, 0, size.width, size.height);
+        self.view.frame = newFrame;
+        // Hide border
+        self.view.layer.borderWidth = 0;
+        self.view.layer.cornerRadius = 0.0f;
+        
+        // Add top margin of close button and content
+        // to take into account the status bar.
+        self.contentTableViewTop.constant = self.topLayoutGuide.length;
+        [self.contentTableView setNeedsUpdateConstraints];
+        self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
+        [self.cancelButtonView setNeedsUpdateConstraints];
+    }
+    
+    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+        // Layout with the frame of the root UIView
+        [atom parentViewChangedSize:self.view.frame.size];
     }
 }
 
@@ -421,32 +481,6 @@
     return UIInterfaceOrientationMaskAll;
 }
     
-// Orientation Detection
-- (void)deviceOrientationDidChange:(NSNotification *)notification {
-#pragma unused (notification)
-    
-    // Do nothing unless conversationPane is Active
-    if(self.conversationPane.isActive) {
-        // Obtaining the current device orientation
-        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-        // Ignoring specific orientations or if hasn't actually changed
-        if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown || currentOrientation == orientation) {
-            return;
-        }
-        
-        currentOrientation = orientation;
-        // Delay for .01ms to account for rotation frame returned being out of date
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            // Tell everyone who needs to know that orientation has changed, individual items will react to this and change shape
-            for(SwrveConversationAtom *atom in self.conversationPane.content) {
-                if([atom.delegate respondsToSelector:@selector(respondToDeviceOrientationChange:)]) {
-                    [atom.delegate respondToDeviceOrientationChange:orientation];
-                }
-            }
-        });
-    }
-}
-    
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl
 {
     conversation = conv;
@@ -546,13 +580,6 @@
 #if defined(__IPHONE_8_0)
 - (BOOL)prefersStatusBarHidden {
     return NO;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        [atom viewWillTransitionToSize:self.view.frame.size];
-    }
 }
 #endif //defined(__IPHONE_8_0)
     

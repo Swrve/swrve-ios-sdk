@@ -17,14 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-        Swrve.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config)
-        
-        if let launchOptions = launchOptions {
-            let remoteNotification: [AnyHashable: Any]? = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as! [AnyHashable: Any]!
-            if (remoteNotification != nil) {
-                Swrve.sharedInstance().talk.pushNotificationReceived(remoteNotification)
-            }
-        }
+        Swrve.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config, launchOptions: launchOptions)
         
         return true
     }

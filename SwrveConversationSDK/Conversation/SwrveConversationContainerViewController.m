@@ -1,4 +1,6 @@
 #import "SwrveConversationContainerViewController.h"
+#import "SwrveBaseConversation.h"
+#import "SwrveConversationItemViewController.h"
 
 @interface SwrveConversationContainerViewController ()
 

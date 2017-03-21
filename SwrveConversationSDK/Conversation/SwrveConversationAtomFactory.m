@@ -52,8 +52,11 @@
         SwrveContentStarRating *swrveConversationStarRating = [[SwrveContentStarRating alloc] initWithTag:tag andDictionary:dict];
         swrveConversationStarRating.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveConversationStarRating];
+    } else {
+        SwrveContentItem *swrveContentItem = [[SwrveContentItem alloc] initWithTag:tag type:kSwrveContentUnknown andDictionary:dict];
+        [atomArray addObject:swrveContentItem];
     }
-    
+
     return atomArray;
 }
 

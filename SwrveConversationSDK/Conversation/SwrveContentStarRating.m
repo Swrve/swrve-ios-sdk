@@ -41,4 +41,9 @@
     _currentRating = rating;
 }
 
+-(void)parentViewChangedSize:(CGSize)size {
+    // Mantain full width
+    [(SwrveContentStarRatingView*)_view setAvailableWidth:size.width];
+}
+
 @end

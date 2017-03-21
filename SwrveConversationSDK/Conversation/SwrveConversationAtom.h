@@ -21,6 +21,7 @@
 #define kSwrveContentTypeImage @"image"
 #define kSwrveContentTypeVideo @"video"
 #define kSwrveContentSpacer @"spacer"
+#define kSwrveContentUnknown @"UNKNOWN"
 // Input types
 #define kSwrveInputMultiValue @"multi-value-input"
 // Control types
@@ -56,7 +57,7 @@
 
 // Subclasses should override this
 -(void) loadViewWithContainerView:(UIView*)containerView;
--(void) viewWillTransitionToSize:(CGSize)size;
+-(void) parentViewChangedSize:(CGSize)size;
 
 // If the atom has some kind of activity going, then
 // this is notice to cease it. Defaults to doing nothing.

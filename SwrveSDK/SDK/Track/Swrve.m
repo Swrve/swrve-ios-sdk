@@ -4,6 +4,7 @@
 
 #include <sys/time.h>
 #import "Swrve.h"
+#import "SwrveEmpty.h"
 #include <sys/sysctl.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
@@ -25,8 +26,6 @@
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)
 #define KB(x) (1024*(x))
 #define MB(x) (1024*KB((x)))
-
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 const static char* swrve_trailing_comma = ",\n";
 static NSString* swrve_user_id_key = @"swrve_user_id";
@@ -109,10 +108,6 @@ enum
 
     SwrveEventQueuedCallback event_queued_callback;
 
-    // Used to retain user-blocks that are passed to C functions
-    NSMutableDictionary *   blockStore;
-    int                     blockStoreId;
-
     // The unique id associated with this instance of Swrve
     long    instanceID;
 
@@ -123,10 +118,8 @@ enum
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(void) setupConfig:(SwrveConfig*)config;
-+(NSString*) getAppVersion;
 -(void) maybeFlushToDisk;
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
--(void) removeBlockStoreItem:(int)blockId;
 -(void) updateDeviceInfo;
 -(void) registerForNotifications;
 -(void) appDidBecomeActive:(NSNotification*)notification;
@@ -174,14 +167,13 @@ enum
 // An in-memory buffer of messages that are ready to be sent to the Swrve
 // server the next time sendQueuedEvents is called.
 @property (atomic) NSMutableArray* eventBuffer;
+// Count the number of UTF-16 code points stored in buffer
+@property (atomic) int eventBufferBytes;
 
 @property (atomic) bool eventFileHasData;
 @property (atomic) NSOutputStream* eventStream;
 @property (atomic) NSURL* eventFilename;
 @property (atomic) NSURL* eventSecondaryFilename;
-
-// Count the number of UTF-16 code points stored in buffer
-@property (atomic) int eventBufferBytes;
 
 // keep track of whether any events were sent so we know whether to check for resources / campaign updates
 @property (atomic) bool eventsWereSent;
@@ -252,268 +244,6 @@ enum
 
 @end
 
-
-@implementation SwrveConfig
-
-@synthesize userId;
-@synthesize orientation;
-@synthesize prefersIAMStatusBarHidden;
-@synthesize httpTimeoutSeconds;
-@synthesize eventsServer;
-@synthesize useHttpsForEventServer;
-@synthesize contentServer;
-@synthesize useHttpsForContentServer;
-@synthesize language;
-@synthesize eventCacheFile;
-@synthesize eventCacheSecondaryFile;
-@synthesize eventCacheSignatureFile;
-@synthesize locationCampaignCacheFile;
-@synthesize locationCampaignCacheSecondaryFile;
-@synthesize locationCampaignCacheSignatureFile;
-@synthesize locationCampaignCacheSignatureSecondaryFile;
-@synthesize userResourcesCacheFile;
-@synthesize userResourcesCacheSecondaryFile;
-@synthesize userResourcesCacheSignatureFile;
-@synthesize userResourcesCacheSignatureSecondaryFile;
-@synthesize userResourcesDiffCacheFile;
-@synthesize userResourcesDiffCacheSignatureFile;
-@synthesize installTimeCacheFile;
-@synthesize installTimeCacheSecondaryFile;
-@synthesize appVersion;
-@synthesize receiptProvider;
-@synthesize maxConcurrentDownloads;
-@synthesize autoDownloadCampaignsAndResources;
-@synthesize talkEnabled;
-@synthesize defaultBackgroundColor;
-@synthesize conversationLightBoxColor;
-@synthesize newSessionInterval;
-@synthesize resourcesUpdatedCallback;
-@synthesize autoSendEventsOnResume;
-@synthesize autoSaveEventsOnResign;
-#if !defined(SWRVE_NO_PUSH)
-@synthesize pushEnabled;
-@synthesize pushNotificationEvents;
-@synthesize autoCollectDeviceToken;
-@synthesize pushCategories;
-#endif //!defined(SWRVE_NO_PUSH)
-@synthesize autoShowMessagesMaxDelay;
-@synthesize selectedStack;
-
--(id) init
-{
-    if ( self = [super init] ) {
-        httpTimeoutSeconds = 60;
-        autoDownloadCampaignsAndResources = YES;
-        orientation = SWRVE_ORIENTATION_BOTH;
-        prefersIAMStatusBarHidden = YES;
-        appVersion = [Swrve getAppVersion];
-        language = [[NSLocale preferredLanguages] objectAtIndex:0];
-        newSessionInterval = 30;
-
-        NSString* caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString* documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-        NSString* applicationSupport = [SwrveFileManagement applicationSupportPath];
-        eventCacheFile = [applicationSupport stringByAppendingPathComponent: @"swrve_events.txt"];
-        eventCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_events.txt"];
-
-        locationCampaignCacheFile = [applicationSupport stringByAppendingPathComponent: @"lc.txt"];
-        locationCampaignCacheSecondaryFile = [caches stringByAppendingPathComponent: @"lc.txt"];
-        locationCampaignCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"lcsgt.txt"];
-        locationCampaignCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"lcsgt.txt"];
-
-        userResourcesCacheFile = [applicationSupport stringByAppendingPathComponent: @"srcngt2.txt"];
-        userResourcesCacheSecondaryFile = [caches stringByAppendingPathComponent: @"srcngt2.txt"];
-        userResourcesCacheSignatureFile = [applicationSupport stringByAppendingPathComponent: @"srcngtsgt2.txt"];
-        userResourcesCacheSignatureSecondaryFile = [caches stringByAppendingPathComponent: @"srcngtsgt2.txt"];
-
-
-        userResourcesDiffCacheFile = [caches stringByAppendingPathComponent: @"rsdfngt2.txt"];
-        userResourcesDiffCacheSignatureFile = [caches stringByAppendingPathComponent:@"rsdfngtsgt2.txt"];
-
-        self.useHttpsForEventServer = YES;
-        self.useHttpsForContentServer = YES;
-        self.installTimeCacheFile = [documents stringByAppendingPathComponent: @"swrve_install.txt"];
-        self.installTimeCacheSecondaryFile = [caches stringByAppendingPathComponent: @"swrve_install.txt"];
-        self.autoSendEventsOnResume = YES;
-        self.autoSaveEventsOnResign = YES;
-        self.talkEnabled = YES;
-#if !defined(SWRVE_NO_PUSH)
-        self.pushEnabled = NO;
-        self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
-        self.autoCollectDeviceToken = YES;
-#endif //!defined(SWRVE_NO_PUSH)
-        self.autoShowMessagesMaxDelay = 5000;
-        self.receiptProvider = [[SwrveReceiptProvider alloc] init];
-        self.resourcesUpdatedCallback = ^() {
-            // Do nothing by default.
-        };
-        self.selectedStack = SWRVE_STACK_US;
-
-        self.conversationLightBoxColor = [[UIColor alloc] initWithRed:0 green:0 blue:0 alpha:0.70f];
-    }
-    return self;
-}
-
-@end
-
-@implementation ImmutableSwrveConfig
-
-@synthesize userId;
-@synthesize orientation;
-@synthesize prefersIAMStatusBarHidden;
-@synthesize httpTimeoutSeconds;
-@synthesize eventsServer;
-@synthesize useHttpsForEventServer;
-@synthesize contentServer;
-@synthesize useHttpsForContentServer;
-@synthesize language;
-@synthesize eventCacheFile;
-@synthesize eventCacheSecondaryFile;
-@synthesize eventCacheSignatureFile;
-@synthesize locationCampaignCacheFile;
-@synthesize locationCampaignCacheSecondaryFile;
-@synthesize locationCampaignCacheSignatureFile;
-@synthesize locationCampaignCacheSignatureSecondaryFile;
-@synthesize userResourcesCacheFile;
-@synthesize userResourcesCacheSecondaryFile;
-@synthesize userResourcesCacheSignatureFile;
-@synthesize userResourcesCacheSignatureSecondaryFile;
-@synthesize userResourcesDiffCacheFile;
-@synthesize userResourcesDiffCacheSignatureFile;
-@synthesize installTimeCacheFile;
-@synthesize installTimeCacheSecondaryFile;
-@synthesize appVersion;
-@synthesize receiptProvider;
-@synthesize maxConcurrentDownloads;
-@synthesize autoDownloadCampaignsAndResources;
-@synthesize talkEnabled;
-@synthesize defaultBackgroundColor;
-@synthesize conversationLightBoxColor;
-@synthesize newSessionInterval;
-@synthesize resourcesUpdatedCallback;
-@synthesize autoSendEventsOnResume;
-@synthesize autoSaveEventsOnResign;
-#if !defined(SWRVE_NO_PUSH)
-@synthesize pushEnabled;
-@synthesize pushNotificationEvents;
-@synthesize autoCollectDeviceToken;
-@synthesize pushCategories;
-#endif //!defined(SWRVE_NO_PUSH)
-@synthesize autoShowMessagesMaxDelay;
-@synthesize selectedStack;
-
-- (id)initWithSwrveConfig:(SwrveConfig*)config
-{
-    if (self = [super init]) {
-        userId = config.userId;
-        orientation = config.orientation;
-        prefersIAMStatusBarHidden = config.prefersIAMStatusBarHidden;
-        httpTimeoutSeconds = config.httpTimeoutSeconds;
-        eventsServer = config.eventsServer;
-        useHttpsForEventServer = config.useHttpsForEventServer;
-        contentServer = config.contentServer;
-        useHttpsForContentServer = config.useHttpsForContentServer;
-        language = config.language;
-        eventCacheFile = config.eventCacheFile;
-        eventCacheSecondaryFile = config.eventCacheSecondaryFile;
-        locationCampaignCacheFile = config.locationCampaignCacheFile;
-        locationCampaignCacheSecondaryFile = config.locationCampaignCacheSecondaryFile;
-        locationCampaignCacheSignatureFile = config.locationCampaignCacheSignatureFile;
-        locationCampaignCacheSignatureSecondaryFile = config.locationCampaignCacheSignatureSecondaryFile;
-        userResourcesCacheFile = config.userResourcesCacheFile;
-        userResourcesCacheSecondaryFile = config.userResourcesCacheSecondaryFile;
-        userResourcesCacheSignatureFile = config.userResourcesCacheSignatureFile;
-        userResourcesCacheSignatureSecondaryFile = config.userResourcesCacheSignatureSecondaryFile;
-        userResourcesDiffCacheFile = config.userResourcesDiffCacheFile;
-        userResourcesDiffCacheSignatureFile = config.userResourcesDiffCacheSignatureFile;
-        installTimeCacheFile = config.installTimeCacheFile;
-        installTimeCacheSecondaryFile = config.installTimeCacheSecondaryFile;
-        appVersion = config.appVersion;
-        receiptProvider = config.receiptProvider;
-        autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
-        talkEnabled = config.talkEnabled;
-        defaultBackgroundColor = config.defaultBackgroundColor;
-        conversationLightBoxColor = config.conversationLightBoxColor;
-        newSessionInterval = config.newSessionInterval;
-        resourcesUpdatedCallback = config.resourcesUpdatedCallback;
-        autoSendEventsOnResume = config.autoSendEventsOnResume;
-        autoSaveEventsOnResign = config.autoSaveEventsOnResign;
-#if !defined(SWRVE_NO_PUSH)
-        pushEnabled = config.pushEnabled;
-        pushNotificationEvents = config.pushNotificationEvents;
-        autoCollectDeviceToken = config.autoCollectDeviceToken;
-        pushCategories = config.pushCategories;
-#endif //!defined(SWRVE_NO_PUSH)
-        autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
-        selectedStack = config.selectedStack;
-    }
-
-    return self;
-}
-
-@end
-
-
-@interface SwrveIAPRewards()
-@property (nonatomic, retain) NSMutableDictionary* rewards;
-@end
-
-@implementation SwrveIAPRewards
-@synthesize rewards;
-
-- (id) init
-{
-    self = [super init];
-    self.rewards = [[NSMutableDictionary alloc] init];
-    return self;
-}
-
-- (void) addItem:(NSString*) resourceName withQuantity:(long) quantity
-{
-    [self addObject:resourceName withQuantity: quantity ofType: @"item"];
-}
-
-- (void) addCurrency:(NSString*) currencyName withAmount:(long) amount
-{
-    [self addObject:currencyName withQuantity:amount ofType:@"currency"];
-}
-
-- (void) addObject:(NSString*) name withQuantity:(long) quantity ofType:(NSString*) type
-{
-    if (![self checkArguments:name andQuantity:quantity andType:type]) {
-        DebugLog(@"ERROR: SwrveIAPRewards has not been added because it received an illegal argument", nil);
-        return;
-    }
-
-    NSDictionary* item = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithLong:quantity], @"amount", type, @"type", nil];
-    [[self rewards] setValue:item forKey:name];
-}
-
-- (bool) checkArguments:(NSString*) name andQuantity:(long) quantity andType:(NSString*) type
-{
-    if (name == nil || [name length] <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: reward name cannot be empty", nil);
-        return false;
-    }
-    if (quantity <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: reward amount must be greater than zero", nil);
-        return false;
-    }
-    if (type == nil || [type length] <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: type cannot be empty", nil);
-        return false;
-    }
-
-    return true;
-}
-
-- (NSDictionary*) rewards {
-    return rewards;
-}
-
-@end
-
-
 @implementation Swrve
 
 static Swrve * _swrveSharedInstance = nil;
@@ -544,11 +274,11 @@ static bool didSwizzle = false;
 @synthesize resourcesFile;
 @synthesize resourcesDiffFile;
 @synthesize eventBuffer;
+@synthesize eventBufferBytes;
 @synthesize eventFileHasData;
 @synthesize eventStream;
 @synthesize eventFilename;
 @synthesize eventSecondaryFilename;
-@synthesize eventBufferBytes;
 @synthesize eventsWereSent;
 @synthesize batchURL;
 @synthesize campaignsAndResourcesURL;
@@ -584,7 +314,7 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey];
     });
     return _swrveSharedInstance;
@@ -593,7 +323,7 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig];
     });
     return _swrveSharedInstance;
@@ -603,7 +333,7 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey launchOptions:launchOptions];
     });
     return _swrveSharedInstance;
@@ -612,7 +342,7 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:launchOptions];
     });
     return _swrveSharedInstance;
@@ -622,7 +352,7 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID];
     });
     return _swrveSharedInstance;
@@ -631,12 +361,20 @@ static bool didSwizzle = false;
 +(Swrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID config:(SwrveConfig*)swrveConfig
 {
     dispatch_once(&sharedInstanceToken, ^{
-        _swrveSharedInstance = [Swrve alloc];
+        _swrveSharedInstance = [Swrve createInstance];
         _swrveSharedInstance = [_swrveSharedInstance initWithAppID:swrveAppID apiKey:swrveAPIKey userID:swrveUserID config:swrveConfig];
     });
     return _swrveSharedInstance;
 }
 
++(Swrve*)createInstance {
+    // Detect if the SDK can run on this platform, if not, create a dummy instance
+    if ([SwrveCommon supportedOS]) {
+        return [Swrve alloc];
+    }
+
+    return (Swrve*)[SwrveEmpty alloc];
+}
 
 // Non shared instance initialization methods
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
@@ -651,6 +389,8 @@ static bool didSwizzle = false;
 }
 
 // Deprecated non shared instance initialization methods
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey userID:(NSString*)swrveUserID
 {
     SwrveConfig* newConfig = [[SwrveConfig alloc] init];
@@ -663,6 +403,7 @@ static bool didSwizzle = false;
     swrveConfig.userId = swrveUserID;
     return [self initWithAppID:swrveAppID apiKey:swrveAPIKey config:swrveConfig launchOptions:nil];
 }
+#pragma clang diagnostic pop
 
 // Init methods with launchOptions for push
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions
@@ -712,9 +453,6 @@ static bool didSwizzle = false;
 
         event_queued_callback = nil;
 
-        blockStore = [[NSMutableDictionary alloc] init];
-        blockStoreId = 0;
-
         locationSegmentVersion = 0; // init to zero
 
         config = [[ImmutableSwrveConfig alloc] initWithSwrveConfig:swrveConfig];
@@ -738,7 +476,7 @@ static bool didSwizzle = false;
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
-        
+
         // legacy from 4.7 mirgrate the event file to suitable protection in background
         [SwrveMigrationsManager migrateFileProtectionAtPath:[[self eventFilename] path]];
         [SwrveMigrationsManager migrateFileProtectionAtPath:swrveConfig.installTimeCacheFile];
@@ -746,9 +484,9 @@ static bool didSwizzle = false;
         [self generateShortDeviceId];
 
         // Set up empty user attributes store
-        self.userUpdates = [[NSMutableDictionary alloc]init];
+        self.userUpdates = [[NSMutableDictionary alloc] init];
         [self.userUpdates setValue:@"user" forKey:@"type"];
-        [self.userUpdates setValue:[[NSMutableDictionary alloc]init] forKey:@"attributes"];
+        [self.userUpdates setValue:[[NSMutableDictionary alloc] init] forKey:@"attributes"];
 
 #if !defined(SWRVE_NO_PUSH)
         if(swrveConfig.autoCollectDeviceToken && _swrveSharedInstance == self && !didSwizzle){
@@ -813,9 +551,9 @@ static bool didSwizzle = false;
 #pragma unused(launchOptions)
 #endif //!defined(SWRVE_NO_PUSH)
     }
-    
+
     [self sendQueuedEvents];
-    
+
     return self;
 }
 
@@ -1092,11 +830,13 @@ static bool didSwizzle = false;
 
     // Merge attributes with current set of attributes
     if (attributes) {
-        NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
-        [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
-        for (id attributeKey in attributes) {
-            id attribute = [attributes objectForKey:attributeKey];
-            [currentAttributes setObject:attribute forKey:attributeKey];
+        @synchronized (self.userUpdates) {
+            NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            for (id attributeKey in attributes) {
+                id attribute = [attributes objectForKey:attributeKey];
+                [currentAttributes setObject:attribute forKey:attributeKey];
+            }
         }
     }
 
@@ -1105,10 +845,12 @@ static bool didSwizzle = false;
 
 - (int) userUpdate:(NSString *)name withDate:(NSDate *) date {
 
-    if(name && date){
-        NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
-        [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
-        [currentAttributes setObject:[self convertDateToString:date] forKey:name];
+    if(name && date) {
+        @synchronized (self.userUpdates) {
+            NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            [currentAttributes setObject:[self convertDateToString:date] forKey:name];
+        }
 
     }else{
         DebugLog(@"nil object passed into userUpdate:withDate");
@@ -1157,7 +899,7 @@ static bool didSwizzle = false;
     }
 
     NSMutableString* queryString = [NSMutableString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&joined=%llu",
-                             self.userID, self.apiKey, self.config.appVersion, self->install_time];
+                             self.userID, self.apiKey, self.appVersion, self->install_time];
     if (self.talk && [self.config talkEnabled]) {
         NSString* campaignQueryString = [self.talk getCampaignQueryString];
         [queryString appendFormat:@"&%@", campaignQueryString];
@@ -1278,7 +1020,11 @@ static bool didSwizzle = false;
     }
 
     // Check if there are events in the buffer or in the cache
-    if ([self eventFileHasData] || [[self eventBuffer] count] > 0 || [self eventsWereSent]) {
+    BOOL eventsToSend;
+    @synchronized (self.eventBuffer) {
+        eventsToSend = ([self eventFileHasData] || [self.eventBuffer count] > 0 || [self eventsWereSent]);
+    }
+    if (eventsToSend) {
         [self sendQueuedEvents];
         [self setEventsWereSent:NO];
 
@@ -1308,7 +1054,7 @@ static bool didSwizzle = false;
 }
 
 -(void) sendQueuedEvents {
-    
+
     if (!self.userID) {
         DebugLog(@"Swrve user_id is null. Not sending data.", nil);
         return;
@@ -1322,42 +1068,45 @@ static bool didSwizzle = false;
     [self queueUserUpdates];
 
     // Early out if length is zero.
-    if ([[self eventBuffer] count] == 0) return;
+    NSArray* buffer = self.eventBuffer;
+    int bytes = self.eventBufferBytes;
 
-    // Swap buffers
-    NSArray* buffer = [self eventBuffer];
-    int bytes = [self eventBufferBytes];
-    [self initBuffer];
+    @synchronized (buffer) {
+        if ([buffer count] == 0) return;
+
+        // Swap buffers
+        [self initBuffer];
+    }
 
     NSString* session_token = [self createSessionToken];
     NSString* array_body = [self copyBufferToJson:buffer];
     NSString* json_string = [self createJSON:session_token events:array_body];
-    
+
     NSData* json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
     [self setEventsWereSent:YES];
 
     [restClient sendHttpPOSTRequest:[self batchURL]
                      jsonData:json_data
             completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
-
                 // Schedule the stream on the current run loop, then open the stream (which
                 // automatically sends the request).  Wait for at least one byte of data to
                 // be returned by the server.  As soon as at least one byte is available,
-                // the full HTTP response header is available.  If no data is returned
+                // the full HTTP response header is available. If no data is returned
                 // within the timeout period, give up.
                 SwrveSendContext* sendContext = [[SwrveSendContext alloc] init];
                 [sendContext setSwrveReference:self];
                 [sendContext setSwrveInstanceID:self->instanceID];
-                [sendContext setBuffer:buffer];
-                [sendContext setBufferLength:bytes];
-                
+                @synchronized (buffer) {
+                    [sendContext setBuffer:buffer];
+                    [sendContext setBufferLength:bytes];
+                }
+
                 if (error){
                     DebugLog(@"Error opening HTTP stream: %@ %@", [error localizedDescription], [error localizedFailureReason]);
                     [self eventsSentCallback:HTTP_SERVER_ERROR withData:data andContext:sendContext]; //503 network error
                     return;
                 }
-                
-                
+
                 enum HttpStatus status = HTTP_SUCCESS;
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
@@ -1369,20 +1118,23 @@ static bool didSwizzle = false;
 
 -(void) saveEventsToDisk {
     DebugLog(@"Writing unsent event data to file", nil);
-    
+
     [self queueUserUpdates];
-    
-    if ([self eventStream] && [[self eventBuffer] count] > 0) {
-        NSString* json = [self copyBufferToJson:[self eventBuffer]];
-        NSData* buffer = [json dataUsingEncoding:NSUTF8StringEncoding];
-        [[self eventStream] write:(const uint8_t *)[buffer bytes] maxLength:[buffer length]];
-        long bytes = [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
-        if(bytes == 0){
-            DebugLog(@"Nothing was written to the event file");
-        }else{
-            DebugLog(@"Written to the event file");
-            [self setEventFileHasData:YES];
-            [self initBuffer];
+
+    NSArray* buffer = self.eventBuffer;
+    @synchronized (buffer) {
+        if ([self eventStream] && [buffer count] > 0) {
+            NSString* json = [self copyBufferToJson:buffer];
+            NSData* bufferJson = [json dataUsingEncoding:NSUTF8StringEncoding];
+            [[self eventStream] write:(const uint8_t *)[bufferJson bytes] maxLength:[bufferJson length]];
+            long bytes = [[self eventStream] write:(const uint8_t *)swrve_trailing_comma maxLength:strlen(swrve_trailing_comma)];
+            if(bytes == 0){
+                DebugLog(@"Nothing was written to the event file");
+            }else{
+                DebugLog(@"Written to the event file");
+                [self setEventFileHasData:YES];
+                [self initBuffer];
+            }
         }
     }
 }
@@ -1395,7 +1147,7 @@ static bool didSwizzle = false;
 -(void) shutdown
 {
     DebugLog(@"shutting down swrveInstance..", nil);
-    if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == NO)
+    if ([[SwrveInstanceIDRecorder sharedInstance] hasSwrveInstanceID:instanceID] == NO)
     {
         DebugLog(@"Swrve shutdown: called on invalid instance.", nil);
         return;
@@ -1412,7 +1164,7 @@ static bool didSwizzle = false;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [[SwrveInstanceIDRecorder sharedInstance]removeSwrveInstanceID:instanceID];
+    [[SwrveInstanceIDRecorder sharedInstance] removeSwrveInstanceID:instanceID];
 
     if ([self eventStream]) {
         [[self eventStream] close];
@@ -1426,11 +1178,14 @@ static bool didSwizzle = false;
 #endif
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 // Deprecated
 - (BOOL) appInBackground {
     UIApplicationState swrveState = [[UIApplication sharedApplication] applicationState];
     return (swrveState == UIApplicationStateInactive || swrveState == UIApplicationStateBackground);
 }
+#pragma clang diagnostic pop
 
 #pragma mark -
 #pragma mark Private methods
@@ -1451,15 +1206,10 @@ static bool didSwizzle = false;
 
 -(void) dealloc
 {
-    if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:instanceID] == YES)
+    if ([[SwrveInstanceIDRecorder sharedInstance] hasSwrveInstanceID:instanceID] == YES)
     {
         [self shutdown];
     }
-}
-
--(void) removeBlockStoreItem:(int)blockId
-{
-    [blockStore removeObjectForKey:[NSNumber numberWithInt:blockId ]];
 }
 
 -(void) updateDeviceInfo
@@ -1625,10 +1375,12 @@ static bool didSwizzle = false;
 
 -(void) queueUserUpdates
 {
-    NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
-    if (currentAttributes.count > 0) {
-        [self queueEvent:@"user" data:self.userUpdates triggerCallback:true];
-        [currentAttributes removeAllObjects];
+    @synchronized (self.userUpdates) {
+        NSMutableDictionary * currentAttributes = (NSMutableDictionary*)[self.userUpdates objectForKey:@"attributes"];
+        if (currentAttributes.count > 0) {
+            [self queueEvent:@"user" data:[self.userUpdates mutableCopy] triggerCallback:true];
+            [currentAttributes removeAllObjects];
+        }
     }
 }
 
@@ -1686,24 +1438,6 @@ static bool didSwizzle = false;
     [self eventInternal:eventName payload:nil triggerCallback:true];
 }
 
-// Get a string that represents the current App Version
-// The implementation intentionally is unspecified, the rest of the SDK is not aware
-// of the details of this.
-+(NSString*) getAppVersion
-{
-    NSString * appVersion = nil;
-    @try {
-        appVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
-    }
-    @catch (NSException * e) {}
-    if (!appVersion)
-    {
-        return @"error";
-    }
-
-    return appVersion;
-}
-
 static NSString* httpScheme(bool useHttps)
 {
     return useHttps ? @"https" : @"http";
@@ -1737,14 +1471,15 @@ static NSString* httpScheme(bool useHttps)
 
 -(void) maybeFlushToDisk
 {
-    if ([self eventBufferBytes] > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
+    if (self.eventBufferBytes > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
         [self saveEventsToDisk];
     }
 }
 
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback {
-    
-    if ([self eventBuffer]) {
+
+    NSMutableArray* buffer = self.eventBuffer;
+    if (buffer) {
         // Add common attributes (if not already present)
         if (![eventData objectForKey:@"type"]) {
             [eventData setValue:eventType forKey:@"type"];
@@ -1758,11 +1493,12 @@ static NSString* httpScheme(bool useHttps)
         NSData* json_data = [NSJSONSerialization dataWithJSONObject:eventData options:0 error:nil];
         if (json_data) {
             NSString* json_string = [[NSString alloc] initWithData:json_data encoding:NSUTF8StringEncoding];
-            [self setEventBufferBytes:[self eventBufferBytes] + (int)[json_string length]];
-            [[self eventBuffer] addObject:json_string];
+            @synchronized (buffer) {
+                [self setEventBufferBytes:self.eventBufferBytes + (int)[json_string length]];
+                [buffer addObject:json_string];
+            }
 
             if (triggerCallback && event_queued_callback != NULL ) {
-                
                 event_queued_callback(eventData, json_string);
             }
         }
@@ -1774,7 +1510,16 @@ static NSString* httpScheme(bool useHttps)
 }
 
 -(NSString*) appVersion {
-    return self.config.appVersion;
+    NSString * appVersion = self.config.appVersion;
+    if (appVersion == nil) {
+        @try {
+            appVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
+        }
+        @catch (NSException * e) {
+            DebugLog(@"Could not obtian version: %@", e);
+        }
+    }
+    return appVersion;
 }
 
 -(NSSet*) pushCategories {
@@ -1935,7 +1680,7 @@ static NSString* httpScheme(bool useHttps)
           self.userID,
           self.apiKey,
           self.appID,
-          self.config.appVersion,
+          self.appVersion,
           self.config.language,
           self.config.eventsServer,
           self.config.contentServer];
@@ -2046,11 +1791,11 @@ static NSString* httpScheme(bool useHttps)
     NSURL *fileURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheFile];
     NSURL *signatureURL = [NSURL fileURLWithPath:self.config.locationCampaignCacheSignatureFile];
     NSString *signatureKey = [self getSignatureKey];
-    
+
     // legacy 4.7 migration
     [SwrveMigrationsManager migrateFileProtectionAtPath:[fileURL path]];
     [SwrveMigrationsManager migrateFileProtectionAtPath:[signatureURL path]];
-    
+
     SwrveSignatureProtectedFile *locationCampaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey];
     return locationCampaignFile;
 }
@@ -2185,7 +1930,7 @@ enum HttpStatus {
 {
     #pragma unused(data)
     Swrve* swrve = [client_info swrveReference];
-    if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:[client_info swrveInstanceID]] == YES) {
+    if ([[SwrveInstanceIDRecorder sharedInstance] hasSwrveInstanceID:[client_info swrveInstanceID]] == YES) {
 
         switch (status) {
             case HTTP_REDIRECTION:
@@ -2197,8 +1942,14 @@ enum HttpStatus {
                 break;
             case HTTP_SERVER_ERROR:
                 DebugLog(@"Error sending event data to Swrve (%@) Adding data back onto unsent message buffer", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-                [[swrve eventBuffer] addObjectsFromArray:[client_info buffer]];
-                [swrve setEventBufferBytes:[swrve eventBufferBytes] + [client_info bufferLength]];
+
+                NSMutableArray* buffer = swrve.eventBuffer;
+                @synchronized (buffer) {
+                    if (buffer) {
+                        [buffer addObjectsFromArray:[client_info buffer]];
+                    }
+                }
+                [swrve setEventBufferBytes:swrve.eventBufferBytes + [client_info bufferLength]];
                 [swrve saveEventsToDisk];
                 break;
         }
@@ -2225,7 +1976,7 @@ enum HttpStatus {
     [jsonPacket setValue:self.userID forKey:@"user"];
     [jsonPacket setValue:self.shortDeviceID forKey:@"short_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
-    [jsonPacket setValue:NullableNSString(self.config.appVersion) forKey:@"app_version"];
+    [jsonPacket setValue:NullableNSString(self.appVersion) forKey:@"app_version"];
     [jsonPacket setValue:NullableNSString(sessionToken) forKey:@"session_token"];
     [jsonPacket setValue:body forKey:@"data"];
 
@@ -2252,7 +2003,7 @@ enum HttpStatus {
 {
     #pragma unused(data)
     Swrve* swrve = [context swrveReference];
-    if ([[SwrveInstanceIDRecorder sharedInstance]hasSwrveInstanceID:[context swrveInstanceID]] == YES) {
+    if ([[SwrveInstanceIDRecorder sharedInstance] hasSwrveInstanceID:[context swrveInstanceID]] == YES) {
         int mode = SWRVE_TRUNCATE_FILE;
 
         switch (status) {
@@ -2273,7 +2024,7 @@ enum HttpStatus {
 }
 
 - (void) sendLogfile {
-    
+
     if (![self eventStream]) return;
     if (![self eventFileHasData]) return;
 
@@ -2305,11 +2056,11 @@ enum HttpStatus {
     [restClient sendHttpPOSTRequest:[self batchURL]
                       jsonData:json_data
              completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
-                 
+
                  SwrveSendLogfileContext* logfileContext = [[SwrveSendLogfileContext alloc] init];
                  [logfileContext setSwrveReference:self];
                  [logfileContext setSwrveInstanceID:self->instanceID];
-                 
+
         if (error) {
             DebugLog(@"Error opening HTTP stream when sending the contents of the log file", nil);
             [self logfileSentCallback:HTTP_SERVER_ERROR withData:data andContext:logfileContext]; //HTTP 503 Error, service not available
@@ -2453,7 +2204,7 @@ enum HttpStatus {
     NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
     NSURL* resourcesDiffURL = [NSURL URLWithString:@"api/1/user_resources_diff" relativeToURL:base_content_url];
     NSString* queryString = [NSString stringWithFormat:@"user=%@&api_key=%@&app_version=%@&joined=%llu",
-                             self.userID, self.apiKey, self.config.appVersion, self->install_time];
+                             self.userID, self.apiKey, self.appVersion, self->install_time];
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"?%@", queryString] relativeToURL:resourcesDiffURL];
 
     [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
