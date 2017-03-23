@@ -189,51 +189,6 @@
 }
 
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control {
-    // Check to see if all required inputs have had data applied and pop up an
-    // alert to the ufser if this is not the case.
-    NSMutableArray *incompleteRequiredInputs = [[NSMutableArray alloc] init];
-    NSMutableArray *invalidInputs = [[NSMutableArray alloc] init];
-    NSError *invalidInputError = nil;
-    
-    // Gather the user responses and send them
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
-        if([atom isKindOfClass:[SwrveInputItem class]]) {
-            SwrveInputItem *item = (SwrveInputItem*)atom;
-            
-            if ([item isComplete]) {
-                if (![item isValid:&invalidInputError]) {
-                    [item highlight];
-                    [invalidInputs addObject:item];
-                }
-            } else {
-                if (![item isOptional]) {
-                    [item highlight];
-                    [incompleteRequiredInputs addObject:item];
-                }
-            }
-        }
-    }
-    
-    if ([incompleteRequiredInputs count] > 0) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
-                                                        message:NSLocalizedStringFromTable(@"FILL_ALL", @"Converser", @"Please fill all required fields.")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
-                                              otherButtonTitles:nil];
-        [alert show];
-        return NO;
-    }
-    
-    if ([invalidInputs count] > 0 ) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"ERROR", @"Converser", @"Error")
-                                                        message:NSLocalizedStringFromTable(@"VALID_EMAIL", @"Converser", @"Please supply a valid email address.")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedStringFromTable(@"DONE", @"Converser", @"Done")
-                                              otherButtonTitles:nil];
-        [alert show];
-        return NO;
-    }
-    
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
     [self stopAtoms];

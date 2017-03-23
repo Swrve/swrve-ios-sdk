@@ -148,7 +148,6 @@
 		3AC4DBC51B2992D1004B57CB /* SwrveConversationsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBA91B2992D1004B57CB /* SwrveConversationsNavigationController.m */; };
 		3AC4DBC61B2992D1004B57CB /* SwrveConversationUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBAB1B2992D1004B57CB /* SwrveConversationUIButton.m */; };
 		3AC4DBC71B2992D1004B57CB /* SwrveInputItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBAD1B2992D1004B57CB /* SwrveInputItem.m */; };
-		3AC4DBC81B2992D1004B57CB /* SwrveInputMultiBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBAF1B2992D1004B57CB /* SwrveInputMultiBase.m */; };
 		3AC4DBC91B2992D1004B57CB /* SwrveInputMultiValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */; };
 		3AC4DBD01B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */; };
 		3AC4DBD11B2992DA004B57CB /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC4DBCF1B2992DA004B57CB /* UIWebView+YouTubeVimeo.m */; };
@@ -373,12 +372,9 @@
 		3AC4DBAB1B2992D1004B57CB /* SwrveConversationUIButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveConversationUIButton.m; sourceTree = "<group>"; };
 		3AC4DBAC1B2992D1004B57CB /* SwrveInputItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputItem.h; sourceTree = "<group>"; };
 		3AC4DBAD1B2992D1004B57CB /* SwrveInputItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInputItem.m; sourceTree = "<group>"; };
-		3AC4DBAE1B2992D1004B57CB /* SwrveInputMultiBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputMultiBase.h; sourceTree = "<group>"; };
-		3AC4DBAF1B2992D1004B57CB /* SwrveInputMultiBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInputMultiBase.m; sourceTree = "<group>"; };
 		3AC4DBB01B2992D1004B57CB /* SwrveInputMultiValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInputMultiValue.h; sourceTree = "<group>"; };
 		3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInputMultiValue.m; sourceTree = "<group>"; };
 		3AC4DBB41B2992D1004B57CB /* SwrveSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSetup.h; sourceTree = "<group>"; };
-		3AC4DBB71B2992D1004B57CB /* SwrveChoiceArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveChoiceArray.h; sourceTree = "<group>"; };
 		3AC4DBCC1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+KeyboardResponderFix.h"; path = "Categories/UINavigationController+KeyboardResponderFix.h"; sourceTree = "<group>"; };
 		3AC4DBCD1B2992DA004B57CB /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+KeyboardResponderFix.m"; path = "Categories/UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
 		3AC4DBCE1B2992DA004B57CB /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+YouTubeVimeo.h"; path = "Categories/UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
@@ -807,12 +803,9 @@
 				3AC4DBAB1B2992D1004B57CB /* SwrveConversationUIButton.m */,
 				3AC4DBAC1B2992D1004B57CB /* SwrveInputItem.h */,
 				3AC4DBAD1B2992D1004B57CB /* SwrveInputItem.m */,
-				3AC4DBAE1B2992D1004B57CB /* SwrveInputMultiBase.h */,
-				3AC4DBAF1B2992D1004B57CB /* SwrveInputMultiBase.m */,
 				3AC4DBB01B2992D1004B57CB /* SwrveInputMultiValue.h */,
 				3AC4DBB11B2992D1004B57CB /* SwrveInputMultiValue.m */,
 				3AC4DBB41B2992D1004B57CB /* SwrveSetup.h */,
-				3AC4DBB71B2992D1004B57CB /* SwrveChoiceArray.h */,
 				1B9A35D51A8CCF8500F34406 /* SwrveConversation.h */,
 				1B9A35D61A8CCF8500F34406 /* SwrveConversation.m */,
 				1B9A35DB1A8CD0A500F34406 /* SwrveConversationCampaign.h */,
@@ -1087,7 +1080,6 @@
 				3AC4DBC01B2992D1004B57CB /* SwrveConversationButton.m in Sources */,
 				095F5E8616D0494E0046D096 /* DemoFramework.m in Sources */,
 				095F5E8A16D0495A0046D096 /* Menu.m in Sources */,
-				3AC4DBC81B2992D1004B57CB /* SwrveInputMultiBase.m in Sources */,
 				095F5E9416D049680046D096 /* OnboardingFlow.m in Sources */,
 				3AC4DBC91B2992D1004B57CB /* SwrveInputMultiValue.m in Sources */,
 				1B22100919B8AFFC00F378E6 /* SwrveTalkQA.m in Sources */,
