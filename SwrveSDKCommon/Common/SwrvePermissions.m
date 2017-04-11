@@ -267,21 +267,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         // that the user hasn't disabled push notifications in the settings.
         bool pushSettingsEnabled = YES;
         UIApplication* app = [UIApplication sharedApplication];
-#if defined(__IPHONE_8_0)
         if (pushSettingsEnabled && [app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
             pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
         }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        if (pushSettingsEnabled && [app respondsToSelector:@selector(enabledRemoteNotificationTypes)]) {
-            UIRemoteNotificationType types = [app enabledRemoteNotificationTypes];
-            pushSettingsEnabled = (types != UIRemoteNotificationTypeNone);
-        }
-#pragma GCC diagnostic pop
-#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-#endif //defined(__IPHONE_8_0)
-
 
         if (pushSettingsEnabled) {
             return ISHPermissionStateAuthorized;
@@ -294,16 +282,8 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 +(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
-#if defined(__IPHONE_8_0)
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-    // Check if the new push API is not available
-    UIApplication* app = [UIApplication sharedApplication];
-    if ([app respondsToSelector:@selector(registerUserNotificationSettings:)])
-#endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-    {
-        ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
-    }
-#endif //defined(__IPHONE_8_0)
+    
+    ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
 
     if (callback) {
         [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {

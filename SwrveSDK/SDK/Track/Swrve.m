@@ -507,9 +507,10 @@ static bool didSwizzle = false;
             didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
             didReceiveRemoteNotificationImpl = NULL;
         }
-
-        [self registerForNotifications];
+#else
+        DebugLog(@"\nWARNING: \nWe have deprecated the SWRVE_NO_PUSH flag as of release 4.9.1. \nIf you still need to exclude Push, please contact CSM with regards to future releases.\n", nil);
 #endif //!defined(SWRVE_NO_PUSH)
+        [self registerForNotifications];
         [self updateDeviceInfo];
 
         if (swrveConfig.talkEnabled) {
