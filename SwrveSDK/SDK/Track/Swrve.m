@@ -30,7 +30,6 @@
 const static char* swrve_trailing_comma = ",\n";
 static NSString* swrve_user_id_key = @"swrve_user_id";
 static NSString* swrve_device_token_key = @"swrve_device_token";
-static BOOL ignoreFirstDidBecomeActive = YES;
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
@@ -101,6 +100,8 @@ enum
 
 @interface Swrve()
 {
+    BOOL initialised;
+    
     UInt64 install_time;
     NSDate *lastSessionDate;
     NSString* lastProcessedPushId;
@@ -114,6 +115,8 @@ enum
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
     didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
+    
+    BOOL isNewUser;
 }
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
@@ -121,7 +124,6 @@ enum
 -(void) maybeFlushToDisk;
 -(void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
 -(void) updateDeviceInfo;
--(void) registerForNotifications;
 -(void) appDidBecomeActive:(NSNotification*)notification;
 -(void) pushNotificationReceived:(NSDictionary*)userInfo;
 -(void) appWillResignActive:(NSNotification*)notification;
@@ -444,7 +446,7 @@ static bool didSwizzle = false;
         NSCAssert(apiKey.length > 1, @"API Key is invalid (too short): %@", apiKey);
         NSCAssert(userID != nil, @"@UserID must not be nil.", nil);
 
-        BOOL didSetUserId = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key] == nil;
+        isNewUser = [[NSUserDefaults standardUserDefaults] stringForKey:swrve_user_id_key] == nil;
         [[NSUserDefaults standardUserDefaults] setValue:userID forKey:swrve_user_id_key];
 
         [self setupConfig:swrveConfig];
@@ -460,7 +462,6 @@ static bool didSwizzle = false;
         deviceInfo = [NSMutableDictionary dictionary];
 
         install_time = [self getInstallTime:swrveConfig.installTimeCacheFile withSecondaryFile:swrveConfig.installTimeCacheSecondaryFile];
-        lastSessionDate = [self getNow];
 
         [self initSwrveRestClient:config.httpTimeoutSeconds];
 
@@ -510,36 +511,26 @@ static bool didSwizzle = false;
 #else
         DebugLog(@"\nWARNING: \nWe have deprecated the SWRVE_NO_PUSH flag as of release 4.9.1. \nIf you still need to exclude Push, please contact CSM with regards to future releases.\n", nil);
 #endif //!defined(SWRVE_NO_PUSH)
-        [self registerForNotifications];
-        [self updateDeviceInfo];
-
-        if (swrveConfig.talkEnabled) {
-            talk = [[SwrveMessageController alloc] initWithSwrve:self];
-            [self disableAutoShowAfterDelay];
-        }
-
-        [self queueSessionStart];
-        [self queueDeviceProperties];
-
-        // If this is the first time this user has been seen send install analytics
-        if(didSetUserId) {
-            [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:true];
-        }
-
+        [self registerLifecycleCallbacks];
+        
         [self setCampaignsAndResourcesInitialized:NO];
-
+        
         self.campaignsAndResourcesFlushFrequency = [[NSUserDefaults standardUserDefaults] doubleForKey:@"swrve_cr_flush_frequency"];
         if (self.campaignsAndResourcesFlushFrequency <= 0) {
             self.campaignsAndResourcesFlushFrequency = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY / 1000;
         }
-
+        
         self.campaignsAndResourcesFlushRefreshDelay = [[NSUserDefaults standardUserDefaults] doubleForKey:@"swrve_cr_flush_delay"];
         if (self.campaignsAndResourcesFlushRefreshDelay <= 0) {
             self.campaignsAndResourcesFlushRefreshDelay = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY / 1000;
         }
 
-        [self startCampaignsAndResourcesTimer];
+        [self updateDeviceInfo];
 
+        if (self.config.talkEnabled) {
+            talk = [[SwrveMessageController alloc] initWithSwrve:self];
+        }
+        
 #if !defined(SWRVE_NO_PUSH)
         // Check if the launch options of the app has any push notification in it
         if (launchOptions != nil) {
@@ -553,9 +544,28 @@ static bool didSwizzle = false;
 #endif //!defined(SWRVE_NO_PUSH)
     }
 
-    [self sendQueuedEvents];
-
     return self;
+}
+
+- (void) beginSession {
+    // The app has started and thus our session
+    lastSessionDate = [self getNow];
+    [self updateDeviceInfo];
+    
+    if (self.config.talkEnabled) {
+        [self disableAutoShowAfterDelay];
+    }
+    
+    [self queueSessionStart];
+    [self queueDeviceProperties];
+    
+    // If this is the first time this user has been seen send install analytics
+    if (isNewUser) {
+        [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:true];
+    }
+    
+    [self startCampaignsAndResourcesTimer];
+    [self sendQueuedEvents];
 }
 
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut {
@@ -1222,7 +1232,7 @@ static bool didSwizzle = false;
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
 }
 
--(void) registerForNotifications
+-(void) registerLifecycleCallbacks
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appDidBecomeActive:)
@@ -1240,12 +1250,14 @@ static bool didSwizzle = false;
 -(void) appDidBecomeActive:(NSNotification*)notification
 {
 #pragma unused(notification)
-    // Ignore the first call when the SDK is initialised at app start
-    if (ignoreFirstDidBecomeActive) {
-        ignoreFirstDidBecomeActive = NO;
+    if (!initialised) {
+        initialised = YES;
+        // App started the first time
+        [self beginSession];
         return;
     }
 
+    // App became active after a pause
     NSDate* now = [self getNow];
     NSTimeInterval secondsPassed = [now timeIntervalSinceDate:lastSessionDate];
     if (secondsPassed >= self.config.newSessionInterval) {
@@ -1264,7 +1276,7 @@ static bool didSwizzle = false;
         [self sendQueuedEvents];
     }
 
-    if (self.config.talkEnabled) {
+    if (self.config.talkEnabled && self.talk != nil) {
         [self.talk appDidBecomeActive];
     }
     [self resumeCampaignsAndResourcesTimer];
