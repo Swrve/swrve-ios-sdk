@@ -6,12 +6,18 @@
 
 #if COCOAPODS
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
+#if !defined(SWRVE_NO_PUSH)
+#import <SwrveSDKCommon/SwrvePush.h>
+#endif /*!defined(SWRVE_NO_PUSH) */
 #else
 #import "SwrveSignatureProtectedFile.h"
+#if !defined(SWRVE_NO_PUSH)
+#import "SwrvePush.h"
+#endif /*!defined(SWRVE_NO_PUSH) */
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.9.2"
+#define SWRVE_SDK_VERSION "4.10"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve getUserResources.
@@ -331,7 +337,7 @@ NSString * eventsPayloadAsJSON);
  * Once called, it is not safe to call any methods on the Swrve object.
  */
 -(void) shutdown;
-
+#pragma mark - Push
 #if !defined(SWRVE_NO_PUSH)
 /*! Called to send the push engaged event to Swrve
  */
@@ -346,8 +352,7 @@ NSString * eventsPayloadAsJSON);
  */
 - (SwrveSignatureProtectedFile *)getLocationCampaignFile;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @property (atomic, readonly, strong) ImmutableSwrveConfig * config;           /*!< Configuration for this Swrve object */
 @property (atomic, readonly)         long appID;                              /*!< App ID used to initialize this Swrve object. */
@@ -357,7 +362,6 @@ NSString * eventsPayloadAsJSON);
 @property (atomic, readonly)         SwrveMessageController * talk;           /*!< In-app message component. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 @property (atomic, readonly)         NSString* deviceToken;                   /*!< Push notification device token. */
-
 #pragma mark -
 
 @end

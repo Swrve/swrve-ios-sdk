@@ -19,8 +19,6 @@ static NSArray* SUPPORTED_DEVICE_FILTERS;
 static NSArray* SUPPORTED_STATIC_DEVICE_FILTERS;
 static NSArray* ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS;
 
-const static int CAMPAIGN_VERSION            = 6;
-const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
 const static int DEFAULT_MIN_DELAY           = 55;
@@ -158,8 +156,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.assetsManager      = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
 
     CGRect screen_bounds = [sdk getDeviceScreenBounds];
-    self.device_height = (int)screen_bounds.size.width;
-    self.device_width  = (int)screen_bounds.size.height;
+    self.device_height = (int)screen_bounds.size.height;
+    self.device_width  = (int)screen_bounds.size.width;
     self.orientation   = sdk.config.orientation;
     self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
     self.language           = sdk.config.language;
@@ -205,7 +203,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSData* device_token = [[NSUserDefaults standardUserDefaults] objectForKey:swrve_device_token_key];
     if (self.pushEnabled && device_token) {
         // Once we have a device token, ask for it every time
-        [self registerForPushNotifications];
+        [analyticsSDK.push registerForPushNotifications];
         [self setDeviceToken:device_token];
     }
 #endif //!defined(SWRVE_NO_PUSH)
@@ -256,13 +254,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
         [[NSFileManager defaultManager] removeItemAtPath:newPath error:nil];
     }
 }
-
-#if !defined(SWRVE_NO_PUSH)
--(void)registerForPushNotifications
-{
-    [SwrvePermissions requestPushNotifications:self.analyticsSDK withCallback:NO];
-}
-#endif //!defined(SWRVE_NO_PUSH)
 
 - (void)campaignsStateFromDisk:(NSMutableDictionary*)states
 {
@@ -1148,6 +1139,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
+            
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
@@ -1205,7 +1197,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (self.pushEnabled) {
         if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
             // Ask for push notification permission
-            [self registerForPushNotifications];
+            [analyticsSDK.push registerForPushNotifications];
         }
     }
 #endif //!defined(SWRVE_NO_PUSH)
@@ -1276,7 +1268,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 - (void) setDeviceToken:(NSData*)deviceToken
 {
     if (self.pushEnabled && deviceToken) {
-        [self.analyticsSDK setPushNotificationsDeviceToken:deviceToken];
+        [analyticsSDK.push setPushNotificationsDeviceToken:deviceToken];
 
         if (self.qaUser) {
             // If we are a QA user then send a device info update
@@ -1296,7 +1288,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Do not process the push notification if the app was on the foreground
         BOOL appInBackground = applicationState != UIApplicationStateActive;
         if (appInBackground) {
-            [self.analyticsSDK pushNotificationReceived:userInfo];
+            [analyticsSDK.push pushNotificationReceived:userInfo];
             if (self.qaUser) {
                 [self.qaUser pushNotification:userInfo];
             } else {
@@ -1306,6 +1298,18 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
 }
+
+- (void)silentPushReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler
+{
+    if (self.pushEnabled) {
+        [analyticsSDK.push silentPushReceived:userInfo withCompletionHandler:completionHandler];
+    } else {
+        if (completionHandler != nil) {
+            completionHandler(UIBackgroundFetchResultFailed, nil);
+        }
+    }
+}
+
 #endif //!defined(SWRVE_NO_PUSH)
 
 - (BOOL) isQaUser

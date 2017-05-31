@@ -1,6 +1,8 @@
 #import "SwrveMessageDelegate.h"
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
+const static int CAMPAIGN_VERSION            = 6;
+const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 
 @class SwrveBaseCampaign;
 @class SwrveMessage;
@@ -72,6 +74,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (NSString*)getAppStoreURLForGame:(long)appID;
 
+#pragma mark - push support block
 #if !defined(SWRVE_NO_PUSH)
 
 /*! Call this method when you get a push notification device token from Apple.
@@ -92,7 +95,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  * \param applicationState Application state at the time when the push notificatin was received.
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
+
+/*! Process the given silent push.
+ *
+ * \param userInfo Push information.
+ */
+- (void)silentPushReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 #endif //!defined(SWRVE_NO_PUSH)
+#pragma mark -
 
 /*! Creates a new fullscreen UIWindow, adds messageViewController to it and makes
  * it visible. If a message window is already displayed, nothing is done.

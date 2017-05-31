@@ -52,7 +52,7 @@
     if (![app respondsToSelector:@selector(registerUserNotificationSettings:)])
     {
         // Use the old API
-        [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+        [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeNewsstandContentAvailability];
     }
     else
 #endif //__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
@@ -63,7 +63,7 @@
     }
 #else
     // Not building with the latest XCode that contains iOS 8 definitions
-    [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+    [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeNewsstandContentAvailability];
 #endif //defined(__IPHONE_8_0)
 }
 

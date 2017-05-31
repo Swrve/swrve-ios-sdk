@@ -9,8 +9,18 @@
 #import "SwrveCommon.h"
 #endif
 
+
+#if !defined(SWRVE_NO_PUSH)
+#if COCOAPODS
+#import <SwrveSDKCommon/SwrvePush.h>
+#else
+#import "SwrvePush.h"
+#endif
 /*! Swrve SDK main class. */
+@interface Swrve : NSObject<Swrve, SwrveCommonDelegate, SwrveSignatureErrorListener, SwrvePushDelegate>
+#else
 @interface Swrve : NSObject<Swrve, SwrveCommonDelegate, SwrveSignatureErrorListener>
+#endif /* !defined(SWRVE_NO_PUSH)*/
 
 #pragma mark -
 #pragma mark Singleton

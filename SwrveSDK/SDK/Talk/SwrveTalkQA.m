@@ -2,6 +2,7 @@
 #import "SwrveCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrveRESTClient.h"
+#import "SwrvePushConstants.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -236,7 +237,7 @@ enum
         [note setValue:[aps valueForKey:@"badge"] forKey:@"badge"];
 
         // Notify push notification id if available
-        id push_identifier = [notification objectForKey:@"_p"];
+        id push_identifier = [notification objectForKey:SwrvePushIdentifierKey];
         if (push_identifier && ![push_identifier isKindOfClass:[NSNull class]]) {
             [note setValue:push_identifier forKey:@"id"];
         }

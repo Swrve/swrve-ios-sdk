@@ -280,7 +280,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return ISHPermissionStateUnknown;
 }
 
-+(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback {
++ (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback {
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
     
     ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
