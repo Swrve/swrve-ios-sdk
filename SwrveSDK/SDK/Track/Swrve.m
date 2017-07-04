@@ -779,6 +779,8 @@ static dispatch_once_t sharedInstanceToken = 0;
 - (NSString *) convertDateToString:(NSDate* )date {
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
     [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
 
