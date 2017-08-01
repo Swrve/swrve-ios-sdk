@@ -14,6 +14,7 @@ static NSString* swrve_permission_photos                = @"Swrve.permission.ios
 static NSString* swrve_permission_camera                = @"Swrve.permission.ios.camera";
 static NSString* swrve_permission_contacts              = @"Swrve.permission.ios.contacts";
 static NSString* swrve_permission_push_notifications    = @"Swrve.permission.ios.push_notifications";
+static NSString* swrve_permission_push_bg_refresh       = @"Swrve.permission.ios.push_bg_refresh";
 
 static NSString* swrve_permission_requestable           = @".requestable";
 
@@ -46,8 +47,8 @@ static NSString* swrve_permission_requestable           = @".requestable";
 #endif //!defined(SWRVE_NO_ADDRESS_BOOK)
 
 #if !defined(SWRVE_NO_PUSH)
-+ (ISHPermissionState)checkPushNotificationsWithSDK:(id<SwrveCommonDelegate>)sdk;
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback;
++ (NSString*) pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PUSH)
 
 @end
