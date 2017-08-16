@@ -24,7 +24,7 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (BOOL)processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk;
 + (NSDictionary*) currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk;
 + (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk;
-+ (NSArray*) currentPermissionFiltersWithSDK:(id<SwrveCommonDelegate>)sdk;
++ (NSArray*) currentPermissionFilters;
 
 #if !defined(SWRVE_NO_LOCATION)
 + (ISHPermissionState)checkLocationAlways;

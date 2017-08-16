@@ -7,17 +7,17 @@
 #if COCOAPODS
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #if !defined(SWRVE_NO_PUSH)
-#import <SwrveSDKCommon/SwrvePush.h>
+#import <UserNotifications/UserNotifications.h>
 #endif /*!defined(SWRVE_NO_PUSH) */
 #else
 #import "SwrveSignatureProtectedFile.h"
 #if !defined(SWRVE_NO_PUSH)
-#import "SwrvePush.h"
+#import <UserNotifications/UserNotifications.h>
 #endif /*!defined(SWRVE_NO_PUSH) */
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.10.2"
+#define SWRVE_SDK_VERSION "4.11.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve getUserResources.
@@ -342,6 +342,13 @@ NSString * eventsPayloadAsJSON);
 /*! Called to send the push engaged event to Swrve
  */
 -(void) sendPushEngagedEvent:(NSString*)pushId;
+
+/**! Should be included to a push response if not using SwrvePushResponseDelegate **/
+- (void) processNotificationResponse:(UNNotificationResponse *)response;
+
+/**! pre-iOS10 push notification response processing **/
+- (void) processNotificationResponseWithIndentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
+
 #endif //!defined(SWRVE_NO_PUSH)
 
 /*! PRIVATE: Used internally to detect if the app is in the background.

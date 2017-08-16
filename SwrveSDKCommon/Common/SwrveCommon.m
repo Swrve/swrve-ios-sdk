@@ -26,4 +26,14 @@ static id <SwrveCommonDelegate> _sharedInstance = NULL;
   return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0");
 }
 
++ (UIApplication *) sharedUIApplication {
+/** Since Apple Extensions do not support shared Application, we have to dummy them when running just on an extension **/    
+#if !(defined(__has_feature) && __has_feature(attribute_availability_app_extension))
+    return [UIApplication sharedApplication];
+#else
+    // WARNING: this should never be called from an extension
+    return [UIApplication performSelector:@selector(sharedApplication)];
+#endif
+}
+
 @end

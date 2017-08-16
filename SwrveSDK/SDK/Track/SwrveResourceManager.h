@@ -5,7 +5,7 @@
 
 @property (atomic, retain) NSDictionary* attributes;    /*!< Resource attributes */
 
-/*! Create a resource with given attributes.
+/*! Create a resource with the given attributes.
  *
  * \param resourceAttributes Resource attributes.
  * \returns New resource instance with the given attributes.
@@ -43,6 +43,24 @@
  * \returns The value of the attribute or the default value provided.
  */
 - (BOOL) getAttributeAsBool:(NSString*)attributeId withDefault:(BOOL)defaultValue;
+
+@end
+
+/*! Information about an AB Test which the user is part of. */
+@interface SwrveABTestDetails : NSObject
+
+@property (atomic, retain) NSString* id;    /*!< Id of the test */
+@property (atomic, retain) NSString* name;  /*!< Name of the test */
+@property (atomic) int caseIndex;   /*!< Index of the variant this user is part of */
+
+/*! Create an instance with the given attributes.
+ *
+ * \param abTestId Id of the test.
+ * \param name Name of the test.
+ * \param caseIndex Case index assigned to the user.
+ * \returns New AB Test information instance with the given attributes.
+ */
+- (id) initWithId:(NSString*)abTestId name:(NSString*)abTestName caseIndex:(int)abTestCaseIndex;
 
 @end
 
@@ -99,5 +117,11 @@
  * \returns The value of the attribute or the default value provided.
  */
 - (BOOL) getAttributeAsBool:(NSString*)attributeId ofResource:(NSString*)resourceId withDefault:(BOOL)defaultValue;
+
+/*! Get information about the AB Tests a user is part of. To use this feature enable the flag abTestDetailsEnabled in your configuration.
+ *
+ * \returns Array of SwrveABTestDetails.
+ */
+- (NSArray*) abTestDetails;
 
 @end

@@ -44,9 +44,13 @@
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
+@synthesize notificationCategories;
+@synthesize pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
+@synthesize appGroupIdentifier;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
+@synthesize abTestDetailsEnabled;
 
 -(id) init
 {
@@ -146,9 +150,13 @@
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize pushCategories;
+@synthesize notificationCategories;
+@synthesize pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
+@synthesize appGroupIdentifier;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize selectedStack;
+@synthesize abTestDetailsEnabled;
 
 - (id)initWithSwrveConfig:(SwrveConfig*)config
 {
@@ -191,9 +199,13 @@
         pushNotificationEvents = config.pushNotificationEvents;
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         pushCategories = config.pushCategories;
+        notificationCategories = config.notificationCategories;
+        pushResponseDelegate = config.pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
+        appGroupIdentifier = config.appGroupIdentifier;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         selectedStack = config.selectedStack;
+        abTestDetailsEnabled = config.abTestDetailsEnabled;
     }
     
     return self;

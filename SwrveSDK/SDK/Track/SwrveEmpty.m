@@ -176,6 +176,16 @@
 -(void) sendPushEngagedEvent:(NSString*)pushId {
 #pragma unused(pushId)
 }
+
+- (void) processNotificationResponse:(UNNotificationResponse *)response {
+#pragma unused(response)
+}
+
+- (void) processNotificationResponseWithIndentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo {
+#pragma unused(identifier)
+#pragma unused(userInfo)
+}
+
 #endif //!defined(SWRVE_NO_PUSH)
 
 
@@ -215,6 +225,14 @@
 }
 
 -(NSSet*) pushCategories {
+    return nil;
+}
+
+-(NSSet*) notificationCategories{
+    return nil;
+}
+
+-(NSString*) appGroupIdentifier {
     return nil;
 }
 

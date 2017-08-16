@@ -1,4 +1,4 @@
-#if !__has_feature(objc_arc)
+ #if !__has_feature(objc_arc)
     #error Please enable ARC for this project (Project Settings > Build Settings), or add the -fobjc-arc compiler flag to each of the files in the Swrve SDK (Project Settings > Build Phases > Compile Sources)
 #endif
 
@@ -15,6 +15,7 @@
 #import "SwrveFileManagement.h"
 #import "SwrveRESTClient.h"
 #import "SwrveMigrationsManager.h"
+#import "SwrveMessageController.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -78,6 +79,7 @@ enum
 @interface SwrveResourceManager()
 
 - (void)setResourcesFromArray:(NSArray*)json;
+- (void)setABTestDetailsFromDictionary:(NSDictionary*)json;
 
 @end
 
@@ -461,8 +463,13 @@ static dispatch_once_t sharedInstanceToken = 0;
         NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
         [self setCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
 
+        if (config.abTestDetailsEnabled) {
+            [self initABTestDetails];
+        }
+
         [self initResources];
         [self initResourcesDiff];
+
 
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
@@ -486,14 +493,18 @@ static dispatch_once_t sharedInstanceToken = 0;
             if(swrveConfig.autoCollectDeviceToken){
                 [self.push observeSwizzling];
             }
+            
+            if(swrveConfig.pushResponseDelegate != nil){
+                [self.push setResponseDelegate:swrveConfig.pushResponseDelegate];
+            }
 
             [self.push processInfluenceData];
         }
 #else
         DebugLog(@"\nWARNING: \nWe have deprecated the SWRVE_NO_PUSH flag as of release 4.9.1. \nIf you still need to exclude Push, please contact CSM with regards to future releases.\n", nil);
 #endif //!defined(SWRVE_NO_PUSH)
-        [self registerLifecycleCallbacks];
 
+        [self registerLifecycleCallbacks];
         [self setCampaignsAndResourcesInitialized:NO];
 
         self.campaignsAndResourcesFlushFrequency = [[NSUserDefaults standardUserDefaults] doubleForKey:@"swrve_cr_flush_frequency"];
@@ -881,6 +892,16 @@ static dispatch_once_t sharedInstanceToken = 0;
                         [self saveLocationCampaignsInCache:campaignsJson];
                     }
 
+                    if (self.config.abTestDetailsEnabled) {
+                        NSDictionary* campaignJson = [responseDict objectForKey:@"campaigns"];
+                        if (campaignJson != nil) {
+                            id abTestDetailsJson = [campaignJson objectForKey:@"ab_test_details"];
+                            if (abTestDetailsJson != nil && [abTestDetailsJson isKindOfClass:[NSDictionary class]]) {
+                                [self updateABTestDetails:abTestDetailsJson];
+                            }
+                        }
+                    }
+
                     NSArray* resourceJson = [responseDict objectForKey:@"user_resources"];
                     if (resourceJson != nil) {
                         [self updateResources:resourceJson writeToCache:YES];
@@ -924,6 +945,10 @@ static dispatch_once_t sharedInstanceToken = 0;
     if (self.talk && [self.config talkEnabled]) {
         NSString *campaignQueryString = [self.talk getCampaignQueryString];
         [queryString appendFormat:@"&%@", campaignQueryString];
+    }
+
+    if (self.config.abTestDetailsEnabled) {
+        [queryString appendString:@"&ab_test_details=1"];
     }
 
     NSString *etagValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"campaigns_and_resources_etag"];
@@ -1344,6 +1369,28 @@ static dispatch_once_t sharedInstanceToken = 0;
     [self eventInternal:eventName payload:nil triggerCallback:true];
 }
 
+- (void) processNotificationResponseWithIndentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo {
+    DebugLog(@"Processing Push Notification Response: %@", identifier);
+    [self.push pushNotificationResponseReceived:identifier withUserInfo:userInfo];
+}
+
+- (void) processNotificationResponse:(UNNotificationResponse *)response {
+    [self processNotificationResponseWithIndentifier:response.actionIdentifier andUserInfo:response.notification.request.content.userInfo];
+}
+
+- (void) deeplinkReceived:(NSURL*) url {
+    UIApplication *application = [UIApplication sharedApplication];
+    
+    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+        [application openURL:url options:@{} completionHandler:^(BOOL success) {
+            DebugLog(@"opening url [%@] successfully: %d", url, success);
+        }];
+    } else {
+        BOOL success = [application openURL:url];
+        DebugLog(@"opening url [%@] successfully: %d", url, success);
+    }
+}
+
 #endif
 #pragma mark -
 
@@ -1437,6 +1484,18 @@ static NSString* httpScheme(bool useHttps)
 #else
     return nil;
 #endif
+}
+
+- (NSSet*) notificationCategories {
+#if !defined(SWRVE_NO_PUSH)
+    return self.config.notificationCategories;
+#else
+    return nil;
+#endif
+}
+
+- (NSString*) appGroupIdentifier {
+    return self.config.appGroupIdentifier;
 }
 
 - (float) _estimate_dpi {
@@ -1550,6 +1609,12 @@ static NSString* httpScheme(bool useHttps)
     // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
+        
+        // Check device capabilities
+        NSString *supported = ((SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) ? @"true" : @"false");
+        [deviceProperties setValue:supported forKey:@"swrve.support.rich_buttons"];
+        [deviceProperties setValue:supported forKey:@"swrve.support.rich_attachment"];
+        [deviceProperties setValue:supported forKey:@"swrve.support.rich_gif"];
     }
 
     // Optional identifiers
@@ -1567,6 +1632,7 @@ static NSString* httpScheme(bool useHttps)
 
     return deviceProperties;
 }
+
 
 - (CTCarrier*) getCarrierInfo {
 
@@ -1721,11 +1787,12 @@ static NSString* httpScheme(bool useHttps)
     [self setResourcesFile:[[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey] signatureErrorListener:self]];
 
     // Initialize resource manager
-    resourceManager = [[SwrveResourceManager alloc] init];
+    if (resourceManager == nil) {
+        resourceManager = [[SwrveResourceManager alloc] init];
+    }
 
-    // read content of resources file and update resource manager if signature valid
-    NSData* content = [[self resourcesFile] readFromFile];
-
+    // Read content of resources file and update resource manager if signature valid
+    NSData* content = [self.resourcesFile readFromFile];
     if (content != nil) {
         NSError* error = nil;
         NSArray* resourcesArray = [NSJSONSerialization JSONObjectWithData:content options:NSJSONReadingMutableContainers error:&error];
@@ -1737,17 +1804,49 @@ static NSString* httpScheme(bool useHttps)
     }
 }
 
+- (void) initABTestDetails
+{
+    NSURL* fileURL = [NSURL fileURLWithPath:[SwrveFileManagement campaignsFilePath]];
+    NSURL* signatureURL = [NSURL fileURLWithPath:[SwrveFileManagement campaignsSignatureFilePath]];
+    SwrveSignatureProtectedFile* campaignFile = [[SwrveSignatureProtectedFile alloc] initFile:fileURL signatureFilename:signatureURL usingKey:[self getSignatureKey]];
+
+    // Initialize resource manager
+    if (resourceManager == nil) {
+        resourceManager = [[SwrveResourceManager alloc] init];
+    }
+
+    // Read content of campaigns file and update ab test details
+    NSData* content = [campaignFile readFromFile];
+    if (content != nil) {
+        NSError* jsonError;
+        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
+        if (jsonError) {
+            DebugLog(@"Error parsing AB Test details.\nError: %@ %@", [jsonError localizedDescription], [jsonError localizedFailureReason]);
+        } else {
+            id abTestDetailsJson = [jsonDict objectForKey:@"ab_test_details"];
+            if (abTestDetailsJson != nil && [abTestDetailsJson isKindOfClass:[NSDictionary class]]) {
+                [self updateABTestDetails:abTestDetailsJson];
+            }
+        }
+    }
+}
+
+- (void) updateABTestDetails:(NSDictionary*)abTestDetailsJson
+{
+    [self.resourceManager setABTestDetailsFromDictionary:abTestDetailsJson];
+}
+
 - (void) updateResources:(NSArray*)resourceJson writeToCache:(BOOL)writeToCache
 {
-    [[self resourceManager] setResourcesFromArray:resourceJson];
+    [self.resourceManager setResourcesFromArray:resourceJson];
 
     if (writeToCache) {
         NSData* resourceData = [NSJSONSerialization dataWithJSONObject:resourceJson options:0 error:nil];
-        [[self resourcesFile] writeToFile:resourceData];
+        [self.resourcesFile writeToFile:resourceData];
     }
 
-    if ([[self config] resourcesUpdatedCallback] != nil) {
-        [[[self config] resourcesUpdatedCallback] invoke];
+    if (self.config.resourcesUpdatedCallback != nil) {
+        [self.config.resourcesUpdatedCallback invoke];
     }
 }
 
@@ -1867,9 +1966,10 @@ enum HttpStatus {
 
 // Convert the array of strings into a json array.
 // This does not add the square brackets.
-- (NSString*) copyBufferToJson:(NSArray*) buffer
-{
-    return [buffer componentsJoinedByString:@",\n"];
+- (NSString*) copyBufferToJson:(NSArray*) buffer {
+    @synchronized (buffer) {
+        return [buffer componentsJoinedByString:@",\n"];
+    }
 }
 
 - (NSString*) createJSON:(NSString*)sessionToken events:(NSString*)rawEvents

@@ -262,6 +262,8 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         }
         
         buttonView.accessibilityLabel = [NSString stringWithFormat:@"TalkButton_%d_%@", buttonTag, buttonType];
+        //Used by sdk systemtests
+        buttonView.accessibilityIdentifier = button.name;
         [containerView addSubview:buttonView];
         buttonTag++;
     }

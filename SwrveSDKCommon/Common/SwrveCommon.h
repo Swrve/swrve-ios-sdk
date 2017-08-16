@@ -14,6 +14,8 @@
 -(NSString*) swrveSDKVersion;
 -(NSString*) appVersion;
 -(NSSet*) pushCategories;
+-(NSSet*) notificationCategories;
+-(NSString*) appGroupIdentifier;
 
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString *userID;
@@ -28,7 +30,7 @@
 +(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
 + (NSString *)swrveCacheFolder;
 +(BOOL)supportedOS;
-
++(UIApplication *) sharedUIApplication;
 @end
 
 #pragma clang diagnostic push
@@ -43,8 +45,8 @@
 #pragma clang diagnostic pop
 
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)
-
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 /*! Result codes for Swrve methods. */
 enum

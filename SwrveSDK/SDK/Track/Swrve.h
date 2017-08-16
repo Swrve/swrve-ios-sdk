@@ -9,12 +9,13 @@
 #import "SwrveCommon.h"
 #endif
 
-
 #if !defined(SWRVE_NO_PUSH)
 #if COCOAPODS
 #import <SwrveSDKCommon/SwrvePush.h>
+#import <SwrveSDKCommon/SwrvePushInternalAccess.h>
 #else
 #import "SwrvePush.h"
+#import "SwrvePushInternalAccess.h"
 #endif
 /*! Swrve SDK main class. */
 @interface Swrve : NSObject<Swrve, SwrveCommonDelegate, SwrveSignatureErrorListener, SwrvePushDelegate>

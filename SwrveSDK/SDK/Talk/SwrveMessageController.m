@@ -9,11 +9,10 @@
 #import "SwrveInternalAccess.h"
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveAssetsManager.h"
+#import "SwrveFileManagement.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-static NSString* swrve_campaign_cache = @"cmcc2.json";
-static NSString* swrve_campaign_cache_signature = @"cmccsgt2.txt";
 static NSString* swrve_device_token_key = @"swrve_device_token";
 static NSArray* SUPPORTED_DEVICE_FILTERS;
 static NSArray* SUPPORTED_STATIC_DEVICE_FILTERS;
@@ -235,13 +234,13 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSString* applicationSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
 
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
-    self.campaignCache      = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache];
-    self.campaignCacheSignature = [applicationSupport stringByAppendingPathComponent:swrve_campaign_cache_signature];
+    self.campaignCache      = [SwrveFileManagement campaignsFilePath];
+    self.campaignCacheSignature = [SwrveFileManagement campaignsSignatureFilePath];
     
     // Files were in this locations in lower than 4.5.1 (caches dir) and we need to move them to the new location
     NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
-    NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache];
-    NSString* oldCampaignCacheSignature = [cacheRoot stringByAppendingPathComponent:swrve_campaign_cache_signature];
+    NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:SWRVE_CAMPAIGNS];
+    NSString* oldCampaignCacheSignature = [cacheRoot stringByAppendingPathComponent:SWRVE_CAMPAIGNS_SGT];
     [SwrveMessageController migrateOldCacheFile:oldSettingsPath withNewPath:self.settingsPath];
     [SwrveMessageController migrateOldCacheFile:oldCampaignCache withNewPath:self.campaignCache];
     [SwrveMessageController migrateOldCacheFile:oldCampaignCacheSignature withNewPath:self.campaignCacheSignature];
@@ -388,7 +387,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(NSArray*)getCurrentlySupportedDeviceFilters {
     NSMutableArray* supported = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
-    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFiltersWithSDK:analyticsSDK];
+    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFilters];
     [supported addObjectsFromArray:currentPermissionFilters];
     return supported;
 }

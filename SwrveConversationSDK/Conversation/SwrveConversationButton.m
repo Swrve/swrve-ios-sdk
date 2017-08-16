@@ -51,6 +51,8 @@
     if(_view == nil) {
         SwrveConversationUIButton *button = [SwrveConversationUIButton buttonWithType:UIButtonTypeCustom];
         [button setTitle:_description forState:UIControlStateNormal];
+        //Used by sdk systemtests
+        button.accessibilityIdentifier = _description;
         _view = button;
     }
     return _view;

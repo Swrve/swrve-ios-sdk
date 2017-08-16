@@ -19,4 +19,16 @@
     return appSupportDir;
 }
 
++ (NSString *)campaignsFilePath {
+    NSString *applicationSupport = [SwrveFileManagement applicationSupportPath];
+    NSString *campaignFilePath = [applicationSupport stringByAppendingPathComponent:SWRVE_CAMPAIGNS];
+    return campaignFilePath;
+}
+
++ (NSString *)campaignsSignatureFilePath {
+    NSString *applicationSupport = [SwrveFileManagement applicationSupportPath];
+    NSString *campaignSignatureFilePath = [applicationSupport stringByAppendingPathComponent:SWRVE_CAMPAIGNS_SGT];
+    return campaignSignatureFilePath;
+}
+
 @end

@@ -7,11 +7,13 @@
 
 @synthesize currentRating = _currentRating;
 @synthesize starColor = _starColor;
+@synthesize description = _description;
 
 - (id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag andType:kSwrveContentStarRating];
     if(self) {
         _starColor = [dict objectForKey:kSwrveKeyStarColor];
+        _description = [dict objectForKey:@"value"];
     }
     
     self.delegate = self;
@@ -27,6 +29,8 @@
     
     [SwrveConversationStyler styleStarRating:(SwrveContentStarRatingView *)_view withStyle:self.style withStarColor:_starColor];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
+    //Used by sdk systemtests
+    _view.accessibilityIdentifier = _description;
 }
 
 -(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {

@@ -53,7 +53,32 @@
 
 @end
 
+/*
+ * SwrveResource: A collection of attributes
+ */
+@implementation SwrveABTestDetails
 
+@synthesize id;
+@synthesize name;
+@synthesize caseIndex;
+
+- (id) initWithId:(NSString*)abTestId name:(NSString*)abTestName caseIndex:(int)abTestCaseIndex
+{
+    if (self = [super init]) {
+        self.id = abTestId;
+        self.name = abTestName;
+        self.caseIndex = abTestCaseIndex;
+    }
+    return self;
+}
+
+@end
+
+@interface SwrveResourceManager()
+{
+    NSArray* abTestDetails;
+}
+@end
 
 @implementation SwrveResourceManager
 
@@ -63,6 +88,7 @@
 {
     if (self = [super init]) {
         resources = [[NSDictionary alloc] init];
+        abTestDetails = [[NSArray alloc] init];
     }
     return self;
 }
@@ -127,6 +153,24 @@
         return [resource getAttributeAsBool:attributeId withDefault:defaultValue];
     }
     return defaultValue;
+}
+
+- (void)setABTestDetailsFromDictionary:(NSDictionary*)abTestDetailsListDic
+{
+    NSMutableArray* abTestDetailsArray = [[NSMutableArray alloc] init];
+    for(id abTestId in abTestDetailsListDic) {
+        NSDictionary* abTestDetailsDic = [abTestDetailsListDic objectForKey:abTestId];
+        NSString* abTestName = [abTestDetailsDic valueForKey:@"name"];
+        NSNumber* abTestCaseIndex = [abTestDetailsDic valueForKey:@"case_index"];
+        
+        SwrveABTestDetails* abDetails = [[SwrveABTestDetails alloc] initWithId:(NSString*)abTestId name:abTestName caseIndex:abTestCaseIndex.intValue];
+        [abTestDetailsArray addObject:abDetails];
+    }
+    abTestDetails = abTestDetailsArray;
+}
+
+- (NSArray*) abTestDetails {
+    return abTestDetails;
 }
 
 @end

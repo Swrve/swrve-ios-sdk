@@ -7,5 +7,6 @@
 
 @property (readwrite, nonatomic) float      currentRating;
 @property (readonly, nonatomic) NSString   *starColor;
+@property (readonly, nonatomic) NSString   *description;
 
 @end

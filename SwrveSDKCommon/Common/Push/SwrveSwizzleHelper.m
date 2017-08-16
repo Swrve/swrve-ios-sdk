@@ -35,11 +35,19 @@ static Method _class_getInstanceMethodSelfOrParents(Class c, SEL selector) {
     return NULL;
 }
 
+/** the empty implementation is there to replace the NULL **/
+static void emptyImplementation(__strong id identifier ,SEL selector,NSObject * ojb, NSError* error) {
+#pragma unused(identifier)
+#pragma unused(selector)
+#pragma unused(ojb)
+#pragma unused(error)
+}
+
 + (void) deswizzleMethod:(SEL)selector inClass:(Class)c originalImplementation:(IMP)originalImplementation
 {
     Method originalMethod = class_getInstanceMethod(c, selector);
     if (originalImplementation == NULL) {
-        method_setImplementation(originalMethod, NULL);
+        method_setImplementation(originalMethod, (IMP) emptyImplementation);
     } else {
         method_setImplementation(originalMethod, originalImplementation);
     }

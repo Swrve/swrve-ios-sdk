@@ -3,6 +3,14 @@
 #import "SwrveConfig.h"
 #import "SwrveReceiptProvider.h"
 
+#if !defined(SWRVE_NO_PUSH)
+#if COCOAPODS
+#import <SwrveSDKCommon/SwrvePush.h>
+#else
+#import "SwrvePush.h"
+#endif
+#endif /*!defined(SWRVE_NO_PUSH) */
+
 /*! Swrve stack names. */
 enum SwrveStack {
     SWRVE_STACK_US,
@@ -107,7 +115,28 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * push notification permissions with UIUserNotificationSettings.
  */
 @property (nonatomic, copy) NSSet* pushCategories;
+
+/*! Set of iOS10+ interactive push notification categories (UNUser). 
+ * Intialise this set only if running on an iOS10+ device with the interactive actions that
+ * your app supports for push notifications. Will be used when registering for
+ * notification permissions with UNUserNotificationCenter
+ */
+@property (nonatomic, copy) NSSet* notificationCategories;
+
+/*!
+ * This is an optional delegate that can be extended to fire rich push responses from a class of your choice.
+ * For this to work effectively, please ensure it is added before Swrve initialisation and initialisation happens
+ * before the application has finished loading.
+ */
+@property (nonatomic) id<SwrvePushResponseDelegate> pushResponseDelegate;
+
 #endif //!defined(SWRVE_NO_PUSH)
+
+/*! NSString indentifier which refers to the app group that stores settings information.
+ *  Intialise this if you are using extensions and want to share data across to swrve.
+ *  The appGroupIdentifier must match the one used in the accompanying extension to be shared correcly.
+ */
+@property (nonatomic, copy) NSString* appGroupIdentifier;
 
 /*! Maximum delay for in-app messages to appear after initialization. */
 @property (nonatomic) long autoShowMessagesMaxDelay;
@@ -249,6 +278,10 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  */
 @property (nonatomic) enum SwrveStack selectedStack;
 
+/*! Obtain information about the AB Tests a user is part of.
+ */
+@property (nonatomic) BOOL abTestDetailsEnabled;
+
 @end
 
 /*! Immutable copy of a SwrveConfig object */
@@ -299,8 +332,12 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 @property (nonatomic, readonly) NSSet* pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet* pushCategories;
+@property (nonatomic, readonly) NSSet* notificationCategories;
+@property (nonatomic, readonly) id<SwrvePushResponseDelegate> pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
+@property (nonatomic, readonly) NSString *appGroupIdentifier;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
 @property (nonatomic, readonly) enum SwrveStack selectedStack;
+@property (nonatomic) BOOL abTestDetailsEnabled;
 
 @end

@@ -1,0 +1,15 @@
+target 'RichPushSample' do
+  pod 'SwrveSDKCommon', :path => '../../..'
+  pod 'SwrveConversationSDK', :path => '../../..'
+  pod 'SwrveSDK', :path => '../../..'
+
+  # use remote podfile by commenting out above and uncommenting below
+  #pod 'SwrveSDK', '5.0'
+end
+
+target 'RichPushSampleServiceExtension' do
+  pod 'SwrveSDKCommon', :path => '../../..'
+  
+  #use remote podfile by commenting out above and uncommenting below
+  #pod 'SwrveSDKCommon', '5.0'
+end
