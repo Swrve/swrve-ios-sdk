@@ -95,14 +95,19 @@ static NSMutableDictionary* permissionsStatusCache;
 #endif //!defined(SWRVE_NO_PUSH)
 
     [SwrvePermissions updatePermissionsStatusCache:permissionsStatus];
+    
     return permissionsStatus;
 }
 
 + (void)updatePermissionsStatusCache:(NSMutableDictionary *)permissionsStatus {
+    
     if (permissionsStatusCache == nil) {
         permissionsStatusCache = [[NSMutableDictionary alloc] init];
     }
-    [permissionsStatusCache addEntriesFromDictionary:permissionsStatus];
+    
+    @synchronized (permissionsStatusCache) {
+        [permissionsStatusCache addEntriesFromDictionary:permissionsStatus];
+    }
 }
 
 #if !defined(SWRVE_NO_PUSH)
@@ -170,20 +175,26 @@ static NSMutableDictionary* permissionsStatusCache;
 
 +(NSArray*)currentPermissionFilters {
     NSMutableArray* filters = [[NSMutableArray alloc] init];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:permissionsStatusCache];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_when_in_use to:filters withCurrentStatus:permissionsStatusCache];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:permissionsStatusCache];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:permissionsStatusCache];
-    [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:permissionsStatusCache];
     
-    // Check that we haven't already asked for push permissions
-    if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
-        NSString *currentPushPermission = [permissionsStatusCache objectForKey:swrve_permission_push_notifications];
-        if ([currentPushPermission isEqualToString:swrve_permission_status_denied]) {
-            [filters addObject:[[swrve_permission_push_notifications lowercaseString] stringByAppendingString:swrve_permission_requestable]];
-        }
+    if(permissionsStatusCache == nil) {
+        return filters;
     }
     
+    @synchronized (permissionsStatusCache) {
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:permissionsStatusCache];
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_when_in_use to:filters withCurrentStatus:permissionsStatusCache];
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:permissionsStatusCache];
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:permissionsStatusCache];
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:permissionsStatusCache];
+        
+        // Check that we haven't already asked for push permissions
+        if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
+            NSString *currentPushPermission = [permissionsStatusCache objectForKey:swrve_permission_push_notifications];
+            if ([currentPushPermission isEqualToString:swrve_permission_status_denied]) {
+                [filters addObject:[[swrve_permission_push_notifications lowercaseString] stringByAppendingString:swrve_permission_requestable]];
+            }
+        }
+    }
     return filters;
 }
 
@@ -192,6 +203,11 @@ static NSMutableDictionary* permissionsStatusCache;
 }
 
 +(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
+    
+    if(currentStatus != nil){
+        return;
+    }
+    
     if ([[currentStatus objectForKey:permissionName] isEqualToString:swrve_permission_status_unknown]) {
         [filters addObject:[[permissionName lowercaseString] stringByAppendingString:swrve_permission_requestable]];
     }

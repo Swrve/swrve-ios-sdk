@@ -92,7 +92,8 @@
         }
         
         NSMutableArray *intentIdentifiers = [NSMutableArray array];
-        NSString *categoryKey = [NSString stringWithFormat:@"swrve-%@", [userInfo objectForKey:SwrvePushIdentifierKey]];
+    
+        NSString *categoryKey = [NSString stringWithFormat:@"swrve-%@-%@", [userInfo objectForKey:SwrvePushIdentifierKey], [[NSUUID UUID] UUIDString]];
         UNNotificationCategory* category = [UNNotificationCategory categoryWithIdentifier:categoryKey actions:actions intentIdentifiers:intentIdentifiers options:[self categoryOptionsForKeys:[richDict objectForKey:SwrvePushButtonOptionsKey]]];
         return category;
     } else{
