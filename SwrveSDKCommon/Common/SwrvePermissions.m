@@ -204,7 +204,7 @@ static NSMutableDictionary* permissionsStatusCache;
 
 +(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
     
-    if(currentStatus != nil){
+    if(currentStatus == nil){
         return;
     }
     

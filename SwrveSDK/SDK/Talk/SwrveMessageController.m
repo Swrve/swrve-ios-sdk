@@ -236,7 +236,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.settingsPath       = [applicationSupport stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     self.campaignCache      = [SwrveFileManagement campaignsFilePath];
     self.campaignCacheSignature = [SwrveFileManagement campaignsSignatureFilePath];
-    
+
     // Files were in this locations in lower than 4.5.1 (caches dir) and we need to move them to the new location
     NSString* oldSettingsPath       = [cacheRoot stringByAppendingPathComponent:@"com.swrve.messages.settings.plist"];
     NSString* oldCampaignCache      = [cacheRoot stringByAppendingPathComponent:SWRVE_CAMPAIGNS];
@@ -299,7 +299,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-    
+
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
     } else if(data)
@@ -672,7 +672,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return nil;
     }
-    
+
     NSDate* now = [self.analyticsSDK getNow];
     SwrveMessage* result = nil;
     SwrveCampaign* campaign = nil;
@@ -784,7 +784,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return nil;
     }
-    
+
     NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
     SwrveConversationCampaign* campaign = nil;
@@ -1138,7 +1138,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
-            
+
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
@@ -1187,7 +1187,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return NO;
     }
-    
+
     // Get event name
     NSString* eventName = [self getEventName:event];
     NSDictionary *payload = [event objectForKey:@"payload"];
@@ -1366,12 +1366,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return result;
     }
-    
+
     NSDate* now = [self.analyticsSDK getNow];
     for(SwrveBaseCampaign* campaign in self.campaigns) {
         NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
         if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:assetsOnDisk]) {
-            [result addObject:campaign];
+            [result addObject:campaign];            
         }
     }
     return result;
@@ -1382,7 +1382,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return NO;
     }
-    
+
     NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
     if (!campaign.messageCenter || ![campaign assetsReady:assetsOnDisk]) {
         return NO;
