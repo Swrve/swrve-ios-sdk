@@ -1,5 +1,5 @@
 #import "SwrveEmpty.h"
-#if COCOAPODS
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
 #else
 #import "SwrveCommon.h"

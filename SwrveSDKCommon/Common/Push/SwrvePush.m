@@ -23,6 +23,10 @@ static dispatch_once_t sharedInstanceToken = 0;
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
     didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
+    
+    // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
+    // This would result in bad engagement reports etc. This var is used to check that the same push id can't be processed in sequence.
+    NSString* lastProcessedPushId;
 }
 @end
 
@@ -158,22 +162,29 @@ static dispatch_once_t sharedInstanceToken = 0;
             return;
         }
         
-        // Engagement replaces Influence Data
-        [self clearInfluenceDataForPushId:pushId];
+        // Only process this push if we haven't seen it before or its a QA push
+        if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"] || ![pushId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushId;
         
-        // Process deeplink _sd (and old _d)
-        id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
-        if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-            // Retrieve old push deeplink for backwards compatibility
-            pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeprecatedDeeplinkKey];
+            // Engagement replaces Influence Data
+            [self clearInfluenceDataForPushId:pushId];
+            
+            // Process deeplink _sd (and old _d)
+            id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
+            if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                // Retrieve old push deeplink for backwards compatibility
+                pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeprecatedDeeplinkKey];
+            }
+            if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+                [self handlePushDeeplinkString:pushDeeplink];
+            }
+            
+            [_pushDelegate sendPushEngagedEvent:pushId];
+            DebugLog(@"Got Swrve notification with ID %@", pushId);
+        } else {
+            DebugLog(@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId);
         }
-        if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-            NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-            [self handlePushDeeplinkString:pushDeeplink];
-        }
-        
-        [_pushDelegate sendPushEngagedEvent:pushId];
-        DebugLog(@"Got Swrve notification with ID %@", pushId);
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
@@ -196,62 +207,69 @@ static dispatch_once_t sharedInstanceToken = 0;
             return;
         }
         
-        // Engagement replaces Influence Data
-        [self clearInfluenceDataForPushId:pushId];
+        // Only process this push if we haven't seen it before or its a QA push
+        if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"] || ![pushId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushId;
             
-        if([identifier isEqualToString:SwrvePushResponseDefaultActionKey]) {
-            // if the user presses the push directly
-            id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
-            if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-                // Retrieve old push deeplink for backwards compatibility
-                pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeprecatedDeeplinkKey];
-            }
-            if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
-                NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
-                [self handlePushDeeplinkString:pushDeeplink];
-            }
-            
-            [_pushDelegate sendPushEngagedEvent:pushId];
-            DebugLog(@"Performed a Direct Press on Swrve notification with ID %@", pushId);
-            
-        }else{
-            
-            NSDictionary *swrveValues = [userInfo objectForKey:SwrvePushContentIdentifierKey];
-            NSArray *swrvebuttons = [swrveValues objectForKey:SwrvePushButtonListKey];
-            
-            if(swrvebuttons != nil && [swrvebuttons count] > 0){
-                int position = [identifier intValue];
+            // Engagement replaces Influence Data
+            [self clearInfluenceDataForPushId:pushId];
                 
-                NSDictionary *selectedButton = [swrvebuttons objectAtIndex:(NSUInteger)position];
-                NSString *action = [selectedButton objectForKey:SwrvePushButtonActionKey];
-                NSString *actionType = [selectedButton objectForKey:SwrvePushButtonActionTypeKey];
-                NSString *actionText = [selectedButton objectForKey:SwrvePushButtonTitleKey];
-                // Process deeplink if available in Action
-                if([actionType isEqualToString:SwrvePushCustomButtonUrlIdentiferKey]){
-                    [self handlePushDeeplinkString:action];
+            if([identifier isEqualToString:SwrvePushResponseDefaultActionKey]) {
+                // if the user presses the push directly
+                id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
+                if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                    // Retrieve old push deeplink for backwards compatibility
+                    pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeprecatedDeeplinkKey];
+                }
+                if ([pushDeeplinkRaw isKindOfClass:[NSString class]]) {
+                    NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
+                    [self handlePushDeeplinkString:pushDeeplink];
                 }
                 
-                // Send button click event.
-                DebugLog(@"Selected Button:'%@' on Swrve notification with ID %@", identifier, pushId);
-                NSMutableDictionary* actionEvent = [[NSMutableDictionary alloc] init];
-                [actionEvent setValue:pushId forKey:@"id"];
-                [actionEvent setValue:@"push" forKey:@"campaignType"];
-                [actionEvent setValue:@"button_click" forKey:@"actionType"];
-                [actionEvent setValue:identifier forKey:@"contextId"];
-                NSMutableDictionary* eventPayload = [[NSMutableDictionary alloc] init];
-                [eventPayload setValue:actionText forKey:@"buttonText"];
-                [actionEvent setValue:eventPayload forKey:@"payload"];
-                
-                // Create generic campaign for button click
-                [_commonDelegate queueEvent:@"generic_campaign_event" data:actionEvent triggerCallback:NO];
-                [_commonDelegate sendQueuedEvents];
-                
-                // Send push EngagedEvent
                 [_pushDelegate sendPushEngagedEvent:pushId];
+                DebugLog(@"Performed a Direct Press on Swrve notification with ID %@", pushId);
                 
             }else{
-                DebugLog(@"Receieved a push with an unrecognised identifier %@", identifier);
+                
+                NSDictionary *swrveValues = [userInfo objectForKey:SwrvePushContentIdentifierKey];
+                NSArray *swrvebuttons = [swrveValues objectForKey:SwrvePushButtonListKey];
+                
+                if(swrvebuttons != nil && [swrvebuttons count] > 0){
+                    int position = [identifier intValue];
+                    
+                    NSDictionary *selectedButton = [swrvebuttons objectAtIndex:(NSUInteger)position];
+                    NSString *action = [selectedButton objectForKey:SwrvePushButtonActionKey];
+                    NSString *actionType = [selectedButton objectForKey:SwrvePushButtonActionTypeKey];
+                    NSString *actionText = [selectedButton objectForKey:SwrvePushButtonTitleKey];
+                    // Process deeplink if available in Action
+                    if([actionType isEqualToString:SwrvePushCustomButtonUrlIdentiferKey]){
+                        [self handlePushDeeplinkString:action];
+                    }
+                    
+                    // Send button click event.
+                    DebugLog(@"Selected Button:'%@' on Swrve notification with ID %@", identifier, pushId);
+                    NSMutableDictionary* actionEvent = [[NSMutableDictionary alloc] init];
+                    [actionEvent setValue:pushId forKey:@"id"];
+                    [actionEvent setValue:@"push" forKey:@"campaignType"];
+                    [actionEvent setValue:@"button_click" forKey:@"actionType"];
+                    [actionEvent setValue:identifier forKey:@"contextId"];
+                    NSMutableDictionary* eventPayload = [[NSMutableDictionary alloc] init];
+                    [eventPayload setValue:actionText forKey:@"buttonText"];
+                    [actionEvent setValue:eventPayload forKey:@"payload"];
+                    
+                    // Create generic campaign for button click
+                    [_commonDelegate queueEvent:@"generic_campaign_event" data:actionEvent triggerCallback:NO];
+                    [_commonDelegate sendQueuedEvents];
+                    
+                    // Send push EngagedEvent
+                    [_pushDelegate sendPushEngagedEvent:pushId];
+                    
+                }else{
+                    DebugLog(@"Receieved a push with an unrecognised identifier %@", identifier);
+                }
             }
+        } else {
+           DebugLog(@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId);
         }
     } else {
         DebugLog(@"Got unidentified notification", nil);
@@ -264,11 +282,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     BOOL canOpen = [[SwrveCommon sharedUIApplication] canOpenURL:url];
     if( url != nil && canOpen ) {
         DebugLog(@"Action - %@ - handled.  Sending to application as URL", pushDeeplink);
-#if !(defined(__has_feature) && __has_feature(attribute_availability_app_extension))
-        [[SwrveCommon retrieveSharedUIApplication] openURL:url];
-#else
         [_pushDelegate deeplinkReceived:url];
-#endif
     } else {
         DebugLog(@"Could not process push deeplink - %@", pushDeeplink);
     }
@@ -433,7 +447,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     }
 }
 
+#ifdef __IPHONE_11_0
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler {
+#else
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
+#endif
 #pragma unused(center)
     
     [self pushNotificationResponseReceived:response.actionIdentifier withUserInfo:response.notification.request.content.userInfo];
@@ -464,28 +482,35 @@ static dispatch_once_t sharedInstanceToken = 0;
             DebugLog(@"Unknown Swrve notification ID class for _sp attribute", nil);
             return;
         }
+     
+        // Only process this push if we haven't seen it before or its a QA push
+        if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"]  || ![pushId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = pushId;
+            
+            [SwrvePush saveInfluencedData:userInfo withPushId:pushId atDate:[self getNow]];
         
-        [SwrvePush saveInfluencedData:userInfo withPushId:pushId atDate:[self getNow]];
-        
-        DebugLog(@"Got Swrve silent notification with ID %@", pushId);
+            if (completionHandler != nil) {
+                // The SDK currently does no fetch operation on its own but will in future releases
+                
+                // Obtain the silent push payload and call the customers code
+                @try {
+                    id silentPayloadRaw = [userInfo objectForKey:SwrveSilentPushPayloadKey];
+                    if (silentPayloadRaw != nil && [silentPayloadRaw isKindOfClass:[NSDictionary class]]) {
+                        completionHandler(UIBackgroundFetchResultNoData, (NSDictionary*)silentPayloadRaw);
+                    } else {
+                        completionHandler(UIBackgroundFetchResultNoData, nil);
+                    }
+                } @catch (NSException* exception) {
+                    DebugLog(@"Could not execute the silent push listener: %@", exception.reason);
+                }
+            }
+            
+            DebugLog(@"Got Swrve silent notification with ID %@", pushId);
+        } else {
+            DebugLog(@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId);
+        }
     } else {
         DebugLog(@"Got unidentified notification", nil);
-    }
-    
-    if (completionHandler != nil) {
-        // The SDK currently does no fetch operation on its own but will in future releases
-        
-        // Obtain the silent push payload and call the customers code
-        @try {
-            id silentPayloadRaw = [userInfo objectForKey:SwrveSilentPushPayloadKey];
-            if (silentPayloadRaw != nil && [silentPayloadRaw isKindOfClass:[NSDictionary class]]) {
-                completionHandler(UIBackgroundFetchResultNoData, (NSDictionary*)silentPayloadRaw);
-            } else {
-                completionHandler(UIBackgroundFetchResultNoData, nil);
-            }
-        } @catch (NSException* exception) {
-            DebugLog(@"Could not execute the silent push listener: %@", exception.reason);
-        }
     }
 }
 

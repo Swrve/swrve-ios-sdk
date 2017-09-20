@@ -56,8 +56,8 @@
 /*! Create an instance with the given attributes.
  *
  * \param abTestId Id of the test.
- * \param name Name of the test.
- * \param caseIndex Case index assigned to the user.
+ * \param abTestName Name of the test.
+ * \param abTestCaseIndex Case index assigned to the user.
  * \returns New AB Test information instance with the given attributes.
  */
 - (id) initWithId:(NSString*)abTestId name:(NSString*)abTestName caseIndex:(int)abTestCaseIndex;

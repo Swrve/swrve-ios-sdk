@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#if COCOAPODS
+#if __has_include(<SwrveConversationSDK/SwrveBaseConversation.h>)
 #import <SwrveConversationSDK/SwrveBaseConversation.h>
 #else
 #import "SwrveBaseConversation.h"

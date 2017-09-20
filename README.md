@@ -13,11 +13,17 @@ Add the following line to your Podfile
 ```
 pod ‘SwrveSDK’
 ```
+Installing using Carthage (iOS 8+)
+--------------------------
+You can use [Carthage](https://github.com/Carthage/Carthage) to install `Swrve` by adding it to your `Cartfile`:
 
+```
+github "Swrve/swrve-ios-sdk"
+```
 Requirements
 ------------
 ### Xcode (latest)
-The SDK supports iOS 6+ and the latest version of Xcode (Xcode 6, as the time of writing).
+The SDK supports iOS 8+ and the latest version of Xcode (Xcode 8, as the time of writing). The SDK will handle older versions of the OS with a dummy SDK.
 
 How to run the demo
 -------------------

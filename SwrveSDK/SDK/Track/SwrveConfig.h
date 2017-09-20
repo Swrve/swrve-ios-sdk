@@ -4,7 +4,7 @@
 #import "SwrveReceiptProvider.h"
 
 #if !defined(SWRVE_NO_PUSH)
-#if COCOAPODS
+#if __has_include(<SwrveSDKCommon/SwrvePush.h>)
 #import <SwrveSDKCommon/SwrvePush.h>
 #else
 #import "SwrvePush.h"
@@ -20,7 +20,7 @@ enum SwrveStack {
 /*! Defines the block signature for being notified when the resources
  * have been updated with new content.
  */
-typedef void (^SwrveResourcesUpdatedListener) ();
+typedef void (^SwrveResourcesUpdatedListener) (void);
 
 /*! Advanced configuration for the Swrve SDK. */
 @interface SwrveConfig : NSObject
@@ -183,7 +183,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
 /**
  * \deprecated
  * Store signature to verify content of eventCacheFile. */
-@property (nonatomic, retain) NSString * eventCacheSignatureFile;
+@property (nonatomic, retain) __attribute__((deprecated)) NSString * eventCacheSignatureFile;
 
 
 /*! The location campaign cache stores data that has not yet been sent to Swrve.
@@ -264,7 +264,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \deprecated
  * No longer used.
  */
-@property (nonatomic) int maxConcurrentDownloads;
+@property (nonatomic) __attribute__((deprecated)) int maxConcurrentDownloads;
 
 /*! Internal Only.
  * Used to get a base64 encoded string of the receipt associated
@@ -318,7 +318,7 @@ typedef void (^SwrveResourcesUpdatedListener) ();
  * \deprecated
  * No longer used.
  */
-@property (nonatomic, readonly) int maxConcurrentDownloads;
+@property (nonatomic, readonly) __attribute__((deprecated)) int maxConcurrentDownloads;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) BOOL talkEnabled;
 @property (nonatomic, readonly) UIColor* defaultBackgroundColor;

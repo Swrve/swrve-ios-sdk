@@ -23,7 +23,6 @@
 /*! Processes APNs Notification that comes in from a Service Extension
  *  and adds all the additional campaign content.
  *  App Group Intentifier is used for storing influence so it can be tracked by Swrve in the Main App.
- * \returns A UNMutableNotificationContent object in the callback.
  */
 + (void)handleNotificationContent:(UNNotificationContent *) notificationContent withAppGroupIdentifier:(NSString *)appGroupIdentifier
      withCompletedContentCallback:(void (^)(UNMutableNotificationContent * content))callback;

@@ -96,11 +96,23 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  */
 - (void)pushNotificationReceived:(NSDictionary*)userInfo atApplicationState:(UIApplicationState)applicationState;
 
-/*! Process the given silent push.
+/*! Process the given silent push. The completion handler is called if a silent push notification was received with the fetch result
+ *  and the custom payloads as parameters.
+ *
+ * \deprecated
+ * \param userInfo Push information.
+ * \param completionHandler Completion handler, only called for silent push notifications.
+ */
+- (void)silentPushReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler __deprecated_msg("Use didReceiveRemoteNotification:withBackgroundCompletionHandler: instead");
+
+/*! Process the push notification in the background. The completion handler is called if a silent push notification was received with the
+ *  fetch result and the custom payloads as parameters.
  *
  * \param userInfo Push information.
+ * \param completionHandler Completion handler, only called for silent push notifications.
+ * \returns If a Swrve silent push notification was handled by the Swrve SDK. In that case the payload and calls to the parent completionHandler will have to be done inside the completionHandler parameter.
  */
-- (void)silentPushReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 #endif //!defined(SWRVE_NO_PUSH)
 #pragma mark -
 

@@ -110,7 +110,6 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
     
     /**
      *  Permission required to schedule remote notifications.
-     *  @endcode
      */
     ISHPermissionCategoryNotificationRemote = 8300
 };

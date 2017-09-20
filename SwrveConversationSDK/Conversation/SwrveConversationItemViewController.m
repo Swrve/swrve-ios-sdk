@@ -444,6 +444,13 @@
     
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {
+        
+        // Ensure there are no Checkmarks selected initially
+        if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+            SwrveInputMultiValue *vgInputMultiValue = (SwrveInputMultiValue *)atom;
+            vgInputMultiValue.selectedIndex = -1;
+        }
+        
         [atom loadViewWithContainerView:self.view];
     }
     

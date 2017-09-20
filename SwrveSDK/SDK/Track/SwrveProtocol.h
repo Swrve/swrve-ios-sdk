@@ -4,7 +4,7 @@
 #import "SwrveResourceManager.h"
 #import "SwrveMessageController.h"
 
-#if COCOAPODS
+#if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #if !defined(SWRVE_NO_PUSH)
 #import <UserNotifications/UserNotifications.h>
@@ -17,7 +17,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "4.11.2"
+#define SWRVE_SDK_VERSION "4.11.3"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve getUserResources.

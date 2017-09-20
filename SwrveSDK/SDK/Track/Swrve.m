@@ -1383,11 +1383,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     
     if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
         [application openURL:url options:@{} completionHandler:^(BOOL success) {
-            DebugLog(@"opening url [%@] successfully: %d", url, success);
+            DebugLog(@"Opening url [%@] successfully: %d", url, success);
         }];
     } else {
         BOOL success = [application openURL:url];
-        DebugLog(@"opening url [%@] successfully: %d", url, success);
+        DebugLog(@"Opening url [%@] successfully: %d", url, success);
     }
 }
 

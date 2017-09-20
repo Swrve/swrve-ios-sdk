@@ -1,7 +1,7 @@
 #import "SwrveProtocol.h"
 #import "SwrveConfig.h"
 
-#if COCOAPODS
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #import <SwrveSDKCommon/SwrveCommon.h>
 #else
@@ -10,7 +10,7 @@
 #endif
 
 #if !defined(SWRVE_NO_PUSH)
-#if COCOAPODS
+#if __has_include(<SwrveSDKCommon/SwrvePush.h>)
 #import <SwrveSDKCommon/SwrvePush.h>
 #import <SwrveSDKCommon/SwrvePushInternalAccess.h>
 #else

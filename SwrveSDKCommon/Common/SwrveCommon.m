@@ -27,13 +27,18 @@ static id <SwrveCommonDelegate> _sharedInstance = NULL;
 }
 
 + (UIApplication *) sharedUIApplication {
-/** Since Apple Extensions do not support shared Application, we have to dummy them when running just on an extension **/    
-#if !(defined(__has_feature) && __has_feature(attribute_availability_app_extension))
-    return [UIApplication sharedApplication];
-#else
-    // WARNING: this should never be called from an extension
-    return [UIApplication performSelector:@selector(sharedApplication)];
-#endif
+    UIApplication* sharedApplication = nil;
+    BOOL respondsToApplication = [UIApplication respondsToSelector:@selector(sharedApplication)];
+    if (respondsToApplication) {
+        sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
+        if (!sharedApplication) {
+            // WARNING: This should never be called from an extension
+            NSException *exec = [[NSException alloc] initWithName:@"ApplicationNotAvailable" reason:@"Service Extensions can't access a shared application" userInfo:nil];
+            [exec raise];
+        }
+    }
+    
+    return sharedApplication;
 }
 
 @end

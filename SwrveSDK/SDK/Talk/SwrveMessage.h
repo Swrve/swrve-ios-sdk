@@ -28,7 +28,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
 /*! Create an in-app message from the JSON content.
  *
  * \param json In-app message JSON content.
- * \param campaign Parent in-app campaign.
+ * \param _campaign Parent in-app campaign.
  * \param controller Message controller.
  * \returns Parsed in-app message.
  */

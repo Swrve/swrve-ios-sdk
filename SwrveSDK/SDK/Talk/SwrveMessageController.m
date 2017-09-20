@@ -10,6 +10,7 @@
 #import "SwrvePrivateBaseCampaign.h"
 #import "SwrveAssetsManager.h"
 #import "SwrveFileManagement.h"
+#import "SwrvePushConstants.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -1298,15 +1299,38 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
+// Deprecated
 - (void)silentPushReceived:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler
 {
+    [self didReceiveRemoteNotification:userInfo withBackgroundCompletionHandler:completionHandler];
+}
+
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler
+{
     if (self.pushEnabled) {
-        [analyticsSDK.push silentPushReceived:userInfo withCompletionHandler:completionHandler];
+        // This method can also be called when the app is in the background for normal pushes
+        // if the app has background remote notifications enabled
+        id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
+        if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
+            [analyticsSDK.push silentPushReceived:userInfo withCompletionHandler:completionHandler];
+            // Customer should handle the payload in the completionHandler
+            return YES;
+        } else {
+            id pushIdentifier = [userInfo objectForKey:SwrvePushIdentifierKey];
+            if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+                [self pushNotificationReceived:userInfo];
+                // We won't call the completionHandler and the customer should handle it themselves
+                return NO;
+            }
+        }
     } else {
         if (completionHandler != nil) {
             completionHandler(UIBackgroundFetchResultFailed, nil);
         }
     }
+    
+    // Not a Swrve push, customer should handle
+    return NO;
 }
 
 #endif //!defined(SWRVE_NO_PUSH)

@@ -32,6 +32,7 @@
 - (void) pushNotificationResponseReceived:(NSString*)identifier withUserInfo:(NSDictionary *)userInfo;
 
 - (void) silentPushReceived:(NSDictionary*)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
+- (BOOL) didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 
 // Called by Unity
 + (void) saveInfluencedData:(NSDictionary*)userInfo withPushId:(NSString*)pushId atDate:(NSDate*)date;

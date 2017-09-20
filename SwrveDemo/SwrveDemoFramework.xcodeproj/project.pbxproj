@@ -167,6 +167,7 @@
 		1B592D201B2848DF00908895 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		1B592D221B2848EA00908895 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		1B6200C11A0012F4003C2DA0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1BD7FE491F6BEFAE00D0E5D0 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		1BE609871BB162D500969382 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		30A4F71C16B05C2500642E8E /* SwrveDemoFramework.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveDemoFramework.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A4F72016B05C2500642E8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -174,7 +175,6 @@
 		30A4F72416B05C2500642E8E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30A4F74E16B05D1400642E8E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		3A52723C1BC3C11500089561 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
-		492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SwrveDemoFramework.entitlements; sourceTree = "<group>"; };
 		492A808C18E082B3006D5D97 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		938F98401A9260AB0089168A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		938F98421A9260F70089168A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -482,7 +482,7 @@
 		30A4F71116B05C2500642E8E = {
 			isa = PBXGroup;
 			children = (
-				492A808B18E082B0006D5D97 /* SwrveDemoFramework.entitlements */,
+				1BD7FE491F6BEFAE00D0E5D0 /* SwrveDemoFramework.entitlements */,
 				30A4F72616B05C2500642E8E /* Demo */,
 				30A4F71F16B05C2500642E8E /* Frameworks */,
 				30A4F71D16B05C2500642E8E /* Products */,
@@ -583,6 +583,7 @@
 				TargetAttributes = {
 					30A4F71B16B05C2500642E8E = {
 						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -674,9 +675,30 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-SwrveDemoFramework/Pods-SwrveDemoFramework-resources.sh",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -689,13 +711,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwrveDemoFramework-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D42204226F884C27B273546E /* [CP] Embed Pods Frameworks */ = {
@@ -819,11 +844,12 @@
 				CLANG_WARN_OBJC_RECEIVER_WEAK = YES;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = SwrveDemoFramework.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_BITCODE = NO;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				ENABLE_BITCODE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Demo/Resources/SwrveDemoFramework-Prefix.pch";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -846,7 +872,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
@@ -856,6 +882,7 @@
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -878,10 +905,11 @@
 				CLANG_WARN_OBJC_RECEIVER_WEAK = YES;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = SwrveDemoFramework.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				ENABLE_BITCODE = NO;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				ENABLE_BITCODE = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/Demo/Resources/SwrveDemoFramework-Prefix.pch";
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -904,7 +932,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Demo/Demo/Resources/SwrveDemoFramework-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PROJECT_DIR}/\"/**",
@@ -913,6 +941,7 @@
 				PRODUCT_NAME = SwrveDemoFramework;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
