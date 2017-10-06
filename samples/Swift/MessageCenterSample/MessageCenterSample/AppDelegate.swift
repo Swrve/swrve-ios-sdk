@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "SwrveUserResourcesUpdated"), object: self);
         }
         
-        //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
+        //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
         Swrve.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config, launchOptions: launchOptions)
         
         return true

@@ -27,7 +27,14 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 @implementation SwrvePermissions
 
-static NSMutableDictionary* permissionsStatusCache;
++ (NSMutableDictionary*)permissionsStatusCache {
+    static NSMutableDictionary *dic = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dic = [NSMutableDictionary new];
+    });
+    return dic;
+}
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
 #if !defined(SWRVE_NO_PUSH)
@@ -95,15 +102,13 @@ static NSMutableDictionary* permissionsStatusCache;
 #endif //!defined(SWRVE_NO_PUSH)
 
     [SwrvePermissions updatePermissionsStatusCache:permissionsStatus];
-    
+
     return permissionsStatus;
 }
 
 + (void)updatePermissionsStatusCache:(NSMutableDictionary *)permissionsStatus {
-    
-    if (permissionsStatusCache == nil) {
-        permissionsStatusCache = [[NSMutableDictionary alloc] init];
-    }
+
+    NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
     
     @synchronized (permissionsStatusCache) {
         [permissionsStatusCache addEntriesFromDictionary:permissionsStatus];
@@ -124,7 +129,7 @@ static NSMutableDictionary* permissionsStatusCache;
             } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
                 pushAuthorizationFromSettings = swrve_permission_status_denied;
             } else if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
-                pushAuthorizationFromSettings = swrve_permission_status_denied;
+                pushAuthorizationFromSettings = swrve_permission_status_unknown;
             }
             [dictionary setValue:pushAuthorizationFromSettings forKey:swrve_permission_push_notifications];
             [sdk userUpdate:dictionary]; // send now
@@ -174,11 +179,9 @@ static NSMutableDictionary* permissionsStatusCache;
 }
 
 +(NSArray*)currentPermissionFilters {
+ 
     NSMutableArray* filters = [[NSMutableArray alloc] init];
-    
-    if(permissionsStatusCache == nil) {
-        return filters;
-    }
+    NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
     
     @synchronized (permissionsStatusCache) {
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:permissionsStatusCache];
@@ -186,11 +189,16 @@ static NSMutableDictionary* permissionsStatusCache;
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:permissionsStatusCache];
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:permissionsStatusCache];
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:permissionsStatusCache];
-        
+
         // Check that we haven't already asked for push permissions
         if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
             NSString *currentPushPermission = [permissionsStatusCache objectForKey:swrve_permission_push_notifications];
-            if ([currentPushPermission isEqualToString:swrve_permission_status_denied]) {
+            NSString *acceptedStatus = swrve_permission_status_denied;
+            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
+                acceptedStatus = swrve_permission_status_unknown;
+            }
+            
+            if ([currentPushPermission isEqualToString:acceptedStatus]) {
                 [filters addObject:[[swrve_permission_push_notifications lowercaseString] stringByAppendingString:swrve_permission_requestable]];
             }
         }
@@ -203,11 +211,11 @@ static NSMutableDictionary* permissionsStatusCache;
 }
 
 +(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
-    
+
     if(currentStatus == nil){
         return;
     }
-    
+
     if ([[currentStatus objectForKey:permissionName] isEqualToString:swrve_permission_status_unknown]) {
         [filters addObject:[[permissionName lowercaseString] stringByAppendingString:swrve_permission_requestable]];
     }
@@ -352,19 +360,19 @@ static NSMutableDictionary* permissionsStatusCache;
         // We have a token, at some point the user said yes. We still have to check
         // that the user hasn't disabled push notifications in the settings.
         __block bool pushSettingsEnabled = YES;
-        
+
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
             UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
             [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
                 [SwrvePermissions updatePushNotificationSettingsStatus:settings andSDK:sdk];
             }];
         }
-        
+
         UIApplication* app = [SwrveCommon sharedUIApplication];
         if (pushSettingsEnabled && [app respondsToSelector:@selector(isRegisteredForRemoteNotifications)]) {
             pushSettingsEnabled = [app isRegisteredForRemoteNotifications];
         }
-        
+
         if (pushSettingsEnabled) {
             return ISHPermissionStateAuthorized;
         } else {
@@ -378,31 +386,27 @@ static NSMutableDictionary* permissionsStatusCache;
 + (void) updatePushNotificationSettingsStatus:(UNNotificationSettings *)settings andSDK:(id<SwrveCommonDelegate>)sdk {
     NSMutableDictionary* pushPermissionsStatus = [[NSMutableDictionary alloc] init];
     ISHPermissionState permissionState = ISHPermissionStateUnknown;
-    
+
     if (settings.alertSetting == UNNotificationSettingEnabled) {
         permissionState = ISHPermissionStateAuthorized;
     } else {
         permissionState = ISHPermissionStateDenied;
     }
-    
+
     [pushPermissionsStatus setValue:stringFromPermissionState(permissionState) forKey:swrve_permission_push_notifications];
     [sdk userUpdate:pushPermissionsStatus];
 }
 
 +(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback {
-
     ISHPermissionRequest *r = [SwrvePermissions pushNotificationsRequest];
-    
+
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
         ((ISHPermissionRequestNotificationsRemote*)r).notificationAuthOptions = (UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge);
         ((ISHPermissionRequestNotificationsRemote*)r).notificationCategories = sdk.notificationCategories;
-        
-        ((ISHPermissionRequestNotificationsRemote*)r).notificationCenterDelegate = [SwrvePush sharedInstance];
     }
-    
+
     ((ISHPermissionRequestNotificationsRemote*)r).notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:sdk.pushCategories];
-    
-    
+
     if (callback) {
         [r requestUserPermissionWithCompletionBlock:^(ISHPermissionRequest *request, ISHPermissionState state, NSError *error) {
 #pragma unused(request, error, state)
@@ -412,7 +416,7 @@ static NSMutableDictionary* permissionsStatusCache;
     } else {
         [(ISHPermissionRequestNotificationsRemote*)r requestUserPermissionWithoutCompleteBlock];
     }
-    
+
     // Remember we asked for push permissions
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:asked_for_push_flag_key];
 }

@@ -15,7 +15,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SwrveUserResourcesUpdated" object:self];
     };
     
-    //FIXME: Add wour App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
+    //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
     [Swrve sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
     return YES;
 }

@@ -14,10 +14,9 @@
 @property (nonatomic) UIUserNotificationSettings *notificationSettings;
 @property (nonatomic) UNAuthorizationOptions notificationAuthOptions;
 @property (nonatomic) NSSet<UNNotificationCategory *> * notificationCategories;
-@property (nonatomic, strong) id<UNUserNotificationCenterDelegate> notificationCenterDelegate;
 
 -(void)requestUserPermissionWithoutCompleteBlock;
 +(void)registerForRemoteNotifications:(UIUserNotificationSettings*)notificationSettings;
-+(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andCenterDelegate:(id<UNUserNotificationCenterDelegate>)notificationCenterDelegate andBackwardsCompatibility:(UIUserNotificationSettings *)notificationSettings;
++(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andBackwardsCompatibility:(UIUserNotificationSettings *)notificationSettings;
 
 @end

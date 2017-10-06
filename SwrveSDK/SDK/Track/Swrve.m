@@ -470,7 +470,6 @@ static dispatch_once_t sharedInstanceToken = 0;
         [self initResources];
         [self initResourcesDiff];
 
-
         [self setEventFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheFile]];
         [self setEventSecondaryFilename:[NSURL fileURLWithPath:swrveConfig.eventCacheSecondaryFile]];
         [self setEventStream:[self createLogfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
@@ -490,11 +489,16 @@ static dispatch_once_t sharedInstanceToken = 0;
         if(swrveConfig.pushEnabled) {
             push = [SwrvePush sharedInstanceWithPushDelegate:self andCommonDelegate:self];
 
-            if(swrveConfig.autoCollectDeviceToken){
+            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
+                UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+                center.delegate = push;
+            }
+
+            if (swrveConfig.autoCollectDeviceToken) {
                 [self.push observeSwizzling];
             }
-            
-            if(swrveConfig.pushResponseDelegate != nil){
+
+            if (swrveConfig.pushResponseDelegate != nil) {
                 [self.push setResponseDelegate:swrveConfig.pushResponseDelegate];
             }
 
@@ -1380,7 +1384,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 - (void) deeplinkReceived:(NSURL*) url {
     UIApplication *application = [UIApplication sharedApplication];
-    
+
     if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
         [application openURL:url options:@{} completionHandler:^(BOOL success) {
             DebugLog(@"Opening url [%@] successfully: %d", url, success);
@@ -1609,7 +1613,7 @@ static NSString* httpScheme(bool useHttps)
     // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:@"swrve.ios_token"];
-        
+
         // Check device capabilities
         NSString *supported = ((SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) ? @"true" : @"false");
         [deviceProperties setValue:supported forKey:@"swrve.support.rich_buttons"];
