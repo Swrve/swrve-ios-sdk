@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1C567363ABB18E7A25F0CAA11948B84B"
+               BlueprintIdentifier = "F371EF1E5AA82C05952C3CB0F87E157C"
                BuildableName = "libPods-SwrveSDKTest.a"
                BlueprintName = "Pods-SwrveSDKTest"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

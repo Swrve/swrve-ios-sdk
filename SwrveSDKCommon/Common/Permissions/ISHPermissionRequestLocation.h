@@ -8,9 +8,9 @@
 
 #import "ISHPermissionRequest.h"
 
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 
 @interface ISHPermissionRequestLocation : ISHPermissionRequest
 @end
 
-#endif //!defined(SWRVE_NO_LOCATION)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)

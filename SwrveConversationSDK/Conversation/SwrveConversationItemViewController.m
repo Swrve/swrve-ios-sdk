@@ -53,7 +53,8 @@
 + (bool)showConversation:(SwrveBaseConversation *)conversation
     withItemController:(SwrveConversationItemViewController *)conversationItemViewController
         withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
-                inWindow:(UIWindow *)conversationWindow {
+                inWindow:(UIWindow *)conversationWindow
+     withMessageDelegate:(id)messageDelegate {
 
     if (!conversation || conversationItemViewController == nil || conversationWindow == nil) {
         DebugLog(@"Unable to showConversation.");
@@ -77,9 +78,17 @@
                                                                                   action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
     conversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
-
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+        if( [messageDelegate respondsToSelector:@selector(messageWillBeShown:)]) {
+            [messageDelegate performSelector:@selector(messageWillBeShown:) withObject:rootController];
+        }
+#pragma clang diagnostic pop
+        
         conversationWindow.rootViewController = rootController;
         [conversationWindow makeKeyAndVisible];
         [conversationWindow.rootViewController.view endEditing:YES];

@@ -16,7 +16,7 @@
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
 
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#if defined(SWRVE_ADDRESS_BOOK)
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -25,7 +25,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     ABAddressBookRef _addressBook;
 #pragma clang diagnostic pop
-    
+
 #if defined(__IPHONE_9_0)
     CNContactStore* _contactStore;
 #endif //defined(__IPHONE_9_0)
@@ -54,11 +54,11 @@
     switch (status) {
         case kABAuthorizationStatusAuthorized:
             return ISHPermissionStateAuthorized;
-            
+
         case kABAuthorizationStatusRestricted:
         case kABAuthorizationStatusDenied:
             return ISHPermissionStateDenied;
-            
+
         case kABAuthorizationStatusNotDetermined:
             return [self internalPermissionState];
     }
@@ -68,14 +68,14 @@
 - (void)requestUserPermissionWithCompletionBlock:(ISHPermissionRequestCompletionBlock)completion {
     NSAssert(completion, @"requestUserPermissionWithCompletionBlock requires a completion block", nil);
     ISHPermissionState currentState = self.permissionState;
-    
+
     if (!ISHPermissionStateAllowsUserPrompt(currentState)) {
         if (completion != nil) {
             completion(self, currentState, nil);
         }
         return;
     }
-    
+
 #if defined(__IPHONE_9_0)
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         // New iOS9+ framework
@@ -87,7 +87,7 @@
                 completion(self, granted ? ISHPermissionStateAuthorized : ISHPermissionStateDenied, error);
             });
         }];
-        return;        
+        return;
     }
 #endif //defined(__IPHONE_9_0)
 
@@ -103,19 +103,12 @@
 - (ABAddressBookRef)addressBook {
     if (!_addressBook) {
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-        
+
         if (addressBook) {
-            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")){
-                [self setAddressBook:CFAutorelease(addressBook)];
-            } else {
-                // CFAutoRelease not supported on iOS6 so we need to use this awful code!
-                SEL autorelease = sel_getUid("autorelease");
-                IMP imp = class_getMethodImplementation(object_getClass((__bridge id)addressBook), autorelease);
-                ((CFTypeRef (*)(CFTypeRef, SEL))imp)(addressBook, autorelease);
-            }
+            [self setAddressBook:CFAutorelease(addressBook)];
         }
     }
-    
+
     return _addressBook;
 }
 
@@ -124,11 +117,11 @@
         if (_addressBook) {
             CFRelease(_addressBook);
         }
-        
+
         if (newAddressBook) {
             CFRetain(newAddressBook);
         }
-        
+
         _addressBook = newAddressBook;
     }
 }
@@ -143,4 +136,4 @@
 
 @end
 
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_ADDRESS_BOOK)

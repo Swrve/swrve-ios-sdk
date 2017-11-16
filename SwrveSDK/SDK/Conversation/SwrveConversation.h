@@ -8,7 +8,6 @@
 
 @class SwrveMessageController;
 @class SwrveConversationCampaign;
-@class SwrveConversationPane;
 
 @interface SwrveConversation : SwrveBaseConversation
 

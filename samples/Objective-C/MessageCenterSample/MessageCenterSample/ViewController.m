@@ -1,18 +1,10 @@
 #import "ViewController.h"
-#import "Swrve.h"
-#import "SwrveBaseCampaign.h"
-
-@interface ViewController ()
-
-@property (nonatomic, retain) NSTimer *checkWindowTimer;
-@property (nonatomic, retain) UIWindow *previousWindow;
-
-@end
+#import "SwrveSDK.h"
+#import "SwrveCampaign.h"
 
 @implementation ViewController
 
 @synthesize campaigns;
-@synthesize checkWindowTimer;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -28,35 +20,18 @@
                                              selector:@selector(newSwrveCampaigns)
                                                  name:@"SwrveUserResourcesUpdated"
                                                object:nil];
-    
+
     // The Swrve SDK creates new UIWindows to display content to avoid
     // creating issues for games etc. However, this means that the controllers
     // do not get their callbacks called.
-    //
-    // This will be fixed by submitting events to the notification center in
-    // an upcoming release.
-    //
-    // To workaround this we can query the current UIWindow active,
-    // if the window is different from the previous iteration we can
-    // notify the table view that the status of one of the items changed
-    // "unread" -> "read" which corresponds to a red -> green background
-    //
-    self.checkWindowTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                             target:self
-                                                           selector:@selector(checkCurrentWindow)
-                                                           userInfo:nil
-                                                            repeats:YES];
+    // We set this class as the delegate to listen to these events.
+    [SwrveSDK messaging].showMessageDelegate = self;
 }
 
-- (void) checkCurrentWindow
-{
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    if (window != self.previousWindow) {
-        self.previousWindow = window;
-        // An in-app message or conversation might have been displayed.
-        // Notify the table view that the state of a campaign might have changed.
-        [self.tableView reloadData];
-    }
+- (void) messageWillBeHidden:(UIViewController*) viewController {
+    // An in-app message or conversation will be hidden.
+    // Notify the table view that the state of a campaign might have changed.
+    [self.tableView reloadData];
 }
 
 - (void) newSwrveCampaigns
@@ -69,14 +44,13 @@
     [super viewWillDisappear:animated];
     // Remove observe
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self.checkWindowTimer invalidate];
 }
 
 - (void)refreshDataSource {
     // Obtain latest campaigns and order by the campaign dateStart property
     NSSortDescriptor *dateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"dateStart" ascending:NO];
     NSArray *sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
-    self.campaigns = [[[Swrve sharedInstance].talk messageCenterCampaigns] sortedArrayUsingDescriptors:sortDescriptors];
+    self.campaigns = [[[SwrveSDK messaging] messageCenterCampaigns] sortedArrayUsingDescriptors:sortDescriptors];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -91,35 +65,35 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MessageCenterCell"];
-    
+
     // Configure the cell
-    SwrveBaseCampaign* campaign = [self.campaigns objectAtIndex:indexPath.row];
-    
+    SwrveCampaign* campaign = [self.campaigns objectAtIndex:indexPath.row];
+
     // Campaign subject
     cell.textLabel.text = campaign.subject;
     [cell.textLabel setBackgroundColor:[UIColor clearColor]];
     [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
-    
+
     // Format the start date for display
     NSDateFormatter *dformat = [[NSDateFormatter alloc] init];
     [dformat setDateFormat:@"MMMM dd, yyyy (EEEE) HH:mm:ss z Z"];
-    
+
     // Campaign start date, change cell background colour based on seen / unseen status
     switch(campaign.state.status) {
         case SWRVE_CAMPAIGN_STATUS_UNSEEN:
             cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
-            [cell setBackgroundColor:[UIColor colorWithRed:255.0f/255.0f green:0.0f blue:0.0f alpha:0.4]];
-            
+            [cell setBackgroundColor:[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.4f]];
+
             break;
         case SWRVE_CAMPAIGN_STATUS_SEEN:
             cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
-            [cell setBackgroundColor:[UIColor colorWithRed:0.0f green:255.0f/255.0f blue:0.0f/255.0f alpha:0.4]];
+            [cell setBackgroundColor:[UIColor colorWithRed:0.0f green:1.0f blue:0.0f alpha:0.4f]];
             break;
         default:
             cell.detailTextLabel.text = @"Other";
             break;
     }
-    
+
     return cell;
 }
 
@@ -130,7 +104,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Display the campaign when clicked
-    [[Swrve sharedInstance].talk showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
+    [[SwrveSDK messaging] showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -146,7 +120,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Remove campaign from the sliding button
         [tableView beginUpdates];
-        [[Swrve sharedInstance].talk removeMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
+        [[SwrveSDK messaging] removeMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
         [self refreshDataSource];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
         [tableView endUpdates];

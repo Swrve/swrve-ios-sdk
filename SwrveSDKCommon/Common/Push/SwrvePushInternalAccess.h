@@ -30,8 +30,6 @@
 - (void) checkLaunchOptionsForPushData:(NSDictionary *) launchOptions;
 - (void) pushNotificationReceived:(NSDictionary *)userInfo;
 - (void) pushNotificationResponseReceived:(NSString*)identifier withUserInfo:(NSDictionary *)userInfo;
-
-- (void) silentPushReceived:(NSDictionary*)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 - (BOOL) didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 
 // Called by Unity

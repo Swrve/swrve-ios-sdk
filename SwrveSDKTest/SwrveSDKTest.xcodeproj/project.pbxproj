@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */; };
+		3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */; };
+		3AEB63D51F0405A900F0A270 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
 		52740A731CF70D5E00151035 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A721CF70D5E00151035 /* main.m */; };
 		52740A761CF70D5E00151035 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A751CF70D5E00151035 /* AppDelegate.m */; };
 		52740A791CF70D5E00151035 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A781CF70D5E00151035 /* ViewController.m */; };
@@ -16,6 +19,7 @@
 		52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */; };
 		B9B78621AF27ACDEC19F6ED5 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */; };
 		BC26DFB089078A4F0C6BEA19 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */; };
+		F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +34,10 @@
 
 /* Begin PBXFileReference section */
 		18CCF3672D55E1AA164691A2 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
+		239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMigrationsManager.m; sourceTree = "<group>"; };
+		3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestProfileManager.m; sourceTree = "<group>"; };
+		3AEB63D31F0405A900F0A270 /* SwrveTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestHelper.h; sourceTree = "<group>"; };
+		3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestHelper.m; sourceTree = "<group>"; };
 		52740A6E1CF70D5E00151035 /* SwrveSDKTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveSDKTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52740A721CF70D5E00151035 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		52740A741CF70D5E00151035 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -47,6 +55,7 @@
 		92E8496B3BEA2DED0F559729 /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DA08B873CAF76C1581D05929 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
 		EBED28B00A4DEAA9E26C9F28 /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
+		F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
 		F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -135,8 +144,13 @@
 		52740A8A1CF70D5E00151035 /* SwrveSDKTest */ = {
 			isa = PBXGroup;
 			children = (
+				3AEB63D31F0405A900F0A270 /* SwrveTestHelper.h */,
+				3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */,
+				3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */,
 				52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */,
 				523EE2211CF73C0400496FEA /* Supporting Files */,
+				239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */,
+				F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */,
 			);
 			name = SwrveSDKTest;
 			path = SwrveSDKTestTests;
@@ -404,6 +418,7 @@
 				52740A791CF70D5E00151035 /* ViewController.m in Sources */,
 				52740A761CF70D5E00151035 /* AppDelegate.m in Sources */,
 				52740A731CF70D5E00151035 /* main.m in Sources */,
+				3AEB63D51F0405A900F0A270 /* SwrveTestHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +426,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */,
+				3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */,
 				52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */,
+				239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

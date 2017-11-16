@@ -6,19 +6,19 @@
 #import <UserNotifications/UserNotifications.h>
 #endif //!defined(SWRVE_NO_PUSH)
 
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 static ISHPermissionRequest *_locationAlwaysRequest = nil;
 static ISHPermissionRequest *_locationWhenInUseRequest = nil;
-#endif //!defined(SWRVE_NO_LOCATION)
-#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
+#if defined(SWRVE_PHOTO_LIBRARY)
 static ISHPermissionRequest *_photoLibraryRequest = nil;
-#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_LIBRARY)
+#if defined(SWRVE_PHOTO_CAMERA)
 static ISHPermissionRequest *_cameraRequest = nil;
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_PHOTO_CAMERA)
+#if defined(SWRVE_ADDRESS_BOOK)
 static ISHPermissionRequest *_contactsRequest = nil;
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_ADDRESS_BOOK)
 #if !defined(SWRVE_NO_PUSH)
 static ISHPermissionRequest *_remoteNotifications = nil;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -45,7 +45,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #else
 #pragma unused(sdk)
 #endif //!defined(SWRVE_NO_PUSH)
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.location.always"] == NSOrderedSame) {
         [SwrvePermissions requestLocationAlways:sdk];
         return YES;
@@ -54,43 +54,43 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [SwrvePermissions requestLocationWhenInUse:sdk];
         return YES;
     }
-#endif //!defined(SWRVE_NO_LOCATION)
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
+#if defined(SWRVE_ADDRESS_BOOK)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.contacts"] == NSOrderedSame) {
         [SwrvePermissions requestContacts:sdk];
         return YES;
     }
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
-#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+#endif //defined(SWRVE_ADDRESS_BOOK)
+#if defined(SWRVE_PHOTO_LIBRARY)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.photos"] == NSOrderedSame) {
         [SwrvePermissions requestPhotoLibrary:sdk];
         return YES;
     }
-#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_LIBRARY)
+#if defined(SWRVE_PHOTO_CAMERA)
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         [SwrvePermissions requestCamera:sdk];
         return YES;
     }
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_CAMERA)
     return NO;
 }
 
 +(NSDictionary*)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationAlways]) forKey:swrve_permission_location_always];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationWhenInUse]) forKey:swrve_permission_location_when_in_use];
-#endif //!defined(SWRVE_NO_LOCATION)
-#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
+#if defined(SWRVE_PHOTO_LIBRARY)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPhotoLibrary]) forKey:swrve_permission_photos];
-#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_LIBRARY)
+#if defined(SWRVE_PHOTO_CAMERA)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkCamera]) forKey:swrve_permission_camera];
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_PHOTO_CAMERA)
+#if defined(SWRVE_ADDRESS_BOOK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts]) forKey:swrve_permission_contacts];
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_ADDRESS_BOOK)
 #if !defined(SWRVE_NO_PUSH)
     NSString *pushAuthorization = [SwrvePermissions pushAuthorizationWithSDK:sdk];
     if (pushAuthorization) {
@@ -107,9 +107,8 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 + (void)updatePermissionsStatusCache:(NSMutableDictionary *)permissionsStatus {
-
     NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
-    
+
     @synchronized (permissionsStatusCache) {
         [permissionsStatusCache addEntriesFromDictionary:permissionsStatus];
     }
@@ -179,10 +178,12 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 +(NSArray*)currentPermissionFilters {
- 
+
     NSMutableArray* filters = [[NSMutableArray alloc] init];
     NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
-    
+    if(permissionsStatusCache == nil) {
+        return filters;
+    }
     @synchronized (permissionsStatusCache) {
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_always to:filters withCurrentStatus:permissionsStatusCache];
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_location_when_in_use to:filters withCurrentStatus:permissionsStatusCache];
@@ -197,7 +198,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
             if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
                 acceptedStatus = swrve_permission_status_unknown;
             }
-            
+
             if ([currentPushPermission isEqualToString:acceptedStatus]) {
                 [filters addObject:[[swrve_permission_push_notifications lowercaseString] stringByAppendingString:swrve_permission_requestable]];
             }
@@ -233,7 +234,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 }
 
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 +(ISHPermissionRequest*)locationAlwaysRequest {
     if (!_locationAlwaysRequest) {
         _locationAlwaysRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryLocationAlways];
@@ -275,9 +276,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
-#endif //!defined(SWRVE_NO_LOCATION)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 
-#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+#if defined(SWRVE_PHOTO_LIBRARY)
 +(ISHPermissionRequest*)photoLibraryRequest {
     if (!_photoLibraryRequest) {
         _photoLibraryRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryPhotoLibrary];
@@ -298,9 +299,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
-#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#endif //defined(SWRVE_PHOTO_LIBRARY)
 
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
+#if defined(SWRVE_PHOTO_CAMERA)
 +(ISHPermissionRequest*)cameraRequest {
     if (!_cameraRequest) {
         _cameraRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryPhotoCamera];
@@ -321,9 +322,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_CAMERA)
 
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#if defined(SWRVE_ADDRESS_BOOK)
 +(ISHPermissionRequest*)contactsRequest {
     if (!_contactsRequest) {
         _contactsRequest = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryAddressBook];
@@ -344,7 +345,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [sdk userUpdate:[SwrvePermissions currentStatusWithSDK:sdk]];
     }];
 }
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_ADDRESS_BOOK)
 
 #if !defined(SWRVE_NO_PUSH)
 +(ISHPermissionRequest*)pushNotificationsRequest {
@@ -424,7 +425,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(ISHPermissionState)state withSDK:(id<SwrveCommonDelegate>)sdk {
     NSString *eventNameWithState = [eventName stringByAppendingString:((state == ISHPermissionStateAuthorized)? @".on" : @".off")];
-    [sdk eventInternal:eventNameWithState payload:nil triggerCallback:true];
+    [sdk eventInternal:eventNameWithState payload:nil triggerCallback:false];
 }
 
 @end

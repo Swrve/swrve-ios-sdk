@@ -10,16 +10,16 @@
 /**
  *  Permission categories describe types of permissions on iOS.
  *  Each is related to a specific PermissionRequest.
- *  @note Values assigned to each category must not be changed, as 
+ *  @note Values assigned to each category must not be changed, as
  *        they may have been persisted on user devices.
  */
 typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
     /**
-     *  Permission required for step counting and motion activity queries. 
+     *  Permission required for step counting and motion activity queries.
      *  See reference documentation for CoreMotion.
      */
     ISHPermissionCategoryActivity = 1000,
-    
+
     /**
      *  Permission required to use HealthKit data.
      *  Make sure to comply with sections 27.4 - 27.6 of the review guidelines.
@@ -30,11 +30,11 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  @note: The Health app and HealthKit are not available on iPad.
      */
     ISHPermissionCategoryHealth = 2000,
-    
+
     /**
      *  Permission required to use the user's location at any time,
      *  including monitoring for regions, visits, or significant location changes.
-     *  If you want to request both Always and WhenInUse, you should ask for 
+     *  If you want to request both Always and WhenInUse, you should ask for
      *  WhenInUse first. You can do so by passing both categories to the
      *  ISHPermissionsViewController with WhenInUse before Always.
      */
@@ -44,12 +44,12 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  is visible to them.
      */
     ISHPermissionCategoryLocationWhenInUse = 3200,
-    
+
     /**
      *  Permission required to record the user's microphone input.
      */
     ISHPermissionCategoryMicrophone = 4000,
-    
+
     /**
      *  Permission required to access the user's photo library.
      */
@@ -58,10 +58,10 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  Permission required to access the user's camera.
      */
     ISHPermissionCategoryPhotoCamera = 5100,
-    
+
     /**
-     *  Permission required to schedule local notifications. 
-     *  @note Requests for this permission might require further 
+     *  Permission required to schedule local notifications.
+     *  @note Requests for this permission might require further
      *        configuration via the ISHPermissionsViewControllerDataSource.
      *
      *  @warning Your app delegate will need to implement the following lines:
@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  @endcode
      */
     ISHPermissionCategoryNotificationLocal = 6100,
-    
+
     /**
      *  Permission required to access the user's Facebook acounts.
      *  @note Requests for this permission require further
@@ -93,12 +93,12 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  Permission required to access the user's TencentWeibo acounts.
      */
     ISHPermissionCategorySocialTencentWeibo = 7130,
-    
+
     /**
      *  Permission required to access the user's contacts.
      */
     ISHPermissionCategoryAddressBook = 8100,
-    
+
     /**
      *  Permission required to access the user's calendar.
      */
@@ -107,7 +107,7 @@ typedef NS_ENUM(NSUInteger, ISHPermissionCategory) {
      *  Permission required to access the user's reminders.
      */
     ISHPermissionCategoryReminders = 8250,
-    
+
     /**
      *  Permission required to schedule remote notifications.
      */

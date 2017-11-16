@@ -25,7 +25,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     NSDate* finishTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:finishTime];
+    NSString* interval = [self timeIntervalFromStartAsString:finishTime];
     
     NSURL* requestURL = [[connection originalRequest] URL];
     NSString* baseURL = [NSString stringWithFormat:@"%@://%@", [requestURL scheme], [requestURL host]];
@@ -50,7 +50,7 @@
 {
 #pragma unused(connection, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite)
     NSDate* sendBodyTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:sendBodyTime];
+    NSString* interval = [self timeIntervalFromStartAsString:sendBodyTime];
     
     [[self metrics] setValue:interval forKey:@"c"];
     [[self metrics] setValue:interval forKey:@"sh"];
@@ -61,7 +61,7 @@
 {
 #pragma unused(connection)
     NSDate* responseTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:responseTime];
+    NSString* interval = [self timeIntervalFromStartAsString:responseTime];
     [self setResponse:receivedResponse];
     
     if (![[self metrics] objectForKey:@"sb"]) {
@@ -77,7 +77,7 @@
 #pragma unused(connection)
     // This might be called multiple times while data is being received
     NSDate* responseDateTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:responseDateTime];
+    NSString* interval = [self timeIntervalFromStartAsString:responseDateTime];
     [[self data] appendData:receivedData];
     
     if (![[self metrics] objectForKey:@"sb"]) {
@@ -94,7 +94,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     NSDate* finishTime = [NSDate date];
-    NSString* interval = [self getTimeIntervalFromStartAsString:finishTime];
+    NSString* interval = [self timeIntervalFromStartAsString:finishTime];
     
     if (![[self metrics] objectForKey:@"sb"]) {
         [[self metrics] setValue:interval forKey:@"c"];
@@ -126,7 +126,7 @@
     }
 }
 
-- (NSString*) getTimeIntervalFromStartAsString:(NSDate*)date
+- (NSString*) timeIntervalFromStartAsString:(NSDate*)date
 {
     NSTimeInterval interval = [date timeIntervalSinceDate:[self startTime]];
     return [NSString stringWithFormat:@"%.0f", round(interval * 1000)];

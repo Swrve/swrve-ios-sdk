@@ -13,7 +13,7 @@
 #import "ISHPermissionRequestLocation.h"
 #import "ISHPermissionRequest+Private.h"
 
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 
 @interface ISHPermissionRequestLocation () <CLLocationManagerDelegate>
 @property (nonatomic) CLLocationManager *_locationManager;
@@ -84,7 +84,7 @@
     }
 
     self.completionBlock = completion;
-    
+
     if ([self useFallback]) {
         // iOS7 fallback
         [self.locationManager startUpdatingLocation];
@@ -138,7 +138,7 @@
     BOOL grantedWhenInUse = NO;
     BOOL requestingAlways = NO;
 #endif //defined(__IPHONE_8_0)
-    
+
     if (notDetermined || (grantedWhenInUse && requestingAlways)) {
         /* early calls to this delegate method are ignored, if this is not the change we are waiting for.
            e.g. the location manager calls this method immediately when requesting always permissions,
@@ -149,9 +149,9 @@
             return;
         }
     }
-    
+
     [self handleCompletionBlock];
-    
+
     if ([self useFallback]) {
         [self.locationManager stopUpdatingLocation];
     }
@@ -175,18 +175,18 @@
            if whenInUse permission were already granted.
            the didChangeAuthorizationStatus delegate call will not be called
            as there is no change. We get called here, because the alert was dismissed.
-           We can now call the completion block. 
-           We also need an internal state to save that the user was asked, 
+           We can now call the completion block.
+           We also need an internal state to save that the user was asked,
            as future calls to requestAlwaysAuthorization do nothing. */
         [self setInternalPermissionState:ISHPermissionStateDenied];
         [self handleCompletionBlock];
     }
-    
-    
+
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 #endif //defined(__IPHONE_8_0)
 
 @end
 
-#endif //!defined(SWRVE_NO_LOCATION)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)

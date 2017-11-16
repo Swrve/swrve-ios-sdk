@@ -10,7 +10,7 @@
 @implementation SwrveConversationEvents
 
 +(void)eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload {
-    [[SwrveCommon sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:true];
+    [[SwrveCommon sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:false];
 }
 
 +(void)started:(SwrveBaseConversation*)conversation onStartPage:(NSString*)pageTag {

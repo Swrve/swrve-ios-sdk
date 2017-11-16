@@ -26,25 +26,25 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk;
 + (NSArray*) currentPermissionFilters;
 
-#if !defined(SWRVE_NO_LOCATION)
+#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 + (ISHPermissionState)checkLocationAlways;
 + (void)requestLocationAlways:(id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_LOCATION)
+#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
 
-#if !defined(SWRVE_NO_PHOTO_LIBRARY)
+#if defined(SWRVE_PHOTO_LIBRARY)
 + (ISHPermissionState)checkPhotoLibrary;
 + (void)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_PHOTO_LIBRARY)
+#endif //defined(SWRVE_PHOTO_LIBRARY)
 
-#if !defined(SWRVE_NO_PHOTO_CAMERA)
+#if defined(SWRVE_PHOTO_CAMERA)
 + (ISHPermissionState)checkCamera;
 + (void)requestCamera:(id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_PHOTO_CAMERA)
+#endif //defined(SWRVE_PHOTO_CAMERA)
 
-#if !defined(SWRVE_NO_ADDRESS_BOOK)
+#if defined(SWRVE_ADDRESS_BOOK)
 + (ISHPermissionState)checkContacts;
 + (void)requestContacts:(id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_ADDRESS_BOOK)
+#endif //defined(SWRVE_ADDRESS_BOOK)
 
 #if !defined(SWRVE_NO_PUSH)
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback;

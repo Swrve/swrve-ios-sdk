@@ -79,13 +79,15 @@
 #if defined(__IPHONE_8_0)
     if(SYSTEM_VERSION_LESS_THAN(@"10.0")){
         NSAssert(notificationSettings, @"Requested notification settings should be set for request before requesting user permission", nil);
-        [app registerUserNotificationSettings:notificationSettings];
-        [app registerForRemoteNotifications];
+        // UIApplication calls must be performed on the main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [app registerUserNotificationSettings:notificationSettings];
+            [app registerForRemoteNotifications];
+        });
     }
 #else
-    // Not building with the latest XCode that contains iOS 8 definitions
+    // Since we no longer support pre-iOS8 builds, this has to be excluded from compilation, here in case
     [app registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeNewsstandContentAvailability];
-
     }
 #endif //defined(__IPHONE_8_0)
 }

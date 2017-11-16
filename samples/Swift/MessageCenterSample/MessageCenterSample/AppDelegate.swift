@@ -17,13 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-        Swrve.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config, launchOptions: launchOptions)
+        SwrveSDK.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config, launchOptions: launchOptions)
         
         return true
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-        Swrve.sharedInstance().talk.pushNotificationReceived(userInfo)
+        SwrveSDK.messaging().pushNotificationReceived(userInfo)
     }
 
 }

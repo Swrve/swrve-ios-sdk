@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-#import "Swrve.h"
+#import "SwrveSDK.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +16,7 @@
     };
     
     //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-    [Swrve sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
+    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
     return YES;
 }
 

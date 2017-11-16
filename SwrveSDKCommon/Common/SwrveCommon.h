@@ -4,7 +4,7 @@
 @protocol SwrveCommonDelegate <NSObject>
 
 @required
--(NSData*) getCampaignData:(int)category;
+-(NSData*) campaignData:(int)category;
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
 -(int) userUpdate:(NSDictionary*)attributes;
 -(BOOL) processPermissionRequest:(NSString*)action;
@@ -20,7 +20,7 @@
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString *userID;
 @property(atomic, readonly) NSDictionary *deviceInfo;
-@property (atomic, readonly) NSString* deviceToken;
+@property(atomic, readonly) NSString* deviceToken;
 
 @end
 
@@ -28,7 +28,6 @@
 
 +(id<SwrveCommonDelegate>) sharedInstance;
 +(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
-+ (NSString *)swrveCacheFolder;
 +(BOOL)supportedOS;
 +(UIApplication *) sharedUIApplication;
 @end
@@ -58,6 +57,13 @@ enum
 enum
 {
     SWRVE_CAMPAIGN_LOCATION = 0
+};
+
+enum  {
+    SWRVE_LOCATION_FILE,
+    SWRVE_RESOURCE_FILE,
+    SWRVE_RESOURCE_DIFF_FILE,
+    SWRVE_CAMPAIGN_FILE
 };
 
 #define KB(x) (1024*(x))
@@ -91,10 +97,3 @@ enum
     // Delay between flushing events and refreshing campaign/user resources
     SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY = 5000,
 };
-
-//
-//#ifndef DEBUG
-//
-//#define DEBUG
-//
-//#endif

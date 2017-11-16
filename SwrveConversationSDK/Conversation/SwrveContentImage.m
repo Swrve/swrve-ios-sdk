@@ -1,5 +1,5 @@
 #import "SwrveContentImage.h"
-#import "SwrveCommon.h"
+#import "SwrveLocalStorage.h"
 
 @interface SwrveContentImage () {
     UIImageView *iv;
@@ -17,7 +17,7 @@
 -(void) loadViewWithContainerView:(UIView*)containerView {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
-        NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
+        NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, self.value, nil]];
         self->image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:bgurl]];
         [self sizeAndDisplayInContainer:containerView];

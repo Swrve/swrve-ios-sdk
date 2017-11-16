@@ -1,5 +1,4 @@
 #import <XCTest/XCTest.h>
-#import "Swrve.h"
 #import "SwrveTrigger.h"
 #import "SwrveTriggerCondition.h"
 

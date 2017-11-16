@@ -23,7 +23,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
     didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
-    
+
     // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
     // This would result in bad engagement reports etc. This var is used to check that the same push id can't be processed in sequence.
     NSString* lastProcessedPushId;
@@ -100,44 +100,44 @@ static dispatch_once_t sharedInstanceToken = 0;
 #pragma mark - Swizzling Handlers
 
 - (BOOL) observeSwizzling {
-    
+
     if(!didSwizzle){
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
         SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
         SEL didFailSelector = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
         SEL didReceiveSelector = @selector(application:didReceiveRemoteNotification:);
-        
+
         // Cast to actual method signature
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)[SwrveSwizzleHelper swizzleMethod:didRegisterSelector inClass:appDelegateClass withImplementationIn:self];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature)[SwrveSwizzleHelper swizzleMethod:didFailSelector inClass:appDelegateClass withImplementationIn:self];
         didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature)[SwrveSwizzleHelper swizzleMethod:didReceiveSelector inClass:appDelegateClass withImplementationIn:self];
-        
+
         didSwizzle = true;
     } else {
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
         didReceiveRemoteNotificationImpl = NULL;
     }
-    
+
     return didSwizzle;
 }
 
 - (void) deswizzlePushMethods {
-    
+
     if(didSwizzle) {
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
         [SwrveSwizzleHelper deswizzleMethod:didRegister inClass:appDelegateClass originalImplementation:(IMP)didRegisterForRemoteNotificationsWithDeviceTokenImpl];
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
-        
+
         SEL didFail = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
         [SwrveSwizzleHelper deswizzleMethod:didFail inClass:appDelegateClass originalImplementation:(IMP)didFailToRegisterForRemoteNotificationsWithErrorImpl];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
-        
+
         SEL didReceive = @selector(application:didReceiveRemoteNotification:);
         [SwrveSwizzleHelper deswizzleMethod:didReceive inClass:appDelegateClass originalImplementation:(IMP)didReceiveRemoteNotificationImpl];
         didReceiveRemoteNotificationImpl = NULL;
-        
+
         didSwizzle = false;
     }
 }
@@ -146,7 +146,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 /** older version of iOS handling **/
 - (void) pushNotificationReceived:(NSDictionary *)userInfo {
-    
+
     // Try to get the identifier (_p)
     id pushIdentifier = [userInfo objectForKey:SwrvePushIdentifierKey];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
@@ -161,14 +161,14 @@ static dispatch_once_t sharedInstanceToken = 0;
             DebugLog(@"Unknown Swrve notification ID class for _p attribute", nil);
             return;
         }
-        
+
         // Only process this push if we haven't seen it before or its a QA push
         if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"] || ![pushId isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = pushId;
-        
+
             // Engagement replaces Influence Data
             [self clearInfluenceDataForPushId:pushId];
-            
+
             // Process deeplink _sd (and old _d)
             id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
             if (pushDeeplinkRaw == nil || ![pushDeeplinkRaw isKindOfClass:[NSString class]]) {
@@ -179,7 +179,7 @@ static dispatch_once_t sharedInstanceToken = 0;
                 NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
                 [self handlePushDeeplinkString:pushDeeplink];
             }
-            
+
             [_pushDelegate sendPushEngagedEvent:pushId];
             DebugLog(@"Got Swrve notification with ID %@", pushId);
         } else {
@@ -191,7 +191,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 }
 
 - (void) pushNotificationResponseReceived:(NSString*)identifier withUserInfo:(NSDictionary *)userInfo {
-    
+
     // Try to get the identifier (_p)
     id pushIdentifier = [userInfo objectForKey:SwrvePushIdentifierKey];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
@@ -206,14 +206,14 @@ static dispatch_once_t sharedInstanceToken = 0;
             DebugLog(@"Unknown Swrve notification ID class for _p attribute", nil);
             return;
         }
-        
+
         // Only process this push if we haven't seen it before or its a QA push
         if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"] || ![pushId isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = pushId;
-            
+
             // Engagement replaces Influence Data
             [self clearInfluenceDataForPushId:pushId];
-                
+
             if([identifier isEqualToString:SwrvePushResponseDefaultActionKey]) {
                 // if the user presses the push directly
                 id pushDeeplinkRaw = [userInfo objectForKey:SwrvePushDeeplinkKey];
@@ -225,18 +225,18 @@ static dispatch_once_t sharedInstanceToken = 0;
                     NSString* pushDeeplink = (NSString*)pushDeeplinkRaw;
                     [self handlePushDeeplinkString:pushDeeplink];
                 }
-                
+
                 [_pushDelegate sendPushEngagedEvent:pushId];
                 DebugLog(@"Performed a Direct Press on Swrve notification with ID %@", pushId);
-                
+
             }else{
-                
+
                 NSDictionary *swrveValues = [userInfo objectForKey:SwrvePushContentIdentifierKey];
                 NSArray *swrvebuttons = [swrveValues objectForKey:SwrvePushButtonListKey];
-                
+
                 if(swrvebuttons != nil && [swrvebuttons count] > 0){
                     int position = [identifier intValue];
-                    
+
                     NSDictionary *selectedButton = [swrvebuttons objectAtIndex:(NSUInteger)position];
                     NSString *action = [selectedButton objectForKey:SwrvePushButtonActionKey];
                     NSString *actionType = [selectedButton objectForKey:SwrvePushButtonActionTypeKey];
@@ -245,7 +245,7 @@ static dispatch_once_t sharedInstanceToken = 0;
                     if([actionType isEqualToString:SwrvePushCustomButtonUrlIdentiferKey]){
                         [self handlePushDeeplinkString:action];
                     }
-                    
+
                     // Send button click event.
                     DebugLog(@"Selected Button:'%@' on Swrve notification with ID %@", identifier, pushId);
                     NSMutableDictionary* actionEvent = [[NSMutableDictionary alloc] init];
@@ -256,14 +256,14 @@ static dispatch_once_t sharedInstanceToken = 0;
                     NSMutableDictionary* eventPayload = [[NSMutableDictionary alloc] init];
                     [eventPayload setValue:actionText forKey:@"buttonText"];
                     [actionEvent setValue:eventPayload forKey:@"payload"];
-                    
+
                     // Create generic campaign for button click
-                    [_commonDelegate queueEvent:@"generic_campaign_event" data:actionEvent triggerCallback:NO];
+                    [_commonDelegate queueEvent:@"generic_campaign_event" data:actionEvent triggerCallback:false];
                     [_commonDelegate sendQueuedEvents];
-                    
+
                     // Send push EngagedEvent
                     [_pushDelegate sendPushEngagedEvent:pushId];
-                    
+
                 }else{
                     DebugLog(@"Receieved a push with an unrecognised identifier %@", identifier);
                 }
@@ -274,7 +274,25 @@ static dispatch_once_t sharedInstanceToken = 0;
     } else {
         DebugLog(@"Got unidentified notification", nil);
     }
-    
+}
+
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler {
+    // This method can also be called when the app is in the background for normal pushes
+    // if the app has background remote notifications enabled
+    id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
+    if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
+        [self silentPushReceived:userInfo withCompletionHandler:completionHandler];
+        // Customer should handle the payload in the completionHandler
+        return YES;
+    } else {
+        id pushIdentifier = [userInfo objectForKey:SwrvePushIdentifierKey];
+        if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+            [self pushNotificationReceived:userInfo];
+            // We won't call the completionHandler and the customer should handle it themselves
+            return NO;
+        }
+    }
+    return NO;
 }
 
 - (void) handlePushDeeplinkString:(NSString*) pushDeeplink {
@@ -293,8 +311,8 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 + (void)handleNotificationContent:(UNNotificationContent *) notificationContent withAppGroupIdentifier:(NSString *)appGroupIdentifier
      withCompletedContentCallback:(void (^)(UNMutableNotificationContent * content)) callback {
-    
-    /** Process push indentifier for influenceData **/
+
+    /** Process push identifier for influenceData **/
     id pushIdentifier = notificationContent.userInfo[SwrvePushIdentifierKey];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
         NSString* pushId = @"-1";
@@ -309,18 +327,18 @@ static dispatch_once_t sharedInstanceToken = 0;
             callback([notificationContent mutableCopy]);
             return;
         }
-        
+
         /** Store Influenced data **/
         [SwrvePush saveInfluencedData:notificationContent.userInfo withPushId:pushId withAppGroupID:appGroupIdentifier atDate:[NSDate date]];
-        
+
         DebugLog(@"Got Swrve Notification with ID %@", pushId);
     } else {
-        
+
         DebugLog(@"Got unidentified notification", nil);
         callback([notificationContent mutableCopy]);
         return;
     }
-    
+
     /** Check the push version number **/
     NSDictionary *sw = [notificationContent.userInfo objectForKey:SwrvePushContentIdentifierKey];
     int contentVersion = [(NSNumber*)[sw objectForKey:SwrvePushContentVersionKey] intValue];
@@ -330,7 +348,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     }
     // clean up
     sw = nil;
-    
+
     /** Set Rich Media Content **/
     [SwrvePush handleRichPushContents:notificationContent withCompletionCallback:^(UNMutableNotificationContent *content) {
         if(content){
@@ -348,21 +366,21 @@ static dispatch_once_t sharedInstanceToken = 0;
         withCompletionCallback:(void (^)(UNMutableNotificationContent * content)) completion {
 
     __block UNMutableNotificationContent *mutableNotificationContent = [notificationContent mutableCopy];
-    
+
     /** create the notification dispatch group **/
     dispatch_group_t notificationGroup = dispatch_group_create();
-    
+
     /** Generate Appropriate Categories based on UserInfo **/
     UNNotificationCategory *generatedCategory = [SwrvePushMediaHelper produceButtonsFromUserInfo:mutableNotificationContent.userInfo];
-    
+
     if (generatedCategory) {
         // Category is generated start dispatch listener
         dispatch_group_enter(notificationGroup);
-        
+
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         /** Merge the categories defined in the app, with the dynamic ones **/
         [center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> * _Nonnull categories) {
-            
+
             /** Check if mutableNotificationContent isn't set nil by mediaUrl checks first **/
             if(mutableNotificationContent != nil) {
                 NSMutableSet* generatedCategories = [NSMutableSet set];
@@ -371,22 +389,22 @@ static dispatch_once_t sharedInstanceToken = 0;
                 mutableNotificationContent.categoryIdentifier = generatedCategory.identifier;
                 [center setNotificationCategories:mergedSet];
             }
-            
+
             dispatch_group_leave(notificationGroup);
         }];
         center = nil;
     }
-    
+
     NSDictionary *sw = [mutableNotificationContent.userInfo objectForKey:SwrvePushContentIdentifierKey];
     NSDictionary *mediaDict = [sw objectForKey:SwrvePushMediaKey];
     // clean up
     sw = nil;
-    
+
     NSString *mediaUrl = [mediaDict objectForKey:SwrvePushUrlKey];
     if(mediaUrl) {
         dispatch_group_enter(notificationGroup);
         [SwrvePushMediaHelper downloadAttachment:mediaUrl withCompletedContentCallback:^(UNNotificationAttachment *attachment, NSError *error) {
-            
+
             if(attachment && error == nil) {
                 // Primary image has worked
                 mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:attachment];
@@ -394,7 +412,7 @@ static dispatch_once_t sharedInstanceToken = 0;
                 DebugLog(@"Downloaded primary attachment successfully, returning to callback");
                 dispatch_group_leave(notificationGroup);
             } else {
-                
+
                 if(mediaDict[SwrvePushFallbackUrlKey] != nil) {
                     // Download fallback image
                     [SwrvePushMediaHelper downloadAttachment:mediaDict[SwrvePushFallbackUrlKey] withCompletedContentCallback:^(UNNotificationAttachment *fallbackAttachment, NSError *fallbackError) {
@@ -403,7 +421,7 @@ static dispatch_once_t sharedInstanceToken = 0;
                             mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallbackAttachment];
                             [SwrvePushMediaHelper produceMediaTextFromProvidedContent:mutableNotificationContent];
                             DebugLog(@"Downloaded fallback attachment successfully, returning to callback");
-                            
+
                             // Set fallback_sd if available
                             if(mediaDict[SwrvePushFallbackDeeplinkKey] != nil) {
                                 DebugLog(@"Fallback Deeplink detected, modifying notificationContent.userInfo");
@@ -413,15 +431,15 @@ static dispatch_once_t sharedInstanceToken = 0;
                                 // clean up
                                 moddedUserInfo = nil;
                             }
-                            
+
                         } else {
                             DebugLog(@"Fallback attachment error occurred: %@ Removing all attachments", fallbackError);
                         }
-                        
+
                         // Finished async fallback download task
                         dispatch_group_leave(notificationGroup);
                     }];
-                    
+
                 }else{
                     // There is no fallback attachment
                     DebugLog(@"Primary attachment error occured %@, Removing all attachments, ", error);
@@ -430,7 +448,7 @@ static dispatch_once_t sharedInstanceToken = 0;
             }
         }];
     }
-    
+
     dispatch_group_notify(notificationGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),^{
         /** Everything is finished, return the result **/
         completion(mutableNotificationContent);
@@ -441,7 +459,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
 #pragma unused(center)
-    
+
     if(_responseDelegate){
         [_responseDelegate willPresentNotification:notification withCompletionHandler:completionHandler];
     }
@@ -453,9 +471,9 @@ static dispatch_once_t sharedInstanceToken = 0;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
 #endif
 #pragma unused(center)
-    
+
     [self pushNotificationResponseReceived:response.actionIdentifier withUserInfo:response.notification.request.content.userInfo];
-    
+
     if(_responseDelegate){
         [_responseDelegate didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
     }else{
@@ -482,16 +500,16 @@ static dispatch_once_t sharedInstanceToken = 0;
             DebugLog(@"Unknown Swrve notification ID class for _sp attribute", nil);
             return;
         }
-     
+
         // Only process this push if we haven't seen it before or its a QA push
         if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"]  || ![pushId isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = pushId;
-            
+
             [SwrvePush saveInfluencedData:userInfo withPushId:pushId atDate:[self getNow]];
-        
+
             if (completionHandler != nil) {
                 // The SDK currently does no fetch operation on its own but will in future releases
-                
+
                 // Obtain the silent push payload and call the customers code
                 @try {
                     id silentPayloadRaw = [userInfo objectForKey:SwrveSilentPushPayloadKey];
@@ -504,7 +522,7 @@ static dispatch_once_t sharedInstanceToken = 0;
                     DebugLog(@"Could not execute the silent push listener: %@", exception.reason);
                 }
             }
-            
+
             DebugLog(@"Got Swrve silent notification with ID %@", pushId);
         } else {
             DebugLog(@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId);
@@ -529,61 +547,61 @@ static dispatch_once_t sharedInstanceToken = 0;
         else if ([influencedWindowMinsRaw isKindOfClass:[NSNumber class]]) {
             influenceWindowMins = [((NSNumber*)influencedWindowMinsRaw) intValue];
         }
-        
+
         long maxWindowTimeSeconds = (long)[[date dateByAddingTimeInterval:influenceWindowMins*60] timeIntervalSince1970];
-        
+
         // Save influence data
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
+
         if(appGroupID) {
             // if there is an appGroupID then check there instead
             defaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupID];
         }
-        
+
         [defaults synchronize];
-        
+
         NSMutableDictionary* influencedData = [[defaults dictionaryForKey:SwrveInfluenceDataKey] mutableCopy];
-        
+
         // if nothing is there. create a new one
         if (influencedData == nil) {
             influencedData = [[NSMutableDictionary alloc] init];
         }
-        
+
         // set pushId passed in
         [influencedData setValue:[NSNumber numberWithLong:maxWindowTimeSeconds] forKey:pushId];
-        
+
         // set influenced data to either the appGroup or the NSUserDefaults of the main app
         [defaults setObject:influencedData forKey:SwrveInfluenceDataKey];
         [defaults synchronize];
-        
+
     }
 }
 
 - (void) processInfluenceData {
-    
+
     NSDictionary *influencedData;
     NSDictionary* mainAppInfluence = [[NSUserDefaults standardUserDefaults] dictionaryForKey:SwrveInfluenceDataKey];
     NSDictionary* serviceExtensionInfluence = nil;
-    
+
     if(_commonDelegate != nil && _commonDelegate.appGroupIdentifier != nil){
         serviceExtensionInfluence = [[[NSUserDefaults alloc] initWithSuiteName:_commonDelegate.appGroupIdentifier] dictionaryForKey:SwrveInfluenceDataKey];
     }
-    
+
     if(mainAppInfluence != nil) {
         influencedData = mainAppInfluence;
-        
+
     }else if(serviceExtensionInfluence != nil) {
         influencedData = serviceExtensionInfluence;
-        
+
     }
-    
+
     if (influencedData != nil) {
         double nowSeconds = [[self getNow] timeIntervalSince1970];
         for (NSString* trackingId in influencedData) {
             id maxInfluenceWindow = [influencedData objectForKey:trackingId];
             if ([maxInfluenceWindow isKindOfClass:[NSNumber class]]) {
                 long maxWindowTimeSeconds = [(NSNumber*)maxInfluenceWindow longValue];
-                
+
                 if (maxWindowTimeSeconds > 0 && maxWindowTimeSeconds >= nowSeconds) {
                     // Send an influenced event for this tracking id
                     if (_commonDelegate != nil) {
@@ -595,15 +613,15 @@ static dispatch_once_t sharedInstanceToken = 0;
                         NSMutableDictionary* eventPayload = [[NSMutableDictionary alloc] init];
                         [eventPayload setValue:[NSString stringWithFormat:@"%i", (int)((maxWindowTimeSeconds - nowSeconds)/60)] forKey:@"delta"];
                         [influencedEvent setValue:eventPayload forKey:@"payload"];
-                        
-                        [_commonDelegate queueEvent:@"generic_campaign_event" data:influencedEvent triggerCallback:NO];
+
+                        [_commonDelegate queueEvent:@"generic_campaign_event" data:influencedEvent triggerCallback:false];
                     } else {
                         DebugLog(@"Could not find a shared instance to send the silent push influence data");
                     }
                 }
             }
         }
-        
+
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:SwrveInfluenceDataKey];
         [[[NSUserDefaults alloc] initWithSuiteName:_commonDelegate.appGroupIdentifier] removeObjectForKey:SwrveInfluenceDataKey];
     }
@@ -614,15 +632,15 @@ static dispatch_once_t sharedInstanceToken = 0;
 }
 
 - (void) clearInfluenceDataForPushId:(NSString *)pushID {
-    
+
     NSMutableDictionary *coreAppInfluenceData = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:SwrveInfluenceDataKey] mutableCopy];
     NSMutableDictionary *appGroupInfluenceData = [[[[NSUserDefaults alloc] initWithSuiteName:_commonDelegate.appGroupIdentifier] dictionaryForKey:SwrveInfluenceDataKey] mutableCopy];
-    
+
     if([coreAppInfluenceData objectForKey:pushID]) {
         [coreAppInfluenceData removeObjectForKey:pushID];
         [[NSUserDefaults standardUserDefaults] setValue:coreAppInfluenceData forKey:SwrveInfluenceDataKey];
     }
-    
+
     if([appGroupInfluenceData objectForKey:pushID]) {
         [appGroupInfluenceData removeObjectForKey:pushID];
         [[[NSUserDefaults alloc] initWithSuiteName:_commonDelegate.appGroupIdentifier] setValue:appGroupInfluenceData forKey:SwrveInfluenceDataKey];
@@ -635,11 +653,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     if( _commonDelegate == NULL) {
         DebugLog(@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil);
     } else {
-        
+
         if(_pushDelegate){
             [_pushDelegate deviceTokenIncoming:newDeviceToken];
         }
-        
+
         if(pushInstance->didRegisterForRemoteNotificationsWithDeviceTokenImpl != NULL) {
             id target = [SwrveCommon sharedUIApplication].delegate;
             pushInstance->didRegisterForRemoteNotificationsWithDeviceTokenImpl(target, @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:), application, newDeviceToken);
@@ -648,12 +666,12 @@ static dispatch_once_t sharedInstanceToken = 0;
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    
+
     if( _commonDelegate == NULL) {
         DebugLog(@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil);
     } else {
         DebugLog(@"Could not auto collected device token.", nil);
-        
+
         if( pushInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl != NULL ) {
             id target = [SwrveCommon sharedUIApplication].delegate;
             pushInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl(target, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), application, error);
@@ -662,15 +680,15 @@ static dispatch_once_t sharedInstanceToken = 0;
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
+
     if( _commonDelegate == NULL) {
         DebugLog(@"Error: Push notification can only be automatically reported if you are using the Swrve instance singleton.", nil);
     } else {
-        
+
         if(_pushDelegate) {
             [_pushDelegate remoteNotificationReceived:userInfo];
         }
-        
+
         if( pushInstance->didReceiveRemoteNotificationImpl != NULL ) {
             id target = [SwrveCommon sharedUIApplication].delegate;
             pushInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo);

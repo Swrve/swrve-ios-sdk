@@ -1,10 +1,10 @@
-#import "SwrveBaseCampaign.h"
+#import "SwrveCampaign.h"
 #import "SwrveConversation.h"
 
 @class SwrveMessageController;
 
 /*! In-app conversation campaign. */
-@interface SwrveConversationCampaign : SwrveBaseCampaign
+@interface SwrveConversationCampaign : SwrveCampaign
 
 @property (atomic, retain)    SwrveConversation*  conversation;     /*!< Conversation attached to this campaign. */
 @property (nonatomic, retain) NSArray* filters;                     /*!< Filters needed to display this campaign. */
@@ -40,7 +40,7 @@
  * \param time Device time.
  * \returns Conversation setup for the given trigger or nil.
  */
--(SwrveConversation*)getConversationForEvent:(NSString*)event
+-(SwrveConversation*)conversationForEvent:(NSString*)event
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time;
 
@@ -53,7 +53,7 @@
  * \param campaignReasons Will contain the reason the campaign returned no message.
  * \returns Message setup for the given trigger or nil.
  */
--(SwrveConversation*)getConversationForEvent:(NSString*)event
+-(SwrveConversation*)conversationForEvent:(NSString*)event
                                  withPayload:(NSDictionary*)payload
                                   withAssets:(NSSet*)assets
                                       atTime:(NSDate*)time

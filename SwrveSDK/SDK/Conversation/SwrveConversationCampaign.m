@@ -1,6 +1,5 @@
 #import "Swrve.h"
 #import "SwrveConversationCampaign.h"
-#import "SwrvePrivateBaseCampaign.h"
 #import "SwrveConversationPane.h"
 #import "SwrveContentItem.h"
 #import "SwrveInputMultiValue.h"
@@ -9,6 +8,8 @@
 #import "SwrveContentImage.h"
 #import "SwrveContentHTML.h"
 #import "SwrveContentStarRating.h"
+#import "SwrveCampaign+Private.h"
+#import "SwrveMessageController+Private.h"
 
 @interface SwrveConversationCampaign()
 
@@ -21,15 +22,16 @@
 @synthesize controller, conversation, filters;
 
 - (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)_controller {
-    self.controller = _controller;
-    id instance = [super initAtTime:time fromDictionary:json];
-    NSDictionary *conversationJson = [json objectForKey:@"conversation"];
-    self.conversation = [[SwrveConversation alloc] initWithJSON:conversationJson forCampaign:self forController:controller];
+    if (self = [super initAtTime:time fromDictionary:json]) {
+        self.controller = _controller;
+        NSDictionary *conversationJson = [json objectForKey:@"conversation"];
+        self.conversation = [[SwrveConversation alloc] initWithJSON:conversationJson forCampaign:self forController:controller];
 
-    self.filters = [json objectForKey:@"filters"];
-    [self addAssetsToQueue:assetsQueue];
-
-    return instance;
+        self.filters = [json objectForKey:@"filters"];
+        [self addAssetsToQueue:assetsQueue];
+    }
+    
+    return self;
 }
 
 - (void)addAssetsToQueue:(NSMutableSet *)assetsQueue {
@@ -104,15 +106,15 @@
     return [self canTriggerWithEvent:event andPayload:payload];
 }
 
--(SwrveConversation*)getConversationForEvent:(NSString*)event
+-(SwrveConversation*)conversationForEvent:(NSString*)event
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
 {
-    return [self getConversationForEvent:event withPayload:nil withAssets:assets atTime:time withReasons:nil];
+    return [self conversationForEvent:event withPayload:nil withAssets:assets atTime:time withReasons:nil];
 }
 
 
--(SwrveConversation*)getConversationForEvent:(NSString*)event
+-(SwrveConversation*)conversationForEvent:(NSString*)event
                                  withPayload:(NSDictionary*)payload
                                   withAssets:(NSSet*)assets
                                       atTime:(NSDate*)time

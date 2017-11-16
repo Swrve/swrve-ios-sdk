@@ -1,6 +1,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
 #import "SwrveCommon.h"
+#import "SwrveLocalStorage.h"
 #import "SwrveBaseConversation.h"
 #import <CoreText/CoreText.h>
 
@@ -181,35 +182,41 @@
                 uiFont = label.font;
             }
         }
-    } else if (fontFile && [fontFile length] == 0) { // will be blank for v1/v2/v3 of conversations
+    } else if (fontFile == nil || (fontFile && [fontFile length] == 0)) { // will be blank for v1/v2/v3 of conversations
         uiFont = [fallbackUIFont fontWithSize:fontSizePoints];
     } else {
         if(fontPostscriptName && [fontPostscriptName length] > 0) {
             uiFont = [UIFont fontWithName:fontPostscriptName size:fontSizePoints]; // try loading the font. It could already be registered.
         }
         if (!uiFont) {
-            NSString *cacheFolder = [SwrveCommon swrveCacheFolder];
+            NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
             NSString *fontPath = [cacheFolder stringByAppendingPathComponent:fontFile];
             BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fontPath];
             if (fileExists) {
                 NSURL *url = [NSURL fileURLWithPath:fontPath];
                 CGDataProviderRef fontDataProvider = CGDataProviderCreateWithURL((__bridge CFURLRef) url);
                 CGFontRef cgFont = CGFontCreateWithDataProvider(fontDataProvider);
-                NSString *newFontPostscriptName = (__bridge NSString *) CGFontCopyPostScriptName(cgFont);
+                CFStringRef newFontPostscsriptNameCString = CGFontCopyPostScriptName(cgFont);
+                NSString *newFontPostscriptName = (__bridge NSString *) newFontPostscsriptNameCString;
                 if(newFontPostscriptName) {
                     uiFont = [UIFont fontWithName:newFontPostscriptName size:fontSizePoints]; // check again if already registered
                 }
                 if (uiFont == NULL) {
-                    CGDataProviderRelease(fontDataProvider);
                     CFErrorRef cfError;
                     if (CTFontManagerRegisterGraphicsFont(cgFont, &cfError)) {
-                        uiFont = [UIFont fontWithName:newFontPostscriptName size:fontSizePoints];
+                        if (newFontPostscriptName != nil) {
+                            uiFont = [UIFont fontWithName:newFontPostscriptName size:fontSizePoints];
+                        }
                     } else {
                         CFStringRef errorDescription = CFErrorCopyDescription(cfError);
                         DebugLog(@"Error registering font: %@ fontPath:%@ errorDescription:%@", fontFile, fontPath, errorDescription);
                         CFRelease(errorDescription);
                     }
-                    CGFontRelease(cgFont);
+                }
+                CGFontRelease(cgFont);
+                CGDataProviderRelease(fontDataProvider);
+                if (newFontPostscsriptNameCString != nil) {
+                    CFRelease(newFontPostscsriptNameCString);
                 }
             } else {
                 DebugLog(@"Swrve: fontFile %@ could not be loaded. Using default/fallback.", fontFile);

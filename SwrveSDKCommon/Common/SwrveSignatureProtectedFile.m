@@ -1,30 +1,79 @@
 #import "SwrveCommon.h"
 #import "SwrveSignatureProtectedFile.h"
 #import <CommonCrypto/CommonHMAC.h>
+#import "SwrveLocalStorage.h"
 
 @implementation SwrveSignatureProtectedFile
 
 @synthesize filename;
 @synthesize signatureFilename;
 @synthesize key;
-@synthesize signatureErrorListener;
+@synthesize signatureErrorDelegate;
+    
+    
+- (id) protectedFileType:(int)fileType
+                  userID:(NSString*)userID
+            signatureKey:(NSString*)signatureKey
+           errorDelegate:(id<SwrveSignatureErrorDelegate>)delegate {
+    
+    NSString *filePath = nil;
+    NSString *signatureFilePath = nil;
+    
+    switch (fileType)
+    
+    {
+        case SWRVE_LOCATION_FILE:
+        
+        filePath = [SwrveLocalStorage locationCampaignFilePathForUserId:userID];
+        signatureFilePath = [SwrveLocalStorage locationCampaignSignatureFilePathForUserId:userID];
+        
+        break;
+        
+        case SWRVE_RESOURCE_FILE:
+        
+        filePath = [SwrveLocalStorage userResourcesFilePathForUserId:userID];
+        signatureFilePath = [SwrveLocalStorage userResourcesSignatureFilePathForUserId:userID];
+        
+        break;
+            
+        case SWRVE_RESOURCE_DIFF_FILE:
+            
+            filePath = [SwrveLocalStorage userResourcesDiffFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage userResourcesDiffSignatureFilePathForUserId:userID];
+            
+            break;
+        
+        case SWRVE_CAMPAIGN_FILE:
+        
+        filePath = [SwrveLocalStorage campaignsFilePathForUserId:userID];
+        signatureFilePath = [SwrveLocalStorage campaignsSignatureFilePathForUserId:userID];
+        
+        break;
+        
+    }
+    
+    NSURL* fileURL = [NSURL fileURLWithPath:filePath];
+    NSURL* signatureURL = [NSURL fileURLWithPath:signatureFilePath];
+    
+    return [self initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey signatureErrorDelegate:delegate];
+}
 
 - (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey
 {
-    return [self initFile:file signatureFilename:signatureFile usingKey:signatureKey signatureErrorListener:nil];
+    return [self initFile:file signatureFilename:signatureFile usingKey:signatureKey signatureErrorDelegate:nil];
 }
 
-- (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey signatureErrorListener:(id<SwrveSignatureErrorListener>)listener
+- (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey signatureErrorDelegate:(id<SwrveSignatureErrorDelegate>)delegate
 {
     if (self = [super init]) {
         key = signatureKey;
         self.filename = file;
         self.signatureFilename = signatureFile;
         
-        if (listener == nil) {
-            self.signatureErrorListener = self;
+        if (delegate == nil) {
+            self.signatureErrorDelegate = self;
         } else {
-            self.signatureErrorListener = listener;
+            self.signatureErrorDelegate = delegate;
         }
     }
     return self;
@@ -57,7 +106,7 @@
             {
                 return content;
             } else {
-                [[self signatureErrorListener] signatureError:[self filename]];
+                [[self signatureErrorDelegate] signatureError:[self filename]];
             }
         }
     }
