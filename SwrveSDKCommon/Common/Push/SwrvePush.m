@@ -461,7 +461,18 @@ static dispatch_once_t sharedInstanceToken = 0;
 #pragma unused(center)
 
     if(_responseDelegate){
-        [_responseDelegate willPresentNotification:notification withCompletionHandler:completionHandler];
+        if ([_responseDelegate respondsToSelector:@selector(willPresentNotification:withCompletionHandler:)]) {
+            [_responseDelegate willPresentNotification:notification withCompletionHandler:completionHandler];
+        }else{
+            // if there is no willPresentNotification implemented as part of the delegate
+            if(completionHandler) {
+                completionHandler(UNNotificationPresentationOptionNone);
+            }
+        }
+    }else{
+        if(completionHandler) {
+            completionHandler(UNNotificationPresentationOptionNone);
+        }
     }
 }
 
@@ -475,7 +486,15 @@ static dispatch_once_t sharedInstanceToken = 0;
     [self pushNotificationResponseReceived:response.actionIdentifier withUserInfo:response.notification.request.content.userInfo];
 
     if(_responseDelegate){
-        [_responseDelegate didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+        if ([_responseDelegate respondsToSelector:@selector(didReceiveNotificationResponse:withCompletionHandler:)]) {
+            [_responseDelegate didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+            
+        }else{
+            // if there is no didReceiveNotificationResponse implemented as part of the delegate
+            if(completionHandler) {
+                completionHandler();
+            }
+        }
     }else{
         if (completionHandler) {
             completionHandler();

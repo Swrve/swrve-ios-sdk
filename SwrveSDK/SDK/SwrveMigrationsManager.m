@@ -1,5 +1,6 @@
 #import "SwrveMigrationsManager.h"
 #import "SwrveLocalStorage.h"
+#import "SwrveProfileManager.h"
 
 @interface SwrveMigrationsManager ()
 
@@ -237,7 +238,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
 - (void)migrate1 {
     DebugLog(@"Executing version 1 migration code. Migrate data per userId");
     NSString *userId = nil;
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithConfig:config];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:config.userId];
     userId = [profileManager userId];
 
     if (userId && [userId length] > 0) {

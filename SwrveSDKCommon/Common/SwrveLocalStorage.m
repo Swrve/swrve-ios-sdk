@@ -28,6 +28,7 @@ static NSString* SWRVE_USER_ID_KEY = @"swrve_user_id";
 static NSString* SWRVE_PERMISSION_STATUS = @"swrve_permission_status";
 static NSString* SWRVE_ASKED_FOR_PUSH_PERMISSIONS = @"swrve.asked_for_push_permission";
 static NSString* SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
+static NSString* SWRVE_QA_USER = @"swrve.q1";
 
 @implementation SwrveLocalStorage
 
@@ -145,6 +146,16 @@ static NSString* SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
 
 + (bool)askedForPushPermission {
     return [[self defaults] boolForKey:SWRVE_ASKED_FOR_PUSH_PERMISSIONS];
+}
+
+//// SWRVE QA USER ////
+
++ (NSDictionary*)qaUser {
+   return [[self defaults] dictionaryForKey:SWRVE_QA_USER];
+}
+
++ (void)saveQaUser:(NSDictionary*)qaUser {
+   [[self defaults] setObject:qaUser forKey:SWRVE_QA_USER];
 }
 
 #pragma mark - Application data management

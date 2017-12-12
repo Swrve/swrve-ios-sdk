@@ -21,6 +21,9 @@
 @property(atomic, readonly) NSString *userID;
 @property(atomic, readonly) NSDictionary *deviceInfo;
 @property(atomic, readonly) NSString* deviceToken;
+@property(atomic, readonly) NSString *apiKey;
+@property(atomic, readonly) NSString *eventsServer;
+@property(atomic, readonly) NSNumber *deviceId;
 
 @end
 

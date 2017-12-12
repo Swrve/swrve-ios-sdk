@@ -11,6 +11,7 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveCampaign+Private.h"
 #import "SwrveUtils.h"
+#import "SwrveQA.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -413,6 +414,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         DebugLog(@"You are a QA user!", nil);
         campaignsDownloaded = [[NSMutableDictionary alloc] init];
         self.qaUser = [[SwrveQAUser alloc] initWithJSON:jsonQa withAnalyticsSDK:self.analyticsSDK];
+        //Location QA setup
+        [SwrveQA updateQAUser:jsonQa];
 
         NSArray* json_qa_campaigns = [jsonQa objectForKey:@"campaigns"];
         if(json_qa_campaigns) {

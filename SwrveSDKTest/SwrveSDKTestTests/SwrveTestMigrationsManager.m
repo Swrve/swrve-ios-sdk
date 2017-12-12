@@ -2,6 +2,7 @@
 #import "SwrveMigrationsManager.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveTestHelper.h"
+#import "SwrveProfileManager.h"
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 
@@ -70,7 +71,7 @@
 }
 
 - (NSString*)installDateFilePathForConfig:(ImmutableSwrveConfig *)immutableSwrveConfig {
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
     NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:installDateWithUserId];
@@ -112,7 +113,7 @@
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
 
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
     NSString *userId = [profileManager userId];
     NSString *campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:userId];
     XCTAssertTrue([fileManager fileExistsAtPath:campaignsStateFilePath] == YES);
@@ -178,7 +179,7 @@
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
 
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
     NSString *userId = [profileManager userId];
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
     NSString *migratedFileName = [userId stringByAppendingString:fileName];

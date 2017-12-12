@@ -35,3 +35,5 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveRESTClient.h>
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveProfileManager.h>
+#import <SwrveSDKCommon/SwrveQA.h>

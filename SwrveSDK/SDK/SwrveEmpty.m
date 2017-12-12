@@ -23,6 +23,8 @@
 @synthesize resourceManager;
 @synthesize deviceToken;
 @synthesize locationSegmentVersion;
+@synthesize eventsServer;
+@synthesize deviceId;
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey {
     if (self = [super init]) {

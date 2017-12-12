@@ -22,6 +22,8 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import "SwrveEventsManager.h"
+#import "SwrveQA.h"
+#import "SwrveProfileManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -245,6 +247,7 @@ enum
 
 @implementation Swrve
 
+@synthesize eventsServer;
 @synthesize config;
 @synthesize appID;
 @synthesize apiKey;
@@ -324,11 +327,12 @@ enum
 
         NSCAssert(swrveConfig, @"Null config object given to Swrve", nil);
         [self setupConfig:swrveConfig];
+        eventsServer = [swrveConfig eventsServer];
         config = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
 
-        profileManager = [[SwrveProfileManager alloc] initWithConfig:config];
+        profileManager = [[SwrveProfileManager alloc] initWithUserID:config.userId];
         userID = [profileManager userId];
-
+       
         eventsManager = [[SwrveEventsManager alloc] initWithDelegate:self];
 
         instanceID = [[SwrveInstanceIDRecorder sharedInstance] addSwrveInstanceID];
@@ -751,6 +755,14 @@ enum
                     if (locationCampaignJson != nil) {
                         NSDictionary* campaignsJson = [locationCampaignJson objectForKey:@"campaigns"];
                         [self saveLocationCampaignsInCache:campaignsJson];
+                        [SwrveQA makeRequest:[SwrveQA locationCampaignDownloaded]];
+                    } 
+                    
+                    // In Version 7 QA is at the root
+                    NSDictionary* jsonQa = [responseDict objectForKey:@"qa"];
+                    if(jsonQa) {
+                        //Location QA setup
+                        [SwrveQA updateQAUser:jsonQa];
                     }
 
                     if (self.config.abTestDetailsEnabled) {

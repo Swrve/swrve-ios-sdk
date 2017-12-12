@@ -48,5 +48,7 @@
 + (NSDictionary *)getPermissions;
 + (void)saveAskedForPushPermission:(bool) status;
 + (bool)askedForPushPermission;
++ (NSDictionary*)qaUser;
++ (void)saveQaUser:(NSDictionary*)qaUser;
 
 @end

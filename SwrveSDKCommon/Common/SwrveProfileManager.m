@@ -5,21 +5,15 @@
 #import <sys/sysctl.h>
 #import <CommonCrypto/CommonHMAC.h>
 
-@interface SwrveProfileManager ()
-@property(nonatomic, retain) ImmutableSwrveConfig *config;
-@end
-
 @implementation SwrveProfileManager
 
-@synthesize config;
 @synthesize userId;
 @synthesize isNewUser;
 
-- (id)initWithConfig:(ImmutableSwrveConfig *)swrveConfig {
+- (id)initWithUserID:(NSString *)userID {
     self = [super init];
     if (self) {
-        self.config = swrveConfig;
-        [self initUserId];
+        [self initUserId:userID];
     }
     return self;
 }
@@ -28,8 +22,7 @@
     return [userId length] > 0;
 }
 
-- (void)initUserId {
-    NSString *swrveUserID = config.userId;
+- (void)initUserId:(NSString *)swrveUserID {
     if (!swrveUserID) {
         swrveUserID = [SwrveLocalStorage swrveUserId];
         if (!swrveUserID) {
