@@ -1,5 +1,6 @@
 #import "SwrveInputMultiValue.h"
 #import "SwrveConversationStyler.h"
+#import "SwrveUITableViewCell.h"
 
 @implementation SwrveInputMultiValue
 
@@ -48,7 +49,7 @@
 
 - (UITableViewCell *)cellForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
     if (![self hasDescription] || row > 0) {
-        return [self fetchStandardCell:tableView forRow:row];
+        return [self fetchStandardCellForRow:row];
     } else {
         return [self fetchDescriptionCell:tableView];
     }
@@ -85,12 +86,7 @@
     if (row == 0) {
         UIFont *fallbackFont = [UIFont boldSystemFontOfSize:[kSwrveDefaultMultiValueDescriptionFontSize floatValue]];
         UIFont *descriptionFont = [SwrveConversationStyler fontFromStyle:self.style withFallback:fallbackFont];
-        NSDictionary *attributes = @{NSFontAttributeName: descriptionFont};
-        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:self.description attributes:attributes];
-        CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
-                                                   options:NSStringDrawingUsesLineFragmentOrigin
-                                                   context:nil];
-        return (float)ceil(rect.size.height);
+        return (float)[SwrveConversationStyler textHeight:self.description withFont:descriptionFont withMaxWidth:(float)tableView.bounds.size.width];
     } else {
         NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
         NSDictionary *dict = [self.values objectAtIndex:finalRow];
@@ -101,12 +97,7 @@
         }
         UIFont *fallbackFont = [UIFont fontWithName:kSwrveDefaultMultiValueCellFontName size:[kSwrveDefaultMultiValueCellFontSize floatValue]];
         UIFont *cellFont = [SwrveConversationStyler fontFromStyle:cellStyle withFallback:fallbackFont];
-        NSDictionary *attributes = @{NSFontAttributeName: cellFont};
-        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:cellText attributes:attributes];
-        CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(tableView.bounds.size.width, CGFLOAT_MAX)
-                                                   options:NSStringDrawingUsesLineFragmentOrigin
-                                                   context:nil];
-        return (float)(ceil(rect.size.height) + 22);
+        return (float)[SwrveConversationStyler textHeight:cellText withFont:cellFont withMaxWidth:(float)tableView.bounds.size.width] + 22;
     }
 }
 
@@ -127,13 +118,10 @@
     return cell;
 }
 
-- (UITableViewCell *)fetchStandardCell:(UITableView *)tableView forRow:(NSUInteger)row {
+- (UITableViewCell *)fetchStandardCellForRow:(NSUInteger)row {
     NSString *cellId = [NSString stringWithFormat:@"%@CellId", self.type];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellId];
-        cell.selectionStyle = UITableViewCellSelectionStyleGray;
-    }
+    UITableViewCell *cell = [[SwrveUITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellId];
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
 
     if(self.selectedIndex == (NSInteger)row) {
         [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
@@ -151,7 +139,8 @@
     UIFont *fallbackFont = [UIFont fontWithName:kSwrveDefaultMultiValueCellFontName size:[kSwrveDefaultMultiValueCellFontSize floatValue]];
     UIFont *cellFont = [SwrveConversationStyler fontFromStyle:cellStyle withFallback:fallbackFont];
     [cell.textLabel setFont:cellFont];
-    [cell.textLabel setText:[dict objectForKey:kSwrveKeyAnswerText]];
+    NSString* cellText = [dict objectForKey:kSwrveKeyAnswerText];
+    [cell.textLabel setText:cellText];
     [cell.textLabel setNumberOfLines:0];
     [SwrveConversationStyler styleView:cell withStyle:cellStyle];
     return cell;

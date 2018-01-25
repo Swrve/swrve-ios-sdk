@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1BE98EB7201A36450096B9D4 /* SwrveUITableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BE98EB5201A36440096B9D4 /* SwrveUITableViewCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1BE98EB8201A36450096B9D4 /* SwrveUITableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BE98EB6201A36440096B9D4 /* SwrveUITableViewCell.m */; };
 		F63EC3651FBB2E3A00AC6BA2 /* SwrveConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CAD1F74083F003B0EA4 /* SwrveConversation.m */; };
 		F63EC3661FBB2E3A00AC6BA2 /* SwrveConversationCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CAF1F74083F003B0EA4 /* SwrveConversationCampaign.m */; };
 		F63EC3671FBB2E3A00AC6BA2 /* SwrveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CB21F74083F003B0EA4 /* SwrveButton.m */; };
@@ -172,6 +174,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1BE98EB5201A36440096B9D4 /* SwrveUITableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveUITableViewCell.h; sourceTree = "<group>"; };
+		1BE98EB6201A36440096B9D4 /* SwrveUITableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveUITableViewCell.m; sourceTree = "<group>"; };
 		F6329B451FBA0DFB00FF9FAD /* SwrveSDK.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = SwrveSDK.modulemap; sourceTree = "<group>"; };
 		F6535DFD1FC4666F00B72A19 /* SwrveProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveProfileManager.m; sourceTree = "<group>"; };
 		F6535DFE1FC4666F00B72A19 /* SwrveProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveProfileManager.h; sourceTree = "<group>"; };
@@ -569,6 +573,8 @@
 				F6D10CF01F695AF70094B34E /* SwrveInputMultiValue.m */,
 				F6D10CF11F695AF70094B34E /* SwrveMessageEventHandler.h */,
 				F6D10CF21F695AF70094B34E /* SwrveSetup.h */,
+				1BE98EB5201A36440096B9D4 /* SwrveUITableViewCell.h */,
+				1BE98EB6201A36440096B9D4 /* SwrveUITableViewCell.m */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -755,6 +761,7 @@
 				F6D10D091F695AF70094B34E /* SwrveContentStarRatingView.h in Headers */,
 				F6D10D1C1F695AF70094B34E /* SwrveConversationResource.h in Headers */,
 				F6D10D111F695AF70094B34E /* SwrveConversationButton.h in Headers */,
+				1BE98EB7201A36450096B9D4 /* SwrveUITableViewCell.h in Headers */,
 				F6D10D1A1F695AF70094B34E /* SwrveConversationPane.h in Headers */,
 				F6D10D051F695AF70094B34E /* SwrveContentSpacer.h in Headers */,
 				F6D10CFB1F695AF70094B34E /* UIWebView+YouTubeVimeo.h in Headers */,
@@ -988,6 +995,7 @@
 				F6D10D1F1F695AF70094B34E /* SwrveConversationResourceManagement.m in Sources */,
 				F6D10CFC1F695AF70094B34E /* UIWebView+YouTubeVimeo.m in Sources */,
 				F6D10D0A1F695AF70094B34E /* SwrveContentStarRatingView.m in Sources */,
+				1BE98EB8201A36450096B9D4 /* SwrveUITableViewCell.m in Sources */,
 				F6D10D081F695AF70094B34E /* SwrveContentStarRating.m in Sources */,
 				F6D10D161F695AF70094B34E /* SwrveConversationEvents.m in Sources */,
 				F6D10D231F695AF70094B34E /* SwrveConversationStyler.m in Sources */,

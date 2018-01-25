@@ -237,7 +237,7 @@
     } else {
 
         XCTAssertTrue([deviceInfo count] == devicePermissionsCount + 2);
-        XCTAssertEqual([deviceInfo valueForKey:@"Swrve.permission.ios.push_notifications"], [NSString class]);
+        XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.push_notifications"]!= nil);
     }
 }
 

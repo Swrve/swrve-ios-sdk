@@ -13,5 +13,6 @@
 + (void) styleButton:(SwrveConversationUIButton *)button withStyle:(NSDictionary*)style;
 + (void) styleStarRating:(SwrveContentStarRatingView*)ratingView withStyle:(NSDictionary*)style withStarColor:(NSString*)starColorHex;
 + (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)defaultUIFont;
++ (float) textHeight:(NSString*)str withFont:(UIFont*)font withMaxWidth:(float)maxWidth;
 
 @end

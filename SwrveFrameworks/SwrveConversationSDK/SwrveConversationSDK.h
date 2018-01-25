@@ -37,3 +37,4 @@ FOUNDATION_EXPORT const unsigned char SwrveConversationSDKVersionString[];
 #import <SwrveConversationSDK/SwrveInputMultiValue.h>
 #import <SwrveConversationSDK/SwrveMessageEventHandler.h>
 #import <SwrveConversationSDK/SwrveSetup.h>
+#import <SwrveConversationSDK/SwrveUITableViewCell.h>

@@ -40,7 +40,7 @@
         float border = [self convertBorderRadius:[[style objectForKey:kSwrveKeyBorderRadius] floatValue]];
         uiView.layer.cornerRadius = border;
     }
-    
+
     NSDictionary *lightBox = [style objectForKey:kSwrveKeyLb];
     NSString *color = [self colorFromStyle:lightBox withDefault:kSwrveDefaultColorLb];
     uiView.superview.backgroundColor = [self convertToUIColor:color];
@@ -71,28 +71,28 @@
 + (UIColor *) processHexColorValue:(NSString *)color {
     NSString *colorString = [[color stringByReplacingOccurrencesOfString: @"#" withString: @""] uppercaseString];
     UIColor *returnColor;
-    
+
     if([colorString length] == 6) {
         unsigned int hexInt = 0;
         NSScanner *scanner = [NSScanner scannerWithString:colorString];
         [scanner scanHexInt:&hexInt];
         returnColor = Swrve_UIColorFromRGB(hexInt, 1.0f);
-        
+
     }else if([colorString length] == 8) {
-        
+
         NSString *alphaSub = [colorString substringWithRange: NSMakeRange(0, 2)];
         NSString *colorSub = [colorString substringWithRange: NSMakeRange(2, 6)];
-        
+
         unsigned hexComponent;
         unsigned int hexInt = 0;
         [[NSScanner scannerWithString: alphaSub] scanHexInt: &hexComponent];
         float alpha = hexComponent / 255.0f;
-        
+
         NSScanner *scanner = [NSScanner scannerWithString:colorSub];
         [scanner scanHexInt:&hexInt];
         returnColor = Swrve_UIColorFromRGB(hexInt, alpha);
     }
-    
+
     return returnColor;
 }
 
@@ -156,14 +156,14 @@
     button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     [button.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
     [button.titleLabel setNumberOfLines:1];
+    [button setContentVerticalAlignment:UIControlContentVerticalAlignmentFill];
 }
 
 + (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont {
 
     NSString *fontFile = [style objectForKey:kSwrveKeyFontFile];
     NSString *fontPostscriptName = [style objectForKey:kSwrveKeyFontPostscriptName];
-    CGFloat fontSizePixels = [[style objectForKey:kSwrveKeyTextSize] floatValue];
-    CGFloat fontSizePoints = fontSizePixels;
+    CGFloat fontSizePoints = [[style objectForKey:kSwrveKeyTextSize] floatValue];
 
     UIFont *uiFont;
     if ([SwrveBaseConversation isSystemFont:style]) {
@@ -235,6 +235,15 @@
     UIColor *bgUIColor = [self convertToUIColor:bgHexColor];
     UIColor *starColor = [self convertToUIColor:starColorHex];
     [ratingView updateWithStarColor:starColor withBackgroundColor:bgUIColor];
+}
+
++ (float) textHeight:(NSString*)str withFont:(UIFont*)font withMaxWidth:(float)maxWidth {
+    NSDictionary *attributes = @{NSFontAttributeName: font};
+    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:str attributes:attributes];
+    CGRect rect = [attributedText boundingRectWithSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
+                                               options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                               context:nil];
+    return ceilf((float)rect.size.height);
 }
 
 @end
