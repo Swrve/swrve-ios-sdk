@@ -38,11 +38,11 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 }
 
 - (void)downloadAssets:(NSSet *)assetsQueue withCompletionHandler:(void (^)(void))completionHandler {
-    if (!assetsQueue || [assetsQueue count] == 0) {
-        return;
-    }
-
+    if (!assetsQueue || [assetsQueue count] == 0) { completionHandler(); return;}
+    
     NSSet *assetItemsToDownload = [self filterExistingFiles:assetsQueue];
+    if ([assetItemsToDownload count] == 0 ) { completionHandler(); return;}
+    
     for (NSDictionary *assetItem in assetItemsToDownload) {
         [self downloadAsset:assetItem withCompletionHandler:completionHandler];
     }

@@ -31,8 +31,8 @@
     return CGSizeMake(w.floatValue, h.floatValue);
 }
 
-+(SwrveImage*)createImage:(NSDictionary*)imageData
-{
++(SwrveImage*)createImage:(NSDictionary*)imageData {
+    
     SwrveImage* image = [[SwrveImage alloc] init];
     image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
     image.center = [SwrveMessageFormat centerFromImageData:imageData];
@@ -227,6 +227,17 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     
     [containerView setCenter:CGPointMake(centerX, centerY)];
     [view addSubview:containerView];
+    
+#if TARGET_OS_TV
+    [containerView setAlpha:1];
+#endif
+    [view setAlpha:1];
+    [containerView setUserInteractionEnabled:YES];
+    [view setUserInteractionEnabled:YES];
+    
+    [view setHidden:NO];
+    [containerView setHidden:NO];
+    
     return containerView;
 }
 
@@ -234,8 +245,8 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
-    for (SwrveButton* button in self.buttons)
-    {
+    
+    for (SwrveButton* button in self.buttons) {
         UIButton* buttonView = [button createButtonWithDelegate:delegate
                                                     andSelector:buttonPressedSelector
                                                         andScale:(float)renderScale
@@ -278,6 +289,12 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         
         UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
         imageView.image = background;
+        
+        //shows focus on tvOS
+#if TARGET_OS_TV
+        imageView.adjustsImageWhenAncestorFocused = YES;
+#endif
+        
         [imageView setCenter:CGPointMake(centerX + (backgroundImage.center.x * renderScale),
                                          centerY + (backgroundImage.center.y * renderScale))];
         [containerView addSubview:imageView];

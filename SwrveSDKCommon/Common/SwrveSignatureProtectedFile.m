@@ -45,8 +45,15 @@
         
         case SWRVE_CAMPAIGN_FILE:
         
-        filePath = [SwrveLocalStorage campaignsFilePathForUserId:userID];
-        signatureFilePath = [SwrveLocalStorage campaignsSignatureFilePathForUserId:userID];
+            filePath = [SwrveLocalStorage campaignsFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage campaignsSignatureFilePathForUserId:userID];
+            
+             break;
+            
+        case SWRVE_AD_CAMPAIGN_FILE:
+            
+            filePath = [SwrveLocalStorage campaignsAdFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage campaignsAdSignatureFilePathForUserId:userID];
         
         break;
         
@@ -91,8 +98,23 @@
     }
 }
 
-- (NSData*) readFromFile
-{
+- (void) writeToDefaults:(NSData*)content {
+    NSData* signature = [self createHMACWithMD5:content];
+    [[NSUserDefaults standardUserDefaults] setValue:content forKey:self.filename.lastPathComponent];
+    [[NSUserDefaults standardUserDefaults] setValue:signature forKey:self.signatureFilename.lastPathComponent];
+    [[NSUserDefaults standardUserDefaults]  synchronize];
+}
+
+- (void) writeWithRespectToPlatform:(NSData*)content {
+#if TARGET_OS_IOS
+    [self writeToFile:content];
+#elif TARGET_OS_TV
+    // tvOS has a much more aggressive cache than iOS, which means most things have to be stored to the tvOS defaults rather than the cache
+    [self writeToDefaults:content];
+#endif
+}
+
+- (NSData*) readFromFile {
     NSData* content = [NSData dataWithContentsOfURL:[self filename]];
     
     if (content != nil) {
@@ -112,6 +134,41 @@
     }
     
     return nil;
+}
+
+- (NSData*) readFromDefaults {
+    NSURL *filePath = [self filename];
+    NSURL *sigFilePath = [self signatureFilename];
+
+    NSData* content = [[NSUserDefaults standardUserDefaults] dataForKey:filePath.lastPathComponent];
+    
+    if (content != nil) {
+        NSData* actual_signature = [[NSUserDefaults standardUserDefaults] dataForKey:sigFilePath.lastPathComponent];
+        
+        if (actual_signature != nil) {
+            // Check signature
+            NSData* computed_signature = [self createHMACWithMD5:content];
+            
+            if ([actual_signature isEqualToData:computed_signature])
+            {
+                return content;
+            } else {
+                [[self signatureErrorDelegate] signatureError:[self filename]];
+            }
+        }
+    }
+    
+    return nil;
+    
+}
+
+- (NSData*) readWithRespectToPlatform {
+#if TARGET_OS_IOS
+    return [self readFromFile];
+#elif TARGET_OS_TV
+    // tvOS has a much more aggressive cache than iOS, which means most things have to be stored to the tvOS defaults rather than the cache
+    return [self readFromDefaults];
+#endif
 }
 
 - (NSData*) createHMACWithMD5:(NSData*)source

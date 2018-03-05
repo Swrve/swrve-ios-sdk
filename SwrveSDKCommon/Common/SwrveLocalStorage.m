@@ -14,6 +14,8 @@ static NSString* SWRVE_USER_RESOURCES_DIFF = @"rsdfngt2.txt";
 static NSString* SWRVE_USER_RESOURCES_DIFF_SGT = @"rsdfngtsgt2.txt";
 static NSString* SWRVE_CAMPAIGNS = @"cmcc2.json";
 static NSString* SWRVE_CAMPAIGNS_SGT = @"cmccsgt2.txt";
+static NSString* SWRVE_AD_CAMPAIGNS = @"cmcc3.json";
+static NSString* SWRVE_AD_CAMPAIGNS_SGT = @"cmccsgt3.txt";
 static NSString* SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
 
 //NSUserDefaults Keys
@@ -138,6 +140,7 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     return [[self defaults] dictionaryForKey:SWRVE_PERMISSION_STATUS];
 }
 
+
 //// SWRVE PERMISSIONS BOOL ////
 
 + (void)saveAskedForPushPermission:(bool) status {
@@ -161,18 +164,22 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 #pragma mark - Application data management
 
 + (NSString *) applicationSupportPath {
-
-    NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:appSupportDir isDirectory:NULL]) {
-        NSError *error = nil;
-        if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:
-              [NSDictionary dictionaryWithObject:NSFileProtectionNone forKey:NSFileProtectionKey] error:&error]) {
-            DebugLog(@"Error Creating an Application Support Directory %@", error.localizedDescription);
-        } else {
-            DebugLog(@"Successfully Created Directory: %@", appSupportDir);
+    //tvOS does not support writing to the application support directory, so use cache directory
+    #if TARGET_OS_TV
+        return [SwrveLocalStorage cachePath];
+    #else
+        NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:appSupportDir isDirectory:NULL]) {
+            NSError *error = nil;
+            if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:
+                  [NSDictionary dictionaryWithObject:NSFileProtectionNone forKey:NSFileProtectionKey] error:&error]) {
+                DebugLog(@"Error Creating an Application Support Directory %@", error.localizedDescription);
+            } else {
+                DebugLog(@"Successfully Created Directory: %@", appSupportDir);
+            }
         }
-    }
-    return appSupportDir;
+        return appSupportDir;
+    #endif
 }
 
 + (NSString *)cachePath {
@@ -203,8 +210,26 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 // Get the time that the application was first installed. This value is stored in a file. If this file is not available
 // then 0 is returned.
 + (UInt64)installTimeForUserId:(NSString*) userId {
-    unsigned long long seconds = 0;
 
+    unsigned long long seconds = 0;
+#if TARGET_OS_TV
+    NSString *installDateKey = [userId stringByAppendingString:SWRVE_INSTALL];
+    if (!installDateKey) {
+        installDateKey = SWRVE_INSTALL;
+    }
+    seconds = [[self defaults] integerForKey:installDateKey];
+    unsigned long long secondsSinceEpoch = (unsigned long long)([[NSDate date] timeIntervalSince1970]);
+    if(seconds > secondsSinceEpoch){
+        DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
+        seconds = seconds / 1000;
+        if(seconds > secondsSinceEpoch){
+            DebugLog(@"install_time from current file_contents was corrupted. setting as today");
+            //install time stored was corrupted and must be added as today.
+            seconds = secondsSinceEpoch;
+        }
+        [[self defaults] setInteger:seconds forKey:installDateKey];
+    }
+#else
     NSError* error = nil;
     NSString *fileName = [SwrveLocalStorage installDateFilePathForUserId:userId];
     NSString* file_contents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
@@ -228,11 +253,15 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     } else {
         DebugLog(@"Install time: could not read file: %@", fileName);
     }
-
+#endif
    return (UInt64)seconds;
 }
 
 + (void)saveInstallTime:(UInt64)installTime forUserId:(NSString*) userId {
+#if TARGET_OS_TV
+    NSString *installDateKey = [userId stringByAppendingString:SWRVE_INSTALL];
+    [[self defaults] setInteger:installTime forKey:installDateKey];
+#else
     NSString *fileName = [SwrveLocalStorage installDateFilePathForUserId:userId];
     NSString *currentTime = [NSString stringWithFormat:@"%llu", installTime];
     BOOL success = [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -241,6 +270,7 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     } else {
         DebugLog(@"Install time: could not save install time to fileName:%@", fileName);
     }
+#endif
 }
 
 + (NSString *)installDateFilePathForUserId:(NSString*) userId {
@@ -258,11 +288,19 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     return [self applicationSupportFileForUserId:userId andName:SWRVE_CAMPAIGNS];
 }
 
-+ (NSString *)campaignsSignatureFilePathForUserId:(NSString*) userId {
++ (NSString *)campaignsSignatureFilePathForUserId:(NSString *)userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_CAMPAIGNS_SGT];
 }
 
-+ (NSString *)campaignsStateFilePathForUserId:(NSString*) userId {
++ (NSString *)campaignsAdFilePathForUserId:(NSString *) userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_AD_CAMPAIGNS];
+}
+
++ (NSString *)campaignsAdSignatureFilePathForUserId:(NSString*) userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_AD_CAMPAIGNS_SGT];
+}
+
++ (NSString *)campaignsStateFilePathForUserId:(NSString *)userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_CAMPAIGNS_STATE_PLIST];
 }
 

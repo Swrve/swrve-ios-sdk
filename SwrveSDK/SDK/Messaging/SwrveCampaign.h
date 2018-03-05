@@ -42,11 +42,13 @@
  */
 -(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json;
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 /*! Check if the campaign supports the given orientation.
  *
  * \returns true if the campaign supports the given orientation.
  */
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
+#endif
 
 /*! Check if assets are downloaded.
  *

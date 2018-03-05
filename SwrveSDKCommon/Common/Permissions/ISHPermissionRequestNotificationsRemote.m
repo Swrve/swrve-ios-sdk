@@ -9,6 +9,7 @@
 #import "ISHPermissionRequestNotificationsRemote.h"
 #import "ISHPermissionRequest+Private.h"
 #import "SwrveCommon.h"
+#if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface ISHPermissionRequestNotificationsRemote ()
 @property (atomic, copy) ISHPermissionRequestCompletionBlock completionBlock;
@@ -92,3 +93,4 @@
 #endif //defined(__IPHONE_8_0)
 }
 @end
+#endif

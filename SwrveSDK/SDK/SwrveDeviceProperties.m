@@ -35,10 +35,12 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 
 @synthesize sdk_version = _sdk_version;
 @synthesize installTimeSeconds = _installTimeSeconds;
-@synthesize conversationVersion = _conversationVersion;
-@synthesize deviceToken = _deviceToken;
 @synthesize permissionStatus = _permissionStatus;
 @synthesize sdk_language = _sdk_language;
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+@synthesize conversationVersion = _conversationVersion;
+@synthesize deviceToken = _deviceToken;
 @synthesize carrierInfo = _carrierInfo;
 
 #pragma mark - init
@@ -63,6 +65,21 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     }
     return self;
 }
+#elif TARGET_OS_TV
+- (instancetype) initWithVersion:(NSString *)sdk_version
+              installTimeSeconds:(UInt64)installTimeSeconds
+                permissionStatus:(NSDictionary *)permissionStatus
+                    sdk_language:(NSString *)sdk_language {
+    if ((self = [super init])) {
+        
+        self.sdk_version = sdk_version;
+        self.installTimeSeconds = installTimeSeconds;
+        self.permissionStatus = permissionStatus;
+        self.sdk_language = sdk_language;
+    }
+    return self;
+}
+#endif
 
 #pragma mark - methods
 
@@ -88,25 +105,11 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:self.installTimeSeconds];
     
     [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:SWRVE_INSTALL_DATE];
-    [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
-    
-    // Carrier info
-    if (self.carrierInfo != nil) {
-        NSString* mobileCountryCode = [self.carrierInfo mobileCountryCode];
-        NSString* mobileNetworkCode = [self.carrierInfo mobileNetworkCode];
-        if (mobileCountryCode != nil && mobileNetworkCode != nil) {
-            NSMutableString* carrierCode = [[NSMutableString alloc] initWithString:mobileCountryCode];
-            [carrierCode appendString:mobileNetworkCode];
-            [deviceProperties setValue:carrierCode forKey:SWRVE_SIM_OPERATOR_CODE];
-        }
-        [deviceProperties setValue:[self.carrierInfo carrierName]     forKey:SWRVE_SIM_OPERATOR_NAME];
-        [deviceProperties setValue:[self.carrierInfo isoCountryCode]  forKey:SWRVE_SIM_OPERATOR_ISO_COUNTRY_CODE];
-    }
     
     // Device Permisisons
     [deviceProperties addEntriesFromDictionary:self.permissionStatus];
     
-    // Language / Regional 
+    // Language / Regional
     NSTimeZone* tz     = [NSTimeZone localTimeZone];
     NSNumber* min_os = [NSNumber numberWithInt: __IPHONE_OS_VERSION_MIN_REQUIRED];
     NSString *sdk_language = self.sdk_language;
@@ -124,6 +127,22 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     [deviceProperties setValue:timezone_name        forKey:SWRVE_TIMEZONE_NAME];
     [deviceProperties setValue:regionCountry        forKey:SWRVE_DEVICE_REGION];
     
+#if TARGET_OS_IOS /** retrieve the properties only supported by iOS **/
+    [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
+    
+    // Carrier info
+    if (self.carrierInfo != nil) {
+        NSString* mobileCountryCode = [self.carrierInfo mobileCountryCode];
+        NSString* mobileNetworkCode = [self.carrierInfo mobileNetworkCode];
+        if (mobileCountryCode != nil && mobileNetworkCode != nil) {
+            NSMutableString* carrierCode = [[NSMutableString alloc] initWithString:mobileCountryCode];
+            [carrierCode appendString:mobileNetworkCode];
+            [deviceProperties setValue:carrierCode forKey:SWRVE_SIM_OPERATOR_CODE];
+        }
+        [deviceProperties setValue:[self.carrierInfo carrierName]     forKey:SWRVE_SIM_OPERATOR_NAME];
+        [deviceProperties setValue:[self.carrierInfo isoCountryCode]  forKey:SWRVE_SIM_OPERATOR_ISO_COUNTRY_CODE];
+    }
+    
     // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:SWRVE_IOS_TOKEN];
@@ -133,6 +152,7 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
         [deviceProperties setValue:supported forKey:SWRVE_SUPPORT_RICH_ATTACHMENT];
         [deviceProperties setValue:supported forKey:SWRVE_SUPPORT_RICH_GIF];
     }
+#endif //TARGET_OS_IOS
     
     // Optional identifiers
 #if defined(SWRVE_LOG_IDFA)

@@ -19,8 +19,12 @@
 #import "SwrveReceiptProvider.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveDeviceProperties.h"
+#import "SwrveEventsManager.h"
+
+#if TARGET_OS_IOS /** exclude tvOS **/
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#endif
 #import "SwrveEventsManager.h"
 #import "SwrveQA.h"
 #import "SwrveProfileManager.h"
@@ -94,10 +98,10 @@ enum
 @property (nonatomic, retain) NSArray* campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 
--(void) updateCampaigns:(NSDictionary*)campaignJson;
--(NSString*) campaignQueryString;
--(void) writeToCampaignCache:(NSData*)campaignData;
--(void) autoShowMessages;
+-(void)updateCampaigns:(NSDictionary *)campaignJson;
+-(NSString *)campaignQueryString;
+-(void)writeToCampaignCache:(NSData *)campaignData;
+-(void)autoShowMessages;
 
 @end
 
@@ -113,7 +117,7 @@ enum
     // The unique id associated with this instance of Swrve
     long    instanceID;
 }
-
+@property(atomic) SwrveDeeplinkManager *swrveDeeplinkManager;
 @property (nonatomic, readonly) SwrveReceiptProvider* receiptProvider;
 
 -(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
@@ -183,7 +187,7 @@ enum
 @property(atomic) SwrveRESTClient *restClient;
 
 // Push
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property (atomic, readonly)         SwrvePush *push;                         /*!< Push Notification Handler Service */
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -255,10 +259,9 @@ enum
 @synthesize deviceInfo;
 @synthesize messaging;
 @synthesize resourceManager;
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @synthesize push;
 #endif
-
 @synthesize initialised;
 @synthesize profileManager;
 @synthesize userUpdates;
@@ -284,6 +287,7 @@ enum
 @synthesize locationSegmentVersion;
 @synthesize restClient;
 @synthesize receiptProvider;
+@synthesize swrveDeeplinkManager;
 
 // Non shared instance initialization methods
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey
@@ -312,7 +316,7 @@ enum
             DebugLog(@"Swrve may not be initialized more than once.", nil);
             return self;
         }
-
+        
         // Do migrations first before anything else is done.
         SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:[[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig]];
         [migrationsManager checkMigrations];
@@ -349,10 +353,10 @@ enum
 
         NSURL* base_content_url = [NSURL URLWithString:self.config.contentServer];
         [self setBaseCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
-
+        
         deviceId = [SwrveDeviceProperties deviceId];
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
         if(swrveConfig.pushEnabled) {
             push = [SwrvePush sharedInstanceWithPushDelegate:self andCommonDelegate:self];
 
@@ -392,7 +396,7 @@ enum
         [self registerLifecycleCallbacks];
         [self initWithUserId:[profileManager userId]];
     }
-
+        
     return self;
 }
 
@@ -858,13 +862,17 @@ enum
 -(NSData*) campaignData:(int)category {
     if(SWRVE_CAMPAIGN_LOCATION == category) {
         SwrveSignatureProtectedFile * locationCampaignFile = [self signatureFileWithType:SWRVE_LOCATION_FILE errorDelegate:self];
-        return [locationCampaignFile readFromFile];
+        return [locationCampaignFile readWithRespectToPlatform];
     }
     return nil;
 }
 
 - (BOOL)processPermissionRequest:(NSString*)action {
+#if TARGET_OS_IOS /** exclude tvOS **/
     return [SwrvePermissions processPermissionRequest:action withSDK:self];
+#else
+    return NO;
+#endif
 }
 
 -(void) sendQueuedEvents {
@@ -983,7 +991,7 @@ enum
 
     [self setEventBuffer:nil];
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     [self.push deswizzlePushMethods];
     [SwrvePush resetSharedInstance];
     push = nil;
@@ -1021,7 +1029,10 @@ enum
     [mutableInfo removeAllObjects];
     [mutableInfo addEntriesFromDictionary:[self deviceProperties]];
     // Send permission events
+    
+#if TARGET_OS_IOS /** exclude tvOS **/
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
+#endif
 }
 
 -(void) registerLifecycleCallbacks {
@@ -1071,7 +1082,7 @@ enum
         [self.messaging appDidBecomeActive];
     }
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if(self.config.pushEnabled) {
         [self.push processInfluenceData];
     }
@@ -1195,7 +1206,7 @@ enum
     }
 }
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 - (void) deviceTokenIncoming:(NSData *)newDeviceToken {
     [self setDeviceToken:newDeviceToken];
 }
@@ -1363,7 +1374,7 @@ enum
 }
 
 - (NSSet*) pushCategories {
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     return self.config.pushCategories;
 #else
     return nil;
@@ -1371,7 +1382,7 @@ enum
 }
 
 - (NSSet*) notificationCategories {
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     return self.config.notificationCategories;
 #else
     return nil;
@@ -1397,17 +1408,26 @@ enum
 }
 
 - (NSDictionary*) deviceProperties {
-
     NSDictionary* permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
+    SwrveDeviceProperties * swrveDeviceProperties = nil;
+    
+#if TARGET_OS_IOS /** tvOS has no support for telephony or push **/
     CTCarrier* carrierInfo = [SwrveUtils carrierInfo];
-    SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
+    swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
                                                                                installTimeSeconds:installTimeSeconds
                                                                               conversationVersion:CONVERSATION_VERSION
                                                                                       deviceToken:self.deviceToken
                                                                                  permissionStatus:permissionStatus
                                                                                      sdk_language:self.config.language
                                                                                       carrierInfo:carrierInfo];
-
+#elif TARGET_OS_TV
+    swrveDeviceProperties =[[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
+                                                                             installTimeSeconds:installTimeSeconds
+                                                                               permissionStatus:permissionStatus
+                                                                                   sdk_language:self.config.language];
+    
+    
+#endif
     return [swrveDeviceProperties deviceProperties];
 }
 
@@ -1461,15 +1481,12 @@ enum
     if (error) {
         DebugLog(@"Error parsing/writing location campaigns.\nError: %@\njson: %@", error, campaignsJson);
     } else {
-
         SwrveSignatureProtectedFile * locationCampaignFile = [self signatureFileWithType:SWRVE_LOCATION_FILE errorDelegate:nil];
-
-        [locationCampaignFile writeToFile:locationCampaignsData];
+        [locationCampaignFile writeWithRespectToPlatform:locationCampaignsData];
     }
 }
 
 - (void) initResources {
-
     SwrveSignatureProtectedFile * file = [self signatureFileWithType:SWRVE_RESOURCE_FILE errorDelegate:self];
 
     [self setResourcesFile:file];
@@ -1480,7 +1497,8 @@ enum
     }
 
     // Read content of resources file and update resource manager if signature valid
-    NSData* content = [self.resourcesFile readFromFile];
+    NSData* content = [self.resourcesFile readWithRespectToPlatform];
+    
     if (content != nil) {
         NSError* error = nil;
         NSArray* resourcesArray = [NSJSONSerialization JSONObjectWithData:content options:NSJSONReadingMutableContainers error:&error];
@@ -1502,7 +1520,8 @@ enum
     }
 
     // Read content of campaigns file and update ab test details
-    NSData* content = [campaignFile readFromFile];
+    NSData* content = [campaignFile readWithRespectToPlatform];
+    
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -1528,7 +1547,7 @@ enum
 
     if (writeToCache) {
         NSData* resourceData = [NSJSONSerialization dataWithJSONObject:resourceJson options:0 error:nil];
-        [self.resourcesFile writeToFile:resourceData];
+        [self.resourcesFile writeWithRespectToPlatform:resourceData];
     }
 
     if (self.config.resourcesUpdatedCallback != nil) {
@@ -1851,8 +1870,8 @@ enum HttpStatus {
     NSCAssert(callbackBlock, @"getUserResourcesDiff: callbackBlock must not be nil.", nil);
     NSURL* url = [self userResourcesDiffURL];
     [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse* response, NSData* data, NSError* error) {
-        NSData* resourcesDiffCacheContent = [[self resourcesDiffFile] readFromFile];
-
+        NSData* resourcesDiffCacheContent = [[self resourcesDiffFile] readWithRespectToPlatform];
+        
         if (!error) {
             enum HttpStatus status = HTTP_SUCCESS;
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -1862,7 +1881,8 @@ enum HttpStatus {
             if (status == SWRVE_SUCCESS) {
                 if ([self isValidJson:data]) {
                     resourcesDiffCacheContent = data;
-                    [[self resourcesDiffFile] writeToFile:data];
+                    [self.resourcesDiffFile writeWithRespectToPlatform:data];
+                    
                 } else {
                     DebugLog(@"Invalid JSON received for user resources diff", nil);
                 }
@@ -1932,6 +1952,33 @@ enum HttpStatus {
 - (SwrveMessageController *)messagingController {
     
     return self.messaging;
+}
+
+- (void)initSwrveDeeplinkManager {
+    if (self.swrveDeeplinkManager == nil) {
+        self.swrveDeeplinkManager = [[SwrveDeeplinkManager alloc]initWithSwrve:self];
+    }
+}
+
+- (void)handleDeeplink:(NSURL *)url {
+    if(![SwrveDeeplinkManager isSwrveDeeplink:url]) { return;}
+    
+    [self initSwrveDeeplinkManager];
+    [self.swrveDeeplinkManager handleDeeplink:url];
+}
+
+- (void)handleDeferredDeeplink:(NSURL *)url {
+    if(![SwrveDeeplinkManager isSwrveDeeplink:url]) { return;}
+    
+    [self initSwrveDeeplinkManager];
+    [self.swrveDeeplinkManager handleDeferredDeeplink:url];
+}
+
+- (void)installAction:(NSURL *)url {
+    if(![SwrveDeeplinkManager isSwrveDeeplink:url]) { return;}
+    
+    [self initSwrveDeeplinkManager];
+    self.swrveDeeplinkManager.actionType = SWRVE_AD_INSTALL;
 }
 
 @end

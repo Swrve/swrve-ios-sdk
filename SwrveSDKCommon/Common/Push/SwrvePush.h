@@ -4,7 +4,7 @@
 #import "SwrveCommon.h"
 
 @protocol SwrvePushResponseDelegate <NSObject>
-
+#if !TARGET_OS_TV
 @optional
 - (void)didReceiveNotificationResponse:(UNNotificationResponse *)response
                  withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
@@ -12,10 +12,11 @@
 - (void) willPresentNotification:(UNNotification *)notification
            withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler __IOS_AVAILABLE(10.0);
 
+#endif
 @end
 
 @interface SwrvePush : NSObject <UNUserNotificationCenterDelegate>
-
+#if !TARGET_OS_TV
 #pragma mark - Static Methods
 /** Rich Push Management **/
 
@@ -27,5 +28,6 @@
 + (void)handleNotificationContent:(UNNotificationContent *) notificationContent withAppGroupIdentifier:(NSString *)appGroupIdentifier
      withCompletedContentCallback:(void (^)(UNMutableNotificationContent * content))callback;
 
+#endif
 @end
 #endif //!defined(SWRVE_NO_PUSH)

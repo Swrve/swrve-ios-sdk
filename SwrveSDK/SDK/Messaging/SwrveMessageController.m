@@ -1,3 +1,4 @@
+
 #import "SwrveMessageController.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveButton.h"
@@ -5,8 +6,10 @@
 #import "SwrveConversationCampaign.h"
 #import "SwrveQAUser.h"
 #import "SwrveConversationItemViewController.h"
-#import "SwrvePermissions.h"
 #import "Swrve+Private.h"
+#if TARGET_OS_IOS /** exclude tvOS **/
+#import "SwrvePermissions.h"
+#endif //TARGET_OS_IOS
 #import "SwrveAssetsManager.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveCampaign+Private.h"
@@ -57,7 +60,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSDate*               initialisedTime; // SDK init time
 @property (nonatomic, retain) NSDate*               showMessagesAfterLaunch; // Only show messages after this time.
 @property (nonatomic, retain) NSDate*               showMessagesAfterDelay; // Only show messages after this time.
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+
 @property (nonatomic)         bool                  pushEnabled; // Decide if push notification is enabled
 @property (nonatomic, retain) NSSet*                pushNotificationEvents; // Events that trigger the push notification dialog
 #endif //!defined(SWRVE_NO_PUSH)
@@ -99,7 +103,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize notifications;
 @synthesize language;
 @synthesize appStoreURLs;
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -121,8 +125,11 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize conversationsMessageQueue;
 
 + (void)initialize {
+    
+#if TARGET_OS_IOS /** exclude tvOS **/
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
         [[swrve_permission_location_always stringByAppendingString:swrve_permission_requestable] lowercaseString],
         [[swrve_permission_location_when_in_use stringByAppendingString:swrve_permission_requestable] lowercaseString],
@@ -133,6 +140,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     SUPPORTED_STATIC_DEVICE_FILTERS = [NSArray arrayWithObjects:@"ios", nil];
     SUPPORTED_DEVICE_FILTERS = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
     [(NSMutableArray*)SUPPORTED_DEVICE_FILTERS addObjectsFromArray:ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS];
+#endif //TARGET_OS_IOS
 }
 
 - (id)initWithSwrve:(Swrve*)sdk
@@ -156,7 +164,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.apiKey             = sdk.apiKey;
     self.server             = sdk.config.contentServer;
     self.analyticsSDK       = sdk;
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     self.pushEnabled        = sdk.config.pushEnabled;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -188,7 +196,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSAssert1([self.user     length] > 0, @"Invalid username specified %@", self.user);
     NSAssert(self.analyticsSDK != NULL,   @"Swrve Analytics SDK is null", nil);
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     NSData* device_token = [SwrveLocalStorage deviceToken];
     if (self.pushEnabled && device_token) {
         // Once we have a device token, ask for it every time
@@ -215,6 +223,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.hideMessageTransition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
     self.hideMessageTransition.removedOnCompletion = YES;
     self.hideMessageTransition.delegate = self;
+    self.conversationsMessageQueue = [NSMutableArray new];
 
     return self;
 }
@@ -247,8 +256,42 @@ const static int DEFAULT_MIN_DELAY           = 55;
     }
 }
 
-- (void)saveCampaignsState
-{
+- (void)campaignsStateFromDefaults:(NSMutableDictionary*)states {
+    NSData *data = [[NSUserDefaults standardUserDefaults] dataForKey:self.campaignsStateFilePath.lastPathComponent];
+    if(!data)
+    {
+        DebugLog(@"Error: No campaigns states loaded. [Reading from defaults %@]", self.campaignsStateFilePath.lastPathComponent);
+        return;
+    }
+    
+    NSError* error = NULL;
+    NSArray* loadedStates = [NSPropertyListSerialization propertyListWithData:data
+                                                                      options:NSPropertyListImmutable
+                                                                       format:NULL
+                                                                        error:&error];
+    if (error) {
+        DebugLog(@"Could not load campaign states from disk.\nError: %@\njson: %@", error, data);
+    } else {
+        @synchronized (states) {
+            for (NSDictionary* dicState in loadedStates)
+            {
+                SwrveCampaignState* state = [[SwrveCampaignState alloc] initWithJSON:dicState];
+                NSString* stateKey = [NSString stringWithFormat:@"%lu", (unsigned long)state.campaignID];
+                [states setValue:state forKey:stateKey];
+            }
+        }
+    }
+}
+
+- (void)saveCampaignsState {
+#if TARGET_OS_IOS
+    [self saveCampaignsStateToFile];
+#else
+    [self saveCampaignsStateToDefaults];
+#endif
+}
+
+- (void)saveCampaignsStateToFile{
     NSMutableArray* newStates;
     @synchronized (self.campaignsState) {
         newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
@@ -281,6 +324,37 @@ const static int DEFAULT_MIN_DELAY           = 55;
     }
 }
 
+- (void)saveCampaignsStateToDefaults
+{
+    NSMutableArray* newStates;
+    @synchronized (self.campaignsState) {
+        newStates = [[NSMutableArray alloc] initWithCapacity:self.campaignsState.count];
+        [self.campaignsState enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop)
+         {
+#pragma unused(key, stop)
+             [newStates addObject:[value asDictionary]];
+         }];
+    }
+    
+    NSError*  error = NULL;
+    NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
+                                                                format:NSPropertyListXMLFormat_v1_0
+                                                               options:0
+                                                                 error:&error];
+    
+    if (error) {
+        DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
+    } else if(data)
+    {
+        [[NSUserDefaults standardUserDefaults] setValue:data forKey:self.campaignsStateFilePath.lastPathComponent];
+    }
+    else
+    {
+        DebugLog(@"Error saving campaigns state: %@ writing to %@", error, self.campaignsStateFilePath);
+    }
+}
+
+
 - (void) initCampaignsFromCacheFile
 {
     // Create campaign cache folder
@@ -298,11 +372,15 @@ const static int DEFAULT_MIN_DELAY           = 55;
                                                                     userID:self.user
                                                               signatureKey:[self.analyticsSDK signatureKey]
                                                              errorDelegate:nil];
+#if TARGET_OS_IOS
     // Read from cache the state of campaigns
     [self campaignsStateFromDisk:self.campaignsState];
-
+#else
+    [self campaignsStateFromDefaults:self.campaignsState];
+#endif
     // Read content of campaigns file and update campaigns
-    NSData* content = [campaignFile readFromFile];
+    NSData* content = [campaignFile readWithRespectToPlatform];
+    
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -323,9 +401,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return result;
 }
 
--(void) writeToCampaignCache:(NSData*)campaignData
-{
-    [[self campaignFile] writeToFile:campaignData];
+-(void) writeToCampaignCache:(NSData*)campaignData {
+    [self.campaignFile writeWithRespectToPlatform:campaignData];
 }
 
 -(BOOL) canSupportDeviceFilter:(NSString*)filter {
@@ -349,13 +426,29 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return nil;
 }
 
--(NSArray*)currentlySupportedDeviceFilters {
-    NSMutableArray* supported = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
-    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFilters];
-    [supported addObjectsFromArray:currentPermissionFilters];
-    return supported;
+- (BOOL)filtersOk:(NSArray *) filters {
+    
+    // Check device filters (permission requests, platform)
+    NSString *lastCheckedFilter = nil;
+    if (filters != nil) {
+        for (NSString *filter in filters) {
+            lastCheckedFilter = filter;
+            if (![self canSupportDeviceFilter:filter]) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
+-(NSArray*)currentlySupportedDeviceFilters {
+    NSMutableArray* supported = [NSMutableArray arrayWithArray:SUPPORTED_STATIC_DEVICE_FILTERS];
+#if TARGET_OS_IOS /** exclude tvOS **/
+    NSArray* currentPermissionFilters = [SwrvePermissions currentPermissionFilters];
+    [supported addObjectsFromArray:currentPermissionFilters];
+#endif
+    return supported;
+}
 -(void) updateCampaigns:(NSDictionary*)campaignJson
 {
     if (campaignJson == nil) {
@@ -660,7 +753,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSNumber* minPriority = [NSNumber numberWithInteger:INT_MAX];
         NSMutableArray* candidateMessages = [[NSMutableArray alloc] init];
         // Get current orientation
+#if TARGET_OS_IOS /** exclude tvOS **/
         UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+#endif
         for (SwrveCampaign* baseCampaignIt in self.campaigns)
         {
             if ([baseCampaignIt isKindOfClass:[SwrveInAppCampaign class]]) {
@@ -671,7 +766,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     BOOL canBeChosen = YES;
                     // iOS9+ will display with local scale
                     if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+#if TARGET_OS_IOS /** exclude tvOS **/
                         canBeChosen = [nextMessage supportsOrientation:currentOrientation];
+#else
+                        canBeChosen = YES;
+#endif
+                        
                     }
                     if (canBeChosen) {
                         // Add to list of returned messages
@@ -973,8 +1073,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     return eventName;
 }
 
--(void) showMessage:(SwrveMessage *)message
-{
+- (void)showMessage:(SwrveMessage *)message {
+    [self showMessage:message queue:false];
+}
+
+- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued {
     @synchronized(self) {
         if ( message && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
@@ -994,13 +1097,34 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     [self beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
                 }
             };
-
+            
+#if TARGET_OS_TV
+            UITapGestureRecognizer *menuPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed)];
+            menuPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeMenu]];
+            [messageViewController.view addGestureRecognizer:menuPress];
+            [messageViewController setRestoresFocusAfterTransition:YES];
+#endif
             [self showMessageWindow:messageViewController];
+            [messageViewController setNeedsFocusUpdate];
+            [messageViewController updateFocusIfNeeded];
+            
+        } else if (isQueued && ![self.conversationsMessageQueue containsObject:message]) {
+            [self.conversationsMessageQueue addObject:message];
         }
     }
 }
 
+#if TARGET_OS_TV
+- (void)menuButtonPressed {
+    [self dismissMessageWindow];
+}
+#endif
+
 - (void)showConversation:(SwrveConversation *)conversation {
+    [self showConversation:conversation queue:false];
+}
+
+- (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued {
     @synchronized (self) {
         if (conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil) {
             self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -1013,6 +1137,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             if(!success) {
                 self.conversationWindow = nil;
             }
+        }  else if (isQueued && ![self.conversationsMessageQueue containsObject:conversation]) {
+            [self.conversationsMessageQueue addObject:conversation];
         }
     }
 }
@@ -1033,6 +1159,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         self.conversationWindow = nil;
     }
     self.swrveConversationItemViewController = nil;
+    
+    [self handleNextConversation:self.conversationsMessageQueue];
+}
+
+-(void)handleNextConversation:(NSMutableArray*)queue {
+    if ([queue count] > 0) {
+        id messageOrConversation = [queue objectAtIndex:0];
+        [messageOrConversation isKindOfClass:[SwrveConversation class]] ? [self showConversation:messageOrConversation queue:false] : [self showMessage:messageOrConversation queue:false];
+        [queue removeObjectAtIndex:0];
+    }
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
@@ -1111,7 +1247,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
             [[UIApplication sharedApplication] openURL:url];
-
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
@@ -1120,6 +1255,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     self.inAppMessageWindow.hidden = YES;
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
+    
+    [self handleNextConversation:self.conversationsMessageQueue];
 }
 
 - (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController {
@@ -1155,6 +1292,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
+
 -(BOOL) eventRaised:(NSDictionary*)event;
 {
     if (analyticsSDK == nil) {
@@ -1165,7 +1303,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSString* eventName = [self eventName:event];
     NSDictionary *payload = [event objectForKey:@"payload"];
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if (self.pushEnabled) {
         if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
             // Ask for push notification permission
@@ -1206,10 +1344,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // iOS9+ will display with local scale
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
             // Only show the message if it supports the given orientation
+#if TARGET_OS_IOS /** exclude tvOS **/
             if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
                 DebugLog(@"The message doesn't support the current orientation", nil);
                 return NO;
             }
+#endif
         }
 
         // Show the message if it exists
@@ -1278,13 +1418,21 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 -(NSArray*) messageCenterCampaigns
 {
+    
+#if TARGET_OS_IOS /** exclude tvOS **/
     // iOS9+ will display with local scale
     if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         return [self messageCenterCampaignsThatSupportOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
     }
+
     return [self messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
+#else
+    return [self messageCenterCampaignsForTvOS];
+#endif
+    
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
 {
     NSMutableArray* result = [[NSMutableArray alloc] init];
@@ -1301,6 +1449,24 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     return result;
 }
+#elif TARGET_OS_TV
+-(NSArray*) messageCenterCampaignsForTvOS {
+    
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    if (analyticsSDK == nil) {
+        return result;
+    }
+    
+    NSDate* now = [self.analyticsSDK getNow];
+    for(SwrveCampaign* campaign in self.campaigns) {
+        NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
+        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk]) {
+            [result addObject:campaign];
+        }
+    }
+    return result;
+}
+#endif
 
 -(BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign
 {
@@ -1326,6 +1492,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         SwrveMessage* message = [((SwrveInAppCampaign*)campaign).messages objectAtIndex:0];
 
         // iOS9+ will display with local scale
+        
+#if TARGET_OS_IOS /** exclude tvOS **/
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
             // Only show the message if it supports the given orientation
             if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
@@ -1333,6 +1501,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 return NO;
             }
         }
+#endif
 
         // Show the message if it exists
         if( message != nil ) {

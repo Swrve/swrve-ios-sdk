@@ -23,8 +23,12 @@
 
 /*! Write the data specified into the file and create a signature file for verification. */
 - (void) writeToFile:(NSData*)content;
+- (void) writeToDefaults:(NSData*)content;
+- (void) writeWithRespectToPlatform:(NSData*)content;
 
 /*! Read from the file, returning an error if file does not exist or signature is invalid. */
 - (NSData*) readFromFile;
+- (NSData*) readFromDefaults;
+- (NSData*) readWithRespectToPlatform;
 
 @end

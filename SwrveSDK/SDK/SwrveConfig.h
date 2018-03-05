@@ -4,7 +4,7 @@
 #import "SwrveConfig.h"
 #import "SwrveReceiptProvider.h"
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #if __has_include(<SwrveSDKCommon/SwrvePush.h>)
 #import <SwrveSDKCommon/SwrvePush.h>
 #else
@@ -92,7 +92,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  */
 @property (nonatomic) BOOL autoSaveEventsOnResign;
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 /*! Controls if push notifications are enabled. */
 @property (nonatomic) BOOL pushEnabled;
 
@@ -181,7 +181,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property (nonatomic, readonly) BOOL pushEnabled;
 @property (nonatomic, readonly) NSSet* pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;

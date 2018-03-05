@@ -13,7 +13,9 @@
 + (NSString *)eventsFilePathForUserId:(NSString*) userId;
 + (NSString *)campaignsFilePathForUserId:(NSString*) userId;
 + (NSString *)campaignsSignatureFilePathForUserId:(NSString*) userId ;
-+ (NSString *)campaignsStateFilePathForUserId:(NSString*) userId;
++ (NSString *)campaignsStateFilePathForUserId:(NSString*)userId;
++ (NSString *)campaignsAdFilePathForUserId:(NSString* )userId;
++ (NSString *)campaignsAdSignatureFilePathForUserId:(NSString *)userId;
 + (NSString *)locationCampaignFilePathForUserId:(NSString*) userId ;
 + (NSString *)locationCampaignSignatureFilePathForUserId:(NSString*) userId ;
 + (NSString *)userResourcesFilePathForUserId:(NSString*) userId ;

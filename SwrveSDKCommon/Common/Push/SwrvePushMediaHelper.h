@@ -8,14 +8,14 @@
 #import <UserNotifications/UserNotifications.h>
 
 @interface SwrvePushMediaHelper : NSObject
-
+#if !TARGET_OS_TV
 + (UNMutableNotificationContent *) produceMediaTextFromProvidedContent:(UNNotificationContent *)notificationContent;
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error)) callback;
 + (UNNotificationCategory *) produceButtonsFromUserInfo:(NSDictionary *)userInfo;
 + (UNNotificationActionOptions) actionOptionsForKeys:(NSArray *) keys;
 + (UNNotificationCategoryOptions) categoryOptionsForKeys:(NSArray *) keys;
 
+#endif
 @end
 
 #endif //#if !defined(SWRVE_NO_PUSH)
-

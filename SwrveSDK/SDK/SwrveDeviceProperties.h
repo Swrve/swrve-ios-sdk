@@ -9,11 +9,13 @@
 @property (nonatomic, assign) int  conversationVersion;
 @property (nonatomic) NSString * deviceToken;
 @property (nonatomic) NSDictionary* permissionStatus;
+
+#if TARGET_OS_IOS /** exclude tvOS **/
 @property (nonatomic) CTCarrier* carrierInfo;
 
 
 /**
- Initializes an `SwrveDeviceProperties` object
+ Initializes an `SwrveDeviceProperties` object for the iOS platform
  
  @param sdk_version         The SDK version string
  @param installTimeSeconds  The install time in seconds
@@ -33,7 +35,22 @@
                     sdk_language:(NSString *)sdk_language
                      carrierInfo:(CTCarrier * )carrierInfo;
 
-
+#elif TARGET_OS_TV
+/**
+ Initializes a reduced `SwrveDeviceProperties` object for the tvOS platform
+ 
+ @param sdk_version         The SDK version string
+ @param installTimeSeconds  The install time in seconds
+ @param permissionStatus    Permission status dictionary
+ @param sdk_language        The SDK langauge string
+ 
+ @return The initialized SwrveDeviceProperties
+ */
+- (instancetype) initWithVersion:(NSString *)sdk_version
+              installTimeSeconds:(UInt64)installTimeSeconds
+                permissionStatus:(NSDictionary *)permissionStatus
+                    sdk_language:(NSString *)sdk_language;
+#endif
 /**
  Get the device properties
  

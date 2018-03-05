@@ -8,12 +8,10 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-
 #import "ISHPermissionRequestPhotoCamera.h"
 #import "ISHPermissionRequest+Private.h"
 
 #if defined(SWRVE_PHOTO_CAMERA)
-
 @implementation ISHPermissionRequestPhotoCamera
 
 - (ISHPermissionState)permissionState {

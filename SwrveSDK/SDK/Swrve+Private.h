@@ -2,7 +2,7 @@
 
 @interface Swrve ()
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property (atomic, readonly)         SwrvePush *push;
 #endif //!defined(SWRVE_NO_PUSH)
 

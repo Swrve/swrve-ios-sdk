@@ -68,6 +68,11 @@ const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 /*! A push notification was received, notify the QA user */
 - (void) pushNotificationReceived:(NSDictionary*)userInfo;
 
+
+#if TARGET_OS_TV /** only have for tvOS **/
+-(NSArray*) messageCenterCampaignsForTvOS;
+#endif
+
 #pragma mark Properties
 
 @property (nonatomic) Swrve*  analyticsSDK;

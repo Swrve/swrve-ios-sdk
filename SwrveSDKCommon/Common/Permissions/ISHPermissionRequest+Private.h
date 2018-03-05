@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
-
+#if TARGET_OS_IOS /** exclude tvOS **/
 @interface ISHPermissionRequest (Private)
 - (void)setPermissionCategory:(ISHPermissionCategory)category;
 @end
@@ -16,3 +16,4 @@
 - (ISHPermissionState)internalPermissionState;
 - (void)setInternalPermissionState:(ISHPermissionState)state;
 @end
+#endif

@@ -3,6 +3,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "UIWebView+YouTubeVimeo.h"
 #import "SwrveCommon.h"
+#if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface SwrveContentVideo () {
     NSString *_height;
@@ -150,3 +151,4 @@
 }
 
 @end
+#endif

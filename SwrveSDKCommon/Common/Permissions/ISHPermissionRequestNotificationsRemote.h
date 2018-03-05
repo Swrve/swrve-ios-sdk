@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ISHPermissionRequest.h"
 #import <UserNotifications/UserNotifications.h>
+#if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface ISHPermissionRequestNotificationsRemote : ISHPermissionRequest
     
@@ -24,3 +25,4 @@
 +(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andBackwardsCompatibility:(UIUserNotificationSettings *)notificationSettings NS_AVAILABLE_IOS(10.0);
 
 @end
+#endif

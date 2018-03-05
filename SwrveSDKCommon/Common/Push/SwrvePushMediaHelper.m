@@ -4,7 +4,7 @@
 
 @implementation SwrvePushMediaHelper
 
-
+#if !TARGET_OS_TV
 + (UNMutableNotificationContent *) produceMediaTextFromProvidedContent:(UNMutableNotificationContent *)content {
     
     NSDictionary *richDict = [content.userInfo objectForKey:SwrvePushContentIdentifierKey];
@@ -159,6 +159,8 @@
     
     return UNNotificationActionOptionNone;
 }
+
+#endif //!TARGET_OS_TV
 
 @end
 #endif //#if !defined(SWRVE_NO_PUSH)

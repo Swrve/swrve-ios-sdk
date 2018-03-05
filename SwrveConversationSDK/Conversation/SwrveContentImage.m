@@ -41,12 +41,14 @@
     }
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
 -(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
     #pragma unused(orientation)
     _view.frame = [self newFrameForOrientationChange];
 }
+#endif
 
 -(void)parentViewChangedSize:(CGSize)size
 {

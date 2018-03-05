@@ -9,7 +9,9 @@
 
 @implementation SwrveConversationAtomFactory
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 + (NSMutableArray <SwrveConversationAtom *> *) atomsForDictionary:(NSDictionary *)dict {
+
     NSString *tag = [dict objectForKey:kSwrveKeyTag];
     NSString *type = [dict objectForKey:kSwrveKeyType];
     
@@ -28,7 +30,8 @@
     if([type isEqualToString:kSwrveContentTypeHTML]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         [atomArray addObject:swrveContentHTML];
-    } else if([type isEqualToString:kSwrveContentTypeImage]) {
+    }
+    else if([type isEqualToString:kSwrveContentTypeImage]) {
         SwrveContentImage *swrveContentImage = [[SwrveContentImage alloc] initWithTag:tag andDictionary:dict];
         swrveContentImage.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentImage];
@@ -46,18 +49,26 @@
         SwrveContentSpacer* swrveContentSpacer = [[SwrveContentSpacer alloc] initWithTag:tag andDictionary:dict];
         swrveContentSpacer.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveContentSpacer];
-    } else if ([type isEqualToString:kSwrveContentStarRating]) {
+    }
+    else if ([type isEqualToString:kSwrveContentStarRating]) {
         SwrveContentHTML *swrveContentHTML = [[SwrveContentHTML alloc] initWithTag:tag andDictionary:dict];
         [atomArray addObject:swrveContentHTML];
         SwrveContentStarRating *swrveConversationStarRating = [[SwrveContentStarRating alloc] initWithTag:tag andDictionary:dict];
         swrveConversationStarRating.style = [dict objectForKey:kSwrveKeyStyle];
         [atomArray addObject:swrveConversationStarRating];
-    } else {
+    }
+    else {
         SwrveContentItem *swrveContentItem = [[SwrveContentItem alloc] initWithTag:tag type:kSwrveContentUnknown andDictionary:dict];
         [atomArray addObject:swrveContentItem];
     }
 
     return atomArray;
 }
+#else
++ (NSMutableArray <SwrveConversationAtom *> *) atomsForDictionary:(NSDictionary *)dict {
+    /** if we're not using a supported platform then return nothing **/
+    return nil;
+}
+#endif
 
 @end

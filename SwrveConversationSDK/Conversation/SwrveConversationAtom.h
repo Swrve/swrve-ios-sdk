@@ -35,8 +35,9 @@
 @protocol SwrveConversationAtomDelegate <NSObject>
 
 @required
+#if TARGET_OS_IOS /** exclude tvOS **/
 - (void) respondToDeviceOrientationChange:(UIDeviceOrientation) orientation;
-
+#endif
 @end
 
 @interface SwrveConversationAtom : NSObject {

@@ -156,7 +156,7 @@
 }
 
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 - (void) setDeviceToken:(NSData*)deviceToken
 {
 #pragma unused(deviceToken)
@@ -190,10 +190,19 @@
 -(void) sendPushEngagedEvent:(NSString*)pushId {
 #pragma unused(pushId)
 }
-
-
-
 #endif //!defined(SWRVE_NO_PUSH)
+
+- (void)handleDeeplink:(NSURL *)url {
+   #pragma unused(url)
+}
+
+- (void)handleDeferredDeeplink:(NSURL *)url {
+    #pragma unused(url)
+}
+
+- (void)installAction:(NSURL *)url {
+#pragma unused(url)
+}
 
 // SwrveCommonDelegate
 -(NSData*) campaignData:(int)category {

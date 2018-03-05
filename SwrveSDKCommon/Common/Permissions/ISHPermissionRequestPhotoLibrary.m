@@ -7,12 +7,14 @@
 //  Copyright (c) 2014 iosphere GmbH. All rights reserved.
 //
 
+#import "ISHPermissionRequestPhotoLibrary.h"
+#import "ISHPermissionRequest+Private.h"
+
+#if TARGET_OS_IOS /** exclude tvOS **/
 #import <AssetsLibrary/AssetsLibrary.h>
 #if defined(__IPHONE_9_0)
 #import <Photos/Photos.h>
 #endif //defined(__IPHONE_9_0)
-#import "ISHPermissionRequestPhotoLibrary.h"
-#import "ISHPermissionRequest+Private.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -20,6 +22,7 @@
 
 @interface ISHPermissionRequestPhotoLibrary ()
 @end
+
 
 @implementation ISHPermissionRequestPhotoLibrary
 - (ISHPermissionState)permissionState {
@@ -105,3 +108,4 @@
 @end
 
 #endif //defined(SWRVE_PHOTO_LIBRARY)
+#endif //TARGET_OS_IOS

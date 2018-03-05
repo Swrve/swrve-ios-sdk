@@ -130,7 +130,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
         message = firstFormatFrom(shuffled, assets);
     }
 
-    if (message == nil)
+    if (message == nil && messages.count > self.state.next)
     {
         message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
@@ -143,7 +143,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
 }
-
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
     if (orientation == UIInterfaceOrientationUnknown) {
@@ -157,7 +157,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     }
     return NO;
 }
-
+#endif
 -(BOOL)assetsReady:(NSSet *)assets
 {
     for (SwrveMessage* message in self.messages) {

@@ -1,6 +1,7 @@
 #import "UIWebView+YouTubeVimeo.h"
 #import "SwrveSetup.h"
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 @implementation UIWebView (YouTubeVimeo)
 
 
@@ -32,3 +33,4 @@
 }
 
 @end
+#endif //TARGET_OS_IOS

@@ -41,9 +41,14 @@
         for (SwrveContentItem *contentItem in page.content) {
             if ([contentItem isKindOfClass:[SwrveContentImage class]]) {
                 [self addImageToQ:assetsQueue withAsset:contentItem];
-            } else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
+                
+            }
+#if TARGET_OS_IOS /** exclude tvOS **/
+            else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
                 [self addFontToQ:assetsQueue withAsset:contentItem.style];
-            } else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
+            }
+#endif
+            else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
                 SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
                 [self addFontToQ:assetsQueue withAsset:inputMultiValue.style];
 
@@ -164,11 +169,13 @@
     return nil;
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
 #pragma unused(orientation)
     return YES;
 }
+#endif
 
 -(BOOL)assetsReady:(NSSet *)assets
 {

@@ -33,6 +33,9 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
  */
 -(id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController*)controller;
 
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+
 /*! Obtain the best format for the given orientation.
  *
  * \param orientation Wanted orientation for the message.
@@ -40,18 +43,20 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
  */
 -(SwrveMessageFormat*)bestFormatForOrientation:(UIInterfaceOrientation)orientation;
 
-/*! Check if assets are downloaded.
- *
- * \returns TRUE if all assets have been downloaded.
- */
--(BOOL)assetsReady:(NSSet*)assets;
-
 /*! Check if the message has any format for the given device orientation.
  *
  * \param orientation Device orientation.
  * \returns TRUE if the message has any format with the given orientation.
  */
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
+
+#endif
+
+/*! Check if assets are downloaded.
+ *
+ * \returns TRUE if all assets have been downloaded.
+ */
+-(BOOL)assetsReady:(NSSet*)assets;
 
 /*! Notify that this message was shown to the user.
  */

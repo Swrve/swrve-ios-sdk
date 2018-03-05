@@ -4,21 +4,22 @@
 #import "SwrveIAPRewards.h"
 #import "SwrveResourceManager.h"
 #import "SwrveMessageController.h"
+#import "SwrveDeeplinkManager.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
 #endif /*!defined(SWRVE_NO_PUSH) */
 #else
 #import "SwrveSignatureProtectedFile.h"
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
 #endif /*!defined(SWRVE_NO_PUSH) */
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "5.1.1"
+#define SWRVE_SDK_VERSION "5.2.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -305,7 +306,7 @@ NSString * eventsPayloadAsJSON);
 -(void) shutdown;
 
 #pragma mark - push support block
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 
 /*! Call this method when you get a push notification device token from Apple.
  *
@@ -341,6 +342,58 @@ NSString * eventsPayloadAsJSON);
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 
 #endif //!defined(SWRVE_NO_PUSH)
+
+/*! Call this method from application:openURL:option
+
+ @param url The deeplink url to process.
+
+ @code
+    - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+        [SwrveSDK handleDeeplink:url];
+        return YES;
+    }
+ @endcode
+*/
+- (void)handleDeeplink:(NSURL *)url;
+
+/*! This method is used to inform SDK that the App had to be installed first and the url loaded in a deferred manner. Facebook example below.
+
+ @param url The deeplink url to process.
+
+ @code
+        if (launchOptions[UIApplicationLaunchOptionsURLKey] == nil) {
+            [FBSDKAppLinkUtility fetchDeferredAppLink:^(NSURL *url, NSError *error) {
+            if (error) {
+                NSLog(@"Received error while fetching deferred app link %@", error);
+            }
+            if (url) {
+                [SwrveSDK handleDeferredDeeplink:url];
+            }
+            }];
+        }
+ @endcode
+*/
+- (void)handleDeferredDeeplink:(NSURL *)url;
+
+/*! Used to determine if Ad install. Property set in SwrveDeeplinkManager. Facebook example below. Instead of calling handleDeferredDeeplink:url, you can set an installAction and call openURL:url
+
+ @param url The deeplink url to process.
+
+ @code
+    if (launchOptions[UIApplicationLaunchOptionsURLKey] == nil) {
+        [FBSDKAppLinkUtility fetchDeferredAppLink:^(NSURL *url, NSError *error) {
+        if (error) {
+            NSLog(@"Received error while fetching deferred app link %@", error);
+        }
+        if (url) {
+            [SwrveSDK installAction];
+            [[UIApplication sharedApplication] openURL:url];
+        }
+        }];
+    }
+ @endcode
+ */
+- (void)installAction:(NSURL *)url;
 
 #pragma mark - Properties
 

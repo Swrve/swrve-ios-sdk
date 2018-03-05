@@ -9,13 +9,14 @@
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id,SEL,UIApplication *, NSData*);
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id,SEL,UIApplication *, NSError*);
 typedef void (*didReceiveRemoteNotificationImplSignature)(__strong id,SEL,UIApplication *, NSDictionary*);
-
+#if !TARGET_OS_TV
 static id <SwrvePushDelegate> _pushDelegate = NULL;
 static id <SwrveCommonDelegate> _commonDelegate = NULL;
 static id <SwrvePushResponseDelegate> _responseDelegate = NULL;
 static SwrvePush *pushInstance = NULL;
 static bool didSwizzle = false;
 static dispatch_once_t sharedInstanceToken = 0;
+#endif
 
 #pragma mark - interface
 
@@ -34,6 +35,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 @implementation SwrvePush
 
+#if !TARGET_OS_TV
 + (SwrvePush*) sharedInstance {
     @synchronized(self) {
         dispatch_once(&sharedInstanceToken, ^{
@@ -715,6 +717,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     }
 }
 
+#endif //!TARGET_OS_TV
 @end
 
 #endif

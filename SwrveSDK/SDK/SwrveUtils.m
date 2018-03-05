@@ -4,9 +4,8 @@
 
 @implementation SwrveUtils
 
-+ (CGRect) deviceScreenBounds {
-    
-    UIScreen* screen   = [UIScreen mainScreen];
++ (CGRect)deviceScreenBounds {
+    UIScreen *screen   = [UIScreen mainScreen];
     CGRect bounds = [screen bounds];
     float screen_scale = (float)[[UIScreen mainScreen] scale];
     bounds.size.width  = bounds.size.width  * screen_scale;
@@ -18,8 +17,7 @@
     return bounds;
 }
 
-+ (float) estimate_dpi {
-    
++ (float)estimate_dpi {
     float scale = (float)[[UIScreen mainScreen] scale];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
@@ -28,12 +26,10 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         return 163.0f * scale;
     }
-    
     return 160.0f * scale;
 }
 
-+ (NSString*) hardwareMachineName {
-    
++ (NSString *)hardwareMachineName {
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char *machine = (char*)malloc(size);
@@ -43,11 +39,33 @@
     return platform;
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 + (CTCarrier*) carrierInfo {
-    
     // Obtain carrier info from the device
-    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+    static CTTelephonyNetworkInfo *netinfo;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        netinfo = [CTTelephonyNetworkInfo new];
+    });
+    
     return [netinfo subscriberCellularProvider];
+}
+#endif
+
++ (NSDictionary *)parseURLQueryParams:(NSString *)queryString {
+    NSMutableDictionary *queryParams = [NSMutableDictionary new];
+    NSArray *queryElements = [queryString componentsSeparatedByString:@"&"];
+    for (NSString *element in queryElements) {
+        NSArray *keyVal = [element componentsSeparatedByString:@"="];
+        if (keyVal.count > 0) {
+            NSString *paramKey = [keyVal objectAtIndex:0];
+            NSString *paramValue = (keyVal.count == 2) ? [[keyVal lastObject] stringByRemovingPercentEncoding] : nil;
+            if (paramValue != nil) {
+                [queryParams setObject:paramValue forKey:paramKey];
+            }
+        }
+    }
+    return queryParams;
 }
 
 @end

@@ -14,7 +14,9 @@
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
     CGFloat keyboardOffset;
+#if TARGET_OS_IOS /** exclude tvOS **/
     UIDeviceOrientation currentOrientation;
+#endif
     UITapGestureRecognizer *localRecognizer;
     SwrveBaseConversation *conversation;
     id<SwrveMessageEventHandler> controller;
@@ -41,7 +43,13 @@
 
     SwrveConversationItemViewController *itemViewController;
     @try {
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"SwrveConversation" bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:
+#if TARGET_OS_IOS /** exclude tvOS **/
+                                    @"SwrveConversation"
+#else
+                                    @"SwrveConversation-tvos"
+#endif
+                                                             bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
         itemViewController = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
     }
     @catch (NSException *exception) {
@@ -132,7 +140,9 @@
                                              selector:@selector(viewReady:)
                                                  name:kSwrveNotificationViewReady
                                                object:nil];
+#if TARGET_OS_IOS /** exclude tvOS **/
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+#endif
     
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
@@ -153,7 +163,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kSwrveNotificationViewReady
                                                   object:nil];
+#if TARGET_OS_IOS /** exclude tvOS **/
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+#endif
     
     // Cleanup views for all panes
     for(SwrveConversationPane* page in self.conversation.pages) {
@@ -449,7 +461,9 @@
     // pane, that second pane will display as scrolled too, unless we reset the
     // tableview to the top of the content stack.
     [self.contentTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
+#if TARGET_OS_IOS /** exclude tvOS **/
     self.contentTableView.separatorColor = [UIColor clearColor];
+#endif
     
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {

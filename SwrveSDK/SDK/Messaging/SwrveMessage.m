@@ -44,6 +44,7 @@
     return self;
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 - (SwrveMessageFormat *)bestFormatForOrientation:(UIInterfaceOrientation)orientation {
     for (SwrveMessageFormat *format in formats) {
         bool format_is_landscape = format.orientation == SWRVE_ORIENTATION_LANDSCAPE;
@@ -61,6 +62,7 @@
 - (BOOL)supportsOrientation:(UIInterfaceOrientation)orientation {
     return (nil != [self bestFormatForOrientation:orientation]);
 }
+#endif
 
 static bool in_cache(NSString* file, NSSet* set){
     return [file length] == 0 || [set containsObject:file];

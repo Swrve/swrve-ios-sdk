@@ -140,6 +140,7 @@
 				TargetAttributes = {
 					1B2D06A41CA55F4F005A7C3C = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 38YP67HQGE;
 					};
 				};
 			};
@@ -413,6 +414,7 @@
 			baseConfigurationReference = F2CCE001F23722094074EB56 /* Pods-MessageCenterSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
 				INFOPLIST_FILE = MessageCenterSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.MessageCenterSample;
@@ -425,6 +427,7 @@
 			baseConfigurationReference = D53475552221053C700F3A3D /* Pods-MessageCenterSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
 				INFOPLIST_FILE = MessageCenterSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.MessageCenterSample;

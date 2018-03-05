@@ -149,6 +149,7 @@ static NSDate* read_date(id d, NSDate* default_date)
         self.maxImpressions = jsonMaxImpressions.unsignedIntegerValue;
     }
     
+    
     NSNumber* delayFirstMsg = [rules objectForKey:@"delay_first_message"];
     if (delayFirstMsg != nil)
     {
@@ -262,11 +263,13 @@ static NSDate* read_date(id d, NSDate* default_date)
     return NO;
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
 {
 #pragma unused(orientation)
     return NO;
 }
+#endif
 
 -(BOOL)assetsReady:(NSSet *)assets
 {

@@ -54,12 +54,18 @@
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
                     return false;
                 }
-            } else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
+                
+            }
+#if TARGET_OS_IOS /** exclude tvOS **/
+            else if ([contentItem isKindOfClass:
+                        [SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
                 if([self isFontAssetMissing:contentItem.style inCache: assets]) {
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.style);
                     return false;
                 }
-            } else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
+            }
+#endif
+            else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
                 SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
                 if([self isFontAssetMissing:inputMultiValue.style inCache: assets]) {
                     DebugLog(@"Conversation asset not yet downloaded: %@", inputMultiValue.style);

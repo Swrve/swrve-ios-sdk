@@ -46,7 +46,7 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)requestContacts:(id<SwrveCommonDelegate>)sdk;
 #endif //defined(SWRVE_ADDRESS_BOOK)
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback;
 + (NSString*) pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PUSH)

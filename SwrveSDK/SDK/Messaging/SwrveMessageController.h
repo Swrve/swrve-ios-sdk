@@ -91,7 +91,9 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
  *
  * \returns List of active Message Center campaigns that support the given orientation.
  */
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+#endif
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.
@@ -114,6 +116,7 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
 @property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
 @property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
+@property (nonatomic, retain) NSMutableArray*  conversationsMessageQueue;                      /*!< Conversation / Message queue */
 
 #pragma mark -
 

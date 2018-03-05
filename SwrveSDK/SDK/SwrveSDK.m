@@ -225,7 +225,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] shutdown];
 }
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 
 +(void)setDeviceToken:(NSData*)deviceToken
 {
@@ -271,4 +271,18 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 #endif //!defined(SWRVE_NO_PUSH)
 
++ (void)handleDeeplink:(NSURL *)url {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] handleDeeplink:url];
+}
+
++ (void)handleDeferredDeeplink:(NSURL *)url {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] handleDeferredDeeplink:url];
+}
+
++ (void)installAction:(NSURL *)url {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] installAction:url];
+}
 @end

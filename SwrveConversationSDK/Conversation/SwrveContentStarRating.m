@@ -33,12 +33,14 @@
     _view.accessibilityIdentifier = _description;
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 -(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
 #pragma unused(orientation)
     CGRect newFrame = [self newFrameForOrientationChange];
     CGFloat containerWidth = newFrame.size.width;
     [(SwrveContentStarRatingView*)_view setAvailableWidth:containerWidth];
 }
+#endif
 
 - (void) ratingView:(SwrveContentStarRatingView *)ratingView ratingDidChange:(float)rating{
 #pragma unused (ratingView)

@@ -1,7 +1,7 @@
 #import "SwrvePermissions.h"
 #import "ISHPermissionRequest+All.h"
 #import "ISHPermissionRequestNotificationsRemote.h"
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #import "SwrvePushInternalAccess.h"
 #import <UserNotifications/UserNotifications.h>
 #endif //!defined(SWRVE_NO_PUSH)
@@ -19,7 +19,7 @@ static ISHPermissionRequest *_cameraRequest = nil;
 #if defined(SWRVE_ADDRESS_BOOK)
 static ISHPermissionRequest *_contactsRequest = nil;
 #endif //defined(SWRVE_ADDRESS_BOOK)
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 static ISHPermissionRequest *_remoteNotifications = nil;
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -37,7 +37,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
         [SwrvePermissions requestPushNotifications:sdk withCallback:YES];
         return YES;
@@ -91,7 +91,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 #if defined(SWRVE_ADDRESS_BOOK)
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts]) forKey:swrve_permission_contacts];
 #endif //defined(SWRVE_ADDRESS_BOOK)
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     NSString *pushAuthorization = [SwrvePermissions pushAuthorizationWithSDK:sdk];
     if (pushAuthorization) {
         [permissionsStatus setValue:pushAuthorization forKey:swrve_permission_push_notifications];
@@ -114,7 +114,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 }
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (NSString*) pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk {
     NSString *pushAuthorization = nil;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
@@ -347,7 +347,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 #endif //defined(SWRVE_ADDRESS_BOOK)
 
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 +(ISHPermissionRequest*)pushNotificationsRequest {
     if (!_remoteNotifications) {
         _remoteNotifications = [ISHPermissionRequest requestForCategory:ISHPermissionCategoryNotificationRemote];
@@ -429,3 +429,4 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 @end
+

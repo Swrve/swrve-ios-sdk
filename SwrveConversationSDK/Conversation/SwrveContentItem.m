@@ -14,7 +14,7 @@
     }
     return self;
 }
-
+#if TARGET_OS_IOS /** exclude tvOS **/
 - (void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
 #pragma unused (orientation)
 }
@@ -33,4 +33,5 @@
         return v;
     }
 }
+#endif
 @end

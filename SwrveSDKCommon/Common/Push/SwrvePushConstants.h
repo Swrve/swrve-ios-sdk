@@ -1,4 +1,5 @@
 /** SwrvePushConstants.h **/
+#import <Foundation/Foundation.h>
 #pragma mark - internal keys
 extern NSString *const SwrvePushDeprecatedDeeplinkKey;
 extern NSString *const SwrvePushDeeplinkKey;

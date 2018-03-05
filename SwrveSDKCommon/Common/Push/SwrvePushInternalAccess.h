@@ -1,4 +1,4 @@
-#if !defined(SWRVE_NO_PUSH)
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #import "SwrvePush.h"
 #import "SwrveCommon.h"
 
@@ -38,4 +38,5 @@
 - (void) processInfluenceData;
 
 @end
-#endif
+#endif //!defined(SWRVE_NO_PUSH)
+

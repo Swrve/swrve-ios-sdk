@@ -9,10 +9,14 @@
 
 #include <UIKit/UIKit.h>
 #include <objc/runtime.h>
+#if TARGET_OS_IOS /** exclude tvOS **/
 #import <AddressBook/AddressBook.h>
+
 #if defined(__IPHONE_9_0)
 #import <Contacts/Contacts.h>
 #endif //defined(__IPHONE_9_0)
+
+#endif // TARGET_OS_IOS
 #import "ISHPermissionRequestAddressBook.h"
 #import "ISHPermissionRequest+Private.h"
 
