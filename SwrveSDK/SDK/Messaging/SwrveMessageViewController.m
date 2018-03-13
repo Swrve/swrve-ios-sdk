@@ -38,10 +38,11 @@
     CGRect screenRect = [[[UIApplication sharedApplication] keyWindow] bounds];
     self.viewportWidth = screenRect.size.width;
     self.viewportHeight = screenRect.size.height;
-    
+#if TARGET_OS_TV
     UITapGestureRecognizer *playPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(buttonSelected)];
     playPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypePlayPause]];
     [self.view addGestureRecognizer:playPress];
+#endif
 }
 
 - (void)buttonSelected {
@@ -62,7 +63,7 @@
 #pragma clang diagnostic pop
     } else {
         [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
-        [self setNeedsFocusUpdate];
+        [self refreshViewForPlatform];
     }
     if (self.wasShownToUserNotified == NO) {
         [self.message wasShownToUser];
@@ -74,8 +75,7 @@
 {
     // Update the bounds to the new screen size
     [self.view setFrame:[[UIScreen mainScreen] bounds]];
-    [self.view setNeedsFocusUpdate];
-    [self.view updateFocusIfNeeded];
+    [self refreshViewForPlatform];
 }
 
 -(void)removeAllViews
@@ -84,6 +84,15 @@
         [view removeFromSuperview];
     }
 }
+
+-(void)refreshViewForPlatform {
+    // pre-iOS 9 setNeedsFocusUpdate and updateFocusIfNeeded are not supported
+#if TARGET_OS_TV
+    [self.view setNeedsFocusUpdate];
+    [self.view updateFocusIfNeeded];
+#endif
+}
+
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 -(void)addViewForOrientation:(UIInterfaceOrientation)orientation

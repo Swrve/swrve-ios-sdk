@@ -1103,10 +1103,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             menuPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeMenu]];
             [messageViewController.view addGestureRecognizer:menuPress];
             [messageViewController setRestoresFocusAfterTransition:YES];
-#endif
             [self showMessageWindow:messageViewController];
             [messageViewController setNeedsFocusUpdate];
             [messageViewController updateFocusIfNeeded];
+#else
+            [self showMessageWindow:messageViewController];
+#endif
             
         } else if (isQueued && ![self.conversationsMessageQueue containsObject:message]) {
             [self.conversationsMessageQueue addObject:message];
