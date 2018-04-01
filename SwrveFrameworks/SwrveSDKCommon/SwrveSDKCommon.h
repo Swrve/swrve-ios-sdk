@@ -23,7 +23,6 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 // Common - Push
 #import <SwrveSDKCommon/SwrvePush.h>
 #import <SwrveSDKCommon/SwrvePushConstants.h>
-#import <SwrveSDKCommon/SwrvePushInternalAccess.h>
 #import <SwrveSDKCommon/SwrvePushMediaHelper.h>
 #import <SwrveSDKCommon/SwrveSwizzleHelper.h>
 

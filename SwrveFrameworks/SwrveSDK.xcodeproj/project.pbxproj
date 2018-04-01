@@ -110,7 +110,7 @@
 		528F5592201B9C4F007AB0A8 /* ISHPermissionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C721F695AE70094B34E /* ISHPermissionRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5593201B9C4F007AB0A8 /* SwrveRESTClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C911F695AE70094B34E /* SwrveRESTClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5594201B9C4F007AB0A8 /* ISHPermissionRequestPhotoLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C7C1F695AE70094B34E /* ISHPermissionRequestPhotoLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		528F5595201B9C4F007AB0A8 /* SwrvePushInternalAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C841F695AE70094B34E /* SwrvePushInternalAccess.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		528F5595201B9C4F007AB0A8 /* SwrvePushInternalAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C841F695AE70094B34E /* SwrvePushInternalAccess.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		528F5596201B9C4F007AB0A8 /* SwrveSignatureProtectedFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C931F695AE70094B34E /* SwrveSignatureProtectedFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5597201B9C4F007AB0A8 /* SwrveAssetsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C891F695AE70094B34E /* SwrveAssetsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5598201B9C4F007AB0A8 /* SwrvePermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C8F1F695AE70094B34E /* SwrvePermissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -231,7 +231,7 @@
 		F6D10CA81F695AE70094B34E /* SwrvePush.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10C811F695AE70094B34E /* SwrvePush.m */; };
 		F6D10CA91F695AE70094B34E /* SwrvePushConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C821F695AE70094B34E /* SwrvePushConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D10CAA1F695AE70094B34E /* SwrvePushConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10C831F695AE70094B34E /* SwrvePushConstants.m */; };
-		F6D10CAB1F695AE70094B34E /* SwrvePushInternalAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C841F695AE70094B34E /* SwrvePushInternalAccess.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F6D10CAB1F695AE70094B34E /* SwrvePushInternalAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C841F695AE70094B34E /* SwrvePushInternalAccess.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		F6D10CAC1F695AE70094B34E /* SwrvePushMediaHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C851F695AE70094B34E /* SwrvePushMediaHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D10CAD1F695AE70094B34E /* SwrvePushMediaHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10C861F695AE70094B34E /* SwrvePushMediaHelper.m */; };
 		F6D10CAE1F695AE70094B34E /* SwrveSwizzleHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10C871F695AE70094B34E /* SwrveSwizzleHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
