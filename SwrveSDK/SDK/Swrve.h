@@ -12,10 +12,8 @@
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #if __has_include(<SwrveSDKCommon/SwrvePush.h>)
 #import <SwrveSDKCommon/SwrvePush.h>
-#import <SwrveSDKCommon/SwrvePushInternalAccess.h>
 #else
 #import "SwrvePush.h"
-#import "SwrvePushInternalAccess.h"
 #endif /** has_include **/
 /*! Swrve SDK main class. */
 @interface Swrve : NSObject<Swrve, SwrveSignatureErrorDelegate, SwrvePushDelegate>

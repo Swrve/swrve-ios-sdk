@@ -2,7 +2,6 @@
 #import "ISHPermissionRequest+All.h"
 #import "ISHPermissionRequestNotificationsRemote.h"
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
-#import "SwrvePushInternalAccess.h"
 #import <UserNotifications/UserNotifications.h>
 #endif //!defined(SWRVE_NO_PUSH)
 

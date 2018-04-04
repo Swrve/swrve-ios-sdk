@@ -26,6 +26,12 @@ const static int DEFAULT_DELAY_FIRST_MESSAGE = 150;
 const static int DEFAULT_MAX_SHOWS           = 99999;
 const static int DEFAULT_MIN_DELAY           = 55;
 
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+@interface SwrvePush (SwrvePushInternalAccess)
+- (void) registerForPushNotifications;
+@end
+#endif //!defined(SWRVE_NO_PUSH)
+
 @interface Swrve(PrivateMethodsForMessageController)
 @property BOOL campaignsAndResourcesInitialized;
 @property (atomic) int locationSegmentVersion;

@@ -3,7 +3,7 @@ target 'SwrveSDKTest' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 5.2.1'
+  #pod 'SwrveSDK', '~> 5.2.2'
 end
 
 target 'SwrveSDKTestTests' do
@@ -11,5 +11,5 @@ target 'SwrveSDKTestTests' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 5.2.1'
+  #pod 'SwrveSDK', '~> 5.2.2'
 end

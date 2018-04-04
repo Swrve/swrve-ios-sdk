@@ -1,6 +1,5 @@
 #if !defined(SWRVE_NO_PUSH)
 #import "SwrvePush.h"
-#import "SwrvePushInternalAccess.h"
 #import "SwrvePushConstants.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrvePermissions.h"

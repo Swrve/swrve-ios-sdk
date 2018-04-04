@@ -4,5 +4,5 @@ target 'MessageCenterSample' do
   pod 'SwrveSDK', :path => '../../..'
 
   # use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDK', '5.2.1'
+  #pod 'SwrveSDK', '5.2.2'
 end

@@ -4,6 +4,12 @@
 #import "Swrve.h"
 #import "SwrveSDK.h"
 
+@interface SwrvePush (InternalAccess)
+
++ (void)resetSharedInstance;
+
+@end
+
 @interface SwrveSDK (InternalAccess)
 
 + (void)resetSwrveSharedInstance;

@@ -3,6 +3,16 @@
 #import <UserNotifications/UserNotifications.h>
 #import "SwrveCommon.h"
 
+@protocol SwrvePushDelegate <NSObject>
+
+- (void) sendPushEngagedEvent:(NSString*)pushId;
+- (void) deviceTokenIncoming:(NSData *)newDeviceToken;
+- (void) deviceTokenUpdated:(NSString *)newDeviceToken;
+- (void) remoteNotificationReceived:(NSDictionary *)notificationInfo;
+- (void) deeplinkReceived:(NSURL *)url;
+
+@end
+
 @protocol SwrvePushResponseDelegate <NSObject>
 #if !TARGET_OS_TV
 @optional

@@ -105,6 +105,24 @@ enum
 
 @end
 
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+@interface SwrvePush (SwrvePushInternalAccess)
+
++ (SwrvePush *)sharedInstanceWithPushDelegate:(id<SwrvePushDelegate>) pushDelegate andCommonDelegate:(id<SwrveCommonDelegate>) commonDelegate;
++ (void)resetSharedInstance;
+- (void)setResponseDelegate:(id<SwrvePushResponseDelegate>) responseDelegate;
+- (BOOL)observeSwizzling;
+- (void)deswizzlePushMethods;
+- (void)setPushNotificationsDeviceToken:(NSData*) newDeviceToken;
+- (void)checkLaunchOptionsForPushData:(NSDictionary *) launchOptions;
+- (void)pushNotificationReceived:(NSDictionary *)userInfo;
+- (void)pushNotificationResponseReceived:(NSString*)identifier withUserInfo:(NSDictionary *)userInfo;
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler;
+- (void)processInfluenceData;
+
+@end
+#endif //!defined(SWRVE_NO_PUSH)
+
 @interface Swrve() <SwrveCommonDelegate>
 {
     BOOL initialised;
@@ -1835,7 +1853,7 @@ enum HttpStatus {
 
 - (void) initResourcesDiff {
 
-    SwrveSignatureProtectedFile * file =  [self signatureFileWithType:SWRVE_RESOURCE_FILE errorDelegate:self];
+    SwrveSignatureProtectedFile * file =  [self signatureFileWithType:SWRVE_RESOURCE_DIFF_FILE errorDelegate:self];
     [self setResourcesDiffFile:file];
 }
 
