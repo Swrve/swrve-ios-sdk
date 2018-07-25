@@ -23,6 +23,11 @@ enum SwrveStack {
  */
 typedef void (^SwrveResourcesUpdatedListener) (void);
 
+/*! Defines the block signature for being notified when the A/B testing
+ * have been updated with new content.
+ */
+typedef void (^SwrveABTestingUpdatedListener) (void);
+
 /*! Advanced configuration for the Swrve SDK. */
 @interface SwrveConfig : NSObject
 
@@ -82,6 +87,13 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  * This listener does not have any argument, use the resourceManager to get the updated resources
  */
 @property (nonatomic, copy) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
+
+/*! A callback to get notified when user A/B testing have been updated.
+ *
+ * If config.abTestDetailsEnabled is YES A/B testing content will be kept up to date automatically
+ * and this listener will be called whenever there has been a change.
+ */
+@property (nonatomic, copy) SwrveABTestingUpdatedListener abTestingUpdatedCallback;
 
 /*! Controls if sendEvents is automatically called when the app resumes
  * in the foreground.
@@ -179,6 +191,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) UIColor* inAppMessageBackgroundColor;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
+@property (nonatomic, readonly) SwrveABTestingUpdatedListener abTestingUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS

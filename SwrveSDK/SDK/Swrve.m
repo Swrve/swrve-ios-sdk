@@ -1557,6 +1557,9 @@ enum
 - (void) updateABTestDetails:(NSDictionary*)abTestDetailsJson
 {
     [self.resourceManager setABTestDetailsFromDictionary:abTestDetailsJson];
+    if ([self.config abTestingUpdatedCallback]) {
+        [[self.config abTestingUpdatedCallback] invoke];
+    }
 }
 
 - (void) updateResources:(NSArray*)resourceJson writeToCache:(BOOL)writeToCache

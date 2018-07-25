@@ -14,6 +14,7 @@
 @synthesize inAppMessageBackgroundColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
+@synthesize abTestingUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
@@ -50,6 +51,9 @@
         self.resourcesUpdatedCallback = ^() {
             // Do nothing by default.
         };
+        self.abTestingUpdatedCallback = ^() {
+            // Do nothing by default.
+        };
         self.stack = SWRVE_STACK_US;
     }
     return self;
@@ -71,6 +75,7 @@
 @synthesize inAppMessageBackgroundColor;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
+@synthesize abTestingUpdatedCallback;
 @synthesize autoSendEventsOnResume;
 @synthesize autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
@@ -101,6 +106,7 @@
         inAppMessageBackgroundColor = config.inAppMessageBackgroundColor;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
+        abTestingUpdatedCallback = config.abTestingUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
