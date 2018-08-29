@@ -63,6 +63,22 @@
     
 }
 
+-(void)handleNotificationToCampaign:(NSString *)campaignId {
+    NSURL *adCampaignURL = [self campaignURL:campaignId];
+    [self loadCampaign:adCampaignURL :^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
+        if (!error) {
+            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                long code = [(NSHTTPURLResponse*)response statusCode];
+                if (code > 300) {
+                    DebugLog(@"Show Campaign Error: %@",responseDic);
+                }
+            }
+            [self writeCampaignDataToCache:responseDic fileType:SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG];
+            [self showCampaign:responseDic];
+        }
+    }];
+}
+
 - (void)handleDeferredDeeplink:(NSURL *)url {
     [self handleDeeplink:url actionType:SWRVE_AD_INSTALL];
 }
@@ -71,7 +87,7 @@
     [self handleDeeplink:url actionType:nil];
 }
 
-- (void)handleDeeplink:(NSURL *)url actionType:(NSString*)actionType {
+- (void)handleDeeplink:(NSURL *)url actionType:(NSString *)actionType {
     if (actionType == nil) {
         // Default is 'reengage', but developer can set this property to 'install' in a deferred action callback from FB
         // using [SwrveSDK installAction:url] or they can just call handleDeferredDeeplink:url  Gives them the option to do either.
@@ -87,7 +103,7 @@
         if (campaignID == nil) { return; }
         if ([campaignID isEqualToString:self.alreadySeenCampaignID]) {  return; }
         
-        NSURL *adCampaignURL = [self adCampaignURL:campaignID];
+        NSURL *adCampaignURL = [self campaignURL:campaignID];
         [self loadCampaign:adCampaignURL :^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
             if (!error) {
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -96,8 +112,8 @@
                         DebugLog(@"Show Campaign Error: %@",responseDic);
                     }
                 }
-                [self writeAdCampaignDataToCache:responseDic];
-                [self showAdCampaign:responseDic];
+                [self writeCampaignDataToCache:responseDic fileType:SWRVE_AD_CAMPAIGN_FILE];
+                [self showCampaign:responseDic];
             }
         }];
         
@@ -109,14 +125,16 @@
     }
 }
 
--(void)writeAdCampaignDataToCache:(NSDictionary *)responseDic {
-    NSData *campaignAdData = [NSJSONSerialization dataWithJSONObject:responseDic options:0 error:nil];
-    SwrveSignatureProtectedFile *campaignFile =  [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_AD_CAMPAIGN_FILE
-                                                                                                 userID:self.sdk.userID
-                                                                                           signatureKey:[self.sdk signatureKey]
-                                                                                          errorDelegate:nil];
-    
-    [campaignFile writeToFile:campaignAdData];
+-(void)writeCampaignDataToCache:(NSDictionary *)responseDic fileType:(int)fileType {
+    if (responseDic != nil) {
+        NSData *campaignData = [NSJSONSerialization dataWithJSONObject:responseDic options:0 error:nil];
+        SwrveSignatureProtectedFile *campaignFile =  [[SwrveSignatureProtectedFile alloc] protectedFileType:fileType
+                                                                                                     userID:self.sdk.userID
+                                                                                               signatureKey:[self.sdk signatureKey]
+                                                                                              errorDelegate:nil];
+        
+        [campaignFile writeToFile:campaignData];
+    }
 }
 
 - (void)queueDeeplinkGenericEvent:(NSString *)adSource
@@ -124,6 +142,10 @@
                      campaignName:(NSString *)campaignName
                        acitonType:(NSString *)actionType {
     
+    if (adSource == nil || [adSource isEqualToString:@""]) {
+        DebugLog(@"DeeplinkCampaign adSource was nil or an empty string. Generic event not queued", nil);
+        return;
+    }
     adSource = [@"external_source_" stringByAppendingString:adSource];
     
     NSDictionary *eventData = @{@"campaignType" :NullableNSString(adSource),
@@ -141,12 +163,15 @@
     
     [self.sdk.restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response)
-        NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSDictionary *responseDict = nil;
+        if (data != nil) {
+           responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        }
         completion(response,responseDict,error);
     }];
 }
 
-- (NSURL *)adCampaignURL:(NSString *)campaignID {
+- (NSURL *)campaignURL:(NSString *)campaignID {
     NSMutableString *queryString = [NSMutableString stringWithFormat:@"?in_app_campaign_id=%@&user=%@&api_key=%@&app_version=%@&joined=%llu",
                                     campaignID,self.sdk.userID, self.sdk.apiKey, self.sdk.appVersion, self.sdk.joinedDateMilliSeconds];
     
@@ -155,13 +180,13 @@
         [queryString appendFormat:@"&%@", campaignQueryString];
     }
     
-    NSURL* base_content_url = [NSURL URLWithString:self.sdk.config.contentServer];
+    NSURL *base_content_url = [NSURL URLWithString:self.sdk.config.contentServer];
     NSURL *adCampaignURL = [NSURL URLWithString:SWRVE_AD_CAMPAIGN_URL relativeToURL:base_content_url];
     
     return [NSURL URLWithString:queryString relativeToURL:adCampaignURL];
 }
 
--(void)showAdCampaign:(NSDictionary *)campaignJson {
+-(void)showCampaign:(NSDictionary *)campaignJson {
     
     if (campaignJson == nil) {
         DebugLog(@"Error parsing campaign JSON", nil);
@@ -198,7 +223,7 @@
     if ([campaignDic objectForKey:@"conversation"] != nil) {
         if ([self.sdk.messaging filtersOk:[campaignJson objectForKey:@"filters"]]) {
             // Conversation version check
-            NSNumber* conversationVersion = [campaignJson objectForKey:@"conversation_version"];
+            NSNumber *conversationVersion = [campaignJson objectForKey:@"conversation_version"];
             if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
                 campaign = [[SwrveConversationCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
             } else {

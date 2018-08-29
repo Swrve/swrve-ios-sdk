@@ -254,7 +254,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 +(void) sendPushEngagedEvent:(NSString*)pushId
 {
     [SwrveSDK checkInstance];
-    [[SwrveSDK sharedInstance] sendPushEngagedEvent:pushId];
+    [[SwrveSDK sharedInstance] sendPushNotificationEngagedEvent:pushId];
 }
 
 +(void) processNotificationResponse:(UNNotificationResponse *)response

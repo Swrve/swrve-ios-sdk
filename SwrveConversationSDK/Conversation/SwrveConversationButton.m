@@ -7,10 +7,10 @@
 @synthesize actions = _actions;
 @synthesize target = _target;
 
--(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
+-(id)initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag andType:kSwrveControlTypeButton];
     if(self) {
-
+        
         NSString *description = [dict objectForKey:kSwrveKeyDescription];
         if ([description length] != 0) {
             _description = description;
@@ -43,7 +43,7 @@
     return self;
 }
 
--(BOOL) endsConversation {
+-(BOOL)endsConversation {
     return _target == nil;
 }
 

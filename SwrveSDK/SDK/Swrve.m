@@ -28,6 +28,7 @@
 #import "SwrveEventsManager.h"
 #import "SwrveQA.h"
 #import "SwrveProfileManager.h"
+#import "SwrveNotificationManager.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -270,6 +271,10 @@ enum
 @implementation Swrve
 
 @synthesize eventsServer;
+@synthesize contentServer;
+@synthesize joined;
+@synthesize language;
+@synthesize httpTimeout;
 @synthesize config;
 @synthesize appID;
 @synthesize apiKey;
@@ -350,8 +355,11 @@ enum
         NSCAssert(swrveConfig, @"Null config object given to Swrve", nil);
         [self setupConfig:swrveConfig];
         eventsServer = [swrveConfig eventsServer];
+        contentServer = [swrveConfig contentServer];
         config = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
 
+        language = [config language];
+        httpTimeout = [config httpTimeoutSeconds];
         profileManager = [[SwrveProfileManager alloc] initWithUserID:config.userId];
         userID = [profileManager userId];
        
@@ -363,6 +371,8 @@ enum
         locationSegmentVersion = 0; // init to zero
         [self initSwrveRestClient:config.httpTimeoutSeconds];
         [self initBuffer];
+        
+        _deviceToken = [SwrveLocalStorage deviceToken];
 
         receiptProvider = [[SwrveReceiptProvider alloc] init];
 
@@ -437,6 +447,7 @@ enum
         [profileManager setIsNewUser:false];
         installTimeSeconds = installTimeSecondsFromFile;
     }
+    joined = [NSString stringWithFormat:@"%lld", [self joinedDateMilliSeconds]];
 
     if (config.abTestDetailsEnabled) {
         [self initABTestDetails];
@@ -1229,11 +1240,13 @@ enum
     [self setDeviceToken:newDeviceToken];
 }
 
-- (void) deviceTokenUpdated:(NSString *) newDeviceToken {
-    _deviceToken = newDeviceToken;
-    [SwrveLocalStorage saveDeviceToken:newDeviceToken];
-    [self queueDeviceProperties];
-    [self sendQueuedEvents];
+- (void)deviceTokenUpdated:(NSString *)newDeviceToken {
+    if (![_deviceToken isEqualToString:newDeviceToken]) {
+        _deviceToken = newDeviceToken;
+        [SwrveLocalStorage saveDeviceToken:newDeviceToken];
+        [self queueDeviceProperties];
+        [self sendQueuedEvents];
+    }
 }
 
 - (void) remoteNotificationReceived:(NSDictionary *) notificationInfo {
@@ -1251,7 +1264,7 @@ enum
     }
 }
 
-- (NSString*) deviceToken {
+- (NSString *)deviceToken {
     return self->_deviceToken;
 }
 
@@ -1261,7 +1274,10 @@ enum
         // Do not process the push notification if the app was on the foreground
         BOOL appInBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
         if (appInBackground) {
-            [self.push pushNotificationReceived:userInfo];
+            NSURL *deeplinkUrl = [SwrveNotificationManager notificationEngaged:userInfo];
+            if(deeplinkUrl) {
+                [self deeplinkReceived:deeplinkUrl];
+            }
             if (self.messaging) {
                 [self.messaging pushNotificationReceived:userInfo];
             }
@@ -1282,14 +1298,12 @@ enum
     return NO;
 }
 
-- (void) sendPushEngagedEvent:(NSString*)pushId {
-    NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-    [self eventInternal:eventName payload:nil triggerCallback:false];
-}
-
 - (void) processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo {
     DebugLog(@"Processing Push Notification Response: %@", identifier);
-    [self.push pushNotificationResponseReceived:identifier withUserInfo:userInfo];
+    NSURL *deeplinkUrl = [SwrveNotificationManager notificationResponseReceived:identifier withUserInfo:userInfo];
+    if(deeplinkUrl) {
+        [self deeplinkReceived:deeplinkUrl];
+    }
 }
 
 - (void) processNotificationResponse:(UNNotificationResponse *)response {
@@ -1305,6 +1319,7 @@ enum
         }];
     } else {
         BOOL success = [application openURL:url];
+        #pragma unused (success) //for when SWRVE_DISABLE_LOGS is set
         DebugLog(@"Opening url [%@] successfully: %d", url, success);
     }
 }
@@ -1409,6 +1424,11 @@ enum
 
 - (NSString*) appGroupIdentifier {
     return self.config.appGroupIdentifier;
+}
+
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId {
+    NSString* eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
+    [self eventInternal:eventName payload:nil triggerCallback:false];
 }
 
 - (void) sendCrashlyticsMetadata {
@@ -1997,6 +2017,11 @@ enum HttpStatus {
     
     [self initSwrveDeeplinkManager];
     self.swrveDeeplinkManager.actionType = SWRVE_AD_INSTALL;
+}
+
+- (void)handleNotificationToCampaign:(NSString *)campaignId {
+    [self initSwrveDeeplinkManager];
+    [self.swrveDeeplinkManager handleNotificationToCampaign:campaignId];
 }
 
 @end

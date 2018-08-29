@@ -3,33 +3,33 @@
 
 @class SwrveBaseConversation;
 
-#define kSwrveKeyTag @"tag"
-#define kSwrveKeyType @"type"
-#define kSwrveKeyValues @"values"
-#define kSwrveKeyAnswerId @"answer_id"
-#define kSwrveKeyAnswerText @"answer_text"
-#define kSwrveKeyStyle @"style"
-#define kSwrveKeyFontFile @"font_file"
-#define kSwrveKeyFontDigest @"font_digest"
-#define kSwrveKeyFontPostscriptName @"font_postscript_name"
-#define kSwrveKeyFontNativeStyle @"font_native_style"
-#define kSwrveKeyTextSize @"text_size"
-#define kSwrveKeyAlignment @"alignment"
+static NSString *const kSwrveKeyTag                = @"tag";
+static NSString *const kSwrveKeyType               = @"type";
+static NSString *const kSwrveKeyValues             = @"values";
+static NSString *const kSwrveKeyAnswerId           = @"answer_id";
+static NSString *const kSwrveKeyAnswerText         = @"answer_text";
+static NSString *const kSwrveKeyStyle              = @"style";
+static NSString *const kSwrveKeyFontFile           = @"font_file";
+static NSString *const kSwrveKeyFontPostscriptName = @"font_postscript_name";
+static NSString *const kSwrveKeyFontDigest         = @"font_digest";
+static NSString *const kSwrveKeyFontNativeStyle    = @"font_native_style";
+static NSString *const kSwrveKeyTextSize           = @"text_size";
+static NSString *const kSwrveKeyAlignment          = @"alignment";
 
 // Content types
-#define kSwrveContentTypeHTML @"html-fragment"
-#define kSwrveContentTypeImage @"image"
-#define kSwrveContentTypeVideo @"video"
-#define kSwrveContentSpacer @"spacer"
-#define kSwrveContentUnknown @"UNKNOWN"
+static NSString *const kSwrveContentTypeHTML   = @"html-fragment";
+static NSString *const kSwrveContentTypeImage  = @"image";
+static NSString *const kSwrveContentTypeVideo  = @"video";
+static NSString *const kSwrveContentSpacer     = @"spacer";
+static NSString *const kSwrveContentUnknown    = @"UNKNOWN";
 // Input types
-#define kSwrveInputMultiValue @"multi-value-input"
+static NSString *const kSwrveInputMultiValue   = @"multi-value-input";
 // Control types
-#define kSwrveControlTypeButton @"button"
-#define kSwrveContentStarRating @"star-rating"
+static NSString *const kSwrveControlTypeButton = @"button";
+static NSString *const kSwrveContentStarRating = @"star-rating";
 
 // Notifications
-#define kSwrveNotificationViewReady @"SwrveNotificationViewReady"
+static NSString *const kSwrveNotificationViewReady = @"SwrveNotificationViewReady";
 
 // Orientation Change delegate
 @protocol SwrveConversationAtomDelegate <NSObject>

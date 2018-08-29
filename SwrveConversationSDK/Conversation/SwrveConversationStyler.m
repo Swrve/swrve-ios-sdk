@@ -5,20 +5,20 @@
 #import "SwrveBaseConversation.h"
 #import <CoreText/CoreText.h>
 
-#define kSwrveKeyBg @"bg"
-#define kSwrveKeyFg @"fg"
-#define kSwrveKeyLb @"lb"
-#define kSwrveKeyType @"type"
-#define kSwrveKeyColorValue @"value"
-#define kSwrveKeyBorderRadius @"border_radius"
-#define kSwrveMaxBorderRadius 22.5
+static NSString *const kSwrveKeyBg           = @"bg";
+static NSString *const kSwrveKeyFg           = @"fg";
+static NSString *const kSwrveKeyLb           = @"lb";
 
-#define kSwrveColorTypeTransparent @"transparent"
-#define kSwrveColorTypeColor @"color"
+static NSString *const kSwrveKeyColorValue   = @"value";
+static NSString *const kSwrveKeyBorderRadius = @"border_radius";
+static float const kSwrveMaxBorderRadius = 22.5f;
 
-#define kSwrveDefaultColorBg @"#ffffff"   // white
-#define kSwrveDefaultColorFg @"#000000"   // black
-#define kSwrveDefaultColorLb @"#B3000000" // 70% alpha black
+static NSString *const kSwrveColorTypeTransparent = @"transparent";
+static NSString *const kSwrveColorTypeColor       = @"color";
+
+static NSString *const kSwrveDefaultColorBg = @"#ffffff";  // white
+static NSString *const kSwrveDefaultColorFg = @"#000000";  //black
+static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
 
 @implementation SwrveConversationStyler : NSObject
 
@@ -114,10 +114,10 @@
 
 + (float) convertBorderRadius:(float)borderRadiusPercentage {
     if(borderRadiusPercentage >= 100.0){
-        return (float)kSwrveMaxBorderRadius;
+        return kSwrveMaxBorderRadius;
     }else{
         float percentage = borderRadiusPercentage / 100;
-        return (float)kSwrveMaxBorderRadius * percentage;
+        return kSwrveMaxBorderRadius * percentage;
     }
 }
 

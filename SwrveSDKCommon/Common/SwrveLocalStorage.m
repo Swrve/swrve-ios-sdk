@@ -16,6 +16,8 @@ static NSString* SWRVE_CAMPAIGNS = @"cmcc2.json";
 static NSString* SWRVE_CAMPAIGNS_SGT = @"cmccsgt2.txt";
 static NSString* SWRVE_AD_CAMPAIGNS = @"cmcc3.json";
 static NSString* SWRVE_AD_CAMPAIGNS_SGT = @"cmccsgt3.txt";
+static NSString* SWRVE_PUSH_CAMPAIGNS = @"cmcc4.json";
+static NSString* SWRVE_PUSH_CAMPAIGNS_SGT = @"cmccsgt4.txt";
 static NSString* SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
 
 //NSUserDefaults Keys
@@ -298,6 +300,14 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 
 + (NSString *)campaignsAdSignatureFilePathForUserId:(NSString*) userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_AD_CAMPAIGNS_SGT];
+}
+
++ (NSString *)debugCampaignsNoticationFilePathForUserId:(NSString *) userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_PUSH_CAMPAIGNS];
+}
+
++ (NSString *)debugCampaignsNotificationSignatureFilePathForUserId:(NSString *) userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_PUSH_CAMPAIGNS_SGT];
 }
 
 + (NSString *)campaignsStateFilePathForUserId:(NSString *)userId {

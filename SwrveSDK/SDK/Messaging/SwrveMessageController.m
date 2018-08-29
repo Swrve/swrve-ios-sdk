@@ -205,9 +205,8 @@ const static int DEFAULT_MIN_DELAY           = 55;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     NSData* device_token = [SwrveLocalStorage deviceToken];
     if (self.pushEnabled && device_token) {
-        // Once we have a device token, ask for it every time
+        // Once we have a device token, ask for it every time as it may change under certain circumstances
         [self.analyticsSDK.push registerForPushNotifications];
-        [self.analyticsSDK setDeviceToken:device_token];
     }
 #endif //!defined(SWRVE_NO_PUSH)
 

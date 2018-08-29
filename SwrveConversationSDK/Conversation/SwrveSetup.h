@@ -31,7 +31,7 @@
 // Notifications
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#define kSwrveNotifyOrientationChange @"SwrveDeviceHasChangedOrientation"
+static NSString *const kSwrveNotifyOrientationChange = @"SwrveDeviceHasChangedOrientation";
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Useful Macros

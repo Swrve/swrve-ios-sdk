@@ -1,7 +1,7 @@
 #import "SwrveContentStarRating.h"
 #import "SwrveConversationStyler.h"
 
-#define kSwrveKeyStarColor @"star_color"
+static NSString *const kSwrveKeyStarColor = @"star_color";
 
 @implementation SwrveContentStarRating
 

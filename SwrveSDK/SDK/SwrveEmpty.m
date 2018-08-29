@@ -24,6 +24,11 @@
 @synthesize deviceToken;
 @synthesize locationSegmentVersion;
 @synthesize eventsServer;
+@synthesize contentServer;
+@synthesize joined;
+@synthesize language;
+@synthesize httpTimeout;
+
 @synthesize deviceId;
 
 -(id) initWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey {
@@ -187,9 +192,6 @@
     return NO;
 }
 
--(void) sendPushEngagedEvent:(NSString*)pushId {
-#pragma unused(pushId)
-}
 #endif //!defined(SWRVE_NO_PUSH)
 
 - (void)handleDeeplink:(NSURL *)url {
@@ -240,4 +242,12 @@
     return nil;
 }
 
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId {
+#pragma unused(pushId)
+}
+
+
+- (void)handleNotificationToCampaign:(NSString *)campaignId {
+#pragma unused(campaignId)
+}
 @end

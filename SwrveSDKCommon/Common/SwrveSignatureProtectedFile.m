@@ -56,6 +56,13 @@
             signatureFilePath = [SwrveLocalStorage campaignsAdSignatureFilePathForUserId:userID];
         
         break;
+            
+        case SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG:
+            
+            filePath = [SwrveLocalStorage debugCampaignsNoticationFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage debugCampaignsNotificationSignatureFilePathForUserId:userID];
+            
+            break;
         
     }
     

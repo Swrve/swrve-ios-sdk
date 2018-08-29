@@ -1,15 +1,18 @@
 #if !defined(SWRVE_NO_PUSH)
+
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import "SwrveCommon.h"
 
+extern NSString *const SwrveSilentPushIdentifierKey;
+extern NSString *const SwrveSilentPushPayloadKey;
+
 @protocol SwrvePushDelegate <NSObject>
 
-- (void) sendPushEngagedEvent:(NSString*)pushId;
-- (void) deviceTokenIncoming:(NSData *)newDeviceToken;
-- (void) deviceTokenUpdated:(NSString *)newDeviceToken;
-- (void) remoteNotificationReceived:(NSDictionary *)notificationInfo;
-- (void) deeplinkReceived:(NSURL *)url;
+- (void)deviceTokenIncoming:(NSData *)newDeviceToken;
+- (void)deviceTokenUpdated:(NSString *)newDeviceToken;
+- (void)remoteNotificationReceived:(NSDictionary *)notificationInfo;
+- (void)deeplinkReceived:(NSURL *)url;
 
 @end
 
@@ -17,10 +20,10 @@
 #if !TARGET_OS_TV
 @optional
 - (void)didReceiveNotificationResponse:(UNNotificationResponse *)response
-                 withCompletionHandler:(void(^)(void))completionHandler __IOS_AVAILABLE(10.0);
+                 withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0);
 
-- (void) willPresentNotification:(UNNotification *)notification
-           withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler __IOS_AVAILABLE(10.0);
+- (void)willPresentNotification:(UNNotification *)notification
+          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler __IOS_AVAILABLE(10.0);
 
 #endif
 @end
@@ -33,11 +36,13 @@
 
 /*! Processes APNs Notification that comes in from a Service Extension
  *  and adds all the additional campaign content.
- *  App Group Intentifier is used for storing influence so it can be tracked by Swrve in the Main App.
+ *  App Group Identifier is used for storing influence so it can be tracked by Swrve in the Main App.
  */
-+ (void)handleNotificationContent:(UNNotificationContent *) notificationContent withAppGroupIdentifier:(NSString *)appGroupIdentifier
-     withCompletedContentCallback:(void (^)(UNMutableNotificationContent * content))callback;
++ (void)handleNotificationContent:(UNNotificationContent *)notificationContent
+           withAppGroupIdentifier:(NSString *)appGroupIdentifier
+     withCompletedContentCallback:(void (^)(UNMutableNotificationContent *content))callback;
 
 #endif
 @end
+
 #endif //!defined(SWRVE_NO_PUSH)

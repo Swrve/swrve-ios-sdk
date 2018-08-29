@@ -1,0 +1,1013 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05F81BDE6936A4D6459FDBDA /* libPods-RichPushSampleServiceExtension-ObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D087921EC0868347E98773F /* libPods-RichPushSampleServiceExtension-ObjC.a */; };
+		071A1F53E104B477DBF54177 /* Pods_RichPushSampleServiceExtension_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 217E111187679C9010DD0161 /* Pods_RichPushSampleServiceExtension_Swift.framework */; };
+		527386B01ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 527386A81ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5B402B3320F3587900601BA4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B402B2120F3587900601BA4 /* AppDelegate.m */; };
+		5B402B3420F3587900601BA4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B402B2320F3587900601BA4 /* main.m */; };
+		5B402B3920F3587900601BA4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B402B2D20F3587900601BA4 /* ViewController.m */; };
+		5B402B7920F365E000601BA4 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B402B3020F3587900601BA4 /* NotificationService.m */; };
+		5B402BB620F36E6800601BA4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B402BB520F36E6800601BA4 /* AppDelegate.swift */; };
+		5B402BB820F36E6800601BA4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B402BB720F36E6800601BA4 /* ViewController.swift */; };
+		5B402BBB20F36E6800601BA4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B402BB920F36E6800601BA4 /* Main.storyboard */; };
+		5B402BC020F36E6A00601BA4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B402BBE20F36E6A00601BA4 /* LaunchScreen.storyboard */; };
+		5B402BD020F36F6100601BA4 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B402BCF20F36F6100601BA4 /* NotificationService.swift */; };
+		5B402BD420F36F6100601BA4 /* RichPushSampleServiceExtension-Swift.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5B402BCD20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5B402BDE20F3727D00601BA4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B402BDA20F3727D00601BA4 /* Main.storyboard */; };
+		5B402BDF20F3727D00601BA4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B402BDC20F3727D00601BA4 /* LaunchScreen.storyboard */; };
+		8AA90F2D60C6231D85D44B3F /* libPods-RichPushSample-ObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 46544171A293038ACCE5ACE5 /* libPods-RichPushSample-ObjC.a */; };
+		FD14870D953A1E49E1C6162C /* Pods_RichPushSample_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F84FBD4001DCCFE3B24202F1 /* Pods_RichPushSample_Swift.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		527386AE1ECA3A650016D70E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 527386811ECA385E0016D70E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 527386A71ECA3A650016D70E;
+			remoteInfo = RichPushSampleServiceExtension;
+		};
+		5B402BD220F36F6100601BA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 527386811ECA385E0016D70E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5B402BCC20F36F6000601BA4;
+			remoteInfo = RichPushSampleServiceExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		527386B41ECA3A650016D70E /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				527386B01ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BD820F36F6100601BA4 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5B402BD420F36F6100601BA4 /* RichPushSampleServiceExtension-Swift.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		118B93496D9EC9163CE129D0 /* Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		217E111187679C9010DD0161 /* Pods_RichPushSampleServiceExtension_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSampleServiceExtension_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46544171A293038ACCE5ACE5 /* libPods-RichPushSample-ObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RichPushSample-ObjC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		527386891ECA385E0016D70E /* RichPushSample-ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RichPushSample-ObjC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		527386A81ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "RichPushSampleServiceExtension-ObjC.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		57EDEA08BB8D1FB0E956D1CF /* Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		5B402B2120F3587900601BA4 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5B402B2220F3587900601BA4 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		5B402B2320F3587900601BA4 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5B402B2420F3587900601BA4 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		5B402B2A20F3587900601BA4 /* RichPushSample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSample.entitlements; sourceTree = "<group>"; };
+		5B402B2C20F3587900601BA4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5B402B2D20F3587900601BA4 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5B402B2F20F3587900601BA4 /* RichPushSampleServiceExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSampleServiceExtension.entitlements; sourceTree = "<group>"; };
+		5B402B3020F3587900601BA4 /* NotificationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		5B402B3120F3587900601BA4 /* NotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		5B402B3220F3587900601BA4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5B402B6F20F35E4500601BA4 /* RichPushSampleServiceExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSampleServiceExtension.entitlements; sourceTree = "<group>"; };
+		5B402BB320F36E6800601BA4 /* RichPushSample-Swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RichPushSample-Swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B402BB520F36E6800601BA4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5B402BB720F36E6800601BA4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5B402BBA20F36E6800601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5B402BBF20F36E6A00601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5B402BC120F36E6A00601BA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5B402BCD20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "RichPushSampleServiceExtension-Swift.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B402BCF20F36F6100601BA4 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		5B402BD120F36F6100601BA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5B402BD920F3712600601BA4 /* RichPushSample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSample.entitlements; sourceTree = "<group>"; };
+		5B402BDB20F3727D00601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5B402BDD20F3727D00601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6D087921EC0868347E98773F /* libPods-RichPushSampleServiceExtension-ObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RichPushSampleServiceExtension-ObjC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		71E8F5A0D72AC9E33CB0B1D4 /* Pods-RichPushSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.release.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		784CBD31C254901D695DB9D6 /* Pods-RichPushSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		7E1D7490886744C725046E72 /* Pods-RichPushSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.release.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		AA0E4D20C25FA9500BE3C2C3 /* Pods-RichPushSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		ABFA12092A63DA6A27CE095F /* Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		CF11C33B5817DAB64E655396 /* Pods-RichPushSampleServiceExtension-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; path = "Pods/Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		F84FBD4001DCCFE3B24202F1 /* Pods_RichPushSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		527386861ECA385E0016D70E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8AA90F2D60C6231D85D44B3F /* libPods-RichPushSample-ObjC.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		527386A51ECA3A650016D70E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05F81BDE6936A4D6459FDBDA /* libPods-RichPushSampleServiceExtension-ObjC.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BB020F36E6800601BA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD14870D953A1E49E1C6162C /* Pods_RichPushSample_Swift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BCA20F36F6000601BA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				071A1F53E104B477DBF54177 /* Pods_RichPushSampleServiceExtension_Swift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		527386801ECA385E0016D70E = {
+			isa = PBXGroup;
+			children = (
+				5B402B3C20F35D3D00601BA4 /* RichPushSample-Swift */,
+				5B402B1B20F357B800601BA4 /* RichPushSample-ObjC */,
+				5273868A1ECA385E0016D70E /* Products */,
+				7BB36D6C7A5FDD02DC768BBB /* Pods */,
+				B183D138218DD766CE6C38E1 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		5273868A1ECA385E0016D70E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				527386891ECA385E0016D70E /* RichPushSample-ObjC.app */,
+				527386A81ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex */,
+				5B402BB320F36E6800601BA4 /* RichPushSample-Swift.app */,
+				5B402BCD20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5B402B1B20F357B800601BA4 /* RichPushSample-ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				5B402B2420F3587900601BA4 /* AppDelegate.h */,
+				5B402B2120F3587900601BA4 /* AppDelegate.m */,
+				5B402B2320F3587900601BA4 /* main.m */,
+				5B402B2220F3587900601BA4 /* ViewController.h */,
+				5B402B2D20F3587900601BA4 /* ViewController.m */,
+				5B402BDC20F3727D00601BA4 /* LaunchScreen.storyboard */,
+				5B402BDA20F3727D00601BA4 /* Main.storyboard */,
+				5B402B2C20F3587900601BA4 /* Info.plist */,
+				5B402B2A20F3587900601BA4 /* RichPushSample.entitlements */,
+				5B402B2E20F3587900601BA4 /* RichPushSampleServiceExtension */,
+			);
+			path = "RichPushSample-ObjC";
+			sourceTree = "<group>";
+		};
+		5B402B2E20F3587900601BA4 /* RichPushSampleServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				5B402B2F20F3587900601BA4 /* RichPushSampleServiceExtension.entitlements */,
+				5B402B3020F3587900601BA4 /* NotificationService.m */,
+				5B402B3120F3587900601BA4 /* NotificationService.h */,
+				5B402B3220F3587900601BA4 /* Info.plist */,
+			);
+			path = RichPushSampleServiceExtension;
+			sourceTree = "<group>";
+		};
+		5B402B3C20F35D3D00601BA4 /* RichPushSample-Swift */ = {
+			isa = PBXGroup;
+			children = (
+				5B402BB520F36E6800601BA4 /* AppDelegate.swift */,
+				5B402BB720F36E6800601BA4 /* ViewController.swift */,
+				5B402BB920F36E6800601BA4 /* Main.storyboard */,
+				5B402BBE20F36E6A00601BA4 /* LaunchScreen.storyboard */,
+				5B402BC120F36E6A00601BA4 /* Info.plist */,
+				5B402BD920F3712600601BA4 /* RichPushSample.entitlements */,
+				5B402B6E20F35E4500601BA4 /* RichPushSampleServiceExtension */,
+			);
+			path = "RichPushSample-Swift";
+			sourceTree = "<group>";
+		};
+		5B402B6E20F35E4500601BA4 /* RichPushSampleServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				5B402BCF20F36F6100601BA4 /* NotificationService.swift */,
+				5B402BD120F36F6100601BA4 /* Info.plist */,
+				5B402B6F20F35E4500601BA4 /* RichPushSampleServiceExtension.entitlements */,
+			);
+			path = RichPushSampleServiceExtension;
+			sourceTree = "<group>";
+		};
+		7BB36D6C7A5FDD02DC768BBB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				784CBD31C254901D695DB9D6 /* Pods-RichPushSample-ObjC.debug.xcconfig */,
+				7E1D7490886744C725046E72 /* Pods-RichPushSample-ObjC.release.xcconfig */,
+				57EDEA08BB8D1FB0E956D1CF /* Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig */,
+				ABFA12092A63DA6A27CE095F /* Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig */,
+				AA0E4D20C25FA9500BE3C2C3 /* Pods-RichPushSample-Swift.debug.xcconfig */,
+				71E8F5A0D72AC9E33CB0B1D4 /* Pods-RichPushSample-Swift.release.xcconfig */,
+				118B93496D9EC9163CE129D0 /* Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig */,
+				CF11C33B5817DAB64E655396 /* Pods-RichPushSampleServiceExtension-Swift.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		B183D138218DD766CE6C38E1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				46544171A293038ACCE5ACE5 /* libPods-RichPushSample-ObjC.a */,
+				F84FBD4001DCCFE3B24202F1 /* Pods_RichPushSample_Swift.framework */,
+				6D087921EC0868347E98773F /* libPods-RichPushSampleServiceExtension-ObjC.a */,
+				217E111187679C9010DD0161 /* Pods_RichPushSampleServiceExtension_Swift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		527386881ECA385E0016D70E /* RichPushSample-ObjC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 527386A01ECA385E0016D70E /* Build configuration list for PBXNativeTarget "RichPushSample-ObjC" */;
+			buildPhases = (
+				96402724D8346E274EE30BDD /* [CP] Check Pods Manifest.lock */,
+				527386851ECA385E0016D70E /* Sources */,
+				527386861ECA385E0016D70E /* Frameworks */,
+				527386871ECA385E0016D70E /* Resources */,
+				B130BD23B0BEDDCEEC17DE7C /* [CP] Copy Pods Resources */,
+				527386B41ECA3A650016D70E /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				527386AF1ECA3A650016D70E /* PBXTargetDependency */,
+			);
+			name = "RichPushSample-ObjC";
+			productName = RichPushSample;
+			productReference = 527386891ECA385E0016D70E /* RichPushSample-ObjC.app */;
+			productType = "com.apple.product-type.application";
+		};
+		527386A71ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 527386B11ECA3A650016D70E /* Build configuration list for PBXNativeTarget "RichPushSampleServiceExtension-ObjC" */;
+			buildPhases = (
+				6E5E96260058A6401DCB29ED /* [CP] Check Pods Manifest.lock */,
+				527386A41ECA3A650016D70E /* Sources */,
+				527386A51ECA3A650016D70E /* Frameworks */,
+				527386A61ECA3A650016D70E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RichPushSampleServiceExtension-ObjC";
+			productName = RichPushSampleServiceExtension;
+			productReference = 527386A81ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		5B402BB220F36E6800601BA4 /* RichPushSample-Swift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5B402BC220F36E6A00601BA4 /* Build configuration list for PBXNativeTarget "RichPushSample-Swift" */;
+			buildPhases = (
+				32A3B0FF2867E433A5E66390 /* [CP] Check Pods Manifest.lock */,
+				5B402BAF20F36E6800601BA4 /* Sources */,
+				5B402BB020F36E6800601BA4 /* Frameworks */,
+				5B402BB120F36E6800601BA4 /* Resources */,
+				5B402BD820F36F6100601BA4 /* Embed App Extensions */,
+				F99838F193C774702FDB7054 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5B402BD320F36F6100601BA4 /* PBXTargetDependency */,
+			);
+			name = "RichPushSample-Swift";
+			productName = RichPushSample;
+			productReference = 5B402BB320F36E6800601BA4 /* RichPushSample-Swift.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5B402BCC20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5B402BD520F36F6100601BA4 /* Build configuration list for PBXNativeTarget "RichPushSampleServiceExtension-Swift" */;
+			buildPhases = (
+				FDC31DD71E0FD93BE00DD723 /* [CP] Check Pods Manifest.lock */,
+				5B402BC920F36F6000601BA4 /* Sources */,
+				5B402BCA20F36F6000601BA4 /* Frameworks */,
+				5B402BCB20F36F6000601BA4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RichPushSampleServiceExtension-Swift";
+			productName = RichPushSampleServiceExtension;
+			productReference = 5B402BCD20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		527386811ECA385E0016D70E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0940;
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = Swrve;
+				TargetAttributes = {
+					527386881ECA385E0016D70E = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
+					};
+					527386A71ECA3A650016D70E = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					5B402BB220F36E6800601BA4 = {
+						CreatedOnToolsVersion = 9.4.1;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+					};
+					5B402BCC20F36F6000601BA4 = {
+						CreatedOnToolsVersion = 9.4.1;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 527386841ECA385E0016D70E /* Build configuration list for PBXProject "RichPushSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 527386801ECA385E0016D70E;
+			productRefGroup = 5273868A1ECA385E0016D70E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				527386881ECA385E0016D70E /* RichPushSample-ObjC */,
+				527386A71ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC */,
+				5B402BB220F36E6800601BA4 /* RichPushSample-Swift */,
+				5B402BCC20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		527386871ECA385E0016D70E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402BDF20F3727D00601BA4 /* LaunchScreen.storyboard in Resources */,
+				5B402BDE20F3727D00601BA4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		527386A61ECA3A650016D70E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BB120F36E6800601BA4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402BC020F36E6A00601BA4 /* LaunchScreen.storyboard in Resources */,
+				5B402BBB20F36E6800601BA4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BCB20F36F6000601BA4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		32A3B0FF2867E433A5E66390 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RichPushSample-Swift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6E5E96260058A6401DCB29ED /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RichPushSampleServiceExtension-ObjC-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		96402724D8346E274EE30BDD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RichPushSample-ObjC-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B130BD23B0BEDDCEEC17DE7C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
+				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F99838F193C774702FDB7054 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveConversationSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FDC31DD71E0FD93BE00DD723 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RichPushSampleServiceExtension-Swift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		527386851ECA385E0016D70E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402B3920F3587900601BA4 /* ViewController.m in Sources */,
+				5B402B3420F3587900601BA4 /* main.m in Sources */,
+				5B402B3320F3587900601BA4 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		527386A41ECA3A650016D70E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402B7920F365E000601BA4 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BAF20F36E6800601BA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402BB820F36E6800601BA4 /* ViewController.swift in Sources */,
+				5B402BB620F36E6800601BA4 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B402BC920F36F6000601BA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B402BD020F36F6100601BA4 /* NotificationService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		527386AF1ECA3A650016D70E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 527386A71ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC */;
+			targetProxy = 527386AE1ECA3A650016D70E /* PBXContainerItemProxy */;
+		};
+		5B402BD320F36F6100601BA4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5B402BCC20F36F6000601BA4 /* RichPushSampleServiceExtension-Swift */;
+			targetProxy = 5B402BD220F36F6100601BA4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		5B402BB920F36E6800601BA4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5B402BBA20F36E6800601BA4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5B402BBE20F36E6A00601BA4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5B402BBF20F36E6A00601BA4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		5B402BDA20F3727D00601BA4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5B402BDB20F3727D00601BA4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5B402BDC20F3727D00601BA4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5B402BDD20F3727D00601BA4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		5273869E1ECA385E0016D70E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5273869F1ECA385E0016D70E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		527386A11ECA385E0016D70E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 784CBD31C254901D695DB9D6 /* Pods-RichPushSample-ObjC.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSample.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-ObjC/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		527386A21ECA385E0016D70E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7E1D7490886744C725046E72 /* Pods-RichPushSample-ObjC.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSample.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-ObjC/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		527386B21ECA3A650016D70E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57EDEA08BB8D1FB0E956D1CF /* Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		527386B31ECA3A650016D70E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ABFA12092A63DA6A27CE095F /* Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		5B402BC320F36E6A00601BA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA0E4D20C25FA9500BE3C2C3 /* Pods-RichPushSample-Swift.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSample.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5B402BC420F36E6A00601BA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 71E8F5A0D72AC9E33CB0B1D4 /* Pods-RichPushSample-Swift.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSample.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5B402BD620F36F6100601BA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 118B93496D9EC9163CE129D0 /* Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5B402BD720F36F6100601BA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CF11C33B5817DAB64E655396 /* Pods-RichPushSampleServiceExtension-Swift.release.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		527386841ECA385E0016D70E /* Build configuration list for PBXProject "RichPushSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5273869E1ECA385E0016D70E /* Debug */,
+				5273869F1ECA385E0016D70E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		527386A01ECA385E0016D70E /* Build configuration list for PBXNativeTarget "RichPushSample-ObjC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				527386A11ECA385E0016D70E /* Debug */,
+				527386A21ECA385E0016D70E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		527386B11ECA3A650016D70E /* Build configuration list for PBXNativeTarget "RichPushSampleServiceExtension-ObjC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				527386B21ECA3A650016D70E /* Debug */,
+				527386B31ECA3A650016D70E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5B402BC220F36E6A00601BA4 /* Build configuration list for PBXNativeTarget "RichPushSample-Swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B402BC320F36E6A00601BA4 /* Debug */,
+				5B402BC420F36E6A00601BA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5B402BD520F36F6100601BA4 /* Build configuration list for PBXNativeTarget "RichPushSampleServiceExtension-Swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B402BD620F36F6100601BA4 /* Debug */,
+				5B402BD720F36F6100601BA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 527386811ECA385E0016D70E /* Project object */;
+}

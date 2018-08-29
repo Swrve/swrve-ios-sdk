@@ -22,8 +22,6 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 
 // Common - Push
 #import <SwrveSDKCommon/SwrvePush.h>
-#import <SwrveSDKCommon/SwrvePushConstants.h>
-#import <SwrveSDKCommon/SwrvePushMediaHelper.h>
 #import <SwrveSDKCommon/SwrveSwizzleHelper.h>
 
 // Common
@@ -36,3 +34,7 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #import <SwrveSDKCommon/SwrveProfileManager.h>
 #import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveCampaignInfluence.h>
+#import <SwrveSDKCommon/SwrveNotificationManager.h>
+#import <SwrveSDKCommon/SwrveNotificationOptions.h>
+#import <SwrveSDKCommon/SwrveNotificationConstants.h>

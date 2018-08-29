@@ -1,0 +1,27 @@
+platform :ios, '8.0'
+
+def shared_pods
+  pod 'SwrveSDKCommon', :path => '../..'
+  pod 'SwrveConversationSDK', :path => '../..'
+  pod 'SwrveSDK', :path => '../..'
+  # use remote podfile by commenting out above and uncommenting below
+  #pod 'SwrveSDK'
+end
+
+target 'MessageCenterSample-ObjC' do
+  shared_pods
+end
+
+target 'MessageCenterSample-Swift' do
+  use_frameworks!
+  shared_pods
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
+          config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+      end
+  end
+end

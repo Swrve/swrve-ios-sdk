@@ -4,18 +4,21 @@
 @protocol SwrveCommonDelegate <NSObject>
 
 @required
--(NSData*) campaignData:(int)category;
--(int) eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload triggerCallback:(bool)triggerCallback;
--(int) userUpdate:(NSDictionary*)attributes;
--(BOOL) processPermissionRequest:(NSString*)action;
-- (void) sendQueuedEvents;
-- (void) queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
+- (NSData *)campaignData:(int)category;
+- (int)eventInternal:(NSString*)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback;
+- (int)userUpdate:(NSDictionary *)attributes;
+- (BOOL)processPermissionRequest:(NSString *)action;
+- (void)sendQueuedEvents;
+- (void)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
+- (void)handleNotificationToCampaign:(NSString *)campaignId;
 
--(NSString*) swrveSDKVersion;
--(NSString*) appVersion;
--(NSSet*) pushCategories;
--(NSSet*) notificationCategories;
--(NSString*) appGroupIdentifier;
+- (NSString *)swrveSDKVersion;
+- (NSString *)appVersion;
+- (NSSet *)pushCategories;
+- (NSSet *)notificationCategories;
+- (NSString *)appGroupIdentifier;
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId;
+
 
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString *userID;
@@ -23,6 +26,10 @@
 @property(atomic, readonly) NSString* deviceToken;
 @property(atomic, readonly) NSString *apiKey;
 @property(atomic, readonly) NSString *eventsServer;
+@property(atomic, readonly) NSString *contentServer;
+@property(atomic, readonly) NSString *joined;
+@property(atomic, readonly) NSString *language;
+@property(atomic, readonly) int httpTimeout;
 @property(atomic, readonly) NSNumber *deviceId;
 
 @end
@@ -67,7 +74,8 @@ enum  {
     SWRVE_RESOURCE_FILE,
     SWRVE_RESOURCE_DIFF_FILE,
     SWRVE_CAMPAIGN_FILE,
-    SWRVE_AD_CAMPAIGN_FILE
+    SWRVE_AD_CAMPAIGN_FILE,
+    SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG
 };
 
 #define KB(x) (1024*(x))

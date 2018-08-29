@@ -2,8 +2,8 @@
 #import "SwrveConversationResourceManagement.h"
 #import "SwrveSetup.h"
 
-#define kSwrveStarRatingHeight 60.0f
-#define kSwrveStarRatingPadding 40.0f
+static float const kSwrveStarRatingHeight = 60.0f;
+static float const kSwrveStarRatingPadding = 40.0f;
 
 @interface SwrveContentStarRatingView ()
 

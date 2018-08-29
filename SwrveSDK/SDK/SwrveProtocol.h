@@ -19,7 +19,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "5.2.2"
+#define SWRVE_SDK_VERSION "5.3"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -324,7 +324,7 @@ NSString * eventsPayloadAsJSON);
 -(void)pushNotificationReceived:(NSDictionary*)userInfo;
 
 /*! Called to send the push engaged event to Swrve. */
--(void) sendPushEngagedEvent:(NSString*)pushId;
+-(void) sendPushNotificationEngagedEvent:(NSString*)pushId;
 
 /**! Should be included to a push response if not using SwrvePushResponseDelegate **/
 - (void) processNotificationResponse:(UNNotificationResponse *)response;
