@@ -1,5 +1,6 @@
 #import "Swrve.h"
 
+NS_ASSUME_NONNULL_BEGIN
 /*! Swrve SDK static access class. */
 @interface SwrveSDK : NSObject
 
@@ -8,7 +9,7 @@
  * \returns A singleton instance of a Swrve object.
  *          This will be nil until one of the sharedInstanceWith... methods is called.
  */
-+(Swrve*) sharedInstance;
++(nullable Swrve*) sharedInstance;
 
 /*! Creates and initializes the shared Swrve singleton.
  *
@@ -31,31 +32,6 @@
  * \param swrveConfig The swrve configuration object used to override default settings.
  */
 +(void) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig;
-
-/*! Creates and initializes the shared Swrve singleton.
- *
- * The default user ID is a random UUID. The userID is cached in the
- * default settings of the app and recalled the next time you initialize the
- * app. This means the ID for the user will stay consistent for as long as the
- * user has your app installed on the device.
- *
- * \param swrveAppID The App ID for your app supplied by Swrve.
- * \param swrveAPIKey The secret token for your app supplied by Swrve.
- * \param launchOptions The Application's launchOptions from didFinishLaunchingWithOptions.
- */
-+(void) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey launchOptions:(NSDictionary*)launchOptions;
-
-/*! Creates and initializes the shared Swrve singleton.
- *
- * Takes a SwrveConfig object that can be used to change default settings.
- *
- * \param swrveAppID The App ID for your app supplied by Swrve.
- * \param swrveAPIKey The secret token for your app supplied by Swrve.
- * \param swrveConfig The swrve configuration object used to override default settings.
- * \param launchOptions The Application's launchOptions from didFinishLaunchingWithOptions.
- */
-+(void) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig launchOptions:(NSDictionary*)launchOptions;
-
 
 #pragma mark Events
 
@@ -262,13 +238,7 @@
 +(void)setDeviceToken:(NSData*)deviceToken;
 
 /*! Obtain the current push notification device token. */
-+(NSString*)deviceToken;
-
-/*! Process the given push notification.
- *
- * \param userInfo Push notification information.
- */
-+(void)pushNotificationReceived:(NSDictionary*)userInfo;
++(nullable NSString*)deviceToken;
 
 /*! Process the push notification in the background. The completion handler is called if a silent push notification was received with the
  *  fetch result and the custom payloads as parameters.
@@ -277,16 +247,13 @@
  * \param completionHandler Completion handler, only called for silent push notifications.
  * \returns If a Swrve silent push notification was handled by the Swrve SDK. In that case the payload and calls to the parent completionHandler will have to be done inside the completionHandler parameter.
  */
-+ (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
++ (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler API_AVAILABLE(ios(7.0));
 
 /*! Called to send the push engaged event to Swrve. */
 +(void) sendPushEngagedEvent:(NSString*)pushId;
 
 /**! Should be included to a push response if not using SwrvePushResponseDelegate **/
-+(void) processNotificationResponse:(UNNotificationResponse *)response;
-
-/**! Pre-iOS10 push notification response processing **/
-+(void) processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
++(void) processNotificationResponse:(UNNotificationResponse *)response __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
 
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -349,11 +316,40 @@
         }
         if (url) {
             [SwrveSDK installAction];
-            [[UIApplication sharedApplication] openURL:url];
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         }
         }];
     }
  @endcode
 */
 + (void)installAction:(NSURL *)url;
+
+/*! Identify users such that they can be tracked and targeted safely across multiple devices, platforms and channels.
+ 
+ @param externalUserId An ID that uniquely identifies your user. Personal identifiable information should not be used. An error may be returned if such information is submitted as the userID eg email, phone number etc.
+ @param onSuccess block.
+ @param onError block.
+ 
+ @code
+ [SwrveSDK identify:@"12345" onSuccess:^(NSString *status, NSString *swrveUserId) {
+ 
+ } onError:^(NSInteger httpCode, NSString *errorMessage) {
+    // please note in the event of an error the tracked userId will not reflect correctly on the backend until this
+    // call completes successfully
+ }];
+ @endcode
+ */
++ (void)identify:(NSString *)externalUserId onSuccess:(nullable void (^)(NSString *status, NSString *swrveUserId))onSuccess
+                                              onError:(nullable void (^)(NSInteger httpCode, NSString *errorMessage))onError;
+
+/*! An ID that uniquely identifies your user. Personal identifiable information should not be used. An error may be returned if such information is submitted as the externalUserId eg email, phone number etc.
+ 
+ @return  The externalUserId for the current user
+ 
+ @remark See the indentify API call
+ 
+ */
++ (NSString *)externalUserId;
+
 @end
+NS_ASSUME_NONNULL_END

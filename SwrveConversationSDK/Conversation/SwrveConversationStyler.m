@@ -175,12 +175,10 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
         } else if(fontNativeStyle && [fontNativeStyle isEqualToString:@"Italic"]) {
             uiFont = [UIFont italicSystemFontOfSize:fontSizePoints];
         } else if(fontNativeStyle && [fontNativeStyle isEqualToString:@"BoldItalic"]) {
-            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-                UILabel * label = [[UILabel alloc] init];
-                UIFontDescriptor * fontD = [label.font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold | UIFontDescriptorTraitItalic];
-                label.font = [UIFont fontWithDescriptor:fontD size:fontSizePoints];
-                uiFont = label.font;
-            }
+            UILabel * label = [[UILabel alloc] init];
+            UIFontDescriptor * fontD = [label.font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold | UIFontDescriptorTraitItalic];
+            label.font = [UIFont fontWithDescriptor:fontD size:fontSizePoints];
+            uiFont = label.font;
         }
     } else if (fontFile == nil || (fontFile && [fontFile length] == 0)) { // will be blank for v1/v2/v3 of conversations
         uiFont = [fallbackUIFont fontWithSize:fontSizePoints];

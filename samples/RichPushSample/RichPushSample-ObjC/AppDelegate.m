@@ -20,16 +20,10 @@ NSString * const NotificationActionTwoIdentifier = @"ACTION2";
     config.appGroupIdentifier = @"group.swrve.RichPushSample";
 
     config.pushEnabled = YES;
-
-    // If running below iOS 10 as well, it is best to include a runtime conditional around category generation
-    if(([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0)){
-         config.notificationCategories = [self produceUNNotificationCategory];
-    }else{
-         config.pushCategories = [self produceUIUserNotificationCategory];
-    }
+    config.notificationCategories = [self produceUNNotificationCategory];
 
     // FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
+    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config];
     return YES;
 }
 
@@ -42,7 +36,7 @@ NSString * const NotificationActionTwoIdentifier = @"ACTION2";
 
 /** SwrvePushResponseDelegate Methods **/
 
-- (void) didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
+- (void) didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     NSLog(@"Got iOS 10 Notification with Identifier - %@", response.actionIdentifier);
 
     // Include your own code in here
@@ -56,19 +50,6 @@ NSString * const NotificationActionTwoIdentifier = @"ACTION2";
     // Include your own code in here
     if(completionHandler) {
         completionHandler(UNNotificationPresentationOptionNone);
-    }
-}
-
-/** Pre-iOS 10 Category Handling **/
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
-    NSLog(@"Got Pre-iOS 10 Notification with Identifier - %@", identifier);
-
-    // Include this method to ensure that you still log it to Swrve
-    [SwrveSDK processNotificationResponseWithIdentifier:identifier andUserInfo:userInfo];
-
-    // Include your own code in here
-    if (completionHandler) {
-        completionHandler();
     }
 }
 
@@ -90,32 +71,6 @@ NSString * const NotificationActionTwoIdentifier = @"ACTION2";
                                                                                     actions:notificationActions
                                                                           intentIdentifiers:@[]
                                                                                     options:UNNotificationCategoryOptionNone];
-    return [NSSet setWithObject:exampleCategory];
-}
-
-- (NSSet *) produceUIUserNotificationCategory {
-
-    UIMutableUserNotificationAction *fgAction;
-    fgAction = [[UIMutableUserNotificationAction alloc] init];
-    [fgAction setActivationMode:UIUserNotificationActivationModeForeground];
-    [fgAction setTitle:@"Foreground"];
-    [fgAction setIdentifier:NotificationActionOneIdentifier];
-    [fgAction setDestructive:NO];
-    [fgAction setAuthenticationRequired:NO];
-
-    UIMutableUserNotificationAction *bgAction;
-    bgAction = [[UIMutableUserNotificationAction alloc] init];
-    [bgAction setActivationMode:UIUserNotificationActivationModeBackground];
-    [bgAction setTitle:@"Background"];
-    [bgAction setIdentifier:NotificationActionTwoIdentifier];
-    [bgAction setDestructive:NO];
-    [bgAction setAuthenticationRequired:NO];
-
-    UIMutableUserNotificationCategory *exampleCategory;
-    exampleCategory = [[UIMutableUserNotificationCategory alloc] init];
-    [exampleCategory setIdentifier:NotificationCategoryIdentifier];
-    [exampleCategory setActions:@[fgAction, bgAction]
-                    forContext:UIUserNotificationActionContextDefault];
     return [NSSet setWithObject:exampleCategory];
 }
 

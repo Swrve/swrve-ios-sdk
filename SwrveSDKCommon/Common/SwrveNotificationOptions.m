@@ -7,7 +7,7 @@
 
 #if !TARGET_OS_TV
 
-+ (UNNotificationCategoryOptions)categoryOptionsForKeys:(NSArray *)keys {
++ (UNNotificationCategoryOptions)categoryOptionsForKeys:(NSArray *)keys {// API_AVAILABLE(ios(10.0)){
     UNNotificationCategoryOptions options = UNNotificationCategoryOptionNone;
     if (keys == nil || [keys count] < 1) {
         options = UNNotificationCategoryOptionNone;
@@ -19,7 +19,7 @@
     return options;
 }
 
-+ (UNNotificationCategoryOptions)categoryOptionForKey:(NSString *)key {
++ (UNNotificationCategoryOptions)categoryOptionForKey:(NSString *)key __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
 
     if ([key isEqualToString:SwrveNotificationCategoryTypeOptionsCustomDismissKey]) {
         return UNNotificationCategoryOptionCustomDismissAction;
@@ -32,7 +32,7 @@
     return UNNotificationCategoryOptionNone;
 }
 
-+ (UNNotificationActionOptions)actionOptionsForKeys:(NSArray *)keys {
++ (UNNotificationActionOptions)actionOptionsForKeys:(NSArray *)keys {// API_AVAILABLE(ios(10.0)){
     UNNotificationActionOptions options = UNNotificationActionOptionNone;
     if (keys == nil || [keys count] < 1) {
         options = UNNotificationActionOptionNone;
@@ -44,7 +44,7 @@
     return options;
 }
 
-+ (UNNotificationActionOptions)actionOptionForKey:(NSString *)key {
++ (UNNotificationActionOptions)actionOptionForKey:(NSString *)key __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
 
     if ([key isEqualToString:SwrveNotificationActionTypeForegroundKey]) {
         return UNNotificationActionOptionForeground;

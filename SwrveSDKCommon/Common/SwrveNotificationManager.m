@@ -113,7 +113,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     });
 }
 
-+ (UNMutableNotificationContent *)mediaTextFromProvidedContent:(UNMutableNotificationContent *)content {
++ (UNMutableNotificationContent *)mediaTextFromProvidedContent:(UNMutableNotificationContent *)content __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
     NSDictionary *richDict = [content.userInfo objectForKey:SwrveNotificationContentIdentifierKey];
     NSDictionary *mediaDict = [richDict objectForKey:SwrveNotificationMediaKey];
     if (mediaDict) {
@@ -130,7 +130,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return content;
 }
 
-+ (UNNotificationCategory *)buttonsFromUserInfo:(NSDictionary *)userInfo {
++ (UNNotificationCategory *)buttonsFromUserInfo:(NSDictionary *)userInfo __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
     NSDictionary *richDict = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
     NSArray *buttons = [richDict valueForKey:SwrveNotificationButtonListKey];
     int customButtonIndex = 0;
@@ -158,7 +158,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     }
 }
 
-+ (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback {
++ (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
 
     __block UNNotificationAttachment *attachment = nil;
     __block NSURL *attachmentURL = [NSURL URLWithString:mediaUrl];
@@ -182,50 +182,61 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                         DebugLog(@"Media download failed with the following error: %@", error, nil);
                         callback(nil, error);
                     } else {
-                        NSString *fileExt = [NSString stringWithFormat:@".%@", [[attachmentURL lastPathComponent] pathExtension]];
-                        NSURL *localURL = [NSURL fileURLWithPath:[location.path stringByAppendingString:fileExt]];
-                        [[NSFileManager defaultManager] moveItemAtURL:location toURL:localURL error:&error];
-                        NSError *attError = nil;
-                        attachment = [UNNotificationAttachment attachmentWithIdentifier:@"" URL:localURL options:nil error:&attError];
+                        NSString *fileExt = nil;
 
-                        //clean up
-                        localURL = nil;
-                        fileExt = nil;
+                        // By default use the extension of the URL (backwards compatibility)
+                        NSString *extFromURL = [attachmentURL pathExtension];
+                        if (extFromURL != nil && [extFromURL length] != 0) {
+                            fileExt = [NSString stringWithFormat:@".%@", extFromURL];
+                        }
 
-                        if (attError) {
-                            DebugLog(@"Attachment creation failed with the following error: %@", attError, nil);
-                            callback(nil, attError);
+                        // If there is no extension try use the MIME type
+                        if (!fileExt) {
+                            NSString *mimeType = [httpResponse MIMEType];
+                            if (mimeType) {
+                                fileExt = [SwrveNotificationManager fileExtensionFromMIMEType:mimeType];
+                            }
+                        }
+
+                        if (fileExt) {
+                            NSURL *localURL = [NSURL fileURLWithPath:[location.path stringByAppendingString:fileExt]];
+                            [[NSFileManager defaultManager] moveItemAtURL:location toURL:localURL error:&error];
+                            NSError *attError = nil;
+                            attachment = [UNNotificationAttachment attachmentWithIdentifier:@"" URL:localURL options:nil error:&attError];
+
+                            // Clean up
+                            localURL = nil;
+                            fileExt = nil;
+
+                            if (attError) {
+                                DebugLog(@"Attachment creation failed with the following error: %@", attError, nil);
+                                callback(nil, attError);
+                            } else {
+                                callback(attachment, error);
+                            }
                         } else {
-                            callback(attachment, error);
+                            // Could not obtain extension from media path
+                            NSString *errorMsg = @"Could not obtain extension from media path";
+                            NSError *swrveMessage = [NSError errorWithDomain:@"com.swrve" code:200
+                                                           userInfo: @{NSLocalizedDescriptionKey:errorMsg}];
+                            DebugLog(errorMsg, nil);
+                            callback(nil, swrveMessage);
                         }
                     }
                 }] resume];
 }
 
-/** older version of iOS handling **/
-+ (NSURL *)notificationEngaged:(NSDictionary *)userInfo {
-
-    if ([self canProcessEngageNotification:userInfo] == NO) {
-        return nil;
-    }
-    NSURL *deeplinkUrl = nil;
-
-    NSString *notificationId = [self notificationIdFromUserInfo:userInfo];
-
-    // Engagement replaces Influence Data
-    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
-    [SwrveCampaignInfluence removeInfluenceDataForId:notificationId fromAppGroupId:swrveCommon.appGroupIdentifier];
-
-    // get deeplink if there is one, but pass it back up so it can be processed by calling code
-    deeplinkUrl = [self deeplinkFromUserInfo:userInfo];
-
-    // send the engagement
-    [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo];
-
-    // check for campaign, if present try to load
-    [self loadCampaignFromNotification:userInfo];
-
-    return deeplinkUrl;
++ (NSString *)fileExtensionFromMIMEType: (NSString *)mimeType {
+    NSDictionary *mimeToFileExtension = [NSDictionary dictionaryWithObjectsAndKeys:@".jpg", @"image/jpg",
+                                         @".jpeg", @"image/jpeg",
+                                         @".bmp", @"image/bmp",
+                                         @".jpg", @"image/jpeg",
+                                         @".png", @"image/png", // [RFC-2045], [RFC-2048]
+                                         @".png", @"image/x-png",
+                                         @".gif", @"image/gif",
+                                         @".mp3", @"audio/mpeg",
+                                         @".mp4", @"video/mp4", nil];
+    return [mimeToFileExtension objectForKey:[mimeType lowercaseString]];
 }
 
 + (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo {
@@ -298,6 +309,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         DebugLog(@"Got unidentified notification", nil);
     } else {
         if (lastProcessedPushId == nil || [notificationIdentifierString isEqualToString:@"0"] || ![notificationIdentifierString isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = notificationIdentifierString;
             canProcess = YES;
         } else {
             DebugLog(@"Got Swrve notification with id %@, ignoring as we already processed it", notificationIdentifierString);
@@ -445,6 +457,30 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     [swrveCommon handleNotificationToCampaign:campaignId];
 }
+
++ (void)clearAllAuthenticatedNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
+        NSMutableArray *identifierArray = [SwrveNotificationManager authenticatedNotificationsFrom:notifications];
+        if ([identifierArray count] > 0) {
+            [center removeDeliveredNotificationsWithIdentifiers:identifierArray];
+        }
+    }];
+}
+
++ (NSMutableArray *)authenticatedNotificationsFrom:(NSArray<UNNotification *> *)notifications {
+    NSMutableArray *identifierArray = [[NSMutableArray alloc] init];
+    for (UNNotification* notification in notifications) {
+        if (notification != nil && notification.request != nil && notification.request.content != nil && notification.request.content.userInfo != nil) {
+            NSDictionary *userInfo = notification.request.content.userInfo;
+            if ([userInfo objectForKey:SwrveNotificationAuthenticatedUserKey]) {
+                [identifierArray addObject:notification.request.identifier];
+            }
+        }
+    }
+    return identifierArray;
+}
+
 
 #endif //!TARGET_OS_TV
 @end

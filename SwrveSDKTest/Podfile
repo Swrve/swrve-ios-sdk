@@ -1,15 +1,13 @@
-target 'SwrveSDKTest' do
-  pod 'OCMock', '~> 3.4.1'
-  pod 'SwrveSDKCommon', :path => '../'
-  pod 'SwrveConversationSDK', :path => '../'
-  pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 5.3.0'
-end
+platform :ios, '10.0'
 
-target 'SwrveSDKTestTests' do
-  pod 'OCMock', '~> 3.4.1'
+target 'SwrveSDKTest' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 5.3.0'
+  #pod 'SwrveSDK', '~> 6.0.0'
+
+  target 'SwrveSDKTestTests' do
+    pod 'OCMock', '~> 3.4.1'
+    inherit! :search_paths
+  end
 end

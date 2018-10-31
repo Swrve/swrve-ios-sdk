@@ -10,7 +10,6 @@
 @property (atomic)                       SwrveActionType actionType;            /*!< Type of action associated with this button. */
 @property (nonatomic, retain)            NSString* actionString;                /*!< Custom action string for the button. */
 @property (atomic)                       CGPoint center;                        /*!< Position of the button. */
-@property (atomic)                       CGSize  size;                          /*!< Size of the button. */
 @property (atomic)                       long messageID;                        /*!< Message identifier associated with this button. */
 @property (atomic)                       long appID;                            /*!< ID of the target installation app. */
 @property (nonatomic, weak)              SwrveMessageController* controller;    /*!< Reference to parent message controller. */

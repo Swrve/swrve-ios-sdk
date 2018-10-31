@@ -12,8 +12,8 @@
 @property (nonatomic) CGFloat viewportWidth;
 @property (nonatomic) CGFloat viewportHeight;
 
-@property (nonatomic, retain) UIFocusGuide *focusGuide1;
-@property (nonatomic, retain) UIFocusGuide *focusGuide2;
+@property (nonatomic, retain) UIFocusGuide *focusGuide1 __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0);
+@property (nonatomic, retain) UIFocusGuide *focusGuide2 __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0);
 @property (nonatomic, retain) UIButton *tvOSFocusForSelection;
 
 @end
@@ -31,7 +31,7 @@
 @synthesize focusGuide1, focusGuide2, tvOSFocusForSelection;
 
 - (void)viewWillAppear:(BOOL)animated {
-    
+
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     // Default viewport size to whole screen
@@ -50,21 +50,13 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    
+
     [super viewDidAppear:animated];
     [self updateBounds];
     [self removeAllViews];
-    if(SYSTEM_VERSION_LESS_THAN(@"9.0")){
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#if TARGET_OS_IOS /** exclude tvOS **/
-        [self addViewForOrientation:[self interfaceOrientation]];
-#endif
-#pragma clang diagnostic pop
-    } else {
-        [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
-        [self refreshViewForPlatform];
-    }
+    [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
+    [self refreshViewForPlatform];
+
     if (self.wasShownToUserNotified == NO) {
         [self.message wasShownToUser];
         self.wasShownToUserNotified = YES;
@@ -102,14 +94,14 @@
         // Never leave the screen without a format
         current_format = [self.message.formats objectAtIndex:0];
     }
-    
+
     if (current_format) {
         DebugLog(@"Selected message format: %@", current_format.name);
         [current_format createViewToFit:self.view
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
                                           rotated:false];
-        
+
         // Update background color
         if (current_format.backgroundColor != nil) {
             self.view.backgroundColor = current_format.backgroundColor;
@@ -130,7 +122,7 @@
     self.block(pressed.actionType, pressed.actionString, pressed.appID);
 }
 
-#if defined(__IPHONE_8_0)
+#if TARGET_OS_IOS
 -(BOOL)prefersStatusBarHidden
 {
     if (prefersIAMStatusBarHidden) {
@@ -139,6 +131,8 @@
         return [super prefersStatusBarHidden];
     }
 }
+#endif
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
@@ -149,138 +143,91 @@
     [self removeAllViews];
     [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
 }
-#endif //defined(__IPHONE_8_0)
 
 - (void) displayForViewportOfSize:(CGSize)size
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        float viewportRatio = (float)(size.width/size.height);
-        float closestRatio = -1;
-        SwrveMessageFormat* closestFormat = nil;
-        for (SwrveMessageFormat* format in self.message.formats) {
-            float formatRatio = (float)(format.size.width/format.size.height);
-            float diffRatio = fabsf(formatRatio - viewportRatio);
-            if (closestFormat == nil || (diffRatio < closestRatio)) {
-                closestFormat = format;
-                closestRatio = diffRatio;
-            }
+    float viewportRatio = (float)(size.width/size.height);
+    float closestRatio = -1;
+    SwrveMessageFormat* closestFormat = nil;
+    for (SwrveMessageFormat* format in self.message.formats) {
+        float formatRatio = (float)(format.size.width/format.size.height);
+        float diffRatio = fabsf(formatRatio - viewportRatio);
+        if (closestFormat == nil || (diffRatio < closestRatio)) {
+            closestFormat = format;
+            closestRatio = diffRatio;
         }
-    
-        current_format = closestFormat;
-        DebugLog(@"Selected message format: %@", current_format.name);
-        UIView *currentView = [current_format createViewToFit:self.view
-                       thatDelegatesTo:self
-                              withSize:size];
-
-        [self setupFocusGuide:currentView];
-        
-        [currentView setHidden:NO];
-        [currentView setUserInteractionEnabled:YES];
-        [currentView setAlpha:1.0];
-        
-    } else {
-#if TARGET_OS_IOS /** exclude tvOS **/
-        UIInterfaceOrientation currentOrientation = (size.width > size.height)? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
-        
-        BOOL mustRotate = false;
-        current_format = [self.message bestFormatForOrientation:currentOrientation];
-        if (!current_format) {
-            // Never leave the screen without a format
-            current_format = [self.message.formats objectAtIndex:0];
-            mustRotate = true;
-        }
-        
-        if (current_format) {
-            DebugLog(@"Selected message format: %@", current_format.name);
-            [current_format createViewToFit:self.view
-                           thatDelegatesTo:self
-                                  withSize:size
-                                   rotated:mustRotate];
-        } else {
-            DebugLog(@"Couldn't find a format for message: %@", message.name);
-        }
-#endif
     }
+
+    current_format = closestFormat;
+    DebugLog(@"Selected message format: %@", current_format.name);
+    UIView *currentView = [current_format createViewToFit:self.view
+                   thatDelegatesTo:self
+                          withSize:size];
+
+    [self setupFocusGuide:currentView];
+
+    [currentView setHidden:NO];
+    [currentView setUserInteractionEnabled:YES];
+    [currentView setAlpha:1.0];
+
     // Update background color
     if (current_format.backgroundColor != nil) {
         self.view.backgroundColor = current_format.backgroundColor;
     }
 }
 
-// iOS 6 and iOS 7 (to be deprecated)
-#if defined(__IPHONE_9_0)
+#if TARGET_OS_IOS
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
-#else
-- (NSUInteger)supportedInterfaceOrientations
-#endif //defined(__IPHONE_9_0)
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        return UIInterfaceOrientationMaskAll;
-    } else {
-#if TARGET_OS_IOS /** exclude tvOS **/
-        BOOL portrait = [self.message supportsOrientation:UIInterfaceOrientationPortrait];
-        BOOL landscape = [self.message supportsOrientation:UIInterfaceOrientationLandscapeLeft];
-        
-        if (portrait && landscape) {
-            return UIInterfaceOrientationMaskAll;
-        }
-        
-        if (landscape) {
-            return UIInterfaceOrientationMaskLandscape | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
-        }
-#endif
-    }
-    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    return UIInterfaceOrientationMaskAll;
 }
 
 - (BOOL)shouldAutorotate
 {
     return YES;
 }
+#endif
 
 #pragma mark - Focus
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
 #pragma unused(coordinator)
-    
+
     UIView *previouslyFocusedView = context.previouslyFocusedView;
-    
+
     if (previouslyFocusedView != nil && [previouslyFocusedView isDescendantOfView:self.view]) {
         [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
             previouslyFocusedView.transform = CGAffineTransformMakeScale(1.0, 1.0);
         } completion:^(BOOL finished) {
 #pragma unused(finished)
         }];
-        
+
     }
-    
+
     UIView *nextFocusedView = context.nextFocusedView;
-    
+
     if (nextFocusedView != nil && [nextFocusedView isDescendantOfView:self.view]) {
         [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-            
+
             CGFloat increase = (float)1.2;
-            
+
             nextFocusedView.transform = CGAffineTransformMakeScale(increase, increase);
         } completion:^(BOOL finished) {
 #pragma unused(finished)
         }];
-        
-        self.tvOSFocusForSelection = (UIButton *)nextFocusedView;
 
-        UIButton *nextFocusableButton = [self nextFocusableButtonWithCurrentFocusedView:nextFocusedView];
-        self.focusGuide1.preferredFocusedView = nextFocusableButton;
-        self.focusGuide2.preferredFocusedView = nextFocusableButton;
+        self.tvOSFocusForSelection = (UIButton *)nextFocusedView;
     }
 }
 
 - (void)setupFocusGuide:(UIView *)currentView {
-    self.focusGuide1 = nil;
-    self.focusGuide2 = nil;
+    if (@available(iOS 9.0, *)) {
+        self.focusGuide1 = nil;
+        self.focusGuide2 = nil;
+    }
     NSArray<UIButton *> *buttons = [SwrveMessageViewController buttonsInView:currentView];
     if (buttons.count != 2) { // we only want to help focus engine if there are two buttons
         return;
     }
-
 
     CGRect frame0 = buttons[0].frame;
     CGRect frame1 = buttons[1].frame;
@@ -289,32 +236,23 @@
          &&
          (CGRectGetMinX(frame1) > CGRectGetMaxX(frame0) || CGRectGetMaxX(frame1) < CGRectGetMinX(frame0))) {
 
-        self.focusGuide1 = [UIFocusGuide new];
-        [currentView addLayoutGuide:self.focusGuide1];
-        [self.focusGuide1.leftAnchor constraintEqualToAnchor:buttons[0].leftAnchor].active = YES;
-        [self.focusGuide1.rightAnchor constraintEqualToAnchor:buttons[0].rightAnchor].active = YES;
-        [self.focusGuide1.topAnchor constraintEqualToAnchor:buttons[1].topAnchor].active = YES;
-        [self.focusGuide1.bottomAnchor constraintEqualToAnchor:buttons[1].bottomAnchor].active = YES;
+        if (@available(iOS 10.0, *)) {
+            self.focusGuide1 = [UIFocusGuide new];
+            [currentView addLayoutGuide:self.focusGuide1];
+            [self.focusGuide1.leftAnchor constraintEqualToAnchor:buttons[0].leftAnchor].active = YES;
+            [self.focusGuide1.rightAnchor constraintEqualToAnchor:buttons[0].rightAnchor].active = YES;
+            [self.focusGuide1.topAnchor constraintEqualToAnchor:buttons[1].topAnchor].active = YES;
+            [self.focusGuide1.bottomAnchor constraintEqualToAnchor:buttons[1].bottomAnchor].active = YES;
 
-        self.focusGuide2 = [UIFocusGuide new];
-        [currentView addLayoutGuide:self.focusGuide2];
-        [self.focusGuide2.leftAnchor constraintEqualToAnchor:buttons[1].leftAnchor].active = YES;
-        [self.focusGuide2.rightAnchor constraintEqualToAnchor:buttons[1].rightAnchor].active = YES;
-        [self.focusGuide2.topAnchor constraintEqualToAnchor:buttons[0].topAnchor].active = YES;
-        [self.focusGuide2.bottomAnchor constraintEqualToAnchor:buttons[0].bottomAnchor].active = YES;
-      
-        /*
-        // Debug focus guide
-        UIView *v1 = [UIView new];
-        v1.backgroundColor = [UIColor redColor];
-        v1.frame = self.focusGuide1.layoutFrame;
-        [currentView addSubview:v1];
-
-        UIView *v2 = [UIView new];
-        v2.backgroundColor = [UIColor redColor];
-        v2.frame = self.focusGuide2.layoutFrame;
-        [currentView addSubview:v2];
-         */
+            self.focusGuide2 = [UIFocusGuide new];
+            [currentView addLayoutGuide:self.focusGuide2];
+            [self.focusGuide2.leftAnchor constraintEqualToAnchor:buttons[1].leftAnchor].active = YES;
+            [self.focusGuide2.rightAnchor constraintEqualToAnchor:buttons[1].rightAnchor].active = YES;
+            [self.focusGuide2.topAnchor constraintEqualToAnchor:buttons[0].topAnchor].active = YES;
+            [self.focusGuide2.bottomAnchor constraintEqualToAnchor:buttons[0].bottomAnchor].active = YES;
+        } else {
+            DebugLog(@"Top and bottom guide not supported, should not reach this code");
+        }
     }
 
 }
@@ -348,14 +286,8 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-#if TARGET_OS_IOS /** exclude tvOS **/
-    if(SYSTEM_VERSION_LESS_THAN(@"8.0")){
-        [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    }
-#endif
 }
 
 @end

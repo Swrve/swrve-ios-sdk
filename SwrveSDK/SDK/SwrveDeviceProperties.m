@@ -28,13 +28,14 @@ static NSString* SWRVE_SUPPORT_RICH_ATTACHMENT  =       @"swrve.support.rich_att
 static NSString* SWRVE_SUPPORT_RICH_GIF  =              @"swrve.support.rich_gif";
 static NSString* SWRVE_IDFA  =                          @"swrve.IDFA";
 static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
+static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_authenticated_push";
 
 @implementation SwrveDeviceProperties
 
 #pragma mark - properties
 
 @synthesize sdk_version = _sdk_version;
-@synthesize installTimeSeconds = _installTimeSeconds;
+@synthesize appInstallTimeSeconds = _appInstallTimeSeconds;
 @synthesize permissionStatus = _permissionStatus;
 @synthesize sdk_language = _sdk_language;
 
@@ -46,7 +47,7 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 #pragma mark - init
 
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              installTimeSeconds:(UInt64)installTimeSeconds
+              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
              conversationVersion:(int)conversationVersion
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
@@ -56,7 +57,7 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     if ((self = [super init])) {
         
         self.sdk_version = sdk_version;
-        self.installTimeSeconds = installTimeSeconds;
+        self.appInstallTimeSeconds = appInstallTimeSeconds;
         self.conversationVersion = conversationVersion;
         self.deviceToken = deviceToken;
         self.permissionStatus = permissionStatus;
@@ -67,13 +68,13 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 }
 #elif TARGET_OS_TV
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              installTimeSeconds:(UInt64)installTimeSeconds
+              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language {
     if ((self = [super init])) {
         
         self.sdk_version = sdk_version;
-        self.installTimeSeconds = installTimeSeconds;
+        self.appInstallTimeSeconds = appInstallTimeSeconds;
         self.permissionStatus = permissionStatus;
         self.sdk_language = sdk_language;
     }
@@ -102,8 +103,7 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     // Install Date / Version
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:self.installTimeSeconds];
-    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:self.appInstallTimeSeconds];
     [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:SWRVE_INSTALL_DATE];
     
     // Device Permisisons
@@ -146,11 +146,12 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
     // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:SWRVE_IOS_TOKEN];
+        [deviceProperties setValue:@"true" forKey:SWRVE_CAN_RECEIVE_AUTH_PUSH];
     
-        NSString *supported = ((SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) ? @"true" : @"false");
-        [deviceProperties setValue:supported forKey:SWRVE_SUPPORT_RICH_BUTTONS];
-        [deviceProperties setValue:supported forKey:SWRVE_SUPPORT_RICH_ATTACHMENT];
-        [deviceProperties setValue:supported forKey:SWRVE_SUPPORT_RICH_GIF];
+        NSString *richSupported = @"true";
+        [deviceProperties setValue:richSupported forKey:SWRVE_SUPPORT_RICH_BUTTONS];
+        [deviceProperties setValue:richSupported forKey:SWRVE_SUPPORT_RICH_ATTACHMENT];
+        [deviceProperties setValue:richSupported forKey:SWRVE_SUPPORT_RICH_GIF];
     }
 #endif //TARGET_OS_IOS
     
@@ -169,21 +170,6 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 #endif //defined(SWRVE_LOG_IDFV)
     
     return deviceProperties;
-}
-
-+ (NSNumber *)deviceId {
-    NSNumber *deviceId;
-    id shortDeviceIdDisk = [[NSUserDefaults standardUserDefaults] objectForKey:@"short_device_id"];
-    if (shortDeviceIdDisk == nil || ![shortDeviceIdDisk isKindOfClass:[NSNumber class]]) {
-        // This is the first time we see this device, assign a UUID to it
-        NSUInteger deviceUUID = [[[NSUUID UUID] UUIDString] hash];
-        unsigned short newShortDeviceID = (unsigned short) deviceUUID;
-        deviceId = [NSNumber numberWithUnsignedShort:newShortDeviceID];
-        [[NSUserDefaults standardUserDefaults] setObject:deviceId forKey:@"short_device_id"];
-    } else {
-        deviceId = shortDeviceIdDisk;
-    }
-    return deviceId;
 }
 
 @end

@@ -1,59 +1,97 @@
-#import "SwrveProfileManager.h"
-#import "SwrveCommon.h"
+#import "SwrveUser.h"
+#import "SwrveRESTClient.h"
 #import "SwrveLocalStorage.h"
 #import <sys/time.h>
 #import <sys/sysctl.h>
 #import <CommonCrypto/CommonHMAC.h>
 
-@implementation SwrveProfileManager
+@interface SwrveUser ()
 
-@synthesize userId;
-@synthesize isNewUser;
+@property (nonatomic, strong) NSString *swrveId;
+@property (nonatomic, strong) NSString *externalId;
+@property (nonatomic) BOOL verified;
 
-- (id)initWithUserID:(NSString *)userID {
-    self = [super init];
-    if (self) {
-        [self initUserId:userID];
+@end
+
+@implementation SwrveUser
+
+@synthesize swrveId = _swrveId;
+@synthesize externalId = _externalId;
+@synthesize verified = _verified;
+
+- (instancetype)initWithExternalId:(NSString *)externalId
+                           swrveId:(NSString *)swrveId
+                          verified:(BOOL)verified {
+    
+    if ((self = [super init])) {
+        
+        self.externalId = externalId;
+        self.swrveId = swrveId;
+        self.verified = verified;
     }
     return self;
 }
 
-- (BOOL)isLoggedIn {
-    return [userId length] > 0;
+- (NSUInteger)hash {
+    return [self.externalId hash];
 }
 
-- (void)initUserId:(NSString *)swrveUserID {
-    if (!swrveUserID) {
-        swrveUserID = [SwrveLocalStorage swrveUserId];
-        if (!swrveUserID) {
-            swrveUserID = [[NSUUID UUID] UUIDString]; // Auto generate user id if necessary
-        }
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
     }
-    [SwrveLocalStorage saveSwrveUserId:swrveUserID];
-    userId = swrveUserID;
-    DebugLog(@"Your user id is:%@", userId);
+    
+    if (![object isKindOfClass:[SwrveUser class]]) {
+        return NO;
+    }
+    
+    SwrveUser *o = (SwrveUser *)object;
+    return([self.externalId isEqualToString:o.externalId] && [self.swrveId isEqualToString:o.swrveId]);
 }
 
-- (NSString*)sessionTokenFromAppId:(long)appID
+
+#pragma mark - NSCoding
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    self.swrveId = [decoder decodeObjectForKey:@"swrveId"];
+    self.externalId = [decoder decodeObjectForKey:@"externalId"];
+    self.verified = [decoder decodeBoolForKey:@"verified"];
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeObject:self.swrveId forKey:@"swrveId"];
+    [encoder encodeObject:self.externalId forKey:@"externalId"];
+    [encoder encodeBool:self.verified forKey:@"verified"];
+}
+
+#pragma mark - Session Token Helpers
+
++ (NSString*)sessionTokenFromAppId:(long)appId
                             apiKey:(NSString*)apiKey
-                            userID:(NSString*)userID
+                            userId:(NSString*)userId
                          startTime:(long)startTime {
     
-    NSString * source = [self sourceFromUserID:userID
+    NSString * source = [self sourceFromUserID:userId
                                      startTime:startTime
                                         apiKey:apiKey];
     
     NSString * digest = [self md5FromSource:source];
     
     
-    NSString * sessionToken = [self sessionTokenFromAppId:appID
-                                                   userID:userID
+    NSString * sessionToken = [self sessionTokenFromAppId:appId
+                                                   userID:userId
                                                 startTime:startTime
                                                    digest:digest];
     return sessionToken;
 }
 
-- (NSString*)sourceFromUserID:(NSString*)userID
++ (NSString*)sourceFromUserID:(NSString*)userID
                     startTime:(long)startTime
                        apiKey:(NSString*)apiKey {
     
@@ -61,7 +99,7 @@
     return source;
 }
 
-- (NSString*) md5FromSource:(NSString*)source {
++ (NSString*) md5FromSource:(NSString*)source {
     
 #define C "%02x"
 #define CCCC C C C C
@@ -86,7 +124,7 @@
     return result;
 }
 
-- (NSString*)sessionTokenFromAppId:(long)appID
++ (NSString*)sessionTokenFromAppId:(long)appID
                             userID:(NSString*)userID
                          startTime:(long)startTime
                             digest:(NSString*)digest {
@@ -98,4 +136,5 @@
                               digest];
     return sessionToken;
 }
+
 @end

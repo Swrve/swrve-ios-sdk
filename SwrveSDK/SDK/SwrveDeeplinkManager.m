@@ -12,8 +12,9 @@
 @interface Swrve()
 - (NSString *) appVersion;
 - (UInt64)joinedDateMilliSeconds;
-- (void)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
+- (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (NSString *)signatureKey;
+- (NSString *)userID;
 @property(atomic) SwrveRESTClient *restClient;
 @end
 
@@ -155,7 +156,7 @@
                                 @"id"           :@-1
                                 };
     
-    [self.sdk queueEvent:@"generic_campaign_event" data:[eventData mutableCopy] triggerCallback:NO];
+    (void)[self.sdk queueEvent:@"generic_campaign_event" data:[eventData mutableCopy] triggerCallback:NO];
 }
 - (void)loadCampaign:(NSURL *)url
                     :(void (^)(NSURLResponse *response,NSDictionary *responseDic, NSError *error))completion {
@@ -173,7 +174,7 @@
 
 - (NSURL *)campaignURL:(NSString *)campaignID {
     NSMutableString *queryString = [NSMutableString stringWithFormat:@"?in_app_campaign_id=%@&user=%@&api_key=%@&app_version=%@&joined=%llu",
-                                    campaignID,self.sdk.userID, self.sdk.apiKey, self.sdk.appVersion, self.sdk.joinedDateMilliSeconds];
+                                    campaignID,[self.sdk userID], self.sdk.apiKey, self.sdk.appVersion, self.sdk.joinedDateMilliSeconds];
     
     if (self.sdk.messaging) {
         NSString *campaignQueryString = [self.sdk.messaging campaignQueryString];
@@ -255,18 +256,6 @@
         } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
             SwrveMessage *message = [((SwrveInAppCampaign *)campaign).messages objectAtIndex:0];
 
-#if TARGET_OS_IOS /** exclude tvOS **/
-            // iOS9+ will display with local scale
-            if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-                // Only show the message if it supports the given orientation
-                
-
-                if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-                    DebugLog(@"The message doesn't support the current orientation", nil);
-                }
-            }
-#endif
-            
             // Show the message if it exists
             if( message != nil ) {
                 dispatch_block_t showMessageBlock = ^{

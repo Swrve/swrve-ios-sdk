@@ -61,4 +61,32 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (NSMutableArray *)stringArrayFromCachedContent:(NSString *)content {
+    NSMutableArray *cacheLines = [[NSMutableArray alloc] initWithArray:[content componentsSeparatedByString:@"\n"]];
+    [cacheLines removeLastObject];
+    
+    return cacheLines;
+}
+
++ (NSMutableArray *)dicArrayFromCachedFile:(NSURL *)file {
+    
+    NSString *content = [SwrveTestHelper fileContentsFromURL:file];
+    NSMutableArray *cacheLines = [[NSMutableArray alloc] initWithArray:[content componentsSeparatedByString:@"\n"]];
+    [cacheLines removeLastObject];
+    
+    NSMutableArray *formattedArray = [NSMutableArray new];
+    for (NSString *s in cacheLines) {
+        
+        NSString *newString = [s substringToIndex:s.length-1];
+        NSDictionary * dic = [NSJSONSerialization JSONObjectWithData:[newString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+        
+        [formattedArray addObject:dic];
+    }
+    return formattedArray;
+}
+
++ (NSString *) fileContentsFromURL:(NSURL *)url {
+    return [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
+}
+
 @end

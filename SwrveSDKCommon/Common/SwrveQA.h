@@ -19,9 +19,6 @@
                  andGeofenceId:(NSString *)geofenceId
                  andActionType:(NSString *)actionType;
 
-+ (NSMutableDictionary *)locationCampaignTriggered:(NSArray *)campaigns;
-+ (NSMutableDictionary *)locationCampaignDownloaded;
-+ (NSMutableDictionary *)locationCampaignEngagedID:(NSString *)campaignID variantID:(NSNumber *)variantID plotID:(NSString *)plotID payload:(NSDictionary *)payload;
 + (void)updateQAUser:(NSDictionary *)jsonQa;
 
 @end

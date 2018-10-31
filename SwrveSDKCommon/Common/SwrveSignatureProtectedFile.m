@@ -9,67 +9,51 @@
 @synthesize signatureFilename;
 @synthesize key;
 @synthesize signatureErrorDelegate;
-    
-    
+
+
 - (id) protectedFileType:(int)fileType
                   userID:(NSString*)userID
             signatureKey:(NSString*)signatureKey
            errorDelegate:(id<SwrveSignatureErrorDelegate>)delegate {
-    
+
     NSString *filePath = nil;
     NSString *signatureFilePath = nil;
-    
+
     switch (fileType)
-    
-    {
-        case SWRVE_LOCATION_FILE:
-        
-        filePath = [SwrveLocalStorage locationCampaignFilePathForUserId:userID];
-        signatureFilePath = [SwrveLocalStorage locationCampaignSignatureFilePathForUserId:userID];
-        
-        break;
-        
+    {    
         case SWRVE_RESOURCE_FILE:
-        
-        filePath = [SwrveLocalStorage userResourcesFilePathForUserId:userID];
-        signatureFilePath = [SwrveLocalStorage userResourcesSignatureFilePathForUserId:userID];
-        
-        break;
-            
+            filePath = [SwrveLocalStorage userResourcesFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage userResourcesSignatureFilePathForUserId:userID];
+            break;
+
         case SWRVE_RESOURCE_DIFF_FILE:
-            
             filePath = [SwrveLocalStorage userResourcesDiffFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage userResourcesDiffSignatureFilePathForUserId:userID];
-            
             break;
-        
+
         case SWRVE_CAMPAIGN_FILE:
-        
             filePath = [SwrveLocalStorage campaignsFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage campaignsSignatureFilePathForUserId:userID];
-            
-             break;
-            
+            break;
+
         case SWRVE_AD_CAMPAIGN_FILE:
-            
             filePath = [SwrveLocalStorage campaignsAdFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage campaignsAdSignatureFilePathForUserId:userID];
-        
-        break;
-            
+            break;
+
         case SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG:
-            
             filePath = [SwrveLocalStorage debugCampaignsNoticationFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage debugCampaignsNotificationSignatureFilePathForUserId:userID];
-            
             break;
-        
     }
-    
-    NSURL* fileURL = [NSURL fileURLWithPath:filePath];
-    NSURL* signatureURL = [NSURL fileURLWithPath:signatureFilePath];
-    
-    return [self initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey signatureErrorDelegate:delegate];
+
+    if (filePath != nil) {
+        NSURL* fileURL = [NSURL fileURLWithPath:filePath];
+        NSURL* signatureURL = [NSURL fileURLWithPath:signatureFilePath];
+        return [self initFile:fileURL signatureFilename:signatureURL usingKey:signatureKey signatureErrorDelegate:delegate];
+    } else {
+        return nil;
+    }
 }
 
 - (id) initFile:(NSURL*)file signatureFilename:(NSURL*)signatureFile usingKey:(NSString*)signatureKey
@@ -83,7 +67,7 @@
         key = signatureKey;
         self.filename = file;
         self.signatureFilename = signatureFile;
-        
+
         if (delegate == nil) {
             self.signatureErrorDelegate = self;
         } else {
@@ -123,14 +107,14 @@
 
 - (NSData*) readFromFile {
     NSData* content = [NSData dataWithContentsOfURL:[self filename]];
-    
+
     if (content != nil) {
         NSData* actual_signature = [NSData dataWithContentsOfURL:[self signatureFilename]];
-        
+
         if (actual_signature != nil) {
             // Check signature
             NSData* computed_signature = [self createHMACWithMD5:content];
-            
+
             if ([actual_signature isEqualToData:computed_signature])
             {
                 return content;
@@ -139,7 +123,7 @@
             }
         }
     }
-    
+
     return nil;
 }
 
@@ -148,14 +132,14 @@
     NSURL *sigFilePath = [self signatureFilename];
 
     NSData* content = [[NSUserDefaults standardUserDefaults] dataForKey:filePath.lastPathComponent];
-    
+
     if (content != nil) {
         NSData* actual_signature = [[NSUserDefaults standardUserDefaults] dataForKey:sigFilePath.lastPathComponent];
-        
+
         if (actual_signature != nil) {
             // Check signature
             NSData* computed_signature = [self createHMACWithMD5:content];
-            
+
             if ([actual_signature isEqualToData:computed_signature])
             {
                 return content;
@@ -164,9 +148,9 @@
             }
         }
     }
-    
+
     return nil;
-    
+
 }
 
 - (NSData*) readWithRespectToPlatform {
@@ -182,10 +166,10 @@
 {
     const char* cKey = [self.key cStringUsingEncoding:NSASCIIStringEncoding];
     unsigned char cHMAC[CC_MD5_DIGEST_LENGTH];
-    
+
     CCHmac(kCCHmacAlgMD5, cKey, strlen(cKey), [source bytes], [source length], cHMAC);
     NSData* hmac = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
-    
+
     return hmac;
 }
 

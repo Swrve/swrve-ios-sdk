@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
+		1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */; };
 		239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */; };
 		3AADF51A20FCE000003AEEA1 /* SwrveTestNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */; };
 		3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */; };
-		3AEB63D51F0405A900F0A270 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
 		52740A731CF70D5E00151035 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A721CF70D5E00151035 /* main.m */; };
 		52740A761CF70D5E00151035 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A751CF70D5E00151035 /* AppDelegate.m */; };
 		52740A791CF70D5E00151035 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A781CF70D5E00151035 /* ViewController.m */; };
@@ -18,9 +19,17 @@
 		52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7D1CF70D5E00151035 /* Assets.xcassets */; };
 		52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7F1CF70D5E00151035 /* LaunchScreen.storyboard */; };
 		52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */; };
-		B9B78621AF27ACDEC19F6ED5 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */; };
-		BC26DFB089078A4F0C6BEA19 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */; };
+		8649EE99A0104C5CFEBC8E62 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */; };
+		87DD2D9CE829758487A2BF32 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */; };
+		F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */; };
+		F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
+		F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
+		F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */; };
+		F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
+		F6D1A9D220B4230B0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
 		F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */; };
+		F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
+		F6F386AB20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,8 +43,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		18CCF3672D55E1AA164691A2 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
+		16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMigrationsManager.m; sourceTree = "<group>"; };
+		3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
 		3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNotificationManager.m; sourceTree = "<group>"; };
 		3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestProfileManager.m; sourceTree = "<group>"; };
 		3AEB63D31F0405A900F0A270 /* SwrveTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestHelper.h; sourceTree = "<group>"; };
@@ -53,12 +63,19 @@
 		52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwrveSDKTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52740A8D1CF70D5E00151035 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggersAndConditions.m; sourceTree = "<group>"; };
-		7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		92E8496B3BEA2DED0F559729 /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
-		DA08B873CAF76C1581D05929 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
-		EBED28B00A4DEAA9E26C9F28 /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
+		7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
+		81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
+		F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestLocalStorage.m; sourceTree = "<group>"; };
+		F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMockNSURLProtocol.h; sourceTree = "<group>"; };
+		F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
+		F6B5D7D320A9A864007E97B6 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = logo.gif; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/logo.gif; sourceTree = "<group>"; };
+		F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
+		F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
+		F6D1A9CE20B4225C0042EDFE /* campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = campaigns.json; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/campaigns.json; sourceTree = "<group>"; };
 		F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
-		F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6F386A920B4294A006F6149 /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = campaignsNone.json; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/campaignsNone.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9B78621AF27ACDEC19F6ED5 /* libPods-SwrveSDKTest.a in Frameworks */,
+				87DD2D9CE829758487A2BF32 /* libPods-SwrveSDKTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,26 +91,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC26DFB089078A4F0C6BEA19 /* libPods-SwrveSDKTestTests.a in Frameworks */,
+				8649EE99A0104C5CFEBC8E62 /* libPods-SwrveSDKTestTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2A06BA70A6452113C8BA4A37 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				7A440A4138AF23072C3BD2BF /* libPods-SwrveSDKTest.a */,
-				F78F916C2E9BDFD161804F0D /* libPods-SwrveSDKTestTests.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		523EE2211CF73C0400496FEA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F6B5D7D320A9A864007E97B6 /* logo.gif */,
 				52740A8D1CF70D5E00151035 /* Info.plist */,
+				F6D1A9CE20B4225C0042EDFE /* campaigns.json */,
+				F6F386A920B4294A006F6149 /* campaignsNone.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -104,8 +115,8 @@
 				52740A8A1CF70D5E00151035 /* SwrveSDKTest */,
 				52740A701CF70D5E00151035 /* Empty App */,
 				52740A6F1CF70D5E00151035 /* Products */,
-				A5FA7BA7C6D20F1D7DBAF9AA /* Pods */,
-				2A06BA70A6452113C8BA4A37 /* Frameworks */,
+				85C84471BD17A65C1477A826 /* Pods */,
+				F656776A5C335E6D23362EF4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -151,23 +162,37 @@
 				3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */,
 				3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */,
 				52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */,
-				523EE2211CF73C0400496FEA /* Supporting Files */,
 				239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */,
 				F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */,
+				F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */,
+				F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */,
+				F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */,
+				F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */,
+				F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */,
+				523EE2211CF73C0400496FEA /* Supporting Files */,
 			);
 			name = SwrveSDKTest;
 			path = SwrveSDKTestTests;
 			sourceTree = "<group>";
 		};
-		A5FA7BA7C6D20F1D7DBAF9AA /* Pods */ = {
+		85C84471BD17A65C1477A826 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				EBED28B00A4DEAA9E26C9F28 /* Pods-SwrveSDKTest.debug.xcconfig */,
-				DA08B873CAF76C1581D05929 /* Pods-SwrveSDKTest.release.xcconfig */,
-				92E8496B3BEA2DED0F559729 /* Pods-SwrveSDKTestTests.debug.xcconfig */,
-				18CCF3672D55E1AA164691A2 /* Pods-SwrveSDKTestTests.release.xcconfig */,
+				3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */,
+				16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */,
+				E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */,
+				7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		F656776A5C335E6D23362EF4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */,
+				81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,11 +202,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A901CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTest" */;
 			buildPhases = (
-				323C33852DCC6FE08BE69FAB /* [CP] Check Pods Manifest.lock */,
+				573379B8969F25F74BDE5F7E /* [CP] Check Pods Manifest.lock */,
 				52740A6A1CF70D5E00151035 /* Sources */,
 				52740A6B1CF70D5E00151035 /* Frameworks */,
 				52740A6C1CF70D5E00151035 /* Resources */,
-				B06DA9C6EBC43E630E64E09C /* [CP] Embed Pods Frameworks */,
 				A6D89C1C0A34190EEEEAC0C3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -197,12 +221,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A931CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTestTests" */;
 			buildPhases = (
-				2E1FA3F8228FCCE8A92030C3 /* [CP] Check Pods Manifest.lock */,
+				7D959DFAC472D223F37786AF /* [CP] Check Pods Manifest.lock */,
 				52740A831CF70D5E00151035 /* Sources */,
 				52740A841CF70D5E00151035 /* Frameworks */,
 				52740A851CF70D5E00151035 /* Resources */,
-				AE0ADB50E6F28C8192E6D611 /* [CP] Embed Pods Frameworks */,
-				6DDA5170EA79C5EC22168899 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -220,7 +242,7 @@
 		52740A661CF70D5E00151035 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = Swrve;
 				TargetAttributes = {
 					52740A6D1CF70D5E00151035 = {
@@ -258,6 +280,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */,
+				F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */,
+				F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */,
+				F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */,
 				52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */,
 				52740A7C1CF70D5E00151035 /* Main.storyboard in Resources */,
 			);
@@ -267,31 +292,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */,
+				F6F386AB20B4294B006F6149 /* campaignsNone.json in Resources */,
+				F6D1A9D220B4230B0042EDFE /* campaigns.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2E1FA3F8228FCCE8A92030C3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTestTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		323C33852DCC6FE08BE69FAB /* [CP] Check Pods Manifest.lock */ = {
+		573379B8969F25F74BDE5F7E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -309,55 +319,22 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6DDA5170EA79C5EC22168899 /* [CP] Copy Pods Resources */ = {
+		7D959DFAC472D223F37786AF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests-resources.sh",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveAssets.xcassets",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTestTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A6D89C1C0A34190EEEEAC0C3 /* [CP] Copy Pods Resources */ = {
@@ -401,7 +378,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveAssets.xcassets",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
@@ -411,36 +388,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AE0ADB50E6F28C8192E6D611 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B06DA9C6EBC43E630E64E09C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -448,10 +395,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */,
 				52740A791CF70D5E00151035 /* ViewController.m in Sources */,
 				52740A761CF70D5E00151035 /* AppDelegate.m in Sources */,
 				52740A731CF70D5E00151035 /* main.m in Sources */,
-				3AEB63D51F0405A900F0A270 /* SwrveTestHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,8 +408,11 @@
 			files = (
 				F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */,
 				3AADF51A20FCE000003AEEA1 /* SwrveTestNotificationManager.m in Sources */,
+				1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */,
+				1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */,
 				3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */,
 				52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */,
+				F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */,
 				239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -506,13 +456,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -534,7 +494,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -551,13 +511,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -573,7 +543,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -583,12 +553,12 @@
 		};
 		52740A911CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EBED28B00A4DEAA9E26C9F28 /* Pods-SwrveSDKTest.debug.xcconfig */;
+			baseConfigurationReference = E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -597,12 +567,12 @@
 		};
 		52740A921CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA08B873CAF76C1581D05929 /* Pods-SwrveSDKTest.release.xcconfig */;
+			baseConfigurationReference = 3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -611,11 +581,11 @@
 		};
 		52740A941CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 92E8496B3BEA2DED0F559729 /* Pods-SwrveSDKTestTests.debug.xcconfig */;
+			baseConfigurationReference = 7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = SwrveSDKTestTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -625,11 +595,11 @@
 		};
 		52740A951CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18CCF3672D55E1AA164691A2 /* Pods-SwrveSDKTestTests.release.xcconfig */;
+			baseConfigurationReference = 16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = SwrveSDKTestTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

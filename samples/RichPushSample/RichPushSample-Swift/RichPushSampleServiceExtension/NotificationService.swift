@@ -10,7 +10,8 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         
         SwrvePush.handle(request.content, withAppGroupIdentifier: "group.swrve.RichPushSample") {(content) in
-            contentHandler(content!);
+            self.bestAttemptContent = content
+            contentHandler(self.bestAttemptContent!);
         }
         
     }

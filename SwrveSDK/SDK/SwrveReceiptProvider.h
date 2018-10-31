@@ -7,7 +7,7 @@
 @interface SwrveReceiptProviderResult : NSObject
 
 @property (nonatomic, retain) NSString * encodedReceipt;        /*!< Base64 encoded receipt from Apple */
-@property (nonatomic, retain) NSString * transactionId;         /*!< Transaction ID (must ONLY be populated for iOS7+) */
+@property (nonatomic, retain) NSString * transactionId;         /*!< Transaction ID */
 
 @end
 

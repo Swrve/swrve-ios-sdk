@@ -1,7 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "SwrveCommon.h"
-#import "ISHPermissionRequest.h"
+#import "SwrvePermissionState.h"
+#import <UserNotifications/UserNotifications.h>
 
+NS_ASSUME_NONNULL_BEGIN
 static NSString* swrve_permission_status_unknown        = @"unknown";
 static NSString* swrve_permission_status_unsupported    = @"unsupported";
 static NSString* swrve_permission_status_denied         = @"denied";
@@ -26,43 +28,40 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk;
 + (NSArray*) currentPermissionFilters;
 
-#if defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
-+ (ISHPermissionState)checkLocationAlways;
-+ (void)requestLocationAlways:(id<SwrveCommonDelegate>)sdk;
-#endif //defined(SWRVE_LOCATION) || defined(SWRVE_LOCATION_SDK)
++ (SwrvePermissionState)checkLocationAlways:(id<SwrveCommonDelegate>)sdk;
++ (BOOL)requestLocationAlways:(id<SwrveCommonDelegate>)sdk;
 
-#if defined(SWRVE_PHOTO_LIBRARY)
-+ (ISHPermissionState)checkPhotoLibrary;
-+ (void)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
-#endif //defined(SWRVE_PHOTO_LIBRARY)
++ (SwrvePermissionState)checkPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
++ (BOOL)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk;
 
-#if defined(SWRVE_PHOTO_CAMERA)
-+ (ISHPermissionState)checkCamera;
-+ (void)requestCamera:(id<SwrveCommonDelegate>)sdk;
-#endif //defined(SWRVE_PHOTO_CAMERA)
++ (SwrvePermissionState)checkCamera:(id<SwrveCommonDelegate>)sdk;
++ (BOOL)requestCamera:(id<SwrveCommonDelegate>)sdk;
 
-#if defined(SWRVE_ADDRESS_BOOK)
-+ (ISHPermissionState)checkContacts;
-+ (void)requestContacts:(id<SwrveCommonDelegate>)sdk;
-#endif //defined(SWRVE_ADDRESS_BOOK)
++ (SwrvePermissionState)checkContacts:(id<SwrveCommonDelegate>)sdk;
++ (BOOL)requestContacts:(id<SwrveCommonDelegate>)sdk;
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
-+ (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk withCallback:(BOOL)callback;
-+ (NSString*) pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
++ (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk;
++ (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
++(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(nullable id<SwrveCommonDelegate>)sdk NS_AVAILABLE_IOS(10.0);
++ (void)processTokenWhenAuthorized;
 #endif //!defined(SWRVE_NO_PUSH)
 
 @end
 
-static inline NSString *stringFromPermissionState(ISHPermissionState state) {
+static inline NSString * _Nullable stringFromPermissionState(SwrvePermissionState state) {
     switch (state) {
-        case ISHPermissionStateUnknown:
+        case SwrvePermissionStateUnknown:
             return swrve_permission_status_unknown;
-        case ISHPermissionStateUnsupported:
+        case SwrvePermissionStateUnsupported:
             return swrve_permission_status_unsupported;
-        case ISHPermissionStateDenied:
+        case SwrvePermissionStateDenied:
             return swrve_permission_status_denied;
-        case ISHPermissionStateAuthorized:
+        case SwrvePermissionStateAuthorized:
             return swrve_permission_status_authorized;
-
+        default:
+            return nil;
     }
 }
+NS_ASSUME_NONNULL_END
+

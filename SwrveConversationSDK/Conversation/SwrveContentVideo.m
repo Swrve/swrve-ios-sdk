@@ -53,14 +53,10 @@
     webview.opaque = NO;
     webview.delegate = self;
     webview.userInteractionEnabled = YES;
-    [SwrveContentItem scrollView:webview].scrollEnabled = NO;
+    webview.scrollView.scrollEnabled = NO;
     
-    NSString *rawValue = self.value;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        // If it is iOS9 we need to force this endpoint to use HTTPs
-        rawValue = [rawValue stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
-    }
-    
+    NSString *rawValue = [self.value stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
+
     preventNavigation = NO;
     [webview loadYouTubeOrVimeoVideo:rawValue];
     
@@ -115,7 +111,13 @@
     
     // Check if the navigation is coming from a user clicking on a link
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        [[UIApplication sharedApplication] openURL:nsurl];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+                DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+            }];
+        } else {
+            DebugLog(@"Could not open url, not supported (should not reach this code)");
+        }
         return NO;
     }
     
@@ -123,7 +125,13 @@
     if (nsurl != nil) {
         NSString* url = nsurl.absoluteString;
         if ([url containsString:@"youtube.com/"] && ![url containsString:@"youtube.com/embed/"]) {
-            [[UIApplication sharedApplication] openURL:nsurl];
+            if (@available(iOS 10.0, *)) {
+                [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+                    DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+                }];
+            } else {
+                DebugLog(@"Could not open url, not supported (should not reach this code)");
+            }
             return NO;
         }
     }

@@ -2,12 +2,12 @@
 
 @implementation SwrveConfig
 
-@synthesize userId;
 @synthesize orientation;
 @synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
+@synthesize identityServer;
 @synthesize language;
 @synthesize appVersion;
 @synthesize autoDownloadCampaignsAndResources;
@@ -20,7 +20,6 @@
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
-@synthesize pushCategories;
 @synthesize notificationCategories;
 @synthesize pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -28,6 +27,7 @@
 @synthesize autoShowMessagesMaxDelay;
 @synthesize stack;
 @synthesize abTestDetailsEnabled;
+@synthesize permissionsDelegate;
 
 -(id) init
 {
@@ -59,12 +59,12 @@
 
 @implementation ImmutableSwrveConfig
 
-@synthesize userId;
 @synthesize orientation;
 @synthesize prefersIAMStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
+@synthesize identityServer;
 @synthesize language;
 @synthesize appVersion;
 @synthesize autoDownloadCampaignsAndResources;
@@ -77,7 +77,6 @@
 @synthesize pushEnabled;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
-@synthesize pushCategories;
 @synthesize notificationCategories;
 @synthesize pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -85,16 +84,17 @@
 @synthesize autoShowMessagesMaxDelay;
 @synthesize stack;
 @synthesize abTestDetailsEnabled;
+@synthesize permissionsDelegate;
 
 - (id)initWithMutableConfig:(SwrveConfig*)config
 {
     if (self = [super init]) {
-        userId = config.userId;
         orientation = config.orientation;
         prefersIAMStatusBarHidden = config.prefersIAMStatusBarHidden;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         contentServer = config.contentServer;
+        identityServer = config.identityServer;
         language = config.language;
         appVersion = config.appVersion;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
@@ -107,7 +107,6 @@
         pushEnabled = config.pushEnabled;
         pushNotificationEvents = config.pushNotificationEvents;
         autoCollectDeviceToken = config.autoCollectDeviceToken;
-        pushCategories = config.pushCategories;
         notificationCategories = config.notificationCategories;
         pushResponseDelegate = config.pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -115,6 +114,7 @@
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         stack = config.stack;
         abTestDetailsEnabled = config.abTestDetailsEnabled;
+        permissionsDelegate = config.permissionsDelegate;
     }
 
     return self;

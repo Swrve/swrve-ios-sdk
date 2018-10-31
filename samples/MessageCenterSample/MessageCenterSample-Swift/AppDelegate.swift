@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-        SwrveSDK.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config, launchOptions: launchOptions)
+        SwrveSDK.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config)
         return true
     }
 

@@ -3,6 +3,7 @@
 
 @class SwrveMessageController;
 
+NS_ASSUME_NONNULL_BEGIN
 /*! In-app conversation campaign. */
 @interface SwrveConversationCampaign : SwrveCampaign
 
@@ -30,7 +31,7 @@
  * \returns TRUE if the campaign contains a conversation for the
  * given trigger.
  */
--(BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload;
+-(BOOL)hasConversationForEvent:(NSString*)event withPayload:(nullable NSDictionary *)payload;
 
 /*! Search for a conversation with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -40,9 +41,9 @@
  * \param time Device time.
  * \returns Conversation setup for the given trigger or nil.
  */
--(SwrveConversation*)conversationForEvent:(NSString*)event
-                        withAssets:(NSSet*)assets
-                            atTime:(NSDate*)time;
+-(nullable SwrveConversation*)conversationForEvent:(NSString*)event
+                                        withAssets:(NSSet*)assets
+                                            atTime:(NSDate*)time;
 
 /*! Search for a message with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -53,11 +54,11 @@
  * \param campaignReasons Will contain the reason the campaign returned no message.
  * \returns Message setup for the given trigger or nil.
  */
--(SwrveConversation*)conversationForEvent:(NSString*)event
-                                 withPayload:(NSDictionary*)payload
-                                  withAssets:(NSSet*)assets
-                                      atTime:(NSDate*)time
-                                 withReasons:(NSMutableDictionary*)campaignReasons;
+-(nullable SwrveConversation*)conversationForEvent:(NSString*)event
+                                       withPayload:(nullable NSDictionary*)payload
+                                        withAssets:(NSSet*)assets
+                                            atTime:(NSDate*)time
+                                       withReasons:(nullable NSMutableDictionary*)campaignReasons;
 
 /*! Notify that a conversation was shown to the user.
  *
@@ -74,3 +75,4 @@
 -(void)conversationDismissed:(NSDate*)timeDismissed;
 
 @end
+NS_ASSUME_NONNULL_END

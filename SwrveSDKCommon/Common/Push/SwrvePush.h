@@ -4,6 +4,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import "SwrveCommon.h"
 
+NS_ASSUME_NONNULL_BEGIN
 extern NSString *const SwrveSilentPushIdentifierKey;
 extern NSString *const SwrveSilentPushPayloadKey;
 
@@ -11,7 +12,6 @@ extern NSString *const SwrveSilentPushPayloadKey;
 
 - (void)deviceTokenIncoming:(NSData *)newDeviceToken;
 - (void)deviceTokenUpdated:(NSString *)newDeviceToken;
-- (void)remoteNotificationReceived:(NSDictionary *)notificationInfo;
 - (void)deeplinkReceived:(NSURL *)url;
 
 @end
@@ -39,10 +39,12 @@ extern NSString *const SwrveSilentPushPayloadKey;
  *  App Group Identifier is used for storing influence so it can be tracked by Swrve in the Main App.
  */
 + (void)handleNotificationContent:(UNNotificationContent *)notificationContent
-           withAppGroupIdentifier:(NSString *)appGroupIdentifier
-     withCompletedContentCallback:(void (^)(UNMutableNotificationContent *content))callback;
+           withAppGroupIdentifier:(nullable NSString *)appGroupIdentifier
+     withCompletedContentCallback:(void (^)(UNMutableNotificationContent *content))callback __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
 
 #endif
 @end
 
+NS_ASSUME_NONNULL_END
 #endif //!defined(SWRVE_NO_PUSH)
+

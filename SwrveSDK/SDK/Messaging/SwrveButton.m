@@ -1,6 +1,9 @@
 #import "SwrveButton.h"
 #import "SwrveLocalStorage.h"
 
+#define DEFAULT_WIDTH 100
+#define DEFAULT_HEIGHT 20
+
 @interface SwrveButton()
 
 @end
@@ -13,7 +16,6 @@
 @synthesize controller;
 @synthesize message;
 @synthesize center;
-@synthesize size;
 @synthesize messageID;
 @synthesize appID;
 @synthesize actionType;
@@ -32,7 +34,6 @@ static CGPoint scaled(CGPoint point, float scale)
     self.appID       = 0;
     self.actionType   = kSwrveActionDismiss;
     self.center   = CGPointMake(100, 100);
-    self.size     = CGSizeMake(100, 20);
     return self;
 }
 
@@ -66,8 +67,8 @@ static CGPoint scaled(CGPoint point, float scale)
     [result  addTarget:delegate action:selector forControlEvents:UIControlEventPrimaryActionTriggered];
 #endif
     
-    CGFloat width  = self.size.width;
-    CGFloat height = self.size.height;
+    CGFloat width  = DEFAULT_WIDTH;
+    CGFloat height = DEFAULT_HEIGHT;
 
     if (up) {
         width  = [up size].width;

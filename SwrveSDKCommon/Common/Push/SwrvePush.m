@@ -2,14 +2,15 @@
 
 #import "SwrvePush.h"
 #import "SwrveSwizzleHelper.h"
-#import "SwrvePermissions.h"
 #import "SwrveCampaignInfluence.h"
 #import "SwrveNotificationManager.h"
 #import "SwrveNotificationConstants.h"
+#import "SwrvePermissions.h"
+#import "SwrveLocalStorage.h"
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id, SEL, UIApplication *, NSData *);
+
 typedef void (*didFailToRegisterForRemoteNotificationsWithErrorImplSignature)(__strong id, SEL, UIApplication *, NSError *);
-typedef void (*didReceiveRemoteNotificationImplSignature)(__strong id, SEL, UIApplication *, NSDictionary *);
 
 #if !TARGET_OS_TV
 static id <SwrvePushDelegate> _pushDelegate = NULL;
@@ -29,7 +30,6 @@ NSString *const SwrveContentVersionKey = @"version";
 @interface SwrvePush () {
     didRegisterForRemoteNotificationsWithDeviceTokenImplSignature didRegisterForRemoteNotificationsWithDeviceTokenImpl;
     didFailToRegisterForRemoteNotificationsWithErrorImplSignature didFailToRegisterForRemoteNotificationsWithErrorImpl;
-    didReceiveRemoteNotificationImplSignature didReceiveRemoteNotificationImpl;
 
     // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
     // This would result in bad engagement reports etc. This var is used to check that the same push id can't be processed in sequence.
@@ -91,20 +91,13 @@ NSString *const SwrveContentVersionKey = @"version";
 #pragma mark - Registration and Startup Functions
 
 - (void)registerForPushNotifications {
-    [SwrvePermissions requestPushNotifications:_commonDelegate withCallback:NO];
+    [SwrvePermissions requestPushNotifications:_commonDelegate];
 }
 
 - (void)setPushNotificationsDeviceToken:(NSData *)newDeviceToken {
     NSCAssert(newDeviceToken, @"The device token cannot be null", nil);
     NSString *newTokenString = [[[newDeviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
     [_pushDelegate deviceTokenUpdated:newTokenString];
-}
-
-- (void)checkLaunchOptionsForPushData:(NSDictionary *)launchOptions {
-    NSDictionary *remoteNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotification) {
-        [_pushDelegate remoteNotificationReceived:remoteNotification];
-    }
 }
 
 #pragma mark - Swizzling Handlers
@@ -115,18 +108,15 @@ NSString *const SwrveContentVersionKey = @"version";
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
         SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
         SEL didFailSelector = @selector(application:didFailToRegisterForRemoteNotificationsWithError:);
-        SEL didReceiveSelector = @selector(application:didReceiveRemoteNotification:);
 
         // Cast to actual method signature
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = (didRegisterForRemoteNotificationsWithDeviceTokenImplSignature) [SwrveSwizzleHelper swizzleMethod:didRegisterSelector inClass:appDelegateClass withImplementationIn:self];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = (didFailToRegisterForRemoteNotificationsWithErrorImplSignature) [SwrveSwizzleHelper swizzleMethod:didFailSelector inClass:appDelegateClass withImplementationIn:self];
-        didReceiveRemoteNotificationImpl = (didReceiveRemoteNotificationImplSignature) [SwrveSwizzleHelper swizzleMethod:didReceiveSelector inClass:appDelegateClass withImplementationIn:self];
 
         didSwizzle = true;
     } else {
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
-        didReceiveRemoteNotificationImpl = NULL;
     }
 
     return didSwizzle;
@@ -144,16 +134,11 @@ NSString *const SwrveContentVersionKey = @"version";
         [SwrveSwizzleHelper deswizzleMethod:didFail inClass:appDelegateClass originalImplementation:(IMP) didFailToRegisterForRemoteNotificationsWithErrorImpl];
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
 
-        SEL didReceive = @selector(application:didReceiveRemoteNotification:);
-        [SwrveSwizzleHelper deswizzleMethod:didReceive inClass:appDelegateClass originalImplementation:(IMP) didReceiveRemoteNotificationImpl];
-        didReceiveRemoteNotificationImpl = NULL;
-
         didSwizzle = false;
     }
 }
 
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler {
-    // This method can also be called when the app is in the background for normal pushes
     // if the app has background remote notifications enabled
     id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
     if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
@@ -162,16 +147,56 @@ NSString *const SwrveContentVersionKey = @"version";
         return YES;
     } else {
         id pushIdentifier = [userInfo objectForKey:SwrveNotificationIdentifierKey];
-        if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
-            NSURL *deeplinkUrl = [SwrveNotificationManager notificationEngaged:userInfo];
-            if (deeplinkUrl) {
-                [_pushDelegate deeplinkReceived:deeplinkUrl];
-            }
-            // We won't call the completionHandler and the customer should handle it themselves
+        NSString *authenticatedPush = userInfo[SwrveNotificationAuthenticatedUserKey];
+        if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]] &&
+                authenticatedPush && ![authenticatedPush isKindOfClass:[NSNull class]]) {
+            [self handleAuthenticatedPushNotification:userInfo];
             return NO;
         }
     }
     return NO;
+}
+
+- (void)handleAuthenticatedPushNotification:(NSDictionary *)userInfo {
+    id pushIdentifier = [userInfo objectForKey:SwrveNotificationIdentifierKey];
+    if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
+
+        NSString *targetedUserId = userInfo[SwrveNotificationAuthenticatedUserKey];
+        if (![targetedUserId isEqualToString:[SwrveLocalStorage swrveUserId]]) {
+            DebugLog(@"Could not handle authenticated notification.");
+            return;
+        }
+
+        if (@available(iOS 10.0, *)) {
+            UNMutableNotificationContent *notification = [[UNMutableNotificationContent alloc] init];
+            notification.userInfo = userInfo;
+            notification.title = userInfo[SwrveNotificationTitleKey];
+            notification.subtitle = userInfo[SwrveNotificationSubtitleKey];
+            notification.body = userInfo[SwrveNotificationBodyKey];
+
+            [SwrvePush handleNotificationContent:notification withAppGroupIdentifier:nil
+                    withCompletedContentCallback:^(UNMutableNotificationContent *content) {
+
+                        NSString *requestIdentifier = [NSDateFormatter localizedStringFromDate:[NSDate date]
+                                                                                     dateStyle:NSDateFormatterShortStyle
+                                                                                     timeStyle:NSDateFormatterFullStyle];
+                        requestIdentifier = [requestIdentifier stringByAppendingString:[NSString stringWithFormat:@" Id: %@", pushIdentifier]];
+
+                        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.5 repeats:NO];
+                        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:requestIdentifier
+                                                                                              content:content
+                                                                                              trigger:trigger];
+
+                        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
+                            if (error == nil) {
+                                DebugLog(@"Authenticated notification completed correctly");
+                            } else {
+                                DebugLog(@"Authenticated Notification error %@", error);
+                            }
+                        }];
+                    }];
+        }
+    }
 }
 
 #pragma mark - Service Extension Modification (public facing)
@@ -224,7 +249,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
 #pragma mark - UNUserNotificationCenterDelegate Functions
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
 #pragma unused(center)
 
     if (_responseDelegate) {
@@ -245,7 +270,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
 #ifdef __IPHONE_11_0
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
 #else
     - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
 #endif
@@ -351,21 +376,6 @@ NSString *const SwrveContentVersionKey = @"version";
         if (pushInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl != NULL) {
             id target = [SwrveCommon sharedUIApplication].delegate;
             pushInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl(target, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), application, error);
-        }
-    }
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-
-    if (_commonDelegate == NULL) {
-        DebugLog(@"Error: Push notification can only be automatically reported if you are using the Swrve instance singleton.", nil);
-    } else {
-        if (_pushDelegate) {
-            [_pushDelegate remoteNotificationReceived:userInfo];
-        }
-        if (pushInstance->didReceiveRemoteNotificationImpl != NULL) {
-            id target = [SwrveCommon sharedUIApplication].delegate;
-            pushInstance->didReceiveRemoteNotificationImpl(target, @selector(application:didReceiveRemoteNotification:), application, userInfo);
         }
     }
 }

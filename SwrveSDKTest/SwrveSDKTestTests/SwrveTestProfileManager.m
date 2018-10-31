@@ -4,12 +4,16 @@
 #import "SwrveProfileManager.h"
 #import "Swrve.h"
 #import "SwrveTestHelper.h"
+#import "SwrveLocalStorage.h"
+#import "SwrveMockNSURLProtocol.h"
+#import "SwrveSDK.h"
+#import "SwrvePermissions.h"
 
 @interface Swrve (InternalAccess)
 
 @property (atomic) BOOL initialised;
 @property (atomic) SwrveProfileManager *profileManager;
--(void) registerLifecycleCallbacks;
+-( void)registerLifecycleCallbacks;
 - (void)initWithUserId:(NSString *)swrveUserId;
 
 @end
@@ -23,20 +27,27 @@
 - (void)setUp {
     [super setUp];
     [SwrveTestHelper tearDown];
+
+    [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
+    
+    id classMock = OCMClassMock([SwrvePermissions class]);
+    OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:[OCMArg any]])).andReturn(@"unittest");
 }
 
 - (void)tearDown {
-    [super tearDown];
     [SwrveTestHelper tearDown];
+    [super tearDown];
 }
 
 - (void)testInit {
 
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
-    NSString *userId = [swrve userID];
-    XCTAssertNotNil(userId, "UserId should be automatically be created by default");
+#pragma clang diagnostic pop
+    XCTAssertNotNil([swrve userID], "UserId should automatically be created by default");
 
     OCMVerify([swrveMock registerLifecycleCallbacks]);
     OCMVerify([swrveMock initWithUserId:[OCMArg any]]);
@@ -44,15 +55,18 @@
     [swrveMock stopMocking];
 }
 
-- (void)testInitWithUserIdConfig {
+- (void)testInitFromLocalStorage {
 
-    SwrveConfig* config = [[SwrveConfig alloc] init];
-    config.userId = @"joe";
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [SwrveLocalStorage saveSwrveUserId:@"joe"];
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
-    NSString *userId = [swrve userID];
-    XCTAssertEqual([swrve userID], @"joe", @"The current user should be joe.");
+#pragma clang diagnostic pop
+    NSString* currentUserId = [swrve userID];
+    XCTAssertEqualObjects(currentUserId, @"joe", @"The current user should be joe but was: %@", currentUserId);
 
     OCMVerify([swrveMock registerLifecycleCallbacks]);
     OCMVerify([swrveMock initWithUserId:[OCMArg any]]);
@@ -61,17 +75,21 @@
 }
 
 - (void)testIsNewUser {
+    Swrve *swrve = [Swrve alloc];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:1 apiKey:@"SomeApiKey"];
+#pragma clang diagnostic pop
 
-    Swrve *swrve = [[Swrve alloc] initWithAppID:123 apiKey:@"SomeAPIKey"];
-    NSString *userId = [swrve userID];
-    SwrveProfileManager *profileManager = [swrve profileManager];
-    XCTAssertTrue([profileManager isNewUser], @"Brand new fresh install, so the isNewUser flag should be true");
+    XCTAssertTrue(swrve.profileManager.isNewUser, @"Init with an initial User, so the isNewUser flag should be true");
 
-    [SwrveTestHelper destroySharedInstance];
-    swrve = [[Swrve alloc] initWithAppID:123 apiKey:@"SomeAPIKey"];
-    profileManager = [swrve profileManager];
-    XCTAssertTrue([[swrve userID] isEqualToString:userId], @"Previous user:%@ should still be logged in. Current user:%@", userId, [swrve userID]);
-    XCTAssertTrue([profileManager isNewUser] == NO, @"Same user as previously auto logged in, so the isNewUser flag should be false now:%@", [profileManager isNewUser] ? @"true" : @"false");
+    //simulate app restart
+    [swrve initWithUserId:[swrve userID]];
+    XCTAssertFalse(swrve.profileManager.isNewUser, @"Init with the same User, so the isNewUser flag should be false");
+
+    //simulate a new user init
+    [swrve initWithUserId:@"A different SwrveUserId"];
+    XCTAssertTrue(swrve.profileManager.isNewUser, @"Init with a new user, so the isNewUser flag should be true");
 }
 
 @end

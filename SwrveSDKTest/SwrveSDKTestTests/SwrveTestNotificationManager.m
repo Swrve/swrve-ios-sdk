@@ -35,7 +35,7 @@
                     @"geofence_id": @"6789"
             }
     };
-    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:engagedExpectedData triggerCallback:false]);
+    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[engagedExpectedData mutableCopy] triggerCallback:false]);
 
     NSDictionary *buttonClickExpectedData = @{
             @"id": @"123",
@@ -48,7 +48,7 @@
                     @"buttonText": @"my button"
             }
     };
-    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:buttonClickExpectedData triggerCallback:false]);
+    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[buttonClickExpectedData mutableCopy] triggerCallback:false]);
 
     NSDictionary *userInfo = @{
             @"_p": @"123",

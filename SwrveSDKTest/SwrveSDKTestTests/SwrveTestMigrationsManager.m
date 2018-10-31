@@ -1,13 +1,17 @@
 #import <XCTest/XCTest.h>
 #import "SwrveMigrationsManager.h"
-#import "SwrveLocalStorage.h"
 #import "SwrveTestHelper.h"
 #import "SwrveProfileManager.h"
+#import "SwrveRESTClient.h"
+
+@interface SwrveProfileManager ()
+- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient;
+@end
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 
-- (int)getCurrentCacheVersion;
-- (void)setCurrentCacheVersion:(int)cacheVersion;
+- (int)currentCacheVersion;
++ (void)setCurrentCacheVersion:(int)cacheVersion;
 
 @end
 
@@ -21,11 +25,32 @@
 - (void)setUp {
     [super setUp];
     [SwrveTestHelper tearDown];
+    [SwrveLocalStorage resetDirectoryCreation];
 }
 
 - (void)tearDown {
     [super tearDown];
     [SwrveTestHelper tearDown];
+}
+
+- (void)testMigrate0_old_device_ids_deleted {
+    
+    [SwrveLocalStorage saveSwrveUserId:@"fake_user"]; // Fake user, migrations only run for existing installations
+    [[NSUserDefaults standardUserDefaults] setObject:@1234 forKey:@"swrve_device_id"];
+    [[NSUserDefaults standardUserDefaults] setObject:@4567 forKey:@"short_device_id"];
+    
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *swrveMigrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    [swrveMigrationsManager checkMigrations];
+    
+    NSString *oldShortDeviceIdKey1 = @"swrve_device_id";
+    NSString *oldShortDeviceId1 =  [[NSUserDefaults standardUserDefaults] stringForKey:oldShortDeviceIdKey1];
+    XCTAssertNil(oldShortDeviceId1);
+    
+    NSString *oldShortDeviceIdKey2 = @"short_device_id";
+    NSString *oldShortDeviceId2 =  [[NSUserDefaults standardUserDefaults] stringForKey:oldShortDeviceIdKey2];
+    XCTAssertNil(oldShortDeviceId2);
 }
 
 - (void)testGetSetCurrentCacheVersion {
@@ -34,44 +59,46 @@
     ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
 
-    XCTAssertEqual([migrationsManager getCurrentCacheVersion], 0, @"From a cold install the current cache version number should not exist.");
+    XCTAssertEqual([migrationsManager currentCacheVersion], 0, @"From a cold install the current cache version number should not exist.");
 
-    [migrationsManager setCurrentCacheVersion:5];
-    XCTAssertEqual([migrationsManager getCurrentCacheVersion], 5, @"The current cache version was updated to 5.");
+    [SwrveMigrationsManager setCurrentCacheVersion:5];
+    XCTAssertEqual([migrationsManager currentCacheVersion], 5, @"The current cache version was updated to 5.");
 
-    [migrationsManager setCurrentCacheVersion:10];
-    XCTAssertEqual([migrationsManager getCurrentCacheVersion], 10, @"The current cache version was updated to 10.");
+    [SwrveMigrationsManager setCurrentCacheVersion:10];
+    XCTAssertEqual([migrationsManager currentCacheVersion], 10, @"The current cache version was updated to 10.");
 }
 
-- (void)testInstallDateMigrationInAutoTracking {
+- (void)testInstallDateMigration {
 
-    // create install date file in old format
-    [self createInstallDateV0Format];
+    [SwrveLocalStorage saveSwrveUserId:@"fake_user"]; // Fake user, migrations only run for existing installations
+    
+    // Create install date file in old format
+    [self createInstallDateV0FormatWithDate:@"00000000"];
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
     ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
 
-    NSString *installDateFilePath = [self installDateFilePathForConfig:immutableSwrveConfig];
+    NSString *installDateFilePath = [self installDateFilePathForConfig];
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:installDateFilePath] == YES);
 }
 
-- (void)createInstallDateV0Format {
+- (void)createInstallDateV0FormatWithDate:(NSString *)installDate {
     // create an install date file in the old v0 format.
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *documentPath = [SwrveLocalStorage documentPath];
     BOOL dirCreated = [[NSFileManager defaultManager] createDirectoryAtPath:documentPath withIntermediateDirectories:YES attributes:nil error:nil];
     XCTAssertTrue(dirCreated == YES);
-    NSString *installDateFilePath = [documentPath stringByAppendingPathComponent: @"swrve_install.txt"];
-    NSData *data = [@"1111111" dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:@"swrve_install.txt"];
+    NSData *data = [installDate dataUsingEncoding:NSUTF8StringEncoding];
     BOOL success = [fileManager createFileAtPath:installDateFilePath contents:data attributes:nil];
     XCTAssertTrue(success == YES);
     XCTAssertTrue([fileManager fileExistsAtPath:installDateFilePath]);
 }
 
-- (NSString*)installDateFilePathForConfig:(ImmutableSwrveConfig *)immutableSwrveConfig {
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
+- (NSString*)installDateFilePathForConfig{
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
     NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:installDateWithUserId];
@@ -81,8 +108,8 @@
 - (void)testSeqNumMigration {
 
     [[NSUserDefaults standardUserDefaults] setValue:@"100" forKey:@"swrve_event_seqnum"];
+    [SwrveLocalStorage saveSwrveUserId:@"joe"];
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    swrveConfig.userId = @"joe";
     ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
@@ -95,9 +122,10 @@
     XCTAssertEqual(oldSeqNum, 0);
 }
 
-- (void)testCampaignsStateMigrationInAutoTracking {
+- (void)testCampaignsStateMigration {
 
-    // create an campaign state file in the old v0 format.
+    [SwrveLocalStorage saveSwrveUserId:@"fake_user"]; // Fake user, migrations only run for existing installations
+    // Create an campaign state file in the old v0 format.
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *applicationSupportPath = [SwrveLocalStorage applicationSupportPath];
     BOOL dirCreated = [[NSFileManager defaultManager] createDirectoryAtPath:applicationSupportPath withIntermediateDirectories:YES attributes:nil error:nil];
@@ -112,8 +140,8 @@
     ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
-
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
+    
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
     NSString *userId = [profileManager userId];
     NSString *campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:userId];
     XCTAssertTrue([fileManager fileExistsAtPath:campaignsStateFilePath] == YES);
@@ -163,12 +191,14 @@
 
 - (void)checkMigratedApplicationSupportFile:(NSString *)fileName {
 
-    // create the file
+    [SwrveLocalStorage saveSwrveUserId:@"fake_user"]; // Fake user, migrations only run for existing installations
+    
+    // Create the file
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *applicationSupportPath = [SwrveLocalStorage applicationSupportPath];
     BOOL dirCreated = [[NSFileManager defaultManager] createDirectoryAtPath:applicationSupportPath withIntermediateDirectories:YES attributes:nil error:nil];
     XCTAssertTrue(dirCreated == YES);
-    NSString *filePath = [applicationSupportPath stringByAppendingPathComponent: fileName];
+    NSString *filePath = [applicationSupportPath stringByAppendingPathComponent:fileName];
     NSData *data = [@"123456" dataUsingEncoding:NSUTF8StringEncoding];
     BOOL success1 = [fileManager createFileAtPath:filePath contents:data attributes:nil];
     XCTAssertTrue(success1 == YES);
@@ -178,8 +208,8 @@
     ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
-
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:immutableSwrveConfig.userId];
+    
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
     NSString *userId = [profileManager userId];
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
     NSString *migratedFileName = [userId stringByAppendingString:fileName];
@@ -188,6 +218,62 @@
     XCTAssertTrue([fileManager fileExistsAtPath:migratedFilePath] == YES);
     NSString *contents = [[NSString alloc] initWithContentsOfFile:migratedFilePath encoding:NSUTF8StringEncoding error:nil];
     XCTAssertTrue([contents isEqualToString:@"123456"], @"The contents of the migrated file are not the same after migration.");
+}
+
+-(void)testMigrate2Etag {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:@"TestEtag" forKey:@"campaigns_and_resources_etag"];
+    [SwrveLocalStorage saveSwrveUserId:@"UserId"];
+
+    XCTAssertTrue([@"TestEtag" isEqualToString:[SwrveLocalStorage eTagForUserId:@""]]);
+    XCTAssertNil([SwrveLocalStorage eTagForUserId:@"UserId"]);
+
+    SwrveMigrationsManager *swrveMigrationsManager = [[SwrveMigrationsManager alloc] init];
+    [SwrveMigrationsManager setCurrentCacheVersion:0];
+    [swrveMigrationsManager checkMigrations];
+
+    XCTAssertNil([defaults objectForKey:@"campaigns_and_resources_etag"]);
+    XCTAssertTrue([@"TestEtag" isEqualToString:[SwrveLocalStorage eTagForUserId:@"UserId"]]);
+}
+
+-(void)testMigrate2InstallDate_From_v0 {
+    [SwrveLocalStorage saveSwrveUserId:@"UserId"]; // Fake user, migrations only run for existing installations
+    
+    // Create install date file in old format
+    [self createInstallDateV0FormatWithDate:@"00000"];
+
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    [SwrveMigrationsManager setCurrentCacheVersion:0]; // migrate from 0
+    [migrationsManager checkMigrations];
+    
+    NSString *documentPath = [SwrveLocalStorage documentPath];
+    NSString *appInstallDateFilePath = [documentPath stringByAppendingPathComponent:@"swrve_install.txt"];
+    XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:appInstallDateFilePath] == YES);
+    
+    NSString *appInstallDateContents = [[NSString alloc] initWithContentsOfFile:appInstallDateFilePath encoding:NSUTF8StringEncoding error:nil];
+    XCTAssertTrue([appInstallDateContents isEqualToString:@"00000"], @"The contents of the app install date is not correct after copying current user joined time.");
+}
+
+-(void)testMigrate2InstallDate_From_v1 {
+    [SwrveLocalStorage saveSwrveUserId:@"UserId"]; // Fake user, migrations only run for existing installations
+    
+    // Create install date file in format v1
+    [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:@"UserId"];
+    
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    [SwrveMigrationsManager setCurrentCacheVersion:1]; //migrate from 1
+    [migrationsManager checkMigrations];
+    
+    NSString *documentPath = [SwrveLocalStorage documentPath];
+    NSString *appInstallDateFilePath = [documentPath stringByAppendingPathComponent:@"swrve_install.txt"];
+    XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:appInstallDateFilePath] == YES);
+    
+    NSString *appInstallDateContents = [[NSString alloc] initWithContentsOfFile:appInstallDateFilePath encoding:NSUTF8StringEncoding error:nil];
+    XCTAssertTrue([appInstallDateContents isEqualToString:@"987654321"], @"The contents of the app install date is not correct after copying current user joined time.");
 }
 
 @end

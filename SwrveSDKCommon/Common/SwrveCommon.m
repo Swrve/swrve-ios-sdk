@@ -16,11 +16,7 @@ static id <SwrveCommonDelegate> _sharedInstance = NULL;
 
 +(BOOL)supportedOS {
   // Detect if the SDK can run on this OS
-#if TARGET_OS_TV
-  return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0");
-#else
-  return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0");
-#endif
+  return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0");
 }
 
 + (UIApplication *) sharedUIApplication {

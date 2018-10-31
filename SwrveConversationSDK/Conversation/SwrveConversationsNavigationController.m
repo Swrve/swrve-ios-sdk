@@ -11,14 +11,9 @@
     return self;
 }
 
-- (BOOL)shouldAutorotate {
-    return YES;
-}
 
-#if defined(__IPHONE_9_0)
-#else
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-#pragma unused(interfaceOrientation)
+#if TARGET_OS_IOS
+- (BOOL)shouldAutorotate {
     return YES;
 }
 #endif

@@ -1,5 +1,6 @@
 #include <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 /*! Resource setup in the dashboard. A collection of attributes under a UID. */
 @interface SwrveResource : NSObject
 
@@ -71,7 +72,7 @@
  * \param resourceId Unique resource identifier.
  * \returns The resource with the given uid or nil.
  */
-- (SwrveResource*) resourceWithId:(NSString*)resourceId;
+- (nullable SwrveResource*) resourceWithId:(NSString*)resourceId;
 
 /*! Get an attribute of the resource as a string.
  *
@@ -116,3 +117,4 @@
 - (NSArray*) abTestDetails;
 
 @end
+NS_ASSUME_NONNULL_END

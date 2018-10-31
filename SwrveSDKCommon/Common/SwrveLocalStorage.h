@@ -1,15 +1,23 @@
 #import <Foundation/Foundation.h>
 
+enum SwrveTrackingState {
+    ON,
+    EVENT_SENDING_PAUSED
+};
+
 @interface SwrveLocalStorage : NSObject
 
++ (void)resetDirectoryCreation;
 + (NSString *)applicationSupportPath;
 + (NSString *)cachePath;
 + (NSString *)documentPath;
 + (NSString *)swrveAppSupportDir;
 + (NSString *)swrveCacheVersionFilePath;
-+ (UInt64)installTimeForUserId:(NSString *)userId;
-+ (void)saveInstallTime:(UInt64)installTime forUserId:(NSString *)userId;
-+ (NSString *)installDateFilePathForUserId:(NSString *)userId;
++ (UInt64)userJoinedTimeSeconds:(NSString *)userId;
++ (void)saveUserJoinedTime:(UInt64)userInitTime forUserId:(NSString *)userId;
++ (UInt64)appInstallTimeSeconds;
++ (void)saveAppInstallTime:(UInt64)appInstallTime;
++ (NSString *)userInitDateFilePath:(NSString*)userId;
 + (NSString *)eventsFilePathForUserId:(NSString *)userId;
 + (NSString *)campaignsFilePathForUserId:(NSString *)userId;
 + (NSString *)campaignsSignatureFilePathForUserId:(NSString *)userId;
@@ -18,8 +26,6 @@
 + (NSString *)campaignsAdSignatureFilePathForUserId:(NSString *)userId;
 + (NSString *)debugCampaignsNoticationFilePathForUserId:(NSString *)userId;
 + (NSString *)debugCampaignsNotificationSignatureFilePathForUserId:(NSString *)userId;
-+ (NSString *)locationCampaignFilePathForUserId:(NSString *) userId;
-+ (NSString *)locationCampaignSignatureFilePathForUserId:(NSString *) userId;
 + (NSString *)userResourcesFilePathForUserId:(NSString *) userId ;
 + (NSString *)userResourcesSignatureFilePathForUserId:(NSString *) userId;
 + (NSString *)userResourcesDiffFilePathForUserId:(NSString *) userId;
@@ -27,24 +33,20 @@
 + (NSString *)anonymousEventsFilePath;
 + (NSString *)swrveCacheFolder;
 
-
 //NSUserdefaults
 + (double)flushFrequency;
 + (void)saveFlushFrequency:(double)flushFrequency;
 + (double)flushDelay;
 + (void)saveflushDelay:(double)flushDelay;
-+ (NSString *)eTag;
-+ (void)saveETag:(NSString *)eTag;
-+ (void)removeETag;
++ (void)saveETag:(NSString *)eTag forUserId:(NSString *)userId;
++ (NSString *)eTagForUserId:(NSString *)userId;
++ (void)removeETagForUserId:(NSString *)userId;
 + (id)deviceToken;
-+ (void)saveDeviceToken:(NSString*)deviceToken;
++ (void)saveDeviceToken:(NSString *)deviceToken;
 + (void)removeDeviceToken;
 + (void)saveSeqNum:(NSInteger)seqNum withCustomKey:(NSString *)key;
 + (NSInteger)seqNumWithCustomKey:(NSString *)key;
 + (void)removeSeqNumWithCustomKey:(NSString *)key;
-+ (void)saveShortDeviceID:(NSNumber *)deviceID;
-+ (NSNumber*)shortDeviceID;
-+ (void)removeShortDeviceID;
 + (void)saveSwrveUserId:(NSString *)swrveUserId;
 + (NSString *)swrveUserId;
 + (void)removeSwrveUserId;
@@ -54,5 +56,7 @@
 + (bool)askedForPushPermission;
 + (NSDictionary *)qaUser;
 + (void)saveQaUser:(NSDictionary *)qaUser;
++ (void)saveDeviceUUID:(NSString *)deviceUUID;
++ (NSString *)deviceUUID;
 
 @end

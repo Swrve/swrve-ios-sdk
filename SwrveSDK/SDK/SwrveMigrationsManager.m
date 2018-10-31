@@ -1,6 +1,4 @@
 #import "SwrveMigrationsManager.h"
-#import "SwrveLocalStorage.h"
-#import "SwrveProfileManager.h"
 
 @interface SwrveMigrationsManager ()
 
@@ -11,7 +9,7 @@
 
 @implementation SwrveMigrationsManager
 
-const static int SWRVE_SDK_CACHE_VERSION = 1;
+const static int SWRVE_SDK_CACHE_VERSION = 2;
 
 @synthesize cacheVersionFilePath;
 @synthesize config;
@@ -27,51 +25,75 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
 
 - (void)checkMigrations {
     @synchronized (self) {
-        int oldCacheVersion = [self getCurrentCacheVersion];
-        if (oldCacheVersion < SWRVE_SDK_CACHE_VERSION) {
-            [self migrateFromVersion:oldCacheVersion];
-        } else {
-            DebugLog(@"No cache migration required.");
+        int oldCacheVersion = [self currentCacheVersion];
+        BOOL firstRun = NO;
+
+        // Detect if this is a first time install of the SDK
+        if (oldCacheVersion == 0) {
+            NSString* userId = [SwrveLocalStorage swrveUserId];
+            if (userId == nil) {
+                firstRun = YES; // Skip migrations
+            }
         }
 
-        if (oldCacheVersion != SWRVE_SDK_CACHE_VERSION) {
-            [self setCurrentCacheVersion:SWRVE_SDK_CACHE_VERSION]; // update stored current version so migration doesn't execute again.
+        if (!firstRun) {
+            if (oldCacheVersion < SWRVE_SDK_CACHE_VERSION) {
+                [self migrateFromVersion:oldCacheVersion];
+            } else {
+                DebugLog(@"No cache migration required.");
+            }
+        }
+
+        if (firstRun || oldCacheVersion != SWRVE_SDK_CACHE_VERSION) {
+            [SwrveMigrationsManager markAsMigrated]; // update stored current version so migration doesn't execute again.
         }
     }
 }
 
-- (int)getCurrentCacheVersion {
+- (int)currentCacheVersion {
     int currentCacheVersion = 0;
 
     NSError *error = nil;
     NSString *file_contents = [[NSString alloc] initWithContentsOfFile:cacheVersionFilePath encoding:NSUTF8StringEncoding error:&error];
     if (!error && file_contents) {
         currentCacheVersion = [file_contents intValue];
-    } else {
-        DebugLog(@"Could not get current cache version so creating new one at filePath:%@. Error: %@ %@", cacheVersionFilePath, error, [error userInfo]);
     }
 
     return currentCacheVersion;
 }
 
-- (void)setCurrentCacheVersion:(int)cacheVersion {
++ (void)markAsMigrated {
+    [SwrveMigrationsManager setCurrentCacheVersion:SWRVE_SDK_CACHE_VERSION];
+}
+
++ (void)setCurrentCacheVersion:(int)cacheVersion {
+    NSString *_cacheVersionFilePath = [SwrveLocalStorage swrveCacheVersionFilePath];
     NSString *cacheVersionString = [NSString stringWithFormat:@"%i", cacheVersion];
     NSError *error = nil;
-    [cacheVersionString writeToFile:cacheVersionFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    [cacheVersionString writeToFile:_cacheVersionFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     if (error) {
-        DebugLog(@"Could not set current cache version to %i in filePath:%@. Error: %@ %@", cacheVersion, cacheVersionFilePath, error, [error userInfo]);
+        DebugLog(@"Could not set current cache version to %i in filePath:%@. Error: %@ %@", cacheVersion, _cacheVersionFilePath, error, [error userInfo]);
     }
 }
 
 - (void)migrateFromVersion:(int)oldVersion {
 
-    // do not add break to this switch statement so execution will start at oldVersion, and run straight through to the latest
-    switch (oldVersion) {
+    int migrateFrom = oldVersion + 1;
+    if (oldVersion == 0) {
+        migrateFrom = oldVersion; // hack
+    }
+
+    // PLEASE READ:
+    // do not add break to this switch statement so execution will start at oldVersion + 1, and run straight through to the latest
+    switch (migrateFrom) {
         case 0: {
-            [self migrate0];
+            [self migrate0]; // various migrations before 5.0
         }
         case 1: {
-            [self migrate1];
+            [self migrate1]; // migrate from 4.11.4 to 5.0
+        }
+        case 2: {
+            [self migrate2]; // migrate from 5.3 to 6.0
         }
     }
 }
@@ -82,29 +104,26 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
     NSString* applicationSupportPath = [SwrveLocalStorage applicationSupportPath];
     NSString* documentPath = [SwrveLocalStorage documentPath];
 
-    [self migrate_0_deviceId];
+    [self migrate_0_delete_olderDeviceIDs];
     [self migrate_0_EventFileFromOldPath:cachePath toNewPath:applicationSupportPath];
     [self migrate_0_InstallTimeFileOldPath:cachePath toNewPath:documentPath];
-    [self migrate_0_LocationFileFromOldPath:cachePath toNewPath:applicationSupportPath];
     [self migrate_0_UserResourcesFileFromOldPath:cachePath toNewPath:applicationSupportPath];
     [self migrate_0_UsersResourcesDiffFileFromOldPath:cachePath toNewPath:applicationSupportPath];
     [self migrate_0_SettingsFromOldPath:cachePath toNewPath:applicationSupportPath];
     [self migrate_0_CampaignsFromOldPath:cachePath toNewPath:applicationSupportPath];
 }
 
-- (void)migrate_0_deviceId {
-    NSString *oldShortDeviceIdKey = @"swrve_device_id";
-    // Read old short device id and migrate it to short_device_id
-    NSString *oldShortDeviceId =  [[NSUserDefaults standardUserDefaults] stringForKey:oldShortDeviceIdKey];
-    if (oldShortDeviceId != nil) {
-        // Reproduce old behaviour, remove key when finished
-        NSUInteger shortDeviceIDInteger = [oldShortDeviceId hash];
-        if (shortDeviceIDInteger > 10000) {
-            shortDeviceIDInteger = shortDeviceIDInteger / 1000;
-        }
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldShortDeviceIdKey];
-        NSNumber *shortDeviceID = [NSNumber numberWithInteger:(NSInteger) shortDeviceIDInteger];
-        [SwrveLocalStorage saveShortDeviceID:shortDeviceID];
+- (void)migrate_0_delete_olderDeviceIDs {
+    NSString *oldShortDeviceIdKey1 = @"swrve_device_id";
+    NSString *oldShortDeviceId1 =  [[NSUserDefaults standardUserDefaults] stringForKey:oldShortDeviceIdKey1];
+    if (oldShortDeviceId1 != nil) {
+       [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldShortDeviceIdKey1];
+    }
+
+    NSString *oldShortDeviceIdKey2 = @"short_device_id";
+    NSString *oldShortDeviceId2 =  [[NSUserDefaults standardUserDefaults] stringForKey:oldShortDeviceIdKey2];
+    if (oldShortDeviceId2 != nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldShortDeviceIdKey2];
     }
 }
 
@@ -137,22 +156,6 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
     [self migrateOldCacheFile:installTimeCacheSecondaryFile withNewPath:installTimeCacheFile];
 
     [self migrateFileProtectionAtPath:installTimeCacheFile];
-}
-
-- (void)migrate_0_LocationFileFromOldPath:(NSString *)cachePath toNewPath:(NSString *)applicationSupportPath {
-    NSString *locationCampaignCacheFile = [applicationSupportPath stringByAppendingPathComponent: @"lc.txt"];
-    NSString *locationCampaignCacheSecondaryFile = [cachePath stringByAppendingPathComponent: @"lc.txt"];
-    [self migrateOldCacheFile:locationCampaignCacheSecondaryFile withNewPath:locationCampaignCacheFile];
-
-    NSString *locationCampaignCacheSignatureFile = [applicationSupportPath stringByAppendingPathComponent: @"lcsgt.txt"];
-    NSString *locationCampaignCacheSignatureSecondaryFile = [cachePath stringByAppendingPathComponent: @"lcsgt.txt"];
-    [self migrateOldCacheFile:locationCampaignCacheSignatureSecondaryFile withNewPath:locationCampaignCacheSignatureFile];
-
-    NSURL *fileURL = [NSURL fileURLWithPath:locationCampaignCacheFile];
-    NSURL *signatureURL = [NSURL fileURLWithPath:locationCampaignCacheSignatureFile];
-
-    [self migrateFileProtectionAtPath:[fileURL path]];
-    [self migrateFileProtectionAtPath:[signatureURL path]];
 }
 
 - (void)migrate_0_UserResourcesFileFromOldPath:(NSString *)cachePath toNewPath:(NSString *)applicationSupportPath {
@@ -238,8 +241,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
 - (void)migrate1 {
     DebugLog(@"Executing version 1 migration code. Migrate data per userId");
     NSString *userId = nil;
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithUserID:config.userId];
-    userId = [profileManager userId];
+    userId = [SwrveLocalStorage swrveUserId];
 
     if (userId && [userId length] > 0) {
         [self migrate_1_InstallFileWithUserId:userId];
@@ -333,5 +335,55 @@ const static int SWRVE_SDK_CACHE_VERSION = 1;
         DebugLog(@"There was an issue migrating the %@ file for userId: %@ \nError: %@", currentFileName, userId, error);
     }
 }
+
+- (void)migrate2 {
+    DebugLog(@"Executing version 2 migration code.");
+    NSString *userId = [SwrveLocalStorage swrveUserId];
+    if (userId && [userId length] > 0) {
+        [self migrate_2_AppInstallDateForUserId:userId];
+        [self migrate_2_EtagForUserId:userId];
+    }
+}
+
+- (void)migrate_2_AppInstallDateForUserId:(NSString *)userId {
+    DebugLog(@"Executing version 2 migration code. Copy existing swrve install date from current user to be used as the app install date.");
+
+    NSString *documentPath = [SwrveLocalStorage documentPath];
+    NSString *currentUserJoinedFileName = [userId stringByAppendingString:@"swrve_install.txt"];
+    NSString *currentUserJoinedFilePath = [documentPath stringByAppendingPathComponent:currentUserJoinedFileName];
+    NSString *newFilePath = [documentPath stringByAppendingPathComponent:@"swrve_install.txt"];
+
+    NSError *error = nil;
+    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:currentUserJoinedFilePath toPath:newFilePath error:&error];
+    if (success == YES) {
+        DebugLog(@"Copied the current user joined date file as app install date", nil);
+    } else {
+        DebugLog(@"There was an issue copying the current user joined date file as app install date", nil);
+    }
+    if (error) {
+        DebugLog(@"There was an issue copying the current user joined date file as app install date:\nError: %@", error);
+    }
+
+    UInt64 installTime = [SwrveLocalStorage userJoinedTimeSeconds:userId];
+    if (installTime > 0)  {
+        [SwrveLocalStorage saveAppInstallTime:installTime];
+        DebugLog(@"Copied current user's joined date as the app install date for all users");
+    }
+}
+
+- (void)migrate_2_EtagForUserId:(NSString *)userId {
+    DebugLog(@"Executing version 2 migration code. Migrate etag");
+    NSString *oldETagKey = @"campaigns_and_resources_etag";
+    NSString *currentETagValue = [[NSUserDefaults standardUserDefaults] stringForKey:oldETagKey];
+    [SwrveLocalStorage saveETag:currentETagValue forUserId:userId];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldETagKey];
+    BOOL success = [[NSUserDefaults standardUserDefaults] synchronize];
+    if (success) {
+        DebugLog(@"Migrated the etag NSUserDefault for userId: %@", userId);
+    } else {
+        DebugLog(@"There was an issue migrating the etag NSUserDefault for userId: %@", userId);
+    }
+}
+
 
 @end

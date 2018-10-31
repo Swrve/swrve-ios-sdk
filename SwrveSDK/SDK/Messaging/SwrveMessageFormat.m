@@ -36,12 +36,9 @@
     SwrveImage* image = [[SwrveImage alloc] init];
     image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
     image.center = [SwrveMessageFormat centerFromImageData:imageData];
-    image.size   = [SwrveMessageFormat sizeFromImageData:imageData];
 
-    DebugLog(@"Image Loaded: Asset: \"%@\" (w: %g h: %g x: %g y: %g)",
+    DebugLog(@"Image Loaded: Asset: \"%@\" (x: %g y: %g)",
           image.file,
-          image.size.width,
-          image.size.height,
           image.center.x,
           image.center.y);
 
@@ -58,7 +55,6 @@
     
     button.name       = [buttonData objectForKey:@"name"];
     button.center     = [SwrveMessageFormat centerFromImageData:buttonData];
-    button.size       = [SwrveMessageFormat sizeFromImageData:buttonData];
     button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
     button.messageID  = [message.messageID integerValue];
 

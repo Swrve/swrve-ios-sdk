@@ -7,8 +7,4 @@
 
 -(id) initWithTag:(NSString *)tag type:(NSString *)type andDictionary:(NSDictionary *)dict;
 
-#if TARGET_OS_IOS /** exclude tvOS **/
-+(UIScrollView*) scrollView:(UIWebView*)web;
-#endif
-
 @end

@@ -43,6 +43,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property(atomic) SwrveRESTClient *restClient;
 - (CGRect) deviceScreenBounds;
 - (NSString*) signatureKey;
+- (NSString *)userID;
 @end
 
 @interface SwrveCampaign(PrivateMethodsForMessageController)
@@ -158,7 +159,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     }
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
     self.assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
-    self.campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:sdk.userID];
+    self.campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:[sdk userID]];
 
     CGRect screen_bounds =  [SwrveUtils deviceScreenBounds];
     self.device_height = (int)screen_bounds.size.height;
@@ -166,7 +167,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.orientation   = sdk.config.orientation;
     self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
     self.language           = sdk.config.language;
-    self.user               = sdk.userID;
+    self.user               = [sdk userID];
     self.apiKey             = sdk.apiKey;
     self.server             = sdk.config.contentServer;
     self.analyticsSDK       = sdk;
@@ -238,7 +239,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSData* data = [NSData dataWithContentsOfFile:self.campaignsStateFilePath];
     if(!data)
     {
-        DebugLog(@"Error: No campaigns states loaded. [Reading from %@]", self.campaignsStateFilePath);
+        DebugLog(@"No campaigns states loaded. [Reading from %@]", self.campaignsStateFilePath);
         return;
     }
 
@@ -265,7 +266,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSData *data = [[NSUserDefaults standardUserDefaults] dataForKey:self.campaignsStateFilePath.lastPathComponent];
     if(!data)
     {
-        DebugLog(@"Error: No campaigns states loaded. [Reading from defaults %@]", self.campaignsStateFilePath.lastPathComponent);
+        DebugLog(@"No campaigns states loaded. [Reading from defaults %@]", self.campaignsStateFilePath.lastPathComponent);
         return;
     }
     
@@ -432,12 +433,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (BOOL)filtersOk:(NSArray *) filters {
-    
     // Check device filters (permission requests, platform)
-    NSString *lastCheckedFilter = nil;
     if (filters != nil) {
         for (NSString *filter in filters) {
-            lastCheckedFilter = filter;
             if (![self canSupportDeviceFilter:filter]) {
                 return false;
             }
@@ -757,10 +755,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Select messages with higher priority that have the current orientation
         NSNumber* minPriority = [NSNumber numberWithInteger:INT_MAX];
         NSMutableArray* candidateMessages = [[NSMutableArray alloc] init];
-        // Get current orientation
-#if TARGET_OS_IOS /** exclude tvOS **/
-        UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-#endif
         for (SwrveCampaign* baseCampaignIt in self.campaigns)
         {
             if ([baseCampaignIt isKindOfClass:[SwrveInAppCampaign class]]) {
@@ -768,37 +762,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                 NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
                 SwrveMessage* nextMessage = [campaignIt messageForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
                 if (nextMessage != nil) {
-                    BOOL canBeChosen = YES;
-                    // iOS9+ will display with local scale
-                    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-#if TARGET_OS_IOS /** exclude tvOS **/
-                        canBeChosen = [nextMessage supportsOrientation:currentOrientation];
-#else
-                        canBeChosen = YES;
-#endif
-                        
-                    }
-                    if (canBeChosen) {
-                        // Add to list of returned messages
-                        [availableMessages addObject:nextMessage];
-                        // Check if it is a candidate to be shown
-                        long nextMessagePriorityLong = [nextMessage.priority longValue];
-                        long minPriorityLong = [minPriority longValue];
-                        if (nextMessagePriorityLong <= minPriorityLong) {
-                            if (nextMessagePriorityLong < minPriorityLong) {
-                                // If it is lower than any of the previous ones
-                                // remove those from being candidates
-                                [candidateMessages removeAllObjects];
-                            }
-                            minPriority = nextMessage.priority;
-                            [candidateMessages addObject:nextMessage];
+                    // Add to list of returned messages
+                    [availableMessages addObject:nextMessage];
+                    // Check if it is a candidate to be shown
+                    long nextMessagePriorityLong = [nextMessage.priority longValue];
+                    long minPriorityLong = [minPriority longValue];
+                    if (nextMessagePriorityLong <= minPriorityLong) {
+                        if (nextMessagePriorityLong < minPriorityLong) {
+                            // If it is lower than any of the previous ones
+                            // remove those from being candidates
+                            [candidateMessages removeAllObjects];
                         }
-                    } else {
-                        if (self.qaUser != nil) {
-                            NSString* campaignIdString = [[NSNumber numberWithUnsignedInteger:campaignIt.ID] stringValue];
-                            [campaignMessages setValue:nextMessage.messageID forKey:campaignIdString];
-                            [campaignReasons setValue:@"Message didn't support the given orientation" forKey:campaignIdString];
-                        }
+                        minPriority = nextMessage.priority;
+                        [candidateMessages addObject:nextMessage];
                     }
                 }
             }
@@ -1083,8 +1059,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued {
+    if (message == nil) {
+        return;
+    }
     @synchronized(self) {
-        if ( message && self.inAppMessageWindow == nil && self.conversationWindow == nil ) {
+        if (self.inAppMessageWindow == nil && self.conversationWindow == nil) {
             SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
             messageViewController.message = message;
@@ -1251,9 +1230,15 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
     if(nonProcessedAction != nil) {
         NSURL* url = [NSURL URLWithString:nonProcessedAction];
-        if( url != nil ) {
-            DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
-            [[UIApplication sharedApplication] openURL:url];
+        if (url != nil) {
+            if (@available(iOS 10.0, *)) {
+                DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
+                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+                    DebugLog(@"Opening url [%@] successfully: %d", url, success);
+                }];
+            } else {
+                DebugLog(@"Action not handled, not supported (should not reach this code)");
+            }
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }
@@ -1341,22 +1326,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else {
         // Find a message that should be displayed
         SwrveMessage* message = nil;
-        if( [self.showMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
+        if ([self.showMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
             message = [self.showMessageDelegate messageForEvent:eventName withPayload:payload];
-        }
-        else {
+        } else {
             message = [self messageForEvent:eventName withPayload:payload];
-        }
-
-        // iOS9+ will display with local scale
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-            // Only show the message if it supports the given orientation
-#if TARGET_OS_IOS /** exclude tvOS **/
-            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-                DebugLog(@"The message doesn't support the current orientation", nil);
-                return NO;
-            }
-#endif
         }
 
         // Show the message if it exists
@@ -1404,34 +1377,16 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 {
     const NSString* orientationName = [self orientationName];
     UIDevice* device = [UIDevice currentDevice];
-    NSString* encodedDeviceName;
-    NSString* encodedSystemName;
-#if defined(__IPHONE_9_0)
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-        encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    } else
-#endif //defined(__IPHONE_9_0)
-    {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        encodedDeviceName = [[device model] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-        encodedSystemName = [[device systemName] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
-#pragma clang diagnostic pop
-    }
+    NSString* encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString* encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
     return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
             CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, self.analyticsSDK.locationSegmentVersion];
 }
 
 -(NSArray*) messageCenterCampaigns
 {
-    
 #if TARGET_OS_IOS /** exclude tvOS **/
-    // iOS9+ will display with local scale
-    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        return [self messageCenterCampaignsThatSupportOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
-    }
-
     return [self messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
 #else
     return [self messageCenterCampaignsForTvOS];
@@ -1497,18 +1452,6 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return YES;
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveMessage* message = [((SwrveInAppCampaign*)campaign).messages objectAtIndex:0];
-
-        // iOS9+ will display with local scale
-        
-#if TARGET_OS_IOS /** exclude tvOS **/
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-            // Only show the message if it supports the given orientation
-            if ( message != nil && ![message supportsOrientation:[[UIApplication sharedApplication] statusBarOrientation]] ) {
-                DebugLog(@"The message doesn't support the current orientation", nil);
-                return NO;
-            }
-        }
-#endif
 
         // Show the message if it exists
         if( message != nil ) {

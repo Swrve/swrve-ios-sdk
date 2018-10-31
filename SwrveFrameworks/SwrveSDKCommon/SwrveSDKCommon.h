@@ -10,15 +10,8 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 
 
 // Common - Permissions
-#import <SwrveSDKCommon/ISHPermissionCategory.h>
-#import <SwrveSDKCommon/ISHPermissionRequest+All.h>
-#import <SwrveSDKCommon/ISHPermissionRequest+Private.h>
-#import <SwrveSDKCommon/ISHPermissionRequest.h>
-#import <SwrveSDKCommon/ISHPermissionRequestAddressBook.h>
-#import <SwrveSDKCommon/ISHPermissionRequestLocation.h>
-#import <SwrveSDKCommon/ISHPermissionRequestNotificationsRemote.h>
-#import <SwrveSDKCommon/ISHPermissionRequestPhotoCamera.h>
-#import <SwrveSDKCommon/ISHPermissionRequestPhotoLibrary.h>
+#import <SwrveSDKCommon/SwrvePermissionState.h>
+#import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
 
 // Common - Push
 #import <SwrveSDKCommon/SwrvePush.h>
@@ -32,9 +25,9 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveRESTClient.h>
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
-#import <SwrveSDKCommon/SwrveProfileManager.h>
 #import <SwrveSDKCommon/SwrveQA.h>
 #import <SwrveSDKCommon/SwrveCampaignInfluence.h>
+#import <SwrveSDKCommon/SwrveUser.h>
 #import <SwrveSDKCommon/SwrveNotificationManager.h>
 #import <SwrveSDKCommon/SwrveNotificationOptions.h>
 #import <SwrveSDKCommon/SwrveNotificationConstants.h>

@@ -3,6 +3,11 @@
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveConfig.h"
 #import "SwrveReceiptProvider.h"
+#if __has_include(<SwrveSDKCommon/SwrvePermissionsDelegate.h>)
+#import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
+#else
+#import "SwrvePermissionsDelegate.h"
+#endif
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #if __has_include(<SwrveSDKCommon/SwrvePush.h>)
@@ -26,10 +31,6 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 /*! Advanced configuration for the Swrve SDK. */
 @interface SwrveConfig : NSObject
 
-/*! The userID is used by Swrve to identify unique users. It must be unique for all users
- * of your app. If not specified the SDK will assign a random UUID to this device. */
-@property (nonatomic, retain) NSString * userId;
-
 /*! The supported orientations of the app. */
 @property (nonatomic) SwrveInterfaceOrientation orientation;
 
@@ -46,7 +47,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  * If you use a different application versioning system than you can specify
  * this here. If you are doing this please contact the Swrve team.
  */
-@property (nonatomic, retain) NSString * appVersion;
+@property (nonatomic, retain) NSString *appVersion;
 
 /*! Swrve will read the language from the current device using the [NSLocale preferredLanguages] API.
  * If your app has a custom mechanism to allow users to change their language, then you should set this property.
@@ -56,14 +57,14 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  *
  * Typical values are codes such as en_US, en_GB or fr_FR.
  */
-@property (nonatomic, retain) NSString * language;
+@property (nonatomic, retain) NSString *language;
 
 /*! Controls if resources and in-app messages are automatically downloaded.
  */
 @property (nonatomic) BOOL autoDownloadCampaignsAndResources;
 
 /*! Default in-app background color used if none is specified in the template */
-@property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;
+@property (nonatomic, retain) UIColor *inAppMessageBackgroundColor;
 
 /*! Session timeout time in seconds. User activity after this time will be considered a new session. */
 @property (nonatomic) double newSessionInterval;
@@ -97,26 +98,19 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic) BOOL pushEnabled;
 
 /*! The set of Swrve events that will trigger push notifications. */
-@property (nonatomic, retain) NSSet* pushNotificationEvents;
+@property (nonatomic, retain) NSSet *pushNotificationEvents;
 
 /*! Controls if the SDK automatically collects the push device token. To
  * manually set the device token yourself set to NO.
  */
 @property (nonatomic) BOOL autoCollectDeviceToken;
 
-/*! Set of iOS8+ interactive push notification categories (UIMutableUserNotificationCategory).
- * Initialize this set only if running on an iOS8+ device with the interactive actions that
- * your app supports for push notifications. Will be used when registering for
- * push notification permissions with UIUserNotificationSettings.
- */
-@property (nonatomic, copy) NSSet* pushCategories;
-
 /*! Set of iOS10+ interactive push notification categories (UNUser).
  * Intialise this set only if running on an iOS10+ device with the interactive actions that
  * your app supports for push notifications. Will be used when registering for
  * notification permissions with UNUserNotificationCenter
  */
-@property (nonatomic, copy) NSSet* notificationCategories;
+@property (nonatomic, copy) NSSet *notificationCategories;
 
 /*!
  * This is an optional delegate that can be extended to fire rich push responses from a class of your choice.
@@ -131,7 +125,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  *  Intialise this if you are using extensions and want to share data across to swrve.
  *  The appGroupIdentifier must match the one used in the accompanying extension to be shared correcly.
  */
-@property (nonatomic, copy) NSString* appGroupIdentifier;
+@property (nonatomic, copy) NSString *appGroupIdentifier;
 
 /*! Maximum delay for in-app messages to appear after initialization. */
 @property (nonatomic) long autoShowMessagesMaxDelay;
@@ -145,13 +139,19 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  * If your company has a special API end-point enabled, then you should specify it here.
  * You should only need to change this value if you are working with Swrve support on a specific support issue.
  */
-@property (nonatomic, retain) NSString * eventsServer;
+@property (nonatomic, retain) NSString *eventsServer;
 
 /*! Set to override the default location of the server from which Swrve will receive personalized content.
  * If your company has a special API end-point enabled, then you should specify it here.
  * You should only need to change this value if you are working with Swrve support on a specific support issue.
  */
-@property (nonatomic, retain) NSString * contentServer;
+@property (nonatomic, retain) NSString *contentServer;
+
+/*! Set to override the default location of the server from which Swrve will Identify users.
+ * If your company has a special API end-point enabled, then you should specify it here.
+ * You should only need to change this value if you are working with Swrve support on a specific support issue.
+ */
+@property (nonatomic, retain) NSString *identityServer;
 
 /*! The stack your app resides in.
  */
@@ -161,37 +161,41 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  */
 @property (nonatomic) BOOL abTestDetailsEnabled;
 
+/*! Implement this delegate in your app to be able to report on permissions and use them as message actions.
+ */
+@property (nonatomic, retain) id <SwrvePermissionsDelegate> permissionsDelegate;
+
 @end
 
 /*! Immutable copy of a SwrveConfig object */
 @interface ImmutableSwrveConfig : NSObject
 
-- (id)initWithMutableConfig:(SwrveConfig*)config;
-@property (nonatomic, readonly) NSString * userId;
+- (id)initWithMutableConfig:(SwrveConfig *)config;
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
 @property (nonatomic, readonly) BOOL prefersIAMStatusBarHidden;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
-@property (nonatomic, readonly) NSString * eventsServer;
-@property (nonatomic, readonly) NSString * contentServer;
-@property (nonatomic, readonly) NSString * language;
-@property (nonatomic, readonly) NSString * appVersion;
+@property (nonatomic, readonly) NSString *eventsServer;
+@property (nonatomic, readonly) NSString *contentServer;
+@property (nonatomic, readonly) NSString *identityServer;
+@property (nonatomic, readonly) NSString *language;
+@property (nonatomic, readonly) NSString *appVersion;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
-@property (nonatomic, readonly) UIColor* inAppMessageBackgroundColor;
+@property (nonatomic, readonly) UIColor *inAppMessageBackgroundColor;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property (nonatomic, readonly) BOOL pushEnabled;
-@property (nonatomic, readonly) NSSet* pushNotificationEvents;
+@property (nonatomic, readonly) NSSet *pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
-@property (nonatomic, readonly) NSSet* pushCategories;
-@property (nonatomic, readonly) NSSet* notificationCategories;
+@property (nonatomic, readonly) NSSet *notificationCategories;
 @property (nonatomic, readonly) id<SwrvePushResponseDelegate> pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
 @property (nonatomic, readonly) NSString *appGroupIdentifier;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
 @property (nonatomic, readonly) enum SwrveStack stack;
 @property (nonatomic) BOOL abTestDetailsEnabled;
+@property (nonatomic, retain) id <SwrvePermissionsDelegate> permissionsDelegate;
 
 @end

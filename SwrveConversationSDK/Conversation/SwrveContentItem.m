@@ -18,20 +18,5 @@ static NSString *const kSwrveKeyValue = @"value";
 - (void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
 #pragma unused (orientation)
 }
-
-+(UIScrollView*) scrollView:(UIWebView*)web {
-    if ([web respondsToSelector:@selector(scrollView)]) {
-        return [web scrollView];
-    } else {
-        UIScrollView *v = nil;
-        for (UIView* subview in [web subviews]) {
-            if ([subview isKindOfClass:[UIScrollView class]]) {
-                v = (UIScrollView*)subview;
-                break;
-            }
-        }
-        return v;
-    }
-}
 #endif
 @end

@@ -141,11 +141,7 @@ static float const kSwrveStarRatingPadding = 40.0f;
     CGPoint itemImagePosition;
     itemImagePosition.x = ((contextRect.size.width - itemImageSize.width) / 2);
     itemImagePosition.y = ((contextRect.size.height - itemImageSize.height) );
-
-    if ([[UIScreen mainScreen] respondsToSelector:@selector((scale))])
-        UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, [[UIScreen mainScreen] scale]);
-    else
-        UIGraphicsBeginImageContext(contextRect.size);
+    UIGraphicsBeginImageContextWithOptions(contextRect.size, NO, [[UIScreen mainScreen] scale]);
 
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGContextBeginTransparencyLayer(c, NULL);

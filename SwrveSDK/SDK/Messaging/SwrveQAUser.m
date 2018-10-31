@@ -21,6 +21,7 @@ enum
 
 
 @interface Swrve (SwrveQAUserTests)
+- (NSString *)userID;
 @property(atomic) SwrveRESTClient *restClient;
 @end
 
@@ -109,7 +110,7 @@ enum
 
         [talkSessionJson setValue:campaignsJson forKey:@"campaigns"];
         // Add device info to request
-        NSDictionary* deviceJson = ((id<SwrveCommonDelegate>)self.swrve).deviceInfo;
+        NSDictionary* deviceJson = [(id<SwrveCommonDelegate>)swrve deviceInfo];
         [talkSessionJson setValue:deviceJson forKey:@"device"];
         [self makeRequest:endpoint withJSON:talkSessionJson];
     }
@@ -217,8 +218,9 @@ enum
 -(void)updateDeviceInfo
 {
     if ([self canMakeRequest]) {
-        NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/device_info", self.loggingUrl, self.swrve.apiKey, self.swrve.userID];
-        NSMutableDictionary* deviceJson = [NSMutableDictionary dictionaryWithDictionary:((id<SwrveCommonDelegate>)self.swrve).deviceInfo];
+        NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/device_info", self.loggingUrl, self.swrve.apiKey, [self.swrve userID]];
+        NSDictionary *dic = [(id<SwrveCommonDelegate>)self.swrve deviceInfo];
+        NSMutableDictionary* deviceJson = [NSMutableDictionary dictionaryWithDictionary:dic];
         [self makeRequest:endpoint withJSON:deviceJson];
     }
 }
@@ -228,7 +230,7 @@ enum
     if ([self canMakeTriggerRequest]) {
 
         NSString* redirect = self.loggingUrl;
-        NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/push", redirect, self.swrve.apiKey, self.swrve.userID];
+        NSString* endpoint = [NSString stringWithFormat:@"%@/talk/game/%@/user/%@/push", redirect, self.swrve.apiKey, [self.swrve userID]];
 
         NSDictionary* aps = [notification valueForKey:@"aps"];
         NSMutableDictionary* note = [[NSMutableDictionary alloc] init];

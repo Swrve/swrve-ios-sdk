@@ -6,8 +6,6 @@ static NSString* SWRVE_CACHE_VERSION = @"swrve_cache_version.txt";
 static NSString* SWRVE_INSTALL = @"swrve_install.txt";
 static NSString* SWRVE_EVENTS = @"swrve_events.txt";
 static NSString* SWRVE_CAMPAIGNS_STATE_PLIST = @"com.swrve.messages.settings.plist";
-static NSString* SWRVE_LOCATION_CAMPAIGNS = @"lc.txt";
-static NSString* SWRVE_LOCATION_CAMPAIGNS_SGT = @"lcsgt.txt";
 static NSString* SWRVE_USER_RESOURCES = @"srcngt2.txt";
 static NSString* SWRVE_USER_RESOURCES_SGT = @"srcngtsgt2.txt";
 static NSString* SWRVE_USER_RESOURCES_DIFF = @"rsdfngt2.txt";
@@ -26,17 +24,25 @@ static NSString* SWRVE_CR_FLUSH_DELAY = @"swrve_cr_flush_delay";
 static NSString* SWRVE_CAMPAIGN_RESOURCE_ETAG = @"campaigns_and_resources_etag";
 static NSString* SWRVE_DEVICE_TOKEN = @"swrve_device_token";
 static NSString* SWRVE_EVENT_SEQNUM = @"swrve_event_seqnum";
-// old version was @"swrve_device_id", was changed in migration0 see migration manager
-static NSString* SWRVE_SHORT_DEVICE_ID =  @"short_device_id";
 static NSString* SWRVE_USER_ID_KEY = @"swrve_user_id";
 static NSString* SWRVE_PERMISSION_STATUS = @"swrve_permission_status";
 static NSString* SWRVE_ASKED_FOR_PUSH_PERMISSIONS = @"swrve.asked_for_push_permission";
 static NSString* SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
 static NSString* SWRVE_QA_USER = @"swrve.q1";
+//this has replaced swrve_device_id and short_device_id
+static NSString* SWRVE_DEVICE_UUID = @"swrve_device_uuid";
+
+static dispatch_once_t applicationSupportPathOnceToken = 0;
+static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 
 @implementation SwrveLocalStorage
 
 #pragma mark - User defaults management
+
++ (void)resetDirectoryCreation {
+    applicationSupportPathOnceToken = 0;
+    swrveAppSupportDirOnceToken = 0;
+}
 
 + (NSUserDefaults*)defaults {
     return [NSUserDefaults standardUserDefaults];
@@ -64,16 +70,22 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 
 //// SWRVE ETAG ////
 
-+ (void)saveETag:(NSString*)eTag {
-    [[self defaults] setValue:eTag forKey:SWRVE_CAMPAIGN_RESOURCE_ETAG];
++ (void)saveETag:(NSString *)eTag forUserId:(NSString*)userId {
+    if (userId == nil) { return; }
+    NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
+    [[self defaults] setObject:eTag forKey:key];
 }
 
-+ (NSString *)eTag {
-    return [[self defaults] stringForKey:SWRVE_CAMPAIGN_RESOURCE_ETAG];
++ (NSString *)eTagForUserId:(NSString *)userId {
+    if (userId == nil) { return nil; }
+    NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
+    return [[self defaults] stringForKey:key];
 }
 
-+ (void)removeETag {
-     [[self defaults] removeObjectForKey:SWRVE_CAMPAIGN_RESOURCE_ETAG];
++ (void)removeETagForUserId:(NSString *)userId {
+    if (userId == nil) { return; }
+     NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
+     [[self defaults] removeObjectForKey:key];
 }
 
 //// SWRVE DEVICE TOKEN ////
@@ -104,20 +116,6 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     [[self defaults] removeObjectForKey:key];
 }
 
-//// SWRVE SHORT DEVICE ID ////
-
-+ (void)saveShortDeviceID:(NSNumber*)deviceID {
-    [[self defaults] setObject:deviceID forKey:SWRVE_SHORT_DEVICE_ID];
-}
-
-+ (NSNumber*)shortDeviceID {
-    return [[self defaults] objectForKey:SWRVE_SHORT_DEVICE_ID];
-}
-
-+ (void)removeShortDeviceID {
-   [[self defaults]removeObjectForKey:SWRVE_SHORT_DEVICE_ID];
-}
-
 //// SWRVE USER ID ////
 
 + (void)saveSwrveUserId:(NSString *) swrveUserId {
@@ -142,7 +140,6 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     return [[self defaults] dictionaryForKey:SWRVE_PERMISSION_STATUS];
 }
 
-
 //// SWRVE PERMISSIONS BOOL ////
 
 + (void)saveAskedForPushPermission:(bool) status {
@@ -155,21 +152,33 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 
 //// SWRVE QA USER ////
 
-+ (NSDictionary*)qaUser {
++ (NSDictionary *)qaUser {
    return [[self defaults] dictionaryForKey:SWRVE_QA_USER];
 }
 
-+ (void)saveQaUser:(NSDictionary*)qaUser {
++ (void)saveQaUser:(NSDictionary *)qaUser {
    [[self defaults] setObject:qaUser forKey:SWRVE_QA_USER];
+}
+
+//// SWRVE DEVICE UUID ////
+
++ (void)saveDeviceUUID:(NSString *)deviceUUID {
+    [[self defaults] setValue:deviceUUID forKey:SWRVE_DEVICE_UUID];
+}
+
++ (NSString *)deviceUUID {
+    return [[self defaults] stringForKey:SWRVE_DEVICE_UUID];
 }
 
 #pragma mark - Application data management
 
 + (NSString *) applicationSupportPath {
-    //tvOS does not support writing to the application support directory, so use cache directory
-    #if TARGET_OS_TV
-        return [SwrveLocalStorage cachePath];
-    #else
+// tvOS does not support writing to the application support directory, so use cache directory
+#if TARGET_OS_TV
+    return [SwrveLocalStorage cachePath];
+#else
+    static NSString *_path;
+    dispatch_once(&applicationSupportPathOnceToken, ^{
         NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
         if (![[NSFileManager defaultManager] fileExistsAtPath:appSupportDir isDirectory:NULL]) {
             NSError *error = nil;
@@ -180,38 +189,66 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
                 DebugLog(@"Successfully Created Directory: %@", appSupportDir);
             }
         }
-        return appSupportDir;
-    #endif
+        _path = appSupportDir;
+    });
+    
+    return _path;
+#endif
 }
 
 + (NSString *)cachePath {
-    return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    static NSString *_path;
+    static dispatch_once_t doOnceToken;
+    dispatch_once(&doOnceToken, ^{
+        _path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    });
+    
+    return _path;
 }
 
 + (NSString *)documentPath {
-    return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    static NSString *_path;
+    static dispatch_once_t doOnceToken;
+    dispatch_once(&doOnceToken, ^{
+        _path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    });
+    
+    return _path;
 }
 
 + (NSString *)swrveAppSupportDir {
-    NSString *appSupportDir = [SwrveLocalStorage applicationSupportPath];
-    NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:SWRVE_APP_SUPPORT_DIR];
-    NSError *error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir withIntermediateDirectories:YES attributes:nil error:&error];
-    if (error == nil) {
-        DebugLog(@"First time migration or installation. Created Swrve app support directory:%@.", swrveAppSupportDir);
-    }
-    return swrveAppSupportDir;
+    static NSString *_path;
+    dispatch_once(&swrveAppSupportDirOnceToken, ^{
+        NSString *appSupportDir = [SwrveLocalStorage applicationSupportPath];
+        NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:SWRVE_APP_SUPPORT_DIR];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:swrveAppSupportDir isDirectory:NULL]) {
+            NSError *error = nil;
+            [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir withIntermediateDirectories:YES attributes:nil error:&error];
+            if (error == nil) {
+                DebugLog(@"First time migration or installation. Created Swrve app support directory: %@.", swrveAppSupportDir);
+            }
+        }
+        _path = swrveAppSupportDir;
+    });
+    
+    return _path;
 }
 
 + (NSString *)swrveCacheVersionFilePath {
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
-    NSString *swrveCacheVersionFilePath = [swrveAppSupportDir stringByAppendingPathComponent:SWRVE_CACHE_VERSION];
-    return swrveCacheVersionFilePath;
+    return [swrveAppSupportDir stringByAppendingPathComponent:SWRVE_CACHE_VERSION];
 }
 
-// Get the time that the application was first installed. This value is stored in a file. If this file is not available
-// then 0 is returned.
-+ (UInt64)installTimeForUserId:(NSString*) userId {
++ (UInt64)appInstallTimeSeconds {
+    return [SwrveLocalStorage userJoinedTimeSeconds:@""]; // pass empty string as app Install time is saved with no id
+}
+
+// Get the time that the user first joined the app. This value is stored in a file and might be different to app install
+// time if multiple users are identified. If this file is not available then 0 is returned.
++ (UInt64)userJoinedTimeSeconds:(NSString *)userId {
+    
+    NSString *logMessage = ([userId isEqualToString:@""]) ? @"App install time:" : @"User Joined time:";
+#pragma unused(logMessage) // for when debuglog is off
 
     unsigned long long seconds = 0;
 #if TARGET_OS_TV
@@ -222,64 +259,76 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     seconds = [[self defaults] integerForKey:installDateKey];
     unsigned long long secondsSinceEpoch = (unsigned long long)([[NSDate date] timeIntervalSince1970]);
     if(seconds > secondsSinceEpoch){
-        DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
+        DebugLog(@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage);
         seconds = seconds / 1000;
         if(seconds > secondsSinceEpoch){
-            DebugLog(@"install_time from current file_contents was corrupted. setting as today");
+            DebugLog(@"%@ from current file_contents was corrupted. setting as today", logMessage);
             //install time stored was corrupted and must be added as today.
             seconds = secondsSinceEpoch;
         }
         [[self defaults] setInteger:seconds forKey:installDateKey];
     }
 #else
-    NSError* error = nil;
-    NSString *fileName = [SwrveLocalStorage installDateFilePathForUserId:userId];
-    NSString* file_contents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
+    NSError *error = nil;
+    NSString *fileName = [SwrveLocalStorage userInitDateFilePath:userId];
+    NSString *file_contents = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
     if (!error && file_contents) {
         seconds = (unsigned long long)[file_contents longLongValue];
         unsigned long long secondsSinceEpoch = (unsigned long long)([[NSDate date] timeIntervalSince1970]);
         // ensure the install time is stored in seconds, legacy from < iOS SDK 4.7
         if(seconds > secondsSinceEpoch){
-            DebugLog(@"install_time from current file_contents was in milliseconds. restoring as seconds");
+            DebugLog(@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage);
             seconds = seconds / 1000;
             if(seconds > secondsSinceEpoch){
-                DebugLog(@"install_time from current file_contents was corrupted. setting as today");
+                DebugLog(@"%@ from current file_contents was corrupted. setting as today", logMessage);
                 //install time stored was corrupted and must be added as today.
                 seconds = secondsSinceEpoch;
             }
 
             file_contents = [NSString stringWithFormat:@"%llu", seconds];
-            [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            
+            error = nil;
+            BOOL success = [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
+            if (!success) {
+                DebugLog(@"%@ could not be saved to fileName: %@ %@", logMessage, fileName, error);
+            }
         }
 
     } else {
-        DebugLog(@"Install time: could not read file: %@", fileName);
+        DebugLog(@"%@ could not read file: %@", logMessage, fileName);
     }
 #endif
    return (UInt64)seconds;
 }
 
-+ (void)saveInstallTime:(UInt64)installTime forUserId:(NSString*) userId {
++ (void)saveAppInstallTime:(UInt64)appInstallTime {
+    [SwrveLocalStorage saveUserJoinedTime:appInstallTime forUserId:@""]; // pass empty string to save app install time for all users
+}
+
++ (void)saveUserJoinedTime:(UInt64)userInitTime forUserId:(NSString *) userId {
 #if TARGET_OS_TV
     NSString *installDateKey = [userId stringByAppendingString:SWRVE_INSTALL];
-    [[self defaults] setInteger:installTime forKey:installDateKey];
+    [[self defaults] setInteger:userInitTime forKey:installDateKey];
 #else
-    NSString *fileName = [SwrveLocalStorage installDateFilePathForUserId:userId];
-    NSString *currentTime = [NSString stringWithFormat:@"%llu", installTime];
-    BOOL success = [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    NSString *fileName = [SwrveLocalStorage userInitDateFilePath:userId];
+    NSString *currentTime = [NSString stringWithFormat:@"%llu", userInitTime];
+    NSError *error = nil;
+    BOOL success = [currentTime writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    
+    NSString *logMessage = ([userId isEqualToString:@""]) ? @"App install time:" : @"User Joined time:";
+#pragma unused(logMessage) // for when debuglog is off
     if (success) {
-        DebugLog(@"Install time: successfully saved install time to fileName:%@", fileName);
+        DebugLog(@"%@ successfully saved to fileName: %@" ,logMessage, fileName);
     } else {
-        DebugLog(@"Install time: could not save install time to fileName:%@", fileName);
+        DebugLog(@"%@ could not be saved to fileName: %@ %@" ,logMessage, fileName, error);
     }
 #endif
 }
 
-+ (NSString *)installDateFilePathForUserId:(NSString*) userId {
++ (NSString *)userInitDateFilePath:(NSString*)userId {
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *installDateFileName = [userId stringByAppendingString:SWRVE_INSTALL];
-    NSString *installDateFilePath = [documentPath stringByAppendingPathComponent: installDateFileName];
-    return installDateFilePath;
+    return [documentPath stringByAppendingPathComponent: installDateFileName];
 }
 
 + (NSString *)eventsFilePathForUserId:(NSString *)userId {
@@ -314,14 +363,6 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
     return [self applicationSupportFileForUserId:userId andName:SWRVE_CAMPAIGNS_STATE_PLIST];
 }
 
-+ (NSString *)locationCampaignFilePathForUserId:(NSString*) userId {
-    return [self applicationSupportFileForUserId:userId andName:SWRVE_LOCATION_CAMPAIGNS];
-}
-
-+ (NSString *)locationCampaignSignatureFilePathForUserId:(NSString*) userId {
-    return [self applicationSupportFileForUserId:userId andName:SWRVE_LOCATION_CAMPAIGNS_SGT];
-}
-
 + (NSString *)userResourcesFilePathForUserId:(NSString*) userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_USER_RESOURCES];
 }
@@ -341,8 +382,7 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 + (NSString *)applicationSupportFileForUserId:(NSString *)userId andName:(NSString *)fileName {
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
     NSString *userIdFileName = [userId stringByAppendingString:fileName];
-    NSString *pathUserIdFileName = [swrveAppSupportDir stringByAppendingPathComponent: userIdFileName];
-    return pathUserIdFileName;
+    return [swrveAppSupportDir stringByAppendingPathComponent: userIdFileName];
 }
 
 + (NSString *)anonymousEventsFilePath {
@@ -351,10 +391,14 @@ static NSString* SWRVE_QA_USER = @"swrve.q1";
 }
 
 + (NSString *)swrveCacheFolder {
-    NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *swrve_folder = @"com.ngt.msgs";
-    NSString *cacheFolder = [cacheRoot stringByAppendingPathComponent:swrve_folder];
-    return cacheFolder;
+    static NSString *_path;
+    static dispatch_once_t doOnceToken;
+    dispatch_once(&doOnceToken, ^{
+        NSString *cacheRoot = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+        _path = [cacheRoot stringByAppendingPathComponent:@"com.ngt.msgs"];
+    });
+    
+    return _path;
 }
 
 @end

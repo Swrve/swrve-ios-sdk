@@ -15,9 +15,9 @@
     
     //FIXME: Replace <app_id> and "<api_key>" with your app ID and API key.
 #if DEBUG
-    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<sandbox_api_key>" config:config launchOptions:launchOptions];
+    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<sandbox_api_key>" config:config];
 #else
-    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<production_api_key>" config:config launchOptions:launchOptions];
+    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<production_api_key>" config:config];
 #endif
     
     return YES;

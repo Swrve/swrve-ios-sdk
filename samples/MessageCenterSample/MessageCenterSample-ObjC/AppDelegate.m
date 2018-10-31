@@ -17,7 +17,7 @@
     };
     
     //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
-    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config launchOptions:launchOptions];
+    [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config];
     return YES;
 }
 
