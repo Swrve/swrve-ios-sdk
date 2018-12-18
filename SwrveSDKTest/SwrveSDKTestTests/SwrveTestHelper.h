@@ -3,6 +3,7 @@
 
 @interface SwrveTestHelper : NSObject
 
++ (void)setUp;
 + (void)tearDown;
 + (void)destroySharedInstance;
 + (NSString *)fileContentsFromURL:(NSURL *)url;

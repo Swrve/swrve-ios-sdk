@@ -18,22 +18,6 @@
     [super tearDown];
 }
 
-- (void)resetDefaults {
-    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
-    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    [self deleteFilesInDirectory:[SwrveLocalStorage applicationSupportPath]];
-    [self deleteFilesInDirectory:[SwrveLocalStorage documentPath]];
-}
-
-- (void)deleteFilesInDirectory:(NSString *)directory {
-    NSFileManager *fileMgr = [NSFileManager defaultManager];
-    NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:directory error:nil];
-    for (NSString *filename in fileArray)  {
-        [fileMgr removeItemAtPath:[directory stringByAppendingPathComponent:filename] error:NULL];
-    }
-}
-
 - (void)testApplicationSupportCreatesNewFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString  *appSupportDir = [SwrveLocalStorage applicationSupportPath];
@@ -43,15 +27,15 @@
 - (void)testApplicationSupportDoesntOverride{
     NSString *path = [NSString pathWithComponents:@[[SwrveLocalStorage applicationSupportPath], @"testFile"]];
     [@"[]" writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    
-    
+
+
     //call path again, and then check if the written file is still present and unaltered
     path = [NSString pathWithComponents:@[[SwrveLocalStorage applicationSupportPath], @"testFile"]];
-    
+
     NSString* content = [NSString stringWithContentsOfFile:path
                                                   encoding:NSUTF8StringEncoding
                                                      error:NULL];
-    
+
     XCTAssertEqualObjects(content, @"[]", @"testApplicationSupportDoesntOverride: %@ does not equal '[]'", content);
 }
 

@@ -71,32 +71,27 @@ static dispatch_once_t onceToken;
     if (self.restClient == nil) {
         self.restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
     }
+    
+    [self createSessionToken];
 }
 
-- (NSString *)createSessionToken {
-
-    if (self.sessionToken != nil) return self.sessionToken;
-
+- (void)createSessionToken {
     // Get the time since the epoch in seconds
     struct timeval time;
     gettimeofday(&time, NULL);
     const long startTime = time.tv_sec;
 
-    NSString * sessionToken = [SwrveUser sessionTokenFromAppId:self.appID
+    self.sessionToken = [SwrveUser sessionTokenFromAppId:self.appID
                                                    apiKey:self.apiKey
                                                    userId:self.userID
                                                 startTime:startTime];
-
-    self.sessionToken = sessionToken;
-
-    return sessionToken;
 }
 
 static id ObjectOrNull(id object) {
     return object ? object : [NSNull null];
 }
 
-- (NSString *)getTimeFormatted {
+- (NSString *)timeFormatted {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     [dateFormatter setLocale:enUSPOSIXLocale];
@@ -123,7 +118,7 @@ static id ObjectOrNull(id object) {
 - (NSMutableDictionary *)createJSONForEvent:(NSMutableDictionary *)event {
 
     [event setValue:@"qa_log_event" forKey:@"type"];
-    [event setValue:[self getTimeFormatted] forKey:@"time"];
+    [event setValue:[self timeFormatted] forKey:@"time"];
     [event setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
 
     NSArray *dataArray = @[event];
@@ -132,7 +127,7 @@ static id ObjectOrNull(id object) {
     [jsonPacket setValue:self.deviceUUID forKey:@"unique_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];
     [jsonPacket setValue:NullableNSString(self.appVersion) forKey:@"app_version"];
-    [jsonPacket setValue:[self createSessionToken] forKey:@"session_token"];
+    [jsonPacket setValue:self.sessionToken forKey:@"session_token"];
     [jsonPacket setValue:dataArray forKey:@"data"];
 
     return jsonPacket;

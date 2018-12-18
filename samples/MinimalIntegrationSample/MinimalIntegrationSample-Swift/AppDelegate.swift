@@ -7,18 +7,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+        
         let config = SwrveConfig()
         // To use the EU stack, include this in your config.
         // config.stack = SWRVE_STACK_EU
-
+        
         //FIXME: Replace <app_id> and <api_key> with your app ID and API key.
 #if DEBUG
         SwrveSDK.sharedInstance(withAppID: -1, apiKey: "sandbox_api_key", config: config)
 #else
         SwrveSDK.sharedInstance(withAppID: -1, apiKey: "production_api_key", config: config)
 #endif
-
+        
         return true
     }
 
@@ -31,5 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) { }
 
     func applicationWillTerminate(_ application: UIApplication) { }
-
+    
 }
+

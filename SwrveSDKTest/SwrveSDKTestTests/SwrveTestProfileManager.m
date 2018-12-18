@@ -13,8 +13,8 @@
 
 @property (atomic) BOOL initialised;
 @property (atomic) SwrveProfileManager *profileManager;
--( void)registerLifecycleCallbacks;
-- (void)initWithUserId:(NSString *)swrveUserId;
+-(void)registerLifecycleCallbacks;
+-(void)initWithUserId:(NSString *)swrveUserId;
 
 @end
 
@@ -29,7 +29,7 @@
     [SwrveTestHelper tearDown];
 
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
-    
+
     id classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:[OCMArg any]])).andReturn(@"unittest");
 }

@@ -168,14 +168,33 @@ NSString *const SwrveContentVersionKey = @"version";
         }
 
         if (@available(iOS 10.0, *)) {
+            //for authenticated push we need to set the title, subtitle and body from the "_sw" dictionary
+            //as these values are removed by the backend from the "aps" dictionary to support silent push.
             UNMutableNotificationContent *notification = [[UNMutableNotificationContent alloc] init];
             notification.userInfo = userInfo;
-            notification.title = userInfo[SwrveNotificationTitleKey];
-            notification.subtitle = userInfo[SwrveNotificationSubtitleKey];
-            notification.body = userInfo[SwrveNotificationBodyKey];
-
+           
+            NSDictionary *richDict = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
+            NSDictionary *mediaDict = [richDict objectForKey:SwrveNotificationMediaKey];
+            if (mediaDict) {
+                if ([mediaDict objectForKey:SwrveNotificationTitleKey]) {
+                    notification.title = [mediaDict objectForKey:SwrveNotificationTitleKey];
+                }
+                if ([mediaDict objectForKey:SwrveNotificationSubtitleKey]) {
+                    notification.subtitle = [mediaDict objectForKey:SwrveNotificationSubtitleKey];
+                }
+                if ([mediaDict objectForKey:SwrveNotificationBodyKey]) {
+                    notification.body = [mediaDict objectForKey:SwrveNotificationBodyKey];
+                }
+            }
+            
             [SwrvePush handleNotificationContent:notification withAppGroupIdentifier:nil
                     withCompletedContentCallback:^(UNMutableNotificationContent *content) {
+                        
+                        //if media url was present and failed to download, we wont show the push
+                        if ([content.userInfo[SwrveNotificationMediaDownloadFailed] boolValue]) {
+                            DebugLog(@"Media download failed, authenticated push does not support fallback text");
+                            return;
+                        }
 
                         NSString *requestIdentifier = [NSDateFormatter localizedStringFromDate:[NSDate date]
                                                                                      dateStyle:NSDateFormatterShortStyle

@@ -43,8 +43,8 @@ static NSString* swrve_permission_requestable           = @".requestable";
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk;
 + (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
-+(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(nullable id<SwrveCommonDelegate>)sdk NS_AVAILABLE_IOS(10.0);
-+ (void)processTokenWhenAuthorized;
++ (void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(nullable id<SwrveCommonDelegate>)sdk NS_AVAILABLE_IOS(10.0);
++ (void)refreshDeviceToken:(nullable id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PUSH)
 
 @end
@@ -64,4 +64,3 @@ static inline NSString * _Nullable stringFromPermissionState(SwrvePermissionStat
     }
 }
 NS_ASSUME_NONNULL_END
-

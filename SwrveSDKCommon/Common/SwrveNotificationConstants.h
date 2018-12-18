@@ -14,6 +14,7 @@ extern NSString *const SwrveNotificationCampaignTypeGeo;
 extern NSString *const SwrveNotificationCampaignTypePush;
 extern NSString *const SwrveNotificationEventPayload;
 extern NSString *const SwrveNotificationAuthenticatedUserKey;
+extern NSString *const SwrveNotificationMediaDownloadFailed;
 
 #pragma mark - campaign key
 extern NSString *const SwrveCampaignKey;

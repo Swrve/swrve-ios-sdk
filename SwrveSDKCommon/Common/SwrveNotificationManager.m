@@ -92,6 +92,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 
                         } else {
                             DebugLog(@"Fallback attachment error occurred: %@ Removing all attachments", fallbackError);
+                            [self setMediaDownloadFailed:mutableNotificationContent];
                         }
 
                         // Finished async fallback download task
@@ -101,6 +102,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                 } else {
                     // There is no fallback attachment
                     DebugLog(@"Primary attachment error occured %@, Removing all attachments, ", error);
+                    [self setMediaDownloadFailed:mutableNotificationContent];
                     dispatch_group_leave(notificationGroup);
                 }
             }
@@ -479,6 +481,13 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         }
     }
     return identifierArray;
+}
+
++ (UNMutableNotificationContent *)setMediaDownloadFailed:(UNMutableNotificationContent *)mutableNotificationContent {
+    NSMutableDictionary *moddedUserInfo = [mutableNotificationContent.userInfo mutableCopy];
+    moddedUserInfo[SwrveNotificationMediaDownloadFailed] = @YES;
+    mutableNotificationContent.userInfo = moddedUserInfo;
+    return mutableNotificationContent;
 }
 
 

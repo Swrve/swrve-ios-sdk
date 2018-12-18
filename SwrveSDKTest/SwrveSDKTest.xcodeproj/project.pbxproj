@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B157E5B21C15BEE003983E8 /* SwrveTestPushSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */; };
 		1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
 		1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */; };
 		239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */; };
@@ -22,6 +23,8 @@
 		8649EE99A0104C5CFEBC8E62 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */; };
 		87DD2D9CE829758487A2BF32 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */; };
 		F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */; };
+		F661663421BFD85C00FDD22A /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */; };
+		F661665A21C16DC400FDD22A /* SwrveTestAuthPush.m in Sources */ = {isa = PBXBuildFile; fileRef = F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */; };
 		F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
 		F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
 		F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */; };
@@ -44,6 +47,7 @@
 
 /* Begin PBXFileReference section */
 		16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
+		1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushSDK.m; sourceTree = "<group>"; };
 		239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMigrationsManager.m; sourceTree = "<group>"; };
 		3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
 		3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNotificationManager.m; sourceTree = "<group>"; };
@@ -68,6 +72,8 @@
 		981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
 		F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestLocalStorage.m; sourceTree = "<group>"; };
+		F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestEventQueueCallback.m; sourceTree = "<group>"; };
+		F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestAuthPush.m; sourceTree = "<group>"; };
 		F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMockNSURLProtocol.h; sourceTree = "<group>"; };
 		F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
 		F6B5D7D320A9A864007E97B6 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = logo.gif; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/logo.gif; sourceTree = "<group>"; };
@@ -165,10 +171,13 @@
 				239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */,
 				F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */,
 				F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */,
+				F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */,
+				F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */,
 				F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */,
 				F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */,
 				F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */,
 				F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */,
+				1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */,
 				523EE2211CF73C0400496FEA /* Supporting Files */,
 			);
 			name = SwrveSDKTest;
@@ -408,11 +417,14 @@
 			files = (
 				F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */,
 				3AADF51A20FCE000003AEEA1 /* SwrveTestNotificationManager.m in Sources */,
+				1B157E5B21C15BEE003983E8 /* SwrveTestPushSDK.m in Sources */,
 				1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */,
+				F661665A21C16DC400FDD22A /* SwrveTestAuthPush.m in Sources */,
 				1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */,
 				3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */,
 				52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */,
 				F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */,
+				F661663421BFD85C00FDD22A /* SwrveTestEventQueueCallback.m in Sources */,
 				239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

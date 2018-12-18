@@ -18,6 +18,10 @@
 
 @implementation SwrveTestHelper
 
++ (void)setUp {
+    [SwrveTestHelper tearDown];
+}
+
 + (void)tearDown {
     [SwrveTestHelper deleteUserDefaults];
     [SwrveTestHelper deleteFilesInDirectory:[SwrveTestHelper rootCacheDirectory]];

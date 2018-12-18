@@ -14,6 +14,7 @@ NSString *const SwrveNotificationCampaignTypeGeo = @"geo";
 NSString *const SwrveNotificationCampaignTypePush = @"push";
 NSString *const SwrveNotificationEventPayload = @"event_payload";
 NSString *const SwrveNotificationAuthenticatedUserKey = @"_aui";
+NSString *const SwrveNotificationMediaDownloadFailed = @"media_failed";
 
 #pragma mark - campaign key
 NSString *const SwrveCampaignKey = @"campaign";

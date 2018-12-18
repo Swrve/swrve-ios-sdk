@@ -2,7 +2,8 @@
 
 @interface SwrveProfileManager : NSObject
 
-@property (nonatomic, retain) NSString * userId;
+@property (readonly, nonatomic, retain) NSString * userId;
+@property (readonly, nonatomic, retain) NSString * sessionToken;
 @property (atomic) BOOL isNewUser;
 
 @end

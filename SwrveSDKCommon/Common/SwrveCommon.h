@@ -21,6 +21,9 @@
 - (NSDictionary *)deviceInfo;
 - (void)sendPushNotificationEngagedEvent:(NSString *)pushId;
 - (id <SwrvePermissionsDelegate>)permissionsDelegate;
+- (double)flushRefreshDelay;
+- (NSInteger)nextEventSequenceNumber;
+- (NSString *)sessionToken;
 
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString* deviceToken;
@@ -85,7 +88,7 @@ enum
 {
     // The API version of this file.
     // This is sent to the server on each call, and should not be modified.
-    SWRVE_VERSION = 2,
+    SWRVE_VERSION = 3,
 
     // Initial size of the in-memory queue
     // Tweak this to avoid fragmenting memory when the queue is growing.

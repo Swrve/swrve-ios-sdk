@@ -89,10 +89,11 @@ enum
 
 @interface SwrveProfileManager ()
 
+- (void)switchUser:(NSString*)userId;
 - (void)updateSwrveUserWithId:(NSString *)swrveUserId externalUserId:(NSString *)externalUserId;
 - (void)saveSwrveUser:(SwrveUser *)swrveUser;
 - (NSArray *)swrveUsers;
-- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient;
+- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)appId apiKey:(NSString*)apiKey;
 - (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError;
 - (void)identify:(NSString *)externalUserId swrveUserId:(NSString *)swrveUserId
@@ -163,7 +164,6 @@ enum
 - (void)appWillResignActive:(NSNotification *)notification;
 - (void)appWillTerminate:(NSNotification *)notification;
 - (void)queueUserUpdates;
-- (NSString *)createSessionToken;
 - (NSString *)createJSON:(NSString *)sessionToken events:(NSString *)rawEvents;
 - (NSString *)copyBufferToJson:(NSArray *)buffer;
 - (void)sendCrashlyticsMetadata;
@@ -385,7 +385,7 @@ enum
             [SwrveLocalStorage saveDeviceUUID:self.deviceUUID];
         }
 
-        self.profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:config.identityServer deviceUUID:self.deviceUUID restClient:self.restClient];
+        self.profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:config.identityServer deviceUUID:self.deviceUUID restClient:self.restClient appId:self.appID apiKey:self.apiKey];
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
         if (swrveConfig.pushEnabled) {
@@ -415,10 +415,7 @@ enum
             self.campaignsAndResourcesFlushFrequency = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY / 1000;
         }
 
-        self.campaignsAndResourcesFlushRefreshDelay = [SwrveLocalStorage flushDelay];
-        if (self.campaignsAndResourcesFlushRefreshDelay <= 0) {
-            self.campaignsAndResourcesFlushRefreshDelay = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY / 1000;
-        }
+        self.campaignsAndResourcesFlushRefreshDelay = [self flushRefreshDelay];
 
         [self initAppInstallTime];
         [self registerLifecycleCallbacks];
@@ -429,7 +426,7 @@ enum
 }
 
 - (void)initWithUserId:(NSString *)swrveUserId {
-    
+
     trackingState = ON;
 
     NSCAssert(swrveUserId != nil, @"UserId cannot be nil. Something has gone wrong.", nil);
@@ -577,7 +574,7 @@ enum
 
 - (int)eventWithNoCallback:(NSString *)eventName payload:(NSDictionary *)eventPayload {
     if ([eventsManager isValidEventName:eventName]) {
-        return [self eventInternal:eventName payload:eventPayload triggerCallback:false];
+        return [self eventInternal:eventName payload:eventPayload triggerCallback:false notifyMessageController:true];
     } else {
         return SWRVE_FAILURE;
     }
@@ -946,7 +943,7 @@ enum
 
 - (void)sendQueuedEventsWithCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventBufferCallback
                    eventFileCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventFileCallback {
-    
+
     [self sendQueuedEventsWithCallback:eventBufferCallback eventFileCallback:eventFileCallback forceFlush:false];
 }
 
@@ -1009,9 +1006,8 @@ enum
         [self initBuffer];
     }
 
-    NSString *session_token = [self createSessionToken];
     NSString *array_body = [self copyBufferToJson:buffer];
-    NSString *json_string = [self createJSON:session_token events:array_body];
+    NSString *json_string = [self createJSON:[self sessionToken] events:array_body];
 
     NSData *json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
     [self setEventsWereSent:YES];
@@ -1121,7 +1117,14 @@ enum
 #pragma mark -
 #pragma mark Private methods
 
-- (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback {
+- (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback  {
+    //triggerCallback and notifyMessageController bools are the same unless we are using eventWithNoCallBack which will set notifyMessageController to true
+    //we want to call eventRaised when going through eventWithNoCallBack below
+    bool notifyMessageController = triggerCallback;
+    return [self eventInternal:eventName payload:eventPayload triggerCallback:triggerCallback notifyMessageController:notifyMessageController];
+}
+
+- (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController {
     if (!eventPayload) {
         eventPayload = [[NSDictionary alloc] init];
     }
@@ -1130,7 +1133,7 @@ enum
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
     [json setValue:NullableNSString(eventName) forKey:@"name"];
     [json setValue:eventPayload forKey:@"payload"];
-    return [self queueEvent:@"event" data:json triggerCallback:triggerCallback];
+    return [self queueEvent:@"event" data:json triggerCallback:triggerCallback notifyMessageController:notifyMessageController];
 }
 
 - (void)dealloc {
@@ -1194,7 +1197,7 @@ enum
     if (self.config.pushEnabled) {
         [self.push processInfluenceData];
         if (_deviceToken == nil) {
-            [SwrvePermissions processTokenWhenAuthorized];
+            [SwrvePermissions refreshDeviceToken:self];
         }
     }
 #endif //!defined(SWRVE_NO_PUSH)
@@ -1330,6 +1333,8 @@ enum
         [SwrveLocalStorage saveDeviceToken:newDeviceToken];
         NSDictionary *deviceInfo = [self deviceInfo];
         [self mergeWithCurrentDeviceInfo:deviceInfo];
+        [self mergeWithCurrentDeviceInfo:[SwrvePermissions currentStatusWithSDK:self]];
+        
         [self logDeviceInfo:deviceInfo];
         [self queueDeviceInfo];
         [self sendQueuedEvents];
@@ -1415,7 +1420,6 @@ enum
     }
 }
 
-
 - (void)maybeFlushToDisk {
     if (trackingState == EVENT_SENDING_PAUSED) {return;}
     if (self.eventBufferBytes > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
@@ -1423,9 +1427,14 @@ enum
     }
 }
 
-
-
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback {
+    //triggerCallback and notifyMessageController bools are the same unless we are using eventWithNoCallBack which will set notifyMessageController to true
+    //we want to call eventRaised when going through eventWithNoCallBack below
+    bool notifyMessageController = triggerCallback;
+    return [self queueEvent:eventType data:eventData triggerCallback:triggerCallback notifyMessageController:notifyMessageController];
+}
+
+- (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController {
     if (trackingState == EVENT_SENDING_PAUSED) {
         DebugLog(@"Event not queued, awaiting response from Identify API call");
         return SWRVE_FAILURE;
@@ -1439,7 +1448,9 @@ enum
         if (![eventData objectForKey:@"time"]) {
             [eventData setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
         }
-        [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
+        if (![eventData objectForKey:@"seqnum"]) {
+            [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
+        }
 
         // Convert to string
         NSData *json_data = [NSJSONSerialization dataWithJSONObject:eventData options:0 error:nil];
@@ -1452,6 +1463,10 @@ enum
 
             if (triggerCallback && event_queued_callback != NULL) {
                 event_queued_callback(eventData, json_string);
+            }
+
+            if (self.messaging && notifyMessageController) {
+                [self.messaging eventRaised:eventData];
             }
         }
     }
@@ -1877,8 +1892,7 @@ enum HttpStatus {
     // Remove trailing comma
     [contents setLength:[contents length] - 2];
     NSString *file_contents = [[NSString alloc] initWithData:contents encoding:NSUTF8StringEncoding];
-    NSString *session_token = [self createSessionToken];
-    NSString *json_string = [self createJSON:session_token events:file_contents];
+    NSString *json_string = [self createJSON:[self sessionToken] events:file_contents];
     NSData *json_data = [json_string dataUsingEncoding:NSUTF8StringEncoding];
 
     [restClient sendHttpPOSTRequest:[self batchURL]
@@ -1931,19 +1945,6 @@ enum HttpStatus {
         DebugLog(@"Error with json.\nError:%@", err);
     }
     return obj != nil;
-}
-
-- (NSString *)createSessionToken {
-    // Get the time since the epoch in seconds
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    const long startTime = time.tv_sec;
-
-    NSString *sessionToken = [SwrveUser sessionTokenFromAppId:self.appID
-                                                       apiKey:self.apiKey
-                                                       userId:self.userID
-                                                    startTime:startTime];
-    return sessionToken;
 }
 
 - (NSString *)signatureKey {
@@ -2116,6 +2117,10 @@ enum HttpStatus {
     return self.profileManager.userId;
 }
 
+- (NSString *)sessionToken {
+    return self.profileManager.sessionToken;
+}
+
 #pragma mark  Switch User ID
 
 - (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession {
@@ -2130,7 +2135,8 @@ enum HttpStatus {
     [SwrveNotificationManager clearAllAuthenticatedNotifications];
 #endif //!defined(SWRVE_NO_PUSH)
 
-    self.profileManager.userId = newUserID; // update SwrveProfileManager
+    // update SwrveProfileManager
+    [self.profileManager switchUser:newUserID];
     @synchronized (self) {
         [SwrveLocalStorage saveSwrveUserId:newUserID]; // update Local storage
     }
@@ -2140,7 +2146,7 @@ enum HttpStatus {
         //this will prevent the Swrve.first_session event from been queued in the beginSession call below
         self.profileManager.isNewUser = false;
     }
-    
+
     [self beginSession];
 }
 
@@ -2154,12 +2160,12 @@ enum HttpStatus {
         }
         return;
     }
-    
+
     DebugLog(@"Swrve identify: Pausing event queuing and sending prior to Identity API call...", nil);
     [self pauseEventSending];
 
     dispatch_group_t sendEventsCallback = dispatch_group_create();
-    
+
     // this will force flush events even though eventing sending and queuing has been paused above
     [self forceFlushAllEventsBeforeIdentify:sendEventsCallback];
 
@@ -2194,7 +2200,7 @@ enum HttpStatus {
 #pragma unused(response, data, error)
         dispatch_group_leave(sendEventsCallbackGroup);
     } forceFlush:true];
-    
+
 }
 
 - (BOOL)identifyCachedUser:(SwrveUser *)cachedSwrveUser withCallback:(void (^)(NSString *status, NSString *swrveUserId))onSuccess {
@@ -2220,28 +2226,28 @@ enum HttpStatus {
 
     // being cautious here and clearing the buffer in case any events got in there
     [[self eventBuffer] removeAllObjects];
- 
+
     [self.profileManager identify:externalUserId swrveUserId:unidentifiedSwrveId onSuccess:^(NSString *status, NSString *swrveUserId) {
 #pragma unused(status)
         DebugLog(@"Swrve identify: Identity service success: %@", status);
-        
+
         //update the swrve user in cache
         [self.profileManager updateSwrveUserWithId:swrveUserId externalUserId:externalUserId];
-        
+
         bool isFirstSession = [unidentifiedSwrveId isEqualToString:swrveUserId];
-        
+
         [self switchUser:swrveUserId isFirstSession:isFirstSession];
-        
+
         if (onSuccess != nil) {
             onSuccess(status, swrveUserId);
         }
-        
+
     }                     onError:^(NSInteger httpCode, NSString *errorMessage) {
 #pragma unused(errorMessage)
         DebugLog(@"Swrve identify: Identity service returned %li error message: %@", (long) httpCode, errorMessage);
-        
+
         [self switchUser:unidentifiedSwrveId isFirstSession:true];
-        
+
         if (httpCode == 403) {
             [self.profileManager removeSwrveUserWithId:externalUserId];
         }
@@ -2284,5 +2290,14 @@ enum HttpStatus {
     SwrveUser *swrveUser =  [self.profileManager swrveUserWithId:self.userID];
     return (swrveUser == nil) ? @"" : swrveUser.externalId;
 }
+
+- (double)flushRefreshDelay {
+    double flushRefreshDelay = [SwrveLocalStorage flushDelay];
+    if (flushRefreshDelay <= 0) {
+        flushRefreshDelay = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_REFRESH_DELAY / 1000;
+    }
+    return flushRefreshDelay;
+}
+
 
 @end

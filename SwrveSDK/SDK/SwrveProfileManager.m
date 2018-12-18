@@ -3,6 +3,7 @@
 #import "SwrveUser.h"
 #import "Swrve.h"
 #import "SwrveRESTClient.h"
+#import <sys/time.h>
 
 #define kSwrveUsers @"swrve_users"
 
@@ -15,66 +16,98 @@
 @end
 
 @interface SwrveProfileManager()
+
 @property (strong, nonatomic) SwrveRESTClient *restClient;
 @property (strong, nonatomic) NSURL *identityURL;
 @property (strong, nonatomic) NSString *deviceUUID;
+
+@property (nonatomic) long appId;
+@property (strong, nonatomic) NSString *apiKey;
+
+- (void)switchUser:(NSString*)userId;
+
 @end
 
 @implementation SwrveProfileManager
 
-@synthesize userId;
+@synthesize userId = _userId;
+@synthesize sessionToken = _sessionToken;
 @synthesize isNewUser;
 @synthesize restClient = _restClient;
 @synthesize identityURL = _identityURL;
 @synthesize deviceUUID = _deviceUUID;
+@synthesize appId;
+@synthesize apiKey;
 
 #pragma mark - Init Setup
 
-- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient {
+- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)_appId apiKey:(NSString*)_apiKey {
     self = [super init];
     if (self) {
         self.restClient = restClient;
         self.identityURL = [NSURL URLWithString:identityBaseUrl];
         self.deviceUUID = deviceUUID;
-        self.userId = [SwrveLocalStorage swrveUserId];
-        if ((self.userId == nil) || [self.userId isEqualToString:@""]) {
-            self.userId = [[NSUUID UUID] UUIDString];
-            [SwrveLocalStorage saveSwrveUserId:self.userId];
+        NSString* initialUser = [SwrveLocalStorage swrveUserId];
+        if ((initialUser == nil) || [initialUser isEqualToString:@""]) {
+            initialUser = [[NSUUID UUID] UUIDString];
+            [SwrveLocalStorage saveSwrveUserId:initialUser];
         }
+        self.appId = _appId;
+        self.apiKey = _apiKey;
+
+        [self switchUser:initialUser];
     }
     return self;
 }
+
+- (void)switchUser:(NSString*)userId {
+    _userId = userId;
+    [self createSessionToken];
+}
+
+- (void)createSessionToken {
+    // Get the time since the epoch in seconds
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    const long startTime = time.tv_sec;
+
+    _sessionToken = [SwrveUser sessionTokenFromAppId:self.appId
+                                             apiKey:self.apiKey
+                                             userId:_userId
+                                          startTime:startTime];
+}
+
 
 #pragma mark - Identify API
 
 - (void)identify:(NSString *)externalUserId swrveUserId:(NSString *)swrveUserId
                                               onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
                                                 onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
-    
+
     NSDictionary *json = @{ @"swrve_id" : swrveUserId,
                              @"external_user_id" : externalUserId,
                              @"unique_device_id" : self.deviceUUID,
                              @"api_key" : [SwrveCommon sharedInstance].apiKey};
-    
+
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
-    
+
     NSURL *identifyUrl = [self.identityURL URLByAppendingPathComponent:@"/identify"];
-    
+
     [self.restClient sendHttpPOSTRequest:identifyUrl
                                 jsonData:jsonData
                        completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                           
+
                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                            NSInteger statusCode = 0;
                            if ([httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
                                statusCode = httpResponse.statusCode;
                            }
-                           
+
                            if (error != nil) {
                                onError(statusCode,error.localizedDescription);
                                return;
                            }
-                           
+
                            //success
                            if (statusCode >= 200 && statusCode < 300) {
                                NSString *verifiedSwrveUserId = nil;
@@ -87,7 +120,7 @@
                                onSuccess(status,verifiedSwrveUserId);
                                return;
                            }
-                           
+
                            //error either server / client / redirect
                            NSString *message = nil;
                            if (data != nil) {
@@ -95,10 +128,10 @@
                                // swrve error message
                                message = [responseDict objectForKey:@"message"];
                            }
-                           
+
                            if (message == nil) { message = @"An error occured";}
                            onError(statusCode,message);
-                           
+
      }];
 }
 
@@ -146,8 +179,7 @@
 
 - (NSArray *)swrveUsers {
     NSData *encodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:kSwrveUsers];
-    NSArray *swrveUsers = [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
-    return swrveUsers;
+    return [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
 }
 
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId {

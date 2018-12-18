@@ -5,7 +5,7 @@
 #import "SwrveRESTClient.h"
 
 @interface SwrveProfileManager ()
-- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient;
+- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)appId apiKey:(NSString*)apiKey;
 @end
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
@@ -97,12 +97,11 @@
     XCTAssertTrue([fileManager fileExistsAtPath:installDateFilePath]);
 }
 
-- (NSString*)installDateFilePathForConfig{
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
+- (NSString*)installDateFilePathForConfig {
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil appId:1 apiKey:@"api_key"];
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
-    NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:installDateWithUserId];
-    return installDateFilePath;
+    return [documentPath stringByAppendingPathComponent:installDateWithUserId];
 }
 
 - (void)testSeqNumMigration {
@@ -141,7 +140,7 @@
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
     
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil  appId:1 apiKey:@"api_key"];
     NSString *userId = [profileManager userId];
     NSString *campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:userId];
     XCTAssertTrue([fileManager fileExistsAtPath:campaignsStateFilePath] == YES);
@@ -209,7 +208,7 @@
     SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
     [migrationsManager checkMigrations];
     
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc]initWithIdentityUrl:nil deviceUUID:nil restClient:nil];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil  appId:1 apiKey:@"api_key"];
     NSString *userId = [profileManager userId];
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
     NSString *migratedFileName = [userId stringByAppendingString:fileName];

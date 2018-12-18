@@ -12,7 +12,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dic = [NSMutableDictionary new];
-        
+
         // Load the push permission status from disk, as it is async and at the start of the app we won't have it on each run
         NSDictionary *savedState = [[NSUserDefaults standardUserDefaults] dictionaryForKey:swrve_permission_status];
         if (savedState != nil) {
@@ -338,7 +338,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
                           completionHandler:^(BOOL granted, NSError * _Nullable error) {
                               if (granted) {
                                   /** Add sdk-defined categories **/
-                                  [center setNotificationCategories:notificationCategories];
+                                  if (notificationCategories != nil && [notificationCategories count] > 0) {
+                                      [center setNotificationCategories:notificationCategories];
+                                  }
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       [app registerForRemoteNotifications];
                                   });
@@ -365,18 +367,24 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     [sdk eventInternal:eventNameWithState payload:nil triggerCallback:false];
 }
 
-+ (void)processTokenWhenAuthorized {
-    // if the user denied push prompt initially and then reenabled it in settings we need to check for this scenario
++ (void)refreshDeviceToken:(id<SwrveCommonDelegate>)sdk {
+    // If the user denied push prompt initially and then reenabled it in settings we need to check for this scenario
     if (@available(iOS 10.0, *)) {
-            UIApplication* app = [SwrveCommon sharedUIApplication];
-            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-            [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-                if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [app registerForRemoteNotifications];
-                    });
+        UIApplication* app = [SwrveCommon sharedUIApplication];
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+            BOOL refreshToken = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
+            if (refreshToken) {
+#if TARGET_OS_IOS /** exclude tvOS **/
+                if (sdk.notificationCategories != nil && [sdk.notificationCategories count] > 0) {
+                    [center setNotificationCategories:sdk.notificationCategories];
                 }
-            }];
+#endif
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [app registerForRemoteNotifications];
+                });
+            }
+        }];
     }
 }
 

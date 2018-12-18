@@ -236,4 +236,16 @@
     return @"";
 }
 
+- (double)flushRefreshDelay {
+    return 0.0;
+}
+
+- (NSInteger)nextEventSequenceNumber {
+    return 0;
+}
+
+- (NSString *)sessionToken {
+    return nil;
+}
+
 @end

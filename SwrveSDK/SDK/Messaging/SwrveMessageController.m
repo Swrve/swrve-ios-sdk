@@ -135,7 +135,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize conversationsMessageQueue;
 
 + (void)initialize {
-    
+
 #if TARGET_OS_IOS /** exclude tvOS **/
     ALL_SUPPORTED_DYNAMIC_DEVICE_FILTERS = [NSArray arrayWithObjects:
         [[swrve_permission_location_always stringByAppendingString:swrve_permission_requestable] lowercaseString],
@@ -190,15 +190,6 @@ const static int DEFAULT_MIN_DELAY           = 55;
              self.server,
              self.apiKey);
 
-    SwrveMessageController * __weak weakSelf = self;
-    [sdk setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {
-#pragma unused(eventsPayloadAsJSON)
-        SwrveMessageController * strongSelf = weakSelf;
-        if (strongSelf != nil) {
-            [strongSelf eventRaised:eventPayload];
-        }
-    }];
-
     NSAssert1([self.language length] > 0, @"Invalid language specified %@", self.language);
     NSAssert1([self.user     length] > 0, @"Invalid username specified %@", self.user);
     NSAssert(self.analyticsSDK != NULL,   @"Swrve Analytics SDK is null", nil);
@@ -207,7 +198,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     NSData* device_token = [SwrveLocalStorage deviceToken];
     if (self.pushEnabled && device_token) {
         // Once we have a device token, ask for it every time as it may change under certain circumstances
-        [self.analyticsSDK.push registerForPushNotifications];
+        [SwrvePermissions refreshDeviceToken:(id<SwrveCommonDelegate>)analyticsSDK];
     }
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -269,7 +260,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
         DebugLog(@"No campaigns states loaded. [Reading from defaults %@]", self.campaignsStateFilePath.lastPathComponent);
         return;
     }
-    
+
     NSError* error = NULL;
     NSArray* loadedStates = [NSPropertyListSerialization propertyListWithData:data
                                                                       options:NSPropertyListImmutable
@@ -341,13 +332,13 @@ const static int DEFAULT_MIN_DELAY           = 55;
              [newStates addObject:[value asDictionary]];
          }];
     }
-    
+
     NSError*  error = NULL;
     NSData*   data = [NSPropertyListSerialization dataWithPropertyList:newStates
                                                                 format:NSPropertyListXMLFormat_v1_0
                                                                options:0
                                                                  error:&error];
-    
+
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
     } else if(data)
@@ -386,7 +377,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 #endif
     // Read content of campaigns file and update campaigns
     NSData* content = [campaignFile readWithRespectToPlatform];
-    
+
     if (content != nil) {
         NSError* jsonError;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
@@ -1081,7 +1072,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     [self beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
                 }
             };
-            
+
 #if TARGET_OS_TV
             UITapGestureRecognizer *menuPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed)];
             menuPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeMenu]];
@@ -1093,7 +1084,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #else
             [self showMessageWindow:messageViewController];
 #endif
-            
+
         } else if (isQueued && ![self.conversationsMessageQueue containsObject:message]) {
             [self.conversationsMessageQueue addObject:message];
         }
@@ -1140,12 +1131,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
             [self.showMessageDelegate messageWillBeHidden:self.conversationWindow.rootViewController];
         }
-        
+
         self.conversationWindow.hidden = YES;
         self.conversationWindow = nil;
     }
     self.swrveConversationItemViewController = nil;
-    
+
     [self handleNextConversation:self.conversationsMessageQueue];
 }
 
@@ -1247,7 +1238,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     self.inAppMessageWindow.hidden = YES;
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
-    
+
     [self handleNextConversation:self.conversationsMessageQueue];
 }
 
@@ -1379,7 +1370,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     UIDevice* device = [UIDevice currentDevice];
     NSString* encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSString* encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
+
     return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&location_version=%d",
             CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, self.analyticsSDK.locationSegmentVersion];
 }
@@ -1391,7 +1382,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #else
     return [self messageCenterCampaignsForTvOS];
 #endif
-    
+
 }
 
 #if TARGET_OS_IOS /** exclude tvOS **/
@@ -1406,19 +1397,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     for(SwrveCampaign* campaign in self.campaigns) {
         NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
         if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:assetsOnDisk]) {
-            [result addObject:campaign];            
+            [result addObject:campaign];
         }
     }
     return result;
 }
 #elif TARGET_OS_TV
 -(NSArray*) messageCenterCampaignsForTvOS {
-    
+
     NSMutableArray* result = [[NSMutableArray alloc] init];
     if (analyticsSDK == nil) {
         return result;
     }
-    
+
     NSDate* now = [self.analyticsSDK getNow];
     for(SwrveCampaign* campaign in self.campaigns) {
         NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
