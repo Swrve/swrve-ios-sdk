@@ -6,7 +6,7 @@ jobs:
   build:
     # Specify the Xcode version to use.
     macos:
-      xcode: "10.1"
+      xcode: "10.1.0"
     environment:
       FL_OUTPUT_DIR: output
 
