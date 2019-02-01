@@ -22,15 +22,15 @@ jobs:
           name: Install CocoaPods
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            cd SwrvePrivateWorkspace
             pod install
 
       # Run tests
       - run:
           name: Run tests
-          command: fastlane scan
-          environment:
-            SCAN_DEVICE: iPhone XR
-            SCAN_SCHEME: WebTests
+          command: |
+            cd SwrvePrivateWorkspace
+            xcodebuild -workspace ./SwrvePrivateWorkspace.xcworkspace -scheme UnitTests clean build test
 
       - store_test_results:
           path: output/scan
