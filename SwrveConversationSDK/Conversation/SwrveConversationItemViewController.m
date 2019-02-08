@@ -98,6 +98,7 @@
 #pragma clang diagnostic pop
         
         conversationWindow.rootViewController = rootController;
+        conversationWindow.windowLevel = UIWindowLevelAlert + 1;
         [conversationWindow makeKeyAndVisible];
         [conversationWindow.rootViewController.view endEditing:YES];
     });

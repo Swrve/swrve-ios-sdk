@@ -67,11 +67,11 @@
                             <constraint firstItem="v5R-q4-Ibm" firstAttribute="top" secondItem="frZ-g3-zoH" secondAttribute="bottom" id="Psy-04-7SS"/>
                             <constraint firstItem="R67-6b-lvO" firstAttribute="top" secondItem="cuB-Sw-8Bl" secondAttribute="top" id="UGP-N2-ORJ"/>
                             <constraint firstItem="frZ-g3-zoH" firstAttribute="top" secondItem="bEg-hd-mAK" secondAttribute="bottom" id="UeO-Pi-mUq"/>
+                            <constraint firstItem="R67-6b-lvO" firstAttribute="bottom" secondItem="cuB-Sw-8Bl" secondAttribute="bottom" id="UmQ-Xx-cmT"/>
                             <constraint firstItem="v5R-q4-Ibm" firstAttribute="top" secondItem="bEg-hd-mAK" secondAttribute="bottom" constant="65" id="XmE-oJ-8sd"/>
                             <constraint firstAttribute="trailing" secondItem="Wp2-wd-Bai" secondAttribute="trailing" id="cnS-8F-B25"/>
                             <constraint firstItem="Wp2-wd-Bai" firstAttribute="top" secondItem="cuB-Sw-8Bl" secondAttribute="top" id="itN-Hz-Y7t"/>
                             <constraint firstItem="bEg-hd-mAK" firstAttribute="top" secondItem="cuB-Sw-8Bl" secondAttribute="top" id="p3E-AB-mPe"/>
-                            <constraint firstItem="v5R-q4-Ibm" firstAttribute="top" secondItem="R67-6b-lvO" secondAttribute="bottom" id="qO8-sK-dpq"/>
                             <constraint firstItem="v5R-q4-Ibm" firstAttribute="top" secondItem="frZ-g3-zoH" secondAttribute="bottom" id="qW8-kx-mOx"/>
                             <constraint firstAttribute="trailing" secondItem="R67-6b-lvO" secondAttribute="trailing" id="tBn-TO-VK7"/>
                         </constraints>
