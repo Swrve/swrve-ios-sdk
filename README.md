@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk.svg?style=svg)](https://circleci.com/gh/Swrve/swrve-ios-sdk)
+
 What is Swrve
 -------------
 Swrve is a single integrated platform delivering everything you need to drive mobile engagement and create valuable consumer relationships on mobile.  
