@@ -26,11 +26,7 @@ jobs:
             pod install
 
       # Run tests
-      - run:
-          name: Run tests
-          command: |
-            cd SwrveSDKTest
-            xcodebuild -workspace ./SwrveSDKTest.xcworkspace -scheme SwrveSDKTest clean build test
+      - run: fastlane unitTests
 
       - store_test_results:
           path: output/scan

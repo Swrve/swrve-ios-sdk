@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites name='SwrveSDKTestTests.xctest' tests='53' failures='0'>
+  <testsuite name='SwrveTestAuthPush' tests='2' failures='0'>
+    <testcase classname='SwrveTestAuthPush' name='testAuthPushMediaDownloadFails' time='0.028'/>
+    <testcase classname='SwrveTestAuthPush' name='testAuthPushMediaDownloadSucceeds' time='0.019'/>
+  </testsuite>
+  <testsuite name='SwrveTestDeviceProperties' tests='8' failures='0'>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil' time='0.005'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithConversationVersion' time='0.001'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithDeviceToken' time='0.001'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithDummyCarrierInfo' time='0.001'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithInstallDate' time='0.001'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithLanguage' time='0.001'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithPermissions' time='0.016'/>
+    <testcase classname='SwrveTestDeviceProperties' name='testDevicePropertiesNil_WithSDKVersion' time='0.001'/>
+  </testsuite>
+  <testsuite name='SwrveTestEventQueueCallback' tests='1' failures='0'>
+    <testcase classname='SwrveTestEventQueueCallback' name='testSetEventQueuedCallback' time='0.019'/>
+  </testsuite>
+  <testsuite name='SwrveTestLocalStorage' tests='10' failures='0'>
+    <testcase classname='SwrveTestLocalStorage' name='testApplicationSupportCreatesNewFile' time='0.004'/>
+    <testcase classname='SwrveTestLocalStorage' name='testApplicationSupportDoesntOverride' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testAskForPermissionsKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testDeviceTokenKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testDeviceUUIDKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testETagKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testFlushDelayKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testFlushFrequencyKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testPermissionsKey' time='0.002'/>
+    <testcase classname='SwrveTestLocalStorage' name='testSwrveUserIDKey' time='0.003'/>
+  </testsuite>
+  <testsuite name='SwrveTestMigrationsManager' tests='18' failures='0'>
+    <testcase classname='SwrveTestMigrationsManager' name='testCampaignsStateMigration' time='0.036'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testGetSetCurrentCacheVersion' time='0.005'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testInstallDateMigration' time='0.022'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrate0_old_device_ids_deleted' time='0.024'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrate2Etag' time='0.019'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrate2InstallDate_From_v0' time='0.022'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrate2InstallDate_From_v1' time='0.012'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateCampaigns' time='0.022'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateCampaignsSgt' time='0.020'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateCampaignState' time='0.018'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateEvents' time='0.020'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateLocations' time='0.016'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateLocationsSgt' time='0.017'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateResources' time='0.020'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateResourcesDiff' time='0.017'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateResourcesDiffSgt' time='0.018'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testMigrateResourcesSgt' time='0.014'/>
+    <testcase classname='SwrveTestMigrationsManager' name='testSeqNumMigration' time='0.017'/>
+  </testsuite>
+  <testsuite name='SwrveTestNotificationManager' tests='1' failures='0'>
+    <testcase classname='SwrveTestNotificationManager' name='testNotificationResponseReceivedWithCampaignType' time='0.002'/>
+  </testsuite>
+  <testsuite name='SwrveTestProfileManager' tests='3' failures='0'>
+    <testcase classname='SwrveTestProfileManager' name='testInit' time='0.013'/>
+    <testcase classname='SwrveTestProfileManager' name='testInitFromLocalStorage' time='0.029'/>
+    <testcase classname='SwrveTestProfileManager' name='testIsNewUser' time='0.014'/>
+  </testsuite>
+  <testsuite name='SwrveTestPushSDK' tests='4' failures='0'>
+    <testcase classname='SwrveTestPushSDK' name='testPushRegistration' time='0.054'/>
+    <testcase classname='SwrveTestPushSDK' name='testStartWithNoPush' time='0.029'/>
+    <testcase classname='SwrveTestPushSDK' name='testStartWithPushButNoTriggeredByEvent' time='0.043'/>
+    <testcase classname='SwrveTestPushSDK' name='testTokenPresentDoNotRequestPermissionAgain' time='0.054'/>
+  </testsuite>
+  <testsuite name='SwrveTestTriggersAndConditions' tests='6' failures='0'>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testCanTriggerWithPayload' time='0.001'/>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testSwrveInvalidTrigger' time='0.001'/>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testSwrveMultipleConditonsNoOperator' time='0.001'/>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testSwrveSingleConditionNoOperatorsForTrigger' time='0.001'/>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testSwrveSingleConditionWithOperatorTrigger' time='0.000'/>
+    <testcase classname='SwrveTestTriggersAndConditions' name='testSwrveTriggerConstruction' time='0.001'/>
+  </testsuite>
+</testsuites>

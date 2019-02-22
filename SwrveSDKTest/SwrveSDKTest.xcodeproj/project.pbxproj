@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1B157E5B21C15BEE003983E8 /* SwrveTestPushSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */; };
+		1B84FB2C222048CF009D61CE /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
+		1B84FB2D222048D2009D61CE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
+		1B84FB2E222048D4009D61CE /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
 		1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
 		1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */; };
 		239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */; };
@@ -25,13 +28,10 @@
 		F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */; };
 		F661663421BFD85C00FDD22A /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */; };
 		F661665A21C16DC400FDD22A /* SwrveTestAuthPush.m in Sources */ = {isa = PBXBuildFile; fileRef = F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */; };
-		F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
 		F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
 		F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */; };
-		F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
 		F6D1A9D220B4230B0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
 		F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */; };
-		F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
 		F6F386AB20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
 /* End PBXBuildFile section */
 
@@ -76,12 +76,12 @@
 		F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestAuthPush.m; sourceTree = "<group>"; };
 		F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMockNSURLProtocol.h; sourceTree = "<group>"; };
 		F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
-		F6B5D7D320A9A864007E97B6 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = logo.gif; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/logo.gif; sourceTree = "<group>"; };
+		F6B5D7D320A9A864007E97B6 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
 		F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
 		F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
-		F6D1A9CE20B4225C0042EDFE /* campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = campaigns.json; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/campaigns.json; sourceTree = "<group>"; };
+		F6D1A9CE20B4225C0042EDFE /* campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns.json; sourceTree = "<group>"; };
 		F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
-		F6F386A920B4294A006F6149 /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = campaignsNone.json; path = ../../../SwrvePrivateWorkspace/Projects/TestableSwrve/TestJSONContent/campaignsNone.json; sourceTree = "<group>"; };
+		F6F386A920B4294A006F6149 /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsNone.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,9 +289,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */,
-				F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */,
-				F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */,
-				F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */,
+				1B84FB2E222048D4009D61CE /* campaignsNone.json in Resources */,
+				1B84FB2C222048CF009D61CE /* logo.gif in Resources */,
+				1B84FB2D222048D2009D61CE /* campaigns.json in Resources */,
 				52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */,
 				52740A7C1CF70D5E00151035 /* Main.storyboard in Resources */,
 			);
@@ -352,7 +352,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
@@ -394,7 +394,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
