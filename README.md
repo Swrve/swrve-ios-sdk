@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk.svg?style=svg)](https://circleci.com/gh/Swrve/swrve-ios-sdk)
+
 What is Swrve
 -------------
 Swrve is a single integrated platform delivering everything you need to drive mobile engagement and create valuable consumer relationships on mobile.  
@@ -23,7 +25,7 @@ github "Swrve/swrve-ios-sdk"
 Requirements
 ------------
 ### Xcode (latest)
-The SDK supports iOS 8+ and the latest version of Xcode (Xcode 9, as the time of writing). The SDK will handle older versions of the OS with a dummy SDK.
+The SDK supports iOS 10+ and the latest version of Xcode (Xcode 10.1, as the time of writing). The SDK will handle older versions of the OS with a dummy SDK.
 
 Sample Projects
 -------------------

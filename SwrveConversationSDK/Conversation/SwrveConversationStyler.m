@@ -159,7 +159,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
     [button setContentVerticalAlignment:UIControlContentVerticalAlignmentFill];
 }
 
-+ (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont {
++ (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont API_AVAILABLE(ios(7.0)) {
 
     NSString *fontFile = [style objectForKey:kSwrveKeyFontFile];
     NSString *fontPostscriptName = [style objectForKey:kSwrveKeyFontPostscriptName];

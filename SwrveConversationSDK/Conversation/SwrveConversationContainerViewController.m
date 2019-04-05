@@ -31,7 +31,9 @@
     if (!displayedChildrenViewController) {
         displayedChildrenViewController = YES;
         childController.view.backgroundColor = [UIColor clearColor];
-        childController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        if (@available(iOS 8.0, *)) {
+         childController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        }
         [self presentViewController:childController animated:YES completion:nil];
     }
 }

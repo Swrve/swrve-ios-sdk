@@ -34,14 +34,17 @@ extern NSString *const SwrveNotificationButtonTitleKey;
 extern NSString *const SwrveNotificationButtonActionTypeKey;
 extern NSString *const SwrveNotificationButtonTypeKey;
 extern NSString *const SwrveNotificationButtonActionKey;
-extern NSString *const SwrveNotificationButtonOptionsKey;
+extern NSString *const SwrveNotificationCategoryOptionsKey;
 extern NSString *const SwrveNotificationCustomButtonUrlIdentiferKey;
 extern NSString *const SwrveNotificaitonCustomButtonCampaignIdentiferKey;
 
 #pragma mark - category option / action keys
 extern NSString *const SwrveNotificationCategoryTypeOptionsCarPlayKey;
 extern NSString *const SwrveNotificationCategoryTypeOptionsCustomDismissKey;
+extern NSString *const SwrveNotificationCategoryTypeOptionsHiddenShowTitleKey;
+extern NSString *const SwrveNotificationCategoryTypeOptionsHiddenShowSubtitleKey;
 extern NSString *const SwrveNotificationActionTypeForegroundKey;
 extern NSString *const SwrveNotificationActionTypeDestructiveKey;
 extern NSString *const SwrveNotificationActionTypeAuthorisationKey;
+extern NSString *const SwrveNotificationHiddenPreviewTextPlaceholderKey;
 extern NSString *const SwrveNotificationResponseDefaultActionKey;

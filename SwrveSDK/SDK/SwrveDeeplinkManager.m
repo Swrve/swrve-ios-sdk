@@ -66,7 +66,7 @@
 
 -(void)handleNotificationToCampaign:(NSString *)campaignId {
     NSURL *adCampaignURL = [self campaignURL:campaignId];
-    [self loadCampaign:adCampaignURL :^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
+    [self fetchCampaign:adCampaignURL completion:^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
         if (!error) {
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 long code = [(NSHTTPURLResponse*)response statusCode];
@@ -75,7 +75,13 @@
                 }
             }
             [self writeCampaignDataToCache:responseDic fileType:SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG];
-            [self showCampaign:responseDic];
+            [self campaignAssets:responseDic withCompletionHandler:^(SwrveCampaign *campaign) {
+                if (campaign != nil) {
+                    [self showCampaign:campaign];
+                };
+            }];
+        } else {
+            [self loadCampaignFromCache:campaignId];
         }
     }];
 }
@@ -105,7 +111,7 @@
         if ([campaignID isEqualToString:self.alreadySeenCampaignID]) {  return; }
         
         NSURL *adCampaignURL = [self campaignURL:campaignID];
-        [self loadCampaign:adCampaignURL :^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
+        [self fetchCampaign:adCampaignURL completion:^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
             if (!error) {
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     long code = [(NSHTTPURLResponse*)response statusCode];
@@ -114,7 +120,11 @@
                     }
                 }
                 [self writeCampaignDataToCache:responseDic fileType:SWRVE_AD_CAMPAIGN_FILE];
-                [self showCampaign:responseDic];
+                [self campaignAssets:responseDic withCompletionHandler:^(SwrveCampaign *campaign) {
+                    if (campaign != nil) {
+                        [self showCampaign:campaign];
+                    };
+                }];
             }
         }];
         
@@ -126,16 +136,22 @@
     }
 }
 
--(void)writeCampaignDataToCache:(NSDictionary *)responseDic fileType:(int)fileType {
-    if (responseDic != nil) {
-        NSData *campaignData = [NSJSONSerialization dataWithJSONObject:responseDic options:0 error:nil];
-        SwrveSignatureProtectedFile *campaignFile =  [[SwrveSignatureProtectedFile alloc] protectedFileType:fileType
-                                                                                                     userID:self.sdk.userID
-                                                                                               signatureKey:[self.sdk signatureKey]
-                                                                                              errorDelegate:nil];
+- (void)writeCampaignDataToCache:(NSDictionary *)response fileType:(int)fileType {
+    if (response != nil) {
+        NSData *campaignData = [NSJSONSerialization dataWithJSONObject:response options:0 error:nil];
+        SwrveSignatureProtectedFile *campaignFile = [self signatureFileWithType:fileType errorDelegate:nil];
         
         [campaignFile writeToFile:campaignData];
     }
+}
+
+- (SwrveSignatureProtectedFile *)signatureFileWithType:(int)type errorDelegate:(id <SwrveSignatureErrorDelegate>)delegate {
+    SwrveSignatureProtectedFile *file =[[SwrveSignatureProtectedFile alloc] protectedFileType:type
+                                                                                       userID:self.sdk.userID
+                                                                                 signatureKey:[self.sdk signatureKey]
+                                                                                  errorDelegate:delegate];
+    
+    return file;
 }
 
 - (void)queueDeeplinkGenericEvent:(NSString *)adSource
@@ -156,10 +172,11 @@
                                 @"id"           :@-1
                                 };
     
-    (void)[self.sdk queueEvent:@"generic_campaign_event" data:[eventData mutableCopy] triggerCallback:NO];
+    [self.sdk queueEvent:@"generic_campaign_event" data:[eventData mutableCopy] triggerCallback:NO];
 }
-- (void)loadCampaign:(NSURL *)url
-                    :(void (^)(NSURLResponse *response,NSDictionary *responseDic, NSError *error))completion {
+
+- (void)fetchCampaign:(NSURL *)url
+           completion:(void (^)(NSURLResponse *response,NSDictionary *responseDic, NSError *error))completion {
     DebugLog(@"DeeplinkCampaign URL %@", url);
     
     [self.sdk.restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -187,7 +204,7 @@
     return [NSURL URLWithString:queryString relativeToURL:adCampaignURL];
 }
 
--(void)showCampaign:(NSDictionary *)campaignJson {
+- (void)campaignAssets:(NSDictionary *)campaignJson withCompletionHandler:(void (^)(SwrveCampaign * campaign))completionHandler {
     
     if (campaignJson == nil) {
         DebugLog(@"Error parsing campaign JSON", nil);
@@ -238,44 +255,113 @@
         return;
     }
     
-    if (campaign == nil) { return; }
+    if (campaign == nil) {
+        if (completionHandler != nil) {
+            completionHandler(nil);
+        }
+        return;
+    }
     
     // Obtain assets we don't have yet
     [self.assetsManager downloadAssets:assetsQueue withCompletionHandler:^ {
-        
-        self.alreadySeenCampaignID =  [NSString stringWithFormat:@"%lu",(unsigned long)campaign.ID];
-        if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                SwrveConversation *conversation = ((SwrveConversationCampaign *)campaign).conversation;
-                if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                    [self.sdk.messaging.showMessageDelegate showConversation:conversation];
-                } else {
-                    [self.sdk.messaging showConversation:conversation queue:true];
-                }
-            });
-        } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            SwrveMessage *message = [((SwrveInAppCampaign *)campaign).messages objectAtIndex:0];
-
-            // Show the message if it exists
-            if( message != nil ) {
-                dispatch_block_t showMessageBlock = ^{
-                    if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                        [self.sdk.messaging.showMessageDelegate showMessage:message];
-                    }
-                    else {
-                        [self.sdk.messaging showMessage:message queue:true];
-                    }
-                };
-                
-                if ([NSThread isMainThread]) {
-                    showMessageBlock();
-                } else {
-                    // Run in the main thread as we have been called from other thread
-                    dispatch_async(dispatch_get_main_queue(), showMessageBlock);
-                }
-            }
+        if (completionHandler != nil) {
+            completionHandler(campaign);
         }
     }];
+}
+
+- (void)showCampaign:(SwrveCampaign *)campaign {
+    
+    self.alreadySeenCampaignID =  [NSString stringWithFormat:@"%lu",(unsigned long)campaign.ID];
+    if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SwrveConversation *conversation = ((SwrveConversationCampaign *)campaign).conversation;
+            if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                [self.sdk.messaging.showMessageDelegate showConversation:conversation];
+            } else {
+                [self.sdk.messaging showConversation:conversation queue:true];
+            }
+        });
+    } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
+        SwrveMessage *message = [((SwrveInAppCampaign *)campaign).messages objectAtIndex:0];
+        
+        // Show the message if it exists
+        if( message != nil ) {
+            dispatch_block_t showMessageBlock = ^{
+                if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                    [self.sdk.messaging.showMessageDelegate showMessage:message];
+                }
+                else {
+                    [self.sdk.messaging showMessage:message queue:true];
+                }
+            };
+            
+            if ([NSThread isMainThread]) {
+                showMessageBlock();
+            } else {
+                // Run in the main thread as we have been called from other thread
+                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+            }
+        }
+    }
+}
+
+
+- (void)loadCampaignFromCache:(NSString *)campaignId  {
+    NSDictionary *cachedCampaigs = [self campaignsInCache:SWRVE_NOTIFICATION_CAMPAIGNS_FILE];
+    NSDictionary *cachedCampaign = [cachedCampaigs objectForKey:campaignId];
+    if (cachedCampaign != nil) {
+        [self campaignAssets:cachedCampaign withCompletionHandler:^(SwrveCampaign *campaign) {
+            if (campaign != nil) {
+                [self showCampaign:campaign];
+            };
+        }];
+    } else {
+        DebugLog(@"SwrveDeeplinkManager: unable to load campaignId:%@ from cache", campaignId);
+    }
+}
+
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds {
+ 
+    //write to cache once all campaigns have finished downloading
+    dispatch_group_t campaignGroup = dispatch_group_create();
+    
+    __block NSMutableDictionary *offlineCampaigns = [NSMutableDictionary new];
+    
+    for (NSString *campaignId in campaignIds) {
+        dispatch_group_enter(campaignGroup);
+        NSURL *campaignUrl = [self campaignURL:campaignId];
+        [self fetchCampaign:campaignUrl completion:^(NSURLResponse *response, NSDictionary *responseDic, NSError *error) {
+            if (!error) {
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                NSInteger statusCode = [httpResponse statusCode];
+                if (statusCode == 200) {                           
+                    NSDictionary *campaignDic = [responseDic objectForKey:@"campaign"];
+                    NSNumber *campIdNumber = [campaignDic objectForKey:@"id"];
+                    if (campIdNumber != nil) {
+                        [offlineCampaigns setObject:responseDic forKey:[campIdNumber stringValue]];
+                        [self campaignAssets:responseDic withCompletionHandler:nil];
+                    }
+                }
+            }
+           dispatch_group_leave(campaignGroup);
+        }];
+    }
+    
+    dispatch_group_notify(campaignGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self writeCampaignDataToCache:offlineCampaigns fileType:SWRVE_NOTIFICATION_CAMPAIGNS_FILE];
+    });
+}
+
+- (NSDictionary *)campaignsInCache:(int)fileType {
+    SwrveSignatureProtectedFile *campaignFile = [self signatureFileWithType:fileType errorDelegate:nil];
+    
+    NSData *campaignData = [campaignFile readFromFile];
+    NSDictionary *campaignDic = nil;
+    if (campaignData != nil) {
+        campaignDic = [NSJSONSerialization JSONObjectWithData:campaignData options:0 error:nil];
+    }
+    return campaignDic;
 }
 
 @end

@@ -35,13 +35,16 @@ NSString *const SwrveNotificationButtonActionTypeKey = @"action_type";
 NSString *const SwrveNotificationButtonActionKey = @"action";
 NSString *const SwrveNotificationButtonTypeKey = @"button_type";
 NSString *const SwrveNotificationCustomButtonUrlIdentiferKey = @"open_url";
-NSString *const SwrveNotificationButtonOptionsKey = @"button_options";
+NSString *const SwrveNotificationCategoryOptionsKey = @"category_options";
 NSString *const SwrveNotificaitonCustomButtonCampaignIdentiferKey = @"open_campaign";
 
 #pragma mark - category option / action keys
 NSString *const SwrveNotificationCategoryTypeOptionsCarPlayKey = @"carplay";
 NSString *const SwrveNotificationCategoryTypeOptionsCustomDismissKey = @"custom_dismiss";
+NSString *const SwrveNotificationCategoryTypeOptionsHiddenShowTitleKey = @"hidden_show_title";
+NSString *const SwrveNotificationCategoryTypeOptionsHiddenShowSubtitleKey = @"hidden_show_subtitle";
 NSString *const SwrveNotificationActionTypeForegroundKey = @"foreground";
 NSString *const SwrveNotificationActionTypeDestructiveKey = @"destructive";
 NSString *const SwrveNotificationActionTypeAuthorisationKey = @"auth-required";
+NSString *const SwrveNotificationHiddenPreviewTextPlaceholderKey = @"hidden_placeholder";
 NSString *const SwrveNotificationResponseDefaultActionKey = @"com.apple.UNNotificationDefaultActionIdentifier";

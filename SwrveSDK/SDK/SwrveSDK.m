@@ -236,4 +236,9 @@ static dispatch_once_t sharedInstanceToken = 0;
     return [[SwrveSDK sharedInstance] externalUserId];
 }
 
++ (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] setCustomPayloadForConversationInput:payload];
+}
+
 @end

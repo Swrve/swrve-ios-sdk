@@ -30,7 +30,7 @@
 - (void)setUp {
     [super setUp];
     [SwrveTestHelper setUp];
-    
+
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
 }
 
@@ -52,13 +52,13 @@
     OCMReject([currentMockCenter setNotificationCategories:OCMOCK_ANY]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
     [self mockNotificationCenterNotificationSettings:currentMockCenter];
-    
+
     // Should not request push permission
     [self rejectNotificationCenterRequestAuth:currentMockCenter];
     [self rejectNotificationCenterRequestAuthProvisional:currentMockCenter];
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
     OCMReject([mockUIApplication registerForRemoteNotifications]);
-    
+
     Swrve *swrve = [Swrve alloc];
     // Start the SDK
     SwrveConfig *config = [[SwrveConfig alloc] init];
@@ -67,10 +67,10 @@
     // Mimic app being started
     [swrve appDidBecomeActive:nil];
     [swrve sendQueuedEvents];
-    
+
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(mockUIApplication);
-    
+
     // Test cleanup
     [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
@@ -90,16 +90,16 @@
     OCMReject([currentMockCenter setNotificationCategories:OCMOCK_ANY]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
     [self mockNotificationCenterNotificationSettings:currentMockCenter];
-    
+
     // Should not request push permission
     [self rejectNotificationCenterRequestAuth:currentMockCenter];
     [self rejectNotificationCenterRequestAuthProvisional:currentMockCenter];
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
     OCMReject([mockUIApplication registerForRemoteNotifications]);
-    
+
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
-    
+
     // Intercept the event queue system to determine if the correct events are sent
     XCTestExpectation *eventWithPushUnknownQueued = [self expectationWithDescription:@"Event with push unknown status queued"];
     eventWithPushUnknownQueued.assertForOverFulfill = NO;
@@ -108,7 +108,7 @@
             [eventWithPushUnknownQueued fulfill];
         }
     }];
-    
+
     // Start the SDK
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
@@ -123,11 +123,11 @@
             NSLog(@"Expectation Error occured: %@", error);
         }
     }];
-    
+
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(swrveMock);
     OCMVerifyAll(mockUIApplication);
-    
+
     // Test cleanup
     [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
@@ -143,17 +143,17 @@
 // - We request a fresh token
 - (void)testPushRegistration {
     NSSet *customCategories = [NSSet setWithObject:@"my_category"];
-    
+
     IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
     currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
     OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
     [self mockNotificationCenterNotificationSettings:currentMockCenter];
-    
+
     // Should request normal push permission (and we mock a success)
     [self mockExpectRequestAuthorization:currentMockCenter withOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge) andReturn:true withError:nil andPushStatus:UNAuthorizationStatusAuthorized];
-    
+
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
@@ -161,7 +161,7 @@
         // When the SDK calls register for notifications we send the new token
         [swrveMock deviceTokenUpdated:@"fake_token"];
     });
-    
+
     // Intercept the event queue system to determine if the correct events are sent
     XCTestExpectation *eventWithDeviceTokenQueued = [self expectationWithDescription:@"Event with device token queued"];
     eventWithDeviceTokenQueued.assertForOverFulfill = NO;
@@ -175,7 +175,7 @@
             [eventWithPushAuthorizedQueued fulfill];
         }
     }];
-    
+
     // Start the SDK
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
@@ -184,23 +184,23 @@
     swrve = [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
     // Mimic app being started
     [swrve appDidBecomeActive:nil];
-    
+
     // We should see the permission status event with unknown queued
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
             NSLog(@"Expectation Error occured: %@", error);
         }
     }];
-    
+
     // Should have requested normal push permission (mock expect on UNUserNotificationCenter)
     // Should have sent an event informing of the status of the permission (mock expect on Swrve)
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(swrveMock);
     OCMVerifyAll(mockUIApplication);
-    
+
     // Verify that the token was saved to disk
     XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token");
-    
+
     // Test cleanup
     [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
@@ -217,18 +217,18 @@
     NSSet *customCategories = [NSSet setWithObject:@"my_category"];
     // Assume the app already gave us a token
     [SwrveLocalStorage saveDeviceToken:@"fake_token"];
-    
+
     IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
     currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
     OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
     currentPushStatus = UNAuthorizationStatusAuthorized;
     [self mockNotificationCenterNotificationSettings:currentMockCenter];
-    
+
     // Should not request push permission
     [self rejectNotificationCenterRequestAuth:currentMockCenter];
     [self rejectNotificationCenterRequestAuthProvisional:currentMockCenter];
-    
+
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
@@ -236,7 +236,7 @@
         // When the SDK ask for a fresh token we send an updated one
         [swrveMock deviceTokenUpdated:@"fake_token_updated"];
     });
-    
+
     // Intercept the event queue system to determine if the correct events are sent
     XCTestExpectation *eventWithDeviceTokenQueued = [self expectationWithDescription:@"Event with device token queued"];
     eventWithDeviceTokenQueued.assertForOverFulfill = NO;
@@ -245,7 +245,7 @@
             [eventWithDeviceTokenQueued fulfill];
         }
     }];
-    
+
     // Start the SDK
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
@@ -255,28 +255,105 @@
     swrve = [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
     // Mimic app being started
     [swrve appDidBecomeActive:nil];
-    
+
     // We should see the permission status event with unknown queued
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
             NSLog(@"Expectation Error occured: %@", error);
         }
     }];
-    
+
     // Should have requested normal push permission (mock expect on UNUserNotificationCenter)
     // Should have sent an event informing of the status of the permission (mock expect on Swrve)
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(swrveMock);
     OCMVerifyAll(mockUIApplication);
-    
+
     // Verify that the token was saved to disk
     XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token_updated");
-    
+
     // Test cleanup
     [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
     [swrveMock stopMocking];
     [mockUIApplication stopMocking];
+}
+
+// Test that when provisioanl push is enabled and set to be requested at start:
+// - The delegate is set
+// - An event with the new authorized status is queued
+// - We set categories (because they are not empty)
+// - We request provisional push permission
+// - We request a fresh token
+- (void)testProvisionalPushRegistration {
+    if (@available(iOS 12.0, *)) {
+        NSSet *customCategories = [NSSet setWithObject:@"my_category"];
+
+        IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
+        currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+        OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
+        OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
+        currentPushStatus = UNAuthorizationStatusNotDetermined;
+        [self mockNotificationCenterNotificationSettings:currentMockCenter];
+
+        // Should request provisional push permission (and we mock a success)
+        [self mockExpectRequestAuthorization:currentMockCenter withOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge + UNAuthorizationOptionProvisional) andReturn:true withError:nil andPushStatus:UNAuthorizationStatusProvisional];
+
+        Swrve *swrve = [Swrve alloc];
+        id swrveMock = OCMPartialMock(swrve);
+        id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+        OCMExpect([mockUIApplication registerForRemoteNotifications]).andDo(^(NSInvocation *invocation) {
+            // When the SDK calls register for notifications we send the new token
+            [swrveMock deviceTokenUpdated:@"fake_token"];
+        });
+
+        // Intercept the event queue system to determine if the correct events are sent
+        XCTestExpectation *eventWithDeviceTokenQueued = [self expectationWithDescription:@"Event with device token queued"];
+        eventWithDeviceTokenQueued.assertForOverFulfill = NO;
+        XCTestExpectation *eventWithPushProvisionalQueued = [self expectationWithDescription:@"Event with push provisional status queued"];
+        eventWithPushProvisionalQueued.assertForOverFulfill = NO;
+        [self listenToDeviceUpdateEvents:swrveMock withBlock:^(NSDictionary *attributes) {
+            if ([[attributes objectForKey:@"swrve.ios_token"] isEqualToString:@"fake_token"]) {
+                [eventWithDeviceTokenQueued fulfill];
+            }
+            if ([[attributes objectForKey:@"Swrve.permission.ios.push_notifications"] isEqualToString:@"provisional"]) {
+                [eventWithPushProvisionalQueued fulfill];
+            }
+        }];
+
+        // Start the SDK
+        SwrveConfig *config = [[SwrveConfig alloc] init];
+        config.pushEnabled = YES;
+        config.autoCollectDeviceToken = NO; // Disable swizzling
+        config.notificationCategories = customCategories;
+        config.pushNotificationEvents = nil;
+        config.provisionalPushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
+        swrve = [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+        // Mimic app being started
+        [swrve appDidBecomeActive:nil];
+
+        // We should see the permission status event with unknown queued
+        [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
+            if (error) {
+                NSLog(@"Expectation Error occured: %@", error);
+            }
+        }];
+
+        // Should have requested normal push permission (mock expect on UNUserNotificationCenter)
+        // Should have sent an event informing of the status of the permission (mock expect on Swrve)
+        OCMVerifyAll(currentMockCenter);
+        OCMVerifyAll(swrveMock);
+        OCMVerifyAll(mockUIApplication);
+
+        // Verify that the token was saved to disk
+        XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token");
+
+        // Test cleanup
+        [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
+        [currentMockCenter stopMocking];
+        [swrveMock stopMocking];
+        [mockUIApplication stopMocking];
+    }
 }
 
 /* HELPER METHODS */
@@ -288,7 +365,7 @@
     SEL currentCenterSelector = @selector(currentNotificationCenter);
     Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
     IMP newImplementation = [[self class] methodForSelector:currentCenterSelector];
-    
+
     return method_setImplementation(originalMethod, newImplementation);
 }
 
@@ -296,7 +373,7 @@
     Class notificationCenterClass = [UNUserNotificationCenter class];
     SEL currentCenterSelector = @selector(currentNotificationCenter);
     Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
-    
+
     method_setImplementation(originalMethod, originalCurrentCenterImp);
 }
 
@@ -305,7 +382,7 @@
     OCMStub([mock getNotificationSettingsWithCompletionHandler:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
         void (^callback)(UNNotificationSettings *_Nonnull settings);
         [invoke getArgument:&callback atIndex:2];
-        
+
         id notificationSettingsMock = OCMClassMock([UNNotificationSettings class]);
         OCMStub([notificationSettingsMock authorizationStatus]).andReturn(currentPushStatus);
         callback(notificationSettingsMock);
@@ -330,7 +407,7 @@
         [invoke getArgument:&eventType atIndex:2];
         __unsafe_unretained NSMutableDictionary *eventData = nil;
         [invoke getArgument:&eventData atIndex:3];
-        
+
         NSDictionary *attributes = [eventData objectForKey:@"attributes"];
         if (attributes != nil) {
             attributesBlock(attributes);
@@ -343,7 +420,7 @@
     OCMExpect([mock requestAuthorizationWithOptions:options completionHandler:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
         void (^callback)(BOOL granted, NSError * _Nullable error);
         [invoke getArgument:&callback atIndex:3];
-        
+
         // Update permission status
         currentPushStatus = status;
         callback(result, error);

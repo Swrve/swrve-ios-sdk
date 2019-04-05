@@ -18,6 +18,7 @@
 @synthesize autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @synthesize pushEnabled;
+@synthesize provisionalPushNotificationEvents;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize notificationCategories;
@@ -43,6 +44,7 @@
         self.autoSaveEventsOnResign = YES;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
         self.pushEnabled = NO;
+        self.provisionalPushNotificationEvents = nil;
         self.pushNotificationEvents = [NSSet setWithObject:@"Swrve.session.start"];
         self.autoCollectDeviceToken = YES;
 #endif //!defined(SWRVE_NO_PUSH)
@@ -75,6 +77,7 @@
 @synthesize autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @synthesize pushEnabled;
+@synthesize provisionalPushNotificationEvents;
 @synthesize pushNotificationEvents;
 @synthesize autoCollectDeviceToken;
 @synthesize notificationCategories;
@@ -105,6 +108,7 @@
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
         pushEnabled = config.pushEnabled;
+        provisionalPushNotificationEvents = config.provisionalPushNotificationEvents;
         pushNotificationEvents = config.pushNotificationEvents;
         autoCollectDeviceToken = config.autoCollectDeviceToken;
         notificationCategories = config.notificationCategories;

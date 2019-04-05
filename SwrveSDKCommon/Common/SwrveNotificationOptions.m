@@ -28,7 +28,17 @@
     if ([key isEqualToString:SwrveNotificationCategoryTypeOptionsCarPlayKey]) {
         return UNNotificationCategoryOptionAllowInCarPlay;
     }
-
+    
+    if(@available(iOS 11.0,*)){
+        if([key isEqualToString:SwrveNotificationCategoryTypeOptionsHiddenShowTitleKey]) {
+            return UNNotificationCategoryOptionHiddenPreviewsShowTitle;
+        }
+        
+        if([key isEqualToString:SwrveNotificationCategoryTypeOptionsHiddenShowSubtitleKey]) {
+            return UNNotificationCategoryOptionHiddenPreviewsShowSubtitle;
+        }
+    }
+    
     return UNNotificationCategoryOptionNone;
 }
 

@@ -134,8 +134,7 @@
 #endif
 
 - (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
+       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator API_AVAILABLE(ios(8.0)) {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     self.viewportWidth = size.width;

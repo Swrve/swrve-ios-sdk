@@ -26,12 +26,12 @@
 
 - (void)setUp {
     [super setUp];
-    [SwrveTestHelper tearDown];
+    [SwrveTestHelper setUp];
 
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
 
     id classMock = OCMClassMock([SwrvePermissions class]);
-    OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:[OCMArg any]])).andReturn(@"unittest");
+    OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
 }
 
 - (void)tearDown {
@@ -50,7 +50,7 @@
     XCTAssertNotNil([swrve userID], "UserId should automatically be created by default");
 
     OCMVerify([swrveMock registerLifecycleCallbacks]);
-    OCMVerify([swrveMock initWithUserId:[OCMArg any]]);
+    OCMVerify([swrveMock initWithUserId:OCMOCK_ANY]);
 
     [swrveMock stopMocking];
 }
@@ -69,7 +69,7 @@
     XCTAssertEqualObjects(currentUserId, @"joe", @"The current user should be joe but was: %@", currentUserId);
 
     OCMVerify([swrveMock registerLifecycleCallbacks]);
-    OCMVerify([swrveMock initWithUserId:[OCMArg any]]);
+    OCMVerify([swrveMock initWithUserId:OCMOCK_ANY]);
 
     [swrveMock stopMocking];
 }

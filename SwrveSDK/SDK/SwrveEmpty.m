@@ -236,6 +236,10 @@
     return @"";
 }
 
+- (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
+    #pragma unused(payload)
+}
+
 - (double)flushRefreshDelay {
     return 0.0;
 }
@@ -246,6 +250,14 @@
 
 - (NSString *)sessionToken {
     return nil;
+}
+
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds {
+#pragma unused (campaignIds)
+}
+
+- (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate {
+#pragma unused (sessionDelegate)
 }
 
 @end

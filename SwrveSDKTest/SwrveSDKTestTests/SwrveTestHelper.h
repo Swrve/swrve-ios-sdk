@@ -10,5 +10,4 @@
 + (NSMutableArray *)stringArrayFromCachedContent:(NSString *)content;
 + (NSMutableArray *)dicArrayFromCachedFile:(NSURL *)file;
 
-
 @end

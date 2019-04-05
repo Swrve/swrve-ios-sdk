@@ -8,9 +8,60 @@
 #import "SwrveContentStarRating.h"
 
 @implementation SwrveConversationEvents
+static NSMutableDictionary *_customPayload = nil;
 
-+(void)eventInternal:(NSString*)eventName payload:(NSDictionary*)eventPayload {
-    [[SwrveCommon sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:false];
++ (NSMutableDictionary *)customPayload {
+    if (_customPayload == nil) {
+        _customPayload = [NSMutableDictionary new];
+    }
+    return _customPayload;
+}
+
++ (void)setCustomPayload:(NSMutableDictionary *)newCustomPayload {
+    if ([newCustomPayload count] > 5) {
+        DebugLog(@"Swrve custom payload rejected, attempted to add more than 5 key pair values", nil);
+        return;
+    }
+
+    if (![SwrveConversationEvents validatePayloadKeys:newCustomPayload]) {
+        DebugLog(@"Swrve custom payload rejected, attempted to add a key which is already reserved for Swrve internal events", nil);
+        return;
+    }
+    _customPayload = [newCustomPayload copy];
+}
+
++ (bool)validatePayloadKeys:(NSMutableDictionary *)payload {
+    NSArray *restrictedSwrveKeys = @[@"event",
+            @"to",
+            @"page",
+            @"conversation",
+            @"control",
+            @"fragment",
+            @"result",
+            @"name",
+            @"id"];
+
+    NSMutableArray *keys = [NSMutableArray arrayWithArray:[payload allKeys]];
+    NSUInteger countBefore = [keys count];
+    [keys removeObjectsInArray:restrictedSwrveKeys];
+    return (countBefore == [keys count]);
+}
+
++ (bool)isSurveyEvent:(NSString *)eventName {
+    NSArray *surveyEvents = @[@"star-rating", @"choice", @"play"];
+    return [surveyEvents containsObject:eventName];
+}
+
++ (void)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload {
+    NSString *payloadEventName = [eventPayload objectForKey:@"event"];
+    if ([self isSurveyEvent:payloadEventName] && [_customPayload count] > 0) {
+        NSMutableDictionary *newPayload = [NSMutableDictionary new];
+        [newPayload addEntriesFromDictionary:_customPayload];
+        [newPayload addEntriesFromDictionary:eventPayload];
+        [[SwrveCommon sharedInstance] eventInternal:eventName payload:newPayload triggerCallback:false];
+    } else {
+        [[SwrveCommon sharedInstance] eventInternal:eventName payload:eventPayload triggerCallback:false];
+    }
 }
 
 +(void)started:(SwrveBaseConversation*)conversation onStartPage:(NSString*)pageTag {

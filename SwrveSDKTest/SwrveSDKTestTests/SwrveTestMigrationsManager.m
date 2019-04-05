@@ -24,13 +24,13 @@
 
 - (void)setUp {
     [super setUp];
-    [SwrveTestHelper tearDown];
+    [SwrveTestHelper setUp];
     [SwrveLocalStorage resetDirectoryCreation];
 }
 
 - (void)tearDown {
-    [super tearDown];
     [SwrveTestHelper tearDown];
+    [super tearDown];
 }
 
 - (void)testMigrate0_old_device_ids_deleted {
@@ -95,13 +95,6 @@
     BOOL success = [fileManager createFileAtPath:installDateFilePath contents:data attributes:nil];
     XCTAssertTrue(success == YES);
     XCTAssertTrue([fileManager fileExistsAtPath:installDateFilePath]);
-}
-
-- (NSString*)installDateFilePathForConfig {
-    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil appId:1 apiKey:@"api_key"];
-    NSString *documentPath = [SwrveLocalStorage documentPath];
-    NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
-    return [documentPath stringByAppendingPathComponent:installDateWithUserId];
 }
 
 - (void)testSeqNumMigration {
@@ -273,6 +266,16 @@
     
     NSString *appInstallDateContents = [[NSString alloc] initWithContentsOfFile:appInstallDateFilePath encoding:NSUTF8StringEncoding error:nil];
     XCTAssertTrue([appInstallDateContents isEqualToString:@"987654321"], @"The contents of the app install date is not correct after copying current user joined time.");
+}
+
+/* HELPER METHODS */
+
+- (NSString*)installDateFilePathForConfig {
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil appId:1 apiKey:@"SomeKey"];
+    NSString *documentPath = [SwrveLocalStorage documentPath];
+    NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
+    NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:installDateWithUserId];
+    return installDateFilePath;
 }
 
 @end

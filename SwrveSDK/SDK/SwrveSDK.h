@@ -351,5 +351,25 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)externalUserId;
 
+/*! Add a custom payload for user input events.
+    Selecting a star-rating,
+    Selecting a choice on a text questionnaire
+    Selecting play on a video
+ 
+ @param payload NSMutableDictionary with custom key pair values.
+ @note  If key pair values added is greater than 5 or Keys added conflict with existing swrve internal keys then
+ the custom payload will be rejected and not added for the event. A debug log error will be generated.
+ @code
+ NSMutableDictionary *myPayload =  [[NSMutableDictionary alloc] initWithDictionary:@{
+ @"key1":@"value2",
+ @"key2": @"value2",
+ }];
+ 
+ [SwrveSDK setCustomPayloadForConversationInput:myPayload];
+ @endcode
+ */
++ (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
+
 @end
 NS_ASSUME_NONNULL_END
+

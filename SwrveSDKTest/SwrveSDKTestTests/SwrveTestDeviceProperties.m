@@ -36,7 +36,7 @@
 
 - (void)setUp {
     [super setUp];
-    [SwrveTestHelper tearDown];
+    [SwrveTestHelper setUp];
 }
 
 - (void)tearDown {
@@ -50,13 +50,13 @@
     int propertyCount = 13;
 
     // increase depending on what macros have been defined
-    #if defined(SWRVE_LOG_IDFA)
+#if defined(SWRVE_LOG_IDFA)
     propertyCount++;
-    #endif
+#endif
 
-    #if defined(SWRVE_LOG_IDFA)
+#if defined(SWRVE_LOG_IDFA)
     propertyCount++;
-    #endif
+#endif
 
     return propertyCount;
 }
@@ -90,13 +90,13 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
 
-    #if defined(SWRVE_LOG_IDFA)
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
-    #endif
+#if defined(SWRVE_LOG_IDFA)
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
+#endif
 
-    #if defined(SWRVE_LOG_IDFV)
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
-    #endif
+#if defined(SWRVE_LOG_IDFV)
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
+#endif
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {
@@ -180,7 +180,7 @@
     SwrveConfig* config = [[SwrveConfig alloc] init];
     config.autoDownloadCampaignsAndResources = false;
     config.permissionsDelegate = permissionsDelegate;
-    [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
+    [SwrveSDK sharedInstanceWithAppID:1 apiKey:@"Key" config:config];
     Swrve *sdk = [SwrveSDK sharedInstance];
     
     NSDictionary *permissionStatus = [SwrvePermissions currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk];

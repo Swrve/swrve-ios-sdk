@@ -16,6 +16,8 @@ static NSString* SWRVE_AD_CAMPAIGNS = @"cmcc3.json";
 static NSString* SWRVE_AD_CAMPAIGNS_SGT = @"cmccsgt3.txt";
 static NSString* SWRVE_PUSH_CAMPAIGNS = @"cmcc4.json";
 static NSString* SWRVE_PUSH_CAMPAIGNS_SGT = @"cmccsgt4.txt";
+static NSString* SWRVE_OFFLINE_CAMPAIGNS = @"cmcc5.json";
+static NSString* SWRVE_OFFLINE_CAMPAIGNS_SGT = @"cmccsgt5.txt";
 static NSString* SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
 
 //NSUserDefaults Keys
@@ -399,6 +401,14 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     });
     
     return _path;
+}
+
++ (NSString *)offlineCampaignsFilePathForUserId:(NSString *)userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_OFFLINE_CAMPAIGNS];
+}
+
++ (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_OFFLINE_CAMPAIGNS_SGT];
 }
 
 @end

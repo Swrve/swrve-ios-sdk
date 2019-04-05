@@ -1,4 +1,5 @@
 #import "SwrvePermissionsDelegate.h"
+#import "SwrveSessionDelegate.h"
 #import <UIKit/UIKit.h>
 
 /*! Swrve SDK shared protocol (interface) definition */
@@ -12,6 +13,7 @@
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (void)mergeWithCurrentDeviceInfo:(NSDictionary *)attributes;
 - (void)handleNotificationToCampaign:(NSString *)campaignId;
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds;
 
 - (NSString *)swrveSDKVersion;
 - (NSString *)appVersion;
@@ -24,6 +26,7 @@
 - (double)flushRefreshDelay;
 - (NSInteger)nextEventSequenceNumber;
 - (NSString *)sessionToken;
+- (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
 
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString* deviceToken;
@@ -78,7 +81,8 @@ enum  {
     SWRVE_RESOURCE_DIFF_FILE,
     SWRVE_CAMPAIGN_FILE,
     SWRVE_AD_CAMPAIGN_FILE,
-    SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG
+    SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG,
+    SWRVE_NOTIFICATION_CAMPAIGNS_FILE
 };
 
 #define KB(x) (1024*(x))

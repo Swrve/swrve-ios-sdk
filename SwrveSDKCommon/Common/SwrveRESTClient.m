@@ -81,7 +81,7 @@
     [self sendHttpRequest:request completionHandler:handler];
 }
 
-- (void)sendHttpRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler {
+- (void)sendHttpRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler API_AVAILABLE(ios(7.0)) {
     NSArray *allMetricsToSend;
 
     @synchronized ([self httpPerformanceMetrics]) {

@@ -183,9 +183,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    self.navigationController.navigationBar.translucent = NO;
+    if (@available(iOS 7.0, *)) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+        self.navigationController.navigationBar.translucent = NO;
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -220,10 +222,12 @@
         
         // Add top margin of close button and content
         // to take into account the status bar.
-        self.contentTableViewTop.constant = self.topLayoutGuide.length;
-        [self.contentTableView setNeedsUpdateConstraints];
-        self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
-        [self.cancelButtonView setNeedsUpdateConstraints];
+        if (@available(iOS 7.0, *)) {
+            self.contentTableViewTop.constant = self.topLayoutGuide.length;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+        }
     }
     
     for(SwrveConversationAtom *atom in self.conversationPane.content) {

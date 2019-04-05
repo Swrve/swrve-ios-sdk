@@ -16,6 +16,7 @@ static NSString* SWRVE_AD_CONTENT          =   @"ad_content";
 - (void)handleDeferredDeeplink:(NSURL *)url;
 + (BOOL)isSwrveDeeplink:(NSURL *)url;
 - (void)handleNotificationToCampaign:(NSString *)campaignId;
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds;
 
 @property (atomic) NSString *actionType;
 

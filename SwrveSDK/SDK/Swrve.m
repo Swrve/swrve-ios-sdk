@@ -15,6 +15,7 @@
 #import "SwrveMessageController+Private.h"
 #import "SwrveDeviceProperties.h"
 #import "SwrveEventsManager.h"
+#import "SwrveConversationEvents.h"
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 #endif
@@ -133,7 +134,7 @@ enum
 - (BOOL)observeSwizzling;
 - (void)deswizzlePushMethods;
 - (void)setPushNotificationsDeviceToken:(NSData *)newDeviceToken;
-- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler;
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0));
 - (void)processInfluenceData;
 
 @end
@@ -142,17 +143,15 @@ enum
 @interface Swrve () <SwrveCommonDelegate> {
     BOOL initialised;
     SwrveEventsManager *eventsManager;
-
     UInt64 appInstallTimeSeconds;
     UInt64 userJoinedTimeSeconds;
     NSDate *lastSessionDate;
-
     SwrveEventQueuedCallback event_queued_callback;
-    // The unique id associated with this instance of Swrve
-    long instanceID;
-
+    long instanceID; // The unique id associated with this instance of Swrve
     enum SwrveTrackingState trackingState;
+    id <SwrveSessionDelegate> sessionDelegate;
 }
+
 @property(atomic) SwrveDeeplinkManager *swrveDeeplinkManager;
 @property(nonatomic) SwrveReceiptProvider *receiptProvider;
 
@@ -537,7 +536,7 @@ enum
 - (void)queueSessionStart {
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
-    (void)[self queueEvent:@"session_start" data:json triggerCallback:true];
+    [self queueEvent:@"session_start" data:json triggerCallback:true];
 }
 
 - (int)sessionStart {
@@ -1163,8 +1162,10 @@ enum
 
     if (!initialised) {
         initialised = YES;
-        // App started the first time
-        [self beginSession];
+        [self beginSession]; // App started the first time
+        if (sessionDelegate) {
+            [sessionDelegate sessionStarted];
+        }
         return;
     }
 
@@ -1172,13 +1173,13 @@ enum
     NSDate *now = [self getNow];
     NSTimeInterval secondsPassed = [now timeIntervalSinceDate:lastSessionDate];
     if (secondsPassed >= self.config.newSessionInterval) {
-        // We consider this a new session as more than newSessionInterval seconds
-        // have passed.
-        [self sessionStart];
-        // Re-enable auto show messages at session start
+        [self sessionStart]; // We consider this a new session as more than newSessionInterval seconds have passed.
         if (self.messaging) {
-            [self.messaging setAutoShowMessagesEnabled:YES];
+            [self.messaging setAutoShowMessagesEnabled:YES]; // Re-enable auto show messages at session start
             [self disableAutoShowAfterDelay];
+        }
+        if (sessionDelegate) {
+            [sessionDelegate sessionStarted];
         }
     }
 
@@ -1305,7 +1306,7 @@ enum
     @synchronized (self.userUpdates) {
         NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
         if (currentAttributes.count > 0) {
-            (void)[self queueEvent:@"user" data:[self.userUpdates mutableCopy] triggerCallback:false];
+            [self queueEvent:@"user" data:[self.userUpdates mutableCopy] triggerCallback:false];
             [currentAttributes removeAllObjects];
         }
     }
@@ -1315,7 +1316,7 @@ enum
     @synchronized (self.deviceInfoDic) {
         NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.deviceInfoDic objectForKey:@"attributes"];
         if (currentAttributes.count > 0) {
-            (void)[self queueEvent:@"device_update" data:[self.deviceInfoDic mutableCopy] triggerCallback:false];
+            [self queueEvent:@"device_update" data:[self.deviceInfoDic mutableCopy] triggerCallback:false];
             [currentAttributes removeAllObjects];
         }
     }
@@ -1355,16 +1356,13 @@ enum
     return self->_deviceToken;
 }
 
-- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler {
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler  API_AVAILABLE(ios(7.0)){
     if (self.config.pushEnabled) {
         return [self.push didReceiveRemoteNotification:userInfo withBackgroundCompletionHandler:completionHandler];
     } else {
-        if (completionHandler != nil) {
-            completionHandler(UIBackgroundFetchResultFailed, nil);
-        }
+        // When we return NO, we don't trigger our completionHandler. Customers will need to call the fetchCompletionHandler regarding the UIBackgroundFetchResult.
+        return NO;
     }
-    // Not a Swrve push, customer should handle
-    return NO;
 }
 
 - (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo {
@@ -1535,10 +1533,10 @@ enum
                                                               sdk_language:self.config.language
                                                                carrierInfo:carrierInfo];
 #elif TARGET_OS_TV
-    swrveDeviceProperties =[[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
-                                                                             appInstallTimeSeconds:appInstallTimeSeconds
-                                                                               permissionStatus:permissionStatus
-                                                                                   sdk_language:self.config.language];
+    swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
+                                                     appInstallTimeSeconds:appInstallTimeSeconds
+                                                          permissionStatus:permissionStatus
+                                                              sdk_language:self.config.language];
 
 
 #endif
@@ -2299,5 +2297,17 @@ enum HttpStatus {
     return flushRefreshDelay;
 }
 
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds {
+    [self initSwrveDeeplinkManager];
+    [self.swrveDeeplinkManager fetchNotificationCampaigns:campaignIds];
+}
+
+- (void)setSwrveSessionDelegate:(id <SwrveSessionDelegate>)swrveSessionDelegate {
+    sessionDelegate = swrveSessionDelegate;
+}
+
+- (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
+    [SwrveConversationEvents setCustomPayload:payload];
+}
 
 @end

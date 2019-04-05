@@ -45,6 +45,11 @@
             filePath = [SwrveLocalStorage debugCampaignsNoticationFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage debugCampaignsNotificationSignatureFilePathForUserId:userID];
             break;
+            
+        case SWRVE_NOTIFICATION_CAMPAIGNS_FILE:
+            filePath = [SwrveLocalStorage offlineCampaignsFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage offlineCampaignsSignatureFilePathForUserId:userID];
+            break;
     }
 
     if (filePath != nil) {

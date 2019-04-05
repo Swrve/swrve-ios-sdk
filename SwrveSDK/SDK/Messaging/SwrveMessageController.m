@@ -28,7 +28,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @interface SwrvePush (SwrvePushInternalAccess)
-- (void) registerForPushNotifications;
+- (void) registerForPushNotifications:(BOOL)provisional;
 @end
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -70,6 +70,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 
 @property (nonatomic)         bool                  pushEnabled; // Decide if push notification is enabled
+@property (nonatomic, retain) NSSet*                provisionalPushNotificationEvents; // Events that trigger the provisional push permission request
 @property (nonatomic, retain) NSSet*                pushNotificationEvents; // Events that trigger the push notification dialog
 #endif //!defined(SWRVE_NO_PUSH)
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
@@ -77,6 +78,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
+@property (nonatomic, retain) NSString*             inAppButtonPressedName;
 @property (nonatomic)         bool                  prefersIAMStatusBarHidden;
 
 // Current Device Properties
@@ -112,12 +114,14 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize appStoreURLs;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @synthesize pushEnabled;
+@synthesize provisionalPushNotificationEvents;
 @synthesize pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
 @synthesize inAppMessageWindow;
 @synthesize conversationWindow;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
+@synthesize inAppButtonPressedName;
 @synthesize device_width;
 @synthesize device_height;
 @synthesize orientation;
@@ -127,6 +131,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize minDelayBetweenMessage;
 @synthesize showMessageDelegate;
 @synthesize customButtonCallback;
+@synthesize dismissButtonCallback;
 @synthesize installButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
@@ -173,6 +178,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.analyticsSDK       = sdk;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     self.pushEnabled        = sdk.config.pushEnabled;
+    self.provisionalPushNotificationEvents = sdk.config.provisionalPushNotificationEvents;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
@@ -993,9 +999,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void)buttonWasPressedByUser:(SwrveButton*)button
 {
     if (button.actionType != kSwrveActionDismiss) {
-        NSString* clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
+        NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventInternal:clickEvent payload:@{@"name" : button.name} triggerCallback:false];
+    } else {
+        // Save button name for processing later
+        self.inAppButtonPressedName = button.name;
     }
 }
 
@@ -1055,7 +1064,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     @synchronized(self) {
         if (self.inAppMessageWindow == nil && self.conversationWindow == nil) {
-            SwrveMessageViewController* messageViewController = [[SwrveMessageViewController alloc] init];
+            SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
             messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
             messageViewController.message = message;
             messageViewController.prefersIAMStatusBarHidden = self.prefersIAMStatusBarHidden;
@@ -1178,24 +1187,29 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) dismissMessageWindow {
-    if( self.inAppMessageWindow == nil ) {
+    if(self.inAppMessageWindow == nil) {
         DebugLog(@"No message to dismiss.", nil);
         return;
     }
     [self setMessageMinDelayThrottle];
-    NSDate* now = [self.analyticsSDK getNow];
-    SwrveInAppCampaign* dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
+    NSDate *now = [self.analyticsSDK getNow];
+    SwrveInAppCampaign *dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
     [dismissedCampaign messageDismissed:now];
 
     if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
         [self.showMessageDelegate messageWillBeHidden:self.inAppMessageWindow.rootViewController];
     }
 
-    NSString* action = self.inAppMessageAction;
-    NSString* nonProcessedAction = nil;
+
+    NSString *action = self.inAppMessageAction;
+    NSString *nonProcessedAction = nil;
     switch(self.inAppMessageActionType)
     {
-        case kSwrveActionDismiss: break;
+        case kSwrveActionDismiss:
+            if (self.dismissButtonCallback != nil) {
+                self.dismissButtonCallback(dismissedCampaign.subject, inAppButtonPressedName);
+            }
+            break;
         case kSwrveActionInstall:
         {
             BOOL standardEvent = true;
@@ -1220,7 +1234,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     if(nonProcessedAction != nil) {
-        NSURL* url = [NSURL URLWithString:nonProcessedAction];
+        NSURL *url = [NSURL URLWithString:nonProcessedAction];
         if (url != nil) {
             if (@available(iOS 10.0, *)) {
                 DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
@@ -1289,8 +1303,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if (self.pushEnabled) {
         if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
-            // Ask for push notification permission
-            [analyticsSDK.push registerForPushNotifications];
+            // Ask for push notification permission (can display a dialog to the user)
+            [analyticsSDK.push registerForPushNotifications:NO];
+        } else if (self.provisionalPushNotificationEvents != nil && [self.provisionalPushNotificationEvents containsObject:eventName]) {
+            // Ask for provisioanl push notification permission
+            [analyticsSDK.push registerForPushNotifications:YES];
         }
     }
 #endif //!defined(SWRVE_NO_PUSH)
@@ -1364,7 +1381,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 }
 
-- (NSString*) campaignQueryString
+- (NSString*) campaignQueryString API_AVAILABLE(ios(7.0))
 {
     const NSString* orientationName = [self orientationName];
     UIDevice* device = [UIDevice currentDevice];

@@ -32,6 +32,9 @@ enum SwrveTrackingState {
 + (NSString *)userResourcesDiffSignatureFilePathForUserId:(NSString *) userId;
 + (NSString *)anonymousEventsFilePath;
 + (NSString *)swrveCacheFolder;
++ (NSString *)offlineCampaignsFilePathForUserId:(NSString *)userId;
++ (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId;
+    
 
 //NSUserdefaults
 + (double)flushFrequency;

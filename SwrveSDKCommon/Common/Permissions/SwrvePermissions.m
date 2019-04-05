@@ -28,7 +28,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
-        [SwrvePermissions requestPushNotifications:sdk];
+        [SwrvePermissions requestPushNotifications:sdk provisional:NO];
         return YES;
     }
 #else
@@ -52,7 +52,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return NO;
 }
 
-+(NSDictionary*)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk {
++(NSDictionary*)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk API_AVAILABLE(ios(7.0)) {
     NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationAlways:sdk]) forKey:swrve_permission_location_always];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationWhenInUse:sdk]) forKey:swrve_permission_location_when_in_use];
@@ -98,6 +98,12 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
                 pushAuthorizationFromSettings = swrve_permission_status_denied;
             } else if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
                 pushAuthorizationFromSettings = swrve_permission_status_unknown;
+            } else if (@available(iOS 12.0, *)) {
+                if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+                    pushAuthorizationFromSettings = swrve_permission_status_provisional;
+                }
+            } else {
+                // Fallback on earlier versions
             }
             [dictionary setValue:pushAuthorizationFromSettings forKey:swrve_permission_push_notifications];
             [sdk mergeWithCurrentDeviceInfo:dictionary]; // send now
@@ -111,7 +117,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return pushAuthorization;
 }
 
-+ (void)bgRefreshStatusToDictionary:(NSMutableDictionary *)permissionsStatus {
++ (void)bgRefreshStatusToDictionary:(NSMutableDictionary *)permissionsStatus API_AVAILABLE(ios(7.0)) {
     NSString *backgroundRefreshStatus = swrve_permission_status_unknown;
     UIBackgroundRefreshStatus uiBackgroundRefreshStatus = [[SwrveCommon sharedUIApplication] backgroundRefreshStatus];
     if (uiBackgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {
@@ -307,23 +313,17 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
-+(void)updatePushNotificationSettingsStatus:(UNNotificationSettings *)settings andSDK:(id<SwrveCommonDelegate>)sdk __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
-    NSMutableDictionary* pushPermissionsStatus = [[NSMutableDictionary alloc] init];
-    SwrvePermissionState permissionState = SwrvePermissionStateUnknown;
-
-    if (settings.alertSetting == UNNotificationSettingEnabled) {
-        permissionState = SwrvePermissionStateAuthorized;
-    } else {
-        permissionState = SwrvePermissionStateDenied;
-    }
-
-    [pushPermissionsStatus setValue:stringFromPermissionState(permissionState) forKey:swrve_permission_push_notifications];
-    [sdk mergeWithCurrentDeviceInfo:pushPermissionsStatus];
-}
-
-+(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk {
++(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional {
     if (@available(iOS 10.0, *)) {
         UNAuthorizationOptions notificationAuthOptions = (UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge);
+        if (provisional) {
+            if (@available(iOS 12.0, *)) {
+                notificationAuthOptions = notificationAuthOptions + UNAuthorizationOptionProvisional;
+            } else {
+                DebugLog(@"Provisional push permission is only supported on iOS 12 and up.");
+                return;
+            }
+        }
         [SwrvePermissions registerForRemoteNotifications:notificationAuthOptions withCategories:sdk.notificationCategories andSDK:sdk];
     } else {
         DebugLog(@"Could not request push permission, not supported (should not reach this code)");
@@ -374,6 +374,12 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
             BOOL refreshToken = (settings.authorizationStatus == UNAuthorizationStatusAuthorized);
+#if TARGET_OS_IOS /** exclude tvOS **/
+            if (@available(iOS 12.0, *)) {
+                refreshToken = refreshToken || (settings.authorizationStatus == UNAuthorizationStatusProvisional);
+            }
+#endif
+
             if (refreshToken) {
 #if TARGET_OS_IOS /** exclude tvOS **/
                 if (sdk.notificationCategories != nil && [sdk.notificationCategories count] > 0) {

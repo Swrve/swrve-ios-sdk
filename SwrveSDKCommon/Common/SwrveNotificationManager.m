@@ -5,11 +5,17 @@
 #import "SwrveNotificationOptions.h"
 #import "SwrveCampaignInfluence.h"
 #import "SwrveNotificationConstants.h"
+#import "SwrveLocalStorage.h"
+#import "SwrveUser.h"
 
 // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
 // This would result in bad engagement reports etc. The lastProcessedPushId var is used to check that the same push id
 // can't be processed in sequence.
 static NSString *lastProcessedPushId = nil;
+
+@interface SwrveUser ()
++ (NSString *)md5FromSource:(NSString *)source;
+@end
 
 @implementation SwrveNotificationManager
 
@@ -29,7 +35,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     dispatch_group_t notificationGroup = dispatch_group_create();
 
     /** Generate Appropriate Categories based on UserInfo **/
-    UNNotificationCategory *generatedCategory = [self buttonsFromUserInfo:mutableNotificationContent.userInfo];
+    UNNotificationCategory *generatedCategory = [self categoryFromUserInfo:mutableNotificationContent.userInfo];
 
     if (generatedCategory) {
         // Category is generated start dispatch listener
@@ -61,52 +67,78 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     NSString *mediaUrl = [mediaDict objectForKey:SwrveNotificationUrlKey];
     if (mediaUrl) {
         dispatch_group_enter(notificationGroup);
-        [self downloadAttachment:mediaUrl withCompletedContentCallback:^(UNNotificationAttachment *attachment, NSError *error) {
+        
+        //check cache first
+        UNNotificationAttachment  *cachedAttachment = [self attachmentFromCache:mediaUrl inCacheDir:[SwrveLocalStorage swrveCacheFolder]];
+        if (cachedAttachment != nil) {
+            mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:cachedAttachment];
+            [self mediaTextFromProvidedContent:mutableNotificationContent];
+            DebugLog(@"SwrveNotificationManager: primary attachment loaded from cache, returning to callback");
+            dispatch_group_leave(notificationGroup);
+        } else {
 
-            if (attachment && error == nil) {
-                // Primary image has worked
-                mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:attachment];
-                [self mediaTextFromProvidedContent:mutableNotificationContent];
-                DebugLog(@"Downloaded primary attachment successfully, returning to callback");
-                dispatch_group_leave(notificationGroup);
-            } else {
-
-                if (mediaDict[SwrveNotificationFallbackUrlKey] != nil) {
-                    // Download fallback image
-                    [self downloadAttachment:mediaDict[SwrveNotificationFallbackUrlKey] withCompletedContentCallback:^(UNNotificationAttachment *fallbackAttachment, NSError *fallbackError) {
-                        if (fallbackAttachment && fallbackError == nil) {
-                            // Fallback image has worked
-                            mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallbackAttachment];
-                            [self mediaTextFromProvidedContent:mutableNotificationContent];
-                            DebugLog(@"Downloaded fallback attachment successfully, returning to callback");
-
-                            // Set fallback_sd if available
-                            if (mediaDict[SwrveNotificationFallbackDeeplinkKey] != nil) {
-                                DebugLog(@"Fallback Deeplink detected, modifying notificationContent.userInfo");
-                                NSMutableDictionary *moddedUserInfo = [mutableNotificationContent.userInfo mutableCopy];
-                                [moddedUserInfo setObject:mediaDict[SwrveNotificationFallbackDeeplinkKey] forKey:SwrveNotificationDeeplinkKey];
-                                mutableNotificationContent.userInfo = moddedUserInfo;
-                                // clean up
-                                moddedUserInfo = nil;
+            [self downloadAttachment:mediaUrl withCompletedContentCallback:^(UNNotificationAttachment *attachment, NSError *error) {
+                
+                if (error) {
+                    DebugLog(@"SwrveNotificationManager: attachment failed download with the following error: %@", error, nil);
+                }
+                if (attachment) {
+                    mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:attachment];
+                    [self mediaTextFromProvidedContent:mutableNotificationContent];
+                    DebugLog(@"SwrveNotificationManager: primary attachment successfully downloaded, returning to callback");
+                    dispatch_group_leave(notificationGroup);
+                } else if (mediaDict[SwrveNotificationFallbackUrlKey] != nil) {
+                    
+                    //check cache first
+                    UNNotificationAttachment *fallBackCachedAttachment = [self attachmentFromCache:mediaDict[SwrveNotificationFallbackUrlKey] inCacheDir:[SwrveLocalStorage swrveCacheFolder]];
+                    
+                    if (fallBackCachedAttachment != nil) {
+                        mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallBackCachedAttachment];
+                        [self mediaTextFromProvidedContent:mutableNotificationContent];
+                        DebugLog(@"SwrveNotificationManager: fallback attachment loaded from cache, returning to callback");
+                        dispatch_group_leave(notificationGroup);
+                    } else {
+                        // Download fallback image
+                        [self downloadAttachment:mediaDict[SwrveNotificationFallbackUrlKey] withCompletedContentCallback:^(UNNotificationAttachment *fallbackAttachment, NSError *fallbackError) {
+                            
+                            if (fallbackError) {
+                                DebugLog(@"SwrveNotificationManager: fallback attachment failed download with the following error: %@", fallbackError, nil);
                             }
 
-                        } else {
-                            DebugLog(@"Fallback attachment error occurred: %@ Removing all attachments", fallbackError);
-                            [self setMediaDownloadFailed:mutableNotificationContent];
-                        }
-
-                        // Finished async fallback download task
-                        dispatch_group_leave(notificationGroup);
-                    }];
-
+                            if (fallbackAttachment) {
+                                // Fallback image has worked
+                                mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallbackAttachment];
+                                [self mediaTextFromProvidedContent:mutableNotificationContent];
+                                DebugLog(@"SwrveNotificationManager: fallback attachment successfully downloaded, returning to callback");
+                                
+                                // Set fallback_sd if available
+                                if (mediaDict[SwrveNotificationFallbackDeeplinkKey] != nil) {
+                                    DebugLog(@"SwrveNotificationManager: fallback Deeplink detected, modifying notificationContent.userInfo");
+                                    NSMutableDictionary *moddedUserInfo = [mutableNotificationContent.userInfo mutableCopy];
+                                    [moddedUserInfo setObject:mediaDict[SwrveNotificationFallbackDeeplinkKey] forKey:SwrveNotificationDeeplinkKey];
+                                    mutableNotificationContent.userInfo = moddedUserInfo;
+                                    // clean up
+                                    moddedUserInfo = nil;
+                                }
+                                
+                            } else {
+                                DebugLog(@"SwrveNotificationManager: fallback attachment error occurred, removing all attachments. Error: %@", fallbackError);
+                                [self setMediaDownloadFailed:mutableNotificationContent];
+                            }
+                            
+                            // Finished async fallback download task
+                            dispatch_group_leave(notificationGroup);
+                        }];
+                    }
+                    
                 } else {
                     // There is no fallback attachment
-                    DebugLog(@"Primary attachment error occured %@, Removing all attachments, ", error);
+                    DebugLog(@"SwrveNotificationManager: primary attachment error occurred, removing all attachments. Error: %@", error);
                     [self setMediaDownloadFailed:mutableNotificationContent];
                     dispatch_group_leave(notificationGroup);
                 }
-            }
-        }];
+            }];
+        }
     }
 
     dispatch_group_notify(notificationGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -132,11 +164,18 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return content;
 }
 
-+ (UNNotificationCategory *)buttonsFromUserInfo:(NSDictionary *)userInfo __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
++ (UNNotificationCategory *)categoryFromUserInfo:(NSDictionary *)userInfo __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
     NSDictionary *richDict = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
     NSArray *buttons = [richDict valueForKey:SwrveNotificationButtonListKey];
+    NSArray *options = [richDict objectForKey:SwrveNotificationCategoryOptionsKey];
+    
+    if(buttons == nil && options == nil) {
+        return nil;
+    }
+    
     int customButtonIndex = 0;
     NSMutableArray *actions = [NSMutableArray array];
+    
     if (buttons != nil && [buttons count] > 0) {
         for (NSDictionary *button in buttons) {
             NSString *buttonId = [NSString stringWithFormat:@"%d", customButtonIndex];
@@ -147,17 +186,25 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             [actions addObject:actionButton];
             customButtonIndex++;
         }
-
-        NSMutableArray *intentIdentifiers = [NSMutableArray array];
-
-        NSString *categoryKey = [NSString stringWithFormat:@"swrve-%@-%@", [userInfo objectForKey:SwrveNotificationIdentifierKey], [[NSUUID UUID] UUIDString]];
-        NSArray *buttonCategoryOptions = [richDict objectForKey:SwrveNotificationButtonOptionsKey];
-        UNNotificationCategoryOptions categoryOptions = [SwrveNotificationOptions categoryOptionsForKeys:buttonCategoryOptions];
-        UNNotificationCategory *category = [UNNotificationCategory categoryWithIdentifier:categoryKey actions:actions intentIdentifiers:intentIdentifiers options:categoryOptions];
-        return category;
-    } else {
-        return nil;
     }
+
+    NSMutableArray *intentIdentifiers = [NSMutableArray array];
+    NSString *categoryKey = [NSString stringWithFormat:@"swrve-%@-%@", [userInfo objectForKey:SwrveNotificationIdentifierKey], [[NSUUID UUID] UUIDString]];
+    UNNotificationCategoryOptions categoryOptions = [SwrveNotificationOptions categoryOptionsForKeys:options];
+    NSString *hiddenPlaceholder = [richDict objectForKey:SwrveNotificationHiddenPreviewTextPlaceholderKey];
+    UNNotificationCategory *category;
+    
+    if(@available(iOS 11.0, *)) {
+        if (hiddenPlaceholder != nil && [hiddenPlaceholder length] > 0) {
+            category = [UNNotificationCategory categoryWithIdentifier:categoryKey actions:actions intentIdentifiers:intentIdentifiers hiddenPreviewsBodyPlaceholder:hiddenPlaceholder options:categoryOptions];
+        } else {
+            category = [UNNotificationCategory categoryWithIdentifier:categoryKey actions:actions intentIdentifiers:intentIdentifiers options:categoryOptions];
+        }
+    } else {
+        category = [UNNotificationCategory categoryWithIdentifier:categoryKey actions:actions intentIdentifiers:intentIdentifiers options:categoryOptions];
+    }
+    
+    return category;
 }
 
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
@@ -173,15 +220,14 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                     if ([httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
                         statusCode = httpResponse.statusCode;
-
                         if (statusCode != 200) {
-                            DebugLog(@"Status Code was not 200 (was %ld) and produced the following error: %@", (long) statusCode, error, nil);
+                            DebugLog(@"SwrveNotificationManager: Status Code was not 200 (was %ld) and produced the following error: %@", (long) statusCode, error, nil);
                             callback(nil, error);
                         }
                     }
 
                     if (error != nil) {
-                        DebugLog(@"Media download failed with the following error: %@", error, nil);
+                        DebugLog(@"SwrveNotificationManager: Media download failed with the following error: %@", error, nil);
                         callback(nil, error);
                     } else {
                         NSString *fileExt = nil;
@@ -196,7 +242,10 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                         if (!fileExt) {
                             NSString *mimeType = [httpResponse MIMEType];
                             if (mimeType) {
-                                fileExt = [SwrveNotificationManager fileExtensionFromMIMEType:mimeType];
+                                NSString *inferredFileExtension = [SwrveNotificationManager fileExtensionFromMIMEType:mimeType];
+                                if (inferredFileExtension) {
+                                    fileExt = [@"." stringByAppendingString:inferredFileExtension];
+                                }
                             }
                         }
 
@@ -211,14 +260,14 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                             fileExt = nil;
 
                             if (attError) {
-                                DebugLog(@"Attachment creation failed with the following error: %@", attError, nil);
+                                DebugLog(@"SwrveNotificationManager: Attachment creation failed with the following error: %@", attError, nil);
                                 callback(nil, attError);
                             } else {
                                 callback(attachment, error);
                             }
                         } else {
                             // Could not obtain extension from media path
-                            NSString *errorMsg = @"Could not obtain extension from media path";
+                            NSString *errorMsg = @"SwrveNotificationManager: Could not obtain extension from media path";
                             NSError *swrveMessage = [NSError errorWithDomain:@"com.swrve" code:200
                                                            userInfo: @{NSLocalizedDescriptionKey:errorMsg}];
                             DebugLog(errorMsg, nil);
@@ -229,16 +278,87 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 }
 
 + (NSString *)fileExtensionFromMIMEType: (NSString *)mimeType {
-    NSDictionary *mimeToFileExtension = [NSDictionary dictionaryWithObjectsAndKeys:@".jpg", @"image/jpg",
-                                         @".jpeg", @"image/jpeg",
-                                         @".bmp", @"image/bmp",
-                                         @".jpg", @"image/jpeg",
-                                         @".png", @"image/png", // [RFC-2045], [RFC-2048]
-                                         @".png", @"image/x-png",
-                                         @".gif", @"image/gif",
-                                         @".mp3", @"audio/mpeg",
-                                         @".mp4", @"video/mp4", nil];
+    NSDictionary *mimeToFileExtension = [NSDictionary dictionaryWithObjectsAndKeys:
+            @"jpeg", @"image/jpeg",
+            @"bmp", @"image/bmp",
+            @"jpg", @"image/jpg",
+            @"png", @"image/png", // [RFC-2045], [RFC-2048]
+            @"png", @"image/x-png",
+            @"gif", @"image/gif",
+            @"mp3", @"audio/mpeg",
+            @"mp4", @"video/mp4", nil];
     return [mimeToFileExtension objectForKey:[mimeType lowercaseString]];
+}
+
++ (UNNotificationAttachment *)attachmentFromCache:(NSString *)externalUrlString inCacheDir:(NSString *)cacheDir {
+    UNNotificationAttachment *attachment = nil;
+    NSURL *externalUrl = [NSURL URLWithString:externalUrlString];
+    NSURL *attachmentURL;
+    if ([externalUrl pathExtension] == nil || [[externalUrl pathExtension] length] == 0) {
+        attachmentURL = [self cachedUrlWithoutFileExtension:externalUrl inCacheDir:cacheDir];
+    } else {
+        attachmentURL = [self cachedUrlFor:externalUrl withPathExtension:[externalUrl pathExtension] inCacheDir:cacheDir];
+    }
+
+    BOOL fileExists = attachmentURL && [[NSFileManager defaultManager] fileExistsAtPath:[attachmentURL path]];
+    if (!fileExists) {
+        DebugLog(@"SwrveNotificationManager: no local cache for:%@", externalUrlString, nil);
+    } else {
+        //Create a copy of attachment url. The attachments are deleted when the notificaiton is shown.
+        //We want to keep them on disk.
+        NSError *copyError = nil;
+        NSURL *tempDirUrl = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+        NSURL *tempAttachmentURL = [tempDirUrl URLByAppendingPathComponent:[attachmentURL lastPathComponent]];
+        [[NSFileManager defaultManager] copyItemAtURL:attachmentURL toURL:tempAttachmentURL error:&copyError];
+        
+        if (copyError) {
+            DebugLog(@"SwrveNotificationManager: attachment copy failed with the following error: %@", [copyError localizedDescription]);
+        }
+        
+        NSError *attachmentError = nil;
+        attachment = [UNNotificationAttachment attachmentWithIdentifier:@"" URL:tempAttachmentURL options:nil error:&attachmentError];
+        if (attachmentError) {
+            DebugLog(@"SwrveNotificationManager: attachment creation failed with the following error: %@", [attachmentError localizedDescription]);
+        }
+        if (attachment) {
+            DebugLog(@"SwrveNotificationManager: successfully got attachment from cache: %@", externalUrlString);
+        }
+    }
+    return attachment;
+}
+
+// used when file extension is known
++ (NSURL *)cachedUrlFor:(NSURL *)externalUrl withPathExtension:(NSString *)pathExtension inCacheDir:(NSString *)cacheDir {
+
+    if (pathExtension == nil || [pathExtension length] == 0) {
+        return nil;
+    }
+
+    // use hash of external url for name, but preserve the file extension
+    NSURL *cacheDirUrl = [NSURL URLWithString:cacheDir];
+    NSString *hashedName = [SwrveUser md5FromSource:[externalUrl absoluteString]];
+    hashedName = [[hashedName stringByAppendingString:@"."] stringByAppendingString:pathExtension];
+    return [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:[cacheDirUrl path], hashedName, nil]];
+}
+
+// used when file extension is not known
++ (NSURL *)cachedUrlWithoutFileExtension:(NSURL *)externalUrl inCacheDir:(NSString *)cacheDir {
+
+    // when no file extension available then iterate through files in cache and match against any file of that name
+    NSURL *cacheDirUrl = [NSURL URLWithString:cacheDir];
+    NSString *hashedName = [SwrveUser md5FromSource:[externalUrl absoluteString]];
+    NSURL *cachedUrl = nil;
+    NSDirectoryEnumerator *dirEnum = [[NSFileManager defaultManager] enumeratorAtURL:cacheDirUrl
+                                                          includingPropertiesForKeys:nil
+                                                                             options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsPackageDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                                        errorHandler:nil];
+    for (NSURL *file in dirEnum) {
+        if ([[file lastPathComponent] hasPrefix:hashedName] && [[file pathExtension] length] > 0) {
+            cachedUrl = file;
+            break;
+        }
+    }
+    return cachedUrl;
 }
 
 + (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo {
@@ -255,7 +375,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     [SwrveCampaignInfluence removeInfluenceDataForId:notificationId fromAppGroupId:swrveCommon.appGroupIdentifier];
 
     if ([identifier isEqualToString:SwrveNotificationResponseDefaultActionKey]) {
-        DebugLog(@"Performed a direct press on Swrve notification with id %@", notificationId);
+        DebugLog(@"SwrveNotificationManager: Performed a direct press on Swrve notification with id %@", notificationId);
 
         // get deeplink if there is one, but pass it back up so it can be processed by calling code
         deeplinkUrl = [self deeplinkFromUserInfo:userInfo];
@@ -297,7 +417,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             // check for open campaign action, if present try to load
             [self loadCampaignFromButton:selectedButton];
         } else {
-            DebugLog(@"Notification pressed with an unrecognised identifier %@", identifier);
+            DebugLog(@"SwrveNotificationManager: Notification pressed with an unrecognised identifier %@", identifier);
         }
     }
 
@@ -308,13 +428,13 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     BOOL canProcess = NO;
     NSString *notificationIdentifierString = [self notificationIdFromUserInfo:userInfo];
     if (!notificationIdentifierString || [notificationIdentifierString isEqualToString:@"-1"]) {
-        DebugLog(@"Got unidentified notification", nil);
+        DebugLog(@"SwrveNotificationManager: Got unidentified notification", nil);
     } else {
         if (lastProcessedPushId == nil || [notificationIdentifierString isEqualToString:@"0"] || ![notificationIdentifierString isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = notificationIdentifierString;
             canProcess = YES;
         } else {
-            DebugLog(@"Got Swrve notification with id %@, ignoring as we already processed it", notificationIdentifierString);
+            DebugLog(@"SwrveNotificationManager: Got Swrve notification with id %@, ignoring as we already processed it", notificationIdentifierString);
         }
     }
     return canProcess;
@@ -350,9 +470,9 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     NSURL *deeplinkUrl = [NSURL URLWithString:deeplinkString];
     BOOL canOpen = [[SwrveCommon sharedUIApplication] canOpenURL:deeplinkUrl];
     if (deeplinkUrl != nil && canOpen) {
-        DebugLog(@"Deeplink - %@ - found.  Sending to application as URL", deeplinkString);
+        DebugLog(@"SwrveNotificationManager: Deeplink - %@ - found.  Sending to application as URL", deeplinkString);
     } else {
-        DebugLog(@"Could not process deeplink - %@", deeplinkString);
+        DebugLog(@"SwrveNotificationManager: Could not process deeplink - %@", deeplinkString);
         deeplinkUrl = nil;
     }
     return deeplinkUrl;
@@ -374,7 +494,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                                  andContextId:(NSString *)contextId
                                 andActionText:(NSString *)actionText
                                    andPayload:(NSMutableDictionary *)eventPayload {
-    DebugLog(@"Selected Button:'%@' on Swrve notification with id: %@ and campaignType: %@", contextId, notificationId, campaignType);
+    DebugLog(@"SwrveNotificationManager: Selected Button:'%@' on Swrve notification with id: %@ and campaignType: %@", contextId, notificationId, campaignType);
 
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSMutableDictionary *eventData = [[NSMutableDictionary alloc] init];
@@ -436,7 +556,8 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if (payload && [payload objectForKey:SwrveCampaignKey]) {
         NSDictionary *campaignDict = [payload objectForKey:SwrveCampaignKey];
         if (campaignDict && [campaignDict objectForKey:@"id"]) {
-            campaignId = [campaignDict objectForKey:@"id"];
+            NSNumber *campaignIdNumber = [campaignDict objectForKey:@"id"];
+            campaignId = [campaignIdNumber stringValue];
         }
     }
     return campaignId;
@@ -455,12 +576,12 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if (campaignId == nil) {
         return;
     }
-    DebugLog(@"Loading campaign %@ from notification.", campaignId);
+    DebugLog(@"SwrveNotificationManager: Loading campaign %@ from notification.", campaignId);
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     [swrveCommon handleNotificationToCampaign:campaignId];
 }
 
-+ (void)clearAllAuthenticatedNotifications {
++ (void)clearAllAuthenticatedNotifications API_AVAILABLE(ios(10.0)) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
         NSMutableArray *identifierArray = [SwrveNotificationManager authenticatedNotificationsFrom:notifications];
@@ -470,7 +591,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     }];
 }
 
-+ (NSMutableArray *)authenticatedNotificationsFrom:(NSArray<UNNotification *> *)notifications {
++ (NSMutableArray *)authenticatedNotificationsFrom:(NSArray<UNNotification *> *)notifications API_AVAILABLE(ios(10.0)) {
     NSMutableArray *identifierArray = [[NSMutableArray alloc] init];
     for (UNNotification* notification in notifications) {
         if (notification != nil && notification.request != nil && notification.request.content != nil && notification.request.content.userInfo != nil) {
@@ -483,7 +604,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return identifierArray;
 }
 
-+ (UNMutableNotificationContent *)setMediaDownloadFailed:(UNMutableNotificationContent *)mutableNotificationContent {
++ (UNMutableNotificationContent *)setMediaDownloadFailed:(UNMutableNotificationContent *)mutableNotificationContent API_AVAILABLE(ios(10.0)) {
     NSMutableDictionary *moddedUserInfo = [mutableNotificationContent.userInfo mutableCopy];
     moddedUserInfo[SwrveNotificationMediaDownloadFailed] = @YES;
     mutableNotificationContent.userInfo = moddedUserInfo;

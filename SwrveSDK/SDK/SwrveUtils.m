@@ -52,7 +52,7 @@
 }
 #endif
 
-+ (NSDictionary *)parseURLQueryParams:(NSString *)queryString {
++ (NSDictionary *)parseURLQueryParams:(NSString *)queryString API_AVAILABLE(ios(7.0)) {
     NSMutableDictionary *queryParams = [NSMutableDictionary new];
     NSArray *queryElements = [queryString componentsSeparatedByString:@"&"];
     for (NSString *element in queryElements) {

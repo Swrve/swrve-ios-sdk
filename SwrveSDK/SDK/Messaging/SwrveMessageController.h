@@ -11,14 +11,18 @@
  * Returning FALSE stops the normal flow preventing
  * Swrve to process the install action. Return TRUE otherwise.
  */
-typedef BOOL (^SwrveInstallButtonPressedCallback) (NSString* appStoreUrl);
+typedef BOOL (^SwrveInstallButtonPressedCallback) (NSString *appStoreUrl);
 
 /*! A block that will be called when a custom button in an in-app message
  * is pressed.
  */
-typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
+typedef void (^SwrveCustomButtonPressedCallback) (NSString *action);
 
-/*! In-app messages controller */
+/*! A block that will be called when a dismiss button in an in-app message
+ * is pressed.
+ */
+typedef void (^SwrveDismissButtonPressedCallback) (NSString *campaignSubject, NSString *buttonName);
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
 #else
@@ -110,13 +114,14 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString* action);
 
 #pragma mark Properties
 
-@property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;                     /*!< Background color of in-app messages. */
-@property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;            /*!< Implement this delegate to intercept in-app messages. */
-@property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;    /*!< Implement this delegate to process custom button actions. */
-@property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;  /*!< Implement this delegate to intercept install button actions. */
-@property (nonatomic, retain) CATransition* showMessageTransition;                      /*!< Animation for displaying messages. */
-@property (nonatomic, retain) CATransition* hideMessageTransition;                      /*!< Animation for hiding messages. */
-@property (nonatomic, retain) NSMutableArray*  conversationsMessageQueue;                      /*!< Conversation / Message queue */
+@property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;                         /*!< Background color of in-app messages. */
+@property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;                /*!< Implement this delegate to intercept in-app messages. */
+@property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;        /*!< Implement this delegate to process custom button actions. */
+@property (nonatomic, copy)   SwrveDismissButtonPressedCallback dismissButtonCallback;      /*!< Implement this delegate to process dismiss button action. */
+@property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;      /*!< Implement this delegate to intercept install button actions. */
+@property (nonatomic, retain) CATransition* showMessageTransition;                          /*!< Animation for displaying messages. */
+@property (nonatomic, retain) CATransition* hideMessageTransition;                          /*!< Animation for hiding messages. */
+@property (nonatomic, retain) NSMutableArray*  conversationsMessageQueue;                   /*!< Conversation / Message queue */
 
 #pragma mark -
 

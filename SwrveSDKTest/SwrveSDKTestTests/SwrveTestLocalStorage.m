@@ -10,7 +10,7 @@
 
 - (void)setUp {
     [super setUp];
-    [SwrveTestHelper tearDown];
+    [SwrveTestHelper setUp];
 }
 
 - (void)tearDown {
@@ -97,6 +97,24 @@
     bool result = [SwrveLocalStorage askedForPushPermission];
     bool expected = [[self defaults] objectForKey:@"swrve.asked_for_push_permission"];
     XCTAssertTrue(result == expected);
+}
+
+/* HELPER METHODS */
+
+- (void)resetDefaults {
+    NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self deleteFilesInDirectory:[SwrveLocalStorage applicationSupportPath]];
+    [self deleteFilesInDirectory:[SwrveLocalStorage documentPath]];
+}
+
+- (void)deleteFilesInDirectory:(NSString *)directory {
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:directory error:nil];
+    for (NSString *filename in fileArray)  {
+        [fileMgr removeItemAtPath:[directory stringByAppendingPathComponent:filename] error:NULL];
+    }
 }
 
 @end

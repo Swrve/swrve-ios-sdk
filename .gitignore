@@ -10,3 +10,6 @@ build/
 .idea
 *.xcscmblueprint
 *.xccheckout
+
+fastlane/test_output/
+fastlane/report.xml

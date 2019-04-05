@@ -13,15 +13,20 @@
 -(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
 {
     id instance = [super initAtTime:time fromDictionary:json];
-    NSMutableArray* loadedMessages = [[NSMutableArray alloc] init];
-    NSArray* campaign_messages = [json objectForKey:@"messages"];
-    for (NSDictionary* messageDict in campaign_messages)
+    NSMutableArray *loadedMessages = [[NSMutableArray alloc] init];
+    NSArray *campaign_messages = [json objectForKey:@"messages"];
+    for (NSDictionary *messageDict in campaign_messages)
     {
-        SwrveMessage* message = [[SwrveMessage alloc] initWithDictionary:messageDict forCampaign:self forController:controller];
+        SwrveMessage *message = [[SwrveMessage alloc] initWithDictionary:messageDict forCampaign:self forController:controller];
         [loadedMessages addObject:message];
     }
     self.messages = [loadedMessages copy];
+
     [self addAssetsToQueue:assetsQueue];
+    if ([json objectForKey:@"subject"] != [NSNull null] && [json objectForKey:@"subject"] != nil) {
+        self.subject = [json objectForKey:@"subject"];
+    }
+
     return instance;
 }
 

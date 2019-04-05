@@ -97,7 +97,10 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 /*! Controls if push notifications are enabled. */
 @property (nonatomic) BOOL pushEnabled;
 
-/*! The set of Swrve events that will trigger push notifications. */
+/*! The set of Swrve events that will trigger a provisional push notifications request on iOS12+. If you want to request it at app start set the value to a set with "Swrve.session.start" */
+@property (nonatomic, retain) NSSet *provisionalPushNotificationEvents;
+
+/*! The set of Swrve events that will trigger a push notifications request. By default it is set to request the permission at the start of the app. */
 @property (nonatomic, retain) NSSet *pushNotificationEvents;
 
 /*! Controls if the SDK automatically collects the push device token. To
@@ -123,7 +126,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 
 /*! NSString identifier which refers to the app group that stores settings information.
  *  Intialise this if you are using extensions and want to share data across to swrve.
- *  The appGroupIdentifier must match the one used in the accompanying extension to be shared correcly.
+ *  The appGroupIdentifier must match the one used in the accompanying extension to be shared correctly.
  */
 @property (nonatomic, copy) NSString *appGroupIdentifier;
 
@@ -187,6 +190,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property (nonatomic, readonly) BOOL pushEnabled;
+@property (nonatomic, readonly) NSSet *provisionalPushNotificationEvents;
 @property (nonatomic, readonly) NSSet *pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet *notificationCategories;

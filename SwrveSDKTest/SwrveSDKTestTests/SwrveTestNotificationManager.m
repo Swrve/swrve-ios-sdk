@@ -1,11 +1,16 @@
 #ifndef SWRVE_NO_PUSH
 
 #import <XCTest/XCTest.h>
-#import <OCMock/OCMockObject.h>
 #import <OCMock/OCMock.h>
 
 #import "SwrvePush.h"
 #import "SwrveNotificationManager.h"
+#import "SwrveLocalStorage.h"
+
+@interface SwrveNotificationManager ()
++ (NSURL *)cachedUrlFor:(NSURL *)externalUrl withPathExtension:(NSString *)pathExtension inCacheDir:(NSString *)cacheDir;
++ (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
+@end
 
 @interface SwrveTestNotificationManager : XCTestCase
 
@@ -13,17 +18,9 @@
 
 @implementation SwrveTestNotificationManager
 
-- (void)setUp {
-    [super setUp];
-}
-
-- (void)tearDown {
-    [super tearDown];
-}
-
 - (void)testNotificationResponseReceivedWithCampaignType {
 
-    id mockSwrveCommon = [OCMockObject niceMockForProtocol:@protocol(SwrveCommonDelegate)];
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
     [SwrveCommon addSharedInstance:mockSwrveCommon];
 
     NSDictionary *engagedExpectedData = @{
@@ -77,6 +74,41 @@
     [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
 
     OCMVerifyAll(mockSwrveCommon);
+    [mockSwrveCommon stopMocking];
+}
+
+- (void)testImageLoadFromCache {
+    
+    NSString *mockCacheDir = [[NSBundle bundleForClass:[self class]] resourcePath];
+    
+    // Create test image files in cache
+    NSURL *externalImage = [NSURL URLWithString:@"http://sample/url/testImage.jpg"];
+    NSURL *cachedImage = [SwrveNotificationManager cachedUrlFor:externalImage withPathExtension:@"jpg" inCacheDir:mockCacheDir];
+    [[@"FakeImageData" dataUsingEncoding:NSUTF8StringEncoding] writeToURL:cachedImage atomically:true];
+    
+    //SwrveNotificationManager *swrveNotificationManager = [SwrveNotificationManager new];
+    id mockSwrveNotificationManager = OCMClassMock([SwrveNotificationManager class]);
+    
+    id localStorage = OCMClassMock([SwrveLocalStorage class]);
+    OCMStub([localStorage swrveCacheFolder]).andReturn(mockCacheDir);
+    
+    NSDictionary *userInfo = @{@"_sw":@{
+                                       @"media":@{
+                                                    @"url":@"http://sample/url/testImage.jpg"
+                                                }
+                                        }
+                              };
+    
+    UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
+    testContent.userInfo = userInfo;
+    
+    OCMReject([mockSwrveNotificationManager downloadAttachment:OCMOCK_ANY withCompletedContentCallback:OCMOCK_ANY]);
+    
+    [SwrveNotificationManager handleContent:testContent withCompletionCallback:^(UNMutableNotificationContent *content) {
+        XCTAssertEqualObjects(@"public.jpeg", content.attachments[0].type);
+    }];
+    
+    OCMVerifyAll(mockSwrveNotificationManager);
 }
 
 @end

@@ -8,6 +8,11 @@
 
 @interface SwrveConversationEvents : NSObject
 
+@property (class,nonatomic,copy) NSMutableDictionary *customPayload;
+
++ (NSMutableDictionary *)customPayload;
++ (void)setCustomPayload:(NSMutableDictionary *)newCustomPayload;
+
 // Conversation related
 +(void)started:(SwrveBaseConversation*)conversation onStartPage:(NSString*)startPageTag;
 +(void)done:(SwrveBaseConversation*)conversation onPage:(NSString*)pageTag withControl:(NSString*)controlTag;

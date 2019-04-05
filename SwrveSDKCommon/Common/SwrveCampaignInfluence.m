@@ -6,7 +6,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
 
 @implementation SwrveCampaignInfluence
 
-+ (void)saveInfluencedData:(NSDictionary *)userInfo withId:(NSString *)campaignId withAppGroupID:(NSString *)appGroupId atDate:(NSDate *)date {
++ (void)saveInfluencedData:(NSDictionary *)userInfo withId:(NSString *)campaignId withAppGroupID:(NSString *)appGroupId atDate:(NSDate *)date API_AVAILABLE(ios(7.0)) {
     // Check if the push requires influence tracking
     id influencedWindowMinsRaw = [userInfo objectForKey:SwrveInfluencedWindowMinsKey];
     if (influencedWindowMinsRaw && ![influencedWindowMinsRaw isKindOfClass:[NSNull class]]) {
@@ -40,7 +40,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
     }
 }
 
-+ (void)removeInfluenceDataForId:(NSString *)notificationId fromAppGroupId:(NSString *)appGroupId {
++ (void)removeInfluenceDataForId:(NSString *)notificationId fromAppGroupId:(NSString *)appGroupId API_AVAILABLE(ios(8.0)) {
     // remove from core app
     NSUserDefaults *coreAppUserDefaults = [NSUserDefaults standardUserDefaults];
     [self removeInfluenceDataFromUserDefaults:coreAppUserDefaults forId:notificationId];
@@ -58,7 +58,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
     }
 }
 
-+ (void)processInfluenceDataWithDate:(NSDate *)now {
++ (void)processInfluenceDataWithDate:(NSDate *)now API_AVAILABLE(ios(8.0)) {
 
     NSDictionary *influencedData;
     NSDictionary *mainAppInfluence = [[NSUserDefaults standardUserDefaults] dictionaryForKey:SwrveInfluenceDataKey];
