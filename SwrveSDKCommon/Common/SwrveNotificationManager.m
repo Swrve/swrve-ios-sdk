@@ -556,8 +556,12 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if (payload && [payload objectForKey:SwrveCampaignKey]) {
         NSDictionary *campaignDict = [payload objectForKey:SwrveCampaignKey];
         if (campaignDict && [campaignDict objectForKey:@"id"]) {
-            NSNumber *campaignIdNumber = [campaignDict objectForKey:@"id"];
-            campaignId = [campaignIdNumber stringValue];
+            if ([[campaignDict objectForKey:@"id"] isKindOfClass:[NSString class]]) {
+                campaignId = [campaignDict objectForKey:@"id"];
+            } else {
+                NSNumber *campaignIdNumber = [campaignDict objectForKey:@"id"];
+                campaignId = [campaignIdNumber stringValue];
+            }
         }
     }
     return campaignId;
