@@ -46,4 +46,13 @@
  */
 + (NSDictionary *)parseURLQueryParams:(NSString *) queryString;
 
+/**
+ Parse a string into paramaters
+
+ @param dic Dictionary that contain a NSNumber or a NSString value on it.
+ @param key The key that is going to be used to get NSString value from dic.
+ @return NSString of paramters
+ */
++ (NSString *)getStringFromDic:(NSDictionary *)dic withKey:(NSString *)key;
+
 @end

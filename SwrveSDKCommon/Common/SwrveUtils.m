@@ -68,4 +68,16 @@
     return queryParams;
 }
 
++ (NSString *)getStringFromDic:(NSDictionary *)dic withKey:(NSString *)key {
+    id value = [dic objectForKey:key];
+    if ([value isKindOfClass:[NSString class]]) {
+        return value;
+    } else if ([value respondsToSelector:@selector(stringValue)]) {
+        return [value stringValue];
+    } else {
+        // return nil regarding couldn't find a valid string from this key.
+        return nil;
+    }
+}
+
 @end

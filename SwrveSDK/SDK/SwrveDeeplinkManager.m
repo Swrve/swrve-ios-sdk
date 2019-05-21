@@ -335,11 +335,11 @@
             if (!error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                 NSInteger statusCode = [httpResponse statusCode];
-                if (statusCode == 200) {                           
+                if (statusCode == 200) {
                     NSDictionary *campaignDic = [responseDic objectForKey:@"campaign"];
-                    NSNumber *campIdNumber = [campaignDic objectForKey:@"id"];
-                    if (campIdNumber != nil) {
-                        [offlineCampaigns setObject:responseDic forKey:[campIdNumber stringValue]];
+                    NSString *linkedCampaignId = [SwrveUtils getStringFromDic:campaignDic withKey:@"id"];
+                    if (linkedCampaignId != nil) {
+                        [offlineCampaigns setObject:responseDic forKey:linkedCampaignId];
                         [self campaignAssets:responseDic withCompletionHandler:nil];
                     }
                 }

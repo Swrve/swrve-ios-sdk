@@ -7,6 +7,7 @@
 #import "SwrveNotificationConstants.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"
+#import "SwrveUtils.h"
 
 // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
 // This would result in bad engagement reports etc. The lastProcessedPushId var is used to check that the same push id
@@ -556,8 +557,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if (payload && [payload objectForKey:SwrveCampaignKey]) {
         NSDictionary *campaignDict = [payload objectForKey:SwrveCampaignKey];
         if (campaignDict && [campaignDict objectForKey:@"id"]) {
-            NSNumber *campaignIdNumber = [campaignDict objectForKey:@"id"];
-            campaignId = [campaignIdNumber stringValue];
+            campaignId = [SwrveUtils getStringFromDic:campaignDict withKey:@"id"];
         }
     }
     return campaignId;

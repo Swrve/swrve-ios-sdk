@@ -16,7 +16,7 @@ target 'RichPushSampleServiceExtension-ObjC' do
   pod 'SwrveSDKCommon', :path => '../..'
 
   #use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDKCommon', '6.1.1'
+  #pod 'SwrveSDKCommon', '6.1.2'
 end
 
 
