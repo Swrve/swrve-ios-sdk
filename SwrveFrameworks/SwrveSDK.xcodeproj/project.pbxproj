@@ -175,8 +175,8 @@
 		528F55EC201BA61E007AB0A8 /* SwrveSDKCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 528F559F201B9C4F007AB0A8 /* SwrveSDKCommon.framework */; };
 		528F55ED201BA62F007AB0A8 /* SwrveConversationSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 528F55E3201B9C9F007AB0A8 /* SwrveConversationSDK.framework */; };
 		528F55F0201BA741007AB0A8 /* SwrveConversation-tvos.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 528F55EF201BA741007AB0A8 /* SwrveConversation-tvos.storyboard */; };
-		5BEA12362292C45E006A9484 /* SwrveUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BEA12342292C45E006A9484 /* SwrveUtils.h */; };
-		5BEA12372292C45E006A9484 /* SwrveUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BEA12342292C45E006A9484 /* SwrveUtils.h */; };
+		5BEA12362292C45E006A9484 /* SwrveUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BEA12342292C45E006A9484 /* SwrveUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5BEA12372292C45E006A9484 /* SwrveUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BEA12342292C45E006A9484 /* SwrveUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5BEA12382292C45E006A9484 /* SwrveUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEA12352292C45E006A9484 /* SwrveUtils.m */; };
 		5BEA12392292C45E006A9484 /* SwrveUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEA12352292C45E006A9484 /* SwrveUtils.m */; };
 		F630DF56202369800022F8F5 /* SwrveDeeplinkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F65373C72017D6A700EB079F /* SwrveDeeplinkManager.m */; };

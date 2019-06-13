@@ -1,5 +1,9 @@
 #import <Foundation/Foundation.h>
+#if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
+#import <SwrveSDKCommon/SwrveUtils.h>
+#else
 #import "SwrveUtils.h"
+#endif
 
 @interface SwrveDeviceProperties : NSObject
 
