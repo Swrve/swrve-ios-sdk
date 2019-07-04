@@ -24,6 +24,7 @@
 #import "SwrveProfileManager.h"
 #import "SwrveUser.h"
 #import "SwrveNotificationManager.h"
+#import "SwrveEventQueueItem.h"
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -221,6 +222,8 @@ enum
 
 @property(atomic) SwrveRESTClient *restClient;
 
+@property(atomic) NSMutableArray *pausedEventsArray;
+
 // Push
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 @property(atomic, readonly) SwrvePush *push;                         /*!< Push Notification Handler Service */
@@ -319,6 +322,7 @@ enum
 @synthesize baseCampaignsAndResourcesURL;
 @synthesize locationSegmentVersion;
 @synthesize restClient;
+@synthesize pausedEventsArray;
 @synthesize receiptProvider;
 @synthesize swrveDeeplinkManager;
 
@@ -366,6 +370,7 @@ enum
         locationSegmentVersion = 0; // init to zero
         [self initSwrveRestClient:config.httpTimeoutSeconds];
         [self initBuffer];
+        [self setPausedEventsArray:[NSMutableArray array]];
 
         [SwrveLocalStorage resetDirectoryCreation];
         _deviceToken = [SwrveLocalStorage deviceToken];
@@ -936,7 +941,10 @@ enum
 }
 
 - (void)sendQueuedEvents {
-    if (trackingState == EVENT_SENDING_PAUSED) return;
+    if (trackingState == EVENT_SENDING_PAUSED) {
+        DebugLog(@"Swrve event sending paused so attempt to send queued events has failed.", nil);
+        return;
+    }
     [self sendQueuedEventsWithCallback:nil eventFileCallback:nil];
 }
 
@@ -1419,7 +1427,10 @@ enum
 }
 
 - (void)maybeFlushToDisk {
-    if (trackingState == EVENT_SENDING_PAUSED) {return;}
+    if (trackingState == EVENT_SENDING_PAUSED) {
+        DebugLog(@"Swrve event sending paused so attempt to flush disk has failed.", nil);
+        return;
+    }
     if (self.eventBufferBytes > SWRVE_MEMORY_QUEUE_MAX_BYTES) {
         [self saveEventsToDisk];
     }
@@ -1434,7 +1445,13 @@ enum
 
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController {
     if (trackingState == EVENT_SENDING_PAUSED) {
-        DebugLog(@"Event not queued, awaiting response from Identify API call");
+        DebugLog(@"Swrve event sending paused so attempt to queue events has failed. Will auto retry when event sending resumes.", nil);
+
+        SwrveEventQueueItem *queueItem = [[SwrveEventQueueItem alloc] initWithEventType:eventType
+                                                                              eventData:eventData
+                                                                        triggerCallback:triggerCallback
+                                                                notifyMessageController:notifyMessageController];
+        [self.pausedEventsArray addObject:queueItem];
         return SWRVE_FAILURE;
     };
     NSMutableArray *buffer = self.eventBuffer;
@@ -2126,6 +2143,7 @@ enum HttpStatus {
     // dont do anything if the current user is the same as the new one
     if (newUserID == nil || [newUserID isEqualToString:self.profileManager.userId]) {
         [self enableEventSending];
+        [self queuePausedEventsArray];
         return;
     }
 
@@ -2139,6 +2157,7 @@ enum HttpStatus {
         [SwrveLocalStorage saveSwrveUserId:newUserID]; // update Local storage
     }
     [self initWithUserId:newUserID];
+    [self queuePausedEventsArray];
 
     if (!isFirstSession) {
         //this will prevent the Swrve.first_session event from been queued in the beginSession call below
@@ -2271,6 +2290,16 @@ enum HttpStatus {
         swrveId = cachedSwrveUser.swrveId; // a previous identify call didn't complete so user has been cached and is unverified
     }
     return swrveId;
+}
+
+- (void)queuePausedEventsArray {
+    for (SwrveEventQueueItem *queueItem in self.pausedEventsArray) {
+        [self queueEvent:queueItem.eventType data:queueItem.eventData triggerCallback:queueItem.triggerCallback notifyMessageController:queueItem.notifyMessageController];
+    }
+    if ([self.pausedEventsArray count] > 0) {
+        [self sendQueuedEvents];
+    }
+    [self.pausedEventsArray removeAllObjects];
 }
 
 - (void)enableEventSending {

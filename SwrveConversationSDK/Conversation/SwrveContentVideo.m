@@ -10,6 +10,7 @@
     UIWebView *webview;
     UIView *_containerView;
     BOOL preventNavigation;
+    BOOL isNewUIWindowFromWebViewClick;
 }
 
 @end
@@ -22,10 +23,27 @@
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
     _height = [dict objectForKey:@"height"];
+    
+    // video loading fullscreen from uiwebview iframe creates a new uiwindow, we need to set its windowlevel
+    // to the same as the main conversation uiwindow level to ensure it appears above it.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowDidBecomeActive:)
+                                                 name:UIWindowDidBecomeVisibleNotification
+                                               object:nil];
+    
     return self;
 }
 
+- (void)windowDidBecomeActive:(NSNotification *)notification {
+    // we can assume within the context of this conversation uiwindow that the uiwindow becoming active is from the video tap in the uiwebview
+    if (isNewUIWindowFromWebViewClick) {
+        UIWindow *window = notification.object;
+        window.windowLevel = UIWindowLevelAlert + 1;
+    }
+}
+
 -(void) stop {
+    isNewUIWindowFromWebViewClick = NO;
     [webview setDelegate:nil];
     // Stop the running video - this will happen on a page change.
     [webview loadHTMLString:@"about:blank" baseURL:nil];
@@ -76,6 +94,7 @@
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer {
 #pragma unused(gestureRecognizer)
     _interactedWith = YES;
+    isNewUIWindowFromWebViewClick = YES;
 }
 
 - (void) sizeTheWebView {

@@ -4,7 +4,7 @@ target 'SwrveSDKTest' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.1.3'
+  #pod 'SwrveSDK', '~> 6.1.4'
 
   target 'SwrveSDKTestTests' do
     pod 'OCMock', '~> 3.4.1'
