@@ -96,8 +96,17 @@ NSString *const SwrveContentVersionKey = @"version";
 
 - (void)setPushNotificationsDeviceToken:(NSData *)newDeviceToken {
     NSCAssert(newDeviceToken, @"The device token cannot be null", nil);
-    NSString *newTokenString = [[[newDeviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSString *newTokenString = [self deviceTokenString:newDeviceToken];
     [_pushDelegate deviceTokenUpdated:newTokenString];
+}
+
+- (NSString *)deviceTokenString:(NSData *)deviceTokenData {
+    const char *bytes = [deviceTokenData bytes];
+    NSMutableString *deviceTokenString = [NSMutableString string];
+    for (NSUInteger i = 0; i < [deviceTokenData length]; i++) {
+        [deviceTokenString appendFormat:@"%02.2hhX", bytes[i]];
+    }
+    return [[deviceTokenString copy] lowercaseString];
 }
 
 - (void)checkLaunchOptionsForPushData:(NSDictionary *)launchOptions {

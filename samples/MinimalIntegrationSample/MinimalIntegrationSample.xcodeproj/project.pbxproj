@@ -272,8 +272,11 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh",
 				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
 				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
 				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
@@ -295,6 +298,9 @@
 				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
 			);
 			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
@@ -315,7 +321,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A4BFBEDC918BBB9E85B58981 /* [CP] Embed Pods Frameworks */ = {
@@ -323,13 +329,19 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveConversationSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
@@ -337,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

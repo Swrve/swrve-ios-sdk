@@ -48,7 +48,21 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                 [center setNotificationCategories:mergedSet];
             }
 
-            dispatch_group_leave(notificationGroup);
+            /**
+               There is a delay required between setting notification categories and leaving dispatch
+               the following checks for the existence of the new category twice before carrying on.
+            **/
+            [self verifyCategoryGenerated:generatedCategory withCompletedCallback:^(BOOL found) {
+                if(found) {
+                    dispatch_group_leave(notificationGroup);
+                } else {
+                    [self verifyCategoryGenerated:generatedCategory withCompletedCallback:^(BOOL foundCategory) {
+                        #pragma unused (foundCategory)
+                        // at this point, if we do not have the category, we should exit anyway
+                        dispatch_group_leave(notificationGroup);
+                    }];
+                }
+            }];
         }];
         center = nil;
     }
@@ -107,7 +121,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         }];
     }
 
-    dispatch_group_notify(notificationGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    dispatch_group_notify(notificationGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         /** Everything is finished, return the result **/
         completion(mutableNotificationContent);
     });
@@ -157,6 +171,18 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         return nil;
     }
 }
+
++ (void)verifyCategoryGenerated:(UNNotificationCategory *) generatedCategory withCompletedCallback:(void (^)(BOOL found)) callback  __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *_Nonnull categories) {
+        BOOL found = NO;
+        if ([categories containsObject:generatedCategory]) {
+            found = YES;
+        }
+
+        callback(found);
+    }];
+ }
 
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback {
 
@@ -336,9 +362,9 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     NSURL *deeplinkUrl = [NSURL URLWithString:deeplinkString];
     BOOL canOpen = [[SwrveCommon sharedUIApplication] canOpenURL:deeplinkUrl];
     if (deeplinkUrl != nil && canOpen) {
-        DebugLog(@"Deeplink - %@ - found.  Sending to application as URL", deeplinkString);
+        DebugLog(@"SwrveNotificationManager: Deeplink - %@ - found.  Sending to application as URL", deeplinkString);
     } else {
-        DebugLog(@"Could not process deeplink - %@", deeplinkString);
+        DebugLog(@"SwrveNotificationManager: Could not process deeplink - %@", deeplinkString);
         deeplinkUrl = nil;
     }
     return deeplinkUrl;

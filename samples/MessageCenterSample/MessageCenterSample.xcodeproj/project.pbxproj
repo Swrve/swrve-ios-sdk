@@ -245,7 +245,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
@@ -287,7 +287,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		386ADD53AD978FF0B6A7ECDE /* [CP] Embed Pods Frameworks */ = {
@@ -296,7 +296,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
@@ -309,7 +309,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5BD834BC20EFB01D004799A7 /* [CP] Check Pods Manifest.lock */ = {

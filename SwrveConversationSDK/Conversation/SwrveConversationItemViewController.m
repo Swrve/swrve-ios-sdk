@@ -98,6 +98,7 @@
 #pragma clang diagnostic pop
         
         conversationWindow.rootViewController = rootController;
+        conversationWindow.windowLevel = UIWindowLevelAlert + 1;
         [conversationWindow makeKeyAndVisible];
         [conversationWindow.rootViewController.view endEditing:YES];
     });
@@ -182,12 +183,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+    if (@available(iOS 7.0, *)) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+        self.navigationController.navigationBar.translucent = NO;
     }
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -222,10 +222,12 @@
         
         // Add top margin of close button and content
         // to take into account the status bar.
-        self.contentTableViewTop.constant = self.topLayoutGuide.length;
-        [self.contentTableView setNeedsUpdateConstraints];
-        self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
-        [self.cancelButtonView setNeedsUpdateConstraints];
+        if (@available(iOS 7.0, *)) {
+            self.contentTableViewTop.constant = self.topLayoutGuide.length;
+            [self.contentTableView setNeedsUpdateConstraints];
+            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
+            [self.cancelButtonView setNeedsUpdateConstraints];
+        }
     }
     
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
@@ -288,7 +290,13 @@
         case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:conversationPaneTag withControl:control.tag];
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
-            [[UIApplication sharedApplication] openURL:callUrl];
+            if (@available(iOS 10.0, *)) {
+                [[UIApplication sharedApplication] openURL:callUrl options:@{} completionHandler:^(BOOL success) {
+                    DebugLog(@"Opening url [%@] successfully: %d", callUrl, success);
+                }];
+            } else {
+                DebugLog(@"Could not open url, not supported (should not reach this code)");
+            }
             break;
         }
         case SwrveVisitURLActionType: {
@@ -302,7 +310,7 @@
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
             }
             
-            if (![[UIApplication sharedApplication] canOpenURL:target]) {
+            if (target == nil || ![[UIApplication sharedApplication] canOpenURL:target]) {
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
@@ -310,7 +318,13 @@
                 DebugLog(@"Could not open the Conversation URL: %@", param, nil);
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
-                [[UIApplication sharedApplication] openURL:target];
+                if (@available(iOS 10.0, *)) {
+                    [[UIApplication sharedApplication] openURL:target options:@{} completionHandler:^(BOOL success) {
+                        DebugLog(@"Opening url [%@] successfully: %d", target, success);
+                    }];
+                } else {
+                    DebugLog(@"Could not open url, not supported (should not reach this code)");
+                }
             }
             break;
         }
@@ -330,7 +344,13 @@
             }
             NSURL *target = [NSURL URLWithString:param];
             [SwrveConversationEvents deeplinkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
-            [[UIApplication sharedApplication] openURL:target];
+            if (@available(iOS 10.0, *)) {
+                [[UIApplication sharedApplication] openURL:target options:@{} completionHandler:^(BOOL success) {
+                    DebugLog(@"Opening url [%@] successfully: %d", target, success);
+                }];
+            } else {
+                DebugLog(@"Could not open deeplink, not supported (should not reach this code)");
+            }
         }
         default:
             break;
@@ -502,14 +522,11 @@
 
 #pragma mark - Rotation
 
-// Rotation for iOS < 6
-#if defined(__IPHONE_9_0)
+#if TARGET_OS_IOS
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-#else
--(NSUInteger) supportedInterfaceOrientations {
-#endif //defined(__IPHONE_9_0)
     return UIInterfaceOrientationMaskAll;
 }
+#endif
     
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl
 {
@@ -607,10 +624,10 @@
     }
 }
 
-#if defined(__IPHONE_8_0)
+#if TARGET_OS_IOS
 - (BOOL)prefersStatusBarHidden {
     return NO;
 }
-#endif //defined(__IPHONE_8_0)
+#endif
     
 @end

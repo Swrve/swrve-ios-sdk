@@ -1311,16 +1311,12 @@ enum
 }
 
 - (void) deeplinkReceived:(NSURL*) url {
-    UIApplication *application = [UIApplication sharedApplication];
-
-    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-        [application openURL:url options:@{} completionHandler:^(BOOL success) {
+    if (@available(iOS 10.0, *)) {
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
             DebugLog(@"Opening url [%@] successfully: %d", url, success);
         }];
     } else {
-        BOOL success = [application openURL:url];
-        #pragma unused (success) //for when SWRVE_DISABLE_LOGS is set
-        DebugLog(@"Opening url [%@] successfully: %d", url, success);
+        DebugLog(@"Deeplink not processed, not supported (should not reach this code)");
     }
 }
 

@@ -115,16 +115,30 @@
     
     // Check if the navigation is coming from a user clicking on a link
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        [[UIApplication sharedApplication] openURL:nsurl];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+                DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+            }];
+        } else {
+            DebugLog(@"Could not open url, not supported (should not reach this code)");
+        }
         return NO;
     }
     
     // Check if the youtube link that is opening is the logo that redirects to the full website
     if (nsurl != nil) {
         NSString* url = nsurl.absoluteString;
-        if ([url containsString:@"youtube.com/"] && ![url containsString:@"youtube.com/embed/"]) {
-            [[UIApplication sharedApplication] openURL:nsurl];
-            return NO;
+        if (@available(iOS 8.0, *)) {
+            if ([url containsString:@"youtube.com/"] && ![url containsString:@"youtube.com/embed/"]) {
+                if (@available(iOS 10.0, *)) {
+                    [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+                        DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+                    }];
+                } else {
+                    DebugLog(@"Could not open url, not supported (should not reach this code)");
+                }
+                return NO;
+            }
         }
     }
     

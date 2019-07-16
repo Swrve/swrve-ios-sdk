@@ -131,6 +131,7 @@
 }
 
 #if defined(__IPHONE_8_0)
+#if TARGET_OS_IOS
 -(BOOL)prefersStatusBarHidden
 {
     if (prefersIAMStatusBarHidden) {
@@ -139,6 +140,8 @@
         return [super prefersStatusBarHidden];
     }
 }
+#endif
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
@@ -208,6 +211,7 @@
 }
 
 // iOS 6 and iOS 7 (to be deprecated)
+#if TARGET_OS_IOS
 #if defined(__IPHONE_9_0)
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 #else
@@ -237,6 +241,7 @@
 {
     return YES;
 }
+#endif
 
 #pragma mark - Focus
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {

@@ -41,20 +41,7 @@
 }
 
 - (int)devicePropertyCount {
-
-    //  initial install property count
-    int propertyCount = 13;
-
-    // increase depending on what macros have been defined
-    #if defined(SWRVE_LOG_IDFA)
-    propertyCount++;
-    #endif
-
-    #if defined(SWRVE_LOG_IDFA)
-    propertyCount++;
-    #endif
-
-    return propertyCount;
+    return 15;
 }
 
 - (int)permissionsCounts {
@@ -96,7 +83,7 @@
     XCTAssertTrue(deviceInfo != nil);
     XCTAssertTrue([deviceInfo count] == [self devicePropertyCount]);
 
-    XCTAssertEqual([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.conversation_version"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_dpi"]!= nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);

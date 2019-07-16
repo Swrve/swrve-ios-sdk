@@ -1253,7 +1253,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         NSURL* url = [NSURL URLWithString:nonProcessedAction];
         if( url != nil ) {
             DebugLog(@"Action - %@ - handled.  Sending to application as URL", nonProcessedAction);
-            [[UIApplication sharedApplication] openURL:url];
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+                DebugLog(@"Opening url [%@] successfully: %d", url, success);
+            }];
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
         }

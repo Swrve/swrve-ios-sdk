@@ -488,7 +488,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
 				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
@@ -530,7 +530,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F99838F193C774702FDB7054 /* [CP] Embed Pods Frameworks */ = {
@@ -539,7 +539,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
@@ -552,7 +552,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FDC31DD71E0FD93BE00DD723 /* [CP] Check Pods Manifest.lock */ = {
