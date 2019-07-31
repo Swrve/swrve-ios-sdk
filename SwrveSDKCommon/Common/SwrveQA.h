@@ -5,6 +5,7 @@
 
 @property(atomic) SwrveRESTClient *restClient;
 @property(nonatomic, readwrite) bool isQALogging;
+@property (atomic) BOOL resetDeviceState;
 
 + (id)sharedInstance;
 + (void)makeRequest:(NSMutableDictionary *)jsonBody;

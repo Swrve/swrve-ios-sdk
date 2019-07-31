@@ -6,18 +6,16 @@
                   "triggers": [{
                                "event_name": "Swrve.currency_given",
                                "conditions": {}
-                               },
-                               {
+                               }, {
                                "event_name": "Swrve.buy_in",
                                "conditions": {}
-                               }
-                               ],
+                               }],
                   "start_date": 1362671700000,
                   "messages": [{
                                "template": {
                                "template_id": "20",
                                "formats": [{
-                                           "orientation": "portrait",
+                                           "orientation": "landscape",
                                            "size": {
                                            "w": {
                                            "type": "number",
@@ -83,49 +81,13 @@
                                                        },
                                                        "game_id": {
                                                        "type": "number",
-                                                       "value": "150"
+                                                       "value": "2"
                                                        },
                                                        "type": {
                                                        "type": "text",
                                                        "value": "INSTALL"
                                                        }
-                                                       },
-                                                       {
-                                                       "name": "custom",
-                                                       "x": {
-                                                       "type": "number",
-                                                       "value": 0
-                                                       },
-                                                       "y": {
-                                                       "type": "number",
-                                                       "value": 80
-                                                       },
-                                                       "w": {
-                                                       "type": "number",
-                                                       "value": 229
-                                                       },
-                                                       "h": {
-                                                       "type": "number",
-                                                       "value": 114
-                                                       },
-                                                       "image_up": {
-                                                       "type": "asset",
-                                                       "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                                       },
-                                                       "action": {
-                                                       "type": "text",
-                                                       "value": "custom_action"
-                                                       },
-                                                       "game_id": {
-                                                       "type": "number",
-                                                       "value": ""
-                                                       },
-                                                       "type": {
-                                                       "type": "text",
-                                                       "value": "CUSTOM"
-                                                       }
-                                                       },
-                                                       {
+                                                       }, {
                                                        "name": "close",
                                                        "x": {
                                                        "type": "number",
@@ -159,43 +121,21 @@
                                                        "type": "text",
                                                        "value": "DISMISS"
                                                        }
-                                                       }
-                                                       ],
+                                                       }],
                                            "name": "Kindle (English (US))",
                                            "language": "en-US"
-                                           }]
-                               },
-                               "id": 165,
-                               "name": "Kindle",
-                               "rules": {}
-                               }],
-                  "rules": {
-                  "display_order": "random",
-                  "dismiss_after_views": 20,
-                  "delay_first_message": 0,
-                  "min_delay_between_messages": 30
-                  }
-                  }, {
-                  "id": 101,
-                  "end_date": 1364568900000,
-                  "triggers": [{
-                               "event_name": "test1",
-                               "conditions": {}
-                               }],
-                  "start_date": 1362671700000,
-                  "messages": [{
-                               "template": {
-                               "template_id": "20",
-                               "formats": [{
+                                           },
+                                           
+                                           {
                                            "orientation": "portrait",
                                            "size": {
                                            "w": {
                                            "type": "number",
-                                           "value": 320
+                                           "value": 240
                                            },
                                            "h": {
                                            "type": "number",
-                                           "value": 240
+                                           "value": 320
                                            }
                                            },
                                            "images": [{
@@ -218,11 +158,11 @@
                                                       },
                                                       "w": {
                                                       "type": "number",
-                                                      "value": 900
+                                                      "value": 600
                                                       },
                                                       "h": {
                                                       "type": "number",
-                                                      "value": 600
+                                                      "value": 900
                                                       }
                                                       }],
                                            "buttons": [{
@@ -253,49 +193,13 @@
                                                        },
                                                        "game_id": {
                                                        "type": "number",
-                                                       "value": "150"
+                                                       "value": "2"
                                                        },
                                                        "type": {
                                                        "type": "text",
                                                        "value": "INSTALL"
                                                        }
-                                                       },
-                                                       {
-                                                       "name": "custom",
-                                                       "x": {
-                                                       "type": "number",
-                                                       "value": 0
-                                                       },
-                                                       "y": {
-                                                       "type": "number",
-                                                       "value": 80
-                                                       },
-                                                       "w": {
-                                                       "type": "number",
-                                                       "value": 229
-                                                       },
-                                                       "h": {
-                                                       "type": "number",
-                                                       "value": 114
-                                                       },
-                                                       "image_up": {
-                                                       "type": "asset",
-                                                       "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                                       },
-                                                       "action": {
-                                                       "type": "text",
-                                                       "value": "custom_action"
-                                                       },
-                                                       "game_id": {
-                                                       "type": "number",
-                                                       "value": ""
-                                                       },
-                                                       "type": {
-                                                       "type": "text",
-                                                       "value": "CUSTOM"
-                                                       }
-                                                       },
-                                                       {
+                                                       }, {
                                                        "name": "close",
                                                        "x": {
                                                        "type": "number",
@@ -329,11 +233,11 @@
                                                        "type": "text",
                                                        "value": "DISMISS"
                                                        }
-                                                       }
-                                                       ],
-                                           "name": "Kindle (English (US))",
+                                                       }],
+                                           "name": "Kindle Portrait  (English (US))",
                                            "language": "en-US"
-                                           }]
+                                           }
+                                           ]
                                },
                                "id": 165,
                                "name": "Kindle",
@@ -341,9 +245,9 @@
                                }],
                   "rules": {
                   "display_order": "random",
-                  "dismiss_after_views": 20,
+                  "dismiss_after_views": 5,
                   "delay_first_message": 0,
-                  "min_delay_between_messages": 30
+                  "min_delay_between_messages": 0
                   }
                   }],
     "game_data": {
@@ -353,7 +257,7 @@
     },
     "rules": {
         "min_delay_between_messages": 0,
-        "max_messages_per_session": 10,
+        "max_messages_per_session": 99999,
         "delay_first_message": 0
     },
     "version": 2

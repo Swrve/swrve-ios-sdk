@@ -6,8 +6,8 @@
  */
 @interface SwrveReceiptProviderResult : NSObject
 
-@property (nonatomic, retain) NSString * encodedReceipt;        /*!< Base64 encoded receipt from Apple */
-@property (nonatomic, retain) NSString * transactionId;         /*!< Transaction ID */
+@property (nonatomic, retain) NSString *encodedReceipt;        /*!< Base64 encoded receipt from Apple */
+@property (nonatomic, retain) NSString *transactionId;         /*!< Transaction ID */
 
 @end
 
@@ -19,7 +19,7 @@
  */
 @interface SwrveReceiptProvider : NSObject
 
-- (SwrveReceiptProviderResult*)receiptForTransaction:(SKPaymentTransaction*)transaction;
-- (NSString*)base64encode:(NSData*)receipt;
+- (SwrveReceiptProviderResult *)receiptForTransaction:(SKPaymentTransaction *)transaction;
+- (NSString *)base64encode:(NSData *)receipt;
 
 @end

@@ -1,0 +1,79 @@
+{
+    "campaigns": [{
+                  "id": 15680,
+                  "end_date": 1364568900000,
+                  "start_date": 1362671700000,
+                  "rules": {
+                  "delay_first_message": 0,
+                  "dismiss_after_views": 99999,
+                  "display_order": "random",
+                  "min_delay_between_messages": 60
+                  },
+                  "triggers": [{
+                               "event_name": "Swrve.multivalue",
+                               "conditions": {
+                               "args": [{
+                                        "key": "key1",
+                                        "op": "eq",
+                                        "value": "value1"
+                                        }, {
+                                        "key": "key2",
+                                        "op": "eq",
+                                        "value": "value2"
+                                        }],
+                               "op": "and"
+                               }
+                               }, {
+                               "event_name": "Swrve.noconditions",
+                               "conditions": {}
+                               }, {
+                               "event_name": "Swrve.noOP",
+                               "conditions": {
+                                    "key": "key1",
+                                    "op": "eq",
+                                    "value": "value1"
+                               }
+                               }],
+                  "conversation_version": 3,
+                  "conversation": {
+                  "id": 99,
+                  "name": "Choose one",
+                  "pages": [{
+                            "tag": "1427124319447-2Button",
+                            "title": "Page 1 of x",
+                            "content": [{
+                                        "type": "multi-value-input",
+                                        "description": "Please select an answer from the radio buttons below 1:",
+                                        "style": {
+                                          "bg": {
+                                            "type": "transparent"
+                                          },
+                                          "fg": {
+                                            "type": "color",
+                                            "value": "#9bf000"
+                                          }
+                                        },
+                                        "values": [{
+                                                   "answer_id": "13654815-option",
+                                                   "answer_text": "Option 1"
+                                                   }],
+                                        "tag": "1427192631272-fragment"
+                                        }],
+                            "controls": [{
+                                         "tag": "1427124319447-Button-1",
+                                         "description": "Call a number",
+                                         "target": "",
+                                         "action": {
+                                         "call": "453453453"
+                                         }
+                                         }]
+                            }]
+                  }
+                  }
+                  
+                  ],
+    "game_data": {},
+    "rules": {},
+    "cdn_root": "http://content-cdn.swrve.com/messaging/message_image/",
+    "version": 2
+}

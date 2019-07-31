@@ -291,7 +291,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return [mimeToFileExtension objectForKey:[mimeType lowercaseString]];
 }
 
-+ (UNNotificationAttachment *)attachmentFromCache:(NSString *)externalUrlString inCacheDir:(NSString *)cacheDir {
++ (UNNotificationAttachment *)attachmentFromCache:(NSString *)externalUrlString inCacheDir:(NSString *)cacheDir  API_AVAILABLE(ios(10.0)){
     UNNotificationAttachment *attachment = nil;
     NSURL *externalUrl = [NSURL URLWithString:externalUrlString];
     NSURL *attachmentURL;

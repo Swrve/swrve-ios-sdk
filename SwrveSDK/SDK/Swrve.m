@@ -1171,9 +1171,7 @@ enum
     if (!initialised) {
         initialised = YES;
         [self beginSession]; // App started the first time
-        if (sessionDelegate) {
-            [sessionDelegate sessionStarted];
-        }
+        [self executeSessionStartedDelegate];
         return;
     }
 
@@ -1186,9 +1184,7 @@ enum
             [self.messaging setAutoShowMessagesEnabled:YES]; // Re-enable auto show messages at session start
             [self disableAutoShowAfterDelay];
         }
-        if (sessionDelegate) {
-            [sessionDelegate sessionStarted];
-        }
+        [self executeSessionStartedDelegate];
     }
 
     NSDictionary *deviceInfo = [self deviceInfo];
@@ -2333,6 +2329,14 @@ enum HttpStatus {
 
 - (void)setSwrveSessionDelegate:(id <SwrveSessionDelegate>)swrveSessionDelegate {
     sessionDelegate = swrveSessionDelegate;
+}
+
+- (void)executeSessionStartedDelegate {
+    if (sessionDelegate) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self -> sessionDelegate sessionStarted];
+        });
+    }
 }
 
 - (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {

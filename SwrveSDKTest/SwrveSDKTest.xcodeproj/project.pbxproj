@@ -7,43 +7,117 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B157E5B21C15BEE003983E8 /* SwrveTestPushSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */; };
-		1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */; };
-		1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */; };
-		1BF8DC6C21AEE3660074D8B6 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
-		239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */; };
-		3A96C949222939C700C789A2 /* SwrveTestInit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A96C9472229397200C789A2 /* SwrveTestInit.m */; };
-		3AADF51A20FCE000003AEEA1 /* SwrveTestNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */; };
-		3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */; };
+		2E646FD9C24D0B5C2F94FBBE /* libPods-SwrveSDKTVTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */; };
+		3AA08417226A251600ECA032 /* SwrveTestInitTV.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA08416226A251600ECA032 /* SwrveTestInitTV.m */; };
+		3AA0841A226F25C400ECA032 /* SwrveTestInitIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */; };
+		3AA0841D2270BFC500ECA032 /* SwrveTestQA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */; };
+		3AA0841E2270BFC600ECA032 /* SwrveTestQA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */; };
+		3AA0842B2271AE9900ECA032 /* abTestDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AA0842A2271AE9900ECA032 /* abTestDetails.json */; };
+		3AA084302271B54300ECA032 /* SwrveTestABTestDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */; };
+		3AA084312271B54400ECA032 /* SwrveTestABTestDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */; };
+		3AA084322271BC1000ECA032 /* abTestDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AA0842A2271AE9900ECA032 /* abTestDetails.json */; };
+		3ABBDCCD22771C1600A69CDE /* SwrveTestUserResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */; };
+		3ABBDCCE22771C1700A69CDE /* SwrveTestUserResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */; };
 		52740A731CF70D5E00151035 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A721CF70D5E00151035 /* main.m */; };
 		52740A761CF70D5E00151035 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A751CF70D5E00151035 /* AppDelegate.m */; };
 		52740A791CF70D5E00151035 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A781CF70D5E00151035 /* ViewController.m */; };
 		52740A7C1CF70D5E00151035 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7A1CF70D5E00151035 /* Main.storyboard */; };
 		52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7D1CF70D5E00151035 /* Assets.xcassets */; };
 		52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7F1CF70D5E00151035 /* LaunchScreen.storyboard */; };
-		52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */; };
-		8649EE99A0104C5CFEBC8E62 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */; };
-		87DD2D9CE829758487A2BF32 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */; };
-		F602D81E2241521B00BEF65D /* external_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F602D81D2241521B00BEF65D /* external_campaigns.json */; };
-		F602D81F2241523600BEF65D /* external_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F602D81D2241521B00BEF65D /* external_campaigns.json */; };
-		F62BB62D21FB4FBD00E53ED4 /* SwrveTestCustomPayloads.m in Sources */ = {isa = PBXBuildFile; fileRef = F62BB62C21FB4FBD00E53ED4 /* SwrveTestCustomPayloads.m */; };
-		F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */; };
-		F661663421BFD85C00FDD22A /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */; };
-		F661665A21C16DC400FDD22A /* SwrveTestAuthPush.m in Sources */ = {isa = PBXBuildFile; fileRef = F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */; };
-		F66C3297222FEC8A0080A94E /* SwrveTestDeeplinkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66C3296222FEC8A0080A94E /* SwrveTestDeeplinkManager.m */; };
-		F67948492237094600A85546 /* ad_journey_campaign_message.json in Resources */ = {isa = PBXBuildFile; fileRef = F67948472237094600A85546 /* ad_journey_campaign_message.json */; };
-		F679484A2237094600A85546 /* ad_journey_campaign_conversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F67948482237094600A85546 /* ad_journey_campaign_conversation.json */; };
-		F679484B2237095600A85546 /* ad_journey_campaign_conversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F67948482237094600A85546 /* ad_journey_campaign_conversation.json */; };
-		F679484C2237095900A85546 /* ad_journey_campaign_message.json in Resources */ = {isa = PBXBuildFile; fileRef = F67948472237094600A85546 /* ad_journey_campaign_message.json */; };
-		F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
-		F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F6B5D7D320A9A864007E97B6 /* logo.gif */; };
-		F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */; };
-		F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
-		F6D1A9D220B4230B0042EDFE /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F6D1A9CE20B4225C0042EDFE /* campaigns.json */; };
-		F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */; };
-		F6EE075A222FCFFB00EA8DD5 /* SwrveTestSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EE0758222FCCE000EA8DD5 /* SwrveTestSignatureProtectedFile.m */; };
-		F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
-		F6F386AB20B4294B006F6149 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F386A920B4294A006F6149 /* campaignsNone.json */; };
+		71D9E6FC821B01ACE537893A /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */; };
+		95E7B5D63721364EF75B9508 /* libPods-SwrveSDKTVTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */; };
+		E3E76A465177869437690C03 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */; };
+		F60B7F44225F3BA1009AFCCC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F43225F3BA1009AFCCC /* AppDelegate.m */; };
+		F60B7F47225F3BA1009AFCCC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F46225F3BA1009AFCCC /* ViewController.m */; };
+		F60B7F4A225F3BA1009AFCCC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60B7F48225F3BA1009AFCCC /* Main.storyboard */; };
+		F60B7F4C225F3BA3009AFCCC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F60B7F4B225F3BA3009AFCCC /* Assets.xcassets */; };
+		F60B7F4F225F3BA3009AFCCC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F4E225F3BA3009AFCCC /* main.m */; };
+		F60B7F95225F412A009AFCCC /* SwrveTVTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */; };
+		F6411206227742BA00399A66 /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
+		F6411207227742BA00399A66 /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
+		F6411208227742BA00399A66 /* SwrveTestMessageCenterAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */; };
+		F6411209227742BA00399A66 /* SwrveTestMessageCenterAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */; };
+		F6411218227742E300399A66 /* campaignsBothOrientations.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120A227742E200399A66 /* campaignsBothOrientations.json */; };
+		F6411219227742E300399A66 /* campaignsBothOrientations.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120A227742E200399A66 /* campaignsBothOrientations.json */; };
+		F641121A227742E300399A66 /* campaignsMessageCenter.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120B227742E200399A66 /* campaignsMessageCenter.json */; };
+		F641121B227742E300399A66 /* campaignsMessageCenter.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120B227742E200399A66 /* campaignsMessageCenter.json */; };
+		F641121C227742E300399A66 /* campaignsAutoshow.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120C227742E200399A66 /* campaignsAutoshow.json */; };
+		F641121D227742E300399A66 /* campaignsAutoshow.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120C227742E200399A66 /* campaignsAutoshow.json */; };
+		F641121E227742E300399A66 /* campaignsMessagePriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */; };
+		F641121F227742E300399A66 /* campaignsMessagePriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */; };
+		F6411220227742E300399A66 /* campaignsMessagePriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120E227742E200399A66 /* campaignsMessagePriority.json */; };
+		F6411221227742E300399A66 /* campaignsMessagePriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120E227742E200399A66 /* campaignsMessagePriority.json */; };
+		F6411222227742E300399A66 /* campaignsAARRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120F227742E200399A66 /* campaignsAARRGGBB.json */; };
+		F6411223227742E300399A66 /* campaignsAARRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120F227742E200399A66 /* campaignsAARRGGBB.json */; };
+		F6411224227742E300399A66 /* conversationCampaignsPriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */; };
+		F6411225227742E300399A66 /* conversationCampaignsPriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */; };
+		F6411226227742E300399A66 /* campaignsImpressions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411211227742E200399A66 /* campaignsImpressions.json */; };
+		F6411227227742E300399A66 /* campaignsImpressions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411211227742E200399A66 /* campaignsImpressions.json */; };
+		F6411228227742E300399A66 /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411212227742E200399A66 /* conversationCampaignsPriority.json */; };
+		F6411229227742E300399A66 /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411212227742E200399A66 /* conversationCampaignsPriority.json */; };
+		F641122A227742E300399A66 /* campaignSessionStart.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411213227742E200399A66 /* campaignSessionStart.json */; };
+		F641122B227742E300399A66 /* campaignSessionStart.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411213227742E200399A66 /* campaignSessionStart.json */; };
+		F641122C227742E300399A66 /* campaignsDelay.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411214227742E200399A66 /* campaignsDelay.json */; };
+		F641122D227742E300399A66 /* campaignsDelay.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411214227742E200399A66 /* campaignsDelay.json */; };
+		F641122E227742E300399A66 /* campaignsFuture.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411215227742E200399A66 /* campaignsFuture.json */; };
+		F641122F227742E300399A66 /* campaignsFuture.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411215227742E200399A66 /* campaignsFuture.json */; };
+		F6411230227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */; };
+		F6411231227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */; };
+		F6411232227742E300399A66 /* campaignRoundRobin.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411217227742E300399A66 /* campaignRoundRobin.json */; };
+		F6411233227742E300399A66 /* campaignRoundRobin.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411217227742E300399A66 /* campaignRoundRobin.json */; };
+		F64112382277445D00399A66 /* TestShowMessageDelegateWithViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F64112342277445200399A66 /* TestShowMessageDelegateWithViewController.m */; };
+		F64112392277445D00399A66 /* TestShowMessageDelegateWithViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F64112342277445200399A66 /* TestShowMessageDelegateWithViewController.m */; };
+		F641123B2277472900399A66 /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123A2277472900399A66 /* campaigns.json */; };
+		F641123C2277473000399A66 /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123A2277472900399A66 /* campaigns.json */; };
+		F64112402277482300399A66 /* campaignsQAUser.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123D2277482300399A66 /* campaignsQAUser.json */; };
+		F64112412277482300399A66 /* campaignsRandom.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123E2277482300399A66 /* campaignsRandom.json */; };
+		F64112422277482300399A66 /* campaignsQAReset.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123F2277482300399A66 /* campaignsQAReset.json */; };
+		F64112432277482900399A66 /* campaignsQAReset.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123F2277482300399A66 /* campaignsQAReset.json */; };
+		F64112442277482900399A66 /* campaignsQAUser.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123D2277482300399A66 /* campaignsQAUser.json */; };
+		F64112452277482900399A66 /* campaignsRandom.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123E2277482300399A66 /* campaignsRandom.json */; };
+		F6411247227748AD00399A66 /* campaignsRRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411246227748AD00399A66 /* campaignsRRGGBB.json */; };
+		F6411248227748AF00399A66 /* campaignsRRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411246227748AD00399A66 /* campaignsRRGGBB.json */; };
+		F641124A2277490200399A66 /* campaignsPortraitOnly.json in Resources */ = {isa = PBXBuildFile; fileRef = F64112492277490200399A66 /* campaignsPortraitOnly.json */; };
+		F641124B2277490200399A66 /* campaignsPortraitOnly.json in Resources */ = {isa = PBXBuildFile; fileRef = F64112492277490200399A66 /* campaignsPortraitOnly.json */; };
+		F65F6C43225F94A0001DAA99 /* SwrveTVTestMigrationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */; };
+		F66174C6226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */; };
+		F66174C7226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */; };
+		F66174C8226F637000E23980 /* SwrveTestCampaignMultipleConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C4226F637000E23980 /* SwrveTestCampaignMultipleConditions.m */; };
+		F66174CA226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */; };
+		F66174CB226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */; };
+		F66174D0226F6C3600E23980 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F66174CF226F6C2F00E23980 /* campaignsMultipleTriggerConditions.json */; };
+		F66626F122649FA3001AF2EB /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */; };
+		F66626F222649FA3001AF2EB /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */; };
+		F66626F322649FA3001AF2EB /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */; };
+		F66626F422649FA3001AF2EB /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */; };
+		F66626F522649FA3001AF2EB /* SwrveTestCustomPayloads.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */; };
+		F66626F622649FA3001AF2EB /* SwrveTestCustomPayloads.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */; };
+		F66626F722649FA3001AF2EB /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */; };
+		F66626F822649FA3001AF2EB /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */; };
+		F66626F922649FA3001AF2EB /* SwrveTestInit.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EE22649FA3001AF2EB /* SwrveTestInit.m */; };
+		F66626FA22649FA3001AF2EB /* SwrveTestInit.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EE22649FA3001AF2EB /* SwrveTestInit.m */; };
+		F66626FB22649FA3001AF2EB /* SwrveTestDeviceProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */; };
+		F66626FD22649FA3001AF2EB /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626F022649FA3001AF2EB /* SwrveTestTriggersAndConditions.m */; };
+		F66626FE22649FA3001AF2EB /* SwrveTestTriggersAndConditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626F022649FA3001AF2EB /* SwrveTestTriggersAndConditions.m */; };
+		F66626FF22649FA9001AF2EB /* SwrveTestAuthPush.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626E822649F6A001AF2EB /* SwrveTestAuthPush.m */; };
+		F666270022649FA9001AF2EB /* SwrveTestDeeplinkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626E122649F51001AF2EB /* SwrveTestDeeplinkManager.m */; };
+		F666270122649FA9001AF2EB /* SwrveTestMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626DC22649F50001AF2EB /* SwrveTestMigrationsManager.m */; };
+		F666270222649FA9001AF2EB /* SwrveTestNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626DF22649F51001AF2EB /* SwrveTestNotificationManager.m */; };
+		F666270322649FA9001AF2EB /* SwrveTestPushSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626DD22649F51001AF2EB /* SwrveTestPushSDK.m */; };
+		F666270422649FA9001AF2EB /* SwrveTestSignatureProtectedFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626DE22649F51001AF2EB /* SwrveTestSignatureProtectedFile.m */; };
+		F666270522649FA9001AF2EB /* SwrveTestSilentPush.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626E022649F51001AF2EB /* SwrveTestSilentPush.m */; };
+		F66627142264A065001AF2EB /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F666270A2264A065001AF2EB /* SwrveTestHelper.m */; };
+		F66627152264A065001AF2EB /* SwrveTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F666270A2264A065001AF2EB /* SwrveTestHelper.m */; };
+		F66627162264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */; };
+		F66627172264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */; };
+		F66627212264A07D001AF2EB /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627092264A065001AF2EB /* campaignsNone.json */; };
+		F66627222264A0CD001AF2EB /* ad_journey_campaign_conversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */; };
+		F66627242264A0D3001AF2EB /* ad_journey_campaign_message.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */; };
+		F66627252264A0D9001AF2EB /* external_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270C2264A065001AF2EB /* external_campaigns.json */; };
+		F666272C2264A3BF001AF2EB /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F66627262264A110001AF2EB /* logo.gif */; };
+		F666272F2264A4CE001AF2EB /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627092264A065001AF2EB /* campaignsNone.json */; };
+		F66627312264A661001AF2EB /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */; };
+		F66627322264A663001AF2EB /* TestPermissionsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,18 +128,26 @@
 			remoteGlobalIDString = 52740A6D1CF70D5E00151035;
 			remoteInfo = SwrveSDKTest;
 		};
+		F60B7F55225F3BA3009AFCCC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52740A661CF70D5E00151035 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F60B7F3F225F3BA1009AFCCC;
+			remoteInfo = SwrveSDKTVTest;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
-		1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushSDK.m; sourceTree = "<group>"; };
-		239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMigrationsManager.m; sourceTree = "<group>"; };
-		3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
-		3A96C9472229397200C789A2 /* SwrveTestInit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInit.m; sourceTree = "<group>"; };
-		3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNotificationManager.m; sourceTree = "<group>"; };
-		3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestProfileManager.m; sourceTree = "<group>"; };
-		3AEB63D31F0405A900F0A270 /* SwrveTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestHelper.h; sourceTree = "<group>"; };
-		3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestHelper.m; sourceTree = "<group>"; };
+		2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
+		2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.debug.xcconfig"; sourceTree = "<group>"; };
+		326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.release.xcconfig"; sourceTree = "<group>"; };
+		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
+		3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitIOS.m; sourceTree = "<group>"; };
+		3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestQA.m; sourceTree = "<group>"; };
+		3AA0842A2271AE9900ECA032 /* abTestDetails.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = abTestDetails.json; sourceTree = "<group>"; };
+		3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestABTestDetails.m; sourceTree = "<group>"; };
+		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
+		3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		52740A6E1CF70D5E00151035 /* SwrveSDKTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveSDKTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52740A721CF70D5E00151035 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		52740A741CF70D5E00151035 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -77,29 +159,81 @@
 		52740A801CF70D5E00151035 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		52740A821CF70D5E00151035 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwrveSDKTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		52740A8D1CF70D5E00151035 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggersAndConditions.m; sourceTree = "<group>"; };
-		7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
-		81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
-		F602D81D2241521B00BEF65D /* external_campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = external_campaigns.json; sourceTree = "<group>"; };
-		F62BB62C21FB4FBD00E53ED4 /* SwrveTestCustomPayloads.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCustomPayloads.m; sourceTree = "<group>"; };
-		F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestLocalStorage.m; sourceTree = "<group>"; };
-		F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestEventQueueCallback.m; sourceTree = "<group>"; };
-		F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestAuthPush.m; sourceTree = "<group>"; };
-		F66C3296222FEC8A0080A94E /* SwrveTestDeeplinkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeeplinkManager.m; sourceTree = "<group>"; };
-		F67948472237094600A85546 /* ad_journey_campaign_message.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_message.json; sourceTree = "<group>"; };
-		F67948482237094600A85546 /* ad_journey_campaign_conversation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_conversation.json; sourceTree = "<group>"; };
-		F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMockNSURLProtocol.h; sourceTree = "<group>"; };
-		F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
-		F6B5D7D320A9A864007E97B6 /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
-		F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
-		F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
-		F6D1A9CE20B4225C0042EDFE /* campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns.json; sourceTree = "<group>"; };
-		F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
-		F6EE0758222FCCE000EA8DD5 /* SwrveTestSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSignatureProtectedFile.m; sourceTree = "<group>"; };
-		F6F386A920B4294A006F6149 /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsNone.json; sourceTree = "<group>"; };
+		7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
+		8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.release.xcconfig"; sourceTree = "<group>"; };
+		EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
+		F60B7F40225F3BA1009AFCCC /* SwrveSDKTVTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveSDKTVTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F60B7F42225F3BA1009AFCCC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F60B7F43225F3BA1009AFCCC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F60B7F45225F3BA1009AFCCC /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		F60B7F46225F3BA1009AFCCC /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		F60B7F49225F3BA1009AFCCC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F60B7F4B225F3BA3009AFCCC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F60B7F4D225F3BA3009AFCCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F60B7F4E225F3BA3009AFCCC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F60B7F54225F3BA3009AFCCC /* SwrveSDKTVTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwrveSDKTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F60B7F5A225F3BA3009AFCCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTVTestDeviceProperties.m; sourceTree = "<group>"; };
+		F6411204227742B900399A66 /* SwrveTestMessageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageController.m; sourceTree = "<group>"; };
+		F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageCenterAPI.m; sourceTree = "<group>"; };
+		F641120A227742E200399A66 /* campaignsBothOrientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsBothOrientations.json; sourceTree = "<group>"; };
+		F641120B227742E200399A66 /* campaignsMessageCenter.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMessageCenter.json; sourceTree = "<group>"; };
+		F641120C227742E200399A66 /* campaignsAutoshow.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsAutoshow.json; sourceTree = "<group>"; };
+		F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMessagePriorityReverse.json; sourceTree = "<group>"; };
+		F641120E227742E200399A66 /* campaignsMessagePriority.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMessagePriority.json; sourceTree = "<group>"; };
+		F641120F227742E200399A66 /* campaignsAARRGGBB.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsAARRGGBB.json; sourceTree = "<group>"; };
+		F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationCampaignsPriorityReverse.json; sourceTree = "<group>"; };
+		F6411211227742E200399A66 /* campaignsImpressions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsImpressions.json; sourceTree = "<group>"; };
+		F6411212227742E200399A66 /* conversationCampaignsPriority.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationCampaignsPriority.json; sourceTree = "<group>"; };
+		F6411213227742E200399A66 /* campaignSessionStart.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignSessionStart.json; sourceTree = "<group>"; };
+		F6411214227742E200399A66 /* campaignsDelay.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsDelay.json; sourceTree = "<group>"; };
+		F6411215227742E200399A66 /* campaignsFuture.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsFuture.json; sourceTree = "<group>"; };
+		F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMultipleTriggerConditions.json; sourceTree = "<group>"; };
+		F6411217227742E300399A66 /* campaignRoundRobin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignRoundRobin.json; sourceTree = "<group>"; };
+		F64112342277445200399A66 /* TestShowMessageDelegateWithViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestShowMessageDelegateWithViewController.m; sourceTree = "<group>"; };
+		F64112352277445200399A66 /* TestShowMessageDelegateWithViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestShowMessageDelegateWithViewController.h; sourceTree = "<group>"; };
+		F641123A2277472900399A66 /* campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns.json; sourceTree = "<group>"; };
+		F641123D2277482300399A66 /* campaignsQAUser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsQAUser.json; sourceTree = "<group>"; };
+		F641123E2277482300399A66 /* campaignsRandom.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsRandom.json; sourceTree = "<group>"; };
+		F641123F2277482300399A66 /* campaignsQAReset.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsQAReset.json; sourceTree = "<group>"; };
+		F6411246227748AD00399A66 /* campaignsRRGGBB.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsRRGGBB.json; sourceTree = "<group>"; };
+		F64112492277490200399A66 /* campaignsPortraitOnly.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsPortraitOnly.json; sourceTree = "<group>"; };
+		F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTVTestMigrationManager.m; sourceTree = "<group>"; };
+		F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCampaignAndResourcesUpdate.m; sourceTree = "<group>"; };
+		F66174C4226F637000E23980 /* SwrveTestCampaignMultipleConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCampaignMultipleConditions.m; sourceTree = "<group>"; };
+		F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwrveCampaignInfluence.m; sourceTree = "<group>"; };
+		F66174CF226F6C2F00E23980 /* campaignsMultipleTriggerConditions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsMultipleTriggerConditions.json; sourceTree = "<group>"; };
+		F666266B22609425001AF2EB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SwrveSDKTests/Info.plist; sourceTree = SOURCE_ROOT; };
+		F66626DC22649F50001AF2EB /* SwrveTestMigrationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMigrationsManager.m; sourceTree = "<group>"; };
+		F66626DD22649F51001AF2EB /* SwrveTestPushSDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushSDK.m; sourceTree = "<group>"; };
+		F66626DE22649F51001AF2EB /* SwrveTestSignatureProtectedFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSignatureProtectedFile.m; sourceTree = "<group>"; };
+		F66626DF22649F51001AF2EB /* SwrveTestNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNotificationManager.m; sourceTree = "<group>"; };
+		F66626E022649F51001AF2EB /* SwrveTestSilentPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSilentPush.m; sourceTree = "<group>"; };
+		F66626E122649F51001AF2EB /* SwrveTestDeeplinkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeeplinkManager.m; sourceTree = "<group>"; };
+		F66626E822649F6A001AF2EB /* SwrveTestAuthPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestAuthPush.m; sourceTree = "<group>"; };
+		F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestProfileManager.m; sourceTree = "<group>"; };
+		F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestEventQueueCallback.m; sourceTree = "<group>"; };
+		F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCustomPayloads.m; sourceTree = "<group>"; };
+		F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestLocalStorage.m; sourceTree = "<group>"; };
+		F66626EE22649FA3001AF2EB /* SwrveTestInit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInit.m; sourceTree = "<group>"; };
+		F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
+		F66626F022649FA3001AF2EB /* SwrveTestTriggersAndConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggersAndConditions.m; sourceTree = "<group>"; };
+		F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_conversation.json; sourceTree = "<group>"; };
+		F66627082264A065001AF2EB /* SwrveTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestHelper.h; sourceTree = "<group>"; };
+		F66627092264A065001AF2EB /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsNone.json; sourceTree = "<group>"; };
+		F666270A2264A065001AF2EB /* SwrveTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestHelper.m; sourceTree = "<group>"; };
+		F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
+		F666270C2264A065001AF2EB /* external_campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = external_campaigns.json; sourceTree = "<group>"; };
+		F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_message.json; sourceTree = "<group>"; };
+		F666270F2264A065001AF2EB /* SwrveMockNSURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMockNSURLProtocol.h; sourceTree = "<group>"; };
+		F66627262264A110001AF2EB /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
+		F66627282264A2D7001AF2EB /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
+		F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,7 +241,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87DD2D9CE829758487A2BF32 /* libPods-SwrveSDKTest.a in Frameworks */,
+				71D9E6FC821B01ACE537893A /* libPods-SwrveSDKTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,35 +249,52 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8649EE99A0104C5CFEBC8E62 /* libPods-SwrveSDKTestTests.a in Frameworks */,
+				E3E76A465177869437690C03 /* libPods-SwrveSDKTestTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F3D225F3BA1009AFCCC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95E7B5D63721364EF75B9508 /* libPods-SwrveSDKTVTest.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F51225F3BA3009AFCCC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E646FD9C24D0B5C2F94FBBE /* libPods-SwrveSDKTVTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		523EE2211CF73C0400496FEA /* Supporting Files */ = {
+		216292B63071DDD24190C43D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F6B5D7D320A9A864007E97B6 /* logo.gif */,
-				52740A8D1CF70D5E00151035 /* Info.plist */,
-				F6D1A9CE20B4225C0042EDFE /* campaigns.json */,
-				F6F386A920B4294A006F6149 /* campaignsNone.json */,
-				F67948482237094600A85546 /* ad_journey_campaign_conversation.json */,
-				F67948472237094600A85546 /* ad_journey_campaign_message.json */,
-				F602D81D2241521B00BEF65D /* external_campaigns.json */,
+				8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */,
+				EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */,
+				CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */,
+				A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */,
 			);
-			name = "Supporting Files";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		52740A651CF70D5E00151035 = {
 			isa = PBXGroup;
 			children = (
-				52740A8A1CF70D5E00151035 /* SwrveSDKTest */,
+				F66626CD22649E7D001AF2EB /* Universal Tests */,
+				F666261222608ABD001AF2EB /* SwrveSDKTests */,
+				F60B7F57225F3BA3009AFCCC /* SwrveSDKTVTests */,
 				52740A701CF70D5E00151035 /* Empty App */,
+				F60B7F41225F3BA1009AFCCC /* Empty App Tv */,
+				F66627062264A01A001AF2EB /* Helpers */,
 				52740A6F1CF70D5E00151035 /* Products */,
-				85C84471BD17A65C1477A826 /* Pods */,
-				F656776A5C335E6D23362EF4 /* Frameworks */,
+				745D2A2AAAF7309F87F71ED7 /* Pods */,
+				216292B63071DDD24190C43D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -152,6 +303,8 @@
 			children = (
 				52740A6E1CF70D5E00151035 /* SwrveSDKTest.app */,
 				52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */,
+				F60B7F40225F3BA1009AFCCC /* SwrveSDKTVTest.app */,
+				F60B7F54225F3BA3009AFCCC /* SwrveSDKTVTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,52 +334,157 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		52740A8A1CF70D5E00151035 /* SwrveSDKTest */ = {
+		745D2A2AAAF7309F87F71ED7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3A96C9472229397200C789A2 /* SwrveTestInit.m */,
-				3AADF51820FCDE87003AEEA1 /* SwrveTestNotificationManager.m */,
-				3AEB63D31F0405A900F0A270 /* SwrveTestHelper.h */,
-				3AEB63D41F0405A900F0A270 /* SwrveTestHelper.m */,
-				3AEB63D01F03ED2200F0A270 /* SwrveTestProfileManager.m */,
-				52740A971CF72BE000151035 /* SwrveTestTriggersAndConditions.m */,
-				239EB1624ABB3CB8B8AD59EC /* SwrveTestMigrationsManager.m */,
-				F6D8F73A1F62B6CA0091F922 /* SwrveTestDeviceProperties.m */,
-				F64602DE207CCA3600804D75 /* SwrveTestLocalStorage.m */,
-				F661663321BFD85C00FDD22A /* SwrveTestEventQueueCallback.m */,
-				F661665921C16DC400FDD22A /* SwrveTestAuthPush.m */,
-				F6D08F322151401A006A5A1D /* TestPermissionsDelegate.h */,
-				F6D08F332151401A006A5A1D /* TestPermissionsDelegate.m */,
-				F6B5D7CD20A99BB1007E97B6 /* SwrveMockNSURLProtocol.h */,
-				F6B5D7CE20A99BB1007E97B6 /* SwrveMockNSURLProtocol.m */,
-				1B157E5A21C15BEE003983E8 /* SwrveTestPushSDK.m */,
-				F62BB62C21FB4FBD00E53ED4 /* SwrveTestCustomPayloads.m */,
-				F6EE0758222FCCE000EA8DD5 /* SwrveTestSignatureProtectedFile.m */,
-				F66C3296222FEC8A0080A94E /* SwrveTestDeeplinkManager.m */,
-				523EE2211CF73C0400496FEA /* Supporting Files */,
+				2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */,
+				DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */,
+				B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */,
+				326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */,
+				7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */,
+				F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */,
+				2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */,
+				3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */,
 			);
-			name = SwrveSDKTest;
-			path = SwrveSDKTestTests;
+			path = Pods;
 			sourceTree = "<group>";
 		};
-		85C84471BD17A65C1477A826 /* Pods */ = {
+		F60B7F41225F3BA1009AFCCC /* Empty App Tv */ = {
 			isa = PBXGroup;
 			children = (
-				3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */,
-				16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */,
-				E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */,
-				7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */,
+				F60B7F42225F3BA1009AFCCC /* AppDelegate.h */,
+				F60B7F43225F3BA1009AFCCC /* AppDelegate.m */,
+				F60B7F45225F3BA1009AFCCC /* ViewController.h */,
+				F60B7F46225F3BA1009AFCCC /* ViewController.m */,
+				F60B7F48225F3BA1009AFCCC /* Main.storyboard */,
+				F60B7F4B225F3BA3009AFCCC /* Assets.xcassets */,
+				F60B7F4D225F3BA3009AFCCC /* Info.plist */,
+				F60B7F4E225F3BA3009AFCCC /* main.m */,
 			);
-			name = Pods;
+			path = "Empty App Tv";
 			sourceTree = "<group>";
 		};
-		F656776A5C335E6D23362EF4 /* Frameworks */ = {
+		F60B7F57225F3BA3009AFCCC /* SwrveSDKTVTests */ = {
 			isa = PBXGroup;
 			children = (
-				981CFF8C97CA93719DD90919 /* libPods-SwrveSDKTest.a */,
-				81985ADCFF7166013A331C6C /* libPods-SwrveSDKTestTests.a */,
+				F60B7F96225F4227009AFCCC /* tvOS Only */,
+				F60B7F87225F3C32009AFCCC /* Supporting Files */,
 			);
-			name = Frameworks;
+			path = SwrveSDKTVTests;
+			sourceTree = "<group>";
+		};
+		F60B7F87225F3C32009AFCCC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F60B7F5A225F3BA3009AFCCC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F60B7F96225F4227009AFCCC /* tvOS Only */ = {
+			isa = PBXGroup;
+			children = (
+				3AA08416226A251600ECA032 /* SwrveTestInitTV.m */,
+				F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */,
+				F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */,
+			);
+			path = "tvOS Only";
+			sourceTree = "<group>";
+		};
+		F666261222608ABD001AF2EB /* SwrveSDKTests */ = {
+			isa = PBXGroup;
+			children = (
+				F66626CF22649F0D001AF2EB /* ios Only */,
+				F6662657226093F6001AF2EB /* Supporting Files */,
+			);
+			path = SwrveSDKTests;
+			sourceTree = "<group>";
+		};
+		F6662657226093F6001AF2EB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F666266B22609425001AF2EB /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F66626CD22649E7D001AF2EB /* Universal Tests */ = {
+			isa = PBXGroup;
+			children = (
+				3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */,
+				3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */,
+				3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */,
+				F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */,
+				F66626EE22649FA3001AF2EB /* SwrveTestInit.m */,
+				F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */,
+				F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */,
+				F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */,
+				F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */,
+				F66626F022649FA3001AF2EB /* SwrveTestTriggersAndConditions.m */,
+				F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */,
+				F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */,
+				F6411204227742B900399A66 /* SwrveTestMessageController.m */,
+			);
+			path = "Universal Tests";
+			sourceTree = "<group>";
+		};
+		F66626CF22649F0D001AF2EB /* ios Only */ = {
+			isa = PBXGroup;
+			children = (
+				3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */,
+				F66174C4226F637000E23980 /* SwrveTestCampaignMultipleConditions.m */,
+				F66626E822649F6A001AF2EB /* SwrveTestAuthPush.m */,
+				F66626E122649F51001AF2EB /* SwrveTestDeeplinkManager.m */,
+				F66626DC22649F50001AF2EB /* SwrveTestMigrationsManager.m */,
+				F66626DF22649F51001AF2EB /* SwrveTestNotificationManager.m */,
+				F66626DD22649F51001AF2EB /* SwrveTestPushSDK.m */,
+				F66626DE22649F51001AF2EB /* SwrveTestSignatureProtectedFile.m */,
+				F66626E022649F51001AF2EB /* SwrveTestSilentPush.m */,
+				F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */,
+			);
+			path = "ios Only";
+			sourceTree = "<group>";
+		};
+		F66627062264A01A001AF2EB /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				F66627082264A065001AF2EB /* SwrveTestHelper.h */,
+				F666270A2264A065001AF2EB /* SwrveTestHelper.m */,
+				F64112352277445200399A66 /* TestShowMessageDelegateWithViewController.h */,
+				F64112342277445200399A66 /* TestShowMessageDelegateWithViewController.m */,
+				F66627282264A2D7001AF2EB /* TestPermissionsDelegate.h */,
+				F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */,
+				F666270F2264A065001AF2EB /* SwrveMockNSURLProtocol.h */,
+				F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */,
+				F641123A2277472900399A66 /* campaigns.json */,
+				3AA0842A2271AE9900ECA032 /* abTestDetails.json */,
+				F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */,
+				F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */,
+				F66627092264A065001AF2EB /* campaignsNone.json */,
+				F666270C2264A065001AF2EB /* external_campaigns.json */,
+				F66174CF226F6C2F00E23980 /* campaignsMultipleTriggerConditions.json */,
+				F6411217227742E300399A66 /* campaignRoundRobin.json */,
+				F641120F227742E200399A66 /* campaignsAARRGGBB.json */,
+				F641120C227742E200399A66 /* campaignsAutoshow.json */,
+				F641120A227742E200399A66 /* campaignsBothOrientations.json */,
+				F6411214227742E200399A66 /* campaignsDelay.json */,
+				F6411213227742E200399A66 /* campaignSessionStart.json */,
+				F6411215227742E200399A66 /* campaignsFuture.json */,
+				F6411211227742E200399A66 /* campaignsImpressions.json */,
+				F641120B227742E200399A66 /* campaignsMessageCenter.json */,
+				F641120E227742E200399A66 /* campaignsMessagePriority.json */,
+				F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */,
+				F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */,
+				F6411212227742E200399A66 /* conversationCampaignsPriority.json */,
+				F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */,
+				F641123F2277482300399A66 /* campaignsQAReset.json */,
+				F641123D2277482300399A66 /* campaignsQAUser.json */,
+				F641123E2277482300399A66 /* campaignsRandom.json */,
+				F6411246227748AD00399A66 /* campaignsRRGGBB.json */,
+				F64112492277490200399A66 /* campaignsPortraitOnly.json */,
+				F66627262264A110001AF2EB /* logo.gif */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,11 +494,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A901CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTest" */;
 			buildPhases = (
-				573379B8969F25F74BDE5F7E /* [CP] Check Pods Manifest.lock */,
+				6714E90F8B9DCC308186CE35 /* [CP] Check Pods Manifest.lock */,
 				52740A6A1CF70D5E00151035 /* Sources */,
 				52740A6B1CF70D5E00151035 /* Frameworks */,
 				52740A6C1CF70D5E00151035 /* Resources */,
-				A6D89C1C0A34190EEEEAC0C3 /* [CP] Copy Pods Resources */,
+				F006C4A0BEB64836AD2E75A4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -255,7 +513,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A931CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTestTests" */;
 			buildPhases = (
-				7D959DFAC472D223F37786AF /* [CP] Check Pods Manifest.lock */,
+				420011D9A128CCEFB2DDDAF6 /* [CP] Check Pods Manifest.lock */,
 				52740A831CF70D5E00151035 /* Sources */,
 				52740A841CF70D5E00151035 /* Frameworks */,
 				52740A851CF70D5E00151035 /* Resources */,
@@ -268,6 +526,44 @@
 			name = SwrveSDKTestTests;
 			productName = SwrveSDKTestTests;
 			productReference = 52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F60B7F3F225F3BA1009AFCCC /* SwrveSDKTVTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F60B7F5F225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTest" */;
+			buildPhases = (
+				4A58B5F4688783D17AD4BD69 /* [CP] Check Pods Manifest.lock */,
+				F60B7F3C225F3BA1009AFCCC /* Sources */,
+				F60B7F3D225F3BA1009AFCCC /* Frameworks */,
+				F60B7F3E225F3BA1009AFCCC /* Resources */,
+				E9E0B109CF5009F903A939C9 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwrveSDKTVTest;
+			productName = SwrveSDKTVTest;
+			productReference = F60B7F40225F3BA1009AFCCC /* SwrveSDKTVTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F60B7F53225F3BA3009AFCCC /* SwrveSDKTVTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F60B7F60225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTests" */;
+			buildPhases = (
+				B3143C14D109E7B4374963DF /* [CP] Check Pods Manifest.lock */,
+				F60B7F50225F3BA3009AFCCC /* Sources */,
+				F60B7F51225F3BA3009AFCCC /* Frameworks */,
+				F60B7F52225F3BA3009AFCCC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F60B7F56225F3BA3009AFCCC /* PBXTargetDependency */,
+			);
+			name = SwrveSDKTVTests;
+			productName = SwrveSDKTVTestTests;
+			productReference = F60B7F54225F3BA3009AFCCC /* SwrveSDKTVTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -287,6 +583,17 @@
 						CreatedOnToolsVersion = 7.3.1;
 						TestTargetID = 52740A6D1CF70D5E00151035;
 					};
+					F60B7F3F225F3BA1009AFCCC = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+					};
+					F60B7F53225F3BA3009AFCCC = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = 38YP67HQGE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = F60B7F3F225F3BA1009AFCCC;
+					};
 				};
 			};
 			buildConfigurationList = 52740A691CF70D5E00151035 /* Build configuration list for PBXProject "SwrveSDKTest" */;
@@ -304,6 +611,8 @@
 			targets = (
 				52740A6D1CF70D5E00151035 /* SwrveSDKTest */,
 				52740A861CF70D5E00151035 /* SwrveSDKTestTests */,
+				F60B7F3F225F3BA1009AFCCC /* SwrveSDKTVTest */,
+				F60B7F53225F3BA3009AFCCC /* SwrveSDKTVTests */,
 			);
 		};
 /* End PBXProject section */
@@ -313,15 +622,36 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F67948492237094600A85546 /* ad_journey_campaign_message.json in Resources */,
-				F602D81E2241521B00BEF65D /* external_campaigns.json in Resources */,
+				F6411220227742E300399A66 /* campaignsMessagePriority.json in Resources */,
+				F6411232227742E300399A66 /* campaignRoundRobin.json in Resources */,
+				F641124A2277490200399A66 /* campaignsPortraitOnly.json in Resources */,
+				F641123B2277472900399A66 /* campaigns.json in Resources */,
+				3AA0842B2271AE9900ECA032 /* abTestDetails.json in Resources */,
+				F66627252264A0D9001AF2EB /* external_campaigns.json in Resources */,
+				F641122C227742E300399A66 /* campaignsDelay.json in Resources */,
 				52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */,
-				F6F386AA20B4294B006F6149 /* campaignsNone.json in Resources */,
-				F6B5D7D420A9A864007E97B6 /* logo.gif in Resources */,
-				F6D1A9D120B422FC0042EDFE /* campaigns.json in Resources */,
+				F6411247227748AD00399A66 /* campaignsRRGGBB.json in Resources */,
+				F6411226227742E300399A66 /* campaignsImpressions.json in Resources */,
+				F6411224227742E300399A66 /* conversationCampaignsPriorityReverse.json in Resources */,
+				F666272C2264A3BF001AF2EB /* logo.gif in Resources */,
+				F641121E227742E300399A66 /* campaignsMessagePriorityReverse.json in Resources */,
+				F666272F2264A4CE001AF2EB /* campaignsNone.json in Resources */,
 				52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */,
-				F679484A2237094600A85546 /* ad_journey_campaign_conversation.json in Resources */,
+				F66627242264A0D3001AF2EB /* ad_journey_campaign_message.json in Resources */,
+				F6411222227742E300399A66 /* campaignsAARRGGBB.json in Resources */,
 				52740A7C1CF70D5E00151035 /* Main.storyboard in Resources */,
+				F641121A227742E300399A66 /* campaignsMessageCenter.json in Resources */,
+				F6411218227742E300399A66 /* campaignsBothOrientations.json in Resources */,
+				F641122E227742E300399A66 /* campaignsFuture.json in Resources */,
+				F641121C227742E300399A66 /* campaignsAutoshow.json in Resources */,
+				F66627222264A0CD001AF2EB /* ad_journey_campaign_conversation.json in Resources */,
+				F64112412277482300399A66 /* campaignsRandom.json in Resources */,
+				F6411228227742E300399A66 /* conversationCampaignsPriority.json in Resources */,
+				F66174D0226F6C3600E23980 /* campaignsMultipleTriggerConditions.json in Resources */,
+				F641122A227742E300399A66 /* campaignSessionStart.json in Resources */,
+				F64112422277482300399A66 /* campaignsQAReset.json in Resources */,
+				F64112402277482300399A66 /* campaignsQAUser.json in Resources */,
+				F6411230227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,46 +659,64 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F679484C2237095900A85546 /* ad_journey_campaign_message.json in Resources */,
-				F6B5D7D520A9A869007E97B6 /* logo.gif in Resources */,
-				F6F386AB20B4294B006F6149 /* campaignsNone.json in Resources */,
-				F679484B2237095600A85546 /* ad_journey_campaign_conversation.json in Resources */,
-				F602D81F2241523600BEF65D /* external_campaigns.json in Resources */,
-				F6D1A9D220B4230B0042EDFE /* campaigns.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F3E225F3BA1009AFCCC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F641122D227742E300399A66 /* campaignsDelay.json in Resources */,
+				F6411231227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */,
+				F66627212264A07D001AF2EB /* campaignsNone.json in Resources */,
+				F6411229227742E300399A66 /* conversationCampaignsPriority.json in Resources */,
+				F6411223227742E300399A66 /* campaignsAARRGGBB.json in Resources */,
+				F60B7F4C225F3BA3009AFCCC /* Assets.xcassets in Resources */,
+				F641123C2277473000399A66 /* campaigns.json in Resources */,
+				F6411225227742E300399A66 /* conversationCampaignsPriorityReverse.json in Resources */,
+				F64112442277482900399A66 /* campaignsQAUser.json in Resources */,
+				F641122B227742E300399A66 /* campaignSessionStart.json in Resources */,
+				F6411227227742E300399A66 /* campaignsImpressions.json in Resources */,
+				F641121F227742E300399A66 /* campaignsMessagePriorityReverse.json in Resources */,
+				F641121B227742E300399A66 /* campaignsMessageCenter.json in Resources */,
+				F641122F227742E300399A66 /* campaignsFuture.json in Resources */,
+				F64112432277482900399A66 /* campaignsQAReset.json in Resources */,
+				F60B7F4A225F3BA1009AFCCC /* Main.storyboard in Resources */,
+				F64112452277482900399A66 /* campaignsRandom.json in Resources */,
+				F6411248227748AF00399A66 /* campaignsRRGGBB.json in Resources */,
+				F6411233227742E300399A66 /* campaignRoundRobin.json in Resources */,
+				3AA084322271BC1000ECA032 /* abTestDetails.json in Resources */,
+				F641124B2277490200399A66 /* campaignsPortraitOnly.json in Resources */,
+				F6411221227742E300399A66 /* campaignsMessagePriority.json in Resources */,
+				F641121D227742E300399A66 /* campaignsAutoshow.json in Resources */,
+				F6411219227742E300399A66 /* campaignsBothOrientations.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F52225F3BA3009AFCCC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		573379B8969F25F74BDE5F7E /* [CP] Check Pods Manifest.lock */ = {
+		420011D9A128CCEFB2DDDAF6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTest-checkManifestLockResult.txt",
+			outputFileListPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7D959DFAC472D223F37786AF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTestTests-checkManifestLockResult.txt",
 			);
@@ -377,49 +725,94 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A6D89C1C0A34190EEEEAC0C3 /* [CP] Copy Pods Resources */ = {
+		4A58B5F4688783D17AD4BD69 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTVTest-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6714E90F8B9DCC308186CE35 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTest-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B3143C14D109E7B4374963DF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTVTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E9E0B109CF5009F903A939C9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset.meta",
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation-tvos.storyboard.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard.meta",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VERSION.meta",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation-tvos.storyboard",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist.meta",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
 				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
@@ -427,36 +820,69 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveAssets.xcassets.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png.meta",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation-tvos.storyboard.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboard.meta",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VERSION.meta",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation-tvos.storyboardc",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist.meta",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F006C4A0BEB64836AD2E75A4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
+				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
@@ -474,7 +900,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6D08F342151401A006A5A1D /* TestPermissionsDelegate.m in Sources */,
 				52740A791CF70D5E00151035 /* ViewController.m in Sources */,
 				52740A761CF70D5E00151035 /* AppDelegate.m in Sources */,
 				52740A731CF70D5E00151035 /* main.m in Sources */,
@@ -485,23 +910,70 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6D8F73B1F62B6CA0091F922 /* SwrveTestDeviceProperties.m in Sources */,
-				F6EE075A222FCFFB00EA8DD5 /* SwrveTestSignatureProtectedFile.m in Sources */,
-				3AADF51A20FCE000003AEEA1 /* SwrveTestNotificationManager.m in Sources */,
-				F62BB62D21FB4FBD00E53ED4 /* SwrveTestCustomPayloads.m in Sources */,
-				1B157E5B21C15BEE003983E8 /* SwrveTestPushSDK.m in Sources */,
-				1B9FEE37215D1E01001248D5 /* SwrveMockNSURLProtocol.m in Sources */,
-				F661665A21C16DC400FDD22A /* SwrveTestAuthPush.m in Sources */,
-				1B9FEE36215D1DF7001248D5 /* SwrveTestHelper.m in Sources */,
-				3AEB63D21F03F37000F0A270 /* SwrveTestProfileManager.m in Sources */,
-				52740A981CF72BE000151035 /* SwrveTestTriggersAndConditions.m in Sources */,
-				3A96C949222939C700C789A2 /* SwrveTestInit.m in Sources */,
-				1BF8DC6C21AEE3660074D8B6 /* (null) in Sources */,
-				1BF8DC6C21AEE3660074D8B6 /* BuildFile in Sources */,
-				F64602E0207CCA6F00804D75 /* SwrveTestLocalStorage.m in Sources */,
-				F661663421BFD85C00FDD22A /* SwrveTestEventQueueCallback.m in Sources */,
-				F66C3297222FEC8A0080A94E /* SwrveTestDeeplinkManager.m in Sources */,
-				239EBB00CAC62D356BF14DAD /* SwrveTestMigrationsManager.m in Sources */,
+				F66626F122649FA3001AF2EB /* SwrveTestProfileManager.m in Sources */,
+				F66626FB22649FA3001AF2EB /* SwrveTestDeviceProperties.m in Sources */,
+				F66626FF22649FA9001AF2EB /* SwrveTestAuthPush.m in Sources */,
+				3AA0841A226F25C400ECA032 /* SwrveTestInitIOS.m in Sources */,
+				3ABBDCCD22771C1600A69CDE /* SwrveTestUserResources.m in Sources */,
+				F66626F922649FA3001AF2EB /* SwrveTestInit.m in Sources */,
+				F66626FD22649FA3001AF2EB /* SwrveTestTriggersAndConditions.m in Sources */,
+				F66174CA226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
+				F666270522649FA9001AF2EB /* SwrveTestSilentPush.m in Sources */,
+				F666270122649FA9001AF2EB /* SwrveTestMigrationsManager.m in Sources */,
+				F66627142264A065001AF2EB /* SwrveTestHelper.m in Sources */,
+				F66626F522649FA3001AF2EB /* SwrveTestCustomPayloads.m in Sources */,
+				F66626F722649FA3001AF2EB /* SwrveTestLocalStorage.m in Sources */,
+				F64112382277445D00399A66 /* TestShowMessageDelegateWithViewController.m in Sources */,
+				3AA084302271B54300ECA032 /* SwrveTestABTestDetails.m in Sources */,
+				F66174C6226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */,
+				3AA0841D2270BFC500ECA032 /* SwrveTestQA.m in Sources */,
+				F6411206227742BA00399A66 /* SwrveTestMessageController.m in Sources */,
+				F66627162264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */,
+				F66626F322649FA3001AF2EB /* SwrveTestEventQueueCallback.m in Sources */,
+				F66174C8226F637000E23980 /* SwrveTestCampaignMultipleConditions.m in Sources */,
+				F666270422649FA9001AF2EB /* SwrveTestSignatureProtectedFile.m in Sources */,
+				F66627312264A661001AF2EB /* TestPermissionsDelegate.m in Sources */,
+				F666270222649FA9001AF2EB /* SwrveTestNotificationManager.m in Sources */,
+				F666270322649FA9001AF2EB /* SwrveTestPushSDK.m in Sources */,
+				F666270022649FA9001AF2EB /* SwrveTestDeeplinkManager.m in Sources */,
+				F6411208227742BA00399A66 /* SwrveTestMessageCenterAPI.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F3C225F3BA1009AFCCC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F60B7F47225F3BA1009AFCCC /* ViewController.m in Sources */,
+				F60B7F4F225F3BA3009AFCCC /* main.m in Sources */,
+				F60B7F44225F3BA1009AFCCC /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F60B7F50225F3BA3009AFCCC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6411207227742BA00399A66 /* SwrveTestMessageController.m in Sources */,
+				F64112392277445D00399A66 /* TestShowMessageDelegateWithViewController.m in Sources */,
+				F66627172264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */,
+				F60B7F95225F412A009AFCCC /* SwrveTVTestDeviceProperties.m in Sources */,
+				3ABBDCCE22771C1700A69CDE /* SwrveTestUserResources.m in Sources */,
+				F66626F822649FA3001AF2EB /* SwrveTestLocalStorage.m in Sources */,
+				3AA084312271B54400ECA032 /* SwrveTestABTestDetails.m in Sources */,
+				F66627322264A663001AF2EB /* TestPermissionsDelegate.m in Sources */,
+				F66174C7226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */,
+				F66626FA22649FA3001AF2EB /* SwrveTestInit.m in Sources */,
+				F66626F622649FA3001AF2EB /* SwrveTestCustomPayloads.m in Sources */,
+				3AA0841E2270BFC600ECA032 /* SwrveTestQA.m in Sources */,
+				F66626F422649FA3001AF2EB /* SwrveTestEventQueueCallback.m in Sources */,
+				F66626F222649FA3001AF2EB /* SwrveTestProfileManager.m in Sources */,
+				F66627152264A065001AF2EB /* SwrveTestHelper.m in Sources */,
+				F6411209227742BA00399A66 /* SwrveTestMessageCenterAPI.m in Sources */,
+				3AA08417226A251600ECA032 /* SwrveTestInitTV.m in Sources */,
+				F66626FE22649FA3001AF2EB /* SwrveTestTriggersAndConditions.m in Sources */,
+				F65F6C43225F94A0001DAA99 /* SwrveTVTestMigrationManager.m in Sources */,
+				F66174CB226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,6 +984,11 @@
 			isa = PBXTargetDependency;
 			target = 52740A6D1CF70D5E00151035 /* SwrveSDKTest */;
 			targetProxy = 52740A881CF70D5E00151035 /* PBXContainerItemProxy */;
+		};
+		F60B7F56225F3BA3009AFCCC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F60B7F3F225F3BA1009AFCCC /* SwrveSDKTVTest */;
+			targetProxy = F60B7F55225F3BA3009AFCCC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -530,6 +1007,14 @@
 				52740A801CF70D5E00151035 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		F60B7F48225F3BA1009AFCCC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F60B7F49225F3BA1009AFCCC /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -625,6 +1110,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -641,41 +1127,53 @@
 		};
 		52740A911CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E446B54FBA35E9AAA9DBF25D /* Pods-SwrveSDKTest.debug.xcconfig */;
+			baseConfigurationReference = 7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		52740A921CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3087E6CB08E50EB286B2A844 /* Pods-SwrveSDKTest.release.xcconfig */;
+			baseConfigurationReference = F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
 				INFOPLIST_FILE = SwrveSDKTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
 		52740A941CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7CC0AA4B8736AAA7DBDC0E01 /* Pods-SwrveSDKTestTests.debug.xcconfig */;
+			baseConfigurationReference = 2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = SwrveSDKTestTests/Info.plist;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
+				INFOPLIST_FILE = SwrveSDKTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTestTests;
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTest.app/SwrveSDKTest";
 			};
@@ -683,15 +1181,145 @@
 		};
 		52740A951CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 16EBC4D8C71C8A8650CB2423 /* Pods-SwrveSDKTestTests.release.xcconfig */;
+			baseConfigurationReference = 3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = SwrveSDKTestTests/Info.plist;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
+				INFOPLIST_FILE = SwrveSDKTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTestTests;
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTest.app/SwrveSDKTest";
+			};
+			name = Release;
+		};
+		F60B7F5B225F3BA3009AFCCC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					SWRVE_NO_PUSH,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/Empty App Tv/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKTVTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		F60B7F5C225F3BA3009AFCCC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"$(inherited)",
+					SWRVE_NO_PUSH,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/Empty App Tv/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKTVTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		F60B7F5D225F3BA3009AFCCC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					SWRVE_IDFA,
+					SWRVE_LOG_IDFV,
+				);
+				INFOPLIST_FILE = SwrveSDKTVTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTVTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTVTest.app/SwrveSDKTVTest";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		F60B7F5E225F3BA3009AFCCC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 38YP67HQGE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					SWRVE_LOG_IDFV,
+					SWRVE_LOG_IDFA,
+				);
+				INFOPLIST_FILE = SwrveSDKTVTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTVTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTVTest.app/SwrveSDKTVTest";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -721,6 +1349,24 @@
 			buildConfigurations = (
 				52740A941CF70D5E00151035 /* Debug */,
 				52740A951CF70D5E00151035 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F60B7F5F225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F60B7F5B225F3BA3009AFCCC /* Debug */,
+				F60B7F5C225F3BA3009AFCCC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F60B7F60225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F60B7F5D225F3BA3009AFCCC /* Debug */,
+				F60B7F5E225F3BA3009AFCCC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

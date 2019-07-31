@@ -29,9 +29,12 @@
     [SwrveTestHelper setUp];
 
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
-
+    
+#if TARGET_OS_IOS /** exclude tvOS **/
     id classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
+#endif
+
 }
 
 - (void)tearDown {

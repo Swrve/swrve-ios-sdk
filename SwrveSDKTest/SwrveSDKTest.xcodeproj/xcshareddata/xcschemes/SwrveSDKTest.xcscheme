@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "86066578BA8C78E1FFDB8CEF2049F607"
+               BlueprintIdentifier = "B2CC8A1D9434166BE22EF1A7D85657E2"
                BuildableName = "libPods-SwrveSDKTest.a"
                BlueprintName = "Pods-SwrveSDKTest"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CCBB05C7683D2E60BA26113E87DEA996"
+               BlueprintIdentifier = "AB018B828D2CF1EBFC8F0EF8ED273003"
                BuildableName = "libPods-SwrveSDKTestTests.a"
                BlueprintName = "Pods-SwrveSDKTestTests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

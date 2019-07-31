@@ -206,7 +206,6 @@
     NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
     NSString *migratedFileName = [userId stringByAppendingString:fileName];
     NSString *migratedFilePath = [swrveAppSupportDir stringByAppendingPathComponent:migratedFileName];
-
     XCTAssertTrue([fileManager fileExistsAtPath:migratedFilePath] == YES);
     NSString *contents = [[NSString alloc] initWithContentsOfFile:migratedFilePath encoding:NSUTF8StringEncoding error:nil];
     XCTAssertTrue([contents isEqualToString:@"123456"], @"The contents of the migrated file are not the same after migration.");

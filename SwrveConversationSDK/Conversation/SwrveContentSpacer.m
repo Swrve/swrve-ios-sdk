@@ -3,7 +3,7 @@
 #import "SwrveConversationStyler.h"
 
 @interface SwrveContentSpacer () {
-    NSString *_height;
+    float _height;
 }
 @end
 
@@ -13,14 +13,19 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentSpacer andDictionary:dict];
-    _height = [dict objectForKey:@"height"];
+    id rawValue = [dict objectForKey:@"height"];
+    if (rawValue) {
+        _height = [rawValue floatValue];
+    } else {
+        _height = 0;
+    }
     return self;
 }
 
 -(void) loadViewWithContainerView:(UIView*)containerView {
     // Height is defined as 'pixels' so we need to transform it to the point space
     float screenScale = (float)[[UIScreen mainScreen] scale];
-    float spacer_height = (_height) ? ([_height floatValue] / screenScale) : 0.0f;
+    float spacer_height = _height / screenScale;
     _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, containerView.frame.size.width, spacer_height)];
     [SwrveConversationStyler styleView:_view withStyle:self.style];
     // Notify that the view is ready to be displayed

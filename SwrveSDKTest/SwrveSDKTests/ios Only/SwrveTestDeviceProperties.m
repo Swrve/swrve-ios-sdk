@@ -45,22 +45,8 @@
 }
 
 - (int)devicePropertyCount {
-
-    //  initial install property count
-    int propertyCount = 13;
-
-    // increase depending on what macros have been defined
-#if defined(SWRVE_LOG_IDFA)
-    propertyCount++;
-#endif
-
-#if defined(SWRVE_LOG_IDFA)
-    propertyCount++;
-#endif
-
-    return propertyCount;
+    return 15;
 }
-
 
 - (void)testDevicePropertiesNil {
 
@@ -90,13 +76,8 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
 
-#if defined(SWRVE_LOG_IDFA)
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
-#endif
-
-#if defined(SWRVE_LOG_IDFV)
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
-#endif
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {

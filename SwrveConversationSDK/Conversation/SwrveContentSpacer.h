@@ -2,7 +2,7 @@
 
 @interface SwrveContentSpacer : SwrveContentItem
 
-@property (readonly, atomic, strong) NSString *height;
+@property (readonly, nonatomic) float height;
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict;
 

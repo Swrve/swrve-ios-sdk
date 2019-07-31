@@ -222,11 +222,11 @@
         [self.assetsManager setCdnImages:cdnImages];
         NSString *cdnFonts = [cdnPaths objectForKey:@"message_fonts"];
         [self.assetsManager setCdnFonts:cdnFonts];
-        DebugLog(@"CDN URL images:%@ fonts:%@", cdnImages, cdnFonts);
+        DebugLog(@"CDN URL images: %@ fonts:%@", cdnImages, cdnFonts);
     } else {
         NSString *cdnRoot = [campaignJson objectForKey:@"cdn_root"];
         [self.assetsManager setCdnImages:cdnRoot];
-        DebugLog(@"CDN URL %@", cdnRoot);
+        DebugLog(@"CDN URL: %@", cdnRoot);
     }
     
     // Version check

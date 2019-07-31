@@ -131,5 +131,4 @@
     XCTAssert([trigger isValidTrigger], @"This should be a valid Trigger");
 }
 
-
 @end

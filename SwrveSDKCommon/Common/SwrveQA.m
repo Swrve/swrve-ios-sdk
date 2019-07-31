@@ -2,7 +2,6 @@
 #import "SwrveCommon.h"
 #import <sys/time.h>
 #import "SwrveLocalStorage.h"
-#import "SwrveSignatureProtectedFile.h"
 #import "SwrveUser.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -29,6 +28,7 @@ static NSString *const LOG_DETAILS = @"log_details";
 #pragma mark Properties
 
 @synthesize isQALogging = _isQALogging;
+@synthesize resetDeviceState = _resetDeviceState;
 @synthesize apiKey = _apiKey;
 @synthesize appID = _appID;
 @synthesize userID = _userID;
@@ -59,6 +59,7 @@ static dispatch_once_t onceToken;
 - (void)updateQAUser:(NSDictionary *)jsonQa {
 
     self.isQALogging = [[jsonQa objectForKey:@"logging"] boolValue];
+    self.resetDeviceState = [[jsonQa objectForKey:@"reset_device_state"] boolValue];
     [SwrveLocalStorage saveQaUser:jsonQa];
     self.apiKey = [SwrveCommon sharedInstance].apiKey;
     self.baseURL = [SwrveCommon sharedInstance].eventsServer;

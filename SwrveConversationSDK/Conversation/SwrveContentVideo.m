@@ -6,7 +6,7 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface SwrveContentVideo () {
-    NSString *_height;
+    float _height;
     UIWebView *webview;
     UIView *_containerView;
     BOOL preventNavigation;
@@ -22,8 +22,13 @@
 
 -(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict {
     self = [super initWithTag:tag type:kSwrveContentTypeVideo andDictionary:dict];
-    _height = [dict objectForKey:@"height"];
-    
+    id rawHeight = [dict objectForKey:@"height"];
+    if (rawHeight) {
+        _height = [rawHeight floatValue];
+    } else {
+        _height = 180.0;
+    }
+
     // video loading fullscreen from uiwebview iframe creates a new uiwindow, we need to set its windowlevel
     // to the same as the main conversation uiwindow level to ensure it appears above it.
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -64,8 +69,7 @@
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     // Create _view
-    CGFloat vid_height = (_height) ? [_height floatValue] : 180.0;
-    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, vid_height)];
+    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, _height)];
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
     webview.opaque = NO;

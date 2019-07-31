@@ -347,12 +347,9 @@ const static int DEFAULT_MIN_DELAY           = 55;
 
     if (error) {
         DebugLog(@"Could not serialize campaign states.\nError: %@\njson: %@", error, newStates);
-    } else if(data)
-    {
+    } else if(data && self.campaignsStateFilePath.lastPathComponent != nil) {
         [[NSUserDefaults standardUserDefaults] setValue:data forKey:self.campaignsStateFilePath.lastPathComponent];
-    }
-    else
-    {
+    } else {
         DebugLog(@"Error saving campaigns state: %@ writing to %@", error, self.campaignsStateFilePath);
     }
 }
@@ -610,11 +607,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         [assetsManager setCdnImages:cdnImages];
         NSString *cdnFonts = [cdnPaths objectForKey:@"message_fonts"];
         [assetsManager setCdnFonts:cdnFonts];
-        DebugLog(@"CDN URL images:%@ fonts:%@", cdnImages, cdnFonts);
+        DebugLog(@"CDN URL images: %@ fonts:%@", cdnImages, cdnFonts);
     } else {
         NSString *cdnRoot = [campaignJson objectForKey:@"cdn_root"];
         [assetsManager setCdnImages:cdnRoot];
-        DebugLog(@"CDN URL %@", cdnRoot);
+        DebugLog(@"CDN URL: %@", cdnRoot);
     }
 }
 
@@ -1130,14 +1127,14 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void) cleanupConversationUI {
-    if(self.swrveConversationItemViewController != nil){
+    if (self.swrveConversationItemViewController != nil) {
         [self.swrveConversationItemViewController dismiss];
     }
 }
 
 - (void) conversationClosed {
     if (self.conversationWindow != nil) {
-        if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
+        if ([self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
             [self.showMessageDelegate messageWillBeHidden:self.conversationWindow.rootViewController];
         }
 

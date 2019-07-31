@@ -310,7 +310,7 @@
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
             }
             
-            if (![[UIApplication sharedApplication] canOpenURL:target]) {
+            if (target == nil || ![[UIApplication sharedApplication] canOpenURL:target]) {
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
