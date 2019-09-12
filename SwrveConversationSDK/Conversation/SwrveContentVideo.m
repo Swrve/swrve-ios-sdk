@@ -1,13 +1,12 @@
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
-#import "UIWebView+YouTubeVimeo.h"
 #import "SwrveCommon.h"
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface SwrveContentVideo () {
     float _height;
-    UIWebView *webview;
+    WKWebView *webview;
     UIView *_containerView;
     BOOL preventNavigation;
     BOOL isNewUIWindowFromWebViewClick;
@@ -29,7 +28,7 @@
         _height = 180.0;
     }
 
-    // video loading fullscreen from uiwebview iframe creates a new uiwindow, we need to set its windowlevel
+    // video loading fullscreen from webview iframe creates a new uiwindow, we need to set its windowlevel
     // to the same as the main conversation uiwindow level to ensure it appears above it.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(windowDidBecomeActive:)
@@ -40,16 +39,17 @@
 }
 
 - (void)windowDidBecomeActive:(NSNotification *)notification {
-    // we can assume within the context of this conversation uiwindow that the uiwindow becoming active is from the video tap in the uiwebview
+    // we can assume within the context of this conversation uiwindow that the uiwindow becoming active is from the video tap in the webview
     if (isNewUIWindowFromWebViewClick) {
         UIWindow *window = notification.object;
         window.windowLevel = UIWindowLevelAlert + 1;
     }
 }
 
--(void) stop {
+- (void)stop {
     isNewUIWindowFromWebViewClick = NO;
-    [webview setDelegate:nil];
+    [webview setNavigationDelegate:nil];
+    [webview setUIDelegate:nil];
     // Stop the running video - this will happen on a page change.
     [webview loadHTMLString:@"about:blank" baseURL:nil];
 }
@@ -61,7 +61,7 @@
     }
 }
 
--(void) loadViewWithContainerView:(UIView*)containerView {
+- (void)loadViewWithContainerView:(UIView *)containerView {
     _containerView = containerView;
     
     // Enable audio
@@ -69,18 +69,23 @@
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     // Create _view
-    _view = webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, _height)];
+    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
+    [wkConfig setAllowsInlineMediaPlayback:YES];
+    
+    _view = webview = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 1, _height) configuration:wkConfig];
+
     [self sizeTheWebView];
     webview.backgroundColor = [UIColor clearColor];
     webview.opaque = NO;
-    webview.delegate = self;
+    webview.UIDelegate = self;
+    webview.navigationDelegate = self;
     webview.userInteractionEnabled = YES;
     webview.scrollView.scrollEnabled = NO;
     
     NSString *rawValue = [self.value stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
 
     preventNavigation = NO;
-    [webview loadYouTubeOrVimeoVideo:rawValue];
+    [self loadYouTubeVideo:rawValue];
     
     UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
     gesRecognizer.delegate = self;
@@ -89,6 +94,20 @@
     // Notify that the view is ready to be displayed
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwrveNotificationViewReady object:nil];
 }
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+#pragma unused(webView, navigation)
+    preventNavigation = YES;
+    CGRect frame = webview.frame;
+    frame.size.width = _containerView.frame.size.width;
+    webview.frame = frame;
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+#pragma unused(webView, navigation, error)
+}
+
+
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
 #pragma unused(gestureRecognizer, otherGestureRecognizer)
@@ -101,7 +120,7 @@
     isNewUIWindowFromWebViewClick = YES;
 }
 
-- (void) sizeTheWebView {
+- (void)sizeTheWebView {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // Make the webview full width on iPad
         webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
@@ -122,64 +141,96 @@
 
 // Respond to device orientation changes by resizing the width of the view
 // Subviews of this should be flexible using AutoResizing masks
--(void) respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
+- (void)respondToDeviceOrientationChange:(UIDeviceOrientation)orientation {
 #pragma unused (orientation)
     _view.frame = [self newFrameForOrientationChange];
     [self sizeTheWebView];
 }
 
-- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-#pragma unused(webView, request, navigationType)
-    NSURL* nsurl = [request URL];
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+#pragma unused (webView)
+    NSURLRequest *nsurl = navigationAction.request;
     
     // Check if the navigation is coming from a user clicking on a link
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
         if (@available(iOS 10.0, *)) {
-            [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+            [[UIApplication sharedApplication] openURL:[nsurl URL] options:@{} completionHandler:^(BOOL success) {
                 DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
             }];
         } else {
             DebugLog(@"Could not open url, not supported (should not reach this code)");
         }
-        return NO;
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
     
     // Check if the youtube link that is opening is the logo that redirects to the full website
     if (nsurl != nil) {
-        NSString* url = nsurl.absoluteString;
+        NSString *url = [[nsurl URL] absoluteString];
         if (@available(iOS 8.0, *)) {
             if ([url containsString:@"youtube.com/"] && ![url containsString:@"youtube.com/embed/"]) {
                 if (@available(iOS 10.0, *)) {
-                    [[UIApplication sharedApplication] openURL:nsurl options:@{} completionHandler:^(BOOL success) {
+                    [[UIApplication sharedApplication] openURL:[nsurl URL] options:@{} completionHandler:^(BOOL success) {
                         DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
                     }];
                 } else {
                     DebugLog(@"Could not open url, not supported (should not reach this code)");
                 }
-                return NO;
+                decisionHandler(WKNavigationActionPolicyCancel);
+                return;
+                
             }
-        } 
+        }
     }
     
-    return !preventNavigation;
+    NSInteger decision = (!preventNavigation) ?  WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel;
+    
+    decisionHandler(decision);
 }
 
-- (void)webViewDidFinishLoad:(UIWebView*)webView {
-#pragma unused(webView)
-    preventNavigation = YES;
-    CGRect frame = webview.frame;
-    frame.size.width = _containerView.frame.size.width;
-    webview.frame = frame;
-}
-
--(void)parentViewChangedSize:(CGSize)size {
+- (void)parentViewChangedSize:(CGSize)size {
     // Mantain full width
     _view.frame = CGRectMake(0, 0, size.width, _view.frame.size.height);
 }
 
+#pragma mark - video url processing and rendering
+
+- (NSString *)vimeoEmbed:(NSString *)url {
+    return url;
+}
+
+-(void)loadYouTubeVideo:(NSString*)videoUrl {
+    if ([videoUrl rangeOfString:@"vimeo"].length > 0) {
+        [self loadVideo:videoUrl];
+    } else if ([videoUrl rangeOfString:@"youtube"].length > 0) {
+        [self loadVideo:videoUrl];
+    } else {
+        // It's not video, nor is it youtube, so we are not sure what to do.
+        // The backend video URL conditioning should mean that we don't get here.
+    }
+}
+
+- (void)loadVideo:(NSString*)url {
+    webview.scrollView.bounces = NO;
+    webview.scrollView.scrollEnabled = NO;
+    NSString *html = [self embedVideoInHTML:url];
+    [webview loadHTMLString:html baseURL:nil];
+}
+
+- (NSString *)embedVideoInHTML:(NSString *)url {
+    NSString *htmlString = @"<html style=\"margin:0;\"><head><meta name=\"viewport\" content=\"initial-scale = 1.0, user-scalable = no\"/></head><body style=\"background:#000000;margin:0;\"><iframe width=\"100%%\" height=\"100%%\" src=\"%@\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
+    return [NSString stringWithFormat:htmlString, url];
+}
+
+#pragma mark - teardown
+
 - (void)dealloc {
-    if (webview.delegate == self) {
-        webview.delegate = nil; // Unassign self from being the delegate, in case we get deallocated before the webview!
+    if (webview.UIDelegate == self) {
+        [webview setUIDelegate: nil]; // Unassign self from being the delegate, in case we get deallocated before the webview!
+    }
+    
+    if (webview.navigationDelegate == self) {
+        [webview setNavigationDelegate: nil];
     }
 }
 

@@ -104,6 +104,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
     NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">%@ html { color: %@; } \
                           body { background-color: %@; } \
                           </style> \
+                          <meta name=\"viewport\" content=\"initial-scale = 1.0, user-scalable = no\"/> \
                           </head> \
                           <body> \
                           %@ \

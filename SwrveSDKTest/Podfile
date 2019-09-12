@@ -4,7 +4,7 @@ target 'SwrveSDKTest' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.2.0'
+  #pod 'SwrveSDK', '~> 6.2.1'
 
   target 'SwrveSDKTestTests' do
     pod 'OCMock', '~> 3.4.3'
@@ -17,7 +17,7 @@ target 'SwrveSDKTVTest' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.2.0'
+  #pod 'SwrveSDK', '~> 6.2.1'
 
   target 'SwrveSDKTVTests' do
     platform :tvos, '10.0'

@@ -1,8 +1,11 @@
 #import "SwrveContentItem.h"
 
 #if TARGET_OS_IOS /** exclude tvOS **/
-@interface SwrveContentHTML : SwrveContentItem <UIWebViewDelegate>
+#import <WebKit/WebKit.h>
 
--(id) initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict;
+@interface SwrveContentHTML : SwrveContentItem <WKUIDelegate, WKNavigationDelegate>
+
+- (id)initWithTag:(NSString *)tag andDictionary:(NSDictionary *)dict;
+
 @end
 #endif
