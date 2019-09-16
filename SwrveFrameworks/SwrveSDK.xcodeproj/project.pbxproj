@@ -162,7 +162,6 @@
 		528F55AC201B9C9F007AB0A8 /* SwrveConversationUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CEC1F695AF70094B34E /* SwrveConversationUIButton.m */; };
 		528F55AD201B9C9F007AB0A8 /* SwrveConversationAtomFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CD71F695AF70094B34E /* SwrveConversationAtomFactory.m */; };
 		528F55AE201B9C9F007AB0A8 /* SwrveConversationResourceManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CE61F695AF70094B34E /* SwrveConversationResourceManagement.m */; };
-		528F55AF201B9C9F007AB0A8 /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CC31F695AF70094B34E /* UIWebView+YouTubeVimeo.m */; };
 		528F55B0201B9C9F007AB0A8 /* SwrveContentStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CD11F695AF70094B34E /* SwrveContentStarRatingView.m */; };
 		528F55B1201B9C9F007AB0A8 /* SwrveContentStarRating.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CCF1F695AF70094B34E /* SwrveContentStarRating.m */; };
 		528F55B2201B9C9F007AB0A8 /* SwrveConversationEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CDD1F695AF70094B34E /* SwrveConversationEvents.m */; };
@@ -181,7 +180,6 @@
 		528F55C2201B9C9F007AB0A8 /* SwrveConversationButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CD81F695AF70094B34E /* SwrveConversationButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F55C3201B9C9F007AB0A8 /* SwrveConversationPane.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CE11F695AF70094B34E /* SwrveConversationPane.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F55C4201B9C9F007AB0A8 /* SwrveContentSpacer.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CCC1F695AF70094B34E /* SwrveContentSpacer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		528F55C5201B9C9F007AB0A8 /* UIWebView+YouTubeVimeo.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CC21F695AF70094B34E /* UIWebView+YouTubeVimeo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F55C6201B9C9F007AB0A8 /* SwrveConversationEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CDC1F695AF70094B34E /* SwrveConversationEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F55C7201B9C9F007AB0A8 /* SwrveConversationsNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CE71F695AF70094B34E /* SwrveConversationsNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F55C8201B9C9F007AB0A8 /* SwrveSetup.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CF21F695AF70094B34E /* SwrveSetup.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -259,8 +257,6 @@
 		F6D10CBC1F695AE70094B34E /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F6D10C951F695AE70094B34E /* LICENSE */; };
 		F6D10CF91F695AF70094B34E /* UINavigationController+KeyboardResponderFix.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CC01F695AF70094B34E /* UINavigationController+KeyboardResponderFix.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D10CFA1F695AF70094B34E /* UINavigationController+KeyboardResponderFix.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CC11F695AF70094B34E /* UINavigationController+KeyboardResponderFix.m */; };
-		F6D10CFB1F695AF70094B34E /* UIWebView+YouTubeVimeo.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CC21F695AF70094B34E /* UIWebView+YouTubeVimeo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F6D10CFC1F695AF70094B34E /* UIWebView+YouTubeVimeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CC31F695AF70094B34E /* UIWebView+YouTubeVimeo.m */; };
 		F6D10CFD1F695AF70094B34E /* SwrveBaseConversation.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CC41F695AF70094B34E /* SwrveBaseConversation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D10CFE1F695AF70094B34E /* SwrveBaseConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D10CC51F695AF70094B34E /* SwrveBaseConversation.m */; };
 		F6D10CFF1F695AF70094B34E /* SwrveContentHTML.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D10CC61F695AF70094B34E /* SwrveContentHTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -462,8 +458,6 @@
 		F6D10C951F695AE70094B34E /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F6D10CC01F695AF70094B34E /* UINavigationController+KeyboardResponderFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+KeyboardResponderFix.h"; sourceTree = "<group>"; };
 		F6D10CC11F695AF70094B34E /* UINavigationController+KeyboardResponderFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+KeyboardResponderFix.m"; sourceTree = "<group>"; };
-		F6D10CC21F695AF70094B34E /* UIWebView+YouTubeVimeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+YouTubeVimeo.h"; sourceTree = "<group>"; };
-		F6D10CC31F695AF70094B34E /* UIWebView+YouTubeVimeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+YouTubeVimeo.m"; sourceTree = "<group>"; };
 		F6D10CC41F695AF70094B34E /* SwrveBaseConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveBaseConversation.h; sourceTree = "<group>"; };
 		F6D10CC51F695AF70094B34E /* SwrveBaseConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveBaseConversation.m; sourceTree = "<group>"; };
 		F6D10CC61F695AF70094B34E /* SwrveContentHTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveContentHTML.h; sourceTree = "<group>"; };
@@ -849,8 +843,6 @@
 			children = (
 				F6D10CC01F695AF70094B34E /* UINavigationController+KeyboardResponderFix.h */,
 				F6D10CC11F695AF70094B34E /* UINavigationController+KeyboardResponderFix.m */,
-				F6D10CC21F695AF70094B34E /* UIWebView+YouTubeVimeo.h */,
-				F6D10CC31F695AF70094B34E /* UIWebView+YouTubeVimeo.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1035,7 +1027,6 @@
 				528F3A84201FA09D0080135F /* SwrveUITableViewCell.h in Headers */,
 				528F55C3201B9C9F007AB0A8 /* SwrveConversationPane.h in Headers */,
 				528F55C4201B9C9F007AB0A8 /* SwrveContentSpacer.h in Headers */,
-				528F55C5201B9C9F007AB0A8 /* UIWebView+YouTubeVimeo.h in Headers */,
 				528F55C6201B9C9F007AB0A8 /* SwrveConversationEvents.h in Headers */,
 				528F55C7201B9C9F007AB0A8 /* SwrveConversationsNavigationController.h in Headers */,
 				528F55C8201B9C9F007AB0A8 /* SwrveSetup.h in Headers */,
@@ -1143,7 +1134,6 @@
 				1BE98EB7201A36450096B9D4 /* SwrveUITableViewCell.h in Headers */,
 				F6D10D1A1F695AF70094B34E /* SwrveConversationPane.h in Headers */,
 				F6D10D051F695AF70094B34E /* SwrveContentSpacer.h in Headers */,
-				F6D10CFB1F695AF70094B34E /* UIWebView+YouTubeVimeo.h in Headers */,
 				F6D10D151F695AF70094B34E /* SwrveConversationEvents.h in Headers */,
 				F6D10D201F695AF70094B34E /* SwrveConversationsNavigationController.h in Headers */,
 				F6D10D2B1F695AF70094B34E /* SwrveSetup.h in Headers */,
@@ -1476,7 +1466,6 @@
 				528F55AC201B9C9F007AB0A8 /* SwrveConversationUIButton.m in Sources */,
 				528F55AD201B9C9F007AB0A8 /* SwrveConversationAtomFactory.m in Sources */,
 				528F55AE201B9C9F007AB0A8 /* SwrveConversationResourceManagement.m in Sources */,
-				528F55AF201B9C9F007AB0A8 /* UIWebView+YouTubeVimeo.m in Sources */,
 				528F55B0201B9C9F007AB0A8 /* SwrveContentStarRatingView.m in Sources */,
 				528F3A85201FA0A50080135F /* SwrveUITableViewCell.m in Sources */,
 				528F55B1201B9C9F007AB0A8 /* SwrveContentStarRating.m in Sources */,
@@ -1569,7 +1558,6 @@
 				F6D10D251F695AF70094B34E /* SwrveConversationUIButton.m in Sources */,
 				F6D10D101F695AF70094B34E /* SwrveConversationAtomFactory.m in Sources */,
 				F6D10D1F1F695AF70094B34E /* SwrveConversationResourceManagement.m in Sources */,
-				F6D10CFC1F695AF70094B34E /* UIWebView+YouTubeVimeo.m in Sources */,
 				F6D10D0A1F695AF70094B34E /* SwrveContentStarRatingView.m in Sources */,
 				1BE98EB8201A36450096B9D4 /* SwrveUITableViewCell.m in Sources */,
 				F6D10D081F695AF70094B34E /* SwrveContentStarRating.m in Sources */,

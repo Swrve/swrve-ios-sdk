@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDKCommon"
-  s.version          = "5.3.1"
+  s.version          = "5.3.2"
   s.summary          = "iOS Common library for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => s.name.to_s + "/LICENSE" }

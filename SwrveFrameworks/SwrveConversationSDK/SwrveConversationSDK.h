@@ -10,7 +10,6 @@ FOUNDATION_EXPORT const unsigned char SwrveConversationSDKVersionString[];
 
 // Conversations - Categories
 #import <SwrveConversationSDK/UINavigationController+KeyboardResponderFix.h>
-#import <SwrveConversationSDK/UIWebView+YouTubeVimeo.h>
 
 // Conversations
 #import <SwrveConversationSDK/SwrveBaseConversation.h>
