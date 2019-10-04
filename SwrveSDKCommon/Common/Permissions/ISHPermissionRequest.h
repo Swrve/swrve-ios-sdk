@@ -15,7 +15,7 @@
  *  These are used inlieu of the permission state values 
  *  provided by the system.
  */
-typedef NS_ENUM(NSUInteger, ISHPermissionState) {
+typedef NS_ENUM(NSInteger, ISHPermissionState) {
     /**
      *  The state of the permission could not be determined.
      */

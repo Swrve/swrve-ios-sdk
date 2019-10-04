@@ -17,7 +17,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     _containerView = containerView;
     // Create _view
     _view = webview = [[WKWebView alloc] init];
-    webview.frame = CGRectMake(0,0, 1, 1);
+    webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 100);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     [webview setUIDelegate:self];
@@ -48,7 +48,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 
 - (void) webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
 #pragma unused (navigation, webView)
-    [webview evaluateJavaScript:@"document.body.scrollHeight;" completionHandler:
+    [webview evaluateJavaScript:@"document.getElementById('swrve_content').clientHeight;" completionHandler:
      ^(id _Nullable response, NSError * _Nullable error) {
 #pragma unused (error)
          // Measure and set width

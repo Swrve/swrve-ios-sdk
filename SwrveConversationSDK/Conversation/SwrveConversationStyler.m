@@ -100,17 +100,42 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
     [SwrveConversationStyler fontFromStyle:style withFallback:nil]; // register any custom font
     NSString *fgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyFg] withDefault:kSwrveDefaultColorFg];
     NSString *bgHexColor = [self colorFromStyle:[style objectForKey:kSwrveKeyBg] withDefault:kSwrveDefaultColorBg];
+    NSString *fontFace = [self base64FontFaceFromStyle:style]; // will be empty for system fonts
 
     NSString *html = [NSString stringWithFormat:@"<html><head><style type=\"text/css\">%@ html { color: %@; } \
                           body { background-color: %@; } \
+                          %@ \
                           </style> \
                           <meta name=\"viewport\" content=\"initial-scale = 1.0, user-scalable = no\"/> \
                           </head> \
                           <body> \
-                          %@ \
-                          </body></html>", pageCSS, fgHexColor, bgHexColor, content];
+                          <div id=\"swrve_content\">%@</div> \
+                          </body></html>", pageCSS, fgHexColor, bgHexColor, fontFace, content];
 
     return html;
+}
+
++ (NSString *)base64FontFaceFromStyle:(NSDictionary *)style {
+    NSString *fontFace = @"";
+    if (![SwrveBaseConversation isSystemFont:style]) {
+
+        NSString *fontFamily = [style objectForKey:kSwrveKeyFontPostscriptName] ? [style objectForKey:kSwrveKeyFontPostscriptName] : @"";
+
+        // base64 encode the custom font file
+        NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
+        NSString *fontFile = [style objectForKey:kSwrveKeyFontFile];
+        NSString *fontPath = [cacheFolder stringByAppendingPathComponent:fontFile];
+        NSString *base64FontFile = [[NSData dataWithContentsOfFile:fontPath] base64EncodedStringWithOptions:0];
+
+        NSString *ext = [[NSURL URLWithString:fontPath] pathExtension];
+        if([ext isEqualToString:@"otf"]) {
+            fontFace = [NSString stringWithFormat:@"@font-face { font-family: '%@'; src: url(data:font/otf;base64,%@) format('opentype');}", fontFamily, base64FontFile];
+        } else {
+            fontFace = [NSString stringWithFormat:@"@font-face { font-family: '%@'; src: url(data:font/ttf;base64,%@) format('truetype');}", fontFamily, base64FontFile];
+        }
+    }
+
+    return fontFace;
 }
 
 + (float) convertBorderRadius:(float)borderRadiusPercentage {

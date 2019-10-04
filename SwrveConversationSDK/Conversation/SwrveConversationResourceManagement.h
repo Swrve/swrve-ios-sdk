@@ -5,4 +5,6 @@
 
 + (UIImage *) imageWithName:(NSString *)imageName;
 
++ (NSBundle *)conversationBundle;
+
 @end

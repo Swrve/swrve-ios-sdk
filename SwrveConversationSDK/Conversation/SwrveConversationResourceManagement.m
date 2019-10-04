@@ -1,19 +1,25 @@
 #import "SwrveConversationResourceManagement.h"
 #import "SwrveSetup.h"
 
-#if defined(__IPHONE_8_0)
-#import <UIKit/UITraitCollection.h>
-#endif
-
 @implementation SwrveConversationResourceManagement
 
-+ (UIImage *) imageWithName:(NSString *)imageName {
-    
-    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-        return [UIImage imageNamed:imageName];
++ (NSBundle *)conversationBundle {
+    NSBundle *mainBundle = [NSBundle bundleForClass:[SwrveConversationResourceManagement class]];
+           
+    // cocoapods uses SwrveConversationSDK.bundle , see resource_bundles in podspec
+    NSURL *bundleURL = [[mainBundle resourceURL] URLByAppendingPathComponent:@"SwrveConversationSDK.bundle"];
+    NSBundle *frameworkBundle = [NSBundle bundleWithURL:bundleURL];
+           
+    // if its nil, try standard bundle location for class
+    if (frameworkBundle != nil) {
+        return frameworkBundle;
     }
-        
-    return [UIImage imageNamed:imageName inBundle:[NSBundle bundleForClass:[SwrveConversationResourceManagement class]] compatibleWithTraitCollection: nil];
+    return mainBundle;
+}
+
++ (UIImage *) imageWithName:(NSString *)imageName API_AVAILABLE(ios(8.0)) {
+    NSBundle *bundle = [SwrveConversationResourceManagement conversationBundle];
+    return [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection: nil];
 }
 
 @end

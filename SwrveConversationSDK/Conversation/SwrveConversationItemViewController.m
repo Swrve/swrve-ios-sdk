@@ -10,6 +10,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationContainerViewController.h"
+#import "SwrveConversationResourceManagement.h"
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -43,13 +44,16 @@
 
     SwrveConversationItemViewController *itemViewController;
     @try {
+ 
+        NSBundle *conversationBundle = [SwrveConversationResourceManagement conversationBundle];
+        
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:
 #if TARGET_OS_IOS /** exclude tvOS **/
                                     @"SwrveConversation"
 #else
                                     @"SwrveConversation-tvos"
 #endif
-                                                             bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
+                                                             bundle:conversationBundle];
         itemViewController = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
     }
     @catch (NSException *exception) {

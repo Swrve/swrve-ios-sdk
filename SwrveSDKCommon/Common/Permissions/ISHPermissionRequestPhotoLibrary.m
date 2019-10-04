@@ -9,6 +9,7 @@
 
 #import "ISHPermissionRequestPhotoLibrary.h"
 #import "ISHPermissionRequest+Private.h"
+#import <UIKit/UIKit.h>
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 #import <AssetsLibrary/AssetsLibrary.h>
