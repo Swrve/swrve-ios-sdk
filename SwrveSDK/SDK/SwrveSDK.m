@@ -27,7 +27,6 @@ static dispatch_once_t sharedInstanceToken = 0;
 }
 
 + (SwrveMessageController *)messaging {
-    
     [SwrveSDK checkInstance];
     return [[SwrveSDK sharedInstance] messaging];
 }
@@ -225,10 +224,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] installAction:url];
 }
 
-+ (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
-                                              onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
-     [SwrveSDK checkInstance];
-     [[SwrveSDK sharedInstance] identify:externalUserId onSuccess:onSuccess onError:onError];
++ (void)identify:(NSString *)externalUserId
+       onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
+         onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] identify:externalUserId onSuccess:onSuccess onError:onError];
 }
 
 + (NSString *)externalUserId {
@@ -239,6 +239,21 @@ static dispatch_once_t sharedInstanceToken = 0;
 + (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
     [SwrveSDK checkInstance];
     [[SwrveSDK sharedInstance] setCustomPayloadForConversationInput:payload];
+}
+
++ (void)start {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] start];
+}
+
++ (void)startWithUserId:(NSString *)userId {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] startWithUserId:userId];
+}
+
++ (BOOL)started {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] started];
 }
 
 @end

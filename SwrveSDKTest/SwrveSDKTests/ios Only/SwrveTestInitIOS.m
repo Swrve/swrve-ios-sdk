@@ -94,7 +94,7 @@
     
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     XCTAssertNotNil(deviceInfo);
-    XCTAssertEqual([deviceInfo count], 19);
+    XCTAssertEqual([deviceInfo count], 20);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
@@ -140,7 +140,7 @@
 
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     XCTAssertNotNil(deviceInfo);
-    XCTAssertEqual([deviceInfo count], 24);
+    XCTAssertEqual([deviceInfo count], 25);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.photos"]);

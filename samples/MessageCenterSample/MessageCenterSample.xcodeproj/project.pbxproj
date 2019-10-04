@@ -190,8 +190,8 @@
 				TargetAttributes = {
 					52D1122F1D5C97ED00F34F38 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 38YP67HQGE;
 						LastSwiftMigration = 0940;
+						ProvisioningStyle = Manual;
 					};
 					5BD834BB20EFB01D004799A7 = {
 						DevelopmentTeam = 38YP67HQGE;
@@ -203,6 +203,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -245,49 +246,16 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveConversationSDK-library/SwrveConversationSDK.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		386ADD53AD978FF0B6A7ECDE /* [CP] Embed Pods Frameworks */ = {
@@ -296,7 +264,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
@@ -309,7 +277,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5BD834BC20EFB01D004799A7 /* [CP] Check Pods Manifest.lock */ = {
@@ -519,14 +487,16 @@
 			baseConfigurationReference = 0CE0CC7E7720A0D57C66F67F /* Pods-MessageCenterSample-Swift.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/MessageCenterSample-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.MessageCenterSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -535,13 +505,15 @@
 			baseConfigurationReference = 5E48C46F9F871AD45196A787 /* Pods-MessageCenterSample-Swift.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/MessageCenterSample-Swift/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.MessageCenterSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

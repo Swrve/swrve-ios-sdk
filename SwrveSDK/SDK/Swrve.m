@@ -95,7 +95,7 @@ enum
 - (void)updateSwrveUserWithId:(NSString *)swrveUserId externalUserId:(NSString *)externalUserId;
 - (void)saveSwrveUser:(SwrveUser *)swrveUser;
 - (NSArray *)swrveUsers;
-- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)appId apiKey:(NSString*)apiKey;
+- (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)_appId apiKey:(NSString*)_apiKey;
 - (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError;
 - (void)identify:(NSString *)externalUserId swrveUserId:(NSString *)swrveUserId
@@ -143,6 +143,8 @@ enum
 
 @interface Swrve () <SwrveCommonDelegate> {
     BOOL initialised;
+    BOOL sdkStarted;
+    BOOL lifecycleCallbacksRegistered;
     SwrveEventsManager *eventsManager;
     UInt64 appInstallTimeSeconds;
     UInt64 userJoinedTimeSeconds;
@@ -176,6 +178,8 @@ enum
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer;
 
 @property(atomic) BOOL initialised;
+@property(atomic) BOOL sdkStarted;
+
 @property(atomic) SwrveProfileManager *profileManager;
 
 // Used to store the merged user updates
@@ -299,6 +303,7 @@ enum
 @synthesize push;
 #endif
 @synthesize initialised;
+@synthesize sdkStarted;
 @synthesize profileManager;
 @synthesize userUpdates;
 @synthesize deviceInfoDic;
@@ -389,7 +394,11 @@ enum
             [SwrveLocalStorage saveDeviceUUID:self.deviceUUID];
         }
 
-        self.profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:config.identityServer deviceUUID:self.deviceUUID restClient:self.restClient appId:self.appID apiKey:self.apiKey];
+        self.profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:config.identityServer
+                                                                    deviceUUID:self.deviceUUID
+                                                                    restClient:self.restClient
+                                                                         appId:self.appID
+                                                                        apiKey:self.apiKey];
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
         if (swrveConfig.pushEnabled) {
@@ -422,12 +431,18 @@ enum
         self.campaignsAndResourcesFlushRefreshDelay = [self flushRefreshDelay];
 
         [self initAppInstallTime];
-        [self registerLifecycleCallbacks];
-        [self initWithUserId:[profileManager userId]];
+
+        self.sdkStarted = [self shouldAutoStart];
+        if (self.sdkStarted) {
+            [profileManager persistUser];
+            [self registerLifecycleCallbacks];
+            [self initWithUserId:[profileManager userId]];
+        }
     }
 
     return self;
 }
+
 
 - (void)initWithUserId:(NSString *)swrveUserId {
 
@@ -496,6 +511,9 @@ enum
 }
 
 - (void)beginSession:(dispatch_group_t)sendEventsCallbackForBeginSessionGroup {
+
+    sdkStarted = true;
+
     // The app has started and thus our session
     lastSessionDate = [self getNow];
 #if TARGET_OS_IOS /** exclude tvOS **/
@@ -513,6 +531,7 @@ enum
     // If this is the first time this user has been seen send install analytics
     if ([profileManager isNewUser]) {
         [self eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false];
+        [profileManager setIsNewUser:false];
     }
 
     [self startCampaignsAndResourcesTimer];
@@ -538,6 +557,18 @@ enum
     [self setRestClient:[[SwrveRESTClient alloc] initWithTimeoutInterval:timeOut]];
 }
 
+- (BOOL)shouldAutoStart {
+    if ([config initMode] == SWRVE_INIT_MODE_AUTO) {
+        return true;
+    } else if ([config initMode] == SWRVE_INIT_MODE_MANAGED &&
+            [config managedModeAutoStartLastUser] &&
+            [[SwrveLocalStorage swrveUserId] length] > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 - (void)queueSessionStart {
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
@@ -551,6 +582,9 @@ enum
 }
 
 - (int)purchaseItem:(NSString *)itemName currency:(NSString *)itemCurrency cost:(int)itemCost quantity:(int)itemQuantity {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
     [json setValue:NullableNSString(itemName) forKey:@"item"];
@@ -561,7 +595,7 @@ enum
 }
 
 - (int)event:(NSString *)eventName {
-    if ([eventsManager isValidEventName:eventName]) {
+    if ([eventsManager isValidEventName:eventName] && [self sdkReady]) {
         return [self eventInternal:eventName payload:nil triggerCallback:true];
     } else {
         return SWRVE_FAILURE;
@@ -569,7 +603,7 @@ enum
 }
 
 - (int)event:(NSString *)eventName payload:(NSDictionary *)eventPayload {
-    if ([eventsManager isValidEventName:eventName]) {
+    if ([eventsManager isValidEventName:eventName] && [self sdkReady]) {
         return [self eventInternal:eventName payload:eventPayload triggerCallback:true];
     } else {
         return SWRVE_FAILURE;
@@ -577,7 +611,7 @@ enum
 }
 
 - (int)eventWithNoCallback:(NSString *)eventName payload:(NSDictionary *)eventPayload {
-    if ([eventsManager isValidEventName:eventName]) {
+    if ([eventsManager isValidEventName:eventName] && [self sdkReady]) {
         return [self eventInternal:eventName payload:eventPayload triggerCallback:false notifyMessageController:true];
     } else {
         return SWRVE_FAILURE;
@@ -589,6 +623,9 @@ enum
 }
 
 - (int)iap:(SKPaymentTransaction *)transaction product:(SKProduct *)product rewards:(SwrveIAPRewards *)rewards {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     NSString *product_id = @"unknown";
     int queuedStatus = SWRVE_SUCCESS;
     switch (transaction.transactionState) {
@@ -670,6 +707,9 @@ enum
 }
 
 - (int)unvalidatedIap:(SwrveIAPRewards *)rewards localCost:(double)localCost localCurrency:(NSString *)localCurrency productId:(NSString *)productId productIdQuantity:(int)productIdQuantity {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
     [json setValue:@"unknown" forKey:@"app_store"];
@@ -687,6 +727,9 @@ enum
 }
 
 - (int)currencyGiven:(NSString *)givenCurrency givenAmount:(double)givenAmount {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
     [json setValue:NullableNSString(givenCurrency) forKey:@"given_currency"];
@@ -711,6 +754,9 @@ enum
 }
 
 - (int)userUpdate:(NSDictionary *)attributes {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     [self maybeFlushToDisk];
 
     // Merge attributes with current set of attributes
@@ -729,6 +775,9 @@ enum
 }
 
 - (int)userUpdate:(NSString *)name withDate:(NSDate *)date {
+    if (![self sdkReady]) {
+        return SWRVE_FAILURE;
+    }
     if (name && date) {
         @synchronized (self.userUpdates) {
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
@@ -761,6 +810,9 @@ enum
 }
 
 - (void)refreshCampaignsAndResources {
+    if (![self sdkReady]) {
+        return;
+    }
     // When campaigns need to be downloaded manually, enforce max. flush frequency
     if (!self.config.autoDownloadCampaignsAndResources) {
         NSDate *now = [self getNow];
@@ -941,6 +993,9 @@ enum
 }
 
 - (void)sendQueuedEvents {
+    if (![self sdkReady]) {
+        return;
+    }
     if (trackingState == EVENT_SENDING_PAUSED) {
         DebugLog(@"Swrve event sending paused so attempt to send queued events has failed.", nil);
         return;
@@ -1059,6 +1114,9 @@ enum
 }
 
 - (void)saveEventsToDisk {
+    if (![self sdkReady]) {
+        return;
+    }
     DebugLog(@"Writing unsent event data to file", nil);
 
     [self queueUserUpdates];
@@ -1084,6 +1142,9 @@ enum
 }
 
 - (void)setEventQueuedCallback:(SwrveEventQueuedCallback)callbackBlock {
+    if (![self sdkReady]) {
+        return;
+    }
     event_queued_callback = callbackBlock;
 }
 
@@ -1150,24 +1211,32 @@ enum
 }
 
 - (void)registerLifecycleCallbacks {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appWillResignActive:)
-                                                 name:UIApplicationWillResignActiveNotification object:nil];
+    if (!lifecycleCallbacksRegistered) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appDidBecomeActive:)
+                                                     name:UIApplicationDidBecomeActiveNotification object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appWillTerminate:)
-                                                 name:UIApplicationWillTerminateNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appWillTerminate:)
+                                                     name:UIApplicationWillTerminateNotification object:nil];
+        lifecycleCallbacksRegistered = true;
+    }
+}
+
+- (BOOL)lifecycleCallbacksRegistered {
+    return lifecycleCallbacksRegistered;
 }
 
 - (void)appDidBecomeActive:(NSNotification *)notification {
 #pragma unused(notification)
 
     trackingState = ON;
-
+    
     if (!initialised) {
         initialised = YES;
         [self beginSession]; // App started the first time
@@ -1291,14 +1360,14 @@ enum
     if (self.messaging) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wselector"
-        SEL authoShowSelector = @selector(setAutoShowMessagesEnabled:);
+        SEL autoShowSelector = @selector(setAutoShowMessagesEnabled:);
 #pragma clang diagnostic pop
 
         NSInvocation *disableAutoshowInvocation = [NSInvocation invocationWithMethodSignature:
-                [self.messaging methodSignatureForSelector:authoShowSelector]];
+                [self.messaging methodSignatureForSelector:autoShowSelector]];
 
         bool arg = NO;
-        [disableAutoshowInvocation setSelector:authoShowSelector];
+        [disableAutoshowInvocation setSelector:autoShowSelector];
         [disableAutoshowInvocation setTarget:self.messaging];
         [disableAutoshowInvocation setArgument:&arg atIndex:2];
         [NSTimer scheduledTimerWithTimeInterval:(self.config.autoShowMessagesMaxDelay / 1000) invocation:disableAutoshowInvocation repeats:NO];
@@ -1347,6 +1416,9 @@ enum
 }
 
 - (void)setDeviceToken:(NSData *)deviceToken {
+    if (![self sdkReady]) {
+        return;
+    }
     if (self.config.pushEnabled && deviceToken) {
         [self.push setPushNotificationsDeviceToken:deviceToken];
 
@@ -1357,6 +1429,9 @@ enum
 }
 
 - (NSString *)deviceToken {
+    if (![self sdkReady]) {
+        return @"";
+    }
     return self->_deviceToken;
 }
 
@@ -1481,7 +1556,7 @@ enum
             }
         }
     }
-     return SWRVE_SUCCESS;
+    return SWRVE_SUCCESS;
 }
 
 - (NSString *)swrveSDKVersion {
@@ -1516,6 +1591,7 @@ enum
 - (void)sendPushNotificationEngagedEvent:(NSString *)pushId {
     NSString *eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
     [self eventInternal:eventName payload:nil triggerCallback:false];
+    [self sendQueuedEventsWithCallback:nil eventFileCallback:nil];
 }
 
 - (void)sendCrashlyticsMetadata {
@@ -1539,23 +1615,38 @@ enum
 #if TARGET_OS_IOS /** tvOS has no support for telephony or push **/
     CTCarrier *carrierInfo = [SwrveUtils carrierInfo];
     swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
-                                                        appInstallTimeSeconds:appInstallTimeSeconds
+                                                     appInstallTimeSeconds:appInstallTimeSeconds
                                                        conversationVersion:CONVERSATION_VERSION
                                                                deviceToken:self.deviceToken
                                                           permissionStatus:permissionStatus
                                                               sdk_language:self.config.language
-                                                               carrierInfo:carrierInfo];
+                                                               carrierInfo:carrierInfo
+                                                             swrveInitMode:[self swrveInitModeString]];
+
 #elif TARGET_OS_TV
     swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
                                                      appInstallTimeSeconds:appInstallTimeSeconds
                                                           permissionStatus:permissionStatus
-                                                              sdk_language:self.config.language];
+                                                              sdk_language:self.config.language
+                                                             swrveInitMode:[self swrveInitModeString]];
 
 
 #endif
 
     NSDictionary *deviceProperties = [swrveDeviceProperties deviceProperties];
     return deviceProperties;
+}
+
+- (NSString *)swrveInitModeString {
+    NSString *initMode = @"unknown";
+    if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
+        initMode = @"auto";
+    } else if (self.config.initMode == SWRVE_INIT_MODE_MANAGED && self.config.managedModeAutoStartLastUser) {
+        initMode = @"managed_auto";
+    } else if (self.config.initMode == SWRVE_INIT_MODE_MANAGED && !self.config.managedModeAutoStartLastUser) {
+        initMode = @"managed";
+    }
+    return initMode;
 }
 
 - (void)logDeviceInfo:(NSDictionary *)deviceProperties {
@@ -1975,6 +2066,9 @@ enum HttpStatus {
 }
 
 - (void)userResources:(SwrveUserResourcesCallback)callbackBlock {
+    if (![self sdkReady]) {
+        return;
+    }
     NSCAssert(callbackBlock, @"getUserResources: callbackBlock must not be nil.", nil);
     NSDictionary *resourcesDict = [self resourceManager].resources;
     NSMutableString *jsonString = [[NSMutableString alloc] initWithString:@"["];
@@ -2002,6 +2096,9 @@ enum HttpStatus {
 }
 
 - (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock {
+    if (![self sdkReady]) {
+        return;
+    }
     NSCAssert(callbackBlock, @"getUserResourcesDiff: callbackBlock must not be nil.", nil);
     NSURL *url = [self userResourcesDiffURL];
     [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -2095,27 +2192,44 @@ enum HttpStatus {
 }
 
 - (void)handleDeeplink:(NSURL *)url {
-    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {return;}
-
+    if (![self sdkReady]) {
+        return;
+    }
+    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {
+        return;
+    }
     [self initSwrveDeeplinkManager];
     [self.swrveDeeplinkManager handleDeeplink:url];
 }
 
 - (void)handleDeferredDeeplink:(NSURL *)url {
-    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {return;}
-
+    if (![self sdkReady]) {
+        return;
+    }
+    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {
+        return;
+    }
     [self initSwrveDeeplinkManager];
     [self.swrveDeeplinkManager handleDeferredDeeplink:url];
 }
 
 - (void)installAction:(NSURL *)url {
-    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {return;}
-
+    if (![self sdkReady]) {
+        return;
+    }
+    if (![SwrveDeeplinkManager isSwrveDeeplink:url]) {
+        return;
+    }
     [self initSwrveDeeplinkManager];
     self.swrveDeeplinkManager.actionType = SWRVE_AD_INSTALL;
 }
 
 - (void)handleNotificationToCampaign:(NSString *)campaignId {
+
+    if ([config initMode] == SWRVE_INIT_MODE_MANAGED && ![config managedModeAutoStartLastUser]) {
+        DebugLog(@"Warning: SwrveSDK Push to IAM/Conv cannot execute in MANAGED mode and managedModeAutoStartLastUser==false.", nil);
+        return;
+    }
     [self initSwrveDeeplinkManager];
     [self.swrveDeeplinkManager handleNotificationToCampaign:campaignId];
 }
@@ -2134,30 +2248,29 @@ enum HttpStatus {
 
 #pragma mark  Switch User ID
 
-- (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession {
-
-    // dont do anything if the current user is the same as the new one
-    if (newUserID == nil || [newUserID isEqualToString:self.profileManager.userId]) {
+- (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession  {
+        
+    // dont do anything if the current user is the same as the new one and its already been started
+    if ((newUserID == nil) || (sdkStarted == true && [newUserID isEqualToString:self.profileManager.userId])) {
         [self enableEventSending];
         [self queuePausedEventsArray];
         return;
     }
-
+    
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     [SwrveNotificationManager clearAllAuthenticatedNotifications];
 #endif //!defined(SWRVE_NO_PUSH)
 
     // update SwrveProfileManager
     [self.profileManager switchUser:newUserID];
-    @synchronized (self) {
-        [SwrveLocalStorage saveSwrveUserId:newUserID]; // update Local storage
-    }
+    [self.profileManager persistUser];
+
     [self initWithUserId:newUserID];
     [self queuePausedEventsArray];
 
     if (!isFirstSession) {
         //this will prevent the Swrve.first_session event from been queued in the beginSession call below
-        self.profileManager.isNewUser = false;
+        [profileManager setIsNewUser:false];
     }
 
     [self beginSession];
@@ -2165,6 +2278,10 @@ enum HttpStatus {
 
 - (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
+    
+    if (self.config.initMode == SWRVE_INIT_MODE_MANAGED) {
+        [self throwIllegalOperationException:@"Cannot call identify api in MANAGED initMode."];
+    }
 
     if (externalUserId == nil || [externalUserId isEqualToString:@""]) {
         DebugLog(@"Swrve identify: External user id cannot be nil or empty", nil);
@@ -2179,8 +2296,9 @@ enum HttpStatus {
 
     dispatch_group_t sendEventsCallback = dispatch_group_create();
 
-    // this will force flush events even though eventing sending and queuing has been paused above
-    [self forceFlushAllEventsBeforeIdentify:sendEventsCallback];
+    DebugLog(@"Swrve identify: Flushing event buffer and cache prior to Identity API call...", nil);
+    // this will force flush events even though event sending and queuing has been paused above
+    [self forceFlushAllEvents:sendEventsCallback];
 
     // this code should only execute after the 2 callbacks in flushAllEventsBeforeIdentify complete
     dispatch_group_notify(sendEventsCallback, dispatch_get_main_queue(), ^{
@@ -2199,13 +2317,11 @@ enum HttpStatus {
     });
 }
 
-- (void)forceFlushAllEventsBeforeIdentify:(dispatch_group_t)sendEventsCallbackGroup {
+- (void)forceFlushAllEvents:(dispatch_group_t)sendEventsCallbackGroup {
 
     dispatch_group_enter(sendEventsCallbackGroup);
     dispatch_group_enter(sendEventsCallbackGroup);
 
-    // flush
-    DebugLog(@"Swrve identify: Flushing event buffer and cache prior to Identity API call...", nil);
     [self sendQueuedEventsWithCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response, data, error)
         dispatch_group_leave(sendEventsCallbackGroup);
@@ -2213,7 +2329,6 @@ enum HttpStatus {
 #pragma unused(response, data, error)
         dispatch_group_leave(sendEventsCallbackGroup);
     } forceFlush:true];
-
 }
 
 - (BOOL)identifyCachedUser:(SwrveUser *)cachedSwrveUser withCallback:(void (^)(NSString *status, NSString *swrveUserId))onSuccess {
@@ -2299,7 +2414,7 @@ enum HttpStatus {
 }
 
 - (void)enableEventSending {
-    DebugLog(@"Swrve identify: Event sending reenabled", nil);
+    DebugLog(@"Swrve: Event sending reenabled", nil);
     trackingState = ON;
     [self resumeCampaignsAndResourcesTimer];
 }
@@ -2310,6 +2425,9 @@ enum HttpStatus {
 }
 
 - (NSString *)externalUserId {
+    if (![self sdkReady]) {
+        return @"";
+    }
     SwrveUser *swrveUser =  [self.profileManager swrveUserWithId:self.userID];
     return (swrveUser == nil) ? @"" : swrveUser.externalId;
 }
@@ -2340,7 +2458,78 @@ enum HttpStatus {
 }
 
 - (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
+    if (![self sdkReady]) {
+        return;
+    }
     [SwrveConversationEvents setCustomPayload:payload];
+}
+
+- (void)start {
+    [self startWithUserId:self.userID];
+}
+
+- (void)startWithUserId:(NSString *)userId {
+    if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
+        [self throwIllegalOperationException:@"Cannot call start api in SWRVE_INIT_MODE_AUTO initMode."];
+    }
+
+    if (userId == nil) {
+        userId = self.profileManager.userId;
+    }
+
+    DebugLog(@"Swrve startWithUserId: Pausing event queuing and sending prior to changing user...", nil);
+    [self pauseEventSending];
+
+    dispatch_group_t sendEventsCallback = dispatch_group_create();
+
+    // this will force flush events even though event sending and queuing has been paused above
+    DebugLog(@"Swrve startWithUserId: Flushing event buffer and cache prior to changing user...", nil);
+    [self forceFlushAllEvents:sendEventsCallback];
+
+    // this code should only execute after the 2 callbacks in flushAllEvents complete
+    dispatch_group_notify(sendEventsCallback, dispatch_get_main_queue(), ^{
+
+        [self registerLifecycleCallbacks];
+
+        // If join time for the user is zero then its the first time this userId has been on this device so send first session event
+        BOOL isFirstSession = [SwrveLocalStorage userJoinedTimeSeconds:userId] == 0;
+        [self switchUser:userId isFirstSession:isFirstSession];
+    });
+}
+
+- (BOOL)started {
+    return sdkStarted;
+}
+
+- (BOOL)sdkReady {
+    if (([config initMode] == SWRVE_INIT_MODE_MANAGED) && [self started] == NO) {
+        DebugLog(@"Warning: SwrveSDK needs to be started in MANAGED mode before calling this api.", nil);
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (SwrveMessageController *)messaging {
+    if (![self sdkReady]) {
+        messaging = [SwrveMessageController new];
+    }
+    return messaging;
+}
+
+- (SwrveResourceManager *)resourceManager {
+    if (![self sdkReady]) {
+        resourceManager = [SwrveResourceManager new];
+    }
+    return resourceManager;
+}
+
+- (void)throwIllegalOperationException:(NSString *) reason {
+    NSException *e = [NSException
+                      exceptionWithName:@"SwrveIllegalOperation"
+                      reason:reason
+                      userInfo:nil];
+    @throw e;
 }
 
 @end

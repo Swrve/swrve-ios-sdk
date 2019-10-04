@@ -52,7 +52,7 @@
 
     NSDictionary *deviceInfo = ((id <SwrveCommonDelegate>) swrveMock).deviceInfo;
     XCTAssertNotNil(deviceInfo);
-    XCTAssertEqual([deviceInfo count], 16);
+    XCTAssertEqual([deviceInfo count], 17);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
@@ -67,6 +67,8 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
+
 
     // Extra identifiers
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);

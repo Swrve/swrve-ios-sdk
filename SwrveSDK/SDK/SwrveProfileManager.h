@@ -6,4 +6,6 @@
 @property (readonly, nonatomic, retain) NSString * sessionToken;
 @property (atomic) BOOL isNewUser;
 
+- (void)persistUser;
+
 @end

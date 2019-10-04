@@ -35,7 +35,8 @@
     SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                             appInstallTimeSeconds:0
                                                                                  permissionStatus:nil
-                                                                                     sdk_language:nil];
+                                                                                     sdk_language:nil
+                                                                                    swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
@@ -62,7 +63,8 @@
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
                                                                            appInstallTimeSeconds:0
                                                                                 permissionStatus:nil
-                                                                                    sdk_language:nil];
+                                                                                    sdk_language:nil
+                                                                                   swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
@@ -77,7 +79,8 @@
     SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                             appInstallTimeSeconds:installTimeSecondsTest
                                                                                  permissionStatus:nil
-                                                                                     sdk_language:nil];
+                                                                                     sdk_language:nil
+                                                                                    swrveInitMode:nil];
     
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
@@ -91,7 +94,7 @@
 
 
 - (void)testDevicePropertiesNil_WithPermissions {
-
+    
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
     TestPermissionsDelegate *permissionsDelegate = [[TestPermissionsDelegate alloc] init];
     SwrveConfig* config = [[SwrveConfig alloc] init];
@@ -105,7 +108,8 @@
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                            appInstallTimeSeconds:0
                                                                                 permissionStatus:permissionStatus
-                                                                                    sdk_language:nil];
+                                                                                    sdk_language:nil
+                                                                                   swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
@@ -129,7 +133,8 @@
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                            appInstallTimeSeconds:0
                                                                                 permissionStatus:nil
-                                                                                    sdk_language:config.language];
+                                                                                    sdk_language:config.language
+                                                                                   swrveInitMode:nil];
     
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];

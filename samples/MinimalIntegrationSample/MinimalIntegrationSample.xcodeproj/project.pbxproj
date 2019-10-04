@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -184,6 +184,7 @@
 				TargetAttributes = {
 					5BEE298C20EF6C4500CA65B8 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1100;
 					};
 					5BEE29C620EF6DD600CA65B8 = {
 						LastSwiftMigration = 0940;
@@ -272,50 +273,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/SwrveConversationSDK/SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A4BFBEDC918BBB9E85B58981 /* [CP] Embed Pods Frameworks */ = {
@@ -323,21 +290,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveConversationSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -527,7 +489,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.MinimalIntegrationSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -545,7 +507,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.MinimalIntegrationSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

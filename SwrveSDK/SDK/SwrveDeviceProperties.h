@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "SwrveConfig.h"
 #if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
 #import <SwrveSDKCommon/SwrveUtils.h>
 #else
@@ -13,6 +14,7 @@
 @property (nonatomic, assign) int  conversationVersion;
 @property (nonatomic) NSString * deviceToken;
 @property (nonatomic) NSDictionary* permissionStatus;
+@property (nonatomic) NSString* swrveInitMode;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 @property (nonatomic) CTCarrier* carrierInfo;
@@ -28,16 +30,18 @@
  @param permissionStatus    Permission status dictionary
  @param sdk_language        The SDK langauge string
  @param carrierInfo         The carrier info
-    
+ @param swrveInitMode       The SDK initMode string from SwrveConfig
+ 
  @return The initialized SwrveDeviceProperties
-*/
+ */
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
+           appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
              conversationVersion:(int)conversationVersion
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
-                     carrierInfo:(CTCarrier * )carrierInfo;
+                     carrierInfo:(CTCarrier * )carrierInfo
+                   swrveInitMode:(NSString *)swrveInitMode;
 
 #elif TARGET_OS_TV
 /**
@@ -47,13 +51,15 @@
  @param appInstallTimeSeconds  The app install time in seconds
  @param permissionStatus    Permission status dictionary
  @param sdk_language        The SDK langauge string
+ @param swrveInitMode       The SDK initMode string from SwrveConfig
  
  @return The initialized SwrveDeviceProperties
  */
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
+           appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
                 permissionStatus:(NSDictionary *)permissionStatus
-                    sdk_language:(NSString *)sdk_language;
+                    sdk_language:(NSString *)sdk_language
+                   swrveInitMode:(NSString *)swrveInitMode;
 #endif
 /**
  Get the device properties
@@ -85,6 +91,7 @@
  swrve.IDFA
  swrve.IDFV
  swrve.can_receive_authenticated_push
+ swrve.sdk_init_mode
  
  Swrve.permission.ios.location.always
  Swrve.permission.ios.location.when_in_use

@@ -6,10 +6,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         let config = SwrveConfig()
-        config.resourcesUpdatedCallback = {(SwrveResourcesUpdatedListener) -> Void in
+        config.resourcesUpdatedCallback = {() -> Void in
             // New campaigns are available
             NotificationCenter.default.post(name: Notification.Name(rawValue: "SwrveUserResourcesUpdated"), object: self);
         }

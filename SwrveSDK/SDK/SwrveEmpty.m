@@ -76,8 +76,11 @@
     return SWRVE_SUCCESS;
 }
 
-- (int)unvalidatedIap:(SwrveIAPRewards *)rewards localCost:(double)localCost localCurrency:(NSString *)localCurrency productId:(NSString *)productId productIdQuantity:(int)productIdQuantity
-{
+- (int)unvalidatedIap:(SwrveIAPRewards *)rewards
+            localCost:(double)localCost
+        localCurrency:(NSString *)localCurrency
+            productId:(NSString *)productId
+    productIdQuantity:(int)productIdQuantity {
 #pragma unused(rewards, localCost, localCurrency, productId, productIdQuantity)
     return SWRVE_SUCCESS;
 }
@@ -140,10 +143,8 @@
 - (void)shutdown {
 }
 
-
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
-- (void)setDeviceToken:(NSData*)deviceToken
-{
+- (void)setDeviceToken:(NSData*)deviceToken {
 #pragma unused(deviceToken)
 }
 
@@ -151,8 +152,7 @@
 #pragma unused(response)
 }
 
-- (NSString *)deviceToken
-{
+- (NSString *)deviceToken {
     return nil;
 }
 
@@ -258,6 +258,17 @@
 
 - (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate {
 #pragma unused (sessionDelegate)
+}
+
+- (void)start {
+}
+
+- (void)startWithUserId:(NSString *)userId {
+#pragma unused (userId)
+}
+
+- (BOOL)started {
+    return false;
 }
 
 @end

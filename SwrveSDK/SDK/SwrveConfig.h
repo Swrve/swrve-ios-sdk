@@ -23,6 +23,15 @@ enum SwrveStack {
     SWRVE_STACK_EU
 };
 
+/*! Swrve init modes.*/
+typedef enum {
+    /// This is the default mode and automatically tracks when your app appears in the foreground.
+            SWRVE_INIT_MODE_AUTO,
+    /// This mode should be configured to manage setting the userId and manage how it starts.
+    /// See managedModeAutoStartLastUser configuration also.
+            SWRVE_INIT_MODE_MANAGED
+} SwrveInitMode;
+
 /*! Defines the block signature for being notified when the resources
  * have been updated with new content.
  */
@@ -35,11 +44,18 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic) SwrveInterfaceOrientation orientation;
 
 /*! By default Swrve will choose the status bar appearance
- * when presenting any view controllers.
+ * when presenting any In-app view Incontrollers.
  * You can disable this functionality by setting
  * prefersIAMStatusBarHidden to false.
  */
 @property (nonatomic) BOOL prefersIAMStatusBarHidden;
+
+/*! By default the app will choose the status bar appearance
+ * when presenting any Conversation view controllers.
+ * You can force the status bar to be hidden by setting
+ * prefersConversationsStatusBarHidden to true.
+ */
+@property (nonatomic) BOOL prefersConversationsStatusBarHidden;
 
 /*! By default Swrve will read the application version from the current
  * application bundle. This is used to allow you to test and target users with a
@@ -160,6 +176,17 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  */
 @property (nonatomic) enum SwrveStack stack;
 
+/*! Default mode is SWRVE_INIT_MODE_AUTO which automatically starts when UI is shown. Set initMode to
+ * SWRVE_INIT_MODE_MANAGED to delay starting the sdk until start api is called.
+ */
+@property(nonatomic) SwrveInitMode initMode;
+
+/*! This configuration can only be used in initMode SWRVE_INIT_MODE_MANAGED. If true, the sdk will delay starting until
+ * the start api is called and the userId is set. Once set, it will autostart when UI is shown. Set to false to force the
+ * sdk to always delay tracking until a start api is called.
+ */
+@property(nonatomic) BOOL managedModeAutoStartLastUser;
+
 /*! Obtain information about the AB Tests a user is part of.
  */
 @property (nonatomic) BOOL abTestDetailsEnabled;
@@ -176,6 +203,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 - (id)initWithMutableConfig:(SwrveConfig *)config;
 @property (nonatomic, readonly) SwrveInterfaceOrientation orientation;
 @property (nonatomic, readonly) BOOL prefersIAMStatusBarHidden;
+@property (nonatomic, readonly) BOOL prefersConversationsStatusBarHidden;
 @property (nonatomic, readonly) int httpTimeoutSeconds;
 @property (nonatomic, readonly) NSString *eventsServer;
 @property (nonatomic, readonly) NSString *contentServer;
@@ -199,6 +227,8 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) NSString *appGroupIdentifier;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
 @property (nonatomic, readonly) enum SwrveStack stack;
+@property (nonatomic, readonly) SwrveInitMode initMode;
+@property(nonatomic, readonly) BOOL managedModeAutoStartLastUser;
 @property (nonatomic) BOOL abTestDetailsEnabled;
 @property (nonatomic, retain) id <SwrvePermissionsDelegate> permissionsDelegate;
 

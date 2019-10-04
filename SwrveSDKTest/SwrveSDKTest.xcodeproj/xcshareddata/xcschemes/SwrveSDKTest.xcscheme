@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B2CC8A1D9434166BE22EF1A7D85657E2"
+               BlueprintIdentifier = "0DFD7F774268DE42B4A6461AFACC9EC4"
                BuildableName = "libPods-SwrveSDKTest.a"
                BlueprintName = "Pods-SwrveSDKTest"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AB018B828D2CF1EBFC8F0EF8ED273003"
+               BlueprintIdentifier = "0BEE253693C5C7068F960DE8D76D66E0"
                BuildableName = "libPods-SwrveSDKTestTests.a"
                BlueprintName = "Pods-SwrveSDKTestTests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -84,6 +84,11 @@
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
+         <AdditionalOption
+            key = "NSZombieEnabled"
+            value = "YES"
+            isEnabled = "YES">
+         </AdditionalOption>
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
@@ -107,6 +112,11 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
+         <AdditionalOption
+            key = "NSZombieEnabled"
+            value = "YES"
+            isEnabled = "YES">
+         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction

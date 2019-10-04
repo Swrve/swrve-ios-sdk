@@ -333,13 +333,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = Swrve;
 				TargetAttributes = {
 					527386881ECA385E0016D70E = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 38YP67HQGE;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -351,8 +351,7 @@
 					};
 					527386A71ECA3A650016D70E = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 38YP67HQGE;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -362,18 +361,19 @@
 					5B402BB220F36E6800601BA4 = {
 						CreatedOnToolsVersion = 9.4.1;
 						DevelopmentTeam = 38YP67HQGE;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Automatic;
 					};
 					5B402BCC20F36F6000601BA4 = {
 						CreatedOnToolsVersion = 9.4.1;
-						DevelopmentTeam = 38YP67HQGE;
-						ProvisioningStyle = Automatic;
+						LastSwiftMigration = 1100;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
 			buildConfigurationList = 527386841ECA385E0016D70E /* Build configuration list for PBXProject "RichPushSample" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -488,49 +488,16 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/../../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveConversationSDK-library/SwrveConversationSDK.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F99838F193C774702FDB7054 /* [CP] Embed Pods Frameworks */ = {
@@ -539,7 +506,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
@@ -552,7 +519,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FDC31DD71E0FD93BE00DD723 /* [CP] Check Pods Manifest.lock */ = {
@@ -666,6 +633,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -723,6 +691,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -815,8 +784,8 @@
 				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -834,8 +803,8 @@
 				CODE_SIGN_ENTITLEMENTS = "RichPushSample-ObjC/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -874,7 +843,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -906,7 +875,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -928,18 +897,19 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -961,17 +931,18 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "RichPushSample-Swift/RichPushSampleServiceExtension/RichPushSampleServiceExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 38YP67HQGE;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/RichPushSample-Swift/RichPushSampleServiceExtension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample.RichPushSampleServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -80,6 +80,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
 @property (nonatomic, retain) NSString*             inAppButtonPressedName;
 @property (nonatomic)         bool                  prefersIAMStatusBarHidden;
+@property (nonatomic)         bool                  prefersConversationsStatusBarHidden;
 
 // Current Device Properties
 @property (nonatomic) int device_width;
@@ -137,6 +138,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize prefersConversationsStatusBarHidden;
 @synthesize conversationsMessageQueue;
 
 + (void)initialize {
@@ -171,6 +173,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.device_width  = (int)screen_bounds.size.width;
     self.orientation   = sdk.config.orientation;
     self.prefersIAMStatusBarHidden = sdk.config.prefersIAMStatusBarHidden;
+    self.prefersConversationsStatusBarHidden = sdk.config.prefersConversationsStatusBarHidden;
     self.language           = sdk.config.language;
     self.user               = [sdk userID];
     self.apiKey             = sdk.apiKey;
@@ -1116,7 +1119,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                                   withItemController:self.swrveConversationItemViewController
                                     withEventHandler:(id<SwrveMessageEventHandler>)self
                                             inWindow:self.conversationWindow
-                                 withMessageDelegate:self.showMessageDelegate];
+                                 withMessageDelegate:self.showMessageDelegate
+                                                         withStatusBarHidden:self.analyticsSDK.config.prefersConversationsStatusBarHidden];
             if(!success) {
                 self.conversationWindow = nil;
             }

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDKCommon"
-  s.version          = "6.2.1"
+  s.version          = "6.3.0"
   s.summary          = "iOS Common library for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => s.name.to_s + "/LICENSE" }
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.social_media_url = 'https://twitter.com/Swrve_Inc'
   s.documentation_url = 'https://docs.swrve.com/developer-documentation/integration/ios/'
 
-  s.platforms    = { :ios => "6.0", :tvos => "9.0" }
+  s.platforms    = { :ios => "7.0", :tvos => "9.0" }
   s.requires_arc = true
 
   s.tvos.user_target_xcconfig = s.tvos.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SWRVE_NO_PUSH' }

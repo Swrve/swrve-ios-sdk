@@ -31,7 +31,7 @@ class ViewController: UITableViewController {
         campaigns = unsortedCampaigns.sortedArray(using: [descriptor]) as NSArray
     }
 
-    func newSwrveCampaigns(_ notification: Notification) {
+    @objc func newSwrveCampaigns(_ notification: Notification) {
         refreshDataSource()
         self.tableView.reloadData()
     }
@@ -59,16 +59,16 @@ extension ViewController {
         return true
     }
 
-    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        return UITableViewCellEditingStyle.delete
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.delete
     }
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == UITableViewCellEditingStyle.delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
             guard let campaign = campaigns[indexPath.row] as? SwrveCampaign else { return }
             tableView.beginUpdates()
             SwrveSDK.messaging().removeMessageCenter(campaign)
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.left)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
             tableView.endUpdates()
         }
     }

@@ -10,6 +10,7 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationContainerViewController.h"
+#import "SwrveConversationResourceManagement.h"
 
 @interface SwrveConversationItemViewController() {
     NSUInteger numViewsReady;
@@ -43,13 +44,16 @@
 
     SwrveConversationItemViewController *itemViewController;
     @try {
+ 
+        NSBundle *conversationBundle = [SwrveConversationResourceManagement conversationBundle];
+        
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:
 #if TARGET_OS_IOS /** exclude tvOS **/
                                     @"SwrveConversation"
 #else
                                     @"SwrveConversation-tvos"
 #endif
-                                                             bundle:[NSBundle bundleForClass:[SwrveBaseConversation class]]];
+                                                             bundle:conversationBundle];
         itemViewController = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
     }
     @catch (NSException *exception) {
@@ -63,6 +67,15 @@
         withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
                 inWindow:(UIWindow *)conversationWindow
      withMessageDelegate:(id)messageDelegate {
+    return [SwrveConversationItemViewController showConversation:conversation withItemController:conversationItemViewController withEventHandler:eventHandler inWindow:conversationWindow withMessageDelegate:messageDelegate withStatusBarHidden:NO];
+}
+
++ (bool)showConversation:(SwrveBaseConversation *)conversation
+    withItemController:(SwrveConversationItemViewController *)conversationItemViewController
+        withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
+                inWindow:(UIWindow *)conversationWindow
+     withMessageDelegate:(id)messageDelegate
+     withStatusBarHidden:(BOOL)prefeerStatusBarHidden {
 
     if (!conversation || conversationItemViewController == nil || conversationWindow == nil) {
         DebugLog(@"Unable to showConversation.");
@@ -86,9 +99,9 @@
                                                                                   action:@selector(cancelButtonTapped:)];
 #pragma clang diagnostic pop
     conversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
-        SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc];
+        SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc withStatusBarHidden:prefeerStatusBarHidden];
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -96,7 +109,7 @@
             [messageDelegate performSelector:@selector(messageWillBeShown:) withObject:rootController];
         }
 #pragma clang diagnostic pop
-        
+
         conversationWindow.rootViewController = rootController;
         conversationWindow.windowLevel = UIWindowLevelAlert + 1;
         [conversationWindow makeKeyAndVisible];
@@ -135,7 +148,7 @@
 
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     // Subscrite to internal notifications and orientation changes
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewReady:)
@@ -144,7 +157,7 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 #endif
-    
+
     self.navigationController.navigationBarHidden = YES;
     [self updateUI];
     [self.view setHidden:YES];
@@ -159,7 +172,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
     // Unsubscribe from internal notifications and orientation changes
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kSwrveNotificationViewReady
@@ -167,7 +180,7 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 #endif
-    
+
     // Cleanup views for all panes
     for(SwrveConversationPane* page in self.conversation.pages) {
         for(SwrveConversationAtom* contentItem in page.content) {
@@ -203,7 +216,7 @@
             newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
             newFrame.origin.y =  (size.height / 2) - (newFrame.size.height / 2);
         }
-        
+
         self.view.frame = newFrame;
         // Apply styles from conversationPane
         [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
@@ -219,7 +232,7 @@
         // Hide border
         self.view.layer.borderWidth = 0;
         self.view.layer.cornerRadius = 0.0f;
-        
+
         // Add top margin of close button and content
         // to take into account the status bar.
         if (@available(iOS 7.0, *)) {
@@ -229,7 +242,7 @@
             [self.cancelButtonView setNeedsUpdateConstraints];
         }
     }
-    
+
     for(SwrveConversationAtom *atom in self.conversationPane.content) {
         // Layout with the frame of the root UIView
         [atom parentViewChangedSize:self.view.frame.size];
@@ -260,11 +273,11 @@
     NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;
-    
+
     if (actions == nil) {
         return;
     }
-    
+
     for (NSString *key in [actions allKeys]) {
         if ([key isEqualToString:@"visit"]) {
             actionType = SwrveVisitURLActionType;
@@ -285,7 +298,7 @@
             [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
         }
     }
-    
+
     switch (actionType) {
         case SwrveCallNumberActionType: {
             [SwrveConversationEvents callNumber:conversation onPage:conversationPaneTag withControl:control.tag];
@@ -304,12 +317,12 @@
                 [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
                 return;
             }
-            
+
             NSURL *target = [NSURL URLWithString:param];
             if (![target scheme]) {
                 target = [NSURL URLWithString:[@"http://" stringByAppendingString:param]];
             }
-            
+
             if (target == nil || ![[UIApplication sharedApplication] canOpenURL:target]) {
                 // The URL scheme could be an app URL scheme, but there is a chance that
                 // the user doesn't have the app installed, which leads to confusing behaviour
@@ -382,10 +395,10 @@
     // Things that are 'running' need to be 'stopped'
     // Bit of a band-aid for videos continuing to play in the background for now.
     [self stopAtoms];
-    
+
     // Issue events for data from the user
     [SwrveConversationEvents gatherAndSendUserInputs:self.conversationPane forConversation:conversation];
-    
+
     // Move onto the next page in the conversation - fetch the next Convseration pane
     if ([control endsConversation]) {
         [SwrveConversationEvents done:conversation onPage:self.conversationPane.tag withControl:control.tag];
@@ -395,13 +408,13 @@
     } else {
         SwrveConversationPane *nextPage = [conversation pageForTag:control.target];
         [SwrveConversationEvents pageTransition:conversation fromPage:self.conversationPane.tag toPage:nextPage.tag withControl:control.tag];
-        
+
         self.conversationPane = nextPage;
         dispatch_async(dispatch_get_main_queue(), ^ {
             [self updateUI];
         });
     }
-    
+
     [self runControlActions:control onPage:self.conversationPane.tag];
     return YES;
 }
@@ -419,7 +432,7 @@
     self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
-            // Delay for .01ms to account for killing the conversation stuff (iOS6) 
+            // Delay for .01ms to account for killing the conversation stuff (iOS6)
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (u_int64_t)0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self->controller conversationClosed];
             });
@@ -440,29 +453,29 @@
     numViewsReady++;
     if(numViewsReady == self.conversationPane.content.count) {
         contentHeight = 0; //reset the contentHeight before we reload
-        
+
         for(SwrveConversationAtom *atom in self.conversationPane.content) {
-            
+
             if([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-                
+
                 for(uint i = 0; i < (uint)[multValue.values count]; i++){
                     contentHeight += (float)[multValue heightForRow:(uint)i inTableView:self.contentTableView];
                 }
-                
+
             }else if([atom.type isEqualToString:kSwrveContentTypeImage]) {
                 SwrveContentImage *imageAtom = (SwrveContentImage *)atom;
                 contentHeight += (float)imageAtom.view.frame.size.height;
-                
+
             }else{
                 contentHeight += (float)atom.view.frame.size.height;
             }
         }
-        
+
         for (SwrveConversationAtom *atom in self.conversationPane.controls) {
             contentHeight +=(float)atom.view.frame.size.height + SWRVE_CONVERSATION_MODAL_MARGIN;
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
             [self viewWillLayoutSubviews];
@@ -476,7 +489,7 @@
     self.navigationItem.title = self.conversationPane.title;
     [SwrveConversationStyler styleView:fullScreenBackgroundImageView withStyle:self.conversationPane.pageStyle];
     self.contentTableView.backgroundColor = [UIColor clearColor];
-    
+
     // In the case where a pane is scrolled, then the user moves on to the next
     // pane, that second pane will display as scrolled too, unless we reset the
     // tableview to the top of the content stack.
@@ -484,24 +497,24 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
     self.contentTableView.separatorColor = [UIColor clearColor];
 #endif
-    
+
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {
-        
+
         // Ensure there are no Checkmarks selected initially
         if([atom.type isEqualToString:kSwrveInputMultiValue]) {
             SwrveInputMultiValue *vgInputMultiValue = (SwrveInputMultiValue *)atom;
             vgInputMultiValue.selectedIndex = -1;
         }
-        
+
         [atom loadViewWithContainerView:self.view];
     }
-    
+
     // Remove current buttons
     for (UIView *view in buttonsView.subviews) {
         [view removeFromSuperview];
     }
-    
+
     NSArray *buttons = self.conversationPane.controls;
     // Buttons need to fit into width - 2*button padding
     // When there are n buttons, there are n-1 gaps between them
@@ -527,7 +540,7 @@
     return UIInterfaceOrientationMaskAll;
 }
 #endif
-    
+
 -(void)setConversation:(SwrveBaseConversation*)conv andMessageController:(id<SwrveMessageEventHandler>)ctrl
 {
     conversation = conv;
@@ -556,7 +569,7 @@
         }
     }
 }
-    
+
 -(NSIndexPath *) indexPathForAtom:(SwrveConversationAtom *)atom {
     for(NSUInteger i = 0; i < self.conversationPane.content.count; i++) {
         if(atom == [self.conversationPane.content objectAtIndex:i]) {
@@ -575,21 +588,21 @@
     }
     return v;
 }
-    
+
 #pragma mark TableViewDelegate Methods
-    
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #pragma unused (tableView)
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:(NSUInteger)section];
     return (NSInteger)[atom numberOfRowsNeeded];
 }
-    
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSUInteger objectIndex = [self objectIndexFromIndexPath:indexPath]; // HACK
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom cellForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
-    
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #pragma unused (tableView)
     // Each item is a "section"
@@ -602,7 +615,7 @@
     SwrveConversationAtom *atom = [self.conversationPane.content objectAtIndex:objectIndex];
     return [atom heightForRow:(NSUInteger)indexPath.row inTableView:tableView];
 }
-    
+
 - (NSUInteger) objectIndexFromIndexPath:(NSIndexPath *)indexPath {
     NSUInteger checkedIndexPath = (NSUInteger)indexPath.section;
     NSUInteger paneCount = [self.conversationPane.content count];
@@ -624,10 +637,4 @@
     }
 }
 
-#if TARGET_OS_IOS
-- (BOOL)prefersStatusBarHidden {
-    return NO;
-}
-#endif
-    
 @end

@@ -1,6 +1,5 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "AppDelegate.h"
 
 #import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
@@ -8,9 +7,31 @@
 
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
+
 - (NSDate *)getNow;
-- (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+
+- (void)setSwrveSessionDelegate:(id <SwrveSessionDelegate>)sessionDelegate;
+
+- (void)registerLifecycleCallbacks;
+
+- (void)initWithUserId:(NSString *)swrveUserId;
+
+- (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession;
+
+- (void)beginSession;
+
+@property(atomic) SwrveRESTClient *restClient;
+
+- (BOOL)lifecycleCallbacksRegistered;
+
+- (NSString *)swrveInitModeString;
+
+@end
+
+@interface SwrveSDK (InternalAccess)
++ (void)addSharedInstance:(Swrve *)instance;
+
++ (void)resetSwrveSharedInstance;
 @end
 
 @interface SwrveTestInit : XCTestCase
@@ -18,7 +39,6 @@
 @end
 
 @implementation SwrveTestInit
-
 
 - (void)setUp {
     [super setUp];
@@ -92,6 +112,7 @@
     XCTAssertTrue(config.autoSaveEventsOnResign);
     XCTAssertTrue(config.autoSendEventsOnResume);
     XCTAssertTrue(config.prefersIAMStatusBarHidden);
+    XCTAssertFalse(config.prefersConversationsStatusBarHidden);
 }
 
 - (void)testStackConfig {
@@ -137,7 +158,7 @@
 
     id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
-    
+
     id mockSwrveSessionDelegate1 = OCMProtocolMock(@protocol(SwrveSessionDelegate)); // mock SessionDelegate for each verify
     XCTestExpectation *completionHandler1 = [self expectationWithDescription:@"SwrveSessionDelegate1"];
     OCMExpect([mockSwrveSessionDelegate1 sessionStarted]).andDo(^(NSInvocation *invocation) {
@@ -177,5 +198,250 @@
     }];
     OCMVerifyAll(mockSwrveSessionDelegate3);
 }
+
+- (void)testSdkStartedAutoMode {
+    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    XCTAssertNotNil(swrveMockAuto);
+    XCTAssertTrue([SwrveSDK started]);
+    [swrveMockAuto stopMocking];
+}
+
+- (void)testSdkStartedManagedModeAndAutoStartFalse {
+    id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    XCTAssertFalse([SwrveSDK started]);
+    [SwrveSDK start];
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+    XCTAssertTrue([SwrveSDK started]);
+
+    id swrveMockManaged2 = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    XCTAssertFalse([SwrveSDK started]); // Should be false because the sdk should NOT be autostarted
+    [SwrveSDK start];
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+    XCTAssertTrue([SwrveSDK started]);
+}
+
+- (void)testSdkStartedManagedModeAndAutoStartTrue {
+
+    id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    XCTAssertFalse([SwrveSDK started]);
+    [SwrveSDK start];
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+    XCTAssertTrue([SwrveSDK started]);
+
+    id swrveMockManagedOnce2 = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManagedOnce2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    XCTAssertTrue([SwrveSDK started]); // the second instance is started upon init.
+}
+
+- (void)testInitModeManaged {
+
+    id swrveMockManaged = OCMPartialMock([Swrve alloc]);
+    OCMReject([swrveMockManaged registerLifecycleCallbacks]);
+    OCMReject([swrveMockManaged initWithUserId:OCMOCK_ANY]);
+    [self initSwrveMock:swrveMockManaged mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    OCMVerifyAll(swrveMockManaged);
+}
+
+- (void)testInitModeManagedAndAutoStart {
+
+    // create instance first time but don't call start api
+    id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
+    OCMReject([swrveMockManaged1 registerLifecycleCallbacks]);
+    OCMReject([swrveMockManaged1 initWithUserId:OCMOCK_ANY]);
+    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    OCMVerifyAll(swrveMockManaged1);
+    [swrveMockManaged1 stopMocking];
+
+    // second instance created but note that start api still hasn't been called so registerLifecycleCallbacks, etc still not called yet
+    id swrveMockManaged2 = OCMPartialMock([Swrve alloc]);
+    OCMReject([swrveMockManaged2 registerLifecycleCallbacks]);
+    OCMReject([swrveMockManaged2 initWithUserId:OCMOCK_ANY]);
+    [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    OCMVerifyAll(swrveMockManaged2);
+
+    // start the sdk
+    [SwrveSDK start];
+    [swrveMockManaged2 stopMocking];
+
+    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+
+    // third instance created and sdk was started previously and userId created, therefore autostarted this time
+    id swrveMockManaged3 = OCMPartialMock([Swrve alloc]);
+    OCMExpect([swrveMockManaged3 registerLifecycleCallbacks]);
+    OCMExpect([swrveMockManaged3 initWithUserId:OCMOCK_ANY]);
+    [self initSwrveMock:swrveMockManaged3 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    OCMVerifyAll(swrveMockManaged3);
+    XCTAssertTrue([SwrveSDK started]);
+    [swrveMockManaged3 stopMocking];
+}
+
+- (void)testInitModeManagedStart {
+
+    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    XCTAssertNotNil(swrveMockManaged);
+
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    Swrve *swrve = (Swrve *) swrveMockManaged;
+    swrve.restClient = mockRestClient;
+
+    [SwrveSDK start];
+
+    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+
+    OCMVerify([swrveMockManaged registerLifecycleCallbacks]);
+    NSString *userId = [SwrveSDK userID];
+    OCMVerify([swrveMockManaged switchUser:userId isFirstSession:true]);
+    OCMVerify([swrveMockManaged beginSession]);
+    OCMVerify([mockRestClient sendHttpGETRequest:[OCMArg checkWithBlock:^BOOL(NSURL *value) {
+        XCTAssertNotNil(value);
+        XCTAssertTrue([[value absoluteString] containsString:@"https://123.content.swrve.com/api/1/user_resources_and_campaigns"], @"Missing a refresh of campaigns");
+        XCTAssertTrue([[value absoluteString] containsString:userId], @"refresh campaigns for incorrect userid");
+        return true; // asserts above are more descriptive so returning true
+    }]                         completionHandler:OCMOCK_ANY]);
+
+    //Check if start called again it doesn't begin another session.
+    OCMReject([swrveMockManaged beginSession]);
+    [SwrveSDK start];
+    OCMVerifyAll(swrveMockManaged);
+
+    [swrveMockManaged stopMocking];
+}
+
+- (void)testInitModeManagedStartWithSameUser {
+
+    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    XCTAssertNotNil(swrveMockManaged);
+
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    Swrve *swrve = (Swrve *) swrveMockManaged;
+    swrve.restClient = mockRestClient;
+
+    NSString *userId = [SwrveSDK userID];
+    XCTAssertNotEqualObjects(userId, @"SomeUserId");
+
+    [SwrveSDK startWithUserId:@"SomeUserId"];
+
+    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+
+    OCMVerify([swrveMockManaged registerLifecycleCallbacks]);
+    OCMVerify([swrveMockManaged switchUser:@"SomeUserId" isFirstSession:true]);
+    OCMVerify([swrveMockManaged beginSession]);
+    OCMVerify([mockRestClient sendHttpGETRequest:[OCMArg checkWithBlock:^BOOL(NSURL *value) {
+        XCTAssertNotNil(value);
+        XCTAssertTrue([[value absoluteString] containsString:@"https://123.content.swrve.com/api/1/user_resources_and_campaigns"], @"Missing a refresh of campaigns");
+        XCTAssertTrue([[value absoluteString] containsString:@"user=SomeUserId"], @"refresh campaigns for incorrect userid");
+        return true; // asserts above are more descriptive so returning true
+    }]                         completionHandler:OCMOCK_ANY]);
+
+    //Check if startWithUserId called again it doesn't begin another session for the same user
+    OCMReject([swrveMockManaged beginSession]);
+    [SwrveSDK startWithUserId:@"SomeUserId"];
+
+    userId = [SwrveSDK userID];
+    XCTAssertEqualObjects(userId, @"SomeUserId");
+
+    [swrveMockManaged stopMocking];
+}
+
+- (void)testAutoCantCallStartMethod {
+    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    XCTAssertNotNil(swrveMockAuto);
+    BOOL pass = false;
+    @try {
+        [SwrveSDK start];
+    } @catch (NSException *exception) {
+        pass = true;
+    }
+    XCTAssertTrue(pass);
+    [swrveMockAuto stopMocking];
+}
+
+- (void)testAutoCantCallStartWithUserMethod {
+    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    XCTAssertNotNil(swrveMockAuto);
+    BOOL pass = false;
+    @try {
+        [SwrveSDK startWithUserId:@"SomeUserId"];
+    } @catch (NSException *exception) {
+        pass = true;
+    }
+    XCTAssertTrue(pass);
+    [swrveMockAuto stopMocking];
+}
+
+- (void)testManagedCantCallIdentityMethod {
+    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    BOOL pass = false;
+    @try {
+        [SwrveSDK identify:@"SomeUser" onSuccess:nil onError:nil];
+    } @catch (NSException *exception) {
+        pass = true;
+    }
+    XCTAssertTrue(pass);
+}
+
+- (void)testRegisterLifecycleCallbacks {
+    // Test to make sure the lifecycleCallbacksRegistered BOOL gets set when registerLifecycleCallbacks method is called.
+    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    XCTAssertFalse([swrveMockManaged lifecycleCallbacksRegistered]);
+    [swrveMockManaged registerLifecycleCallbacks];
+    XCTAssertTrue([swrveMockManaged lifecycleCallbacksRegistered]);
+    [swrveMockManaged stopMocking];
+}
+
+- (void)testInitModeString {
+    id swrveMockAuto = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockAuto mode:SWRVE_INIT_MODE_AUTO autoStart:false];
+    XCTAssertEqualObjects([swrveMockAuto swrveInitModeString], @"auto");
+
+    id swrveMockManagedAutostartFalse = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManagedAutostartFalse mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    XCTAssertEqualObjects([swrveMockManagedAutostartFalse swrveInitModeString], @"managed");
+
+    id swrveMockManagedAutostartTrue = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockManagedAutostartTrue mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    XCTAssertEqualObjects([swrveMockManagedAutostartTrue swrveInitModeString], @"managed_auto");
+}
+
+- (id)initSwrveSDKWithMode:(SwrveInitMode)mode {
+
+    [SwrveSDK resetSwrveSharedInstance];
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    config.initMode = mode;
+    Swrve *swrve = [Swrve alloc];
+    id swrveMock = OCMPartialMock(swrve);
+    [SwrveSDK addSharedInstance:swrveMock];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+
+    return swrveMock;
+}
+
+- (void)initSwrveMock:(id)swrveMock mode:(SwrveInitMode)mode autoStart:(BOOL) autoStart {
+
+    [SwrveSDK resetSwrveSharedInstance];
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    config.initMode = mode;
+    config.managedModeAutoStartLastUser = autoStart;
+    Swrve *swrve = (Swrve *) swrveMock;
+    [SwrveSDK addSharedInstance:swrveMock];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+}
+
 
 @end

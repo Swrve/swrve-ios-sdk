@@ -1,6 +1,7 @@
 #import "SwrveContentHTML.h"
 #import "SwrveConversationStyler.h"
 #import "SwrveCommon.h"
+#import "SwrveLocalStorage.h"
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; } b, i, u { margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline; } /* HTML5 display-role reset for older browsers */ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; } body { line-height: 1; } ol, ul { list-style: none; } blockquote, q { quotes: none; } blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; } table { border-collapse: collapse; border-spacing: 0; } /* Swrve defaults */ body { font-size: 16px; -webkit-text-size-adjust: 100%;  line-height: 26px; font-family: Helvetica, Arial; } p { letter-spacing: 0; font-size: 16px; line-height: 26px; margin: 0 20px; } h1 { font-size: 48px; line-height: 64px; margin: 0 20px; letter-spacing: 0; text-align: center; } h2 { font-size: 34px; line-height: 45px; margin: 0 20px; letter-spacing: 0; text-align: center; } h3 { font-size: 24px; line-height: 34px; letter-spacing: 0; margin: 0 20px; text-transform: none; text-align: center; } h4, h5, h6 { text-align: center; } strong { font-weight: bold;} em {font-style: italic;}";
@@ -17,7 +18,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     _containerView = containerView;
     // Create _view
     _view = webview = [[WKWebView alloc] init];
-    webview.frame = CGRectMake(0,0, 1, 1);
+    webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 100);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;
     [webview setUIDelegate:self];
@@ -26,6 +27,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     webview.scrollView.scrollEnabled = NO;
     
     NSString *html = [SwrveConversationStyler convertContentToHtml:self.value withPageCSS:DEFAULT_CSS withStyle:self.style];
+
     [webview loadHTMLString:html baseURL:nil];
 }
 
@@ -48,7 +50,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 
 - (void) webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
 #pragma unused (navigation, webView)
-    [webview evaluateJavaScript:@"document.body.scrollHeight;" completionHandler:
+    [webview evaluateJavaScript:@"document.getElementById('swrve_content').clientHeight;" completionHandler:
      ^(id _Nullable response, NSError * _Nullable error) {
 #pragma unused (error)
          // Measure and set width

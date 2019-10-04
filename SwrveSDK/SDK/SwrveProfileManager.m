@@ -50,11 +50,10 @@
         NSString* initialUser = [SwrveLocalStorage swrveUserId];
         if ((initialUser == nil) || [initialUser isEqualToString:@""]) {
             initialUser = [[NSUUID UUID] UUIDString];
-            [SwrveLocalStorage saveSwrveUserId:initialUser];
         }
         self.appId = _appId;
         self.apiKey = _apiKey;
-
+        
         [self switchUser:initialUser];
     }
     return self;
@@ -63,6 +62,12 @@
 - (void)switchUser:(NSString*)userId {
     _userId = userId;
     [self createSessionToken];
+}
+
+- (void)persistUser {
+    @synchronized (self) {
+        [SwrveLocalStorage saveSwrveUserId:_userId];
+    }
 }
 
 - (void)createSessionToken {

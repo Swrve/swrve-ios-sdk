@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2E646FD9C24D0B5C2F94FBBE /* libPods-SwrveSDKTVTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */; };
+		3A3A8C39230C464200D53B0C /* SwrveTestInitMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */; };
+		3A3A8C3A230C464300D53B0C /* SwrveTestInitMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */; };
+		3A3A8C3E230ECC2000D53B0C /* SwrveTestInitModeIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */; };
+		3A71967D231D1B3C00500C08 /* SwrveTestPushNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */; };
 		3AA08417226A251600ECA032 /* SwrveTestInitTV.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA08416226A251600ECA032 /* SwrveTestInitTV.m */; };
 		3AA0841A226F25C400ECA032 /* SwrveTestInitIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */; };
 		3AA0841D2270BFC500ECA032 /* SwrveTestQA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */; };
@@ -24,9 +27,10 @@
 		52740A7C1CF70D5E00151035 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7A1CF70D5E00151035 /* Main.storyboard */; };
 		52740A7E1CF70D5E00151035 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7D1CF70D5E00151035 /* Assets.xcassets */; };
 		52740A811CF70D5E00151035 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52740A7F1CF70D5E00151035 /* LaunchScreen.storyboard */; };
-		71D9E6FC821B01ACE537893A /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */; };
-		95E7B5D63721364EF75B9508 /* libPods-SwrveSDKTVTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */; };
-		E3E76A465177869437690C03 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */; };
+		64ACE220A25C110E5C7E7920 /* libPods-SwrveSDKTVTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC7B5790575125F5560CBB3B /* libPods-SwrveSDKTVTests.a */; };
+		A54D67024BFD7180990260E0 /* libPods-SwrveSDKTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C900B7D8A03D652787EDC3CB /* libPods-SwrveSDKTest.a */; };
+		CAEB6FC6C72216C396506670 /* libPods-SwrveSDKTestTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4BACCA2196549B3C5EB7913 /* libPods-SwrveSDKTestTests.a */; };
+		D64E4DBF24332A3A57539E19 /* libPods-SwrveSDKTVTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBF75CEBBDF4758F19F2DAE /* libPods-SwrveSDKTVTest.a */; };
 		F60B7F44225F3BA1009AFCCC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F43225F3BA1009AFCCC /* AppDelegate.m */; };
 		F60B7F47225F3BA1009AFCCC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F60B7F46225F3BA1009AFCCC /* ViewController.m */; };
 		F60B7F4A225F3BA1009AFCCC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60B7F48225F3BA1009AFCCC /* Main.storyboard */; };
@@ -61,7 +65,6 @@
 		F641122D227742E300399A66 /* campaignsDelay.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411214227742E200399A66 /* campaignsDelay.json */; };
 		F641122E227742E300399A66 /* campaignsFuture.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411215227742E200399A66 /* campaignsFuture.json */; };
 		F641122F227742E300399A66 /* campaignsFuture.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411215227742E200399A66 /* campaignsFuture.json */; };
-		F6411230227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */; };
 		F6411231227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411216227742E200399A66 /* campaignsMultipleTriggerConditions.json */; };
 		F6411232227742E300399A66 /* campaignRoundRobin.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411217227742E300399A66 /* campaignRoundRobin.json */; };
 		F6411233227742E300399A66 /* campaignRoundRobin.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411217227742E300399A66 /* campaignRoundRobin.json */; };
@@ -138,16 +141,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
-		2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.debug.xcconfig"; sourceTree = "<group>"; };
-		326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.release.xcconfig"; sourceTree = "<group>"; };
+		05DE1C51105C4A7BD0CF429A /* Pods-SwrveSDKTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.debug.xcconfig"; sourceTree = "<group>"; };
+		257A548646BC143772ADAD84 /* Pods-SwrveSDKTVTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.debug.xcconfig"; sourceTree = "<group>"; };
+		3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitMode.m; sourceTree = "<group>"; };
+		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
+		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
 		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
 		3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitIOS.m; sourceTree = "<group>"; };
 		3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestQA.m; sourceTree = "<group>"; };
 		3AA0842A2271AE9900ECA032 /* abTestDetails.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = abTestDetails.json; sourceTree = "<group>"; };
 		3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestABTestDetails.m; sourceTree = "<group>"; };
 		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
-		3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		52740A6E1CF70D5E00151035 /* SwrveSDKTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveSDKTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52740A721CF70D5E00151035 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		52740A741CF70D5E00151035 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -159,14 +163,13 @@
 		52740A801CF70D5E00151035 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		52740A821CF70D5E00151035 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52740A871CF70D5E00151035 /* SwrveSDKTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwrveSDKTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
-		8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.debug.xcconfig"; sourceTree = "<group>"; };
-		CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.release.xcconfig"; sourceTree = "<group>"; };
-		EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
+		7E5EE09E4EE2645869E8211A /* Pods-SwrveSDKTVTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.debug.xcconfig"; sourceTree = "<group>"; };
+		8815A5543C22021181D6F3F0 /* Pods-SwrveSDKTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTestTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTestTests/Pods-SwrveSDKTestTests.release.xcconfig"; sourceTree = "<group>"; };
+		B16B601A19D9FEAE6632FE88 /* Pods-SwrveSDKTVTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTests.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTests/Pods-SwrveSDKTVTests.release.xcconfig"; sourceTree = "<group>"; };
+		BDBF75CEBBDF4758F19F2DAE /* libPods-SwrveSDKTVTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4BACCA2196549B3C5EB7913 /* libPods-SwrveSDKTestTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTestTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C900B7D8A03D652787EDC3CB /* libPods-SwrveSDKTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC7B5790575125F5560CBB3B /* libPods-SwrveSDKTVTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDKTVTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F60B7F40225F3BA1009AFCCC /* SwrveSDKTVTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveSDKTVTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F60B7F42225F3BA1009AFCCC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F60B7F43225F3BA1009AFCCC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -234,6 +237,9 @@
 		F66627262264A110001AF2EB /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
 		F66627282264A2D7001AF2EB /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
 		F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
+		FA5B2751740341D2AA03DE16 /* Pods-SwrveSDKTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.debug.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.debug.xcconfig"; sourceTree = "<group>"; };
+		FCF57410C8FCFB8A5B6B9460 /* Pods-SwrveSDKTVTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTVTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest.release.xcconfig"; sourceTree = "<group>"; };
+		FF7B056FBEAE5C97A9C81E47 /* Pods-SwrveSDKTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKTest.release.xcconfig"; path = "Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,7 +247,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				71D9E6FC821B01ACE537893A /* libPods-SwrveSDKTest.a in Frameworks */,
+				A54D67024BFD7180990260E0 /* libPods-SwrveSDKTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,7 +255,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3E76A465177869437690C03 /* libPods-SwrveSDKTestTests.a in Frameworks */,
+				CAEB6FC6C72216C396506670 /* libPods-SwrveSDKTestTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +263,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95E7B5D63721364EF75B9508 /* libPods-SwrveSDKTVTest.a in Frameworks */,
+				D64E4DBF24332A3A57539E19 /* libPods-SwrveSDKTVTest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,24 +271,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E646FD9C24D0B5C2F94FBBE /* libPods-SwrveSDKTVTests.a in Frameworks */,
+				64ACE220A25C110E5C7E7920 /* libPods-SwrveSDKTVTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		216292B63071DDD24190C43D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				8445FE170C599CCC8F1BADAA /* libPods-SwrveSDKTVTest.a */,
-				EAB0B1A8CD974551FEC09B67 /* libPods-SwrveSDKTVTests.a */,
-				CC5C8490AAA169873B9E317B /* libPods-SwrveSDKTest.a */,
-				A987EF8F2EE75EF6FE6CBC15 /* libPods-SwrveSDKTestTests.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		52740A651CF70D5E00151035 = {
 			isa = PBXGroup;
 			children = (
@@ -294,7 +289,7 @@
 				F66627062264A01A001AF2EB /* Helpers */,
 				52740A6F1CF70D5E00151035 /* Products */,
 				745D2A2AAAF7309F87F71ED7 /* Pods */,
-				216292B63071DDD24190C43D /* Frameworks */,
+				A12628CF4F75578C563573F2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -337,16 +332,27 @@
 		745D2A2AAAF7309F87F71ED7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */,
-				DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */,
-				B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */,
-				326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */,
-				7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */,
-				F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */,
-				2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */,
-				3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */,
+				257A548646BC143772ADAD84 /* Pods-SwrveSDKTVTest.debug.xcconfig */,
+				FCF57410C8FCFB8A5B6B9460 /* Pods-SwrveSDKTVTest.release.xcconfig */,
+				7E5EE09E4EE2645869E8211A /* Pods-SwrveSDKTVTests.debug.xcconfig */,
+				B16B601A19D9FEAE6632FE88 /* Pods-SwrveSDKTVTests.release.xcconfig */,
+				FA5B2751740341D2AA03DE16 /* Pods-SwrveSDKTest.debug.xcconfig */,
+				FF7B056FBEAE5C97A9C81E47 /* Pods-SwrveSDKTest.release.xcconfig */,
+				05DE1C51105C4A7BD0CF429A /* Pods-SwrveSDKTestTests.debug.xcconfig */,
+				8815A5543C22021181D6F3F0 /* Pods-SwrveSDKTestTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		A12628CF4F75578C563573F2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BDBF75CEBBDF4758F19F2DAE /* libPods-SwrveSDKTVTest.a */,
+				EC7B5790575125F5560CBB3B /* libPods-SwrveSDKTVTests.a */,
+				C900B7D8A03D652787EDC3CB /* libPods-SwrveSDKTest.a */,
+				C4BACCA2196549B3C5EB7913 /* libPods-SwrveSDKTestTests.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F60B7F41225F3BA1009AFCCC /* Empty App Tv */ = {
@@ -416,6 +422,7 @@
 				3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */,
 				F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */,
 				F66626EE22649FA3001AF2EB /* SwrveTestInit.m */,
+				3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */,
 				F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */,
 				F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */,
 				F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */,
@@ -441,6 +448,8 @@
 				F66626DE22649F51001AF2EB /* SwrveTestSignatureProtectedFile.m */,
 				F66626E022649F51001AF2EB /* SwrveTestSilentPush.m */,
 				F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */,
+				3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */,
+				3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */,
 			);
 			path = "ios Only";
 			sourceTree = "<group>";
@@ -494,11 +503,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A901CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTest" */;
 			buildPhases = (
-				6714E90F8B9DCC308186CE35 /* [CP] Check Pods Manifest.lock */,
+				D8E70DA1D0DB8604093A5E54 /* [CP] Check Pods Manifest.lock */,
 				52740A6A1CF70D5E00151035 /* Sources */,
 				52740A6B1CF70D5E00151035 /* Frameworks */,
 				52740A6C1CF70D5E00151035 /* Resources */,
-				F006C4A0BEB64836AD2E75A4 /* [CP] Copy Pods Resources */,
+				FE1E7F47AF34FBD20E72198D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -513,7 +522,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52740A931CF70D5E00151035 /* Build configuration list for PBXNativeTarget "SwrveSDKTestTests" */;
 			buildPhases = (
-				420011D9A128CCEFB2DDDAF6 /* [CP] Check Pods Manifest.lock */,
+				2A0441DBA9EB6571D0C1B58E /* [CP] Check Pods Manifest.lock */,
 				52740A831CF70D5E00151035 /* Sources */,
 				52740A841CF70D5E00151035 /* Frameworks */,
 				52740A851CF70D5E00151035 /* Resources */,
@@ -532,11 +541,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F60B7F5F225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTest" */;
 			buildPhases = (
-				4A58B5F4688783D17AD4BD69 /* [CP] Check Pods Manifest.lock */,
+				0967E2D826B46A526C727360 /* [CP] Check Pods Manifest.lock */,
 				F60B7F3C225F3BA1009AFCCC /* Sources */,
 				F60B7F3D225F3BA1009AFCCC /* Frameworks */,
 				F60B7F3E225F3BA1009AFCCC /* Resources */,
-				E9E0B109CF5009F903A939C9 /* [CP] Copy Pods Resources */,
+				B37C542B244D5E16E41FB1D1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -551,7 +560,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F60B7F60225F3BA3009AFCCC /* Build configuration list for PBXNativeTarget "SwrveSDKTVTests" */;
 			buildPhases = (
-				B3143C14D109E7B4374963DF /* [CP] Check Pods Manifest.lock */,
+				CF73C089AA81F7242540347E /* [CP] Check Pods Manifest.lock */,
 				F60B7F50225F3BA3009AFCCC /* Sources */,
 				F60B7F51225F3BA3009AFCCC /* Frameworks */,
 				F60B7F52225F3BA3009AFCCC /* Resources */,
@@ -601,6 +610,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -651,7 +661,6 @@
 				F641122A227742E300399A66 /* campaignSessionStart.json in Resources */,
 				F64112422277482300399A66 /* campaignsQAReset.json in Resources */,
 				F64112402277482300399A66 /* campaignsQAUser.json in Resources */,
-				F6411230227742E300399A66 /* campaignsMultipleTriggerConditions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -703,29 +712,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		420011D9A128CCEFB2DDDAF6 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTestTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4A58B5F4688783D17AD4BD69 /* [CP] Check Pods Manifest.lock */ = {
+		0967E2D826B46A526C727360 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -747,7 +734,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6714E90F8B9DCC308186CE35 /* [CP] Check Pods Manifest.lock */ = {
+		2A0441DBA9EB6571D0C1B58E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -762,14 +749,32 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTest-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTestTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B3143C14D109E7B4374963DF /* [CP] Check Pods Manifest.lock */ = {
+		B37C542B244D5E16E41FB1D1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveConversationSDK-tvOS/SwrveConversationSDK.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CF73C089AA81F7242540347E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -791,102 +796,40 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E9E0B109CF5009F903A939C9 /* [CP] Copy Pods Resources */ = {
+		D8E70DA1D0DB8604093A5E54 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation-tvos.storyboard",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+			inputFileListPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation-tvos.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+				"$(DERIVED_FILE_DIR)/Pods-SwrveSDKTest-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTVTest/Pods-SwrveSDKTVTest-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F006C4A0BEB64836AD2E75A4 /* [CP] Copy Pods Resources */ = {
+		FE1E7F47AF34FBD20E72198D /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDKTest/Pods-SwrveSDKTest-resources.sh",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/close_button@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset/star-empty@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/Contents.json",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@2x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset/star-full@3x.png",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveConversation.storyboard",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/VGConversationKitResources-Info.plist",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/close_button.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_empty.imageset",
-				"${PODS_ROOT}/../../SwrveConversationSDK/Resources/SwrveAssets.xcassets/star_full.imageset",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveConversationSDK-iOS/SwrveConversationSDK.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Contents.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-empty@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star-full@3x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversation.storyboardc",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/VGConversationKitResources-Info.plist",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/close_button.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_empty.imageset",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star_full.imageset",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -918,7 +861,9 @@
 				F66626F922649FA3001AF2EB /* SwrveTestInit.m in Sources */,
 				F66626FD22649FA3001AF2EB /* SwrveTestTriggersAndConditions.m in Sources */,
 				F66174CA226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
+				3A3A8C3E230ECC2000D53B0C /* SwrveTestInitModeIOS.m in Sources */,
 				F666270522649FA9001AF2EB /* SwrveTestSilentPush.m in Sources */,
+				3A71967D231D1B3C00500C08 /* SwrveTestPushNotifications.m in Sources */,
 				F666270122649FA9001AF2EB /* SwrveTestMigrationsManager.m in Sources */,
 				F66627142264A065001AF2EB /* SwrveTestHelper.m in Sources */,
 				F66626F522649FA3001AF2EB /* SwrveTestCustomPayloads.m in Sources */,
@@ -928,6 +873,7 @@
 				F66174C6226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */,
 				3AA0841D2270BFC500ECA032 /* SwrveTestQA.m in Sources */,
 				F6411206227742BA00399A66 /* SwrveTestMessageController.m in Sources */,
+				3A3A8C39230C464200D53B0C /* SwrveTestInitMode.m in Sources */,
 				F66627162264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */,
 				F66626F322649FA3001AF2EB /* SwrveTestEventQueueCallback.m in Sources */,
 				F66174C8226F637000E23980 /* SwrveTestCampaignMultipleConditions.m in Sources */,
@@ -958,6 +904,7 @@
 				F64112392277445D00399A66 /* TestShowMessageDelegateWithViewController.m in Sources */,
 				F66627172264A065001AF2EB /* SwrveMockNSURLProtocol.m in Sources */,
 				F60B7F95225F412A009AFCCC /* SwrveTVTestDeviceProperties.m in Sources */,
+				3A3A8C3A230C464300D53B0C /* SwrveTestInitMode.m in Sources */,
 				3ABBDCCE22771C1700A69CDE /* SwrveTestUserResources.m in Sources */,
 				F66626F822649FA3001AF2EB /* SwrveTestLocalStorage.m in Sources */,
 				3AA084312271B54400ECA032 /* SwrveTestABTestDetails.m in Sources */,
@@ -1127,7 +1074,7 @@
 		};
 		52740A911CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F435E74A238814A68C98D76 /* Pods-SwrveSDKTest.debug.xcconfig */;
+			baseConfigurationReference = FA5B2751740341D2AA03DE16 /* Pods-SwrveSDKTest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
@@ -1145,7 +1092,7 @@
 		};
 		52740A921CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F5D9627C1B7E1E1BA366ABBE /* Pods-SwrveSDKTest.release.xcconfig */;
+			baseConfigurationReference = FF7B056FBEAE5C97A9C81E47 /* Pods-SwrveSDKTest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
@@ -1163,7 +1110,7 @@
 		};
 		52740A941CF70D5E00151035 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2475EF315E705C8ABF99D5AF /* Pods-SwrveSDKTestTests.debug.xcconfig */;
+			baseConfigurationReference = 05DE1C51105C4A7BD0CF429A /* Pods-SwrveSDKTestTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1176,12 +1123,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTest.app/SwrveSDKTest";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 			};
 			name = Debug;
 		};
 		52740A951CF70D5E00151035 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3AC434CEB078EC5C1D60093A /* Pods-SwrveSDKTestTests.release.xcconfig */;
+			baseConfigurationReference = 8815A5543C22021181D6F3F0 /* Pods-SwrveSDKTestTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1194,12 +1142,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.SwrveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDKTest.app/SwrveSDKTest";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 			};
 			name = Release;
 		};
 		F60B7F5B225F3BA3009AFCCC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DDD3DAFFA5E58DEABBBEC0E /* Pods-SwrveSDKTVTest.debug.xcconfig */;
+			baseConfigurationReference = 257A548646BC143772ADAD84 /* Pods-SwrveSDKTVTest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1231,7 +1180,7 @@
 		};
 		F60B7F5C225F3BA3009AFCCC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DAAB40614510FA95A1DBC300 /* Pods-SwrveSDKTVTest.release.xcconfig */;
+			baseConfigurationReference = FCF57410C8FCFB8A5B6B9460 /* Pods-SwrveSDKTVTest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1262,7 +1211,7 @@
 		};
 		F60B7F5D225F3BA3009AFCCC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B67245DE01B613714E783FAA /* Pods-SwrveSDKTVTests.debug.xcconfig */;
+			baseConfigurationReference = 7E5EE09E4EE2645869E8211A /* Pods-SwrveSDKTVTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1294,7 +1243,7 @@
 		};
 		F60B7F5E225F3BA3009AFCCC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 326182D4B520663BABC92218 /* Pods-SwrveSDKTVTests.release.xcconfig */;
+			baseConfigurationReference = B16B601A19D9FEAE6632FE88 /* Pods-SwrveSDKTVTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;

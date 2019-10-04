@@ -58,10 +58,10 @@
     [swrveMock stopMocking];
 }
 
-- (void)testInitFromLocalStorage {
+- (void)testUserIdInitFromLocalStorage {
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
-    [SwrveLocalStorage saveSwrveUserId:@"joe"];
+    [SwrveLocalStorage saveSwrveUserId:@"SomeUserId"];
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
 #pragma clang diagnostic push
@@ -69,11 +69,46 @@
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
     NSString* currentUserId = [swrve userID];
-    XCTAssertEqualObjects(currentUserId, @"joe", @"The current user should be joe but was: %@", currentUserId);
+    XCTAssertEqualObjects(currentUserId, @"SomeUserId", @"The current user should be SomeUserId but was: %@", currentUserId);
 
     OCMVerify([swrveMock registerLifecycleCallbacks]);
     OCMVerify([swrveMock initWithUserId:OCMOCK_ANY]);
 
+    [swrveMock stopMocking];
+}
+
+- (void)testNoUserIdInitFromConfig {
+    
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    Swrve *swrve = [Swrve alloc];
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+    NSString *currentUserId = [swrve userID];
+    XCTAssertTrue((bool)[[NSUUID alloc] initWithUUIDString:currentUserId]);
+
+    OCMVerify([swrveMock registerLifecycleCallbacks]);
+    OCMVerify([swrveMock initWithUserId:OCMOCK_ANY]);
+    
+    [swrveMock stopMocking];
+}
+
+- (void)testUserIdNoConfig {
+    
+    Swrve *swrve = [Swrve alloc];
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+    NSString *currentUserId = [swrve userID];
+    XCTAssertTrue((bool)[[NSUUID alloc] initWithUUIDString:currentUserId]);
+    
+    OCMVerify([swrveMock registerLifecycleCallbacks]);
+    OCMVerify([swrveMock initWithUserId:OCMOCK_ANY]);
+    
     [swrveMock stopMocking];
 }
 

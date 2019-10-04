@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
  * \returns A singleton instance of a Swrve object.
  *          This will be nil until one of the sharedInstanceWith... methods is called.
  */
-+(nullable Swrve*) sharedInstance;
++ (nullable Swrve *)sharedInstance;
 
 /*! Creates and initializes the shared Swrve singleton.
  *
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  * \param swrveAppID The App ID for your app supplied by Swrve.
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
  */
-+(void) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey;
++ (void)sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString *)swrveAPIKey;
 
 /*! Creates and initializes the shared Swrve singleton.
  *
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * \param swrveAPIKey The secret token for your app supplied by Swrve.
  * \param swrveConfig The swrve configuration object used to override default settings.
  */
-+(void) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey config:(SwrveConfig*)swrveConfig;
++ (void)sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString *)swrveAPIKey config:(SwrveConfig *)swrveConfig;
 
 #pragma mark Events
 
@@ -45,9 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
  * \param itemCurrency The name of the currency used to purchase the item.
  * \param itemCost The per-item cost of the item being purchased.
  * \param itemQuantity The quantity of the item being purchased.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) purchaseItem:(NSString*)itemName currency:(NSString*)itemCurrency cost:(int)itemCost quantity:(int)itemQuantity;
++ (int)purchaseItem:(NSString *)itemName currency:(NSString *)itemCurrency cost:(int)itemCost quantity:(int)itemQuantity;
 
 /*! Call this when the user has bought something using real currency.
  *
@@ -57,9 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * \param transaction The SKPaymentTransaction object received from the iTunes Store.
  * \param product The SDKProduct of the purchased item.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product;
++ (int)iap:(SKPaymentTransaction *)transaction product:(SKProduct *)product;
 
 /*!
  * Call this when the user has bought something using real currency.
@@ -73,9 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
  *        items or in-app currencies that are part of this purchase.
  * \param product The SDKProduct of the purchased item.
  * \param transaction The SKPaymentTransaction object received from the iTunes Store.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product rewards:(SwrveIAPRewards*)rewards;
++ (int)iap:(SKPaymentTransaction *)transaction product:(SKProduct *)product rewards:(SwrveIAPRewards *)rewards;
 
 /*! Similar to IAP event but does not validate the receipt data server side.
  *
@@ -86,24 +86,24 @@ NS_ASSUME_NONNULL_BEGIN
  * \param localCurrency The name of the currency that the user has spent in real money.
  * \param productId The ID of the IAP item being purchased.
  * \param productIdQuantity The number of product items being purchased (usually 1).
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) unvalidatedIap:(SwrveIAPRewards*)rewards localCost:(double)localCost localCurrency:(NSString*)localCurrency productId:(NSString*)productId productIdQuantity:(int)productIdQuantity;
++ (int)unvalidatedIap:(SwrveIAPRewards *)rewards localCost:(double)localCost localCurrency:(NSString *)localCurrency productId:(NSString *)productId productIdQuantity:(int)productIdQuantity;
 
 /*! Call this to send a named custom event with no payload.
  *
  * \param eventName The quantity of the item being purchased.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) event:(NSString*)eventName;
++ (int)event:(NSString *)eventName;
 
 /*! Call this to send a named custom event with no payload.
  *
  * \param eventName The quantity of the item being purchased.
  * \param eventPayload The payload to be sent with this event.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) event:(NSString*)eventName payload:(NSDictionary*)eventPayload;
++ (int)event:(NSString *)eventName payload:(NSDictionary *)eventPayload;
 
 /*! Call this when the user has been gifted in-app currency by the app itself.
  * See the REST API docs for the currency_given event for a detailed
@@ -113,18 +113,18 @@ NS_ASSUME_NONNULL_BEGIN
  *                      rewarded with.
  * \param givenAmount The amount of in-app currency that the player was
  *                    rewarded with.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) currencyGiven:(NSString*)givenCurrency givenAmount:(double)givenAmount;
++ (int)currencyGiven:(NSString *)givenCurrency givenAmount:(double)givenAmount;
 
 /*! Sends a group of custom user properties to Swrve.
  * See the REST API docs for the user event for a detailed description of the
  * semantics of this call.
  *
  * \param attributes The attributes to be set for the user.
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) userUpdate:(NSDictionary*)attributes;
++ (int)userUpdate:(NSDictionary *)attributes;
 
 /*! Sends a single Date based custom user property to Swrve
  *
@@ -133,9 +133,9 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * \param name The identifier for the user update
  * \param date The NSDate value associated
- * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
+ * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_FAILURE.
  */
-+(int) userUpdate:(NSString *)name withDate:(NSDate *) date;
++ (int)userUpdate:(NSString *)name withDate:(NSDate *)date;
 
 #pragma mark -
 #pragma mark User Resources
@@ -151,14 +151,14 @@ NS_ASSUME_NONNULL_BEGIN
  * callback will be fired after the Swrve server has sent its response. At this point
  * the resourceManager can be used to retrieve the updated resource values.
  */
-+(void) refreshCampaignsAndResources;
++ (void)refreshCampaignsAndResources;
 
 /*! Use the resource manager to retrieve the most up-to-date attribute
  * values at any time.
  *
  * \returns Resource manager.
  */
-+(SwrveResourceManager*) resourceManager;
++ (SwrveResourceManager *)resourceManager;
 
 /*! Gets a list of resources for a user including modifications from active
  * A/B tests.  Please refer to our online documentation for more details:
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
  * \param callbackBlock A callback block that will be called asynchronously when
  *                      A/B test data is available.
  */
-+(void) userResources:(SwrveUserResourcesCallback)callbackBlock;
++ (void)userResources:(SwrveUserResourcesCallback)callbackBlock;
 
 /*! Gets a list of resource differences that should be applied to items for the
  * given user based on the A/B test the user is involved in.  Please refer to
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
  * \param callbackBlock A callback block that will be called asynchronously when
  *                      A/B test data is available.
  */
-+(void) userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
++ (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
 
 #pragma mark -
 #pragma mark Other
@@ -203,30 +203,30 @@ NS_ASSUME_NONNULL_BEGIN
 /*! Sends all events that are queued to the Swrve servers.
  * If any events cannot be send they will be re-queued and sent again later.
  */
-+(void) sendQueuedEvents;
++ (void)sendQueuedEvents;
 
 /*! Saves events stored in the in-memory queue to disk.
  * After calling this function, the in-memory queue will be empty.
  */
-+(void) saveEventsToDisk;
++ (void)saveEventsToDisk;
 
 /*! Sets the event queue callback. If set, the callback block will be called each
  * time an event is queued with the SDK.
  *
  * \param callbackBlock Block to be executed once per event added to the queue.
  */
-+(void) setEventQueuedCallback:(SwrveEventQueuedCallback)callbackBlock;
++ (void)setEventQueuedCallback:(SwrveEventQueuedCallback)callbackBlock;
 
 /*! Similar to #event:payload: except the callback block will not be called
  * when the event is queued.
  */
-+(int) eventWithNoCallback:(NSString*)eventName payload:(NSDictionary*)eventPayload;
++ (int)eventWithNoCallback:(NSString *)eventName payload:(NSDictionary *)eventPayload;
 
 /*! Releases all resources used by the Swrve object.
  * Typically, this should only be called if you are managing multiple Swrve instances.
  * Once called, it is not safe to call any methods on the Swrve object.
  */
-+(void) shutdown;
++ (void)shutdown;
 
 #pragma mark - push support block
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
@@ -235,10 +235,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * \param deviceToken Apple device token for your app.
  */
-+(void)setDeviceToken:(NSData*)deviceToken;
++ (void)setDeviceToken:(NSData *)deviceToken;
 
 /*! Obtain the current push notification device token. */
-+(nullable NSString*)deviceToken;
++ (nullable NSString *)deviceToken;
 
 /*! Process the push notification in the background. The completion handler is called if a silent push notification was received with the
  *  fetch result and the custom payloads as parameters.
@@ -247,30 +247,30 @@ NS_ASSUME_NONNULL_BEGIN
  * \param completionHandler Completion handler, only called for silent push notifications.
  * \returns If a Swrve silent push notification was handled by the Swrve SDK. In that case the payload and calls to the parent completionHandler will have to be done inside the completionHandler parameter.
  */
-+ (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler API_AVAILABLE(ios(7.0));
++ (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0));
 
 /*! Called to send the push engaged event to Swrve. */
-+(void) sendPushEngagedEvent:(NSString*)pushId;
++ (void)sendPushEngagedEvent:(NSString *)pushId;
 
 /**! Should be included to a push response if not using SwrvePushResponseDelegate **/
-+(void) processNotificationResponse:(UNNotificationResponse *)response __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
++ (void)processNotificationResponse:(UNNotificationResponse *)response __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
 
 #endif //!defined(SWRVE_NO_PUSH)
 
 /*!< Configuration for this Swrve object */
-+(ImmutableSwrveConfig *) config;
++ (ImmutableSwrveConfig *)config;
 
 /*!< App ID used to initialize this Swrve object. */
-+(long) appID;
++ (long)appID;
 
 /*!< Secret token used to initialize this Swrve object. */
-+(NSString *) apiKey;
++ (NSString *)apiKey;
 
 /*!< User ID used to initialize this Swrve object. */
-+(NSString *) userID;
++ (NSString *)userID;
 
 /*!< In-app message component. */
-+(SwrveMessageController*) messaging;
++ (SwrveMessageController *)messaging;
 
 /*! Call this method from application:openURL:option
  
@@ -325,7 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)installAction:(NSURL *)url;
 
 /*! Identify users such that they can be tracked and targeted safely across multiple devices, platforms and channels.
- 
+ * Throws NSException if called in SwrveInitMode.MANAGED mode.
+
  @param externalUserId An ID that uniquely identifies your user. Personal identifiable information should not be used. An error may be returned if such information is submitted as the userID eg email, phone number etc.
  @param onSuccess block.
  @param onError block.
@@ -339,8 +340,9 @@ NS_ASSUME_NONNULL_BEGIN
  }];
  @endcode
  */
-+ (void)identify:(NSString *)externalUserId onSuccess:(nullable void (^)(NSString *status, NSString *swrveUserId))onSuccess
-                                              onError:(nullable void (^)(NSInteger httpCode, NSString *errorMessage))onError;
++ (void)identify:(NSString *)externalUserId
+       onSuccess:(nullable void (^)(NSString *status, NSString *swrveUserId))onSuccess
+         onError:(nullable void (^)(NSInteger httpCode, NSString *errorMessage))onError;
 
 /*! An ID that uniquely identifies your user. Personal identifiable information should not be used. An error may be returned if such information is submitted as the externalUserId eg email, phone number etc.
  
@@ -370,6 +372,28 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
 
+/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+ * Tracking will begin using the last user or an auto generated userId if the first time the sdk is started.
+ * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ */
++ (void)start;
+
+/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+ * Tracking will begin using the userId passed in.
+ * Can be called multiple times to switch the current userId to something else. A new session is started if not already
+ * started or if is already started with different userId.
+ * The sdk will remain started until the createInstance is called again.
+ * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ * @param userId User id to start sdk with..
+ */
++ (void)startWithUserId:(NSString *)userId;
+
+/*! Check if the SDK has been started.
+ * @return true when in SWRVE_INIT_MODE_AUTO mode. When in SWRVE_INIT_MODE_MANAGED mode it will return true after one of the 'start' api's has been called.
+ */
++ (BOOL)started;
+
 @end
+
 NS_ASSUME_NONNULL_END
 

@@ -39,6 +39,13 @@ typedef enum {
                 inWindow:(UIWindow *)conversationWindow
      withMessageDelegate:(id)messageDelegate;
 
++ (bool)showConversation:(SwrveBaseConversation *)conversation
+      withItemController:(SwrveConversationItemViewController *)conversationItemViewController
+        withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
+                inWindow:(UIWindow *)conversationWindow
+     withMessageDelegate:(id)messageDelegate
+     withStatusBarHidden:(BOOL)prefeerStatusBarHidden;
+
 -(void)setConversation:(SwrveBaseConversation*)conversation andMessageController:(id<SwrveMessageEventHandler>)controller;
 -(BOOL)transitionWithControl:(SwrveConversationButton *)control;
 

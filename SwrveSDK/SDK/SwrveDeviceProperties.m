@@ -29,6 +29,7 @@ static NSString* SWRVE_SUPPORT_RICH_GIF  =              @"swrve.support.rich_gif
 static NSString* SWRVE_IDFA  =                          @"swrve.IDFA";
 static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_authenticated_push";
+static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 
 @implementation SwrveDeviceProperties
 
@@ -38,6 +39,7 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
 @synthesize appInstallTimeSeconds = _appInstallTimeSeconds;
 @synthesize permissionStatus = _permissionStatus;
 @synthesize sdk_language = _sdk_language;
+@synthesize swrveInitMode = _swrveInitMode;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 @synthesize conversationVersion = _conversationVersion;
@@ -47,13 +49,14 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
 #pragma mark - init
 
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
+           appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
              conversationVersion:(int)conversationVersion
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
-                     carrierInfo:(CTCarrier * )carrierInfo {
-
+                     carrierInfo:(CTCarrier * )carrierInfo
+                        swrveInitMode:(NSString *)initMode {
+    
     if ((self = [super init])) {
         
         self.sdk_version = sdk_version;
@@ -63,20 +66,23 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
         self.permissionStatus = permissionStatus;
         self.sdk_language = sdk_language;
         self.carrierInfo = carrierInfo;
+        self.swrveInitMode = initMode;
     }
     return self;
 }
 #elif TARGET_OS_TV
 - (instancetype) initWithVersion:(NSString *)sdk_version
-              appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
+           appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
                 permissionStatus:(NSDictionary *)permissionStatus
-                    sdk_language:(NSString *)sdk_language {
+                    sdk_language:(NSString *)sdk_language
+                        swrveInitMode:(NSString *)initMode {
     if ((self = [super init])) {
         
         self.sdk_version = sdk_version;
         self.appInstallTimeSeconds = appInstallTimeSeconds;
         self.permissionStatus = permissionStatus;
         self.sdk_language = sdk_language;
+        self.swrveInitMode = initMode;
     }
     return self;
 }
@@ -126,7 +132,8 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
     [deviceProperties setValue:secondsFromGMT       forKey:SWRVE_UTC_OFFSET_SECONDS ];
     [deviceProperties setValue:timezone_name        forKey:SWRVE_TIMEZONE_NAME];
     [deviceProperties setValue:regionCountry        forKey:SWRVE_DEVICE_REGION];
-    
+    [deviceProperties setValue:self.swrveInitMode   forKey:SWRVE_SDK_INIT_MODE];
+
 #if TARGET_OS_IOS /** retrieve the properties only supported by iOS **/
     [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
     
@@ -147,7 +154,7 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:SWRVE_IOS_TOKEN];
         [deviceProperties setValue:@"true" forKey:SWRVE_CAN_RECEIVE_AUTH_PUSH];
-    
+        
         NSString *richSupported = @"true";
         [deviceProperties setValue:richSupported forKey:SWRVE_SUPPORT_RICH_BUTTONS];
         [deviceProperties setValue:richSupported forKey:SWRVE_SUPPORT_RICH_ATTACHMENT];
@@ -165,11 +172,12 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
 #endif //defined(SWRVE_LOG_IDFA)
     
 #if defined(SWRVE_LOG_IDFV)
-        NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-        [deviceProperties setValue:idfv forKey:SWRVE_IDFV];
+    NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    [deviceProperties setValue:idfv forKey:SWRVE_IDFV];
 #endif //defined(SWRVE_LOG_IDFV)
     
     return deviceProperties;
 }
+
 
 @end

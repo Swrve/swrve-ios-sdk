@@ -4,6 +4,7 @@
 
 @synthesize orientation;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize prefersConversationsStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
@@ -27,6 +28,8 @@
 @synthesize appGroupIdentifier;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize stack;
+@synthesize initMode;
+@synthesize managedModeAutoStartLastUser;
 @synthesize abTestDetailsEnabled;
 @synthesize permissionsDelegate;
 
@@ -37,6 +40,7 @@
         autoDownloadCampaignsAndResources = YES;
         orientation = SWRVE_ORIENTATION_BOTH;
         prefersIAMStatusBarHidden = YES;
+        prefersConversationsStatusBarHidden = NO;
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
 
@@ -53,6 +57,8 @@
             // Do nothing by default.
         };
         self.stack = SWRVE_STACK_US;
+        self.initMode = SWRVE_INIT_MODE_AUTO;
+        self.managedModeAutoStartLastUser = true;
     }
     return self;
 }
@@ -63,6 +69,7 @@
 
 @synthesize orientation;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize prefersConversationsStatusBarHidden;
 @synthesize httpTimeoutSeconds;
 @synthesize eventsServer;
 @synthesize contentServer;
@@ -86,6 +93,8 @@
 @synthesize appGroupIdentifier;
 @synthesize autoShowMessagesMaxDelay;
 @synthesize stack;
+@synthesize initMode;
+@synthesize managedModeAutoStartLastUser;
 @synthesize abTestDetailsEnabled;
 @synthesize permissionsDelegate;
 
@@ -94,6 +103,7 @@
     if (self = [super init]) {
         orientation = config.orientation;
         prefersIAMStatusBarHidden = config.prefersIAMStatusBarHidden;
+        prefersConversationsStatusBarHidden = config.prefersConversationsStatusBarHidden;
         httpTimeoutSeconds = config.httpTimeoutSeconds;
         eventsServer = config.eventsServer;
         contentServer = config.contentServer;
@@ -117,6 +127,8 @@
         appGroupIdentifier = config.appGroupIdentifier;
         autoShowMessagesMaxDelay = config.autoShowMessagesMaxDelay;
         stack = config.stack;
+        initMode = config.initMode;
+        managedModeAutoStartLastUser = config.managedModeAutoStartLastUser;
         abTestDetailsEnabled = config.abTestDetailsEnabled;
         permissionsDelegate = config.permissionsDelegate;
     }

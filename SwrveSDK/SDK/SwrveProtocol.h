@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "6.2.1"
+#define SWRVE_SDK_VERSION "6.3"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -413,6 +413,15 @@ NSString * eventsPayloadAsJSON);
  @endcode
  */
 - (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
+
+/*!< TODO comment */
+- (void)start;
+
+/*!< TODO comment */
+- (void)startWithUserId:(NSString *)userId;
+
+/*!< TODO comment */
+- (BOOL)started;
 
 #pragma mark - Properties
 

@@ -8,6 +8,7 @@
 @property (nonatomic) BOOL displayedChildrenViewController;
 @property (nonatomic, retain) NSDictionary *lightBoxStyle;
 @property (nonatomic, retain) UIColor* lightBoxColor;
+@property (nonatomic) BOOL statusBarHidden;
 
 @end
 
@@ -17,10 +18,12 @@
 @synthesize displayedChildrenViewController;
 @synthesize lightBoxStyle = _lightBoxStyle;
 @synthesize lightBoxColor = _lightBoxColor;
+@synthesize statusBarHidden;
 
--(id) initWithChildViewController:(UIViewController*)child {
+-(id) initWithChildViewController:(UIViewController*)child withStatusBarHidden:(BOOL)prefeerStatusBarHidden {
     if (self = [super init]) {
         self.childController = child;
+        self.statusBarHidden = prefeerStatusBarHidden;
     }
     return self;
 }
@@ -45,5 +48,15 @@
         self.view.backgroundColor = [UIColor clearColor];
     } completion:NULL];
 }
+
+#if TARGET_OS_IOS
+- (BOOL)prefersStatusBarHidden {
+    if (self.statusBarHidden) {
+        return YES;
+    } else {
+        return [super prefersStatusBarHidden];
+    }
+}
+#endif
 
 @end
