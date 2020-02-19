@@ -9,21 +9,31 @@
 #import <sys/time.h>
 #import "Swrve.h"
 #import "SwrveCampaign.h"
-#import "SwrvePermissions.h"
+#if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveUser.h>
+#import <SwrveSDKCommon/SwrveNotificationManager.h>
+#import <SwrveSDKCommon/SwrvePermissions.h>
+#else
+#import "SwrveQA.h"
 #import "SwrveRESTClient.h"
+#import "SwrveUser.h"
+#import "SwrveNotificationManager.h"
+#import "SwrvePermissions.h"
+#endif
 #import "SwrveMigrationsManager.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveDeviceProperties.h"
 #import "SwrveEventsManager.h"
-#import "SwrveConversationEvents.h"
 
-#if TARGET_OS_IOS /** exclude tvOS **/
+#if __has_include(<SwrveConversationSDK/SwrveConversationEvents.h>)
+#import <SwrveConversationSDK/SwrveConversationEvents.h>
+#else
+#import "SwrveConversationEvents.h"
 #endif
 
-#import "SwrveQA.h"
 #import "SwrveProfileManager.h"
-#import "SwrveUser.h"
-#import "SwrveNotificationManager.h"
 #import "SwrveEventQueueItem.h"
 
 #if SWRVE_TEST_BUILD
@@ -1236,7 +1246,7 @@ enum
 #pragma unused(notification)
 
     trackingState = ON;
-    
+
     if (!initialised) {
         initialised = YES;
         [self beginSession]; // App started the first time
@@ -1408,7 +1418,7 @@ enum
         NSDictionary *deviceInfo = [self deviceInfo];
         [self mergeWithCurrentDeviceInfo:deviceInfo];
         [self mergeWithCurrentDeviceInfo:[SwrvePermissions currentStatusWithSDK:self]];
-        
+
         [self logDeviceInfo:deviceInfo];
         [self queueDeviceInfo];
         [self sendQueuedEvents];
@@ -2249,14 +2259,14 @@ enum HttpStatus {
 #pragma mark  Switch User ID
 
 - (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession  {
-        
+
     // dont do anything if the current user is the same as the new one and its already been started
     if ((newUserID == nil) || (sdkStarted == true && [newUserID isEqualToString:self.profileManager.userId])) {
         [self enableEventSending];
         [self queuePausedEventsArray];
         return;
     }
-    
+
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     [SwrveNotificationManager clearAllAuthenticatedNotifications];
 #endif //!defined(SWRVE_NO_PUSH)
@@ -2278,7 +2288,7 @@ enum HttpStatus {
 
 - (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
-    
+
     if (self.config.initMode == SWRVE_INIT_MODE_MANAGED) {
         [self throwIllegalOperationException:@"Cannot call identify api in MANAGED initMode."];
     }

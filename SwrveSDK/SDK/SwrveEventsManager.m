@@ -1,7 +1,12 @@
 #import "SwrveEventsManager.h"
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#else
+#import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
+#endif
 #import "Swrve.h"
-
 
 @interface SwrveEventsManager () {
     id <SwrveCommonDelegate> swrveCommon;
@@ -18,7 +23,7 @@
 }
 
 - (BOOL)isValidEventName:(NSString *)eventName {
-    
+
     NSMutableArray *restrictedNamesStartWith = [NSMutableArray arrayWithObjects:@"Swrve.", @"swrve.", nil];
     for (NSString *restricted in restrictedNamesStartWith) {
         if (eventName == nil || [eventName hasPrefix:restricted]) {

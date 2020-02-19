@@ -3,7 +3,11 @@
 #import "SwrveMessageController.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#else
 #import "SwrveLocalStorage.h"
+#endif
 
 @implementation SwrveMessageFormat
 
@@ -32,7 +36,7 @@
 }
 
 +(SwrveImage*)createImage:(NSDictionary*)imageData {
-    
+
     SwrveImage* image = [[SwrveImage alloc] init];
     image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
     image.center = [SwrveMessageFormat centerFromImageData:imageData];
@@ -52,7 +56,7 @@
     SwrveButton* button = [[SwrveButton alloc] init];
     button.controller = controller;
     button.message = message;
-    
+
     button.name       = [buttonData objectForKey:@"name"];
     button.center     = [SwrveMessageFormat centerFromImageData:buttonData];
     button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
@@ -90,13 +94,13 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     self.name     = [json objectForKey:@"name"];
     self.language = [json objectForKey:@"language"];
-    
+
     NSString* jsonOrientation = [json objectForKey:@"orientation"];
     if (jsonOrientation)
     {
         self.orientation = ([jsonOrientation caseInsensitiveCompare:@"landscape"] == NSOrderedSame)? SWRVE_ORIENTATION_LANDSCAPE : SWRVE_ORIENTATION_PORTRAIT;
     }
-    
+
     NSString* jsonColor = [json objectForKey:@"color"];
     if (jsonColor)
     {
@@ -118,7 +122,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         }
         self.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
     }
-    
+
     // If doesn't exist default to 1.0
     NSNumber * jsonScale = [json objectForKey:@"scale"];
     if (jsonScale != nil)
@@ -129,14 +133,14 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     {
         self.scale = 1.0;
     }
-    
+
     self.size = [SwrveMessageFormat sizeFromImageData:[json objectForKey:@"size"]];
 
     DebugLog(@"Format %@ Scale: %g  Size: %gx%g", self.name, self.scale, self.size.width, self.size.height);
-    
+
     NSArray* jsonButtons = [json objectForKey:@"buttons"];
     NSMutableArray* loadedButtons = [[NSMutableArray alloc] init];
-    
+
     for (NSDictionary* jsonButton in jsonButtons)
     {
         [loadedButtons addObject:[SwrveMessageFormat createButton:jsonButton forController:controller forMessage:message]];
@@ -169,24 +173,24 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         containerViewSize = CGRectMake(0, 0, sizeParent.height, sizeParent.width);
     }
     UIView* containerView = [[UIView alloc] initWithFrame:containerViewSize];
-    
+
     // Find the center point of the view
     CGFloat half_screen_width = sizeParent.width/2;
     CGFloat half_screen_height = sizeParent.height/2;
-    
+
     CGFloat logical_half_screen_width = (rotated)? half_screen_height : half_screen_width;
     CGFloat logical_half_screen_height = (rotated)? half_screen_width : half_screen_height;
-    
+
     // Adjust scale, accounting for retina devices
     CGFloat screenScale = [[UIScreen mainScreen] scale];
     CGFloat renderScale = self.scale / screenScale;
-    
+
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
-    
+
     [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
     [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
-    
+
     if (rotated) {
         containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
     }
@@ -204,36 +208,36 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     float wscale = (float)((sizeParent.width * screenScale)/self.size.width);
     float hscale = (float)((sizeParent.height * screenScale)/self.size.height);
     float viewportScale = (wscale < hscale)? wscale : hscale;
-    
+
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
     UIView* containerView = [[UIView alloc] initWithFrame:containerViewSize];
-    
+
     // Find the center point of the view
     CGFloat centerX = sizeParent.width/2;
     CGFloat centerY = sizeParent.height/2;
-    
+
     // Adjust scale, accounting for retina devices
     CGFloat renderScale = (self.scale / screenScale) * viewportScale;
-    
+
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
 
     [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale];
     [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale];
-    
+
     [containerView setCenter:CGPointMake(centerX, centerY)];
     [view addSubview:containerView];
-    
+
 #if TARGET_OS_TV
     [containerView setAlpha:1];
 #endif
     [view setAlpha:1];
     [containerView setUserInteractionEnabled:YES];
     [view setUserInteractionEnabled:YES];
-    
+
     [view setHidden:NO];
     [containerView setHidden:NO];
-    
+
     return containerView;
 }
 
@@ -241,7 +245,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
-    
+
     for (SwrveButton* button in self.buttons) {
         UIButton* buttonView = [button createButtonWithDelegate:delegate
                                                     andSelector:buttonPressedSelector
@@ -249,7 +253,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
                                                       andCenterX:(float)centerX
                                                       andCenterY:(float)centerY];
         buttonView.tag = buttonTag;
-        
+
         NSString * buttonType;
         switch (button.actionType) {
             case kSwrveActionInstall:
@@ -261,7 +265,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
             default:
                 buttonType = @"Custom";
         }
-        
+
         buttonView.accessibilityLabel = [NSString stringWithFormat:@"TalkButton_%d_%@", buttonTag, buttonType];
         //Used by sdk systemtests
         buttonView.accessibilityIdentifier = button.name;
@@ -277,20 +281,20 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     {
         NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, backgroundImage.file, nil]];
         UIImage* background = [UIImage imageWithData:[NSData dataWithContentsOfURL:bgurl]];
-        
+
         CGRect frame = CGRectMake(0, 0,
                                   background.size.width * renderScale,
                                   background.size.height * renderScale);
-        
-        
+
+
         UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
         imageView.image = background;
-        
+
         //shows focus on tvOS
 #if TARGET_OS_TV
         imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
-        
+
         [imageView setCenter:CGPointMake(centerX + (backgroundImage.center.x * renderScale),
                                          centerY + (backgroundImage.center.y * renderScale))];
         [containerView addSubview:imageView];

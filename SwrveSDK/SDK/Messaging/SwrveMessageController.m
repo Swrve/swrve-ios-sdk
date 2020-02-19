@@ -5,16 +5,31 @@
 #import "SwrveInAppCampaign.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrveQAUser.h"
+#if __has_include(<SwrveConversationSDK/SwrveConversationItemViewController.h>)
+#import <SwrveConversationSDK/SwrveConversationItemViewController.h>
+#else
 #import "SwrveConversationItemViewController.h"
+#endif
 #import "Swrve+Private.h"
+
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
+#import <SwrveSDKCommon/SwrveQA.h>
+#if TARGET_OS_IOS /** exclude tvOS **/
+#import <SwrveSDKCommon/SwrvePermissions.h>
+#endif //TARGET_OS_IOS
+#else
+#import "SwrveLocalStorage.h"
+#import "SwrveAssetsManager.h"
+#import "SwrveUtils.h"
+#import "SwrveQA.h"
 #if TARGET_OS_IOS /** exclude tvOS **/
 #import "SwrvePermissions.h"
 #endif //TARGET_OS_IOS
-#import "SwrveAssetsManager.h"
-#import "SwrveLocalStorage.h"
+#endif
 #import "SwrveCampaign+Private.h"
-#import "SwrveUtils.h"
-#import "SwrveQA.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 

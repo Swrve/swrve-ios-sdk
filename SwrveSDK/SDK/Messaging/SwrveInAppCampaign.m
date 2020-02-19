@@ -2,7 +2,11 @@
 #import "SwrveInAppCampaign.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#if __has_include(<SwrveSDKCommon/SwrveAssetsManager.h>)
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#else
 #import "SwrveAssetsManager.h"
+#endif
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 
@@ -87,12 +91,12 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
  * This is used to decide if the campaign is a valid candidate for automatically showing at session start
  */
 -(BOOL)hasMessageForEvent:(NSString*)event {
-    
+
     return [self hasMessageForEvent:event withPayload:nil];
 }
 
 -(BOOL)hasMessageForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
-    
+
     return [self canTriggerWithEvent:event andPayload:payload];
 }
 
@@ -109,9 +113,9 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
                         withAssets:(NSSet*)assets
                             atTime:(NSDate*)time
                        withReasons:(NSMutableDictionary*)campaignReasons {
-    
+
     if (![self hasMessageForEvent:event withPayload:payload]){
-        
+
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
         [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
         return nil;
@@ -139,12 +143,12 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     {
         message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
-    
+
     if ([message assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return message;
     }
-    
+
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
 }
@@ -154,7 +158,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     if (orientation == UIInterfaceOrientationUnknown) {
         return YES;
     }
-    
+
     for (SwrveMessage* message in self.messages) {
         if ([message supportsOrientation:orientation]){
             return YES;

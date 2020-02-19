@@ -1,8 +1,13 @@
 #import "SwrveQAUser.h"
 #import "SwrveInAppCampaign.h"
 #import "SwrveConversationCampaign.h"
+#if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#import <SwrveSDKCommon/SwrveNotificationConstants.h>
+#else
 #import "SwrveRESTClient.h"
 #import "SwrveNotificationConstants.h"
+#endif
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 

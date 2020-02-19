@@ -1,13 +1,27 @@
 #import "Swrve.h"
 #import "SwrveConversationCampaign.h"
+#if __has_include(<SwrveConversationSDK/SwrveConversationPane.h>)
+#import <SwrveConversationSDK/SwrveConversationPane.h>
+#import <SwrveConversationSDK/SwrveContentItem.h>
+#import <SwrveConversationSDK/SwrveInputMultiValue.h>
+#import <SwrveConversationSDK/SwrveConversationButton.h>
+#import <SwrveConversationSDK/SwrveContentImage.h>
+#import <SwrveConversationSDK/SwrveContentHTML.h>
+#import <SwrveConversationSDK/SwrveContentStarRating.h>
+#else
 #import "SwrveConversationPane.h"
 #import "SwrveContentItem.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveConversationButton.h"
-#import "SwrveAssetsManager.h"
 #import "SwrveContentImage.h"
 #import "SwrveContentHTML.h"
 #import "SwrveContentStarRating.h"
+#endif
+#if __has_include(<SwrveSDKCommon/SwrveAssetsManager.h>)
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#else
+#import "SwrveAssetsManager.h"
+#endif
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 
@@ -30,7 +44,7 @@
         self.filters = [json objectForKey:@"filters"];
         [self addAssetsToQueue:assetsQueue];
     }
-    
+
     return self;
 }
 
@@ -41,7 +55,7 @@
         for (SwrveContentItem *contentItem in page.content) {
             if ([contentItem isKindOfClass:[SwrveContentImage class]]) {
                 [self addImageToQ:assetsQueue withAsset:contentItem];
-                
+
             }
 #if TARGET_OS_IOS /** exclude tvOS **/
             else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
@@ -102,12 +116,12 @@
  */
 
 -(BOOL)hasConversationForEvent:(NSString*)event {
-    
+
     return [self hasConversationForEvent:event withPayload:nil];
 }
 
 - (BOOL)hasConversationForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
-    
+
     return [self canTriggerWithEvent:event andPayload:payload];
 }
 
@@ -124,25 +138,25 @@
                                   withAssets:(NSSet*)assets
                                       atTime:(NSDate*)time
                                  withReasons:(NSMutableDictionary*)campaignReasons {
-    
+
     if (![self hasConversationForEvent:event withPayload:payload]) {
-        
+
         DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
         [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
-        
+
         return nil;
     }
-    
+
     if (self.conversation == nil)
     {
         [self logAndAddReason:[NSString stringWithFormat:@"No conversations in campaign %ld", (long)self.ID] withReasons:campaignReasons];
         return nil;
     }
-    
+
     if (![self checkCampaignRulesForEvent:event atTime:time withReasons:campaignReasons]) {
         return nil;
     }
-    
+
     SwrveMessageController* controllerStrongReference = self.controller;
     if (controllerStrongReference == nil) {
         DebugLog(@"No message controller!", nil);
@@ -159,12 +173,12 @@
             return nil;
         }
     }
-    
+
     if ([self.conversation assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
         return self.conversation;
     }
-    
+
     [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld hasn't finished downloading", (long)self.ID] withReasons:campaignReasons];
     return nil;
 }

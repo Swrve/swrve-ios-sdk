@@ -1,4 +1,8 @@
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#else
 #import "SwrveCommon.h"
+#endif
 #import "SwrveMessageEventHandler.h"
 #import "SwrveContentItem.h"
 #import "SwrveBaseConversation.h"
@@ -54,7 +58,7 @@
                     DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
                     return false;
                 }
-                
+
             }
 #if TARGET_OS_IOS /** exclude tvOS **/
             else if ([contentItem isKindOfClass:

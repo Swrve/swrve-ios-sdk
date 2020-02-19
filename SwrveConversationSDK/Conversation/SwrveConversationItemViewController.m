@@ -6,7 +6,11 @@
 #import "SwrveConversationPane.h"
 #import "SwrveInputMultiValue.h"
 #import "SwrveContentImage.h"
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#else
 #import "SwrveCommon.h"
+#endif
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationsNavigationController.h"
 #import "SwrveConversationContainerViewController.h"
@@ -44,9 +48,9 @@
 
     SwrveConversationItemViewController *itemViewController;
     @try {
- 
+
         NSBundle *conversationBundle = [SwrveConversationResourceManagement conversationBundle];
-        
+
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:
 #if TARGET_OS_IOS /** exclude tvOS **/
                                     @"SwrveConversation"

@@ -1,8 +1,14 @@
 #import "SwrveProfileManager.h"
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveUser.h>
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#else
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"
-#import "Swrve.h"
 #import "SwrveRESTClient.h"
+#endif
+#import "Swrve.h"
 #import <sys/time.h>
 
 #define kSwrveUsers @"swrve_users"
@@ -53,7 +59,7 @@
         }
         self.appId = _appId;
         self.apiKey = _apiKey;
-        
+
         [self switchUser:initialUser];
     }
     return self;

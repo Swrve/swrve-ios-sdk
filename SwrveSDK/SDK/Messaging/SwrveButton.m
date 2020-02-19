@@ -1,5 +1,9 @@
 #import "SwrveButton.h"
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#else
 #import "SwrveLocalStorage.h"
+#endif
 
 #define DEFAULT_WIDTH 100
 #define DEFAULT_HEIGHT 20
@@ -50,7 +54,7 @@ static CGPoint scaled(CGPoint point, float scale)
     UIButton* result;
     if (up) {
         result = [UIButton buttonWithType:UIButtonTypeCustom];
-        
+
 #if TARGET_OS_TV
         result.imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
@@ -59,14 +63,14 @@ static CGPoint scaled(CGPoint point, float scale)
     else {
         result = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     }
-    
+
 #if TARGET_OS_IOS /** TouchUpInside is iOS only **/
     [result  addTarget:delegate action:selector forControlEvents:UIControlEventTouchUpInside];
 #elif TARGET_OS_TV
     // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
     [result  addTarget:delegate action:selector forControlEvents:UIControlEventPrimaryActionTriggered];
 #endif
-    
+
     CGFloat width  = DEFAULT_WIDTH;
     CGFloat height = DEFAULT_HEIGHT;
 

@@ -1,4 +1,8 @@
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#else
 #import "SwrveCommon.h"
+#endif
 #import "SwrveConversationEvents.h"
 #import "SwrveBaseConversation.h"
 #import "SwrveConversationAtom.h"

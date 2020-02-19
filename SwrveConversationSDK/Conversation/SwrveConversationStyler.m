@@ -1,7 +1,12 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveConversationButton.h"
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#else
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
+#endif
 #import "SwrveBaseConversation.h"
 #import <CoreText/CoreText.h>
 

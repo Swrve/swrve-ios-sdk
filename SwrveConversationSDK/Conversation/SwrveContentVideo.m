@@ -1,7 +1,11 @@
 #import "SwrveContentVideo.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#else
 #import "SwrveCommon.h"
+#endif
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 @interface SwrveContentVideo () {
@@ -34,7 +38,7 @@
                                              selector:@selector(windowDidBecomeActive:)
                                                  name:UIWindowDidBecomeVisibleNotification
                                                object:nil];
-    
+
     return self;
 }
 
@@ -63,15 +67,15 @@
 
 - (void)loadViewWithContainerView:(UIView *)containerView {
     _containerView = containerView;
-    
+
     // Enable audio
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-    
+
     // Create _view
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
     [wkConfig setAllowsInlineMediaPlayback:YES];
-    
+
     _view = webview = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 1, _height) configuration:wkConfig];
 
     [self sizeTheWebView];
@@ -81,12 +85,12 @@
     webview.navigationDelegate = self;
     webview.userInteractionEnabled = YES;
     webview.scrollView.scrollEnabled = NO;
-    
+
     NSString *rawValue = [self.value stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
 
     preventNavigation = NO;
     [self loadYouTubeVideo:rawValue];
-    
+
     UITapGestureRecognizer *gesRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]; // Declare the Gesture.
     gesRecognizer.delegate = self;
     [gesRecognizer setNumberOfTapsRequired:1];
@@ -150,7 +154,7 @@
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
 #pragma unused (webView)
     NSURLRequest *nsurl = navigationAction.request;
-    
+
     // Check if the navigation is coming from a user clicking on a link
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
         if (@available(iOS 10.0, *)) {
@@ -163,7 +167,7 @@
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
-    
+
     // Check if the youtube link that is opening is the logo that redirects to the full website
     if (nsurl != nil) {
         NSString *url = [[nsurl URL] absoluteString];
@@ -178,13 +182,13 @@
                 }
                 decisionHandler(WKNavigationActionPolicyCancel);
                 return;
-                
+
             }
         }
     }
-    
+
     NSInteger decision = (!preventNavigation) ?  WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel;
-    
+
     decisionHandler(decision);
 }
 
@@ -228,7 +232,7 @@
     if (webview.UIDelegate == self) {
         [webview setUIDelegate: nil]; // Unassign self from being the delegate, in case we get deallocated before the webview!
     }
-    
+
     if (webview.navigationDelegate == self) {
         [webview setNavigationDelegate: nil];
     }

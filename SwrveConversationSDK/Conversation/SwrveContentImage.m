@@ -1,5 +1,9 @@
 #import "SwrveContentImage.h"
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#else
 #import "SwrveLocalStorage.h"
+#endif
 
 @interface SwrveContentImage () {
     UIImageView *iv;
