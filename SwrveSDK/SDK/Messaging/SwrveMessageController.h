@@ -23,6 +23,11 @@ typedef void (^SwrveCustomButtonPressedCallback) (NSString *action);
  */
 typedef void (^SwrveDismissButtonPressedCallback) (NSString *campaignSubject, NSString *buttonName);
 
+/*! A block that will be called when a clipboard button in an in-app message
+ * is pressed.
+ */
+typedef void (^SwrveClipboardButtonPressedCallback)(NSString *processedText);
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
 @interface SwrveMessageController : NSObject<SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
 #else
@@ -104,7 +109,15 @@ typedef void (^SwrveDismissButtonPressedCallback) (NSString *campaignSubject, NS
  * \param campaign Campaign that will be displayed.
  * \returns if the campaign was shown.
  */
--(BOOL)showMessageCenterCampaign:(SwrveCampaign*)campaign;
+-(BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign;
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \param personalisation Dictionary <String, String> used to personalise the campaign
+ * \returns if the campaign was shown.
+ */
+-(BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalisation:(NSDictionary *)personalisation;
 
 /*! Remove this campaign. It won't be returned anymore by the method messageCenterCampaigns.
  *
@@ -114,11 +127,12 @@ typedef void (^SwrveDismissButtonPressedCallback) (NSString *campaignSubject, NS
 
 #pragma mark Properties
 
-@property (nonatomic, retain) UIColor* inAppMessageBackgroundColor;                         /*!< Background color of in-app messages. */
-@property (nonatomic, retain) id <SwrveMessageDelegate> showMessageDelegate;                /*!< Implement this delegate to intercept in-app messages. */
+@property (nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;                  /*!< Configuration for the InApp Messaging*/
+@property (nonatomic, weak) id <SwrveMessageDelegate> showMessageDelegate;                /*!< Implement this delegate to intercept in-app messages. */
 @property (nonatomic, copy)   SwrveCustomButtonPressedCallback customButtonCallback;        /*!< Implement this delegate to process custom button actions. */
 @property (nonatomic, copy)   SwrveDismissButtonPressedCallback dismissButtonCallback;      /*!< Implement this delegate to process dismiss button action. */
 @property (nonatomic, copy)   SwrveInstallButtonPressedCallback installButtonCallback;      /*!< Implement this delegate to intercept install button actions. */
+@property (nonatomic, copy)   SwrveClipboardButtonPressedCallback clipboardButtonCallback;  /*!< Implement this delegate to intercept clipboard button actions. */
 @property (nonatomic, retain) CATransition* showMessageTransition;                          /*!< Animation for displaying messages. */
 @property (nonatomic, retain) CATransition* hideMessageTransition;                          /*!< Animation for hiding messages. */
 @property (nonatomic, retain) NSMutableArray*  conversationsMessageQueue;                   /*!< Conversation / Message queue */

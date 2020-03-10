@@ -34,7 +34,8 @@ enum SwrveTrackingState {
 + (NSString *)swrveCacheFolder;
 + (NSString *)offlineCampaignsFilePathForUserId:(NSString *)userId;
 + (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId;
-    
++ (NSString *)realTimeUserPropertiesFilePathForUserId:(NSString *)userId;
++ (NSString *)offlineRealTimeUserPropertiesSignatureFilePathForUserId:(NSString *)userId;
 
 //NSUserdefaults
 + (double)flushFrequency;
@@ -61,5 +62,7 @@ enum SwrveTrackingState {
 + (void)saveQaUser:(NSDictionary *)qaUser;
 + (void)saveDeviceUUID:(NSString *)deviceUUID;
 + (NSString *)deviceUUID;
++ (void)saveSwrveUsers:(NSData *)data;
++ (NSData *)swrveUsers;
 
 @end

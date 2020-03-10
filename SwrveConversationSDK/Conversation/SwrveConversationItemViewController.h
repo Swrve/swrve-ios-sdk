@@ -19,18 +19,16 @@ typedef enum {
     SwrveConversationResource *_engine;
 }
 
-@property (strong, nonatomic) IBOutlet UIImageView *fullScreenBackgroundImageView;
-@property (strong, nonatomic) IBOutlet UITableView *contentTableView;
-@property (strong, nonatomic) IBOutlet UIButton *cancelButtonView;
-
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cancelButtonViewTop;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *contentTableViewTop;
-
-@property (unsafe_unretained, nonatomic) IBOutlet UIView *buttonsView;
+@property (strong, nonatomic) UIImageView *fullScreenBackgroundImageView;
+@property (strong, nonatomic) UITableView *contentTableView;
+@property (strong, nonatomic) UIButton *cancelButtonView;
+@property (strong, nonatomic) UIView *buttonsView;
 @property (strong, nonatomic) SwrveBaseConversation *conversation;
 @property (strong, nonatomic) SwrveConversationPane *conversationPane;
 @property (readwrite, nonatomic) float contentHeight;
 
++ (SwrveConversationItemViewController*)initConversation;
+// Unity Bridge function
 + (SwrveConversationItemViewController*)initFromStoryboard;
 
 + (bool)showConversation:(SwrveBaseConversation *)conversation

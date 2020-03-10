@@ -4,13 +4,14 @@
 typedef enum {
     kSwrveActionDismiss,    /*!< Cancel the message display */
     kSwrveActionCustom,     /*!< Handle the custom action string associated with the button */
-    kSwrveActionInstall     /*!< Go to the url specified in the button’s action string */
+    kSwrveActionInstall,    /*!< Go to the url specified in the button’s action string */
+    kSwrveActionClipboard  /*!< Add Dynamic Text in place of the image */
 } SwrveActionType;
 
 /*! A block that will be called when a button is pressed inside
  * an in-app message.
  */
-typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInteger appId);
+typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInteger appId);
 
 @class SwrveMessageController;
 @class SwrveInAppCampaign;
@@ -57,6 +58,13 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString* action, NSInt
  * \returns TRUE if all assets have been downloaded.
  */
 -(BOOL)assetsReady:(NSSet*)assets;
+
+
+/*! Check if all personalised text in this message has been accounted for and can be set
+*
+* \returns TRUE if all personalised text parts have either fallbacks or values available to them
+*/
+-(BOOL)canResolvePersonalisation:(NSDictionary*)personalisation;
 
 /*! Notify that this message was shown to the user.
  */

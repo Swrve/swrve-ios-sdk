@@ -3,6 +3,7 @@
 #import "SwrveMessageController+Private.h"
 #import "SwrveButton.h"
 #import "SwrveInAppCampaign.h"
+#import "SwrveInAppMessageConfig.h"
 #import "SwrveConversationCampaign.h"
 #import "SwrveQAUser.h"
 #if __has_include(<SwrveConversationSDK/SwrveConversationItemViewController.h>)
@@ -93,6 +94,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic)         SwrveActionType       inAppMessageActionType;
 @property (nonatomic, retain) NSString*             inAppMessageAction;
+@property (nonatomic, retain) NSString*             inAppMessagePersonalisedAction;
 @property (nonatomic, retain) NSString*             inAppButtonPressedName;
 @property (nonatomic)         bool                  prefersIAMStatusBarHidden;
 @property (nonatomic)         bool                  prefersConversationsStatusBarHidden;
@@ -120,7 +122,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize showMessagesAfterLaunch;
 @synthesize showMessagesAfterDelay;
 @synthesize messagesLeftToShow;
-@synthesize inAppMessageBackgroundColor;
+@synthesize inAppMessageConfig;
 @synthesize campaigns;
 @synthesize campaignsState;
 @synthesize assetsManager;
@@ -137,6 +139,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize conversationWindow;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
+@synthesize inAppMessagePersonalisedAction;
 @synthesize inAppButtonPressedName;
 @synthesize device_width;
 @synthesize device_height;
@@ -149,6 +152,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize customButtonCallback;
 @synthesize dismissButtonCallback;
 @synthesize installButtonCallback;
+@synthesize clipboardButtonCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
@@ -200,7 +204,14 @@ const static int DEFAULT_MIN_DELAY           = 55;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
     self.appStoreURLs       = [[NSMutableDictionary alloc] init];
-    self.inAppMessageBackgroundColor    = sdk.config.inAppMessageBackgroundColor;
+    
+    self.inAppMessageConfig = sdk.config.inAppMessageConfig;
+    
+    if (self.inAppMessageConfig.backgroundColor == nil) {
+        // current workaround since this isn't a major version
+        self.inAppMessageConfig.backgroundColor = sdk.config.inAppMessageBackgroundColor;
+    }
+    
     self.manager            = [NSFileManager defaultManager];
     self.notifications      = [[NSMutableArray alloc] init];
     self.autoShowMessagesEnabled = YES;
@@ -659,7 +670,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         return;
     }
 
-    // Only execute if at least 1 call to the /user_resources_and_campaigns api endpoint has been completed
+    // Only execute if at least 1 call to the /user_content api endpoint has been completed
     if (![self.analyticsSDK campaignsAndResourcesInitialized]) {
         return;
     }
@@ -1070,27 +1081,40 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 
 - (void)showMessage:(SwrveMessage *)message {
-    [self showMessage:message queue:false];
+    [self showMessage:message queue:false withPersonalisation:nil];
 }
 
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued {
+    [self showMessage:message queue:isQueued withPersonalisation:nil];
+}
+
+- (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation {
+    [self showMessage:message queue:false withPersonalisation:personalisation];
+}
+
+- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalisation:(NSDictionary *)personalisation {
     if (message == nil) {
         return;
     }
     @synchronized(self) {
         if (self.inAppMessageWindow == nil && self.conversationWindow == nil) {
             SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
-            messageViewController.view.backgroundColor = self.inAppMessageBackgroundColor;
+            messageViewController.view.backgroundColor = self.inAppMessageConfig.backgroundColor;
+            messageViewController.messageController = self;
             messageViewController.message = message;
             messageViewController.prefersIAMStatusBarHidden = self.prefersIAMStatusBarHidden;
+            messageViewController.personalisationDict = personalisation;
+            messageViewController.inAppConfig = self.inAppMessageConfig;
+            
             messageViewController.block = ^(SwrveActionType type, NSString* action, NSInteger appId) {
     #pragma unused(appId)
                 // Save button type and action for processing later
                 self.inAppMessageActionType = type;
                 self.inAppMessageAction = action;
 
-                if( [self.showMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
-                    [self.showMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
+                id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
+                if( [strongMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
+                    [strongMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
                 }
                 else {
                     [self beginHideMessageAnimation:(SwrveMessageViewController*)self.inAppMessageWindow.rootViewController];
@@ -1121,6 +1145,19 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 #endif
 
+- (UIWindow *)createUIWindow {
+    // Check if using Swift UI
+    if (@available(iOS 13.0,tvOS 13.0, *)) {
+        for (UIWindowScene *wScene in [UIApplication sharedApplication].connectedScenes) {
+            if (wScene.activationState == UISceneActivationStateForegroundActive) {
+                UIWindow *window = wScene.windows.firstObject;
+                return [[UIWindow alloc] initWithWindowScene:window.windowScene];
+            }
+        }
+    }
+    return [[UIWindow alloc] init];
+}
+
 - (void)showConversation:(SwrveConversation *)conversation {
     [self showConversation:conversation queue:false];
 }
@@ -1128,8 +1165,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued {
     @synchronized (self) {
         if (conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil) {
-            self.conversationWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-            self.swrveConversationItemViewController = [SwrveConversationItemViewController initFromStoryboard];
+            self.conversationWindow = [self createUIWindow];
+            self.conversationWindow.frame = [[UIScreen mainScreen] bounds];
+            self.swrveConversationItemViewController = [SwrveConversationItemViewController initConversation];
             bool success = [SwrveConversationItemViewController showConversation:conversation
                                   withItemController:self.swrveConversationItemViewController
                                     withEventHandler:(id<SwrveMessageEventHandler>)self
@@ -1153,8 +1191,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
 - (void) conversationClosed {
     if (self.conversationWindow != nil) {
-        if ([self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
-            [self.showMessageDelegate messageWillBeHidden:self.conversationWindow.rootViewController];
+        id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
+        if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
+            [strongMessageDelegate messageWillBeHidden:self.conversationWindow.rootViewController];
         }
 
         self.conversationWindow.hidden = YES;
@@ -1168,34 +1207,36 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 -(void)handleNextConversation:(NSMutableArray*)queue {
     if ([queue count] > 0) {
         id messageOrConversation = [queue objectAtIndex:0];
-        [messageOrConversation isKindOfClass:[SwrveConversation class]] ? [self showConversation:messageOrConversation queue:false] : [self showMessage:messageOrConversation queue:false];
+        [messageOrConversation isKindOfClass:[SwrveConversation class]] ? [self showConversation:messageOrConversation queue:false] : [self showMessage:messageOrConversation queue:false withPersonalisation:nil];
         [queue removeObjectAtIndex:0];
     }
 }
 
 - (void) showMessageWindow:(SwrveMessageViewController*) messageViewController {
-    if( messageViewController == nil ) {
+    if (messageViewController == nil ) {
         DebugLog(@"Cannot show a nil view.", nil);
         return;
     }
 
-    if( self.inAppMessageWindow != nil ) {
+    if (self.inAppMessageWindow != nil ) {
         DebugLog(@"A message is already displayed, ignoring second message.", nil);
         return;
     }
 
-    if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeShown:)]) {
-        [self.showMessageDelegate messageWillBeShown:messageViewController];
+    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
+    if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeShown:)]) {
+        [strongMessageDelegate messageWillBeShown:messageViewController];
     }
 
-    self.inAppMessageWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.inAppMessageWindow = [self createUIWindow];
+    self.inAppMessageWindow.frame = [[UIScreen mainScreen] bounds];
     self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
     self.inAppMessageWindow.rootViewController = messageViewController;
     self.inAppMessageWindow.windowLevel = UIWindowLevelAlert + 1;
     [self.inAppMessageWindow makeKeyAndVisible];
 
-    if( [self.showMessageDelegate respondsToSelector:@selector(beginShowMessageAnimation:)]) {
-        [self.showMessageDelegate beginShowMessageAnimation:messageViewController];
+    if ([strongMessageDelegate respondsToSelector:@selector(beginShowMessageAnimation:)]) {
+        [strongMessageDelegate beginShowMessageAnimation:messageViewController];
     }
     else {
         [self beginShowMessageAnimation:messageViewController];
@@ -1212,10 +1253,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     SwrveInAppCampaign *dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
     [dismissedCampaign messageDismissed:now];
 
-    if( [self.showMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
-        [self.showMessageDelegate messageWillBeHidden:self.inAppMessageWindow.rootViewController];
+    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
+    if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
+        [strongMessageDelegate messageWillBeHidden:self.inAppMessageWindow.rootViewController];
     }
-
 
     NSString *action = self.inAppMessageAction;
     NSString *nonProcessedAction = nil;
@@ -1240,10 +1281,25 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             break;
         case kSwrveActionCustom:
         {
+
             if (self.customButtonCallback != nil) {
                 self.customButtonCallback(action);
             } else {
                 nonProcessedAction = action;
+            }
+        }
+            break;
+        case kSwrveActionClipboard:
+        {
+#if TARGET_OS_IOS /** exclude tvOS **/
+            if (action != nil) {
+                UIPasteboard *pb = [UIPasteboard generalPasteboard];
+                [pb setString:action];
+            }
+#endif /*TARGET_OS_IOS*/
+            
+            if (self.clipboardButtonCallback != nil) {
+                self.clipboardButtonCallback(action);
             }
         }
             break;
@@ -1331,8 +1387,9 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     // Find a conversation that should be displayed
     SwrveConversation* conversation = nil;
 
-    if( [self.showMessageDelegate respondsToSelector:@selector(conversationForEvent: withPayload:)]) {
-        conversation = [self.showMessageDelegate conversationForEvent:eventName withPayload:payload];
+    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
+    if ([strongMessageDelegate respondsToSelector:@selector(conversationForEvent: withPayload:)]) {
+        conversation = [strongMessageDelegate conversationForEvent:eventName withPayload:payload];
     }
     else {
         conversation = [self conversationForEvent:eventName withPayload:payload];
@@ -1340,7 +1397,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
     if (conversation != nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if( [self.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+            if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
                 [self.showMessageDelegate showConversation:conversation];
             } else {
                 [self showConversation:conversation];
@@ -1350,8 +1407,8 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else {
         // Find a message that should be displayed
         SwrveMessage* message = nil;
-        if ([self.showMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
-            message = [self.showMessageDelegate messageForEvent:eventName withPayload:payload];
+        if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
+            message = [strongMessageDelegate messageForEvent:eventName withPayload:payload];
         } else {
             message = [self messageForEvent:eventName withPayload:payload];
         }
@@ -1359,7 +1416,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         // Show the message if it exists
         if( message != nil ) {
             dispatch_block_t showMessageBlock = ^{
-                if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                     [self.showMessageDelegate showMessage:message];
                 }
                 else {
@@ -1454,7 +1511,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 }
 #endif
 
--(BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign
+-(BOOL)showMessageCenterCampaign:(SwrveCampaign*)campaign {
+    return [self showMessageCenterCampaign:campaign withPersonalisation:nil];
+}
+
+-(BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalisation:(NSDictionary *)personalisation
 {
     if (analyticsSDK == nil) {
         return NO;
@@ -1464,11 +1525,13 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (!campaign.messageCenter || ![campaign assetsReady:assetsOnDisk]) {
         return NO;
     }
+    
+    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             SwrveConversation* conversation = ((SwrveConversationCampaign*)campaign).conversation;
-            if( [self.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                [self.showMessageDelegate showConversation:conversation];
+            if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                [strongMessageDelegate showConversation:conversation];
             } else {
                 [self showConversation:conversation];
             }
@@ -1477,17 +1540,21 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveMessage* message = [((SwrveInAppCampaign*)campaign).messages objectAtIndex:0];
 
+        if (![message canResolvePersonalisation:personalisation]) {
+            return NO;
+        }
+        
         // Show the message if it exists
         if( message != nil ) {
             dispatch_block_t showMessageBlock = ^{
-                if( [self.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                if ([strongMessageDelegate respondsToSelector:@selector(showMessage:withPersonalisation:)]) {
+                    [strongMessageDelegate showMessage:message withPersonalisation:personalisation];
+                } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                     [self.showMessageDelegate showMessage:message];
-                }
-                else {
-                    [self showMessage:message];
+                } else {
+                    [self showMessage:message withPersonalisation:personalisation];
                 }
             };
-
 
             if ([NSThread isMainThread]) {
                 showMessageBlock();

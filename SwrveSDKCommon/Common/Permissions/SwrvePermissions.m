@@ -1,20 +1,19 @@
 #import "SwrvePermissions.h"
+#import "SwrveLocalStorage.h"
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
 #endif //!defined(SWRVE_NO_PUSH)
 
-static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
-
 @implementation SwrvePermissions
 
-+ (NSMutableDictionary*)permissionsStatusCache {
++ (NSMutableDictionary *)permissionsStatusCache {
     static NSMutableDictionary *dic = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dic = [NSMutableDictionary new];
 
         // Load the push permission status from disk, as it is async and at the start of the app we won't have it on each run
-        NSDictionary *savedState = [[NSUserDefaults standardUserDefaults] dictionaryForKey:swrve_permission_status];
+        NSDictionary *savedState = [SwrveLocalStorage getPermissions];
         if (savedState != nil) {
             NSString *pushState = [savedState objectForKey:swrve_permission_push_notifications];
             if (pushState != nil) {
@@ -52,8 +51,8 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return NO;
 }
 
-+(NSDictionary*)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk API_AVAILABLE(ios(7.0)) {
-    NSMutableDictionary* permissionsStatus = [[NSMutableDictionary alloc] init];
++ (NSDictionary *)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk API_AVAILABLE(ios(7.0)) {
+    NSMutableDictionary *permissionsStatus = [[NSMutableDictionary alloc] init];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationAlways:sdk]) forKey:swrve_permission_location_always];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationWhenInUse:sdk]) forKey:swrve_permission_location_when_in_use];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPhotoLibrary:sdk]) forKey:swrve_permission_photos];
@@ -83,8 +82,13 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 }
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
-+ (NSString*) pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk {
-    NSDictionary* permissionsCache = [SwrvePermissions permissionsStatusCache];
+
++ (NSString *)pushAuthorizationWithSDK:(id<SwrveCommonDelegate>)sdk {
+    return [SwrvePermissions pushAuthorizationWithSDK:sdk WithCallback:nil];
+}
+
++ (NSString *)pushAuthorizationWithSDK:(id<SwrveCommonDelegate>)sdk WithCallback:(nullable void (^)(NSString * pushAuthorization)) callback {
+    NSDictionary *permissionsCache = [SwrvePermissions permissionsStatusCache];
     __block NSString *pushAuthorization = (permissionsCache == nil)? nil : [permissionsCache objectForKey:swrve_permission_push_notifications];
     if (@available(iOS 10.0, *)) {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -108,8 +112,10 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
             [dictionary setValue:pushAuthorizationFromSettings forKey:swrve_permission_push_notifications];
             [sdk mergeWithCurrentDeviceInfo:dictionary]; // send now
             pushAuthorization = pushAuthorizationFromSettings;
-
             [SwrvePermissions updatePermissionsStatusCache:dictionary];
+            if (callback) {
+                callback(pushAuthorizationFromSettings);
+            }
         }];
     } else {
         DebugLog(@"Checking push auth not supported, should not reach this code");
@@ -132,9 +138,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
 
 #endif //!defined(SWRVE_NO_PUSH)
 
-+(void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk {
-    NSDictionary* lastStatus = [[NSUserDefaults standardUserDefaults] dictionaryForKey:swrve_permission_status];
-    NSDictionary* currentStatus = [self currentStatusWithSDK:sdk];
++ (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk {
+    NSDictionary *lastStatus = [SwrveLocalStorage getPermissions];
+    NSDictionary *currentStatus = [self currentStatusWithSDK:sdk];
     if (lastStatus != nil) {
         [self compareStatusAndQueueEvent:swrve_permission_location_always lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
         [self compareStatusAndQueueEvent:swrve_permission_location_when_in_use lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
@@ -143,10 +149,10 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         [self compareStatusAndQueueEvent:swrve_permission_contacts lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
         [self compareStatusAndQueueEvent:swrve_permission_push_notifications lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
     }
-    [[NSUserDefaults standardUserDefaults] setObject:currentStatus forKey:swrve_permission_status];
+    [SwrveLocalStorage savePermissions:currentStatus];
 }
 
-+(NSArray*)currentPermissionFilters {
++ (NSArray *)currentPermissionFilters {
     NSMutableArray* filters = [[NSMutableArray alloc] init];
     NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
     if(permissionsStatusCache == nil) {
@@ -162,8 +168,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
         // Check that we haven't already asked for push permissions
         if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
             NSString *currentPushPermission = [permissionsStatusCache objectForKey:swrve_permission_push_notifications];
-            NSString *acceptedStatus = swrve_permission_status_unknown;
-            if ([currentPushPermission isEqualToString:acceptedStatus]) {
+            if ([currentPushPermission isEqualToString:swrve_permission_status_unknown] || [currentPushPermission isEqualToString:swrve_permission_status_provisional]) {
                 [filters addObject:[[swrve_permission_push_notifications lowercaseString] stringByAppendingString:swrve_permission_requestable]];
             }
         }
@@ -171,11 +176,11 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return filters;
 }
 
-+(BOOL)didWeAskForPushPermissionsAlready {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:asked_for_push_flag_key];
++ (BOOL)didWeAskForPushPermissionsAlready {
+    return [SwrveLocalStorage askedForPushPermission];
 }
 
-+(void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
++ (void)checkPermissionNameAndAddFilters:(NSString*)permissionName to:(NSMutableArray*)filters withCurrentStatus:(NSDictionary*)currentStatus {
     if (currentStatus == nil) {
         return;
     }
@@ -185,9 +190,9 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 }
 
-+(void)compareStatusAndQueueEvent:(NSString*)permissioName lastStatus:(NSDictionary*)lastStatus currentStatus:(NSDictionary*)currentStatus withSDK:(id<SwrveCommonDelegate>)sdk {
-    NSString* lastStatusString = [lastStatus objectForKey:permissioName];
-    NSString* currentStatusString = [currentStatus objectForKey:permissioName];
++ (void)compareStatusAndQueueEvent:(NSString *)permissioName lastStatus:(NSDictionary *)lastStatus currentStatus:(NSDictionary*)currentStatus withSDK:(id<SwrveCommonDelegate>)sdk {
+    NSString *lastStatusString = [lastStatus objectForKey:permissioName];
+    NSString *currentStatusString = [currentStatus objectForKey:permissioName];
     if (![lastStatusString isEqualToString:swrve_permission_status_authorized] && [currentStatusString isEqualToString:swrve_permission_status_authorized]) {
         // Send event as the permission has been granted
         [SwrvePermissions sendPermissionEvent:permissioName withState:SwrvePermissionStateAuthorized withSDK:sdk];
@@ -197,7 +202,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     }
 }
 
-+(SwrvePermissionState)checkLocationAlways:(id<SwrveCommonDelegate>)sdk {
++ (SwrvePermissionState)checkLocationAlways:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(locationAlwaysPermissionState)]) {
         return [del locationAlwaysPermissionState];
@@ -205,7 +210,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return SwrvePermissionStateNotImplemented;
 }
 
-+(BOOL)requestLocationAlways:(id<SwrveCommonDelegate>)sdk {
++ (BOOL)requestLocationAlways:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(requestLocationAlways:)]) {
         [del requestLocationAlwaysPermission:^(BOOL processed) {
@@ -220,7 +225,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return FALSE;
 }
 
-+(SwrvePermissionState)checkLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
++ (SwrvePermissionState)checkLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(locationWhenInUsePermissionState)]) {
         return [del locationWhenInUsePermissionState];
@@ -228,7 +233,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return SwrvePermissionStateNotImplemented;
 }
 
-+(BOOL)requestLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
++ (BOOL)requestLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(requestLocationWhenInUse:)]) {
         [del requestLocationWhenInUsePermission:^(BOOL processed) {
@@ -243,7 +248,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return FALSE;
 }
 
-+(SwrvePermissionState)checkPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
++ (SwrvePermissionState)checkPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(photoLibraryPermissionState)]) {
         return [del photoLibraryPermissionState];
@@ -251,7 +256,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
     return SwrvePermissionStateNotImplemented;
 }
 
-+(BOOL)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
++ (BOOL)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(requestPhotoLibrary:)]) {
         [del requestPhotoLibraryPermission:^(BOOL processed) {
@@ -358,7 +363,7 @@ static NSString* asked_for_push_flag_key = @"swrve.asked_for_push_permission";
                           }];
 
     // Remember we asked for push permissions
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:asked_for_push_flag_key];
+    [SwrveLocalStorage saveAskedForPushPermission:YES];
 }
 #endif //!defined(SWRVE_NO_PUSH)
 

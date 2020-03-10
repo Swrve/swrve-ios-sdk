@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveConfig.h"
+#import "SwrveInAppMessageConfig.h"
 #import "SwrveReceiptProvider.h"
 #if __has_include(<SwrveSDKCommon/SwrvePermissionsDelegate.h>)
 #import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
@@ -82,6 +83,9 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 /*! Default in-app background color used if none is specified in the template */
 @property (nonatomic, retain) UIColor *inAppMessageBackgroundColor;
 
+/*! in-app config */
+@property (nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;
+
 /*! Session timeout time in seconds. User activity after this time will be considered a new session. */
 @property (nonatomic) double newSessionInterval;
 
@@ -136,7 +140,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  * For this to work effectively, please ensure it is added before Swrve initialisation and initialisation happens
  * before the application has finished loading.
  */
-@property (nonatomic) id<SwrvePushResponseDelegate> pushResponseDelegate;
+@property (nonatomic, weak) id<SwrvePushResponseDelegate> pushResponseDelegate;
 
 #endif //!defined(SWRVE_NO_PUSH)
 
@@ -193,7 +197,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 
 /*! Implement this delegate in your app to be able to report on permissions and use them as message actions.
  */
-@property (nonatomic, retain) id <SwrvePermissionsDelegate> permissionsDelegate;
+@property (nonatomic, weak) id <SwrvePermissionsDelegate> permissionsDelegate;
 
 @end
 
@@ -212,6 +216,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) NSString *appVersion;
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) UIColor *inAppMessageBackgroundColor;
+@property (nonatomic, readonly) SwrveInAppMessageConfig *inAppMessageConfig;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
@@ -222,7 +227,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) NSSet *pushNotificationEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet *notificationCategories;
-@property (nonatomic, readonly) id<SwrvePushResponseDelegate> pushResponseDelegate;
+@property (nonatomic, weak, readonly) id<SwrvePushResponseDelegate> pushResponseDelegate;
 #endif //!defined(SWRVE_NO_PUSH)
 @property (nonatomic, readonly) NSString *appGroupIdentifier;
 @property (nonatomic, readonly) long autoShowMessagesMaxDelay;
@@ -230,6 +235,6 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) SwrveInitMode initMode;
 @property(nonatomic, readonly) BOOL managedModeAutoStartLastUser;
 @property (nonatomic) BOOL abTestDetailsEnabled;
-@property (nonatomic, retain) id <SwrvePermissionsDelegate> permissionsDelegate;
+@property (nonatomic, weak, readonly) id <SwrvePermissionsDelegate> permissionsDelegate;
 
 @end

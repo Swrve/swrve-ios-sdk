@@ -50,6 +50,11 @@
             filePath = [SwrveLocalStorage offlineCampaignsFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage offlineCampaignsSignatureFilePathForUserId:userID];
             break;
+            
+        case SWRVE_REAL_TIME_USER_PROPERTIES_FILE:
+            filePath = [SwrveLocalStorage realTimeUserPropertiesFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage offlineRealTimeUserPropertiesSignatureFilePathForUserId:userID];
+            break;
     }
 
     if (filePath != nil) {

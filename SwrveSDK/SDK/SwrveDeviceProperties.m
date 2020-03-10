@@ -90,7 +90,15 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 
 #pragma mark - methods
 
-- (NSDictionary*) deviceProperties {
+- (NSString *)installDate:(UInt64)appInstallTimeSeconds {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
+    [dateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:appInstallTimeSeconds];
+    return [dateFormatter stringFromDate:date];
+}
+
+- (NSDictionary *)deviceProperties {
     
     NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
     
@@ -107,10 +115,7 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
     [deviceProperties setValue:dpi                              forKey:SWRVE_DEVICE_DPI];
     
     // Install Date / Version
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:self.appInstallTimeSeconds];
-    [deviceProperties setValue:[dateFormatter stringFromDate:date] forKey:SWRVE_INSTALL_DATE];
+    [deviceProperties setValue:[self installDate:self.appInstallTimeSeconds] forKey:SWRVE_INSTALL_DATE];
     
     // Device Permisisons
     [deviceProperties addEntriesFromDictionary:self.permissionStatus];

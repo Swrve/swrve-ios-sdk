@@ -143,6 +143,12 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
     {
         message = [self.messages objectAtIndex:(NSUInteger)self.state.next];
     }
+    
+    if (![message canResolvePersonalisation:nil]) {
+        // currently, personalisation isn't available on triggered campaigns. This will prevent malformed text appearing on screen
+        [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has personisation options that cannot be resolved", (long)self.ID] withReasons:campaignReasons];
+        return nil;
+    }
 
     if ([message assetsReady:assets]) {
         DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);

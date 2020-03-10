@@ -125,6 +125,10 @@
 #pragma unused(callbackBlock)
 }
 
+-(void) realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock{
+#pragma unused(callbackBlock)
+}
+
 - (void)sendQueuedEvents {
 }
 

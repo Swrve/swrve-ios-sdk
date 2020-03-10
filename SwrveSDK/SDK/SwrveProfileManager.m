@@ -11,8 +11,6 @@
 #import "Swrve.h"
 #import <sys/time.h>
 
-#define kSwrveUsers @"swrve_users"
-
 @interface SwrveUser()
 
 @property (nonatomic, strong) NSString *swrveId;
@@ -157,7 +155,7 @@
             swrveUser.verified = true;
             swrveUser.swrveId = swrveUserId;
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
-            [[NSUserDefaults standardUserDefaults] setObject:data forKey:kSwrveUsers];
+            [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
     }
@@ -171,8 +169,8 @@
         [mArray addObject:swrveUser];
     }
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
-    [[NSUserDefaults standardUserDefaults] setObject:data forKey:kSwrveUsers];
-}
+    [SwrveLocalStorage saveSwrveUsers:data];
+ }
 
 - (void)removeSwrveUserWithId:(NSString *)aUserId {
     if (aUserId == nil) return;
@@ -182,14 +180,14 @@
         if ([swrveUser.swrveId isEqualToString:aUserId] || [swrveUser.externalId isEqualToString:aUserId] ) {
             [mArray removeObject:swrveUser];
             NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
-            [[NSUserDefaults standardUserDefaults] setObject:data forKey:kSwrveUsers];
+            [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
     }
 }
 
 - (NSArray *)swrveUsers {
-    NSData *encodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:kSwrveUsers];
+    NSData *encodedObject = [SwrveLocalStorage swrveUsers];
     return [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
 }
 

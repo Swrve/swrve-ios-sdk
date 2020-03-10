@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 extern NSString *const SwrveSilentPushIdentifierKey;
 extern NSString *const SwrveSilentPushPayloadKey;
+extern NSString *const SwrveContentVersionKey;
 
 @protocol SwrvePushDelegate <NSObject>
 
@@ -32,7 +33,6 @@ extern NSString *const SwrveSilentPushPayloadKey;
 #if !TARGET_OS_TV
 #pragma mark - Static Methods
 /** Rich Push Management **/
-
 
 /*! Processes APNs Notification that comes in from a Service Extension
  *  and adds all the additional campaign content.

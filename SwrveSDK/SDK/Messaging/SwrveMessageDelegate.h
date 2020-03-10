@@ -41,6 +41,17 @@
  */
 - (void)showMessage:(SwrveMessage *)message;
 
+/*! Called when a message should be shown. Should show and react to the action
+ * in the message. By default the SwrveMessageController will display the
+ * message as a modal dialog. If an install action is returned by the dialog
+ * it will direct the user to the app store. If you have a custom action you
+ * should create a custom delegate to process it in your app.
+ *
+ * \param message Message to be displayed.
+ * \param personalisation Dictionary of Strings which can be used to personalise the given message
+ */
+- (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation;
+
 /*! Called when a conversation should be shown. Should show and react to the action
  * in the conversation.
  *

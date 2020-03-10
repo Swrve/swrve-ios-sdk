@@ -147,6 +147,7 @@ enum
 - (void)setPushNotificationsDeviceToken:(NSData *)newDeviceToken;
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0));
 - (void)processInfluenceData;
+- (void)saveConfigForPushDelivery;
 
 @end
 #endif //!defined(SWRVE_NO_PUSH)
@@ -183,7 +184,6 @@ enum
 - (void)initResources;
 - (void)sendEventfile;
 - (NSOutputStream *)createEventfile:(int)mode;
-- (UInt64)getTime;
 - (void)initBuffer;
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer;
 
@@ -215,6 +215,12 @@ enum
 // Resource cache files
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
 @property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;
+
+// Real Time User Properties cache file
+@property(atomic) SwrveSignatureProtectedFile *realTimeUserPropertiesFile;
+
+// Store current real time user properties
+@property(atomic, strong) NSMutableDictionary *realTimeUserProperties;
 
 // An in-memory buffer of messages that are ready to be sent to the Swrve
 // server the next time sendQueuedEvents is called.
@@ -328,6 +334,8 @@ enum
 @synthesize campaignsAndResourcesInitialized;
 @synthesize resourcesFile;
 @synthesize resourcesDiffFile;
+@synthesize realTimeUserPropertiesFile;
+@synthesize realTimeUserProperties;
 @synthesize eventBuffer;
 @synthesize eventBufferBytes;
 @synthesize eventStream;
@@ -396,7 +404,7 @@ enum
         [self setBatchURL:[NSURL URLWithString:@"1/batch" relativeToURL:base_events_url]];
 
         NSURL *base_content_url = [NSURL URLWithString:self.config.contentServer];
-        [self setBaseCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_resources_and_campaigns" relativeToURL:base_content_url]];
+        [self setBaseCampaignsAndResourcesURL:[NSURL URLWithString:@"api/1/user_content" relativeToURL:base_content_url]];
 
         self.deviceUUID = [SwrveLocalStorage deviceUUID];
         if ((self.deviceUUID == nil) || [self.deviceUUID isEqualToString:@""]) {
@@ -425,8 +433,9 @@ enum
                 [self.push observeSwizzling];
             }
 
-            if (swrveConfig.pushResponseDelegate != nil) {
-                [self.push setResponseDelegate:swrveConfig.pushResponseDelegate];
+            id <SwrvePushResponseDelegate> pushDelegate = swrveConfig.pushResponseDelegate;
+            if (pushDelegate != nil) {
+                [self.push setResponseDelegate:pushDelegate];
             }
         }
 #else
@@ -469,6 +478,7 @@ enum
     }
     [self initResources];
     [self initResourcesDiff];
+    [self initRealTimeUserProperties];
 
     NSString *eventCacheFile = [SwrveLocalStorage eventsFilePathForUserId:swrveUserId];
     [self setEventFilename:[NSURL fileURLWithPath:eventCacheFile]];
@@ -561,6 +571,12 @@ enum
             dispatch_group_leave(sendEventsCallbackForBeginSessionGroup);
         }
     }];
+
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+    if (self.config.pushEnabled) {
+        [self.push saveConfigForPushDelivery];
+    }
+#endif
 }
 
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut {
@@ -754,7 +770,7 @@ enum
     if (attributes) {
         @synchronized (self.deviceInfoDic) {
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.deviceInfoDic objectForKey:@"attributes"];
-            [self.deviceInfoDic setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            [self.deviceInfoDic setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
             for (id attributeKey in attributes) {
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
@@ -773,7 +789,7 @@ enum
     if (attributes) {
         @synchronized (self.userUpdates) {
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
-            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
             for (id attributeKey in attributes) {
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
@@ -791,7 +807,7 @@ enum
     if (name && date) {
         @synchronized (self.userUpdates) {
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
-            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
             [currentAttributes setObject:[self convertDateToString:date] forKey:name];
         }
 
@@ -918,6 +934,12 @@ enum
                     if (resourceJson != nil) {
                         [self updateResources:resourceJson writeToCache:YES];
                     }
+                    
+                    NSDictionary *realTimeUserPropertiesJson = [responseDict objectForKey:@"real_time_user_properties"];
+                    if(realTimeUserPropertiesJson != nil) {
+                        [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
+                    }
+                    
                 } else {
                     DebugLog(@"Invalid JSON received for user resources and campaigns", nil);
                 }
@@ -1542,7 +1564,7 @@ enum
             [eventData setValue:eventType forKey:@"type"];
         }
         if (![eventData objectForKey:@"time"]) {
-            [eventData setValue:[NSNumber numberWithUnsignedLongLong:[self getTime]] forKey:@"time"];
+            [eventData setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
         }
         if (![eventData objectForKey:@"seqnum"]) {
             [eventData setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
@@ -1762,6 +1784,39 @@ enum
 
     if (self.config.resourcesUpdatedCallback != nil) {
         [self.config.resourcesUpdatedCallback invoke];
+    }
+}
+
+- (void)initRealTimeUserProperties {
+    SwrveSignatureProtectedFile *file = [self signatureFileWithType:SWRVE_REAL_TIME_USER_PROPERTIES_FILE errorDelegate:self];
+
+    [self setRealTimeUserPropertiesFile:file];
+
+    // Initialize real time user properties NSDictionary
+    if (self.realTimeUserProperties == nil) {
+        self.realTimeUserProperties = [NSMutableDictionary dictionary];
+    }
+
+    // Read content of properties file and update real time user properties if signature valid
+    NSData *content = [self.realTimeUserPropertiesFile readWithRespectToPlatform];
+
+    if (content != nil) {
+        NSError *error = nil;
+        NSDictionary *realtimeUserProperties = [NSJSONSerialization JSONObjectWithData:content options:NSJSONReadingMutableContainers error:&error];
+        if (!error) {
+            self.realTimeUserProperties = [realtimeUserProperties mutableCopy];
+        }
+    } else {
+        [self invalidateETag];
+    }
+}
+
+- (void)updateRealTimeUserProperties:(NSDictionary *)realTimeUserPropertiesJson writeToCache:(BOOL)writeToCache {
+    self.realTimeUserProperties = [realTimeUserPropertiesJson mutableCopy];
+    
+    if (writeToCache) {
+        NSData *propertiesData = [NSJSONSerialization dataWithJSONObject:realTimeUserPropertiesJson options:0 error:nil];
+        [self.realTimeUserPropertiesFile writeWithRespectToPlatform:propertiesData];
     }
 }
 
@@ -2038,13 +2093,6 @@ enum HttpStatus {
     [self setEventStream:[self createEventfile:SWRVE_TRUNCATE_FILE]];
 }
 
-- (UInt64)getTime {
-    // Get the time since the epoch in milliseconds
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    return (((UInt64) time.tv_sec) * 1000) + (((UInt64) time.tv_usec) / 1000);
-}
-
 - (void)initBuffer {
     [self setEventBuffer:[[NSMutableArray alloc] initWithCapacity:SWRVE_MEMORY_QUEUE_INITIAL_SIZE]];
     [self setEventBufferBytes:0];
@@ -2173,6 +2221,22 @@ enum HttpStatus {
                                                        self.userID, self.apiKey, self.appVersion, joinedDateMilliSeconds];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"?%@", queryString] relativeToURL:resourcesDiffURL];
     return url;
+}
+
+- (void) realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock {
+    if (![self sdkReady]) {
+        return;
+    }
+
+    NSCAssert(callbackBlock, @"realTimeUserProperties: callbackBlock must not be nil.", nil);
+    if (callbackBlock != nil) {
+        @try {
+            callbackBlock(self.realTimeUserProperties);
+        }
+        @catch (NSException *e) {
+            DebugLog(@"Exception in realtimeUserProperies callback. %@", e);
+        }
+    }
 }
 
 // Overwritten for unit tests

@@ -197,6 +197,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
 
+/*! Gets a dictionary of real time user properties
+ * This function will return immediately, and the callback will be fired right
+ * away with the already present AB test data.
+ *
+ * \param callbackBlock A callback block that will be called asynchronously when real time user
+ * properties become available
+ *
+*/
++ (void)realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock;
+
 #pragma mark -
 #pragma mark Other
 

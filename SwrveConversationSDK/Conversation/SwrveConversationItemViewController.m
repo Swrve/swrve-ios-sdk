@@ -40,30 +40,41 @@
 @synthesize conversationPane = _conversationPane;
 @synthesize conversation;
 @synthesize wasShownToUserNotified;
-@synthesize cancelButtonViewTop;
-@synthesize contentTableViewTop;
 @synthesize contentHeight;
 
-+ (SwrveConversationItemViewController *)initFromStoryboard {
++ (SwrveConversationItemViewController *)initConversation {
 
-    SwrveConversationItemViewController *itemViewController;
-    @try {
+    SwrveConversationItemViewController *itemViewController = [[SwrveConversationItemViewController alloc] init];
 
-        NSBundle *conversationBundle = [SwrveConversationResourceManagement conversationBundle];
+    // -- Background Image
+    itemViewController.fullScreenBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [itemViewController.view addSubview:itemViewController.fullScreenBackgroundImageView];
 
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:
-#if TARGET_OS_IOS /** exclude tvOS **/
-                                    @"SwrveConversation"
-#else
-                                    @"SwrveConversation-tvos"
-#endif
-                                                             bundle:conversationBundle];
-        itemViewController = [storyBoard instantiateViewControllerWithIdentifier:@"SwrveConversationItemViewController"];
-    }
-    @catch (NSException *exception) {
-        DebugLog(@"Unable to showConversation. Error loading SwrveConversationItemViewController. %@", exception);
-    }
+    // -- Atoms table
+    UITableView *tableview =[[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    tableview.delegate = itemViewController;
+    tableview.dataSource = itemViewController;
+    itemViewController.contentTableView = tableview;
+    [itemViewController.view addSubview:itemViewController.contentTableView];
+
+    // -- Atoms buttons view
+    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, itemViewController.view.frame.size.width, 0)];
+    itemViewController.buttonsView = buttonView;
+    [itemViewController.view addSubview:itemViewController.buttonsView];
+
+    // -- Cancel button
+    UIButton *cancelButton = [[UIButton alloc] initWithFrame:CGRectZero]; // will set with constraints in viewWillAppear
+    [cancelButton addTarget:itemViewController action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [cancelButton setImage:[SwrveConversationResourceManagement imageWithName:@"close_button"] forState:UIControlStateNormal];
+    itemViewController.cancelButtonView = cancelButton;
+    [itemViewController.view addSubview:itemViewController.cancelButtonView];
+
     return itemViewController;
+}
+
++ (SwrveConversationItemViewController *)initFromStoryboard {
+     // This function exists as a Unity SDK bridge since it still uses this specific name. delete when not longer used by Unity.
+    return [self initConversation];
 }
 
 + (bool)showConversation:(SwrveBaseConversation *)conversation
@@ -153,7 +164,68 @@
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    // Subscrite to internal notifications and orientation changes
+    if (@available(iOS 9.0, *)) {
+
+        // - background image constraints
+        self.fullScreenBackgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.fullScreenBackgroundImageView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+        [self.fullScreenBackgroundImageView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+        [self.fullScreenBackgroundImageView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
+        [self.fullScreenBackgroundImageView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+
+
+        // -- bottom button constraints
+        self.buttonsView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.buttonsView.heightAnchor constraintEqualToConstant:65.0f].active = YES;
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+        if (@available(iOS 11, *)) {
+            [self.buttonsView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+            [self.buttonsView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor constant: -5].active = YES;
+            [self.buttonsView.leftAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor constant:5].active = YES;
+        }
+        else {
+            [self.buttonsView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+            [self.buttonsView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant: -5].active = YES;
+            [self.buttonsView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:5].active = YES;
+        }
+
+
+        // -- tableview constraints
+        self.contentTableView.translatesAutoresizingMaskIntoConstraints = NO;
+        if (@available(iOS 11, *)) {
+            [self.contentTableView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
+            [self.contentTableView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor].active = YES;
+            [self.contentTableView.leftAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor].active = YES;
+            [self.contentTableView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant: -65].active = YES;
+        }
+        else {
+            [self.contentTableView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+            [self.contentTableView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+            [self.contentTableView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
+            [self.contentTableView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-65].active = YES;
+        }
+
+        // -- cancel button constraints
+        self.cancelButtonView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.cancelButtonView.widthAnchor constraintEqualToConstant:40.0f].active = YES;
+        [self.cancelButtonView.heightAnchor constraintEqualToConstant:40.0f].active = YES;
+
+        if (@available(iOS 11, *)) {
+            [self.cancelButtonView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
+            [self.cancelButtonView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor].active = YES;
+        }
+        else {
+            [self.cancelButtonView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+            [self.cancelButtonView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+        }
+
+#endif
+    } else {
+        // This section is build for iOS 10.0 and above
+    }
+
+    // Subscribe to internal notifications and orientation changes
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(viewReady:)
                                                  name:kSwrveNotificationViewReady
@@ -200,6 +272,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     if (@available(iOS 7.0, *)) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
@@ -225,26 +298,13 @@
         // Apply styles from conversationPane
         [SwrveConversationStyler styleModalView:self.view withStyle:self.conversationPane.pageStyle];
         self.view.layer.masksToBounds = YES;
-        // Remove top margin of close button and content.
-        self.contentTableViewTop.constant = 0;
-        [self.contentTableView setNeedsUpdateConstraints];
-        self.cancelButtonViewTop.constant = 0;
-        [self.cancelButtonView setNeedsUpdateConstraints];
+
     } else {
         CGRect newFrame = CGRectMake(0, 0, size.width, size.height);
         self.view.frame = newFrame;
         // Hide border
         self.view.layer.borderWidth = 0;
         self.view.layer.cornerRadius = 0.0f;
-
-        // Add top margin of close button and content
-        // to take into account the status bar.
-        if (@available(iOS 7.0, *)) {
-            self.contentTableViewTop.constant = self.topLayoutGuide.length;
-            [self.contentTableView setNeedsUpdateConstraints];
-            self.cancelButtonViewTop.constant = self.topLayoutGuide.length;
-            [self.cancelButtonView setNeedsUpdateConstraints];
-        }
     }
 
     for(SwrveConversationAtom *atom in self.conversationPane.content) {

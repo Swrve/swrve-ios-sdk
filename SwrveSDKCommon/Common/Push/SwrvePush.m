@@ -7,6 +7,7 @@
 #import "SwrveNotificationConstants.h"
 #import "SwrvePermissions.h"
 #import "SwrveLocalStorage.h"
+#import "SwrveCampaignDelivery.h"
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id, SEL, UIApplication *, NSData *);
 
@@ -148,7 +149,15 @@ NSString *const SwrveContentVersionKey = @"version";
 }
 
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0)) {
-    // if the app has background remote notifications enabled
+    return [self didReceiveRemoteNotification:userInfo withBackgroundCompletionHandler:completionHandler withLocalUserId:[SwrveLocalStorage swrveUserId]];
+}
+
+- (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler withLocalUserId:(NSString *) localUserId API_AVAILABLE(ios(7.0)) {
+    NSString *appGroupIdentifier = nil;
+    if (_commonDelegate != NULL) {
+        appGroupIdentifier = _commonDelegate.appGroupIdentifier;
+    }
+    [SwrveCampaignDelivery sendPushDelivery:userInfo withAppGroupID:appGroupIdentifier];
     id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
     if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
         return [self handleSilentPushNotification:userInfo withCompletionHandler:completionHandler];
@@ -157,19 +166,23 @@ NSString *const SwrveContentVersionKey = @"version";
         NSString *authenticatedPush = userInfo[SwrveNotificationAuthenticatedUserKey];
         if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]] &&
                 authenticatedPush && ![authenticatedPush isKindOfClass:[NSNull class]]) {
-            return [self handleAuthenticatedPushNotification:userInfo withCompletionHandler:completionHandler];
+            return [self handleAuthenticatedPushNotification:userInfo withCompletionHandler:completionHandler withLocalUserId:localUserId];
         }
     }
     // We are not dealing with this push, so we return NO.
     return NO;
 }
 
-- (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *)) completionHandler API_AVAILABLE(ios(7.0)) {
+- (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *)) completionHandler {
+    return [self handleAuthenticatedPushNotification:userInfo withCompletionHandler:completionHandler withLocalUserId:[SwrveLocalStorage swrveUserId]];
+}
+
+- (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *)) completionHandler withLocalUserId:(NSString *) localUserId API_AVAILABLE(ios(7.0)) {
     id pushIdentifier = [userInfo objectForKey:SwrveNotificationIdentifierKey];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
 
         NSString *targetedUserId = userInfo[SwrveNotificationAuthenticatedUserKey];
-        if (![targetedUserId isEqualToString:[SwrveLocalStorage swrveUserId]]) {
+        if (![targetedUserId isEqualToString:localUserId]) {
             DebugLog(@"Could not handle authenticated notification.");
             return NO;
         }
@@ -193,8 +206,13 @@ NSString *const SwrveContentVersionKey = @"version";
                     notification.body = [mediaDict objectForKey:SwrveNotificationBodyKey];
                 }
             }
-            
-            [SwrvePush handleNotificationContent:notification withAppGroupIdentifier:nil
+
+            NSString *appGroupIdentifier = nil;
+            if (_commonDelegate != NULL) {
+                appGroupIdentifier = _commonDelegate.appGroupIdentifier;
+            }
+
+            [SwrvePush handleNotificationContent:notification withAppGroupIdentifier:appGroupIdentifier
                     withCompletedContentCallback:^(UNMutableNotificationContent *content) {
                         
                         //if media url was present and failed to download, we wont show the push
@@ -248,6 +266,7 @@ NSString *const SwrveContentVersionKey = @"version";
         callback([notificationContent mutableCopy]);
         return;
     }
+    [SwrveCampaignDelivery sendPushDelivery:notificationContent.userInfo withAppGroupID:appGroupIdentifier];
 
     /** Process push identifier for influenceData **/
     id pushIdentifier = notificationContent.userInfo[SwrveNotificationIdentifierKey];
@@ -381,6 +400,19 @@ NSString *const SwrveContentVersionKey = @"version";
 
 - (void)processInfluenceData {
     [SwrveCampaignInfluence processInfluenceDataWithDate:[self getNow]];
+}
+
+- (void)saveConfigForPushDelivery {
+    if (_commonDelegate == NULL) {
+        DebugLog(@"Error: Could not storage SwrveCampaignDelivery necesarry info to trigger this event later", nil);
+    }
+
+    [SwrveCampaignDelivery saveConfigForPushDeliveryWithUserId:_commonDelegate.userID
+                                            WithEventServerUrl:_commonDelegate.eventsServer
+                                                  WithDeviceId:_commonDelegate.deviceUUID
+                                              WithSessionToken:_commonDelegate.sessionToken
+                                                WithAppVersion:_commonDelegate.appVersion
+                                                 ForAppGroupID:_commonDelegate.appGroupIdentifier];
 }
 
 - (NSDate *)getNow {

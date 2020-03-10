@@ -9,6 +9,12 @@
 #import "SwrveLocalStorage.h"
 #endif
 
+#if __has_include(<SwrveSDKCommon/TextTemplating.h>)
+#import <SwrveSDKCommon/TextTemplating.h>
+#else
+#import "TextTemplating.h"
+#endif
+
 @implementation SwrveMessageFormat
 
 @synthesize images;
@@ -20,6 +26,7 @@
 @synthesize language;
 @synthesize orientation;
 @synthesize backgroundColor;
+@synthesize inAppConfig;
 
 +(CGPoint)centerFromImageData:(NSDictionary*)data
 {
@@ -40,7 +47,13 @@
     SwrveImage* image = [[SwrveImage alloc] init];
     image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
     image.center = [SwrveMessageFormat centerFromImageData:imageData];
-
+    
+    NSDictionary *textDictionary = (NSDictionary*)[imageData objectForKey:@"text"];
+    
+    if (textDictionary) {
+        image.text = [textDictionary objectForKey:@"value"];
+    }
+    
     DebugLog(@"Image Loaded: Asset: \"%@\" (x: %g y: %g)",
           image.file,
           image.center.x,
@@ -54,19 +67,24 @@
                  forMessage:(SwrveMessage*)message
 {
     SwrveButton* button = [[SwrveButton alloc] init];
-    button.controller = controller;
     button.message = message;
 
     button.name       = [buttonData objectForKey:@"name"];
     button.center     = [SwrveMessageFormat centerFromImageData:buttonData];
     button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
+    
+    NSDictionary *textDictionary = (NSDictionary*)[buttonData objectForKey:@"text"];
+    if (textDictionary) {
+        button.text = [textDictionary objectForKey:@"value"];
+    }
+
     button.messageID  = [message.messageID integerValue];
 
     // Set up the action for the button.
     button.actionType   = kSwrveActionDismiss;
     button.appID       = 0;
     button.actionString = @"";
-
+    
     NSString* buttonType = [(NSDictionary*)[buttonData objectForKey:@"type"] objectForKey:@"value"];
     if ([buttonType isEqualToString:@"INSTALL"]){
         button.actionType   = kSwrveActionInstall;
@@ -75,6 +93,9 @@
 
     } else if ([buttonType isEqualToString:@"CUSTOM"]) {
         button.actionType   = kSwrveActionCustom;
+        button.actionString = [(NSDictionary*)[buttonData objectForKey:@"action"] objectForKey:@"value"];
+    } else if ([buttonType isEqualToString:@"COPY_TO_CLIPBOARD"]) {
+        button.actionType = kSwrveActionClipboard;
         button.actionString = [(NSDictionary*)[buttonData objectForKey:@"action"] objectForKey:@"value"];
     }
 
@@ -164,9 +185,21 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 }
 
 -(UIView*)createViewToFit:(UIView*)view
-              thatDelegatesTo:(UIViewController*)delegate
-                     withSize:(CGSize)sizeParent
-                      rotated:(BOOL)rotated
+          thatDelegatesTo:(UIViewController*)delegate
+                 withSize:(CGSize)sizeParent
+                  rotated:(BOOL)rotated
+                    
+{
+    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent rotated:rotated personalisation:nil];
+}
+
+
+-(UIView*)createViewToFit:(UIView*)view
+          thatDelegatesTo:(UIViewController*)delegate
+                 withSize:(CGSize)sizeParent
+                  rotated:(BOOL)rotated
+          personalisation:(NSDictionary* )personalisation
+                    
 {
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
     if (rotated) {
@@ -188,9 +221,9 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
 
-    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
-    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
-
+    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalisation:personalisation];
+    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalisation:personalisation];
+    
     if (rotated) {
         containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
     }
@@ -200,8 +233,16 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 }
 
 -(UIView*)createViewToFit:(UIView*)view
+    thatDelegatesTo:(UIViewController*)delegate
+           withSize:(CGSize)sizeParent
+{
+    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent personalisation:nil];
+}
+
+-(UIView*)createViewToFit:(UIView*)view
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)sizeParent
+          personalisation:(NSDictionary* )personalisation
 {
     // Calculate the scale needed to fit the format in the current viewport
     CGFloat screenScale = [[UIScreen mainScreen] scale];
@@ -222,9 +263,9 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     DebugLog(@"MessageViewFormat scale :%g", self.scale);
     DebugLog(@"UI scale :%g", screenScale);
 
-    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale];
-    [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale];
-
+    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale personalisation:personalisation];
+    [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale personalisation:personalisation];
+    
     [containerView setCenter:CGPointMake(centerX, centerY)];
     [view addSubview:containerView];
 
@@ -241,17 +282,42 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     return containerView;
 }
 
--(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
+-(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalisation:(NSDictionary *)personalisation
 {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
 
     for (SwrveButton* button in self.buttons) {
-        UIButton* buttonView = [button createButtonWithDelegate:delegate
-                                                    andSelector:buttonPressedSelector
-                                                        andScale:(float)renderScale
-                                                      andCenterX:(float)centerX
-                                                      andCenterY:(float)centerY];
+        
+        NSString *personalisedTextStr = nil;
+        NSString *personalisedActionStr = nil;
+        
+        if (button.text) {
+             NSError *error;
+             personalisedTextStr = [TextTemplating templatedTextFromString:button.text withProperties:personalisation andError:&error];
+             
+             if (error != nil){
+                 DebugLog(@"%@", error);
+             }
+        }
+        
+        if (button.actionType == kSwrveActionClipboard || button.actionType == kSwrveActionCustom) {
+            NSError *error;
+            personalisedActionStr = [TextTemplating templatedTextFromString:button.actionString withProperties:personalisation andError:&error];
+            
+            if (error != nil){
+                DebugLog(@"%@", error);
+            }
+        }
+        
+        UISwrveButton* buttonView = [button createButtonWithDelegate:delegate
+                                                         andSelector:buttonPressedSelector
+                                                            andScale:(float)renderScale
+                                                          andCenterX:(float)centerX
+                                                          andCenterY:(float)centerY
+                                               andPersonalisedAction:personalisedActionStr
+                                                  andPersonalisation:personalisedTextStr
+                                                          withConfig:self.inAppConfig];
         buttonView.tag = buttonTag;
 
         NSString * buttonType;
@@ -261,6 +327,9 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
                 break;
             case kSwrveActionDismiss:
                 buttonType = @"Dismiss";
+                break;
+            case kSwrveActionClipboard:
+                buttonType = @"Clipboard";
                 break;
             default:
                 buttonType = @"Custom";
@@ -274,13 +343,23 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale
+-(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalisation:(NSDictionary *)personalisation
 {
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
-    for (SwrveImage* backgroundImage in self.images)
+    for (SwrveImage* image in self.images)
     {
-        NSURL* bgurl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, backgroundImage.file, nil]];
-        UIImage* background = [UIImage imageWithData:[NSData dataWithContentsOfURL:bgurl]];
+        NSString *personalisedTextStr = nil;
+        
+        if (image.text) {
+             NSError *error;
+             personalisedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:personalisation andError:&error];
+             
+             if (error != nil){
+                 DebugLog(@"%@", error);
+             }
+        }
+    
+        UIImage *background = [image createImage:cacheFolder personalisation:personalisedTextStr inAppConfig:self.inAppConfig];
 
         CGRect frame = CGRectMake(0, 0,
                                   background.size.width * renderScale,
@@ -295,8 +374,8 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
 
-        [imageView setCenter:CGPointMake(centerX + (backgroundImage.center.x * renderScale),
-                                         centerY + (backgroundImage.center.y * renderScale))];
+        [imageView setCenter:CGPointMake(centerX + (image.center.x * renderScale),
+                                         centerY + (image.center.y * renderScale))];
         [containerView addSubview:imageView];
     }
 }

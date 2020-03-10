@@ -13,6 +13,7 @@
 @synthesize appVersion;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize inAppMessageBackgroundColor;
+@synthesize inAppMessageConfig;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -43,7 +44,7 @@
         prefersConversationsStatusBarHidden = NO;
         language = [[NSLocale preferredLanguages] objectAtIndex:0];
         newSessionInterval = 30;
-
+        
         self.autoSendEventsOnResume = YES;
         self.autoSaveEventsOnResign = YES;
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
@@ -59,6 +60,7 @@
         self.stack = SWRVE_STACK_US;
         self.initMode = SWRVE_INIT_MODE_AUTO;
         self.managedModeAutoStartLastUser = true;
+        self.inAppMessageConfig = [SwrveInAppMessageConfig new];
     }
     return self;
 }
@@ -78,6 +80,7 @@
 @synthesize appVersion;
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize inAppMessageBackgroundColor;
+@synthesize inAppMessageConfig;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -112,6 +115,7 @@
         appVersion = config.appVersion;
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         inAppMessageBackgroundColor = config.inAppMessageBackgroundColor;
+        inAppMessageConfig = config.inAppMessageConfig;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;

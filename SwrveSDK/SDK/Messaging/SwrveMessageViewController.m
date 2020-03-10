@@ -27,6 +27,9 @@
 @synthesize viewportWidth;
 @synthesize viewportHeight;
 @synthesize prefersIAMStatusBarHidden;
+@synthesize personalisationDict;
+@synthesize inAppConfig;
+@synthesize messageController;
 
 @synthesize focusGuide1, focusGuide2, tvOSFocusForSelection;
 
@@ -96,12 +99,16 @@
     }
 
     if (current_format) {
+        // pass config for text generation
+        current_format.inAppConfig = self.inAppConfig;
+
         DebugLog(@"Selected message format: %@", current_format.name);
         [current_format createViewToFit:self.view
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
-                                          rotated:false];
-
+                                          rotated:false
+                                  personalisation:personalisationDict];
+        
         // Update background color
         if (current_format.backgroundColor != nil) {
             self.view.backgroundColor = current_format.backgroundColor;
@@ -114,12 +121,21 @@
 
 -(IBAction)onButtonPressed:(id)sender
 {
-    UIButton* button = sender;
-
+    UISwrveButton* button = sender;
+    
+    NSString *action = button.actionString;
+    
     SwrveButton* pressed = [current_format.buttons objectAtIndex:(NSUInteger)button.tag];
-    [pressed wasPressedByUser];
+    SwrveMessageController* controller = self.messageController;
+    if (controller != nil) {
+        [controller buttonWasPressedByUser:pressed];
+    }
+    
+    if(action == nil || [action isEqualToString:@""]) {
+        action = pressed.actionString;
+    }
 
-    self.block(pressed.actionType, pressed.actionString, pressed.appID);
+    self.block(pressed.actionType, action, pressed.appID);
 }
 
 #if TARGET_OS_IOS
@@ -158,10 +174,12 @@
     }
 
     current_format = closestFormat;
+    current_format.inAppConfig = self.inAppConfig;
     DebugLog(@"Selected message format: %@", current_format.name);
     UIView *currentView = [current_format createViewToFit:self.view
                    thatDelegatesTo:self
-                          withSize:size];
+                          withSize:size
+                   personalisation:personalisationDict];
 
     [self setupFocusGuide:currentView];
 

@@ -55,4 +55,11 @@
  */
 + (NSString *)getStringFromDic:(NSDictionary *)dic withKey:(NSString *)key;
 
+/**
+Get current time in epoch in milliseconds.
+
+@return UInt64 time in milliseconds.
+*/
++ (UInt64)getTimeEpoch;
+
 @end

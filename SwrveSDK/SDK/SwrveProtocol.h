@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "6.3.1"
+#define SWRVE_SDK_VERSION "6.4.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -42,6 +42,13 @@ NSString * resourcesAsJSON);
 typedef void (^SwrveUserResourcesDiffCallback) (NSDictionary * oldResourcesValues,
 NSDictionary * newResourcesValues,
 NSString * resourcesAsJSON);
+
+/*! Defines the block signature for receiving real time user properties after calling
+ *  Swrve realTimeUserProperties
+ *
+ * \param properties         A dictionary containing the properties.
+ */
+typedef void (^SwrveRealTimeUserPropertiesCallback) (NSDictionary* properties);
 
 /*! Defines the block signature for notifications when an event is raised.
  * Typically used internally.
@@ -247,6 +254,17 @@ NSString * eventsPayloadAsJSON);
  *                      A/B test data is available.
  */
 -(void) userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
+
+/*! Gets a dictionary of real time user properties for a user
+ *
+ *
+ * The result of this call is cached in the realTimeUserPropertiesFile specified in
+ * SwrveConfig. This file is initially seeded with "[]", the empty JSON Dictionary.
+ *
+ * \param callbackBlock A callback block that will be called asynchronously when
+ *                      A/B test data is available.
+ */
+-(void) realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock;
 
 #pragma mark -
 #pragma mark Other

@@ -3,6 +3,12 @@
 #import "SwrveButton.h"
 #import "SwrveImage.h"
 
+#if __has_include(<SwrveSDKCommon/TextTemplating.h>)
+#import <SwrveSDKCommon/TextTemplating.h>
+#else
+#import "TextTemplating.h"
+#endif
+
 @interface SwrveMessage()
 
 @property (nonatomic, weak) SwrveMessageController* controller;
@@ -86,6 +92,44 @@ static bool in_cache(NSString* file, NSSet* set){
         }
     }
 
+    return true;
+}
+
+-(BOOL)canResolvePersonalisation:(NSDictionary*)personalisation
+{
+    for (SwrveMessageFormat* format in self.formats) {
+
+        for (SwrveButton *button in format.buttons) {
+            if (button.text) {
+                NSError *error;
+                NSString *text = [TextTemplating templatedTextFromString:button.text withProperties:personalisation andError:&error];
+                if (error != nil || text == nil) {
+                    DebugLog(@"Button Asset has no personalisation for text: %@", button.text);
+                    return false;
+                }
+            }
+            
+            if (button.actionType == kSwrveActionClipboard || button.actionType == kSwrveActionCustom) {
+                NSError *error;
+                NSString *text = [TextTemplating templatedTextFromString:button.actionString withProperties:personalisation andError:&error];
+                if (error != nil || text == nil) {
+                    DebugLog(@"Button Asset has no personalisation for action: %@", button.actionString);
+                    return false;
+                }
+            }
+        }
+        
+        for (SwrveImage *image in format.images) {
+            if (image.text) {
+                NSError *error;
+                NSString *text = [TextTemplating templatedTextFromString:image.text withProperties:personalisation andError:&error];
+                if (error != nil || text == nil) {
+                    DebugLog(@"Button Asset has no personalisation for text: %@", image.text);
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
 

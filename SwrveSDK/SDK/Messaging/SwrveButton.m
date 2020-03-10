@@ -1,4 +1,5 @@
 #import "SwrveButton.h"
+#import "SwrvePersonalisedTextImage.h"
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #else
@@ -16,8 +17,8 @@
 
 @synthesize name;
 @synthesize image;
+@synthesize text;
 @synthesize actionString;
-@synthesize controller;
 @synthesize message;
 @synthesize center;
 @synthesize messageID;
@@ -34,6 +35,7 @@ static CGPoint scaled(CGPoint point, float scale)
     self = [super init];
     self.name         = NULL;
     self.image        = @"buttonup.png";
+    self.text         = NULL;
     self.actionString = @"";
     self.appID       = 0;
     self.actionType   = kSwrveActionDismiss;
@@ -41,19 +43,43 @@ static CGPoint scaled(CGPoint point, float scale)
     return self;
 }
 
--(UIButton*)createButtonWithDelegate:(id)delegate
+- (UISwrveButton*)createButtonWithDelegate:(id)delegate
                             andSelector:(SEL)selector
                                andScale:(float)scale
                              andCenterX:(float)cx
                              andCenterY:(float)cy
 {
+    return [self createButtonWithDelegate:delegate andSelector:selector andScale:scale andCenterX:cx andCenterY:cy andPersonalisedAction:nil andPersonalisation:nil withConfig:nil];
+}
+
+- (UISwrveButton*)createButtonWithDelegate:(id)delegate
+                         andSelector:(SEL)selector
+                            andScale:(float)scale
+                          andCenterX:(float)cx
+                          andCenterY:(float)cy
+               andPersonalisedAction:(NSString*)personalisedActionStr
+                  andPersonalisation:(NSString*)personalisedTextStr
+                          withConfig:(SwrveInAppMessageConfig*)inAppConfig
+{
+
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
     NSURL* url_up = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, image, nil]];
     UIImage* up   = [UIImage imageWithData:[NSData dataWithContentsOfURL:url_up]];
+    
+    if (personalisedTextStr != nil) {
+        // store the current 'up' image so we can use it as a guide
+        UIImage *guideImage = up;
 
-    UIButton* result;
+        up = [SwrvePersonalisedTextImage imageFromString:personalisedTextStr
+                withBackgroundColor:inAppConfig.personalisationBackgroundColor
+                withForegroundColor:inAppConfig.personalisationForegroundColor
+                       withFont:inAppConfig.personalisationFont
+                               size:guideImage.size];
+    }
+    
+    UISwrveButton* result;
     if (up) {
-        result = [UIButton buttonWithType:UIButtonTypeCustom];
+        result = [UISwrveButton buttonWithType:UIButtonTypeCustom];
 
 #if TARGET_OS_TV
         result.imageView.adjustsImageWhenAncestorFocused = YES;
@@ -61,7 +87,7 @@ static CGPoint scaled(CGPoint point, float scale)
         [result setBackgroundImage:up forState:UIControlStateNormal];
     }
     else {
-        result = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        result = [UISwrveButton buttonWithType:UIButtonTypeRoundedRect];
     }
 
 #if TARGET_OS_IOS /** TouchUpInside is iOS only **/
@@ -82,16 +108,18 @@ static CGPoint scaled(CGPoint point, float scale)
     CGPoint position = scaled(self.center, scale);
     [result setFrame:CGRectMake(0, 0, width * scale, height * scale)];
     [result setCenter: CGPointMake(position.x + cx, position.y + cy)];
+    
+    if (self.actionType == kSwrveActionClipboard || self.actionType == kSwrveActionCustom) {
+        result.actionString = personalisedActionStr;
+    }
+    
+    if (personalisedTextStr) {
+        // store the text that was displayed for testing
+        result.displayString = personalisedTextStr;
+    }
 
     return result;
 }
 
--(void)wasPressedByUser
-{
-    SwrveMessageController* c = self.controller;
-    if (c != nil) {
-        [c buttonWasPressedByUser:self];
-    }
-}
 
 @end

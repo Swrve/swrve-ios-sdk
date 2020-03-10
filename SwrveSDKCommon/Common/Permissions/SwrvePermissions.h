@@ -9,7 +9,6 @@ static NSString* swrve_permission_status_unsupported    = @"unsupported";
 static NSString* swrve_permission_status_denied         = @"denied";
 static NSString* swrve_permission_status_authorized     = @"authorized";
 static NSString* swrve_permission_status_provisional    = @"provisional";
-static NSString* swrve_permission_status                = @"swrve_permission_status";
 
 static NSString* swrve_permission_location_always       = @"Swrve.permission.ios.location.always";
 static NSString* swrve_permission_location_when_in_use  = @"Swrve.permission.ios.location.when_in_use";
@@ -44,6 +43,7 @@ static NSString* swrve_permission_requestable           = @".requestable";
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional;
 + (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
++ (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk WithCallback:(nullable void (^)(NSString * pushAuthorization)) callback;
 + (void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(nullable id<SwrveCommonDelegate>)sdk NS_AVAILABLE_IOS(10.0);
 + (void)refreshDeviceToken:(nullable id<SwrveCommonDelegate>)sdk;
 #endif //!defined(SWRVE_NO_PUSH)

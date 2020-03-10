@@ -80,4 +80,10 @@
     }
 }
 
++ (UInt64)getTimeEpoch {
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return (((UInt64) time.tv_sec) * 1000) + (((UInt64) time.tv_usec) / 1000);
+}
+
 @end

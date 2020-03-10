@@ -1,38 +1,42 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveCommon.h"
 
-static NSString* SWRVE_APP_SUPPORT_DIR = @"swrve";
-static NSString* SWRVE_CACHE_VERSION = @"swrve_cache_version.txt";
-static NSString* SWRVE_INSTALL = @"swrve_install.txt";
-static NSString* SWRVE_EVENTS = @"swrve_events.txt";
-static NSString* SWRVE_CAMPAIGNS_STATE_PLIST = @"com.swrve.messages.settings.plist";
-static NSString* SWRVE_USER_RESOURCES = @"srcngt2.txt";
-static NSString* SWRVE_USER_RESOURCES_SGT = @"srcngtsgt2.txt";
-static NSString* SWRVE_USER_RESOURCES_DIFF = @"rsdfngt2.txt";
-static NSString* SWRVE_USER_RESOURCES_DIFF_SGT = @"rsdfngtsgt2.txt";
-static NSString* SWRVE_CAMPAIGNS = @"cmcc2.json";
-static NSString* SWRVE_CAMPAIGNS_SGT = @"cmccsgt2.txt";
-static NSString* SWRVE_AD_CAMPAIGNS = @"cmcc3.json";
-static NSString* SWRVE_AD_CAMPAIGNS_SGT = @"cmccsgt3.txt";
-static NSString* SWRVE_PUSH_CAMPAIGNS = @"cmcc4.json";
-static NSString* SWRVE_PUSH_CAMPAIGNS_SGT = @"cmccsgt4.txt";
-static NSString* SWRVE_OFFLINE_CAMPAIGNS = @"cmcc5.json";
-static NSString* SWRVE_OFFLINE_CAMPAIGNS_SGT = @"cmccsgt5.txt";
-static NSString* SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
+static NSString *SWRVE_APP_SUPPORT_DIR = @"swrve";
+static NSString *SWRVE_CACHE_VERSION = @"swrve_cache_version.txt";
+static NSString *SWRVE_INSTALL = @"swrve_install.txt";
+static NSString *SWRVE_EVENTS = @"swrve_events.txt";
+static NSString *SWRVE_CAMPAIGNS_STATE_PLIST = @"com.swrve.messages.settings.plist";
+static NSString *SWRVE_USER_RESOURCES = @"srcngt2.txt";
+static NSString *SWRVE_USER_RESOURCES_SGT = @"srcngtsgt2.txt";
+static NSString *SWRVE_USER_RESOURCES_DIFF = @"rsdfngt2.txt";
+static NSString *SWRVE_USER_RESOURCES_DIFF_SGT = @"rsdfngtsgt2.txt";
+static NSString *SWRVE_CAMPAIGNS = @"cmcc2.json";
+static NSString *SWRVE_CAMPAIGNS_SGT = @"cmccsgt2.txt";
+static NSString *SWRVE_AD_CAMPAIGNS = @"cmcc3.json";
+static NSString *SWRVE_AD_CAMPAIGNS_SGT = @"cmccsgt3.txt";
+static NSString *SWRVE_PUSH_CAMPAIGNS = @"cmcc4.json";
+static NSString *SWRVE_PUSH_CAMPAIGNS_SGT = @"cmccsgt4.txt";
+static NSString *SWRVE_OFFLINE_CAMPAIGNS = @"cmcc5.json";
+static NSString *SWRVE_OFFLINE_CAMPAIGNS_SGT = @"cmccsgt5.txt";
+static NSString *SWRVE_REAL_TIME_USER_PROPERTIES = @"cmrp2s.txt";
+static NSString *SWRVE_REAL_TIME_USER_PROPERTIES_SGT = @"cmrp2ssgt2.txt";
+static NSString *SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
 
 //NSUserDefaults Keys
-static NSString* SWRVE_CR_FLUSH_FREQUENCY = @"swrve_cr_flush_frequency";
-static NSString* SWRVE_CR_FLUSH_DELAY = @"swrve_cr_flush_delay";
-static NSString* SWRVE_CAMPAIGN_RESOURCE_ETAG = @"campaigns_and_resources_etag";
-static NSString* SWRVE_DEVICE_TOKEN = @"swrve_device_token";
-static NSString* SWRVE_EVENT_SEQNUM = @"swrve_event_seqnum";
-static NSString* SWRVE_USER_ID_KEY = @"swrve_user_id";
-static NSString* SWRVE_PERMISSION_STATUS = @"swrve_permission_status";
-static NSString* SWRVE_ASKED_FOR_PUSH_PERMISSIONS = @"swrve.asked_for_push_permission";
-static NSString* SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
-static NSString* SWRVE_QA_USER = @"swrve.q1";
+static NSString *SWRVE_CR_FLUSH_FREQUENCY = @"swrve_cr_flush_frequency";
+static NSString *SWRVE_CR_FLUSH_DELAY = @"swrve_cr_flush_delay";
+static NSString *SWRVE_CAMPAIGN_RESOURCE_ETAG = @"campaigns_and_resources_etag";
+static NSString *SWRVE_DEVICE_TOKEN = @"swrve_device_token";
+static NSString *SWRVE_EVENT_SEQNUM = @"swrve_event_seqnum";
+static NSString *SWRVE_USER_ID_KEY = @"swrve_user_id";
+static NSString *SWRVE_PERMISSION_STATUS = @"swrve_permission_status";
+static NSString *SWRVE_ASKED_FOR_PUSH_PERMISSIONS = @"swrve.asked_for_push_permission";
+static NSString *SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
+static NSString *SWRVE_QA_USER = @"swrve.q1";
 //this has replaced swrve_device_id and short_device_id
-static NSString* SWRVE_DEVICE_UUID = @"swrve_device_uuid";
+static NSString *SWRVE_DEVICE_UUID = @"swrve_device_uuid";
+static NSString *SWRVE_BACKUP_DEFAULTS = @"swrve_backup_defaults";
+static NSString *SWRVE_USERS = @"swrve_users";
 
 static dispatch_once_t applicationSupportPathOnceToken = 0;
 static dispatch_once_t swrveAppSupportDirOnceToken = 0;
@@ -54,20 +58,30 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 
 + (void)saveFlushFrequency:(double) flushFrequency {
     [[self defaults] setDouble:flushFrequency forKey:SWRVE_CR_FLUSH_FREQUENCY];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:@(flushFrequency) key:SWRVE_CR_FLUSH_FREQUENCY];
 }
 
 + (double)flushFrequency {
-    return [[self defaults] doubleForKey:SWRVE_CR_FLUSH_FREQUENCY];
+    double flushFrequency = [[self defaults] doubleForKey:SWRVE_CR_FLUSH_FREQUENCY];
+    if (flushFrequency == 0) {
+        flushFrequency = [[SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_CR_FLUSH_FREQUENCY] doubleValue];
+    }
+    return flushFrequency;
 }
 
 ///// SWRVE FLUSH DELAY /////
 
 + (void)saveflushDelay:(double) flushDelay {
     [[self defaults] setDouble:flushDelay forKey:SWRVE_CR_FLUSH_DELAY];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:@(flushDelay) key:SWRVE_CR_FLUSH_DELAY];
 }
 
 + (double)flushDelay {
-    return  [[self defaults] doubleForKey:SWRVE_CR_FLUSH_DELAY];
+    double flushDelay = [[self defaults] doubleForKey:SWRVE_CR_FLUSH_DELAY];
+    if (flushDelay == 0) {
+        flushDelay = [[SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_CR_FLUSH_DELAY] doubleValue];
+    }
+    return flushDelay;
 }
 
 //// SWRVE ETAG ////
@@ -76,100 +90,166 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     if (userId == nil) { return; }
     NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
     [[self defaults] setObject:eTag forKey:key];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:eTag key:key];
 }
 
 + (NSString *)eTagForUserId:(NSString *)userId {
     if (userId == nil) { return nil; }
     NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
-    return [[self defaults] stringForKey:key];
+    NSString *eTag = [[self defaults] stringForKey:key];
+    if (eTag == nil) {
+        eTag = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
+    }
+    return eTag;
 }
 
 + (void)removeETagForUserId:(NSString *)userId {
     if (userId == nil) { return; }
-     NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
-     [[self defaults] removeObjectForKey:key];
+    NSString *key = [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG];
+    [[self defaults] removeObjectForKey:key];
+    [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
 }
 
 //// SWRVE DEVICE TOKEN ////
 
 + (void)saveDeviceToken:(NSString*)deviceToken {
     [[self defaults] setValue:deviceToken forKey:SWRVE_DEVICE_TOKEN];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:deviceToken key:SWRVE_DEVICE_TOKEN];
 }
 
 + (id)deviceToken {
-    return [[self defaults] objectForKey:SWRVE_DEVICE_TOKEN];
+    id deviceToken = [[self defaults] objectForKey:SWRVE_DEVICE_TOKEN];
+    if (deviceToken == nil) {
+        deviceToken = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_DEVICE_TOKEN];
+    }
+    return deviceToken;
 }
 
 + (void)removeDeviceToken {
     [[self defaults] removeObjectForKey:SWRVE_DEVICE_TOKEN];
+    [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_DEVICE_TOKEN];
 }
 
 // SWRVE SEQUENCE NUMBER KEY
 
 + (void)saveSeqNum:(NSInteger)seqNum withCustomKey:(NSString*)key {
     [[self defaults] setInteger:seqNum forKey:key];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:@(seqNum) key:key];
 }
 
 + (NSInteger)seqNumWithCustomKey:(NSString*)key {
-    return [[self defaults] integerForKey:key];
+    NSInteger seqNum = [[self defaults] integerForKey:key];
+    if (seqNum == 0) {
+        seqNum = [[SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key] integerValue];
+    }
+    return seqNum;
 }
 
 + (void)removeSeqNumWithCustomKey:(NSString*)key {
     [[self defaults] removeObjectForKey:key];
+    [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
 }
 
 //// SWRVE USER ID ////
 
 + (void)saveSwrveUserId:(NSString *) swrveUserId {
     [[self defaults] setValue:swrveUserId forKey:SWRVE_USER_ID_KEY];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:swrveUserId key:SWRVE_USER_ID_KEY];
 }
 
 + (NSString *)swrveUserId {
-    return [[self defaults] stringForKey:SWRVE_USER_ID_KEY];
+    NSString *swrveUserId = [[self defaults] stringForKey:SWRVE_USER_ID_KEY];
+    if (swrveUserId == nil) {
+        swrveUserId = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_USER_ID_KEY];
+    }
+    return swrveUserId;
 }
 
 + (void)removeSwrveUserId {
     [[self defaults] removeObjectForKey:SWRVE_USER_ID_KEY];
+    [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_USER_ID_KEY];
 }
 
 //// SWRVE PERMISSIONS ////
 
 + (void)savePermissions:(NSDictionary *) permissions {
     [[self defaults] setObject:permissions forKey:SWRVE_PERMISSION_STATUS];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:permissions key:SWRVE_PERMISSION_STATUS];
 }
 
 + (NSDictionary *)getPermissions {
-    return [[self defaults] dictionaryForKey:SWRVE_PERMISSION_STATUS];
+    NSDictionary *permissions = [[self defaults] dictionaryForKey:SWRVE_PERMISSION_STATUS];
+    if (permissions == nil) {
+        permissions = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_PERMISSION_STATUS];
+    }
+    return permissions;
 }
 
 //// SWRVE PERMISSIONS BOOL ////
 
 + (void)saveAskedForPushPermission:(bool) status {
     [[self defaults] setBool:status forKey:SWRVE_ASKED_FOR_PUSH_PERMISSIONS];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:@(status) key:SWRVE_ASKED_FOR_PUSH_PERMISSIONS];
 }
 
 + (bool)askedForPushPermission {
-    return [[self defaults] boolForKey:SWRVE_ASKED_FOR_PUSH_PERMISSIONS];
+    bool askedForPushPermission = [[self defaults] boolForKey:SWRVE_ASKED_FOR_PUSH_PERMISSIONS];
+    if (askedForPushPermission == false) {
+        askedForPushPermission = [[SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_ASKED_FOR_PUSH_PERMISSIONS] boolValue];
+    }
+    return askedForPushPermission;
 }
 
 //// SWRVE QA USER ////
 
 + (NSDictionary *)qaUser {
-   return [[self defaults] dictionaryForKey:SWRVE_QA_USER];
+    NSDictionary *qaUser = [[self defaults] dictionaryForKey:SWRVE_QA_USER];
+     if (qaUser == nil) {
+         qaUser = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_QA_USER];
+     }
+     return qaUser;
 }
 
 + (void)saveQaUser:(NSDictionary *)qaUser {
    [[self defaults] setObject:qaUser forKey:SWRVE_QA_USER];
+   [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:qaUser key:SWRVE_QA_USER];
 }
 
 //// SWRVE DEVICE UUID ////
 
 + (void)saveDeviceUUID:(NSString *)deviceUUID {
     [[self defaults] setValue:deviceUUID forKey:SWRVE_DEVICE_UUID];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:deviceUUID key:SWRVE_DEVICE_UUID];
 }
 
 + (NSString *)deviceUUID {
-    return [[self defaults] stringForKey:SWRVE_DEVICE_UUID];
+    NSString *deviceUUID = [[self defaults] stringForKey:SWRVE_DEVICE_UUID];
+    if (deviceUUID == nil) {
+        deviceUUID = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_DEVICE_UUID];
+    }
+    return deviceUUID;
+}
+
+//// SWRVE USERS ////
+
++ (void)saveSwrveUsers:(NSData *)data {
+    [[self defaults] setObject:data forKey:SWRVE_USERS];
+    
+    if (data != nil) {
+        NSString *string = [data base64EncodedStringWithOptions:0];
+        [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:string key:SWRVE_USERS];
+    }
+}
+
++ (NSData *)swrveUsers {
+    NSData *data = [[self defaults] dataForKey:SWRVE_USERS];
+    if (data == nil) {
+        NSString *string = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_USERS];
+        if (string != nil) {
+            data = [[NSData alloc] initWithBase64EncodedString:string options:0];
+        }
+    }
+    return data;
 }
 
 #pragma mark - Application data management
@@ -409,6 +489,87 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 
 + (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_OFFLINE_CAMPAIGNS_SGT];
+}
+
++ (NSString *)realTimeUserPropertiesFilePathForUserId:(NSString *)userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_REAL_TIME_USER_PROPERTIES];
+}
+
++ (NSString *)offlineRealTimeUserPropertiesSignatureFilePathForUserId:(NSString *)userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_REAL_TIME_USER_PROPERTIES_SGT];
+}
+
++ (id)readValueFromDictionaryFile:(NSString *)fileName forKey:(NSString *)key {
+    if (fileName == nil || key == nil) return nil;
+    NSString *rootPath = [SwrveLocalStorage applicationSupportPath];
+    NSString *filePath = [rootPath stringByAppendingPathComponent:fileName];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary new];
+        @synchronized (self) {
+            NSData *dataFile = [NSData dataWithContentsOfFile:filePath];
+            if (dataFile != nil) {
+                NSError *error;
+                dictionary = [NSJSONSerialization JSONObjectWithData:dataFile
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:&error];
+                if (error) {
+                    DebugLog(@"Swrve: Unable to read from file name: %@, error: %@",fileName, [error localizedDescription]);
+                    return nil;
+                }
+            }
+        }
+        return [dictionary objectForKey:key];
+    }
+    return nil;
+}
+
++ (void)writeValueToDictionaryFile:(NSString*)fileName value:(id)value key:(NSString*)key {
+    [SwrveLocalStorage valueToDictionaryFileModfy:fileName value:value key:key remove:NO];
+}
+
++ (void)removeValueFromDictionaryFile:(NSString *)fileName forKey:(NSString *)key {
+    [SwrveLocalStorage valueToDictionaryFileModfy:fileName value:nil key:key remove:YES];
+}
+
++ (void)valueToDictionaryFileModfy:(NSString*)fileName value:(id)value key:(NSString*)key remove:(bool)remove {
+    if (fileName == nil || (!remove && value == nil) || key == nil) return;
+    NSString *rootPath = [SwrveLocalStorage applicationSupportPath];
+    NSString *filePath = [rootPath stringByAppendingPathComponent:fileName];
+    
+    NSError *error;
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    
+    @synchronized (self) {
+        NSData *dataFile = [NSData dataWithContentsOfFile:filePath];
+        if (dataFile != nil) {
+            dictionary = [NSJSONSerialization JSONObjectWithData:dataFile
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
+            if (error) {
+                DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+                return;
+            }
+        }
+        
+        if (remove) {
+            [dictionary removeObjectForKey:key];
+        } else {
+            [dictionary setObject:value forKey:key];
+        }
+        
+        NSData *dataFromDict = [NSJSONSerialization dataWithJSONObject:dictionary
+                                                               options:NSJSONWritingPrettyPrinted
+                                                                 error:&error];
+        if (error) {
+             DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+             return;
+         }
+        
+        [dataFromDict writeToFile:filePath options:NSDataWritingFileProtectionNone error:&error];
+        if (error) {
+            DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+        }
+    }
 }
 
 @end
