@@ -499,8 +499,13 @@ enum
 #if TARGET_OS_IOS /** exclude tvOS **/
     [SwrvePermissions compareStatusAndQueueEventsWithSDK:self];
 #endif
-
-    messaging = [[SwrveMessageController alloc] initWithSwrve:self];
+    
+    // Try keep the instance to not lose listeners and other public config
+    if (messaging == nil) {
+        messaging = [[SwrveMessageController alloc] initWithSwrve:self];
+    } else {
+        messaging = [messaging initWithSwrve:self];
+    }
 }
 
 - (void)initUserJoinedTimeAndIsNewUserForUser:(NSString *)userId {
