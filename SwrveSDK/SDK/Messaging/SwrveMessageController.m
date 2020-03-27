@@ -1250,6 +1250,11 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
     [self setMessageMinDelayThrottle];
     NSDate *now = [self.analyticsSDK getNow];
+    
+    if (self.inAppMessageWindow.rootViewController == nil || ![self.inAppMessageWindow.rootViewController isKindOfClass:[SwrveMessageViewController class]]) {
+        DebugLog(@"rootViewController doesn't conform to SwrveMessageViewController.", nil);
+        return;
+    }
     SwrveInAppCampaign *dismissedCampaign = ((SwrveMessageViewController*)self.inAppMessageWindow.rootViewController).message.campaign;
     [dismissedCampaign messageDismissed:now];
 
