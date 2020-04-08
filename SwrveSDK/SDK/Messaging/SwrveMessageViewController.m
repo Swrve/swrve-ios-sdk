@@ -268,7 +268,7 @@
             [self.focusGuide2.topAnchor constraintEqualToAnchor:buttons[0].topAnchor].active = YES;
             [self.focusGuide2.bottomAnchor constraintEqualToAnchor:buttons[0].bottomAnchor].active = YES;
         } else {
-            DebugLog(@"Top and bottom guide not supported, should not reach this code");
+            DebugLog(@"Top and bottom guide not supported, should not reach this code", nil);
         }
     }
 

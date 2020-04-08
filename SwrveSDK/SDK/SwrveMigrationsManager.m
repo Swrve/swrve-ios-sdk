@@ -40,7 +40,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
             if (oldCacheVersion < SWRVE_SDK_CACHE_VERSION) {
                 [self migrateFromVersion:oldCacheVersion];
             } else {
-                DebugLog(@"No cache migration required.");
+                DebugLog(@"No cache migration required.", nil);
             }
         }
 
@@ -99,7 +99,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
 }
 
 - (void)migrate0 {
-    DebugLog(@"Executing version 0 migration code. Migrate legacy data from cache directory to application data. And change protection level.");
+    DebugLog(@"Executing version 0 migration code. Migrate legacy data from cache directory to application data. And change protection level.", nil);
     NSString* cachePath = [SwrveLocalStorage cachePath];
     NSString* applicationSupportPath = [SwrveLocalStorage applicationSupportPath];
     NSString* documentPath = [SwrveLocalStorage documentPath];
@@ -239,7 +239,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
 }
 
 - (void)migrate1 {
-    DebugLog(@"Executing version 1 migration code. Migrate data per userId");
+    DebugLog(@"Executing version 1 migration code. Migrate data per userId", nil);
     NSString *userId = nil;
     userId = [SwrveLocalStorage swrveUserId];
 
@@ -346,7 +346,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
 }
 
 - (void)migrate_2_AppInstallDateForUserId:(NSString *)userId {
-    DebugLog(@"Executing version 2 migration code. Copy existing swrve install date from current user to be used as the app install date.");
+    DebugLog(@"Executing version 2 migration code. Copy existing swrve install date from current user to be used as the app install date.", nil);
 
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *currentUserJoinedFileName = [userId stringByAppendingString:@"swrve_install.txt"];
@@ -367,12 +367,12 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
     UInt64 installTime = [SwrveLocalStorage userJoinedTimeSeconds:userId];
     if (installTime > 0)  {
         [SwrveLocalStorage saveAppInstallTime:installTime];
-        DebugLog(@"Copied current user's joined date as the app install date for all users");
+        DebugLog(@"Copied current user's joined date as the app install date for all users", nil);
     }
 }
 
 - (void)migrate_2_EtagForUserId:(NSString *)userId {
-    DebugLog(@"Executing version 2 migration code. Migrate etag");
+    DebugLog(@"Executing version 2 migration code. Migrate etag", nil);
     NSString *oldETagKey = @"campaigns_and_resources_etag";
     NSString *currentETagValue = [[NSUserDefaults standardUserDefaults] stringForKey:oldETagKey];
     [SwrveLocalStorage saveETag:currentETagValue forUserId:userId];

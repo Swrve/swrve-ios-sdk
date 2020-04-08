@@ -62,4 +62,12 @@ Get current time in epoch in milliseconds.
 */
 + (UInt64)getTimeEpoch;
 
+
+/**
+ Returns YES if running on platforms that support Conversations
+ 
+ @return BOOL
+ */
++ (BOOL) supportsConversations;
+
 @end

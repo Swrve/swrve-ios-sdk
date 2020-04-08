@@ -162,7 +162,7 @@
                 DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
             }];
         } else {
-            DebugLog(@"Could not open url, not supported (should not reach this code)");
+            DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
         }
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
@@ -178,7 +178,7 @@
                         DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
                     }];
                 } else {
-                    DebugLog(@"Could not open url, not supported (should not reach this code)");
+                    DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
                 }
                 decisionHandler(WKNavigationActionPolicyCancel);
                 return;

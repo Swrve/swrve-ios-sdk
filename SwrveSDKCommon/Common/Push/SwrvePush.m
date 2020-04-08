@@ -183,7 +183,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
         NSString *targetedUserId = userInfo[SwrveNotificationAuthenticatedUserKey];
         if (![targetedUserId isEqualToString:localUserId]) {
-            DebugLog(@"Could not handle authenticated notification.");
+            DebugLog(@"Could not handle authenticated notification.", nil);
             return NO;
         }
 
@@ -217,7 +217,7 @@ NSString *const SwrveContentVersionKey = @"version";
                         
                         //if media url was present and failed to download, we wont show the push
                         if ([content.userInfo[SwrveNotificationMediaDownloadFailed] boolValue]) {
-                            DebugLog(@"Media download failed, authenticated push does not support fallback text");
+                            DebugLog(@"Media download failed, authenticated push does not support fallback text", nil);
                             if (completionHandler != nil) {
                                 completionHandler(UIBackgroundFetchResultFailed, nil);
                             }
@@ -236,7 +236,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
                         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                             if (error == nil) {
-                                DebugLog(@"Authenticated notification completed correctly");
+                                DebugLog(@"Authenticated notification completed correctly", nil);
                             } else {
                                 DebugLog(@"Authenticated Notification error %@", error);
                             }
@@ -294,7 +294,7 @@ NSString *const SwrveContentVersionKey = @"version";
         if (content) {
             callback(content);
         } else {
-            DebugLog(@"Push Content did not load correctly");
+            DebugLog(@"Push Content did not load correctly", nil);
             callback([notificationContent mutableCopy]);
         }
     }];

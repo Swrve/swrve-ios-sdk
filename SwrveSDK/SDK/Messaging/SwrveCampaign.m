@@ -188,7 +188,7 @@ static NSDate* read_date(id d, NSDate* default_date)
 {
     if(campaignReasons != nil) {
         [campaignReasons setValue:reason forKey:[[NSNumber numberWithUnsignedInteger:self.ID] stringValue]];
-        DebugLog(@"%@",reason);
+        DebugLog(@"%@", reason);
     }
 }
 

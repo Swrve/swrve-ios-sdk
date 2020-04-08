@@ -63,7 +63,7 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
         NSNumber *isImage = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_IS_IMAGE];
         NSString *cdn = [isImage boolValue] ? cdnImages : cdnFonts;
         if ([cdn length] == 0) {
-            DebugLog(@"No cdn configured");
+            DebugLog(@"No cdn configured", nil);
             return;
         }
 

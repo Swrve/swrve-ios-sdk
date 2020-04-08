@@ -150,7 +150,7 @@
 
     [config setAutoDownloadCampaignsAndResources:NO];
 
-    DebugLog(@"Finished setting up campaign data for unit tests...");
+    DebugLog(@"Finished setting up campaign data for unit tests...", nil);
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     OCMStub([swrveMock getNow]).andReturn(date);
     swrveMock = [swrveMock initWithAppID:123 apiKey:apiKey config:config];

@@ -118,7 +118,7 @@
             }
         }];
     } else {
-        DebugLog(@"Checking push auth not supported, should not reach this code");
+        DebugLog(@"Checking push auth not supported, should not reach this code", nil);
     }
     return pushAuthorization;
 }
@@ -325,13 +325,13 @@
             if (@available(iOS 12.0, *)) {
                 notificationAuthOptions = notificationAuthOptions + UNAuthorizationOptionProvisional;
             } else {
-                DebugLog(@"Provisional push permission is only supported on iOS 12 and up.");
+                DebugLog(@"Provisional push permission is only supported on iOS 12 and up.", nil);
                 return;
             }
         }
         [SwrvePermissions registerForRemoteNotifications:notificationAuthOptions withCategories:sdk.notificationCategories andSDK:sdk];
     } else {
-        DebugLog(@"Could not request push permission, not supported (should not reach this code)");
+        DebugLog(@"Could not request push permission, not supported (should not reach this code)", nil);
     }
 }
 

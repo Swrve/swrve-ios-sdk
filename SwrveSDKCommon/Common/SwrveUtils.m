@@ -86,4 +86,11 @@
     return (((UInt64) time.tv_sec) * 1000) + (((UInt64) time.tv_usec) / 1000);
 }
 
++ (BOOL)supportsConversations {
+#if TARGET_OS_IOS /** conversations are only supported in iOS **/
+    return YES;
+#endif
+    return NO;
+}
+
 @end

@@ -426,7 +426,7 @@ enum
                 UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
                 center.delegate = push;
             } else {
-                DebugLog(@"UNUserNotificationCenter delegate not set, not supported (should not reach this code)");
+                DebugLog(@"UNUserNotificationCenter delegate not set, not supported (should not reach this code)", nil);
             }
 
             if (swrveConfig.autoCollectDeviceToken) {
@@ -817,7 +817,7 @@ enum
         }
 
     } else {
-        DebugLog(@"nil object passed into userUpdate:withDate");
+        DebugLog(@"nil object passed into userUpdate:withDate", nil);
         return SWRVE_FAILURE;
     }
 
@@ -1167,11 +1167,11 @@ enum
             NSData *bufferJson = [json dataUsingEncoding:NSUTF8StringEncoding];
             long bytes = [[self eventStream] write:(const uint8_t *) [bufferJson bytes] maxLength:[bufferJson length]];
             if (bytes == 0) {
-                DebugLog(@"Nothing was written to the event file");
+                DebugLog(@"Nothing was written to the event file", nil);
             } else if (bytes < 0) {
-                DebugLog(@"Error, could not write events to disk");
+                DebugLog(@"Error, could not write events to disk", nil);
             } else {
-                DebugLog(@"Written to the event file");
+                DebugLog(@"Written to the event file", nil);
                 [self initBuffer];
             }
         }
@@ -1499,7 +1499,7 @@ enum
             DebugLog(@"Opening url [%@] successfully: %d", url, success);
         }];
     } else {
-        DebugLog(@"Deeplink not processed, not supported (should not reach this code)");
+        DebugLog(@"Deeplink not processed, not supported (should not reach this code)", nil);
     }
 }
 
@@ -1923,11 +1923,11 @@ enum HttpStatus {
                         NSData *bufferJson = [json dataUsingEncoding:NSUTF8StringEncoding];
                         long bytes = [stream write:(const uint8_t *) [bufferJson bytes] maxLength:[bufferJson length]];
                         if (bytes == 0) {
-                            DebugLog(@"Nothing was written to the event file");
+                            DebugLog(@"Nothing was written to the event file", nil);
                         } else if (bytes < 0) {
-                            DebugLog(@"Error, could not write events to disk");
+                            DebugLog(@"Error, could not write events to disk", nil);
                         } else {
-                            DebugLog(@"Written to the event file");
+                            DebugLog(@"Written to the event file", nil);
                         }
                         [stream close];
                     }

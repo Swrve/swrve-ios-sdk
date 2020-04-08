@@ -99,7 +99,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                 if (attachment) {
                     mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:attachment];
                     [self mediaTextFromProvidedContent:mutableNotificationContent];
-                    DebugLog(@"SwrveNotificationManager: primary attachment successfully downloaded, returning to callback");
+                    DebugLog(@"SwrveNotificationManager: primary attachment successfully downloaded, returning to callback", nil);
                     dispatch_group_leave(notificationGroup);
                 } else if (mediaDict[SwrveNotificationFallbackUrlKey] != nil) {
                     
@@ -109,7 +109,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                     if (fallBackCachedAttachment != nil) {
                         mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallBackCachedAttachment];
                         [self mediaTextFromProvidedContent:mutableNotificationContent];
-                        DebugLog(@"SwrveNotificationManager: fallback attachment loaded from cache, returning to callback");
+                        DebugLog(@"SwrveNotificationManager: fallback attachment loaded from cache, returning to callback", nil);
                         dispatch_group_leave(notificationGroup);
                     } else {
                         // Download fallback image
@@ -123,11 +123,11 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                                 // Fallback image has worked
                                 mutableNotificationContent.attachments = [NSMutableArray arrayWithObject:fallbackAttachment];
                                 [self mediaTextFromProvidedContent:mutableNotificationContent];
-                                DebugLog(@"SwrveNotificationManager: fallback attachment successfully downloaded, returning to callback");
+                                DebugLog(@"SwrveNotificationManager: fallback attachment successfully downloaded, returning to callback", nil);
                                 
                                 // Set fallback_sd if available
                                 if (mediaDict[SwrveNotificationFallbackDeeplinkKey] != nil) {
-                                    DebugLog(@"SwrveNotificationManager: fallback Deeplink detected, modifying notificationContent.userInfo");
+                                    DebugLog(@"SwrveNotificationManager: fallback Deeplink detected, modifying notificationContent.userInfo", nil);
                                     NSMutableDictionary *moddedUserInfo = [mutableNotificationContent.userInfo mutableCopy];
                                     [moddedUserInfo setObject:mediaDict[SwrveNotificationFallbackDeeplinkKey] forKey:SwrveNotificationDeeplinkKey];
                                     mutableNotificationContent.userInfo = moddedUserInfo;

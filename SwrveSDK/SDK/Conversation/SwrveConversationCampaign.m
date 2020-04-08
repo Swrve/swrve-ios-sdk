@@ -49,6 +49,7 @@
 }
 
 - (void)addAssetsToQueue:(NSMutableSet *)assetsQueue {
+#if TARGET_OS_IOS /** exclude conversation assets from tvOS **/
     for (SwrveConversationPane *page in self.conversation.pages) {
 
         // Add image and font assets to queue from content
@@ -57,11 +58,9 @@
                 [self addImageToQ:assetsQueue withAsset:contentItem];
 
             }
-#if TARGET_OS_IOS /** exclude tvOS **/
             else if ([contentItem isKindOfClass:[SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
                 [self addFontToQ:assetsQueue withAsset:contentItem.style];
             }
-#endif
             else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
                 SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
                 [self addFontToQ:assetsQueue withAsset:inputMultiValue.style];
@@ -78,6 +77,7 @@
             [self addFontToQ:assetsQueue withAsset:button.style];
         }
     }
+#endif
 }
 
 - (void)addImageToQ:(NSMutableSet *)assetQueue withAsset:(SwrveContentItem *)contentItem {

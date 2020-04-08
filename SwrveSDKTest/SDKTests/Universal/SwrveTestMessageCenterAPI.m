@@ -140,13 +140,15 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
 
-    XCTAssertEqual([[controller messageCenterCampaigns] count], 2);
     // IAM and Conversation support these orientations
 #if TARGET_OS_IOS
+    XCTAssertEqual([[controller messageCenterCampaigns] count], 2);
     XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 2);
     XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 2);
 #elif TARGET_OS_TV
-    XCTAssertEqual([[controller messageCenterCampaignsForTvOS] count], 2);
+    // should only get one now that the conversation is excluded from the message center response
+    XCTAssertEqual([[controller messageCenterCampaigns] count], 1);
+    XCTAssertEqual([[controller messageCenterCampaignsForTvOS] count], 1);
 #endif
     SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);

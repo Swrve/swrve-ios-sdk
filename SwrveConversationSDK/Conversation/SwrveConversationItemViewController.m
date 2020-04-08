@@ -91,9 +91,11 @@
                 inWindow:(UIWindow *)conversationWindow
      withMessageDelegate:(id)messageDelegate
      withStatusBarHidden:(BOOL)prefeerStatusBarHidden {
+    
+#if TARGET_OS_IOS /** exclude tvOS **/
 
     if (!conversation || conversationItemViewController == nil || conversationWindow == nil) {
-        DebugLog(@"Unable to showConversation.");
+        DebugLog(@"Unable to showConversation.", nil);
         return false;
     }
 
@@ -132,6 +134,11 @@
     });
 
     return true;
+    
+#elif TARGET_OS_TV
+    DebugLog(@"Conversations are not supported on tvOS.", nil);
+    return false;
+#endif
 }
 
 + (bool)hasUnknownContentAtoms:(SwrveBaseConversation *)conversation {
@@ -372,7 +379,7 @@
                     DebugLog(@"Opening url [%@] successfully: %d", callUrl, success);
                 }];
             } else {
-                DebugLog(@"Could not open url, not supported (should not reach this code)");
+                DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
             }
             break;
         }
@@ -400,7 +407,7 @@
                         DebugLog(@"Opening url [%@] successfully: %d", target, success);
                     }];
                 } else {
-                    DebugLog(@"Could not open url, not supported (should not reach this code)");
+                    DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
                 }
             }
             break;
@@ -426,7 +433,7 @@
                     DebugLog(@"Opening url [%@] successfully: %d", target, success);
                 }];
             } else {
-                DebugLog(@"Could not open deeplink, not supported (should not reach this code)");
+                DebugLog(@"Could not open deeplink, not supported (should not reach this code)", nil);
             }
         }
         default:

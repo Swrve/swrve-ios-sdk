@@ -79,7 +79,7 @@
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 long code = [(NSHTTPURLResponse*)response statusCode];
                 if (code > 300) {
-                    DebugLog(@"Show Campaign Error: %@",responseDic);
+                    DebugLog(@"Show Campaign Error: %@", responseDic);
                 }
             }
             [self writeCampaignDataToCache:responseDic fileType:SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG];
@@ -124,7 +124,7 @@
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     long code = [(NSHTTPURLResponse*)response statusCode];
                     if (code > 300) {
-                        DebugLog(@"Show Campaign Error: %@",responseDic);
+                        DebugLog(@"Show Campaign Error: %@", responseDic);
                     }
                 }
                 [self writeCampaignDataToCache:responseDic fileType:SWRVE_AD_CAMPAIGN_FILE];
@@ -259,7 +259,7 @@
     } else if ([campaignDic objectForKey:@"messages"] != nil)  {
         campaign = [[SwrveInAppCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
     } else {
-        DebugLog(@"Unknown campaign type",nil);
+        DebugLog(@"Unknown campaign type", nil);
         return;
     }
 

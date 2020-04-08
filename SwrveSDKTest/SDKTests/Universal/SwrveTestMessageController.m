@@ -1300,6 +1300,7 @@
     XCTAssertEqual([[message messageID] intValue], 1);
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
 /**
  * Check conversation priority is taken into account
  */
@@ -1367,6 +1368,24 @@
     XCTAssertNotNil(conversation);
     XCTAssertEqual([[message messageID] intValue], 1);
 }
+#elif TARGET_OS_TV
+
+/**
+ * Check that conversation rejection logic for tvOS
+ */
+- (void)testConversationTvOS {
+    id swrveMock = [self swrveMockWithTestJson:@"conversationCampaignsPriority"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    TestShowMessageDelegateNoCustomFind *testDelegate = [[TestShowMessageDelegateNoCustomFind alloc] init];
+    [controller setShowMessageDelegate:testDelegate];
+
+    // try to retrieve a conversation
+    SwrveConversation *conversation = [controller conversationForEvent:@"Swrve.currency_given"];
+    XCTAssertNil(conversation, @"Conversations are not supported in tvOS should not be found and nil should be returned");
+}
+
+#endif /**TARGET_OS_TV */
 
 /**
  * Ensure session start event can trigger a message

@@ -17,7 +17,7 @@ target 'SwrveSDK-tvOS' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.4.1'
+  #pod 'SwrveSDK', '~> 6.4.2'
 
   target 'SwrveSDK-tvOSTests' do
     platform :tvos, '10.0'

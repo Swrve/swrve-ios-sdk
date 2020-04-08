@@ -854,6 +854,10 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return nil;
     }
+    
+    if ([SwrveUtils supportsConversations] == NO) {
+        return nil;
+    }
 
     NSDate* now = [self.analyticsSDK getNow];
     SwrveConversation* result = nil;
@@ -1314,7 +1318,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
                     DebugLog(@"Opening url [%@] successfully: %d", url, success);
                 }];
             } else {
-                DebugLog(@"Action not handled, not supported (should not reach this code)");
+                DebugLog(@"Action not handled, not supported (should not reach this code)", nil);
             }
         } else {
             DebugLog(@"Action - %@ -  not handled. Override the customButtonCallback to customize message actions", nonProcessedAction);
@@ -1383,58 +1387,66 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         }
     }
 #endif //!defined(SWRVE_NO_PUSH)
-
-    // Find a conversation that should be displayed
-    SwrveConversation* conversation = nil;
-
+    
     id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
-    if ([strongMessageDelegate respondsToSelector:@selector(conversationForEvent: withPayload:)]) {
-        conversation = [strongMessageDelegate conversationForEvent:eventName withPayload:payload];
-    }
-    else {
-        conversation = [self conversationForEvent:eventName withPayload:payload];
-    }
-
-    if (conversation != nil) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                [self.showMessageDelegate showConversation:conversation];
-            } else {
-                [self showConversation:conversation];
-            }
-        });
-        return YES;
+    
+    // Find a message that should be displayed
+    SwrveMessage* message = nil;
+    if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
+        message = [strongMessageDelegate messageForEvent:eventName withPayload:payload];
     } else {
-        // Find a message that should be displayed
-        SwrveMessage* message = nil;
-        if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
-            message = [strongMessageDelegate messageForEvent:eventName withPayload:payload];
-        } else {
-            message = [self messageForEvent:eventName withPayload:payload];
-        }
-
-        // Show the message if it exists
-        if( message != nil ) {
-            dispatch_block_t showMessageBlock = ^{
-                if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                    [self.showMessageDelegate showMessage:message];
-                }
-                else {
-                    [self showMessage:message];
-                }
-            };
-
-
-            if ([NSThread isMainThread]) {
-                showMessageBlock();
-            } else {
-                // Run in the main thread as we have been called from other thread
-                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
-            }
-        }
-
-        return ( message != nil );
+        message = [self messageForEvent:eventName withPayload:payload];
     }
+
+    // Show the message if it exists
+    if( message != nil ) {
+        dispatch_block_t showMessageBlock = ^{
+            if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                [self.showMessageDelegate showMessage:message];
+            }
+            else {
+                [self showMessage:message];
+            }
+        };
+
+        if ([NSThread isMainThread]) {
+            showMessageBlock();
+        } else {
+            // Run in the main thread as we have been called from other thread
+            dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+        }
+        return YES;
+        
+    } else {
+    
+        if([SwrveUtils supportsConversations] == NO){
+            DebugLog(@"Conversations are not supported on this platform.", nil);
+            return NO;
+        }
+        
+        // Find a conversation that should be displayed
+        SwrveConversation* conversation = nil;
+        
+        if ([strongMessageDelegate respondsToSelector:@selector(conversationForEvent: withPayload:)]) {
+            conversation = [strongMessageDelegate conversationForEvent:eventName withPayload:payload];
+        } else {
+            conversation = [self conversationForEvent:eventName withPayload:payload];
+        }
+
+        if (conversation != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
+                    [self.showMessageDelegate showConversation:conversation];
+                } else {
+                    [self showConversation:conversation];
+                }
+            });
+        }
+        
+        return (conversation != nil);
+    }
+    
+    return NO;
 }
 
 - (BOOL) isQaUser
@@ -1503,7 +1515,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     NSDate* now = [self.analyticsSDK getNow];
     for(SwrveCampaign* campaign in self.campaigns) {
         NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
-        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk]) {
+        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk] && ![campaign isKindOfClass:[SwrveConversationCampaign class]]) {
             [result addObject:campaign];
         }
     }

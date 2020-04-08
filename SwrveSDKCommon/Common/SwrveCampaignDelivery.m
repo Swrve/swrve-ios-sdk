@@ -105,7 +105,7 @@ NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
     NSError *jsonError;
     NSData *jsonEventBatchNSData = [NSJSONSerialization dataWithJSONObject:eventBatch options:0 error:&jsonError];
     if (jsonError) {
-        DebugLog(@"Swrve Something went wrong when parsing the \"Push Delivery json event\" - invalid json format");
+        DebugLog(@"Swrve Something went wrong when parsing the \"Push Delivery json event\" - invalid json format", nil);
         return;
     }
 
