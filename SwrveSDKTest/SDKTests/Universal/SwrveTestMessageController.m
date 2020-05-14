@@ -90,6 +90,28 @@
 
 @end
 
+@interface TestShowTriggeredPersonalisationDelegate : NSObject<SwrveMessageDelegate>
+
+- (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation;
+    @property SwrveMessage *messageShown;
+@end
+
+@implementation TestShowTriggeredPersonalisationDelegate
+
+- (id) init {
+    if (self = [super init]) {
+        [self setMessageShown:nil];
+    }
+    return self;
+}
+
+- (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation {
+    [self setMessageShown:message];
+    [message wasShownToUser];
+}
+
+@end
+
 @interface TestShowIAMMessageDelegatePersonalisation : NSObject<SwrveMessageDelegate>
 - (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation;
 @property SwrveMessage *messageShown;
@@ -488,6 +510,31 @@
     [controller showMessageCenterCampaign:campaign withPersonalisation: @{@"test_cp": @"test_value",
                                                                           @"test_custom":@"urlprocessed",
                                                                           @"test_display": @"display"}];
+
+    SwrveMessage *message = [testDelegate messageShown];
+    XCTAssertNotNil(message);
+    XCTAssertEqualObjects(message.name,@"Kindle");
+}
+
+- (void)testShowMessageDelegatePersonalisationFromTrigger {
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalisation"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    TestShowTriggeredPersonalisationDelegate *testDelegate = [[TestShowTriggeredPersonalisationDelegate alloc] init];
+    controller.showMessageDelegate = testDelegate;
+    
+    SwrveMessagePersonalisationCallback personalisationCallback = ^(NSDictionary* eventPayload) {
+        return @{@"test_cp": @"test_value", @"test_custom":@"urlprocessed", @"test_display": @"display"};
+    };
+    
+    [controller setPersonalisationCallback:personalisationCallback];
+    
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_name",
+                             @"payload": @{}};
+    [controller eventRaised:event];
 
     SwrveMessage *message = [testDelegate messageShown];
     XCTAssertNotNil(message);
@@ -1155,18 +1202,18 @@
 
     NSArray* buttons = [[viewController current_format] buttons];
     XCTAssertEqual([buttons count], 4);
-    
+
     // access the UIViews in the subview of the SwrveMessageViewController
     NSArray *vcSubviews = [[[[viewController view] subviews] firstObject] subviews];
     NSMutableArray *uiButtons = [NSMutableArray new];
-    
+
     // get all the buttons
     for (UIView *item in vcSubviews){
         if ([item isKindOfClass:[UISwrveButton class]]) {
             [uiButtons addObject:item];
         }
     }
-    
+
     XCTAssertEqual([uiButtons count], 4);
 
     for (NSInteger i = 0; i < [buttons count]; i++) {
@@ -1187,7 +1234,7 @@
     XCTAssertEqual(clipboardActionCount, 1);
     XCTAssertNotNil(message);
     XCTAssertEqualObjects(clipboardAction, @"test");
-    
+
 #if TARGET_OS_IOS /** exclude tvOS **/
         // verify (on iOS) that the value was copied to clipboard
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -1631,6 +1678,25 @@
     [swrveMock messaging].clipboardButtonCallback(@"ProcessedText");
 
     XCTAssertEqualObjects(clipboardButtonProcessedTextResult, @"ProcessedText");
+}
+
+
+/**
+ * Test that setting message personalisation listener works
+ */
+- (void)testMessagePersonalisationListener {
+    __block NSDictionary* messagePersonalisationResult = nil;
+
+    SwrveMessagePersonalisationCallback personalisationCallback = ^(NSDictionary* eventPayload) {
+        messagePersonalisationResult = eventPayload;
+        return messagePersonalisationResult;
+    };
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    [[swrveMock messaging] setPersonalisationCallback:personalisationCallback];
+    NSDictionary *result = [swrveMock messaging].personalisationCallback(@{@"test": @"passed"});
+    
+    XCTAssertEqualObjects([result objectForKey:@"test"], @"passed");
 }
 
 /**

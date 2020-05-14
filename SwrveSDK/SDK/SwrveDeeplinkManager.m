@@ -29,7 +29,7 @@
 @interface SwrveMessageController()
 - (NSString *)campaignQueryString;
 - (BOOL)filtersOk:(NSArray *)filters;
-- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued;
+- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalisation:(NSDictionary *)personalisation;
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
 @property (nonatomic, retain) NSDate *initialisedTime; // SDK init time
 @end
@@ -279,8 +279,6 @@
 }
 
 - (void)showCampaign:(SwrveCampaign *)campaign {
-
-    self.alreadySeenCampaignID =  [NSString stringWithFormat:@"%lu",(unsigned long)campaign.ID];
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             SwrveConversation *conversation = ((SwrveConversationCampaign *)campaign).conversation;
@@ -293,25 +291,37 @@
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveMessage *message = [((SwrveInAppCampaign *)campaign).messages objectAtIndex:0];
 
-        // Show the message if it exists
-        if( message != nil ) {
-            dispatch_block_t showMessageBlock = ^{
-                if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                    [self.sdk.messaging.showMessageDelegate showMessage:message];
-                }
-                else {
-                    [self.sdk.messaging showMessage:message queue:true];
-                }
-            };
+        // Show the message if it exists and personalisation can be resolved
+        if (message != nil) {
+            NSDictionary *personalisation;
+            if (_sdk.messaging.personalisationCallback != nil) {
+                personalisation = _sdk.messaging.personalisationCallback(nil);
+            }
+            
+            if ([message canResolvePersonalisation:personalisation]) {
+                dispatch_block_t showMessageBlock = ^{
+                    if ([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:withPersonalisation:)]) {
+                        [self.sdk.messaging.showMessageDelegate showMessage:message withPersonalisation:personalisation];
+                    } else if([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                        [self.sdk.messaging.showMessageDelegate showMessage:message];
+                    } else {
+                        [self.sdk.messaging showMessage:message queue:true withPersonalisation:personalisation];
+                    }
+                };
 
-            if ([NSThread isMainThread]) {
-                showMessageBlock();
+                if ([NSThread isMainThread]) {
+                    showMessageBlock();
+                } else {
+                    // Run in the main thread as we have been called from other thread
+                    dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+                }
             } else {
-                // Run in the main thread as we have been called from other thread
-                dispatch_async(dispatch_get_main_queue(), showMessageBlock);
+                DebugLog(@"Personalisaton options are not available for this message.", nil);
             }
         }
     }
+    
+    self.alreadySeenCampaignID = [NSString stringWithFormat:@"%lu",(unsigned long)campaign.ID];
 }
 
 

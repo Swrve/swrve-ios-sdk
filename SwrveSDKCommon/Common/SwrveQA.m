@@ -3,6 +3,7 @@
 #import <sys/time.h>
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"
+#import "SwrveUtils.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -92,16 +93,6 @@ static id ObjectOrNull(id object) {
     return object ? object : [NSNull null];
 }
 
-- (NSString *)timeFormatted {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    [dateFormatter setLocale:enUSPOSIXLocale];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZ"];
-
-    NSDate *now = [NSDate date];
-    return [dateFormatter stringFromDate:now];
-}
-
 // TODO Method below is copied from Swrve.m but there should only be one of these as its supposed to be synchronized access
 - (NSInteger)nextEventSequenceNumber {
     NSInteger seqno;
@@ -119,7 +110,7 @@ static id ObjectOrNull(id object) {
 - (NSMutableDictionary *)createJSONForEvent:(NSMutableDictionary *)event {
 
     [event setValue:@"qa_log_event" forKey:@"type"];
-    [event setValue:[self timeFormatted] forKey:@"time"];
+    [event setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
     [event setValue:[NSNumber numberWithInteger:[self nextEventSequenceNumber]] forKey:@"seqnum"];
 
     NSArray *dataArray = @[event];

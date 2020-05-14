@@ -423,4 +423,87 @@ NSString *mockCacheDir;
     }]]);
 }
 
+- (void)testHandleDeeplink_Personalisation_MessageShown {
+    Swrve *swrve = [Swrve alloc];
+
+    SwrveMessagePersonalisationCallback personalisationCallback = ^(NSDictionary* eventPayload) {
+        return @{@"test_key": @"test_value"};
+    };
+    
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+    SwrveMessageController *vc = swrve.messaging;
+    [vc setPersonalisationCallback:personalisationCallback];
+    
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalisation" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
+    [swrveDeeplinkManger handleDeeplink:url];
+    
+    XCTAssertTrue(vc != nil);
+    
+    SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
+    XCTAssertTrue(mvc != nil);
+    
+    SwrveMessage *message = mvc.message;
+    
+    XCTAssertTrue([message.name isEqualToString:@"Double format"]);
+    XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
+    
+    // Allow message to load
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
+    
+    //Check events buffer for impression event
+    NSArray *eventsBuffer = [swrveMock eventBuffer];
+    NSString *bufferString = (NSString*)(eventsBuffer[0]);
+    NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    XCTAssertTrue([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
+}
+
+- (void)testHandleDeeplink_Personalisation_MessageNotShown {
+    Swrve *swrve = [Swrve alloc];
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+    
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalisation" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
+    [swrveDeeplinkManger handleDeeplink:url];
+    
+    SwrveMessageController *vc = swrve.messaging;
+    XCTAssertTrue(vc != nil);
+    
+    SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
+    XCTAssertNil(mvc);
+}
+
 @end

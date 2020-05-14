@@ -153,6 +153,7 @@ const static int DEFAULT_MIN_DELAY           = 55;
 @synthesize dismissButtonCallback;
 @synthesize installButtonCallback;
 @synthesize clipboardButtonCallback;
+@synthesize personalisationCallback;
 @synthesize showMessageTransition;
 @synthesize hideMessageTransition;
 @synthesize swrveConversationItemViewController;
@@ -1390,6 +1391,12 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     
     id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
     
+    NSDictionary *personalisation;
+    
+    if(self.personalisationCallback != nil) {
+        personalisation = self.personalisationCallback(payload);
+    }
+    
     // Find a message that should be displayed
     SwrveMessage* message = nil;
     if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
@@ -1397,15 +1404,22 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     } else {
         message = [self messageForEvent:eventName withPayload:payload];
     }
-
+    
     // Show the message if it exists
     if( message != nil ) {
+        
+        if (![message canResolvePersonalisation:personalisation]) {
+            DebugLog(@"Personalisaton options are not available for this message.", nil);
+            return NO;
+        }
+        
         dispatch_block_t showMessageBlock = ^{
-            if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                [self.showMessageDelegate showMessage:message];
-            }
-            else {
-                [self showMessage:message];
+            if ([strongMessageDelegate respondsToSelector:@selector(showMessage:withPersonalisation:)]) {
+                [strongMessageDelegate showMessage:message withPersonalisation:personalisation];
+            } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
+                [strongMessageDelegate showMessage:message];
+            } else {
+                [self showMessage:message withPersonalisation:personalisation];
             }
         };
 
@@ -1477,18 +1491,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
             CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION, self.analyticsSDK.locationSegmentVersion];
 }
 
--(NSArray*) messageCenterCampaigns
-{
-#if TARGET_OS_IOS /** exclude tvOS **/
-    return [self messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationUnknown];
-#else
-    return [self messageCenterCampaignsForTvOS];
-#endif
-
-}
-
-#if TARGET_OS_IOS /** exclude tvOS **/
--(NSArray*) messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
+-(NSArray*)messageCenterCampaignsWithPredicate:(BOOL (^)(SwrveCampaign*))predicate
 {
     NSMutableArray* result = [[NSMutableArray alloc] init];
     if (analyticsSDK == nil) {
@@ -1497,31 +1500,66 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
 
     NSDate* now = [self.analyticsSDK getNow];
     for(SwrveCampaign* campaign in self.campaigns) {
+#if TARGET_OS_TV /** filter conversations for TV**/
+        if (![campaign isKindOfClass:[SwrveInAppCampaign class]]) continue;
+#endif
+        
         NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
-        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign supportsOrientation:messageOrientation] && [campaign assetsReady:assetsOnDisk]) {
-            [result addObject:campaign];
+        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk]) {
+            if (predicate == nil || predicate(campaign)) {
+                [result addObject:campaign];
+            }
         }
     }
     return result;
 }
-#elif TARGET_OS_TV
--(NSArray*) messageCenterCampaignsForTvOS {
 
-    NSMutableArray* result = [[NSMutableArray alloc] init];
-    if (analyticsSDK == nil) {
-        return result;
-    }
+-(NSArray*)messageCenterCampaigns
+{
+    return [self messageCenterCampaignsWithPredicate:nil];
+}
 
-    NSDate* now = [self.analyticsSDK getNow];
-    for(SwrveCampaign* campaign in self.campaigns) {
-        NSSet* assetsOnDisk = [assetsManager assetsOnDisk];
-        if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk] && ![campaign isKindOfClass:[SwrveConversationCampaign class]]) {
-            [result addObject:campaign];
+#if TARGET_OS_IOS /** exclude tvOS **/
+-(NSArray*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation
+{
+    return [self messageCenterCampaignsWithPredicate:^BOOL(SwrveCampaign* campaign) {
+        return [campaign supportsOrientation:messageOrientation];
+    }];
+}
+
+-(NSArray*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation withPersonalisation:(NSDictionary*)personalisation
+{
+    return [self messageCenterCampaignsWithPredicate:^BOOL(SwrveCampaign* campaign) {
+        BOOL supportsOrientation = [campaign supportsOrientation:messageOrientation];
+        if (!supportsOrientation) return NO;
+        
+        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
+            for (SwrveMessage* message in ((SwrveInAppCampaign*)campaign).messages) {
+                if ([message supportsOrientation:messageOrientation] && ![message canResolvePersonalisation:personalisation]) {
+                    return NO;
+                }
+            }
         }
-    }
-    return result;
+        
+        return YES;
+    }];
 }
 #endif
+
+-(NSArray*)messageCenterCampaignsWithPersonalisation:(NSDictionary*)personalisation
+{
+    return [self messageCenterCampaignsWithPredicate:^BOOL(SwrveCampaign* campaign) {
+        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
+            for (SwrveMessage* message in ((SwrveInAppCampaign*)campaign).messages) {
+                if (![message canResolvePersonalisation:personalisation]) {
+                    return NO;
+                }
+            }
+        }
+        
+        return YES;
+    }];
+}
 
 -(BOOL)showMessageCenterCampaign:(SwrveCampaign*)campaign {
     return [self showMessageCenterCampaign:campaign withPersonalisation:nil];
@@ -1587,10 +1625,20 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     if (analyticsSDK == nil) {
         return;
     }
-    if (campaign.messageCenter) {
+    if (campaign != nil && campaign.messageCenter) {
         [campaign.state setStatus:SWRVE_CAMPAIGN_STATUS_DELETED];
         [self saveCampaignsState];
     }
+}
+
+-(void)markMessageCenterCampaignAsSeen:(SwrveCampaign*)campaign {
+   if (analyticsSDK == nil) {
+       return;
+   }
+   if (campaign != nil && campaign.messageCenter) {
+       [campaign.state setStatus:SWRVE_CAMPAIGN_STATUS_SEEN];
+       [self saveCampaignsState];
+   }
 }
 
 -(void)deviceTokenUpdated

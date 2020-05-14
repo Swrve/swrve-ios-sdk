@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2B37B453E478A06E8F762370 /* Pods_MessageCenterSample_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */; };
-		3DC2BCD1402081C5C09221CD /* libPods-MessageCenterSample-ObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E84A2C0D2A5BFF2EF8424471 /* libPods-MessageCenterSample-ObjC.a */; };
+		4EC46A22EA763213A4EDBBFD /* Pods_MessageCenterSample_ObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52E7ABC9DB9608462866D96B /* Pods_MessageCenterSample_ObjC.framework */; };
 		52D112341D5C97ED00F34F38 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D112331D5C97ED00F34F38 /* AppDelegate.swift */; };
 		52D112361D5C97ED00F34F38 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D112351D5C97ED00F34F38 /* ViewController.swift */; };
 		52D112391D5C97ED00F34F38 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52D112371D5C97ED00F34F38 /* Main.storyboard */; };
@@ -29,6 +29,7 @@
 		52D112381D5C97ED00F34F38 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		52D1123D1D5C97ED00F34F38 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		52D1123F1D5C97ED00F34F38 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52E7ABC9DB9608462866D96B /* Pods_MessageCenterSample_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BD834AB20EFAFD7004799A7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5BD834AC20EFAFD7004799A7 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		5BD834AE20EFAFD7004799A7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -42,7 +43,6 @@
 		A910440D7407AA8CF4419482 /* Pods-MessageCenterSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.debug.xcconfig"; sourceTree = "<group>"; };
 		B8CA1DF1F50952A8210B3991 /* Pods-MessageCenterSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
 		BBE1A0B5FF81991836909344 /* Pods-MessageCenterSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.release.xcconfig"; sourceTree = "<group>"; };
-		E84A2C0D2A5BFF2EF8424471 /* libPods-MessageCenterSample-ObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MessageCenterSample-ObjC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F45001C5DAD9D038ABE168D9 /* Pods-MessageCenterSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
 		FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DC2BCD1402081C5C09221CD /* libPods-MessageCenterSample-ObjC.a in Frameworks */,
+				4EC46A22EA763213A4EDBBFD /* Pods_MessageCenterSample_ObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,7 +104,7 @@
 			children = (
 				34F60FAFEB75B9DC478C4C11 /* Pods_MessageCenterSample.framework */,
 				FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */,
-				E84A2C0D2A5BFF2EF8424471 /* libPods-MessageCenterSample-ObjC.a */,
+				52E7ABC9DB9608462866D96B /* Pods_MessageCenterSample_ObjC.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -167,7 +167,7 @@
 				5BD834BD20EFB01D004799A7 /* Sources */,
 				5BD834C320EFB01D004799A7 /* Frameworks */,
 				5BD834C520EFB01D004799A7 /* Resources */,
-				0CD76AEFC300BC7933A74DFF /* [CP] Copy Pods Resources */,
+				3BB687D06F44BA9147CBBF4E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -240,24 +240,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0CD76AEFC300BC7933A74DFF /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveConversationSDK-library/SwrveConversationSDK.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		386ADD53AD978FF0B6A7ECDE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,9 +247,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK-framework/SwrveConversationSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK-framework/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-framework/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK/SwrveConversationSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -278,6 +260,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3BB687D06F44BA9147CBBF4E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SwrveConversationSDK/SwrveConversationSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveConversationSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5BD834BC20EFB01D004799A7 /* [CP] Check Pods Manifest.lock */ = {

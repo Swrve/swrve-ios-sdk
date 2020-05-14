@@ -158,7 +158,7 @@
     XCTAssertTrue([data objectForKey:@"log_type"]);
     XCTAssertEqualObjects([data objectForKey:@"log_type"], logType);
     XCTAssertTrue([data objectForKey:@"seqnum"]);
-    XCTAssertTrue([data objectForKey:@"time"]);
+    XCTAssertTrue([[data objectForKey:@"time"] isKindOfClass:[NSNumber class]]);
     XCTAssertTrue([data objectForKey:@"type"]);
     XCTAssertEqualObjects([data objectForKey:@"type"], @"qa_log_event");
     
