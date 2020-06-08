@@ -154,7 +154,9 @@
         if ([swrveUser.swrveId isEqualToString:swrveUserId] || [swrveUser.externalId isEqualToString:externalUserId] ) {
             swrveUser.verified = true;
             swrveUser.swrveId = swrveUserId;
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+            NSError *error = nil;
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray requiringSecureCoding:NO error:&error];
+            NSAssert(!error, error.localizedDescription);
             [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
@@ -168,7 +170,9 @@
     if (![mArray containsObject:swrveUser]) {
         [mArray addObject:swrveUser];
     }
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+    NSError *error = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray requiringSecureCoding:NO error:&error];
+    NSAssert(!error, error.localizedDescription);
     [SwrveLocalStorage saveSwrveUsers:data];
  }
 
@@ -176,11 +180,13 @@
     if (aUserId == nil) return;
     NSArray *swrveUsers = [self swrveUsers];
     NSMutableArray * mArray = [[NSMutableArray alloc]initWithArray:swrveUsers];
+    NSError *error = nil;
     for (SwrveUser *swrveUser in [mArray copy]) {
         if ([swrveUser.swrveId isEqualToString:aUserId] || [swrveUser.externalId isEqualToString:aUserId] ) {
             [mArray removeObject:swrveUser];
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray requiringSecureCoding:NO error:&error];
             [SwrveLocalStorage saveSwrveUsers:data];
+            NSAssert(!error, error.localizedDescription);
             return;
         }
     }
@@ -188,7 +194,9 @@
 
 - (NSArray *)swrveUsers {
     NSData *encodedObject = [SwrveLocalStorage swrveUsers];
-    return [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
+    NSError *error = nil;
+    return [NSKeyedUnarchiver unarchivedObjectOfClass:NSArray.class fromData:encodedObject error:&error];
+    NSAssert(!error, error.localizedDescription);
 }
 
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId {
