@@ -57,7 +57,6 @@ extern NSString *const SwrveDeliveryRequiredConfigAppVersionKey;
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub([classSwrveUtilsMock getTimeEpoch]).andReturn(1580397679375);
 
-
     NSDictionary *expectedEventData = [SwrveCampaignDelivery eventData:userInfo forSeqno:1];
     XCTAssertEqualObjects([expectedEventData objectForKey:@"type"], @"generic_campaign_event");
     XCTAssertEqualObjects([expectedEventData objectForKey:@"time"], @1580397679375);
@@ -68,6 +67,17 @@ extern NSString *const SwrveDeliveryRequiredConfigAppVersionKey;
     XCTAssertEqualObjects([expectedEventData objectForKey:@"id"], @123456);
 
     [classSwrveUtilsMock stopMocking];
+}
+
+- (void)testPushDeliveryInvalidConten {
+    id mockSwrvePushDelivery = OCMClassMock([SwrveCampaignDelivery class]);
+    NSString *expectedGroupIdentifier = @"whatever.identifier";
+    NSDictionary *expectedInvalidUserInfo = @{@"some_invalid_content": @123};
+
+    // Should not break with invalid payloads as well.
+    [SwrveCampaignDelivery sendPushDelivery:expectedInvalidUserInfo withAppGroupID:expectedGroupIdentifier];
+    OCMVerify([mockSwrvePushDelivery sendPushDelivery:expectedInvalidUserInfo withAppGroupID: expectedGroupIdentifier]);
+    [mockSwrvePushDelivery stopMocking];
 }
 
 - (void)testSaveDeliveryPushConfig {
@@ -112,7 +122,6 @@ extern NSString *const SwrveDeliveryRequiredConfigAppVersionKey;
                       @"url": @"https://whatever.jpg"
                     },
                 @"version": @1
-
         }
    };
 
@@ -176,7 +185,6 @@ extern NSString *const SwrveDeliveryRequiredConfigAppVersionKey;
     [userDefaults setObject:nil forKey:seqNumKey];
 
     OCMVerifyAll(classDeliveryMock);
-
     [classDeliveryMock stopMocking];
     [classSwrveUtilsMock stopMocking];
 }

@@ -157,15 +157,16 @@ NSString *const SwrveContentVersionKey = @"version";
     if (_commonDelegate != NULL) {
         appGroupIdentifier = _commonDelegate.appGroupIdentifier;
     }
-    [SwrveCampaignDelivery sendPushDelivery:userInfo withAppGroupID:appGroupIdentifier];
     id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
     if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
+        [SwrveCampaignDelivery sendPushDelivery:userInfo withAppGroupID:appGroupIdentifier];
         return [self handleSilentPushNotification:userInfo withCompletionHandler:completionHandler];
     } else {
         id pushIdentifier = [userInfo objectForKey:SwrveNotificationIdentifierKey];
         NSString *authenticatedPush = userInfo[SwrveNotificationAuthenticatedUserKey];
         if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]] &&
                 authenticatedPush && ![authenticatedPush isKindOfClass:[NSNull class]]) {
+            [SwrveCampaignDelivery sendPushDelivery:userInfo withAppGroupID:appGroupIdentifier];
             return [self handleAuthenticatedPushNotification:userInfo withCompletionHandler:completionHandler withLocalUserId:localUserId];
         }
     }

@@ -78,8 +78,8 @@ NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
 }
 
 + (void)sendPushDelivery:(NSDictionary *)userInfo withAppGroupID:(NSString *)appGroupId {
-    if (![self isValidAppGroupId:appGroupId]) {
-        return; // We need a valid App group to procced this method.
+    if (![self isValidAppGroupId:appGroupId] || ![userInfo objectForKey:SwrveNotificationIdentifierKey]) {
+        return; // We need a valid App group to procced this method, and must contain a "SwrveNotificationIdentifierKey" to proceed.
     }
     
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupId];
