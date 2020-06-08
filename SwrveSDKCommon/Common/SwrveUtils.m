@@ -48,7 +48,14 @@
         netinfo = [CTTelephonyNetworkInfo new];
     });
     
-    return [netinfo subscriberCellularProvider];
+    // It's possible to have devices with multiple SIM cards
+    if (@available(iOS 12, *)) {
+        return [[netinfo serviceSubscriberCellularProviders] allValues].firstObject;
+    }
+    else {
+	    // We won't get carrier info in iOS 11, but this is only way to make it compatible
+        return [CTCarrier new];
+    }
 }
 #endif
 
