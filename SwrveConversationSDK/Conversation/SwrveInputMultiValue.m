@@ -83,10 +83,12 @@
 }
 
 -(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
+    float tableWidth = (float)tableView.bounds.size.width;
+    
     if (row == 0) {
         UIFont *fallbackFont = [UIFont boldSystemFontOfSize:[kSwrveDefaultMultiValueDescriptionFontSize floatValue]];
         UIFont *descriptionFont = [SwrveConversationStyler fontFromStyle:self.style withFallback:fallbackFont];
-        return (float)[SwrveConversationStyler textHeight:self.description withFont:descriptionFont withMaxWidth:(float)tableView.bounds.size.width];
+        return [SwrveConversationStyler textHeight:self.description withFont:descriptionFont withMaxWidth:tableWidth];
     } else {
         NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
         NSDictionary *dict = [self.values objectAtIndex:finalRow];
@@ -97,7 +99,7 @@
         }
         UIFont *fallbackFont = [UIFont fontWithName:kSwrveDefaultMultiValueCellFontName size:[kSwrveDefaultMultiValueCellFontSize floatValue]];
         UIFont *cellFont = [SwrveConversationStyler fontFromStyle:cellStyle withFallback:fallbackFont];
-        return (float)[SwrveConversationStyler textHeight:cellText withFont:cellFont withMaxWidth:(float)tableView.bounds.size.width] + 22;
+        return [SwrveConversationStyler textHeight:cellText withFont:cellFont withMaxWidth:tableWidth] + 22;
     }
 }
 

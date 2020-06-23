@@ -2483,13 +2483,20 @@ enum HttpStatus {
 }
 
 - (void)queuePausedEventsArray {
-    for (SwrveEventQueueItem *queueItem in self.pausedEventsArray) {
-        [self queueEvent:queueItem.eventType data:queueItem.eventData triggerCallback:queueItem.triggerCallback notifyMessageController:queueItem.notifyMessageController];
+    NSMutableArray *pausedEventsArrayToSend = nil;
+    @synchronized (self.pausedEventsArray) {
+        if ([self.pausedEventsArray count] == 0) {
+            return;
+        }
+        pausedEventsArrayToSend = [self.pausedEventsArray copy];
+        for (SwrveEventQueueItem *queueItem in pausedEventsArrayToSend) {
+            [self queueEvent:queueItem.eventType data:queueItem.eventData triggerCallback:queueItem.triggerCallback notifyMessageController:queueItem.notifyMessageController];
+        }
+        if ([pausedEventsArrayToSend count] > 0) {
+            [self sendQueuedEvents];
+        }
+        [self.pausedEventsArray removeAllObjects];
     }
-    if ([self.pausedEventsArray count] > 0) {
-        [self sendQueuedEvents];
-    }
-    [self.pausedEventsArray removeAllObjects];
 }
 
 - (void)enableEventSending {

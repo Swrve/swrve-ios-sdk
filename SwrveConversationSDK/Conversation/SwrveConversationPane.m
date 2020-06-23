@@ -8,7 +8,6 @@
 @synthesize tag = _tag;
 @synthesize title = _title;
 @synthesize pageStyle = _pageStyle;
-@synthesize isActive = _isActive;
 
 -(id) initWithDictionary:(NSDictionary *)dict {
     self = [super init];

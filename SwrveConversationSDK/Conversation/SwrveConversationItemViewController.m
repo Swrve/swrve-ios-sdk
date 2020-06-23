@@ -22,7 +22,6 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
     UIDeviceOrientation currentOrientation;
 #endif
-    UITapGestureRecognizer *localRecognizer;
     SwrveBaseConversation *conversation;
     id<SwrveMessageEventHandler> controller;
 }
@@ -51,7 +50,7 @@
     [itemViewController.view addSubview:itemViewController.fullScreenBackgroundImageView];
 
     // -- Atoms table
-    UITableView *tableview =[[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    UITableView *tableview = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     tableview.delegate = itemViewController;
     tableview.dataSource = itemViewController;
     itemViewController.contentTableView = tableview;
@@ -180,53 +179,41 @@
         [self.fullScreenBackgroundImageView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
         [self.fullScreenBackgroundImageView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
 
-
-        // -- bottom button constraints
         self.buttonsView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.buttonsView.heightAnchor constraintEqualToConstant:65.0f].active = YES;
 
+        self.contentTableView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        self.cancelButtonView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.cancelButtonView.widthAnchor constraintEqualToConstant:40.0f].active = YES;
+        [self.cancelButtonView.heightAnchor constraintEqualToConstant:40.0f].active = YES;
+        
 #if TARGET_OS_IOS /** exclude tvOS **/
         if (@available(iOS 11, *)) {
             [self.buttonsView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
             [self.buttonsView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor constant: -5].active = YES;
             [self.buttonsView.leftAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor constant:5].active = YES;
-        }
-        else {
-            [self.buttonsView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
-            [self.buttonsView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant: -5].active = YES;
-            [self.buttonsView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:5].active = YES;
-        }
-
-
-        // -- tableview constraints
-        self.contentTableView.translatesAutoresizingMaskIntoConstraints = NO;
-        if (@available(iOS 11, *)) {
+            
             [self.contentTableView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
             [self.contentTableView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor].active = YES;
             [self.contentTableView.leftAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor].active = YES;
-            [self.contentTableView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant: -65].active = YES;
-        }
-        else {
+            [self.contentTableView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant:-65].active = YES;
+            
+            [self.cancelButtonView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
+            [self.cancelButtonView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor].active = YES;
+        } else {
+            [self.buttonsView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+            [self.buttonsView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant: -5].active = YES;
+            [self.buttonsView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:5].active = YES;
+            
             [self.contentTableView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
             [self.contentTableView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
             [self.contentTableView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
             [self.contentTableView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-65].active = YES;
-        }
-
-        // -- cancel button constraints
-        self.cancelButtonView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.cancelButtonView.widthAnchor constraintEqualToConstant:40.0f].active = YES;
-        [self.cancelButtonView.heightAnchor constraintEqualToConstant:40.0f].active = YES;
-
-        if (@available(iOS 11, *)) {
-            [self.cancelButtonView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
-            [self.cancelButtonView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor].active = YES;
-        }
-        else {
+            
             [self.cancelButtonView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
             [self.cancelButtonView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
         }
-
 #endif
     } else {
         // This section is build for iOS 10.0 and above
@@ -242,8 +229,8 @@
 #endif
 
     self.navigationController.navigationBarHidden = YES;
+    self.view.hidden = YES;
     [self updateUI];
-    [self.view setHidden:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -296,9 +283,12 @@
     if (size.width > SWRVE_CONVERSATION_MAX_WIDTH) {
         float centerx = ((float)size.width - SWRVE_CONVERSATION_MAX_WIDTH)/2.0f;
         CGRect newFrame = CGRectMake(centerx, SWRVE_CONVERSATION_MODAL_MARGIN, SWRVE_CONVERSATION_MAX_WIDTH, size.height - (SWRVE_CONVERSATION_MODAL_MARGIN*2));
-        if(contentHeight < (size.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
-            newFrame.size.height = contentHeight + SWRVE_CONVERSATION_MODAL_MARGIN;
-            newFrame.origin.y =  (size.height / 2) - (newFrame.size.height / 2);
+        
+        float maxControlsHeight = (float)buttonsView.frame.size.height;
+        float modalHeight = (contentHeight + maxControlsHeight);
+        if (modalHeight < (size.height - SWRVE_CONVERSATION_MODAL_MARGIN)) {
+            newFrame.size.height = modalHeight;
+            newFrame.origin.y = (size.height / 2) - (newFrame.size.height / 2);
         }
 
         self.view.frame = newFrame;
@@ -314,7 +304,7 @@
         self.view.layer.cornerRadius = 0.0f;
     }
 
-    for(SwrveConversationAtom *atom in self.conversationPane.content) {
+    for (SwrveConversationAtom *atom in self.conversationPane.content) {
         // Layout with the frame of the root UIView
         [atom parentViewChangedSize:self.view.frame.size];
     }
@@ -499,8 +489,6 @@
 -(void)dismiss {
     // Stop videos etc
     [self stopAtoms];
-    // Close the view controller
-    self.conversationPane.isActive = NO;
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
         @synchronized(self->controller) {
             // Delay for .01ms to account for killing the conversation stuff (iOS6)
@@ -522,35 +510,32 @@
 -(void) viewReady:(NSNotification *)notification {
 #pragma unused (notification)
     numViewsReady++;
-    if(numViewsReady == self.conversationPane.content.count) {
-        contentHeight = 0; //reset the contentHeight before we reload
+    if (numViewsReady == self.conversationPane.content.count) {
+        float newContentHeight = 0;
+        for (SwrveConversationAtom *atom in self.conversationPane.content) {
 
-        for(SwrveConversationAtom *atom in self.conversationPane.content) {
-
-            if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+            if ([atom.type isEqualToString:kSwrveInputMultiValue]) {
                 SwrveInputMultiValue *multValue = (SwrveInputMultiValue *)atom;
-
-                for(uint i = 0; i < (uint)[multValue.values count]; i++){
-                    contentHeight += (float)[multValue heightForRow:(uint)i inTableView:self.contentTableView];
+                // Measure all rows including the description (+1) if needed
+                int rows = (int)[multValue numberOfRowsNeeded];
+                for (int i = 0; i < rows; i++) {
+                    newContentHeight += (float)[multValue heightForRow:(uint)i inTableView:self.contentTableView];
                 }
 
-            }else if([atom.type isEqualToString:kSwrveContentTypeImage]) {
+            } else if ([atom.type isEqualToString:kSwrveContentTypeImage]) {
                 SwrveContentImage *imageAtom = (SwrveContentImage *)atom;
-                contentHeight += (float)imageAtom.view.frame.size.height;
+                newContentHeight += (float)imageAtom.view.frame.size.height;
 
-            }else{
-                contentHeight += (float)atom.view.frame.size.height;
+            } else {
+                newContentHeight += (float)atom.view.frame.size.height;
             }
         }
 
-        for (SwrveConversationAtom *atom in self.conversationPane.controls) {
-            contentHeight +=(float)atom.view.frame.size.height + SWRVE_CONVERSATION_MODAL_MARGIN;
-        }
+        contentHeight = newContentHeight;
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.contentTableView reloadData];
             [self viewWillLayoutSubviews];
-            self.conversationPane.isActive = YES;
             self.view.hidden = NO;
         });
     }
@@ -568,19 +553,20 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
     self.contentTableView.separatorColor = [UIColor clearColor];
 #endif
-
+    
+    // When all atoms are loaded, it will trigger a measurement of height (contentHeight)
     NSArray *contentToAdd = self.conversationPane.content;
     for (SwrveConversationAtom *atom in contentToAdd) {
 
         // Ensure there are no Checkmarks selected initially
-        if([atom.type isEqualToString:kSwrveInputMultiValue]) {
+        if ([atom.type isEqualToString:kSwrveInputMultiValue]) {
             SwrveInputMultiValue *vgInputMultiValue = (SwrveInputMultiValue *)atom;
             vgInputMultiValue.selectedIndex = -1;
         }
 
         [atom loadViewWithContainerView:self.view];
     }
-
+    
     // Remove current buttons
     for (UIView *view in buttonsView.subviews) {
         [view removeFromSuperview];
@@ -592,7 +578,7 @@
     // So, the buttons each take up (width-(n+1)*gapwidth)/numbuttons
     CGFloat buttonWidth = (buttonsView.frame.size.width-(buttons.count+1)*[self buttonHorizontalPadding])/buttons.count;
     CGFloat xOffset = [self buttonHorizontalPadding];
-    for(NSUInteger i = 0; i < buttons.count; i++) {
+    for (NSUInteger i = 0; i < buttons.count; i++) {
         SwrveConversationButton *button = [buttons objectAtIndex:i];
         UIButton *buttonUIView = (UIButton*)button.view;
         buttonUIView.frame = CGRectMake(xOffset, 10, buttonWidth, 45.0);

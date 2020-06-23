@@ -46,7 +46,7 @@
 #pragma unused (row)
     NSString *cellId = [NSString stringWithFormat:@"%@CellId", self.type];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    if(cell == nil) {
+    if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
@@ -66,13 +66,9 @@
     return cell;
 }
 
--(CGFloat) verticalPadding {
-    return 0.0;
-}
-
 -(CGFloat) heightForRow:(NSUInteger)row inTableView:(UITableView *)tableView {
 #pragma unused (row, tableView)
-    return _view.frame.size.height + [self verticalPadding];
+    return _view.frame.size.height;
 }
 
 // Return the new frame that this view needs to sit correctly
