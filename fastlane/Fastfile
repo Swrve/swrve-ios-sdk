@@ -20,14 +20,24 @@ platform :ios do
     setup_circle_ci
   end
 
-  desc "Run tests"
-  lane :unitTests do
+  desc "Run iOS Tests"
+  lane :unitTestsiOS do
     scan(
       workspace: "SwrveSDKTest/SwrveSDKTest.xcworkspace",
-      scheme: "SwrveSDKTest",
+      scheme: "SwrveSDKiOS",
       clean: true
     )
   end
+  
+  desc "Run tests"
+  lane :unitTeststvOS do
+    scan(
+      workspace: "SwrveSDKTest/SwrveSDKTest.xcworkspace",
+      scheme: "SwrveSDKtvOS",
+      clean: true
+    )
+  end
+
 end
 
 # More information about multiple platforms in fastlane: https://docs.fastlane.tools/advanced/#control-configuration-by-lane-and-by-platform
