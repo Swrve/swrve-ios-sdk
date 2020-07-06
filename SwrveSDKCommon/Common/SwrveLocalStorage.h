@@ -36,6 +36,7 @@ enum SwrveTrackingState {
 + (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId;
 + (NSString *)realTimeUserPropertiesFilePathForUserId:(NSString *)userId;
 + (NSString *)offlineRealTimeUserPropertiesSignatureFilePathForUserId:(NSString *)userId;
++ (void)setFileProtectionNone:(NSString *)filePath;
 
 //NSUserdefaults
 + (double)flushFrequency;

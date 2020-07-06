@@ -305,7 +305,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
         NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:SWRVE_APP_SUPPORT_DIR];
         if (![[NSFileManager defaultManager] fileExistsAtPath:swrveAppSupportDir isDirectory:NULL]) {
             NSError *error = nil;
-            [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir withIntermediateDirectories:YES attributes:nil error:&error];
+            [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir withIntermediateDirectories:YES attributes:@{NSFileProtectionKey:NSFileProtectionNone} error:&error];
             if (error == nil) {
                 DebugLog(@"First time migration or installation. Created Swrve app support directory: %@.", swrveAppSupportDir);
             }
@@ -373,6 +373,8 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
             BOOL success = [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
             if (!success) {
                 DebugLog(@"%@ could not be saved to fileName: %@ %@", logMessage, fileName, error);
+            } else {
+                [SwrveLocalStorage setFileProtectionNone:fileName];
             }
         }
 
@@ -401,6 +403,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 #pragma unused(logMessage) // for when debuglog is off
     if (success) {
         DebugLog(@"%@ successfully saved to fileName: %@" ,logMessage, fileName);
+        [SwrveLocalStorage setFileProtectionNone:fileName];
     } else {
         DebugLog(@"%@ could not be saved to fileName: %@ %@" ,logMessage, fileName, error);
     }
@@ -569,6 +572,16 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
         if (error) {
             DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
         }
+    }
+}
+
++ (void)setFileProtectionNone:(NSString *)filePath {
+    NSError *error = nil;
+    BOOL success = [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone} ofItemAtPath:filePath error:&error];
+    if (success == YES) {
+        DebugLog(@"Successfully set NSFileProtectionNone on file:%@", filePath);
+    } else {
+        DebugLog(@"Error setting NSFileProtectionNone on file:%@ error:%@", filePath, [error localizedDescription]);
     }
 }
 

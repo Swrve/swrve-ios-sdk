@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDK"
-  s.version          = "6.5.2"
+  s.version          = "6.5.3"
   s.summary          = "iOS SDK for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => s.name.to_s + "/LICENSE" }
@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.source_files = s.name.to_s + '/SDK/**/*.{m,h}'
   s.public_header_files = s.name.to_s + '/SDK/**/*.h'
 
-  s.dependency 'SwrveSDKCommon', '6.5.2'
-  s.dependency 'SwrveConversationSDK', '6.5.2'
+  s.dependency 'SwrveSDKCommon', '6.5.3'
+  s.dependency 'SwrveConversationSDK', '6.5.3'
 
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'AVFoundation', 'CoreText'
   s.ios.frameworks = 'MessageUI', 'CoreTelephony'

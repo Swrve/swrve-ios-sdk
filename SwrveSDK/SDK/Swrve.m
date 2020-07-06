@@ -521,6 +521,10 @@ enum
     }
 }
 
+- (UInt64)userJoinedTimeSeconds {
+    return userJoinedTimeSeconds;
+}
+
 - (void)initAppInstallTime {
     UInt64 appInstallTimeSecondsFromFile = [SwrveLocalStorage appInstallTimeSeconds];
     if (appInstallTimeSecondsFromFile == 0) {
@@ -529,6 +533,10 @@ enum
     } else {
         appInstallTimeSeconds = appInstallTimeSecondsFromFile;
     }
+}
+
+- (UInt64)appInstallTimeSeconds {
+    return appInstallTimeSeconds;
 }
 
 - (void)beginSession {
@@ -582,6 +590,8 @@ enum
         [self.push saveConfigForPushDelivery];
     }
 #endif
+    
+    [self executeSessionStartedDelegate];
 }
 
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut {
@@ -780,6 +790,10 @@ enum
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
             }
+            if (trackingState == EVENT_SENDING_PAUSED) {
+                // this will queue the current device info attributes into the paused event queue.
+                [self queueDeviceInfo];
+            }
         }
     }
 }
@@ -799,6 +813,10 @@ enum
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
             }
+            if (trackingState == EVENT_SENDING_PAUSED) {
+                // this will queue current user update attributes into the paused event queue.
+                [self queueUserUpdates];
+            }
         }
     }
 
@@ -814,6 +832,10 @@ enum
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
             [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
             [currentAttributes setObject:[self convertDateToString:date] forKey:name];
+            if (trackingState == EVENT_SENDING_PAUSED) {
+                // this will queue the current user update attributes into the paused event queue.
+                [self queueUserUpdates];
+            }
         }
 
     } else {
@@ -1277,7 +1299,6 @@ enum
     if (!initialised) {
         initialised = YES;
         [self beginSession]; // App started the first time
-        [self executeSessionStartedDelegate];
         return;
     }
 
@@ -1554,9 +1575,12 @@ enum
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController {
     if (trackingState == EVENT_SENDING_PAUSED) {
         DebugLog(@"Swrve event sending paused so attempt to queue events has failed. Will auto retry when event sending resumes.", nil);
+        
+        // we want a deep copy of eventData attributes as they get cleared when user update is queued and that can happen before our paused event queue is sent.
+        NSDictionary *copyEventData = [[NSDictionary alloc]initWithDictionary:eventData copyItems:YES];
 
         SwrveEventQueueItem *queueItem = [[SwrveEventQueueItem alloc] initWithEventType:eventType
-                                                                              eventData:eventData
+                                                                              eventData:[copyEventData mutableCopy]
                                                                         triggerCallback:triggerCallback
                                                                 notifyMessageController:notifyMessageController];
         [self.pausedEventsArray addObject:queueItem];
@@ -2369,6 +2393,10 @@ enum HttpStatus {
         }
         return;
     }
+    
+    //queue these, so they will be flushed below
+    [self queueUserUpdates];
+    [self queueDeviceInfo];
 
     DebugLog(@"Swrve identify: Pausing event queuing and sending prior to Identity API call...", nil);
     [self pauseEventSending];

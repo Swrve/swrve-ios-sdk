@@ -197,6 +197,22 @@
         }
     }];
     OCMVerifyAll(mockSwrveSessionDelegate3);
+    
+    // Change in identity with new user id can also begin a new session
+    id mockSwrveSessionDelegate4 = OCMProtocolMock(@protocol(SwrveSessionDelegate)); // mock SessionDelegate for each verify
+    XCTestExpectation *completionHandler4 = [self expectationWithDescription:@"mockSwrveSessionDelegate4"];
+    OCMExpect([mockSwrveSessionDelegate4 sessionStarted]).andDo(^(NSInvocation *invocation) {
+         [completionHandler4 fulfill];
+    });
+    [swrveMock setSwrveSessionDelegate:mockSwrveSessionDelegate4];
+    [swrveMock beginSession];
+    
+    [self waitForExpectationsWithTimeout:2 handler:^(NSError *error) {
+        if (error) {
+            XCTFail(@"Session4 started not invoked");
+        }
+    }];
+    OCMVerifyAll(mockSwrveSessionDelegate4);
 }
 
 - (void)testSdkStartedAutoMode {
@@ -279,13 +295,13 @@
     [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
     OCMVerifyAll(swrveMockManaged2);
     [swrveMockManaged2 stopMocking];
-    
+
     //third instance created and sdk was started previously and userId created, therefore autostarted this time
     id swrveMockManaged3 = OCMPartialMock([Swrve alloc]);
     OCMExpect([swrveMockManaged3 registerLifecycleCallbacks]);
     OCMExpect([swrveMockManaged3 initWithUserId:OCMOCK_ANY]);
     [self initSwrveMock:swrveMockManaged3 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
-    
+
     // start the sdk
     [SwrveSDK start];
 
@@ -296,10 +312,10 @@
 
     } expectation:expectation];
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
-    
+
     OCMVerifyAll(swrveMockManaged3);
     [swrveMockManaged3 stopMocking];
-    
+
 }
 
 - (void)testInitModeManagedStart {
@@ -475,6 +491,5 @@
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
 }
-
 
 @end

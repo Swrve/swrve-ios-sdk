@@ -3,16 +3,35 @@
 #import "SwrveTestHelper.h"
 #import "SwrveProfileManager.h"
 #import "SwrveRESTClient.h"
+#import "SwrveUser.h"
 
 @interface SwrveProfileManager ()
 - (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)appId apiKey:(NSString*)apiKey;
 @end
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
-
 - (int)currentCacheVersion;
 + (void)setCurrentCacheVersion:(int)cacheVersion;
+@property(nonatomic) NSString *cacheVersionFilePath;
+@end
 
+@interface Swrve (Internal)
+@property(atomic) SwrveSignatureProtectedFile *resourcesFile;
+@property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;
+@property(atomic) SwrveSignatureProtectedFile *realTimeUserPropertiesFile;
+- (UInt64)joinedDateMilliSeconds;
+- (UInt64)appInstallTimeSeconds;
+- (UInt64)userJoinedTimeSeconds;
+- (NSString *)signatureKey;
+@end
+
+@interface SwrveMessageController (SwrveMessageControllerInternal)
+@property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
+@end
+
+
+@interface SwrveSignatureProtectedFile (SwrveSignatureProtectedFileInternal)
+- (NSData*) createHMACWithMD5:(NSData*)source;
 @end
 
 
@@ -66,6 +85,47 @@
 
     [SwrveMigrationsManager setCurrentCacheVersion:10];
     XCTAssertEqual([migrationsManager currentCacheVersion], 10, @"The current cache version was updated to 10.");
+}
+
+// The below test requires Data Encryption capability to be enabled, and a passcode set.
+// Therefore this test is manually executed on a REAL device with a passcode. Simulators do not support passcode so it will fail in CI.
+// prefix the test with "skipped" so CI does not execute it in simulator
+- (void)skipped_testFileProtectionOnCurrentCacheVersion_withCompleteParentProtection {
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    // remove the app support dir and then recreate it with NSFileProtectionComplete
+    NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    [fileManager removeItemAtPath:appSupportDir error:nil];
+    [fileManager createDirectoryAtPath:appSupportDir
+           withIntermediateDirectories:YES
+                            attributes:@{NSFileProtectionKey: NSFileProtectionComplete}
+                                 error:nil];
+
+    // create "swrve" parent folder using nil attributes. Version 6.5.2 and lower had this
+    NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:@"swrve"];
+    BOOL successCreateDir = [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir
+                                                      withIntermediateDirectories:YES
+                                                                       attributes:nil // nil file protection
+                                                                            error:nil];
+    XCTAssertTrue(successCreateDir);
+
+    // create existing cache version file and verify it is protected
+    NSString *cacheVersionFilePath = [swrveAppSupportDir stringByAppendingPathComponent:@"swrve_cache_version.txt"];
+    BOOL successWriteCacheVersion = [@"2" writeToFile:cacheVersionFilePath
+                                           atomically:YES
+                                             encoding:NSUTF8StringEncoding
+                                                error:nil];
+    XCTAssertTrue(successWriteCacheVersion);
+    BOOL successSetAttributes = [fileManager setAttributes:@{NSFileProtectionKey: NSFileProtectionComplete}
+                                              ofItemAtPath:cacheVersionFilePath
+                                                     error:nil];
+    XCTAssertTrue(successSetAttributes);
+    XCTAssertTrue([self isProtectedItemAtFilePath:cacheVersionFilePath]);
+
+    // call setCurrentCacheVersion verify it is now not protected
+    [SwrveMigrationsManager setCurrentCacheVersion:10];
+    XCTAssertFalse([self isProtectedItemAtFilePath:cacheVersionFilePath]);
 }
 
 - (void)testInstallDateMigration {
@@ -267,6 +327,103 @@
     XCTAssertTrue([appInstallDateContents isEqualToString:@"987654321"], @"The contents of the app install date is not correct after copying current user joined time.");
 }
 
+-(void)testMigrate3WithSingleUser {
+    
+    [SwrveLocalStorage saveSwrveUserId:@"userId1"]; // Fake user, migrations only run for existing installations
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    // remove the app support dir and then recreate it with NSFileProtectionComplete
+    NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    [fileManager removeItemAtPath:appSupportDir error:nil];
+    [fileManager createDirectoryAtPath:appSupportDir
+           withIntermediateDirectories:YES
+                            attributes:@{NSFileProtectionKey: NSFileProtectionComplete}
+                                 error:nil];
+
+    // create "swrve" parent folder using nil attributes. Version 6.5.2 and lower had this
+    NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:@"swrve"];
+    [fileManager createDirectoryAtPath:swrveAppSupportDir
+                                                      withIntermediateDirectories:YES
+                                                                       attributes:nil // nil file protection
+                                                                            error:nil];
+
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    [SwrveMigrationsManager setCurrentCacheVersion:2]; // migrate from 2
+
+    // install dates
+    [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:@""]; // blank userId for app install date
+
+    // set up files
+    [self migrate3SetupTestForUserId:@"userId1"];
+
+    // do the migrations
+    [migrationsManager checkMigrations];
+
+    // verify files are not protected
+    XCTAssertFalse([self isProtectedItemAtFilePath:migrationsManager.cacheVersionFilePath]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage swrveAppSupportDir]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userInitDateFilePath:@""]]); // pass empty string as app Install time is saved with no id
+
+    [self migrate3VerifyTestForUserId:@"userId1"];
+}
+
+-(void)testMigrate3WithMultipleUsers {
+    
+    [SwrveLocalStorage saveSwrveUserId:@"userId1"]; // Fake user, migrations only run for existing installations
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    // remove the app support dir and then recreate it with NSFileProtectionComplete
+    NSString *appSupportDir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    [fileManager removeItemAtPath:appSupportDir error:nil];
+    [fileManager createDirectoryAtPath:appSupportDir
+           withIntermediateDirectories:YES
+                            attributes:@{NSFileProtectionKey: NSFileProtectionComplete}
+                                 error:nil];
+
+    // create "swrve" parent folder using nil attributes. Version 6.5.2 and lower had this
+    NSString *swrveAppSupportDir = [appSupportDir stringByAppendingPathComponent:@"swrve"];
+    [fileManager createDirectoryAtPath:swrveAppSupportDir
+                                                      withIntermediateDirectories:YES
+                                                                       attributes:nil // nil file protection
+                                                                            error:nil];
+
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    [SwrveMigrationsManager setCurrentCacheVersion:2]; // migrate from 2
+
+    // install dates
+    [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:@""]; // blank userId for app install date
+
+    SwrveUser *user1 = [[SwrveUser alloc]initWithExternalId:@"externalUserId1" swrveId:@"userId1" verified:YES];
+    SwrveUser *user2 = [[SwrveUser alloc]initWithExternalId:@"externalUserId2" swrveId:@"userId2" verified:YES];
+    SwrveUser *user3 = [[SwrveUser alloc]initWithExternalId:@"externalUserId3" swrveId:@"userId3" verified:YES];
+    NSArray *userArray = @[user1, user2, user3];
+    NSData *swrveUsersData = [NSKeyedArchiver archivedDataWithRootObject:userArray];
+    [SwrveLocalStorage saveSwrveUsers:swrveUsersData];
+
+    // set up files for 3 users
+    [self migrate3SetupTestForUserId:@"userId1"];
+    [self migrate3SetupTestForUserId:@"userId2"];
+    [self migrate3SetupTestForUserId:@"userId3"];
+
+    // do the migrations
+    [migrationsManager checkMigrations];
+
+    // verify files are not protected
+    XCTAssertFalse([self isProtectedItemAtFilePath:migrationsManager.cacheVersionFilePath]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage swrveAppSupportDir]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userInitDateFilePath:@""]]); // pass empty string as app Install time is saved with no id
+
+    [self migrate3VerifyTestForUserId:@"userId1"];
+    [self migrate3VerifyTestForUserId:@"userId2"];
+    [self migrate3VerifyTestForUserId:@"userId3"];
+}
+
 /* HELPER METHODS */
 
 - (NSString*)installDateFilePathForConfig {
@@ -275,6 +432,86 @@
     NSString *installDateWithUserId = [[profileManager userId] stringByAppendingString:@"swrve_install.txt"];
     NSString *installDateFilePath = [documentPath stringByAppendingPathComponent:installDateWithUserId];
     return installDateFilePath;
+}
+
+- (void)migrate3SetupTestForUserId:(NSString *)userId {
+
+    UInt64 secondsSinceEpoch = (unsigned long long) ([[NSDate date] timeIntervalSince1970]);
+    NSString *signatureKey = [NSString stringWithFormat:@"%@%llu", @"someAPIKey", secondsSinceEpoch];
+    
+    // install dates
+    [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:userId];
+
+    // resources
+    NSArray *resources = [NSArray arrayWithObjects:@{@"uid": @"resources.example"}, nil];
+    NSData *resourceData = [NSJSONSerialization dataWithJSONObject:resources options:0 error:nil];
+    SwrveSignatureProtectedFile *resourcesFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_RESOURCE_FILE
+                                                                                                 userID:userId
+                                                                                           signatureKey:signatureKey
+                                                                                          errorDelegate:nil];
+
+    [resourcesFile writeWithRespectToPlatform:resourceData];
+    // resources diff
+    NSArray *resourcesDiff = [NSArray arrayWithObjects:@{@"uid": @"resourcesdiff.example"}, nil];
+    NSData *resourceDiffData = [NSJSONSerialization dataWithJSONObject:resourcesDiff options:0 error:nil];
+    SwrveSignatureProtectedFile *resourcesDiffFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_RESOURCE_DIFF_FILE
+                                                                                                     userID:userId
+                                                                                               signatureKey:signatureKey
+                                                                                              errorDelegate:nil];
+    [resourcesDiffFile writeWithRespectToPlatform:resourceDiffData];
+    // campaigns
+    NSDictionary *campaigns = @{ @"campaigns": @{}, @"fake1": @"value1"};
+    NSData *campaignsData = [NSJSONSerialization dataWithJSONObject:campaigns options:0 error:nil];
+    SwrveSignatureProtectedFile *campaignsFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_CAMPAIGN_FILE
+                                                                                                 userID:userId
+                                                                                           signatureKey:signatureKey
+                                                                                          errorDelegate:nil];
+    [campaignsFile writeWithRespectToPlatform:campaignsData];
+    // offline notification campaigns
+    NSDictionary *campaignsOffline = @{@"campaigns": @{}, @"fake2": @"value2"};
+    NSData *campaignsOfflineData = [NSJSONSerialization dataWithJSONObject:campaignsOffline options:0 error:nil];
+    SwrveSignatureProtectedFile *campaignsOfflineFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_NOTIFICATION_CAMPAIGNS_FILE
+                                                                                                        userID:userId
+                                                                                                  signatureKey:signatureKey
+                                                                                                 errorDelegate:nil];
+    [campaignsOfflineFile writeWithRespectToPlatform:campaignsOfflineData];
+    // realtime user properties
+    NSDictionary *realTimeUserProperties = @{ @"fake3": @"value3"};
+    NSData *realTimeUserPropertiesData = [NSJSONSerialization dataWithJSONObject:realTimeUserProperties options:0 error:nil];
+    SwrveSignatureProtectedFile *realTimeUserPropertiesFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_REAL_TIME_USER_PROPERTIES_FILE
+                                                                                                              userID:userId
+                                                                                                        signatureKey:signatureKey
+                                                                                                       errorDelegate:nil];
+    [realTimeUserPropertiesFile writeWithRespectToPlatform:realTimeUserPropertiesData];
+    // event file
+    // TODO
+}
+
+- (void)migrate3VerifyTestForUserId:(NSString *)userId {
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userInitDateFilePath:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userResourcesFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userResourcesSignatureFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userResourcesDiffFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage userResourcesDiffSignatureFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage campaignsFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage campaignsSignatureFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage offlineCampaignsFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage offlineCampaignsSignatureFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage realTimeUserPropertiesFilePathForUserId:userId]]);
+    XCTAssertFalse([self isProtectedItemAtFilePath:[SwrveLocalStorage offlineRealTimeUserPropertiesSignatureFilePathForUserId:userId]]);
+}
+
+- (BOOL)isProtectedItemAtFilePath:(NSString *)filePath {
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSError *error = nil;
+    NSDictionary *attributes = [fileManager attributesOfItemAtPath:filePath error:&error];
+    if (attributes != nil) {
+        NSString *protectionAttributeValue = [attributes valueForKey:NSFileProtectionKey];
+        if ((protectionAttributeValue == nil) || [protectionAttributeValue isEqualToString:NSFileProtectionNone]) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 @end

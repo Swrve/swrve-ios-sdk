@@ -8,9 +8,16 @@
 #import "SwrvePermissions.h"
 #import "TestPermissionsDelegate.h"
 #import "AppDelegate.h"
+#import "SwrveEventQueueItem.h"
+
+@interface SwrveSDK (InternalAccess)
++ (void)addSharedInstance:(Swrve*)instance;
++ (void)resetSwrveSharedInstance;
+@end
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)setCurrentCacheVersion:(int)cacheVersion;
+- (int)currentCacheVersion;
 @end
 
 @interface Swrve (Internal)
@@ -18,6 +25,26 @@
 - (UInt64)secondsSinceEpoch;
 @property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrvePush *push;
+@property(atomic) NSMutableArray *pausedEventsArray;
+@property(atomic) SwrveSignatureProtectedFile *resourcesFile;
+@property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;
+@property(atomic) SwrveSignatureProtectedFile *realTimeUserPropertiesFile;
+- (UInt64)joinedDateMilliSeconds;
+- (UInt64)appInstallTimeSeconds;
+- (UInt64)userJoinedTimeSeconds;
+- (NSString *)signatureKey;
+@property(atomic) NSURL *eventFilename;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+@property (atomic) SwrveRESTClient *restClient;
+
+@end
+
+@interface SwrveMessageController (SwrveMessageControllerInternal)
+
+@property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
+
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+@property (atomic) SwrveRESTClient *restClient;
 @end
 
 @interface SwrveMessageController (Internal)
@@ -287,5 +314,218 @@
     SwrveAssetsManager *assetsManager = [[swrveMock messaging] assetsManager];
     XCTAssertTrue([fileManager fileExistsAtPath:assetsManager.cacheFolder]);
 }
+
+// The below test requires Data Encryption capability to be enabled, and a passcode set.
+// Therefore this test is manually executed on a REAL device with a passcode. Simulators do not support passcode so it will always pass in CI.
+// This test will fail on 6.5.2 and pass in 6.5.3
+- (void)testReadFilesDuringInitWhileLocked {
+
+    Swrve *swrve1 = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    // joined
+    UInt64 joined = swrve1.joinedDateMilliSeconds;
+    // appInstallTime
+    UInt64 appInstallTimeSeconds = swrve1.appInstallTimeSeconds;
+    // userInstallFilePath
+    UInt64 userJoinedTimeSeconds = swrve1.userJoinedTimeSeconds;
+    // resources
+    NSArray *resources = [NSArray arrayWithObjects:@{@"uid": @"resources.example"}, nil];
+    NSData *resourceData = [NSJSONSerialization dataWithJSONObject:resources options:0 error:nil];
+    [swrve1.resourcesFile writeWithRespectToPlatform:resourceData];
+    // resources diff
+    NSArray *resourcesDiff = [NSArray arrayWithObjects:@{@"uid": @"resourcesdiff.example"}, nil];
+    NSData *resourceDiffData = [NSJSONSerialization dataWithJSONObject:resourcesDiff options:0 error:nil];
+    [swrve1.resourcesDiffFile writeWithRespectToPlatform:resourceDiffData];
+    // campaigns
+    NSDictionary *campaigns = @{@"campaigns": @{}, @"fake1": @"value1"};
+    NSData *campaignsData = [NSJSONSerialization dataWithJSONObject:campaigns options:0 error:nil];
+    [swrve1.messaging.campaignFile writeWithRespectToPlatform:campaignsData];
+    // offline notification campaigns
+    SwrveSignatureProtectedFile *campaignsOfflineFile1 = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_NOTIFICATION_CAMPAIGNS_FILE
+                                                                                                         userID:swrve1.userID
+                                                                                                   signatureKey:swrve1.signatureKey
+                                                                                                  errorDelegate:nil];
+    NSDictionary *campaignsOffline = @{@"campaigns": @{}, @"fake2": @"value2"};
+    NSData *campaignsOfflineData = [NSJSONSerialization dataWithJSONObject:campaignsOffline options:0 error:nil];
+    [campaignsOfflineFile1 writeWithRespectToPlatform:campaignsOfflineData];
+    // realtime user properties
+    NSDictionary *realTimeUserProperties = @{@"fake3": @"value3"};
+    NSData *realTimeUserPropertiesData = [NSJSONSerialization dataWithJSONObject:realTimeUserProperties options:0 error:nil];
+    [swrve1.realTimeUserPropertiesFile writeWithRespectToPlatform:realTimeUserPropertiesData];
+    // swrve_events
+    [swrve1 event:@"my_event"];
+    [swrve1 saveEventsToDisk];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:swrve1]; // this will stop events being sents upon suspend and locking of the device.
+
+    // lock the device
+#pragma GCC diagnostic ignored "-Wundeclared-selector"
+    if ([XCUIDevice.sharedDevice respondsToSelector:@selector(pressLockButton)]) {
+        [XCUIDevice.sharedDevice performSelector:@selector(pressLockButton)];
+    }
+
+    // reset swrve and leave it locked for at least 10 seconds.
+    [SwrveSDK resetSwrveSharedInstance];
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+
+    // start swrve again while locked, and then read the various files
+    Swrve *swrve2 = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    // cacheversion
+    SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
+    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    XCTAssertTrue([migrationsManager currentCacheVersion] > 2);
+
+    // joined
+    XCTAssertEqual(joined, swrve2.joinedDateMilliSeconds);
+    // appInstallTime
+    XCTAssertEqual(appInstallTimeSeconds, swrve2.appInstallTimeSeconds);
+    // userJoinedTimeSeconds
+    XCTAssertEqual(userJoinedTimeSeconds, swrve2.userJoinedTimeSeconds);
+    // resources
+    NSData *resourceFileData = [swrve2.resourcesFile readFromFile];
+    XCTAssertNotNil(resourceFileData);
+    if (resourceFileData != nil) {
+        NSArray *resourcesArray = [NSJSONSerialization JSONObjectWithData:resourceFileData options:NSJSONReadingMutableContainers error:nil];
+        XCTAssertNotNil(resourcesArray);
+        XCTAssertEqualObjects(@"resources.example", [[resourcesArray objectAtIndex:0] objectForKey:@"uid"]);
+    }
+    // resources diff
+    NSData *resourceDiffFileData = [swrve2.resourcesDiffFile readFromFile];
+    XCTAssertNotNil(resourceDiffFileData);
+    if (resourceDiffFileData != nil) {
+        NSArray *resourcesDiffArray = [NSJSONSerialization JSONObjectWithData:resourceDiffFileData options:NSJSONReadingMutableContainers error:nil];
+        XCTAssertNotNil(resourcesDiffArray);
+        XCTAssertEqualObjects(@"resourcesdiff.example", [[resourcesDiffArray objectAtIndex:0] objectForKey:@"uid"]);
+    }
+    // campaigns file
+    NSData *campaignData = [swrve2.messaging.campaignFile readFromFile];
+    XCTAssertNotNil(campaignData);
+    if (campaignData != nil) {
+        NSDictionary *campaignsDict = [NSJSONSerialization JSONObjectWithData:campaignData options:NSJSONReadingMutableContainers error:nil];
+        XCTAssertNotNil(campaignsDict);
+        XCTAssertEqualObjects(@"value1", [campaignsDict objectForKey:@"fake1"]);
+    }
+    // offline notification campaigns
+    SwrveSignatureProtectedFile *campaignsOfflineFile2 = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_NOTIFICATION_CAMPAIGNS_FILE
+                                                                                                         userID:swrve2.userID
+                                                                                                   signatureKey:swrve2.signatureKey
+                                                                                                  errorDelegate:nil];
+    NSData *campaignsOfflineFileData = [campaignsOfflineFile2 readFromFile];
+    XCTAssertNotNil(campaignsOfflineFileData);
+    if (campaignsOfflineFileData != nil) {
+        NSDictionary *campaignsOfflineDict = [NSJSONSerialization JSONObjectWithData:campaignsOfflineFileData options:NSJSONReadingMutableContainers error:nil];
+        XCTAssertNotNil(campaignsOfflineDict);
+        XCTAssertEqualObjects(@"value2", [campaignsOfflineDict objectForKey:@"fake2"]);
+    }
+    // realtime user properties
+    NSData *realTimeUserPropertiesFileData = [swrve2.realTimeUserPropertiesFile readFromFile];
+    XCTAssertNotNil(realTimeUserPropertiesFileData);
+    if (realTimeUserPropertiesFileData != nil) {
+        NSDictionary *realTimeUserPropertiesDict = [NSJSONSerialization JSONObjectWithData:realTimeUserPropertiesFileData options:NSJSONReadingMutableContainers error:nil];
+        XCTAssertNotNil(realTimeUserPropertiesDict);
+        XCTAssertEqualObjects(@"value3", [realTimeUserPropertiesDict objectForKey:@"fake3"]);
+    }
+    // swrve_events
+    NSString *eventFilePath = [[swrve2 eventFilename] path];
+    NSString *events = [NSString stringWithContentsOfFile:eventFilePath encoding:NSUTF8StringEncoding error:nil];
+    XCTAssertNotNil(events);
+    if (events != nil) {
+        XCTAssertTrue([events containsString:@"my_event"]);
+    }
+}
+
+- (void)testQueingAttributesWhileIdentifying {
+    
+    // Confirming:
+    // event 0 and user update 0 sent to swrve id A
+    // event 1 and user update 1 added to paused event queue
+    // event 1 and user update 1 sent to swrve id B
+    
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon apiKey]).andReturn(@"SomeAPIKey");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+    
+    id localStorage = OCMClassMock([SwrveLocalStorage class]);
+    OCMStub([localStorage swrveUserId]).andReturn(@"A");
+    
+    // mock all rest calls with success
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMStub([mockResponse statusCode]).andReturn(200);
+    
+    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+        swrveMock.restClient = mockRestClient;
+    });
+    
+    // this will change swrve user id on identity callback
+    NSData *mockData = [@"{ \"swrve_id\": \"B\" }" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    __block  bool event0_SentForUserA = false;
+    __block  bool userUpdate0_SentForUserA = false;
+    __block  bool event1_InPausedEventQueue = false;
+    __block  bool userUpdate1_InPausedEventQueue = false;
+    __block  bool event1_SentForUserB = false;
+    __block  bool userUpdate1_SentForUserB = false;
+    
+    __block NSData *capturedJson;
+     id jsonData = [OCMArg checkWithBlock:^BOOL(NSData *jsonValue)  {
+         capturedJson = jsonValue;
+         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:capturedJson options:0 error:nil];
+         NSString *userId = [json objectForKey:@"user"];
+         NSArray *data = [json objectForKey:@"data"];
+         for (NSDictionary *dic in data) {
+             if ([[dic objectForKey:@"name"] isEqualToString:@"0"] && [userId isEqualToString:@"A"] ) {
+                 event0_SentForUserA = true;
+             }
+             else if ([[dic objectForKey:@"attributes"] isEqualToDictionary:@{@"0":@"0"}] && [userId isEqualToString:@"A"]) {
+                 userUpdate0_SentForUserA = true;
+             }
+             else if ([[dic objectForKey:@"name"] isEqualToString:@"1"] && [userId isEqualToString:@"B"] ) {
+                 event1_SentForUserB = true;
+             }
+             else if ([[dic objectForKey:@"attributes"] isEqualToDictionary:@{@"1":@"1"}] && [userId isEqualToString:@"B"]) {
+                 userUpdate1_SentForUserB = true;
+             }
+         }
+         
+         for (SwrveEventQueueItem *item in [swrveMock pausedEventsArray] ) {
+             if ([[item.eventData objectForKey:@"name"] isEqualToString:@"1"]) {
+                 event1_InPausedEventQueue = true;
+             }
+             else if ([[item.eventData objectForKey:@"attributes"] isEqualToDictionary:@{@"1":@"1"}]) {
+                 userUpdate1_InPausedEventQueue = true;
+             }
+         }
+         
+         return true;
+     }];
+     
+    OCMStub([mockRestClient sendHttpPOSTRequest:OCMOCK_ANY
+                                       jsonData:jsonData
+                              completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    Swrve *swrve = (Swrve *) swrveMock;
+    [SwrveSDK addSharedInstance:swrveMock];
+ 
+    (void)[swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
+    
+    // swrve id is A.
+    [swrve event:@"0"];
+    [swrve userUpdate:@{@"0":@"0"}];
+    [swrve identify:@"SomeExternalId" onSuccess:nil onError:nil]; // on completition changes to swrve id: B
+    [swrve event:@"1"];
+    [swrve userUpdate:@{@"1":@"1"}];
+        
+    XCTestExpectation *expectation = [self expectationWithDescription:@"event 0 sent with user id 1234"];
+    [SwrveTestHelper waitForBlock:0.5 conditionBlock:^BOOL(){
+        return (event0_SentForUserA && userUpdate0_SentForUserA && event1_InPausedEventQueue && userUpdate1_InPausedEventQueue && event1_SentForUserB && userUpdate1_SentForUserB);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+}
+
 
 @end

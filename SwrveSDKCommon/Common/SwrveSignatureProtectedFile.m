@@ -87,11 +87,13 @@
     return self;
 }
 
-- (void) writeToFile:(NSData*)content
-{
-    if ([content writeToURL:[self filename] atomically:YES]) {
-        NSData* signature = [self createHMACWithMD5:content];
-        if (![signature writeToURL:[self signatureFilename] atomically:YES]) {
+- (void)writeToFile:(NSData *)content {
+    NSError *error;
+    BOOL successFileWrite = [content writeToURL:[self filename] options:NSDataWritingFileProtectionNone error:&error];
+    if (successFileWrite) {
+        NSData *signature = [self createHMACWithMD5:content];
+        BOOL successSignatureFileWrite = [signature writeToURL:[self signatureFilename] options:NSDataWritingFileProtectionNone error:&error];
+        if (!successSignatureFileWrite) {
             DebugLog(@"Could not write to signature file: %@", [self signatureFilename]);
         }
     } else {

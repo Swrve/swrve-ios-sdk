@@ -1,4 +1,9 @@
 #import "SwrveMigrationsManager.h"
+#if __has_include(<SwrveSDKCommon/SwrveUser.h>)
+#import <SwrveSDKCommon/SwrveUser.h>
+#else
+#import "SwrveUser.h"
+#endif
 
 @interface SwrveMigrationsManager ()
 
@@ -7,9 +12,13 @@
 
 @end
 
+@interface SwrveUser (SwrveUserInternalAccess)
+@property (nonatomic, strong) NSString *swrveId;
+@end
+
 @implementation SwrveMigrationsManager
 
-const static int SWRVE_SDK_CACHE_VERSION = 2;
+const static int SWRVE_SDK_CACHE_VERSION = 3;
 
 @synthesize cacheVersionFilePath;
 @synthesize config;
@@ -51,6 +60,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
 }
 
 - (int)currentCacheVersion {
+    [SwrveLocalStorage setFileProtectionNone:cacheVersionFilePath]; // some versions of sdk did not have FileProtectionNone so this needs to be first to ensure we can read
     int currentCacheVersion = 0;
 
     NSError *error = nil;
@@ -70,9 +80,12 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
     NSString *_cacheVersionFilePath = [SwrveLocalStorage swrveCacheVersionFilePath];
     NSString *cacheVersionString = [NSString stringWithFormat:@"%i", cacheVersion];
     NSError *error = nil;
-    [cacheVersionString writeToFile:_cacheVersionFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    if (error) {
+    BOOL success = [cacheVersionString writeToFile:_cacheVersionFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if (!success) {
         DebugLog(@"Could not set current cache version to %i in filePath:%@. Error: %@ %@", cacheVersion, _cacheVersionFilePath, error, [error userInfo]);
+    } else {
+        // file protection will inherit from parent(s) so explicitly set it here
+        [SwrveLocalStorage setFileProtectionNone:_cacheVersionFilePath];
     }
 }
 
@@ -94,6 +107,9 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
         }
         case 2: {
             [self migrate2]; // migrate from 5.3 to 6.0
+        }
+        case 3: {
+            [self migrate3]; // migrate from 6.0 to 6.5.3
         }
     }
 }
@@ -385,5 +401,93 @@ const static int SWRVE_SDK_CACHE_VERSION = 2;
     }
 }
 
+- (void)migrate3 {
+    DebugLog(@"Executing version 3 migration code - set file protection to NSFileProtectionNone", nil);
+
+    // cache version file
+    [SwrveLocalStorage setFileProtectionNone:cacheVersionFilePath];
+
+    // swrve app support dir
+    NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
+    [SwrveLocalStorage setFileProtectionNone:swrveAppSupportDir];
+
+    // app install file (no user id)
+    NSString *appInstallFilePath = [SwrveLocalStorage userInitDateFilePath:@""]; // pass empty string as app Install time is saved with no id
+    [SwrveLocalStorage setFileProtectionNone:appInstallFilePath];
+
+    // apply NSFileProtectionNone for current user
+    NSString *currentUserId = [SwrveLocalStorage swrveUserId];
+    [self migrate_3_ForUserId:currentUserId];
+
+    // apply NSFileProtectionNone for all users that were used in identify api.
+    NSData *swrveUsersData = [SwrveLocalStorage swrveUsers];
+    if (swrveUsersData != nil) {
+        NSError *error = nil;
+        NSArray *swrveUsers = [NSKeyedUnarchiver unarchiveObjectWithData:swrveUsersData];
+        if (error) {
+            DebugLog(@"Executing version 3 migration code - error getting swrve users:%@", [error localizedDescription]);
+        } else if (swrveUsers != nil) {
+            for (SwrveUser *swrveUser in swrveUsers) {
+                if (![currentUserId isEqualToString:[swrveUser swrveId]]) { // No need to migrate the current user as it was done above.
+                    [self migrate_3_ForUserId:[swrveUser swrveId]];
+                }
+            }
+        }
+    }
+}
+
+- (void)migrate_3_ForUserId:(NSString *)userId {
+    DebugLog(@"Executing version 3 migration code - for userdId:%@", userId);
+
+    // user install file
+    NSString *userInstallFilePath = [SwrveLocalStorage userInitDateFilePath:userId];
+    [SwrveLocalStorage setFileProtectionNone:userInstallFilePath];
+
+    // user resources file and signature
+    NSString *userResourcesFilePath = [SwrveLocalStorage userResourcesFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:userResourcesFilePath];
+    NSString *userResourcesSignatureFilePath = [SwrveLocalStorage userResourcesSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:userResourcesSignatureFilePath];
+
+    // user resources diff file and signature
+    NSString *userResourcesDiffFilePath = [SwrveLocalStorage userResourcesDiffFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:userResourcesDiffFilePath];
+    NSString *userResourcesDiffSignatureFilePath = [SwrveLocalStorage userResourcesDiffSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:userResourcesDiffSignatureFilePath];
+
+    // campaigns file and signature
+    NSString *campaignsFilePath = [SwrveLocalStorage campaignsFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:campaignsFilePath];
+    NSString *campaignsSignatureFilePath = [SwrveLocalStorage campaignsSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:campaignsSignatureFilePath];
+
+    // campaigns ad file and signature
+    NSString *campaignsAdFilePath = [SwrveLocalStorage campaignsAdFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:campaignsAdFilePath];
+    NSString *campaignsAdSignatureFilePath = [SwrveLocalStorage campaignsAdSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:campaignsAdSignatureFilePath];
+
+    // debug campaigns notification file and signature
+    NSString *debugCampaignsNotificationFilePath = [SwrveLocalStorage debugCampaignsNoticationFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:debugCampaignsNotificationFilePath];
+    NSString *debugCampaignsNotificationsSignatureFilePath = [SwrveLocalStorage debugCampaignsNotificationSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:debugCampaignsNotificationsSignatureFilePath];
+
+    // offline campaigns file and signature
+    NSString *offlineCampaignsFilePath = [SwrveLocalStorage offlineCampaignsFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:offlineCampaignsFilePath];
+    NSString *offlineCampaignsSignatureFilePath = [SwrveLocalStorage offlineCampaignsSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:offlineCampaignsSignatureFilePath];
+
+    // realtime user properties file and signature
+    NSString *realTimeUserPropertiesFilePath = [SwrveLocalStorage realTimeUserPropertiesFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:realTimeUserPropertiesFilePath];
+    NSString *realTimeUserPropertiesSignatureFilePath = [SwrveLocalStorage offlineRealTimeUserPropertiesSignatureFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:realTimeUserPropertiesSignatureFilePath];
+
+    // events
+    NSString *eventsFilePath = [SwrveLocalStorage eventsFilePathForUserId:userId];
+    [SwrveLocalStorage setFileProtectionNone:eventsFilePath];
+}
 
 @end
