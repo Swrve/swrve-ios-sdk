@@ -221,6 +221,7 @@ NSString *mockCacheDir;
     
     SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
     XCTAssertTrue(mvc != nil);
+    XCTAssertEqual(vc.inAppMessageWindow.backgroundColor, [UIColor clearColor]);
     
     SwrveMessage *message = mvc.message;
     
@@ -458,6 +459,7 @@ NSString *mockCacheDir;
     
     SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
     XCTAssertTrue(mvc != nil);
+    XCTAssertEqual(vc.inAppMessageWindow.backgroundColor, [UIColor clearColor]);
     
     SwrveMessage *message = mvc.message;
     

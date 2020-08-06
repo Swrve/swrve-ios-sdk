@@ -99,6 +99,7 @@
         }
         UIFont *fallbackFont = [UIFont fontWithName:kSwrveDefaultMultiValueCellFontName size:[kSwrveDefaultMultiValueCellFontSize floatValue]];
         UIFont *cellFont = [SwrveConversationStyler fontFromStyle:cellStyle withFallback:fallbackFont];
+
         return [SwrveConversationStyler textHeight:cellText withFont:cellFont withMaxWidth:tableWidth] + 22;
     }
 }
@@ -144,6 +145,7 @@
     NSString* cellText = [dict objectForKey:kSwrveKeyAnswerText];
     [cell.textLabel setText:cellText];
     [cell.textLabel setNumberOfLines:0];
+    [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
     [SwrveConversationStyler styleView:cell withStyle:cellStyle];
     return cell;
 }

@@ -1172,7 +1172,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
         if (conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil) {
             self.conversationWindow = [self createUIWindow];
             self.conversationWindow.frame = [[UIScreen mainScreen] bounds];
-            self.conversationWindow.window.backgroundColor = [UIColor clearColor]; // Define transparent color.
+            self.conversationWindow.backgroundColor = [UIColor clearColor]; // Define transparent color.
             self.swrveConversationItemViewController = [SwrveConversationItemViewController initConversation];
             bool success = [SwrveConversationItemViewController showConversation:conversation
                                   withItemController:self.swrveConversationItemViewController
@@ -1235,6 +1235,7 @@ static NSNumber* numberFromJsonWithDefault(NSDictionary* json, NSString* key, in
     }
 
     self.inAppMessageWindow = [self createUIWindow];
+    self.inAppMessageWindow.backgroundColor = [UIColor clearColor];
     self.inAppMessageWindow.frame = [[UIScreen mainScreen] bounds];
     self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
     self.inAppMessageWindow.rootViewController = messageViewController;
