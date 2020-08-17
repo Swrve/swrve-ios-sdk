@@ -10,6 +10,4 @@
 // Used at runtime when the SDK is not supported
 @interface SwrveEmpty : NSObject<Swrve>
 
-@property (atomic) int locationSegmentVersion;
-
 @end

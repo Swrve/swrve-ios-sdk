@@ -2,8 +2,6 @@
 
 @interface SwrveRESTClient : NSObject
 
-// HTTP Request metrics that haven't been sent yet
-@property(atomic) NSMutableArray *httpPerformanceMetrics;
 @property(atomic) NSTimeInterval timeoutInterval;
 
 - (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInterval;
@@ -21,8 +19,6 @@
 - (void)sendHttpPOSTRequest:(NSURL *)url jsonData:(NSData *)json completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 - (void)sendHttpRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
-
-- (void)addHttpPerformanceMetrics:(NSString *)metrics;
 
 @end
 

@@ -137,4 +137,8 @@
     return sessionToken;
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
 @end

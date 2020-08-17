@@ -26,7 +26,6 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKVersionString[];
 #import <SwrveSDK/SwrveMessageDelegate.h>
 #import <SwrveSDK/SwrveMessageFormat.h>
 #import <SwrveSDK/SwrveMessageViewController.h>
-#import <SwrveSDK/SwrveQAUser.h>
 #import <SwrveSDK/SwrveTrigger.h>
 #import <SwrveSDK/SwrveTriggerCondition.h>
 

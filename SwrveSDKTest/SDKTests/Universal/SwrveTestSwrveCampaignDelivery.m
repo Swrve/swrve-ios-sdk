@@ -64,7 +64,8 @@ extern NSString *const SwrveDeliveryRequiredConfigAppVersionKey;
                                                   WithDeviceId:deviceId
                                               WithSessionToken:sessionToken
                                                 WithAppVersion:appVersion
-                                                 ForAppGroupID:appGroupId];
+                                                 ForAppGroupID:appGroupId
+                                                      isQAUser:NO];
 
     // Update storadConfigs after save the values for final test.
     deliveryConfig = [userDefaults dictionaryForKey:SwrveDeliveryConfigKey];

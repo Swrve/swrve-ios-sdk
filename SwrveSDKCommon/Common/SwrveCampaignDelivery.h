@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
                                WithDeviceId:(NSString *)deviceId
                            WithSessionToken:(NSString *)sessionToken
                              WithAppVersion:(NSString *)appVersion
-                              ForAppGroupID:(NSString *)appGroupId;
+                              ForAppGroupID:(NSString *)appGroupId
+                                   isQAUser:(BOOL)isQaUser;
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (void)sendPushDelivery:(NSDictionary *)userInfo withAppGroupID:(NSString *)appGroupId;

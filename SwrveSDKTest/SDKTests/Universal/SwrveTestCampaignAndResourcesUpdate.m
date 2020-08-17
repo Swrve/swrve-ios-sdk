@@ -19,7 +19,6 @@
 @property (atomic) NSTimer *campaignsAndResourcesTimer;
 @property (atomic) int campaignsAndResourcesTimerSeconds;
 @property (nonatomic) SwrveReceiptProvider *receiptProvider;
-@property (atomic) int locationSegmentVersion;
 @property (atomic) SwrveRESTClient *restClient;
 
 - (void)campaignsAndResourcesTimerTick:(NSTimer *)timer;
@@ -206,7 +205,6 @@
                                 [NSURLQueryItem queryItemWithName:@"os_version" value:[device systemName]],
                                 [NSURLQueryItem queryItemWithName:@"device_name" value:[device model]],
                                 [NSURLQueryItem queryItemWithName:@"conversation_version" value:[NSString stringWithFormat:@"%d", CONVERSATION_VERSION]],
-                                [NSURLQueryItem queryItemWithName:@"location_version" value:[NSString stringWithFormat:@"%d", swrve.locationSegmentVersion]],
                              ];
  
     NSURL *expectedUrl = components.URL;

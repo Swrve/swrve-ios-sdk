@@ -423,7 +423,21 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSData *swrveUsersData = [SwrveLocalStorage swrveUsers];
     if (swrveUsersData != nil) {
         NSError *error = nil;
-        NSArray *swrveUsers = [NSKeyedUnarchiver unarchiveObjectWithData:swrveUsersData];
+        NSArray *swrveUsers = nil;
+        if (@available(ios 11.0,tvos 11.0, *)) {
+            NSSet *classes = [NSSet setWithArray:@[[NSArray class],[SwrveUser class]]];
+            swrveUsers = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:swrveUsersData error:&error];
+            if (error) {
+                DebugLog(@"Failed to un archive swrve user: %@",[error localizedDescription]);
+            }
+        } else {
+            // Fallback on earlier versions
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            swrveUsers = [NSKeyedUnarchiver unarchiveObjectWithData:swrveUsersData];
+            #pragma clang diagnostic pop
+        }
+        
         if (error) {
             DebugLog(@"Executing version 3 migration code - error getting swrve users:%@", [error localizedDescription]);
         } else if (swrveUsers != nil) {

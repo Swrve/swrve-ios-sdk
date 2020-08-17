@@ -7,7 +7,6 @@
 
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
-- (UInt64)getTime;
 - (NSInteger)nextEventSequenceNumber;
 - (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
 - (void)sendQueuedEventsWithCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventBufferCallback

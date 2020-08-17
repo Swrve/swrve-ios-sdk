@@ -4,6 +4,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*! Swrve SDK static access class. */
 @interface SwrveSDK : NSObject
 
+
 /*! Accesses a single shared instance of a Swrve object.
  *
  * \returns A singleton instance of a Swrve object.

@@ -8,6 +8,7 @@
 #import "SwrvePermissions.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveCampaignDelivery.h"
+#import "SwrveQA.h"
 
 typedef void (*didRegisterForRemoteNotificationsWithDeviceTokenImplSignature)(__strong id, SEL, UIApplication *, NSData *);
 
@@ -102,7 +103,7 @@ NSString *const SwrveContentVersionKey = @"version";
 }
 
 - (NSString *)deviceTokenString:(NSData *)deviceTokenData {
-    const char *bytes = [deviceTokenData bytes];
+    const unsigned char *bytes = (const unsigned char *)deviceTokenData.bytes;
     NSMutableString *deviceTokenString = [NSMutableString string];
     for (NSUInteger i = 0; i < [deviceTokenData length]; i++) {
         [deviceTokenString appendFormat:@"%02.2hhX", bytes[i]];
@@ -413,7 +414,8 @@ NSString *const SwrveContentVersionKey = @"version";
                                                   WithDeviceId:_commonDelegate.deviceUUID
                                               WithSessionToken:_commonDelegate.sessionToken
                                                 WithAppVersion:_commonDelegate.appVersion
-                                                 ForAppGroupID:_commonDelegate.appGroupIdentifier];
+                                                 ForAppGroupID:_commonDelegate.appGroupIdentifier
+                                                      isQAUser:[[SwrveQA sharedInstance] isQALogging]];
 }
 
 - (NSDate *)getNow {

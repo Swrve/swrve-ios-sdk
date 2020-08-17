@@ -2,6 +2,14 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveTestHelper.h"
 #import "SwrveUser.h"
+#import "SwrveProfileManager.h"
+
+@interface SwrveProfileManager ()
+
+- (NSData *)archiveSwrveUserArray:(NSArray *)array;
+- (NSArray *)swrveUsers;
+
+@end
 
 @interface SwrveTestLocalStorage : XCTestCase
 
@@ -169,7 +177,9 @@
     SwrveUser *user1 = [[SwrveUser alloc]initWithExternalId:@"TestEx1" swrveId:@"TestSw1" verified:YES];
     SwrveUser *user2 = [[SwrveUser alloc]initWithExternalId:@"TestEx2" swrveId:@"TestSw2" verified:NO];
     NSArray *mArray = @[user1,user2];
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+
+    SwrveProfileManager *pm = [SwrveProfileManager new];
+    NSData *data = [pm archiveSwrveUserArray:mArray];
     [SwrveLocalStorage saveSwrveUsers:data];
     
     NSData *swrveUsers = [SwrveLocalStorage swrveUsers];
@@ -184,7 +194,9 @@
     //it will still be in backup store
     expected = swrveUsers;
     XCTAssertEqualObjects(expected,data);
-    NSArray *expectedArray = [NSKeyedUnarchiver unarchiveObjectWithData:expected];
+    
+    NSArray *expectedArray = [pm swrveUsers];
+
     XCTAssertEqualObjects(expectedArray,mArray);
 }
 

@@ -1,6 +1,7 @@
 #import "SwrveUtils.h"
 #import "SwrveCommon.h"
 #import <CommonCrypto/CommonHMAC.h>
+#import <sys/time.h>
 
 @implementation SwrveUtils
 
@@ -19,11 +20,11 @@
 
 + (float)estimate_dpi {
     float scale = (float)[[UIScreen mainScreen] scale];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         return 163.0f * scale;
     }
     return 160.0f * scale;
@@ -48,7 +49,15 @@
         netinfo = [CTTelephonyNetworkInfo new];
     });
     
-    return [netinfo subscriberCellularProvider];
+    if (@available(iOS 12.0, *)) {
+        return [[netinfo serviceSubscriberCellularProviders] allValues].firstObject;
+    } else {
+        // Fallback on earlier versions
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        return [netinfo subscriberCellularProvider];
+        #pragma clang diagnostic pop
+    }
 }
 #endif
 

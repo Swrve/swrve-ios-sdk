@@ -9,7 +9,7 @@
 
 - (id)initWithSwrve:(Swrve*)sdk;
 - (void)writeToCampaignCache:(NSData*)campaignData;
-- (void)updateCampaigns:(NSDictionary*)campaignJson;
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (NSDate *)getNow;
 
 @property (nonatomic, retain) NSDate *initialisedTime;
@@ -59,7 +59,7 @@
     // reset the initialised date in SwrveMessageController
     // we do this to pass throttle limits in: checkCampaignRulesForEvent
     [swrveMock messaging].initialisedTime = [mockInitDate dateByAddingTimeInterval:-280];
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     return swrveMock;
 }

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface SwrveUser : NSObject  <NSCoding>
+@interface SwrveUser : NSObject  <NSCoding,NSSecureCoding>
 
 - (instancetype)initWithExternalId:(NSString *)externalId
                            swrveId:(NSString *)swrveId

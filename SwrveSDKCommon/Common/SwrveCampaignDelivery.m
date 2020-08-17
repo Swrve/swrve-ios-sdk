@@ -3,6 +3,8 @@
 #import "SwrveRESTClient.h"
 #import "SwrveUtils.h"
 #import "SwrveNotificationConstants.h"
+#import "SwrveQA.h"
+#import "SwrveEvents.h"
 
 // Main key for storage NSDictionary with info related with SwrveCampaing items.
 NSString *const SwrveDeliveryConfigKey = @"swrve.delivery_rest_config";
@@ -13,6 +15,7 @@ NSString *const SwrveDeliveryRequiredConfigEventsUrlKey = @"swrve.events_url";
 NSString *const SwrveDeliveryRequiredConfigDeviceIdKey = @"swrve.device_id";
 NSString *const SwrveDeliveryRequiredConfigSessionTokenKey = @"swrve.session_token";
 NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
+NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
 
 @implementation SwrveCampaignDelivery
 
@@ -21,15 +24,15 @@ NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
 }
 
 + (void)saveConfigForPushDeliveryWithUserId:(NSString *)userId
-                  WithEventServerUrl:(NSString *)eventServerUrl
-                         WithDeviceId:(NSString *)deviceId
-                 WithSessionToken:(NSString *)sessionToken
-                   WithAppVersion:(NSString *)appVersion
-                    ForAppGroupID:(NSString *)appGroupId {
+                         WithEventServerUrl:(NSString *)eventServerUrl
+                               WithDeviceId:(NSString *)deviceId
+                           WithSessionToken:(NSString *)sessionToken
+                             WithAppVersion:(NSString *)appVersion
+                              ForAppGroupID:(NSString *)appGroupId
+                                   isQAUser:(BOOL)isQaUser {
     if (![self isValidAppGroupId:appGroupId]) {
         return; // We need a valid App group to procced this method.
     }
-
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupId];
     // Save NSDictionary into NSUserDefaults
     [userDefaults setObject:@{
@@ -37,7 +40,8 @@ NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
         SwrveDeliveryRequiredConfigEventsUrlKey: eventServerUrl,
         SwrveDeliveryRequiredConfigDeviceIdKey: deviceId,
         SwrveDeliveryRequiredConfigSessionTokenKey: sessionToken,
-        SwrveDeliveryRequiredConfigAppVersionKey: appVersion
+        SwrveDeliveryRequiredConfigAppVersionKey: appVersion,
+        SwrveDeliveryRequiredConfigIsQAUser:[NSNumber numberWithBool:isQaUser]
     } forKey:SwrveDeliveryConfigKey];
 }
 
@@ -94,7 +98,16 @@ NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey] forKey:@"user"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigDeviceIdKey] forKey:@"unique_device_id"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigAppVersionKey] forKey:@"app_version"];
-    [eventBatch setValue:@[[self eventData:userInfo forSeqno:seqno]] forKey:@"data"];
+
+    NSMutableArray *eventData = [NSMutableArray new];
+    NSDictionary *pushDeliveryData = [self eventData:userInfo forSeqno:seqno];
+    [eventData addObject: pushDeliveryData];
+
+    // If is a QA user we also append the QA LogEvent.
+    if([[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigIsQAUser] boolValue]) {
+        [eventData addObject:[SwrveEvents qalogWrappedEvent:pushDeliveryData]];
+    }
+    [eventBatch setValue:[eventData copy] forKey:@"data"];
 
     NSDictionary *sw = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
     NSNumber *contentVersion = [sw objectForKey:@"version"];

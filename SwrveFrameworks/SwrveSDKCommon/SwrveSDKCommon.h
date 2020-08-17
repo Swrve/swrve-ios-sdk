@@ -20,12 +20,13 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 // Common
 #import <SwrveSDKCommon/SwrveAssetsManager.h>
 #import <SwrveSDKCommon/SwrveCommon.h>
-#import <SwrveSDKCommon/SwrveCommonConnectionDelegate.h>
 #import <SwrveSDKCommon/SwrvePermissions.h>
 #import <SwrveSDKCommon/SwrveRESTClient.h>
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
+#import <SwrveSDKCommon/SwrveQAEventsQueueManager.h>
 #import <SwrveSDKCommon/SwrveCampaignInfluence.h>
 #import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #import <SwrveSDKCommon/SwrveUser.h>
@@ -34,3 +35,4 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveNotificationConstants.h>
 #import <SwrveSDKCommon/SwrveSessionDelegate.h>
 #import <SwrveSDKCommon/SwrveUtils.h>
+#import <SwrveSDKCommon/SwrveEvents.h>

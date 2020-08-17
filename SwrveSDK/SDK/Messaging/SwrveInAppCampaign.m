@@ -131,7 +131,7 @@ static SwrveMessage* firstFormatFrom(NSArray* messages, NSSet* assets)
         return nil;
     }
 
-    SwrveMessage* message = nil;
+    SwrveMessage *message = nil;
     if (self.randomOrder)
     {
         DebugLog(@"Random Message in %ld", (long)self.ID);

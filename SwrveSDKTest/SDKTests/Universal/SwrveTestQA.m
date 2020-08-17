@@ -3,43 +3,50 @@
 #import "SwrveCommon.h"
 #import "SwrveQA.h"
 #import "SwrveLocalStorage.h"
+#import "SwrveUtils.h"
+#import "SwrveQAEventsQueueManager.h"
 
 @interface SwrveTestQA : XCTestCase {
-    
+    id classSwrveUtilsMock;
+    NSNumber *expectedMockedTime;
 }
+@end
 
+@interface SwrveQAEventsQueueManager (private_acess)
+
+@property(nonatomic) SwrveQAEventsQueueManager *queueManager;
+@property(atomic) NSMutableArray  *queue;
+@end
+
+@interface SwrveQA (private_acess)
+@property(nonatomic) SwrveQAEventsQueueManager *queueManager;
 @end
 
 @implementation SwrveTestQA
 
 - (void)setUp {
     [super setUp];
-    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
-    OCMStub([mockSwrveCommon apiKey]).andReturn(@"my_api_key");
-    OCMStub([mockSwrveCommon eventsServer]).andReturn(@"https://myevents.server");
-    OCMStub([mockSwrveCommon deviceUUID]).andReturn(@"my_device_id");
-    OCMStub([mockSwrveCommon appID]).andReturn(123);
-    OCMStub([mockSwrveCommon appVersion]).andReturn(@"myappversion");
-    OCMStub([mockSwrveCommon userID]).andReturn(@"my_user_id");
-    [SwrveCommon addSharedInstance:mockSwrveCommon];
+    expectedMockedTime = @1592239308915;
+    // Mock getTimeEpoch at SwrveUtils.
+    classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
+    OCMStub([classSwrveUtilsMock getTimeEpoch])._andReturn(expectedMockedTime);
 }
 
 - (void)tearDown {
     [SwrveLocalStorage saveQaUser:nil];
     [SwrveLocalStorage saveSwrveUserId:nil];
+    [classSwrveUtilsMock stopMocking];
     [super tearDown];
 }
 
 - (void)testSwrveQADisabledByDefault {
     SwrveQA *qa = [SwrveQA sharedInstance];
-    XCTAssertTrue(qa.restClient != nil);
     XCTAssertTrue(qa.isQALogging == false);
 }
 
 - (void)testSwrveQADisabledAfterEmptyUpdate {
-    [SwrveQA updateQAUser:@{}];
+    [SwrveQA updateQAUser:@{} andSessionToken:@"whatEver"];
     SwrveQA *qa = [SwrveQA sharedInstance];
-    XCTAssertTrue(qa.restClient != nil);
     XCTAssertTrue(qa.isQALogging == false);
 }
 
@@ -49,30 +56,268 @@
                              @"logging_url": @"http://123.swrve.com",
                              @"campaigns": @{}
                              };
-    [SwrveQA updateQAUser:jsonQa];
+    [SwrveQA updateQAUser:jsonQa andSessionToken:@"whatEver"];
     SwrveQA *qa = [SwrveQA sharedInstance];
-    XCTAssertTrue(qa.restClient != nil);
     XCTAssertTrue(qa.isQALogging);
 }
+
+- (void)testInitSwrveQAWithValidCachedQAUser {
+
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon userID]).andReturn(@"SomeID");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    // Force valid QA user available on cache.
+    [SwrveLocalStorage saveQaUser:@{
+        @"logging": @true,
+        @"reset_device_state": @true,
+    }];
+
+    [SwrveQA updateQAUser:nil andSessionToken:@"whatEver"];
+
+    SwrveQA *qa = [SwrveQA sharedInstance];
+    XCTAssertTrue(qa.isQALogging);
+    XCTAssertTrue(qa.resetDeviceState);
+    [mockSwrveCommon stopMocking];
+}
+
+- (void)testInitSwrveQAWithNoCachedQAUser {
+
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon userID]).andReturn(@"SomeID");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    // No valid cache should resturn as Non QA user
+    [SwrveLocalStorage saveQaUser:@{
+        @"logging": @false,
+        @"reset_device_state": @false,
+    }];
+
+    [SwrveQA updateQAUser:nil andSessionToken:@"whatEver"];
+    SwrveQA *qa = [SwrveQA sharedInstance];
+    XCTAssertFalse(qa.isQALogging);
+    XCTAssertFalse(qa.resetDeviceState);
+    [mockSwrveCommon stopMocking];
+}
+
+
+#pragma mark - SDK
+
+- (void)testCampaignButtonClicked {
+    [self enableQaLogging];
+    SwrveQA *qa = [SwrveQA sharedInstance];
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+    [qa setQueueManager:swrveQAEventsQueueMock];
+
+    NSDictionary *logDetails = @{
+            @"action_type":@"custom",
+            @"action_value":@"https://url.com",
+            @"button_name":@"button",
+            @"campaign_id":@12,
+            @"variant_id":@2
+    };
+    NSMutableDictionary *expecectedQALoggedEvent = [self createExpectedEventWithLogDetails:logDetails withLogType:@"campaign-button-clicked" withlogSource:@"sdk"];
+
+    [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
+
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQALoggedEvent]);
+    // Check if the event is on queue.
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
+    [swrveQAEventsQueueMock stopMocking];
+}
+
+- (void)testMessageCampaignTrigger {
+    [self enableQaLogging];
+    SwrveQA *qa = [SwrveQA sharedInstance];
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+    [qa setQueueManager:swrveQAEventsQueueMock];
+
+    // Mock campaign that will be used as part of this test.
+    NSString *expectedReason1 = @"Reason passed";
+    NSString *expectedReason2 = @"Whatever expected passed";
+    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:expectedReason1];
+    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_IAM displayed:YES reason:expectedReason2];
+    NSMutableArray<SwrveQACampaignInfo *> *campaignInfoExpected = [@[expectedCampaign1, expectedCampaign2 ] mutableCopy];
+
+    NSDictionary *payloadExpected = @{@"hello": @"test"};
+    NSString *eventNameExpected = @"event";
+
+    // Mock expected Log details for the event that will be generated
+    NSDictionary *expectedLogDetails = @{
+        @"campaigns":@[@{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign1.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign1.campaignID],
+                          @"reason": expectedReason1,
+                          @"type": swrveCampaignTypeToString(expectedCampaign1.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign1.variantID]},
+                      @{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign2.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign2.campaignID],
+                          @"reason": expectedReason2,
+                          @"type": swrveCampaignTypeToString(expectedCampaign2.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign2.variantID],
+                      }],
+        @"displayed":@YES,
+        @"event_name":eventNameExpected,
+        @"event_payload": payloadExpected,
+        @"reason":@""
+    };
+    // Test again with displayed:YES
+    [SwrveQA messageCampaignTriggered:eventNameExpected eventPayload:payloadExpected displayed:YES campaignInfoDict:campaignInfoExpected];
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+
+    [swrveQAEventsQueueMock stopMocking];
+}
+
+- (void)testConversationCampaignTrigger {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+    // Mock campaign that will be used as part of this test.
+    NSString *expectedReason1 = @"Reason passed";
+    NSString *expectedReason2 = @"Whatever expected passed";
+    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason1];
+    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_CONVERSATION displayed:YES reason:expectedReason2];
+    NSMutableArray<SwrveQACampaignInfo *> *campaignInfoExpected = [@[expectedCampaign1, expectedCampaign2 ] mutableCopy];
+
+    NSDictionary *payloadExpected = @{@"hello": @"test"};
+    NSString *eventNameExpected = @"event";
+
+    // Mock expected Log details for the event that will be generated
+    NSDictionary *expectedLogDetails = @{
+        @"campaigns":@[@{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign1.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign1.campaignID],
+                          @"reason": expectedReason1,
+                          @"type": swrveCampaignTypeToString(expectedCampaign1.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign1.variantID]},
+                      @{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign2.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign2.campaignID],
+                          @"reason": expectedReason2,
+                          @"type": swrveCampaignTypeToString(expectedCampaign2.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign2.variantID],
+                      }],
+        @"displayed":@YES,
+        @"event_name":eventNameExpected,
+        @"event_payload": payloadExpected,
+        @"reason":@""
+    };
+    // Test again with displayed:YES
+    [SwrveQA conversationCampaignTriggered:eventNameExpected eventPayload:payloadExpected displayed:YES campaignInfoDict:campaignInfoExpected];
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+
+    [swrveQAEventsQueueMock stopMocking];
+}
+
+- (void)testConversationCampaignTriggeredNoDisplay {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+    NSDictionary *payloadExpected = @{@"hello": @"test"};
+    NSString *eventNameExpected = @"event";
+    NSDictionary *expectedLogDetails = @{
+            @"campaigns":@[],
+            @"displayed":@NO,
+            @"event_name":eventNameExpected,
+            @"event_payload": payloadExpected,
+            @"reason":@"No Conversation triggered because In App Message displayed"
+    };
+
+    [SwrveQA conversationCampaignTriggeredNoDisplay:eventNameExpected eventPayload:payloadExpected];
+
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+
+    [swrveQAEventsQueueMock stopMocking];
+}
+
+- (void)testCampaignTrigger {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+    // Mock campaign that will be used as part of this test.
+    NSString *expectedReason1 = @"Reason passed";
+    NSString *expectedReason2 = @"Whatever expected passed";
+    NSString *expectedNotDisplayReason = @"Whatever expected passed";
+
+    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason1];
+    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason2];
+    NSMutableArray<SwrveQACampaignInfo *> *campaignInfoExpected = [@[expectedCampaign1, expectedCampaign2 ] mutableCopy];
+
+    NSDictionary *payloadExpected = @{@"hello": @"test"};
+    NSString *eventNameExpected = @"event";
+
+    // Mock expected Log details for the event that will be generated
+    NSDictionary *expectedLogDetails = @{
+        @"campaigns":@[@{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign1.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign1.campaignID],
+                          @"reason": expectedReason1,
+                          @"type": swrveCampaignTypeToString(expectedCampaign1.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign1.variantID]},
+                      @{
+                          @"displayed": [NSNumber numberWithBool:expectedCampaign2.displayed],
+                          @"id": [NSNumber numberWithInteger:expectedCampaign2.campaignID],
+                          @"reason": expectedReason2,
+                          @"type": swrveCampaignTypeToString(expectedCampaign2.type),
+                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign2.variantID],
+                      }],
+        @"displayed":@NO,
+        @"event_name":eventNameExpected,
+        @"event_payload": payloadExpected,
+        @"reason":expectedNotDisplayReason
+    };
+    // Test with displayed:NO
+    [SwrveQA campaignTriggered:eventNameExpected eventPayload:payloadExpected displayed:NO reason:expectedNotDisplayReason campaignInfo:campaignInfoExpected];
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+
+    [swrveQAEventsQueueMock stopMocking];
+}
+
+
+#pragma mark - Geo SDK
 
 - (void)testGeoCampaignTriggered {
     [self enableQaLogging];
     SwrveQA *qa = [SwrveQA sharedInstance];
-    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
-    
-    __block NSURL *capturedUrl;
-    __block NSData *capturedJson;
-    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
-        capturedUrl = urlValue;
-        return urlValue;
-    }]
-                                         jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
-        capturedJson = jsonValue;
-        return jsonValue;
-    }]
-                                completionHandler:OCMOCK_ANY]);
-    [qa setRestClient:mockRestClient];
-    
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+    [qa setQueueManager:swrveQAEventsQueueMock];
+
     NSMutableArray *qaLogs = [NSMutableArray new];
     NSDictionary *log = @{
                           @"variant_id": @123,
@@ -80,48 +325,59 @@
                           @"reason": @"some reason"
                           };
     [qaLogs addObject:log];
-    
+
+    NSDictionary *logDetails = @{
+        @"action_type":@"exit",
+        @"campaigns": @[log],
+        @"geofence_id":@456,
+        @"geoplace_id":@123
+    };
+
+    NSMutableDictionary *expecectedQALoggedEvent = [self createExpectedEventWithLogDetails:logDetails withLogType:@"geo-campaign-triggered" withlogSource:@"geo-sdk"];
+
     [SwrveQA geoCampaignTriggered:qaLogs fromGeoPlaceId:@"123" andGeofenceId:@"456" andActionType:@"exit"];
-    
-    XCTAssertEqualObjects(@"myevents.server", [capturedUrl host]);
-    XCTAssertEqualObjects(@"/1/batch", [capturedUrl path]);
-    
-    NSDictionary *logDetails = [self verifyQaLogEvent:capturedJson withLogType:@"geo-campaign-triggered"];
-    [self verifyTriggeredLogDetail:logDetails withDisplayed:0 andReason:@"some reason" andVariantId:123];
+
+    OCMVerify([swrveQAEventsQueueMock queueEvent:OCMOCK_ANY]);
+    // Check if the event is on queue.
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
+    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testGeoCampaignsDownloaded {
     [self enableQaLogging];
     SwrveQA *qa = [SwrveQA sharedInstance];
-    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
-    
-    __block NSURL *capturedUrl;
-    __block NSData *capturedJson;
-    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
-        capturedUrl = urlValue;
-        return urlValue;
-    }]
-                                         jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
-        capturedJson = jsonValue;
-        return jsonValue;
-    }]
-                                completionHandler:OCMOCK_ANY]);
-    [qa setRestClient:mockRestClient];
-    
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+    [qa setQueueManager:swrveQAEventsQueueMock];
+
     NSMutableArray *qaLogs = [NSMutableArray new];
     NSDictionary *log = @{
-                          @"variant_id": @123
+                          @"variant_id": @123,
+                          @"displayed": [NSNumber numberWithBool:false],
+                          @"reason": @"some reason"
                           };
     [qaLogs addObject:log];
-    
+
+    NSDictionary *logDetails = @{
+        @"action_type":@"exit",
+        @"campaigns": @[log],
+        @"geofence_id":@456,
+        @"geoplace_id":@123
+    };
+
+    NSMutableDictionary *expecectedQALoggedEvent = [self createExpectedEventWithLogDetails:logDetails withLogType:@"geo-campaigns-downloaded" withlogSource:@"geo-sdk"];
     [SwrveQA geoCampaignsDownloaded:qaLogs fromGeoPlaceId:@"123" andGeofenceId:@"456" andActionType:@"exit"];
-    
-    XCTAssertEqualObjects(@"myevents.server", [capturedUrl host]);
-    XCTAssertEqualObjects(@"/1/batch", [capturedUrl path]);
-    
-    NSDictionary *logDetails = [self verifyQaLogEvent:capturedJson withLogType:@"geo-campaigns-downloaded"];
-    [self verifyDownloadedLogDetail:logDetails withVariantId:123];
+
+    OCMVerify([swrveQAEventsQueueMock queueEvent:OCMOCK_ANY]);
+    // Check if the event is on queue.
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
+    [swrveQAEventsQueueMock stopMocking];
 }
+
+#pragma mark - helpers
 
 - (void)enableQaLogging {
     NSDictionary *jsonQa = @{
@@ -129,69 +385,18 @@
                              @"logging_url": @"http://123.swrve.com",
                              @"campaigns": @{}
                              };
-    [SwrveQA updateQAUser:jsonQa];
+    [SwrveQA updateQAUser:jsonQa andSessionToken:@"whatEver"];
 }
 
-- (NSDictionary* )verifyQaLogEvent:(NSData*) capturedJson withLogType:(NSString *) logType{
-    
-    NSError* error;
-    NSDictionary* json = [NSJSONSerialization JSONObjectWithData:capturedJson options:kNilOptions error:&error];
-    XCTAssertEqual(6, [json count]);
-    XCTAssertTrue([json objectForKey:@"app_version"]);
-    XCTAssertEqualObjects([json objectForKey:@"app_version"], @"myappversion");
-    XCTAssertTrue([json objectForKey:@"session_token"]);
-    XCTAssertTrue([json objectForKey:@"unique_device_id"]);
-    XCTAssertEqualObjects([json objectForKey:@"unique_device_id"], @"my_device_id");
-    XCTAssertTrue([json objectForKey:@"user"]);
-    XCTAssertEqualObjects([json objectForKey:@"user"], @"my_user_id");
-    XCTAssertTrue([json objectForKey:@"version"]);
-    XCTAssertEqualObjects([json objectForKey:@"version"], [NSNumber numberWithInt:3]);
-    
-    XCTAssertTrue([json objectForKey:@"data"]);
-    NSArray *dataArray = [json objectForKey:@"data"];
-    XCTAssertEqual(1, [dataArray count]);
-    
-    NSDictionary *data = [dataArray objectAtIndex:0];
-    XCTAssertEqual(6, [data count]);
-    XCTAssertTrue([data objectForKey:@"log_source"]);
-    XCTAssertEqualObjects([data objectForKey:@"log_source"], @"geo-sdk");
-    XCTAssertTrue([data objectForKey:@"log_type"]);
-    XCTAssertEqualObjects([data objectForKey:@"log_type"], logType);
-    XCTAssertTrue([data objectForKey:@"seqnum"]);
-    XCTAssertTrue([[data objectForKey:@"time"] isKindOfClass:[NSNumber class]]);
-    XCTAssertTrue([data objectForKey:@"type"]);
-    XCTAssertEqualObjects([data objectForKey:@"type"], @"qa_log_event");
-    
-    XCTAssertTrue([data objectForKey:@"log_details"]);
-    NSDictionary *logDetails = [data objectForKey:@"log_details"];
-    return logDetails;
-}
-
-- (void)verifyTriggeredLogDetail:(NSDictionary *)logDetails withDisplayed:(long)displayed andReason:(NSString *)reason andVariantId:(long)variantId {
-    XCTAssertTrue([logDetails objectForKey:@"campaigns"]);
-    NSArray *campaignsArray = [logDetails objectForKey:@"campaigns"];
-    XCTAssertEqual(1, [campaignsArray count]);
-    
-    NSDictionary *campaigns = [campaignsArray objectAtIndex:0];
-    XCTAssertEqual(3, [campaigns count]);
-    XCTAssertTrue([campaigns objectForKey:@"displayed"]);
-    XCTAssertEqualObjects([campaigns objectForKey:@"displayed"], [NSNumber numberWithLong:displayed]);
-    XCTAssertTrue([campaigns objectForKey:@"reason"]);
-    XCTAssertEqualObjects([campaigns objectForKey:@"reason"], reason);
-    XCTAssertTrue([campaigns objectForKey:@"variant_id"]);
-    XCTAssertEqualObjects([campaigns objectForKey:@"variant_id"], [NSNumber numberWithLong:variantId]);
-}
-
-- (void)verifyDownloadedLogDetail:(NSDictionary *)logDetails withVariantId:(long)variantId {
-    XCTAssertTrue([logDetails objectForKey:@"campaigns"]);
-    NSArray *campaignsArray = [logDetails objectForKey:@"campaigns"];
-    XCTAssertEqual(1, [campaignsArray count]);
-    
-    NSDictionary *campaigns = [campaignsArray objectAtIndex:0];
-    XCTAssertEqual(1, [campaigns count]);
-    XCTAssertTrue([campaigns objectForKey:@"variant_id"]);
-    XCTAssertEqualObjects([campaigns objectForKey:@"variant_id"], [NSNumber numberWithLong:variantId]);
+// Helper method that return the a "NSMutableDictionary *" that would be the exepecte event logged
+- (NSMutableDictionary *)createExpectedEventWithLogDetails:(NSDictionary *) logDetails withLogType:(NSString *) logType withlogSource:(NSString *) logSource {
+    return [@{
+        @"log_details":logDetails,
+        @"log_source":logSource,
+        @"log_type":logType,
+        @"time":@1592239308915, // mocked with this value at "setUp" method
+        @"type":@"qa_log_event"
+    } mutableCopy];;
 }
 
 @end
-

@@ -5,7 +5,7 @@
 #import "UISwrveButton.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
-#import "SwrveQAUser.h"
+#import "SwrveQA.h"
 #import "SwrveTestHelper.h"
 #import "TestShowMessageDelegateWithViewController.h"
 #import "SwrveAssetsManager.h"
@@ -33,9 +33,8 @@
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued;
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
 - (void)dismissMessageWindow;
-- (void)updateCampaigns:(NSDictionary *)campaignJson;
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic) SwrveQAUser *qaUser;
 @property (nonatomic, retain) NSMutableDictionary *appStoreURLs;
 @property (nonatomic, retain) NSArray *campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
@@ -237,8 +236,9 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:jsonFileName ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+
+    BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
     
     return swrveMock;
 }
@@ -308,14 +308,14 @@
 
     // Ensure calling updateCampaigns with nil doesn't change the current campaigns
     NSArray *currentCampaigns = [controller campaigns];
-    [controller updateCampaigns:nil];
+    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO];
     if ([controller campaigns] != nil) {
         XCTAssertEqualObjects([controller campaigns], currentCampaigns);
     }
 
     NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
-    [controller updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
     XCTAssertEqual([[controller campaigns] count], 0);
     
@@ -323,7 +323,7 @@
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
-    [controller updateCampaigns:jsonDict];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     XCTAssertEqual([[controller campaigns] count], 2);
 
     NSTimeInterval nowTime = [[swrveMock getNow] timeIntervalSince1970];
@@ -545,23 +545,26 @@
  * Ensure QA trigger function gets called when QA user is set and message is requested
  */
 - (void)testSwrveQAUserCalls {
+    // Mock SwrveQA
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+
+    // set the expected expectedQACampaign.
+    NSArray<SwrveQACampaignInfo*> *expectedQACampaign = @[
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 102 that matches InvalidEvent with conditions (null)"],
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:101 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 101 that matches InvalidEvent with conditions (null)"]];
+
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
-    
+
     SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
-    
+
     message = [controller messageForEvent:@"InvalidEvent"];
-    
-    OCMVerify(([mockSwrveQAUser trigger:@"InvalidEvent"
-                            withMessage:message
-                             withReason:@{@"102":@"There is no trigger in 102 that matches InvalidEvent with conditions (null)",
-                                          @"101":@"There is no trigger in 101 that matches InvalidEvent with conditions (null)"
-                                          }
-                           withMessages:@{}]));
+
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"InvalidEvent" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
+
+    [swrveQAMock stopMocking];
 }
 
 /**
@@ -598,26 +601,27 @@
  * Test campaign throttle limits: delay after launch, delay between messages and max impressions
  */
 - (void)testCampaignThrottleLimits {
+    // Mock campaign and QA User.
     id swrveMock = [self swrveMockWithTestJson:@"campaignsDelay"];
-    SwrveMessageController *controller = [swrveMock messaging];
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
+    NSArray<SwrveQACampaignInfo*> *expectedQACampaign;
 
+    SwrveMessageController *controller = [swrveMock messaging];
     TestShowMessageDelegateNoCustomFind *testDelegate = [[TestShowMessageDelegateNoCustomFind alloc] init];
     [controller setShowMessageDelegate:testDelegate];
 
     // First Message Delay
     // Campaign has start delay of 60 seconds, so no message should be returned after 40 seconds
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
 
     SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    OCMVerify(([mockSwrveQAUser  trigger:@"Swrve.currency_given"
-                                withMessage:message
-                                 withReason:@{@"102":@"{Campaign throttle limit} Too soon after launch. Wait until 00:01:00 +0000",
-                                              @"103":@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"
-                                              }
-                               withMessages:@{}]));
+
+    expectedQACampaign = @[
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"{Campaign throttle limit} Too soon after launch. Wait until 00:01:00 +0000"],
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:103 variantID:166 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"]];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     // Go another 30 seconds into future to get to start time + 70 seconds, message should appear now
     self.swrveNowDate = [NSDate dateWithTimeInterval:30 sinceDate:self.swrveNowDate];
@@ -626,19 +630,16 @@
     [testDelegate showMessage:message];
 
     // Delay between messages
-
     // Go 10 seconds into the future, no message should show because there need to be 30 seconds between messages
     self.swrveNowDate = [NSDate dateWithTimeInterval:10 sinceDate:self.swrveNowDate];
 
     message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
 
-    OCMVerify(([mockSwrveQAUser trigger:@"Swrve.currency_given"
-                            withMessage:message
-                             withReason:@{@"102":@"{Campaign throttle limit} Too soon after last message. Wait until 00:01:40 +0000",
-                                          @"103":@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"
-                                              }
-                            withMessages:@{}]));
+    expectedQACampaign = @[
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"{Campaign throttle limit} Too soon after last message. Wait until 00:01:40 +0000"],
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:103 variantID:166 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"]];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     // Another 25 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:25 sinceDate:self.swrveNowDate];
@@ -660,13 +661,13 @@
 
     message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    
-    OCMVerify(([mockSwrveQAUser trigger:@"Swrve.currency_given"
-                            withMessage:OCMOCK_ANY
-                             withReason:@{@"102":@"{Campaign throttle limit} Campaign 102 has been shown 3 times already",
-                                          @"103":@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"
-                                              }
-                          withMessages:@{}]));
+
+    expectedQACampaign = @[
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"{Campaign throttle limit} Campaign 102 has been shown 3 times already"],
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:103 variantID:166 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"]];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
+
+    [swrveQAMock stopMocking];
 }
 
 /**
@@ -695,7 +696,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     // Fake campaigns gone and come back
-    [controller updateCampaigns:jsonDict];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     XCTAssertEqual([[controller campaigns] count], 0);
     
     [[swrveMock messaging] saveCampaignsState];
@@ -705,7 +706,7 @@
     mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
-    [controller updateCampaigns:jsonDict];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
     XCTAssertEqual([[controller campaigns] count], 1);
     
     // Impressions rule still in place
@@ -757,26 +758,28 @@
  * the time the campaign was downloaded to ensure that the throttle limits count from start of session.
  */
 - (void)testCampaignThrottleLimitsOnReset {
+    // Mock SwrveQA
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
     id swrveMock = [self swrveMockWithTestJson:@"campaignsDelay"];
-    SwrveMessageController *controller = [swrveMock messaging];
 
+    NSArray<SwrveQACampaignInfo*> *expectedQACampaign = @[
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"{Campaign throttle limit} Too soon after launch. Wait until 00:01:00 +0000"],
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:103 variantID:166 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"]];
+
+    SwrveMessageController *controller = [swrveMock messaging];
     TestShowMessageDelegateNoCustomFind *testDelegate = [[TestShowMessageDelegateNoCustomFind alloc] init];
     [controller setShowMessageDelegate:testDelegate];
 
     // Campaign has start delay of 60 seconds - so if we go 40 seconds into the future and reload the
     // campaigns it shouldn't show yet
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
-    
+
+
     SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    OCMVerify(([mockSwrveQAUser  trigger:@"Swrve.currency_given"
-                             withMessage:message
-                              withReason:@{@"102":@"{Campaign throttle limit} Too soon after launch. Wait until 00:01:00 +0000",
-                                           @"103":@"There is no trigger in 103 that matches Swrve.currency_given with conditions (null)"
-                                           }
-                            withMessages:@{}]));
+
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     // If we then go another 30 seconds into the future it should show
     // (if throttle limit is reset at campaign load it would only show after 40 + 60 seconds)
@@ -785,31 +788,32 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsDelay" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [controller updateCampaigns:jsonDict];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
+
+    [swrveQAMock stopMocking];
 }
 
 /**
  * Test app throttle limits: delay after launch, delay between messages and max impressions
  */
 - (void)testAppThrottleLimits {
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
     id swrveMock = [self swrveMockWithTestJson:@"campaignsDelay"];
     SwrveMessageController *controller = [swrveMock messaging];
 
     TestShowMessageDelegateNoCustomFind *testDelegate = [[TestShowMessageDelegateNoCustomFind alloc] init];
     [controller setShowMessageDelegate:testDelegate];
 
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
-    
     // First Message Delay
     // App has start delay of 30 seconds, so no message should be returned
     SwrveMessage *message = [controller messageForEvent:@"Swrve.user_purchase"];
     XCTAssertNil(message);
-    OCMVerify([mockSwrveQAUser triggerFailure:@"Swrve.user_purchase"
-                                   withReason:@"{App throttle limit} Too soon after launch. Wait until 00:00:30 +0000"]);
+
+    OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App throttle limit} Too soon after launch. Wait until 00:00:30 +0000" campaignInfo:nil]);
     
     // Go 40 seconds into future
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
@@ -822,12 +826,11 @@
     self.swrveNowDate = [NSDate dateWithTimeInterval:5 sinceDate:self.swrveNowDate];
     message = [controller messageForEvent:@"Swrve.user_purchase"];
     XCTAssertNil(message);
-    OCMVerify([mockSwrveQAUser triggerFailure:@"Swrve.user_purchase"
-                                   withReason:@"{App throttle limit} Too soon after last message. Wait until 00:00:50 +0000"]);
-               
+
+    OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App throttle limit} Too soon after last iam. Wait until 00:00:50 +0000" campaignInfo:nil]);
+
     // Another 15 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:15 sinceDate:self.swrveNowDate];
-    [controller setQaUser:mockSwrveQAUser];
     message = [controller messageForEvent:@"Swrve.user_purchase"];
     XCTAssertNotNil(message);
     [testDelegate showMessage:message];
@@ -846,11 +849,12 @@
     [testDelegate showMessage:message];
 
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
-    [controller setQaUser:mockSwrveQAUser];
     message = [controller messageForEvent:@"Swrve.user_purchase"];
     XCTAssertNil(message);
-    OCMVerify([mockSwrveQAUser triggerFailure:@"Swrve.user_purchase"
-                                   withReason:@"{App throttle limit} Too many messages shown"]);
+
+    OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App Throttle limit} Too many iam s shown" campaignInfo:nil]);
+
+    [swrveQAMock stopMocking];
 }
 
 - (void)testGetMessageForNonExistingTrigger {
@@ -862,22 +866,23 @@
 }
 
 - (void)testGetMessageWithEmptyCampaigns {
+
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
+
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
 
     NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
     
-    [controller updateCampaigns:jsonDict];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
     SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    
-    OCMVerify([mockSwrveQAUser triggerFailure:@"Swrve.currency_given"
-                                   withReason:@"No campaigns available"]);
+
+    OCMVerify([swrveQAMock campaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO reason:@"No iams available" campaignInfo:nil]);
+    [swrveQAMock stopMocking];
 }
 
 /**
@@ -886,20 +891,20 @@
  * Test that it stops displaying when we move time past the campaign end date
  */
 - (void)testCampaignsStartEndDates {
+    // Mock SwrveQA
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
+    NSArray<SwrveQACampaignInfo*> *expectedQACampaign = nil;
+
     id swrveMock = [self swrveMockWithTestJson:@"campaignsFuture"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    // Campaign has start date in future so should not be shown
-    id mockSwrveQAUser = OCMClassMock([SwrveQAUser class]);
-    [controller setQaUser:mockSwrveQAUser];
-    
     SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    
-    OCMVerify(([mockSwrveQAUser trigger:@"Swrve.currency_given"
-                            withMessage:message
-                             withReason:@{@"105":@"Campaign 105 has not started yet"}
-                           withMessages:@{}]));
+
+    expectedQACampaign = @[
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has not started yet"]];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     // 25 hours into the future the campaign should be available
     self.swrveNowDate = [NSDate dateWithTimeInterval:60*60*25 sinceDate:self.swrveNowDate];
@@ -912,11 +917,12 @@
 
     message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    
-    OCMVerify(([mockSwrveQAUser trigger:@"Swrve.currency_given"
-                            withMessage:message
-                             withReason:@{@"105":@"Campaign 105 has finished"}
-                           withMessages:@{}]));
+
+    expectedQACampaign = @[
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has finished"]];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
+
+    [swrveQAMock stopMocking];
 }
 
 /**
@@ -1271,9 +1277,11 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsQAReset" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    
-    [controller updateCampaigns:jsonDict];
-    
+
+    [SwrveQA updateQAUser: [jsonDict objectForKey:@"qa"] andSessionToken:@"whatEverSessionToken"];
+    BOOL isLoadingCampaign = [[SwrveQA sharedInstance] resetDeviceState];
+    [controller updateCampaigns: jsonDict withLoadingPreviousCampaignState:isLoadingCampaign];
+
     message = [controller messageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
 
@@ -1415,6 +1423,21 @@
     XCTAssertNotNil(conversation);
     XCTAssertEqual([[message messageID] intValue], 1);
 }
+
+// Conversation is just supported by iOS.
+- (void)testConversationForEventTriggerAsQAUser {
+    id swrveMock = [self swrveMockWithTestJson:@"conversationCampaignsPriority"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    // define as QAUser
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    [swrveQAMock updateQAUser:@{@"logging": @YES, @"reset_device_state": @YES } andSessionToken:@"aSessinToken"];
+
+    SwrveConversation *conversation = [controller conversationForEvent:@"Swrve.currency_given"];
+    XCTAssertNotNil(conversation);
+
+    OCMVerify([swrveQAMock conversationCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:YES campaignInfoDict:OCMOCK_ANY]);
+}
+
 #elif TARGET_OS_TV
 
 /**
@@ -1519,7 +1542,7 @@
     XCTAssertEqual([[viewController current_format] orientation], SWRVE_ORIENTATION_PORTRAIT);
 
     // Press dismiss button
-    UISwrveButton* dismissButton = [UISwrveButton new];
+    UISwrveButton *dismissButton = [UISwrveButton new];
     [dismissButton setTag:0];
     [viewController onButtonPressed:dismissButton];
 
@@ -1926,15 +1949,6 @@
 }
 
 /**
- * Ensure QA user values are set when the server has the 'qa' key
- */
-- (void)testQAUserLoaded {
-    id swrveMock = [self swrveMockWithTestJson:@"campaignsQAUser"];
-    XCTAssertNotNil([swrveMock messaging].qaUser);
-    XCTAssertTrue([swrveMock messaging].qaUser.resetDevice);
-}
-
-/**
  * Test configurable color from config
  */
 - (void)testDefaultBackgroundColor {
@@ -2124,7 +2138,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsAARRGGBB" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
     [swrveMock currencyGiven:@"gold" givenAmount:2];
     
@@ -2174,7 +2188,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsAARRGGBB" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
     SwrveMessageController *controller = [swrveMock messaging];
     [swrveMock currencyGiven:@"gold" givenAmount:2];
@@ -2211,16 +2225,7 @@
     XCTAssertNotNil(message);
 
     NSArray *eventsBuffer = [swrveMock eventBuffer];
-    XCTAssertEqual([eventsBuffer count], 1);
-
-    NSString *eventString = (NSString *)(eventsBuffer[0]);
-    NSDictionary *event = [NSJSONSerialization JSONObjectWithData:[eventString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    XCTAssertEqualObjects(event[@"name"], @"Swrve.Messages.message_returned");
-    XCTAssertNotNil(event[@"payload"]);
-
-    NSDictionary *payload = event[@"payload"];
-    XCTAssertNotNil([payload objectForKey:@"id"]);
-    XCTAssertEqualObjects(payload[@"id"], @"165");
+    XCTAssertEqual([eventsBuffer count], 0);
 }
 
 #pragma mark - event trigger checks
@@ -2264,6 +2269,19 @@
 
     OCMVerifyAll(swrveMock);
     [swrveMock stopMocking];
+}
+
+- (void)testMessageForEventTriggerAsQAUser {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    // define as QAUser
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    [swrveQAMock updateQAUser:@{@"logging": @YES, @"reset_device_state": @YES} andSessionToken:@"aSessinToken"];
+
+    SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
+    XCTAssertNotNil(message);
+
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:YES campaignInfoDict:OCMOCK_ANY]);
 }
 
 #pragma mark - orientation checks

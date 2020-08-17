@@ -203,16 +203,20 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 //// SWRVE QA USER ////
 
 + (NSDictionary *)qaUser {
-    NSDictionary *qaUser = [[self defaults] dictionaryForKey:SWRVE_QA_USER];
+    NSString *userId = [[SwrveCommon sharedInstance] userID];
+    NSString *key = [NSString stringWithFormat:@"%@%@",SWRVE_QA_USER, userId];
+    NSDictionary *qaUser = [[self defaults] dictionaryForKey:key];
      if (qaUser == nil) {
-         qaUser = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_QA_USER];
+         qaUser = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
      }
      return qaUser;
 }
 
 + (void)saveQaUser:(NSDictionary *)qaUser {
+    NSString *userId = [[SwrveCommon sharedInstance] userID];
+    NSString *key = [NSString stringWithFormat:@"%@%@",SWRVE_QA_USER, userId];
    [[self defaults] setObject:qaUser forKey:SWRVE_QA_USER];
-   [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:qaUser key:SWRVE_QA_USER];
+   [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:qaUser key:key];
 }
 
 //// SWRVE DEVICE UUID ////

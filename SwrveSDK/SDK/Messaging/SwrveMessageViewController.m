@@ -33,12 +33,31 @@
 
 @synthesize focusGuide1, focusGuide2, tvOSFocusForSelection;
 
+- (UIWindow*)keyWindow {
+    UIWindow *keyWindow = nil;
+    if (@available(iOS 13, *)) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for (UIWindow *window in windows) {
+            if (window.isKeyWindow) {
+                keyWindow = window;
+                break;
+            }
+        }
+    } else {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        keyWindow = [[UIApplication sharedApplication] keyWindow];
+        #pragma clang diagnostic pop
+    }
+    return keyWindow;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     // Default viewport size to whole screen
-    CGRect screenRect = [[[UIApplication sharedApplication] keyWindow] bounds];
+    CGRect screenRect = [[self keyWindow] bounds];
     self.viewportWidth = screenRect.size.width;
     self.viewportHeight = screenRect.size.height;
 #if TARGET_OS_TV

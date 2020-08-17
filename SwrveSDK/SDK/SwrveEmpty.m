@@ -20,7 +20,6 @@
 @synthesize messaging;
 @synthesize resourceManager;
 @synthesize deviceToken;
-@synthesize locationSegmentVersion;
 @synthesize eventsServer;
 @synthesize contentServer;
 @synthesize identityServer;

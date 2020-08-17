@@ -125,7 +125,7 @@
 }
 
 - (void)sizeTheWebView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         // Make the webview full width on iPad
         webview.frame = CGRectMake(0.0, 0.0, _view.frame.size.width, webview.frame.size.height/webview.frame.size.width*_view.frame.size.width);
     } else {
@@ -187,9 +187,11 @@
         }
     }
 
-    NSInteger decision = (!preventNavigation) ?  WKNavigationActionPolicyAllow : WKNavigationActionPolicyCancel;
-
-    decisionHandler(decision);
+    if (!preventNavigation) {
+        decisionHandler(WKNavigationActionPolicyAllow);
+    } else {
+        decisionHandler(WKNavigationActionPolicyCancel);
+    }
 }
 
 - (void)parentViewChangedSize:(CGSize)size {

@@ -196,7 +196,7 @@
     },
     "version": 2,
     "qa": {
-        "logging": 0,
-        "reset_device_state": 1
+        "logging": true,
+        "reset_device_state": true
     }    
 }

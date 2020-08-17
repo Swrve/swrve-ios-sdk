@@ -1,39 +1,8 @@
 #import "SwrveRESTClient.h"
-#import "SwrveCommonConnectionDelegate.h"
 #import "SwrveCommon.h"
-
-@interface SwrveConnectionDelegate : SwrveCommonConnectionDelegate
-
-@property(nonatomic, strong) SwrveRESTClient *restClient;
-
-- (id)init:(SwrveRESTClient *)restClient completionHandler:(ConnectionCompletionHandler)handler;
-
-@end
-
-@implementation SwrveConnectionDelegate
-
-@synthesize restClient;
-
-- (id)init:(SwrveRESTClient *)_restClient completionHandler:(ConnectionCompletionHandler)_handler {
-    self = [super init:_handler];
-    if (self) {
-        [self setRestClient:_restClient];
-    }
-    return self;
-}
-
-// Override default implementation and store the metricsString
-- (void)addHttpPerformanceMetrics:(NSString *)metricsString {
-    if (restClient) {
-        [restClient addHttpPerformanceMetrics:metricsString];
-    }
-}
-
-@end
 
 @implementation SwrveRESTClient
 
-@synthesize httpPerformanceMetrics;
 @synthesize timeoutInterval;
 
 - (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInt {
@@ -82,18 +51,6 @@
 }
 
 - (void)sendHttpRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler API_AVAILABLE(ios(7.0)) {
-    NSArray *allMetricsToSend;
-
-    @synchronized ([self httpPerformanceMetrics]) {
-        allMetricsToSend = [[self httpPerformanceMetrics] copy];
-        [[self httpPerformanceMetrics] removeAllObjects];
-    }
-
-    if (allMetricsToSend != nil && [allMetricsToSend count] > 0) {
-        NSString *fullHeader = [allMetricsToSend componentsJoinedByString:@";"];
-        [request addValue:fullHeader forHTTPHeaderField:@"Swrve-Latency-Metrics"];
-    }
-
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -103,12 +60,6 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [task resume];
     });
-}
-
-- (void)addHttpPerformanceMetrics:(NSString *)metrics {
-    @synchronized ([self httpPerformanceMetrics]) {
-        [[self httpPerformanceMetrics] addObject:metrics];
-    }
 }
 
 @end

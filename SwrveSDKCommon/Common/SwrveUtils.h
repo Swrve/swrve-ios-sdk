@@ -56,10 +56,10 @@
 + (NSString *)getStringFromDic:(NSDictionary *)dic withKey:(NSString *)key;
 
 /**
-Get current time in epoch in milliseconds.
-
-@return UInt64 time in milliseconds.
-*/
+    Return current time since the epoch in milliseconds
+    @return UInt64 of current time
+ */
+//TODO: review and update the Swrve.m to use this method instead of "[self getTime]". (need update few test mock to support this change as well)
 + (UInt64)getTimeEpoch;
 
 

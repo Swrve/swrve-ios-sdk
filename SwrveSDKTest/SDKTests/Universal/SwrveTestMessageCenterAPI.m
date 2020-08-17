@@ -26,7 +26,7 @@
 
 - (id)initWithSwrve:(Swrve*)sdk;
 - (void)writeToCampaignCache:(NSData*)campaignData;
-- (void)updateCampaigns:(NSDictionary*)campaignJson;
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (NSDate *)getNow;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 
@@ -100,8 +100,8 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict];
-    
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
     SwrveMessageController *controller = [swrveMock messaging];
     // No Message Center campaigns
     XCTAssertEqual([[controller messageCenterCampaigns] count], 0);
@@ -125,7 +125,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController* controller = [swrveMock messaging];
     
@@ -199,7 +199,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController* controller = [swrveMock messaging];
     
@@ -229,7 +229,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController* controller = [swrveMock messaging];
     
@@ -406,7 +406,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController* controller = [swrveMock messaging];
 

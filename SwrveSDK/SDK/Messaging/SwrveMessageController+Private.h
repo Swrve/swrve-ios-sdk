@@ -6,7 +6,7 @@
 #endif
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
-const static int CAMPAIGN_VERSION            = 6;
+const static int CAMPAIGN_VERSION            = 7;
 const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 
 /*! In-app messages controller */
@@ -42,15 +42,9 @@ const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 /*! Called when an event is raised by the Swrve SDK.
  *
  * \param event Event triggered.
- * \returns YES if an in-app message was shown.
+ * \returns YES if an in-app message or conversation was shown.
  */
 -(BOOL)eventRaised:(NSDictionary*)event;
-
-/*! Check if the user is a QA user.
- *
- * \returns TRUE if the current user is a QA user.
- */
-- (BOOL)isQaUser;
 
 /*! Determine if the conversation filters are supporter at this moment.
  *
@@ -61,12 +55,6 @@ const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 
 /*! Called when the app became active */
 -(void) appDidBecomeActive;
-
-/*! The device token was updated and we should update the QA user */
--(void) deviceTokenUpdated;
-
-/*! A push notification was received, notify the QA user */
-- (void) pushNotificationReceived:(NSDictionary*)userInfo;
 
 #pragma mark Properties
 

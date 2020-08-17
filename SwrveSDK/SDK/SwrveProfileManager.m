@@ -154,7 +154,7 @@
         if ([swrveUser.swrveId isEqualToString:swrveUserId] || [swrveUser.externalId isEqualToString:externalUserId] ) {
             swrveUser.verified = true;
             swrveUser.swrveId = swrveUserId;
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+            NSData *data = [self archiveSwrveUserArray:mArray];
             [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
@@ -168,7 +168,7 @@
     if (![mArray containsObject:swrveUser]) {
         [mArray addObject:swrveUser];
     }
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+    NSData *data = [self archiveSwrveUserArray:mArray];
     [SwrveLocalStorage saveSwrveUsers:data];
  }
 
@@ -179,16 +179,49 @@
     for (SwrveUser *swrveUser in [mArray copy]) {
         if ([swrveUser.swrveId isEqualToString:aUserId] || [swrveUser.externalId isEqualToString:aUserId] ) {
             [mArray removeObject:swrveUser];
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:mArray];
+            NSData *data = [self archiveSwrveUserArray:mArray];
             [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
     }
 }
 
+- (NSData *)archiveSwrveUserArray:(NSArray *)array{
+    NSData *data  = nil;
+    if (@available(ios 11.0,tvos 11.0, *)) {
+        NSError *error = nil;
+        data = [NSKeyedArchiver archivedDataWithRootObject:array requiringSecureCoding:false error:&error];
+        if (error) {
+            DebugLog(@"Failed to archive swrve user: %@",[error localizedDescription]);
+        }
+    } else {
+        // Fallback on earlier versions
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        data = [NSKeyedArchiver archivedDataWithRootObject:array];
+        #pragma clang diagnostic pop
+    }
+    return data;
+}
+
 - (NSArray *)swrveUsers {
     NSData *encodedObject = [SwrveLocalStorage swrveUsers];
-    return [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
+    NSArray *swrveUsers = nil;
+    if (@available(ios 11.0,tvos 11.0, *)) {
+        NSError *error = nil;
+        NSSet *classes = [NSSet setWithArray:@[[NSArray class],[SwrveUser class]]];
+        swrveUsers = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:encodedObject error:&error];
+        if (error) {
+            DebugLog(@"Failed to un archive swrve user: %@",[error localizedDescription]);
+        }
+    } else {
+        // Fallback on earlier versions
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        swrveUsers = [NSKeyedUnarchiver unarchiveObjectWithData:encodedObject];
+        #pragma clang diagnostic pop
+    }
+    return swrveUsers;
 }
 
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId {
