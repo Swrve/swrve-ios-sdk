@@ -9,6 +9,7 @@
 #import "TestPermissionsDelegate.h"
 #import "AppDelegate.h"
 #import "SwrveEventQueueItem.h"
+#import "SwrveCampaignInfluence.h"
 
 @interface SwrveSDK (InternalAccess)
 + (void)addSharedInstance:(Swrve*)instance;
@@ -126,7 +127,6 @@
     
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     XCTAssertNotNil(deviceInfo);
-    XCTAssertEqual([deviceInfo count], 20);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
@@ -145,8 +145,16 @@
     // Permissions
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_notifications"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
+    
+    // IDFA & Device Info count
+    if (@available(iOS 14, *)) {
+        XCTAssertEqual([deviceInfo count], 19);
+    } else {
+        XCTAssertEqual([deviceInfo count], 20);
+        XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
+    }
+    
     // Extra identifiers
-    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
     // Feature versions
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
@@ -172,7 +180,12 @@
 
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     XCTAssertNotNil(deviceInfo);
-    XCTAssertEqual([deviceInfo count], 25);
+    // Device Info count
+    if (@available(iOS 14, *)) {
+        XCTAssertEqual([deviceInfo count], 24);
+    } else {
+        XCTAssertEqual([deviceInfo count], 25);
+    }
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.photos"]);
@@ -527,5 +540,25 @@
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }
 
+- (void)testProcessInfluenceData {
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    config.pushEnabled = YES;
+    Swrve *swrve = [Swrve alloc];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+
+    // expect processInfluenceDataWithDate called from cold start
+    id campaignInfluenceMock = OCMClassMock([SwrveCampaignInfluence class]);
+    OCMExpect([campaignInfluenceMock processInfluenceDataWithDate:OCMOCK_ANY]);
+    [swrve appDidBecomeActive:nil];
+    OCMVerifyAll(campaignInfluenceMock);
+
+    // expect processInfluenceDataWithDate called from resuming the app
+    OCMExpect([campaignInfluenceMock processInfluenceDataWithDate:OCMOCK_ANY]);
+    [swrve appDidBecomeActive:nil];
+    OCMVerifyAll(campaignInfluenceMock);
+}
 
 @end

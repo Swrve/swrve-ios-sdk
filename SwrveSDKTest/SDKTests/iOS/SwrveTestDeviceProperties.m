@@ -47,7 +47,11 @@
 }
 
 - (int)devicePropertyCount {
-    return 15;
+    if (@available(iOS 14, *)) {
+        return 14;
+    } else{
+        return 15;
+    }
 }
 
 - (void)testDevicePropertiesNil {
@@ -79,7 +83,11 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
     
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
+    if (@available(iOS 14, *)) {
+        // FIXME: Cannot check for IDFA in iOS14 due to platform changes
+    } else {
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
+    }
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
 }
 

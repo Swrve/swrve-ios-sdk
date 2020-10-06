@@ -371,6 +371,7 @@ NSString *const SwrveContentVersionKey = @"version";
         if (lastProcessedPushId == nil || [pushId isEqualToString:@"0"] || ![pushId isEqualToString:lastProcessedPushId]) {
             lastProcessedPushId = pushId;
 
+            // Silent push does not require an app group Id so pass nil as a param.
             [SwrveCampaignInfluence saveInfluencedData:userInfo withId:pushId withAppGroupID:nil atDate:[self getNow]];
 
             if (completionHandler != nil) {

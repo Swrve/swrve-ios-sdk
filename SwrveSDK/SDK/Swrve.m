@@ -630,6 +630,7 @@ enum {
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     if (self.config.pushEnabled) {
+        [self.push processInfluenceData];
         [self.push saveConfigForPushDelivery];
     }
 #endif
