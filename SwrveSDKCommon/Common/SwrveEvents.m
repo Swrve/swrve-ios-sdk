@@ -47,7 +47,7 @@ static NSString *const SEQNUM_KEY = @"seqnum";
         NSMutableDictionary *campaignDic = [NSMutableDictionary new];
         [campaignDic setValue:[campaign objectForKey:@"id"] forKey:@"id"];
         NSDictionary *conversation = campaign[@"conversation"];
-        NSDictionary *message = campaign[@"messages"][0]; //TODO: Adam's notes: doesn't this cause a null pointer? if "messages" is null?
+        NSDictionary *message = campaign[@"messages"][0];
 
         if (conversation != nil && conversation[@"id"] != nil) {
             NSInteger variantID = [conversation[@"id"] integerValue];
