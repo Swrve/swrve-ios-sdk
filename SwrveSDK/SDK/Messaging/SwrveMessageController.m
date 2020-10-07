@@ -983,10 +983,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
         [self.analyticsSDK eventInternal:clickEvent payload:@{@"name": button.name} triggerCallback:false];
-    } else {
-        // Save button name for processing later
-        self.inAppButtonPressedName = button.name;
     }
+
+    // Save button name for processing later
+    self.inAppButtonPressedName = button.name;
 }
 
 - (NSString *)appStoreURLForAppId:(long)appID {
@@ -1226,7 +1226,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             } else {
                 nonProcessedAction = action;
             }
-            actionTypeString = @"custom";
+            actionTypeString = @"deeplink";
         }
             break;
         case kSwrveActionClipboard: {
@@ -1268,6 +1268,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     self.inAppMessageWindow.hidden = YES;
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
+    self.inAppButtonPressedName = nil;
 
     [self handleNextConversation:self.conversationsMessageQueue];
 }
