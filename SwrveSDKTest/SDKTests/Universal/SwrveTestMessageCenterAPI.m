@@ -109,7 +109,7 @@
 
 - (void)testIAMMessageCenter {
 #if TARGET_OS_IOS
-    [SwrveTestHelper changeToOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -179,7 +179,7 @@
 
 - (void)testIAMMessageCenterProgrammaticallySeen {
 #if TARGET_OS_IOS
-    [SwrveTestHelper changeToOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -201,7 +201,7 @@
     
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
-    SwrveMessageController* controller = [swrveMock messaging];
+    SwrveMessageController *controller = [swrveMock messaging];
     
     SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
@@ -213,7 +213,7 @@
 
 - (void)testPersonalisedIAMMessageCenter {
 #if TARGET_OS_IOS
-    [SwrveTestHelper changeToOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -231,7 +231,7 @@
     
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
-    SwrveMessageController* controller = [swrveMock messaging];
+    SwrveMessageController *controller = [swrveMock messaging];
     
     TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
@@ -308,7 +308,7 @@
     viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
     [viewController viewDidAppear:NO];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    NSArray *buttons = [[viewController current_format] buttons];
     XCTAssertEqual([buttons count], 2);
     
     
@@ -390,9 +390,9 @@
 }
 
 #if TARGET_OS_IOS /** Conversations are not supported on tvOS **/
-- (void)skipped_testConversationMessageCenter // TODO this test is failing locally so skipping it for now, needs to be fixed later.
-{
-    [SwrveTestHelper changeToOrientation:UIInterfaceOrientationLandscapeRight];
+- (void)testConversationMessageCenter {
+
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
     
     id swrveMock = [self swrveMock];
@@ -408,7 +408,7 @@
     
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
-    SwrveMessageController* controller = [swrveMock messaging];
+    SwrveMessageController *controller = [swrveMock messaging];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[controller messageCenterCampaigns] count], 0);
@@ -471,6 +471,8 @@
 
     XCTAssertFalse([[controller messageCenterCampaigns] containsObject:campaign]);
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_DELETED);
+    // Reset to default UIInterfaceOrientationPortrait orientation
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 }
 #endif
 

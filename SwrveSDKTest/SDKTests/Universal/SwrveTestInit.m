@@ -88,7 +88,7 @@
 }
 
 - (void)testManyCreations {
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 5; ++i) {
         Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
         swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
         [swrveMock appDidBecomeActive:nil];

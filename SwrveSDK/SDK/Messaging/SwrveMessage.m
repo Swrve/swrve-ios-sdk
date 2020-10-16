@@ -35,7 +35,7 @@
 
         NSArray* jsonFormats = [messageTemplate objectForKey:@"formats"];
 
-        NSMutableArray* loadedFormats = [[NSMutableArray alloc] init];
+        NSMutableArray *loadedFormats = [NSMutableArray new];
 
         for (NSDictionary* jsonFormat in jsonFormats)
         {

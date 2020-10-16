@@ -218,24 +218,6 @@
     return [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:@"com.ngt.msgs"];
 }
 
-#if TARGET_OS_IOS
-+ (void)changeToOrientation:(UIInterfaceOrientation)orientation {
-    // Give it time
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-    UIApplication *app = [UIApplication sharedApplication];
-    if (app == nil || ![app respondsToSelector:@selector(statusBarOrientation)]) {
-        NSException *ex = [NSException exceptionWithName:@"ApplicationChangeOrientationError"
-                                    reason:@"Appliction could not change orientation, something is up..."
-                                    userInfo:nil];
-        @throw ex;
-    }
-
-    if ([app statusBarOrientation] != orientation) {
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:orientation] forKey:@"orientation"];
-    }
-}
-#endif
-
 // Wait for the condition to be true, once that happens the expectation is fulfilled. If it is not true on each delta time, it is checked again.
 + (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation {
     [self waitForBlock:deltaSecs conditionBlock:conditionBlock expectation:expectation checkNow:TRUE];

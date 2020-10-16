@@ -228,15 +228,19 @@ NSString *mockCacheDir;
     XCTAssertTrue([message.name isEqualToString:@"Double format"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
     
-    // Allow message to load
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
-    
-    //Check events buffer for impression event
-    NSArray *eventsBuffer = [swrveMock eventBuffer];
-    NSString *bufferString = (NSString*)(eventsBuffer[0]);
-    NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    
-    XCTAssertTrue([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        //Check events buffer for impression event
+        NSArray *eventsBuffer = [swrveMock eventBuffer];
+        if ([eventsBuffer count] >0) {
+            NSString *bufferString = (NSString*)(eventsBuffer[0]);
+            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
+
+        }
+        return false;
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }
 
 - (void)testHandleDeeplink_ConversationShown {
@@ -266,8 +270,11 @@ NSString *mockCacheDir;
     SwrveMessageController *vc = swrve.messaging;
     XCTAssertTrue(vc != nil);
     
-    // Allow conversation to load
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        return (vc.conversationWindow != nil);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
     
     XCTAssertTrue(vc.conversationWindow != nil);
     
@@ -466,15 +473,19 @@ NSString *mockCacheDir;
     XCTAssertTrue([message.name isEqualToString:@"Double format"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
     
-    // Allow message to load
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
-    
-    //Check events buffer for impression event
-    NSArray *eventsBuffer = [swrveMock eventBuffer];
-    NSString *bufferString = (NSString*)(eventsBuffer[0]);
-    NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    
-    XCTAssertTrue([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        //Check events buffer for impression event
+        NSArray *eventsBuffer = [swrveMock eventBuffer];
+        if ([eventsBuffer count] >0) {
+            NSString *bufferString = (NSString*)(eventsBuffer[0]);
+            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
+
+        }
+        return false;
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }
 
 - (void)testHandleDeeplink_Personalisation_MessageNotShown {

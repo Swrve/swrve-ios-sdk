@@ -43,7 +43,7 @@
 
 + (SwrveConversationItemViewController *)initConversation {
 
-    SwrveConversationItemViewController *itemViewController = [[SwrveConversationItemViewController alloc] init];
+    SwrveConversationItemViewController *itemViewController = [SwrveConversationItemViewController new];
 
     // -- Background Image
     itemViewController.fullScreenBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectZero];

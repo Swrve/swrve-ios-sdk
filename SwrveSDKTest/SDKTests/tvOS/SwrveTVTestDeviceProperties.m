@@ -27,7 +27,7 @@
 }
 
 - (int)devicePropertyCount {
-    if (@available(iOS 14, *)) {
+    if (@available(iOS 14, tvOS 14, *)) {
         return 13;
     } else{
         return 14;
@@ -54,13 +54,13 @@
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"tvos");
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
-    if (@available(iOS 14, *)) {
-        //FIXME: IDFA is not available with the current platform
-    } else {
+    if (@available(iOS 14, tvOS 14, *)) {
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil);
+    }else{
         XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
     }
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
@@ -126,8 +126,9 @@
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.photos"]!= nil);
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.camera"]!= nil);
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.contacts"] != nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.permission.ios.ad_tracking"] != nil);
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 5);
+    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 6);
     
     [NSURLProtocol unregisterClass:[SwrveMockNSURLProtocol class]];
 }

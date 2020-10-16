@@ -210,7 +210,7 @@ const static int DEFAULT_MIN_DELAY = 55;
     self.provisionalPushNotificationEvents = sdk.config.provisionalPushNotificationEvents;
     self.pushNotificationEvents = sdk.config.pushNotificationEvents;
 #endif //!defined(SWRVE_NO_PUSH)
-    self.appStoreURLs = [[NSMutableDictionary alloc] init];
+    self.appStoreURLs = [NSMutableDictionary new];
 
     self.inAppMessageConfig = sdk.config.inAppMessageConfig;
 
@@ -220,7 +220,7 @@ const static int DEFAULT_MIN_DELAY = 55;
     }
 
     self.manager = [NSFileManager defaultManager];
-    self.notifications = [[NSMutableArray alloc] init];
+    self.notifications = [NSMutableArray new];
     self.autoShowMessagesEnabled = YES;
 
     // Game rule defaults
@@ -244,7 +244,7 @@ const static int DEFAULT_MIN_DELAY = 55;
     }
 #endif //!defined(SWRVE_NO_PUSH)
 
-    self.campaignsState = [[NSMutableDictionary alloc] init];
+    self.campaignsState = [NSMutableDictionary new];
     // Initialize campaign cache file
     [self initCampaignsFromCacheFile];
 
@@ -477,7 +477,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
     if ([campaignDic count] == 0) {
         DebugLog(@"Campaign JSON empty, no campaigns downloaded", nil);
-        self.campaigns = [[NSArray alloc] init];
+        self.campaigns = [NSArray new];
         return;
     }
 
@@ -1420,14 +1420,17 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     const NSString *orientationName = [self orientationName];
     UIDevice *device = [UIDevice currentDevice];
     NSString *encodedDeviceName = [[device model] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    NSString *encodedSystemName = [[device systemName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *encodedSystemVersion = [[device systemVersion] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *systemName  = [[device systemName] lowercaseString];
+    NSString *deviceType = [SwrveUtils platformDeviceType];
+    
 
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d",
-                                      CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemName, encodedDeviceName, CONVERSATION_VERSION];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&os=%@&device_type=%@",
+                                      CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemVersion, encodedDeviceName, CONVERSATION_VERSION, systemName, deviceType];
 }
 
 - (NSArray *)messageCenterCampaignsWithPredicate:(BOOL (^)(SwrveCampaign *))predicate {
-    NSMutableArray *result = [[NSMutableArray alloc] init];
+    NSMutableArray *result = [NSMutableArray new];
     if (analyticsSDK == nil) {
         return result;
     }

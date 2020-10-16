@@ -74,7 +74,7 @@ static NSString *const LOG_DETAILS_KEY = @"log_details";
 }
 
 - (NSMutableDictionary *)createJSONBodyForQAEvent {
-    NSMutableDictionary *jsonPacket = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *jsonPacket = [NSMutableDictionary new];
     [jsonPacket setValue:[SwrveCommon sharedInstance].userID forKey:@"user"];
     [jsonPacket setValue:[SwrveCommon sharedInstance].deviceUUID forKey:@"unique_device_id"];
     [jsonPacket setValue:[NSNumber numberWithInt:SWRVE_VERSION] forKey:@"version"];

@@ -24,6 +24,7 @@
 - (void)initSwrveDeeplinkManager;
 - (void)beginSession;
 - (NSDate *)getNow;
+- (void)startCampaignsAndResourcesTimer;
 @property(atomic) NSMutableArray *eventBuffer;
 @property(atomic) SwrveDeeplinkManager *swrveDeeplinkManager;
 @end
@@ -447,8 +448,7 @@
     id swrveMock1 = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:false];
     OCMExpect([swrveMock1 eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false]);
     [SwrveSDK start];
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-    OCMVerifyAll(swrveMock1);
+    OCMVerifyAllWithDelay(swrveMock1, 5);
 
     // Calling begin session later (to simulate 30 seconds in background and new session) should not send a Swrve.first_session again
     OCMReject([swrveMock1 eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false]);
@@ -458,9 +458,12 @@
     // verify Swrve.first_session is not fired in next new instance
     id swrveMock2 = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:false];
     OCMReject([swrveMock2 eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false]);
+    
+    //startCampaignsAndResourcesTimer is the next thing to be called after the check for Swrve.first_session
+    OCMExpect([swrveMock2 startCampaignsAndResourcesTimer]);
     [SwrveSDK start];
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-    OCMVerifyAll(swrveMock2);
+
+    OCMVerifyAllWithDelay(swrveMock2, 5);
 }
 
 @end

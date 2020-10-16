@@ -12,6 +12,8 @@
 @synthesize mockNextLocationAlwaysPermissionState;
 @synthesize mockLocationWhenInUsePermissionState;
 @synthesize mockNextLocationWhenInUsePermissionState;
+@synthesize mockAdTrackingPermissionState;
+@synthesize mockNextAdTrackingPermissionState;
 
 - (id)init {
     id result = [super init];
@@ -26,6 +28,8 @@
         self.mockNextLocationAlwaysPermissionState = SwrvePermissionStateAuthorized;
         self.mockLocationWhenInUsePermissionState = SwrvePermissionStateAuthorized;
         self.mockNextLocationWhenInUsePermissionState = SwrvePermissionStateAuthorized;
+        self.mockAdTrackingPermissionState = SwrvePermissionStateAuthorized;
+        self.mockNextAdTrackingPermissionState = SwrvePermissionStateAuthorized;
     }
     return result;
 }
@@ -74,5 +78,15 @@
     self.mockLocationWhenInUsePermissionState = self.mockNextLocationWhenInUsePermissionState;
     callback(TRUE);
 }
+
+- (SwrvePermissionState)adTrackingPermissionState {
+    return self.mockAdTrackingPermissionState;
+}
+
+- (void) requestAdTrackingPermission:(void (^)(BOOL processed))callback {
+    self.mockAdTrackingPermissionState = self.mockNextAdTrackingPermissionState;
+    callback(TRUE);
+}
+
 
 @end

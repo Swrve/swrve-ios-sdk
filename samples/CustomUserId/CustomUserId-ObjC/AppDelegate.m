@@ -9,7 +9,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    SwrveConfig* config = [[SwrveConfig alloc] init];
+    SwrveConfig *config = [SwrveConfig new];
     config.initMode = SWRVE_INIT_MODE_MANAGED;
     //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
     [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config];

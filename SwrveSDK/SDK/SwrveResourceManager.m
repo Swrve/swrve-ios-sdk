@@ -95,15 +95,15 @@
 - (id) init
 {
     if (self = [super init]) {
-        resources = [[NSDictionary alloc] init];
-        abTestDetails = [[NSArray alloc] init];
+        resources = [NSDictionary new];
+        abTestDetails = [NSArray new];
     }
     return self;
 }
 
 - (void)setResourcesFromArray:(NSArray*)resourcesArray
 {
-    NSMutableDictionary* resourcesDict = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *resourcesDict = [NSMutableDictionary new];
 
     for (NSDictionary* obj in resourcesArray) {
         NSString* itemName = [obj objectForKey:@"uid"];
@@ -160,7 +160,7 @@
 
 - (void)setABTestDetailsFromDictionary:(NSDictionary*)abTestDetailsListDic
 {
-    NSMutableArray* abTestDetailsArray = [[NSMutableArray alloc] init];
+    NSMutableArray *abTestDetailsArray = [NSMutableArray new];
     for(id abTestId in abTestDetailsListDic) {
         NSDictionary* abTestDetailsDic = [abTestDetailsListDic objectForKey:abTestId];
         NSString* abTestName = [abTestDetailsDic valueForKey:@"name"];

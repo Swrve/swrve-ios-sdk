@@ -10,7 +10,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-    SwrveConfig* config = [[SwrveConfig alloc] init];
+    SwrveConfig *config = [SwrveConfig new];
     config.resourcesUpdatedCallback = ^() {
         // New campaigns are available
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SwrveUserResourcesUpdated" object:self];

@@ -27,7 +27,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
 
         NSMutableDictionary *influencedData = [[defaults dictionaryForKey:SwrveInfluenceDataKey] mutableCopy];
         if (influencedData == nil) { // if nothing is there. create a new one
-            influencedData = [[NSMutableDictionary alloc] init];
+            influencedData = [NSMutableDictionary new];
         }
 
         // set id passed in
@@ -87,11 +87,11 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
                     // Send an influenced event for this tracking id
                     if (swrveCommon != nil) {
                         NSInteger trackingIdLong = [trackingId integerValue];
-                        NSMutableDictionary *influencedEvent = [[NSMutableDictionary alloc] init];
+                        NSMutableDictionary *influencedEvent = [NSMutableDictionary new];
                         [influencedEvent setValue:[NSNumber numberWithLong:trackingIdLong] forKey:@"id"];
                         [influencedEvent setValue:@"push" forKey:@"campaignType"];
                         [influencedEvent setValue:@"influenced" forKey:@"actionType"];
-                        NSMutableDictionary *eventPayload = [[NSMutableDictionary alloc] init];
+                        NSMutableDictionary *eventPayload = [NSMutableDictionary new];
                         [eventPayload setValue:[NSString stringWithFormat:@"%i", (int) ((maxWindowTimeSeconds - nowSeconds) / 60)] forKey:@"delta"];
                         [influencedEvent setValue:eventPayload forKey:@"payload"];
 

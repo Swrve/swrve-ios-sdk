@@ -127,8 +127,9 @@
     
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     XCTAssertNotNil(deviceInfo);
+    
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], @"ios");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.ios_min_version"] isKindOfClass:[NSNumber class]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"],  [swrveMock config].language);
@@ -147,7 +148,7 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
     
     // IDFA & Device Info count
-    if (@available(iOS 14, *)) {
+    if (@available(iOS 14, tvOS 14, *)) {
         XCTAssertEqual([deviceInfo count], 19);
     } else {
         XCTAssertEqual([deviceInfo count], 20);
@@ -179,12 +180,15 @@
     [swrveMock appDidBecomeActive:nil];
 
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
+    
     XCTAssertNotNil(deviceInfo);
     // Device Info count
-    if (@available(iOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 24);
-    } else {
+    if (@available(iOS 14, tvOS 14, *)) {
+        //IDFA string will be invalid on simulator
         XCTAssertEqual([deviceInfo count], 25);
+    }
+    else {
+        XCTAssertEqual([deviceInfo count], 26);
     }
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);
@@ -193,6 +197,7 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.contacts"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_notifications"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.permission.ios.ad_tracking"]);
 }
 
 -(void)testSavePushInfoWithStart
@@ -332,6 +337,7 @@
 // Therefore this test is manually executed on a REAL device with a passcode. Simulators do not support passcode so it will always pass in CI.
 // This test will fail on 6.5.2 and pass in 6.5.3
 - (void)testReadFilesDuringInitWhileLocked {
+#if !(TARGET_IPHONE_SIMULATOR) //File Protection does not appear for simulators, can only test against device
 
     Swrve *swrve1 = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
 
@@ -447,6 +453,7 @@
     if (events != nil) {
         XCTAssertTrue([events containsString:@"my_event"]);
     }
+#endif
 }
 
 - (void)testQueingAttributesWhileIdentifying {

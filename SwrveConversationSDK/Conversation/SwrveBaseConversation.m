@@ -28,7 +28,7 @@
     self.name = [json objectForKey:@"name"];
 
     NSArray *jsonPages = [json objectForKey:@"pages"];
-    NSMutableArray *loadedPages = [[NSMutableArray alloc] init];
+    NSMutableArray *loadedPages = [NSMutableArray new];
     for (NSDictionary *pageJson in jsonPages) {
         [loadedPages addObject:[[SwrveConversationPane alloc] initWithDictionary:pageJson]];
     }

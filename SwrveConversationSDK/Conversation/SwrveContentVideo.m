@@ -73,7 +73,7 @@
     [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
 
     // Create _view
-    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
+    WKWebViewConfiguration *wkConfig = [WKWebViewConfiguration new];
     [wkConfig setAllowsInlineMediaPlayback:YES];
 
     _view = webview = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 1, _height) configuration:wkConfig];

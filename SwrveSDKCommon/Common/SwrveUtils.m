@@ -102,4 +102,20 @@
     return NO;
 }
 
+
++ (NSString *) platformDeviceType {
+#if TARGET_OS_TV
+    return @"tv";
+#elif TARGET_OS_OSX
+    return @"desktop";
+#endif
+    return @"mobile";
+}
+
++ (BOOL)isValidIDFA:(NSString *)idfa {
+    NSString *noDashes = [idfa stringByReplacingOccurrencesOfString: @"-" withString:@""];
+    NSString *idfaNoZerosOrDashes = [noDashes stringByReplacingOccurrencesOfString: @"0" withString:@""];
+    return (idfaNoZerosOrDashes != nil && idfaNoZerosOrDashes.length != 0);
+}
+
 @end

@@ -220,8 +220,6 @@ enum {
 
 - (NSString *)copyBufferToJson:(NSArray *)buffer;
 
-- (void)sendCrashlyticsMetadata;
-
 - (BOOL)isValidJson:(NSData *)json;
 
 - (void)initResources;
@@ -432,7 +430,6 @@ enum {
         eventsManager = [[SwrveEventsManager alloc] initWithDelegate:self];
 
         instanceID = [[SwrveInstanceIDRecorder sharedInstance] addSwrveInstanceID];
-        [self sendCrashlyticsMetadata];
         [self setHttpPerformanceMetrics:[[NSMutableArray alloc] init]];
         [self initSwrveRestClient:config.httpTimeoutSeconds];
         [self initBuffer];
@@ -1698,20 +1695,6 @@ enum {
     NSString *eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
     [self eventInternal:eventName payload:nil triggerCallback:false];
     [self sendQueuedEventsWithCallback:nil eventFileCallback:nil];
-}
-
-- (void)sendCrashlyticsMetadata {
-
-    // Check if Crashlytics is used in this project
-    Class crashlyticsClass = NSClassFromString(@"Crashlytics");
-    if (crashlyticsClass != nil) {
-        SEL setObjectValueSelector = NSSelectorFromString(@"setObjectValue:forKey:");
-        if ([crashlyticsClass respondsToSelector:setObjectValueSelector]) {
-            IMP imp = [crashlyticsClass methodForSelector:setObjectValueSelector];
-            void (*func)(__strong id, SEL, id, NSString *) = (void (*)(__strong id, SEL, id, NSString *)) imp;
-            func(crashlyticsClass, setObjectValueSelector, @SWRVE_SDK_VERSION, @"Swrve_version");
-        }
-    }
 }
 
 - (NSDictionary *)deviceInfo {

@@ -14,7 +14,7 @@
         return nil;
     } else {
         NSArray *matches = [regex matchesInString:text options:0 range:searchedRange];
-        NSMutableDictionary *matchedStrings = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *matchedStrings = [NSMutableDictionary new];
         for (NSTextCheckingResult *match in matches) {
             NSString *templateFullValue = [text substringWithRange:[match range]];
             NSString *fallback = [self fallbackFromString:templateFullValue];

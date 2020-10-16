@@ -1522,7 +1522,7 @@
  * rotate the device and show the same message again it should show in landscape format
  */
 - (void)testMessageAppearsWithCorrectFormat {
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -1547,7 +1547,7 @@
     [viewController onButtonPressed:dismissButton];
 
     // Rotate device
-    [self changeOrientation:UIInterfaceOrientationLandscapeRight];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
 
     // Show same message again
     [controller showMessage:message];
@@ -1559,7 +1559,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 }
 
 /**
@@ -1567,7 +1567,7 @@
  * rotated, the message should still be there after rotation but with the new orientation format
  */
 - (void)testMessageReappearsWithDifferentFormat {
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -1586,7 +1586,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Rotate device
-    [self changeOrientation:UIInterfaceOrientationLandscapeRight];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
 
     [viewController viewDidAppear:NO];
 
@@ -1595,7 +1595,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 }
 
 /**
@@ -1603,7 +1603,7 @@
  * rotated, the message should still be there after rotation with the same format
  */
 - (void)testMessageReappearsWithSameFormat {
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPortraitOnly"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -1622,7 +1622,8 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Rotate device
-    [self changeOrientation:UIInterfaceOrientationLandscapeRight];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
+
     viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
 
     // Ensure message is still shown with the same format
@@ -1630,7 +1631,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    [self changeOrientation:UIInterfaceOrientationPortrait];
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 }
 #endif //TARGET_OS_IOS
 
@@ -1840,7 +1841,7 @@
     XCTAssertEqual(campaignShown.state.impressions, 1);
 
     // Fake that there were no campaigns before saving (can cause bugs if states are not saved properly)
-    [swrveMock messaging].campaigns = [[NSMutableArray alloc] init];
+    [swrveMock messaging].campaigns = [NSMutableArray new];
 
     // Restart, and check campaign settings haven't been reset
     [swrveMock suspend:YES];
@@ -1872,7 +1873,7 @@
 
 - (void)testCampaignStatesCannotGoOverLimit {
     int impressionAmount = 0;
-    NSMutableArray *allEventsBuffer = [[NSMutableArray alloc] init];
+    NSMutableArray *allEventsBuffer = [NSMutableArray new];
     
     //max impressions rule set to 5
     while(impressionAmount < 5) {
@@ -1902,7 +1903,7 @@
         XCTAssertEqual(campaignShown.state.impressions, impressionAmount);
 
         // Fake that there were no campaigns before saving (can cause bugs if states are not saved properly)
-        [swrveMock messaging].campaigns = [[NSMutableArray alloc] init];
+        [swrveMock messaging].campaigns = [NSMutableArray new];
 
         [allEventsBuffer addObjectsFromArray:[swrveMock eventBuffer]];
 
@@ -2284,11 +2285,4 @@
     OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:YES campaignInfoDict:OCMOCK_ANY]);
 }
 
-#pragma mark - orientation checks
-
-#if TARGET_OS_IOS
-- (void)changeOrientation:(UIInterfaceOrientation)orientation {
-    [SwrveTestHelper changeToOrientation:orientation];
-}
-#endif
 @end

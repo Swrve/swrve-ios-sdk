@@ -205,7 +205,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
         } else if(fontNativeStyle && [fontNativeStyle isEqualToString:@"Italic"]) {
             uiFont = [UIFont italicSystemFontOfSize:fontSizePoints];
         } else if(fontNativeStyle && [fontNativeStyle isEqualToString:@"BoldItalic"]) {
-            UILabel * label = [[UILabel alloc] init];
+            UILabel *label = [UILabel new];
             UIFontDescriptor * fontD = [label.font.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold | UIFontDescriptorTraitItalic];
             label.font = [UIFont fontWithDescriptor:fontD size:fontSizePoints];
             uiFont = label.font;

@@ -18,6 +18,9 @@
 @property (nonatomic) SwrvePermissionState mockLocationWhenInUsePermissionState;
 @property (nonatomic) SwrvePermissionState mockNextLocationWhenInUsePermissionState;
 
+@property (nonatomic) SwrvePermissionState mockAdTrackingPermissionState;
+@property (nonatomic) SwrvePermissionState mockNextAdTrackingPermissionState;
+
 - (SwrvePermissionState)contactPermissionState;
 
 - (void) requestContactsPermission:(void (^)(BOOL processed))callback;
@@ -37,5 +40,9 @@
 - (SwrvePermissionState)locationWhenInUsePermissionState;
 
 - (void) requestLocationWhenInUsePermission:(void (^)(BOOL processed))callback;
+
+- (SwrvePermissionState)adTrackingPermissionState;
+
+- (void) requestAdTrackingPermission:(void (^)(BOOL processed))callback;
 
 @end

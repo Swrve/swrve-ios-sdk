@@ -8,8 +8,7 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    SwrveConfig *config = [[SwrveConfig alloc] init];
-    
+    SwrveConfig *config = [SwrveConfig new];
     // To use the EU stack, include this in your config.
     // config.Stack = SWRVE_STACK_EU;
     

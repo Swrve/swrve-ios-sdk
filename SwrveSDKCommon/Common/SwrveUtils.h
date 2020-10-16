@@ -70,4 +70,19 @@
  */
 + (BOOL) supportsConversations;
 
+
+/**
+ Returns one of three options "mobile" , "tv" or "desktop" based on the platform running it.
+ 
+ @return NSString representing the device type
+ */
++ (NSString *) platformDeviceType;
+
+/**
+ Check if IDFA doesn't contain all zeros and dashes
+ 
+ @return Bool
+ */
++ (BOOL)isValidIDFA:(NSString *)idfa;
+
 @end

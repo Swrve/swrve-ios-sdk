@@ -1,7 +1,6 @@
 #import "SwrveDeviceProperties.h"
 #import <AdSupport/ASIdentifierManager.h>
 
-
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 static NSString* SWRVE_DEVICE_NAME =                    @"swrve.device_name";
@@ -100,7 +99,7 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 
 - (NSDictionary *)deviceProperties {
     
-    NSMutableDictionary* deviceProperties = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *deviceProperties = [NSMutableDictionary new];
     
     // Basic Device Properties
     UIDevice* device = [UIDevice currentDevice];
@@ -110,9 +109,9 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
     NSNumber* dpi = [NSNumber numberWithFloat:[SwrveUtils estimate_dpi]];
     
     [deviceProperties setValue:[SwrveUtils hardwareMachineName] forKey:SWRVE_DEVICE_NAME];
-    [deviceProperties setValue:[device systemName]              forKey:SWRVE_OS];
-    [deviceProperties setValue:[device systemVersion]           forKey:SWRVE_OS_VERSION];
-    [deviceProperties setValue:dpi                              forKey:SWRVE_DEVICE_DPI];
+    [deviceProperties setValue:[[device systemName] lowercaseString]            forKey:SWRVE_OS];
+    [deviceProperties setValue:[device systemVersion]                           forKey:SWRVE_OS_VERSION];
+    [deviceProperties setValue:dpi                                              forKey:SWRVE_DEVICE_DPI];
     
     // Install Date / Version
     [deviceProperties setValue:[self installDate:self.appInstallTimeSeconds] forKey:SWRVE_INSTALL_DATE];
@@ -169,11 +168,18 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
     
     // Optional identifiers
 #if defined(SWRVE_LOG_IDFA)
-    if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled])
-    {
+    if (@available(iOS 14,tvOS 14, *)) {
         NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [deviceProperties setValue:idfa forKey:SWRVE_IDFA];
+        if ([SwrveUtils isValidIDFA:idfa]) {
+            [deviceProperties setValue:idfa forKey:SWRVE_IDFA];
+        }
+    } else {
+        if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled]) {
+            NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+            [deviceProperties setValue:idfa forKey:SWRVE_IDFA];
+        }
     }
+
 #endif //defined(SWRVE_LOG_IDFA)
     
 #if defined(SWRVE_LOG_IDFV)
@@ -183,6 +189,5 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
     
     return deviceProperties;
 }
-
 
 @end

@@ -17,7 +17,7 @@
 -(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
 {
     id instance = [super initAtTime:time fromDictionary:json];
-    NSMutableArray *loadedMessages = [[NSMutableArray alloc] init];
+    NSMutableArray *loadedMessages = [NSMutableArray new];
     NSArray *campaign_messages = [json objectForKey:@"messages"];
     for (NSDictionary *messageDict in campaign_messages)
     {

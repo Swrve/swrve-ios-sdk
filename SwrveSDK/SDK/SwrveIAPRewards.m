@@ -16,7 +16,7 @@
 - (id) init
 {
     self = [super init];
-    self.rewards = [[NSMutableDictionary alloc] init];
+    self.rewards = [NSMutableDictionary new];
     return self;
 }
 

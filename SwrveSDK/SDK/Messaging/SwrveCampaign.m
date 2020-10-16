@@ -47,7 +47,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 }
 
 -(NSDictionary*)asDictionary {
-    NSMutableDictionary* state = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *state = [NSMutableDictionary new];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.campaignID] forKey:@"ID"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.impressions] forKey:@"impressions"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.status] forKey:@"status"];

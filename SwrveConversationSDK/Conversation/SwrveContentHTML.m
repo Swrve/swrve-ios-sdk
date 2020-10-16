@@ -22,7 +22,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
 -(void) loadViewWithContainerView:(UIView*)containerView {
     _containerView = containerView;
     // Create _view
-    _view = webview = [[WKWebView alloc] init];
+    _view = webview = [WKWebView new];
     webview.frame = CGRectMake(0, 0, containerView.frame.size.width, 100);
     [SwrveConversationStyler styleView:webview withStyle:self.style];
     webview.opaque = NO;

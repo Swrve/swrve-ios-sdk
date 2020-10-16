@@ -39,7 +39,7 @@ static float const kSwrveStarRatingPadding = 40.0f;
 - (id) initWithDefaults {
     self = [super init];
     if(self){
-        self.swrveStarViews = [[NSMutableArray alloc] init];
+        self.swrveStarViews = [NSMutableArray new];
         self.swrveNotSelectedImage =  [SwrveConversationResourceManagement imageWithName:@"star_empty"];
         self.swrveFullSelectedImage = [SwrveConversationResourceManagement imageWithName:@"star_full"];
         self.swrveStarColor = [UIColor redColor];
@@ -69,7 +69,7 @@ static float const kSwrveStarRatingPadding = 40.0f;
     [self.swrveStarViews removeAllObjects];
     // Add new image views
     for(NSUInteger i = 0; i < self.swrveMaxRating; ++i) {
-        UIImageView *imageView = [[UIImageView alloc] init];
+        UIImageView *imageView = [UIImageView new];
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.swrveStarViews addObject:imageView];
         [self addSubview:imageView];

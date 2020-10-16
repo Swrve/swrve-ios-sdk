@@ -48,16 +48,20 @@
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.camera"] == NSOrderedSame) {
         return [SwrvePermissions requestCamera:sdk];
     }
+    if([action caseInsensitiveCompare:@"swrve.request_permission.ios.adtracking"] == NSOrderedSame) {
+        return [SwrvePermissions requestAdTracking:sdk];
+    }
     return NO;
 }
 
 + (NSDictionary *)currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk API_AVAILABLE(ios(7.0)) {
-    NSMutableDictionary *permissionsStatus = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *permissionsStatus = [NSMutableDictionary new];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationAlways:sdk]) forKey:swrve_permission_location_always];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkLocationWhenInUse:sdk]) forKey:swrve_permission_location_when_in_use];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkPhotoLibrary:sdk]) forKey:swrve_permission_photos];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkCamera:sdk]) forKey:swrve_permission_camera];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts:sdk]) forKey:swrve_permission_contacts];
+    [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkAdTracking:sdk]) forKey:swrve_permission_ad_tracking];
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
     NSString *pushAuthorization = [SwrvePermissions pushAuthorizationWithSDK:sdk];
     if (pushAuthorization) {
@@ -94,7 +98,7 @@
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
 
-            NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *dictionary = [NSMutableDictionary new];
             NSString *pushAuthorizationFromSettings = swrve_permission_status_unknown;
             if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
                 pushAuthorizationFromSettings = swrve_permission_status_authorized;
@@ -148,13 +152,14 @@
         [self compareStatusAndQueueEvent:swrve_permission_camera lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
         [self compareStatusAndQueueEvent:swrve_permission_contacts lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
         [self compareStatusAndQueueEvent:swrve_permission_push_notifications lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
+        [self compareStatusAndQueueEvent:swrve_permission_ad_tracking lastStatus:lastStatus currentStatus:currentStatus withSDK:sdk];
     }
     [SwrveLocalStorage savePermissions:currentStatus];
 }
 
 + (NSArray *)currentPermissionFilters {
-    NSMutableArray* filters = [[NSMutableArray alloc] init];
-    NSMutableDictionary * permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
+    NSMutableArray *filters = [NSMutableArray new];
+    NSMutableDictionary *permissionsStatusCache = [SwrvePermissions permissionsStatusCache];
     if(permissionsStatusCache == nil) {
         return filters;
     }
@@ -164,6 +169,7 @@
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_photos to:filters withCurrentStatus:permissionsStatusCache];
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_camera to:filters withCurrentStatus:permissionsStatusCache];
         [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_contacts to:filters withCurrentStatus:permissionsStatusCache];
+        [SwrvePermissions checkPermissionNameAndAddFilters:swrve_permission_ad_tracking to:filters withCurrentStatus:permissionsStatusCache];
 
         // Check that we haven't already asked for push permissions
         if (![SwrvePermissions didWeAskForPushPermissionsAlready]) {
@@ -212,7 +218,7 @@
 
 + (BOOL)requestLocationAlways:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
-    if (del != nil && [del respondsToSelector:@selector(requestLocationAlways:)]) {
+    if (del != nil && [del respondsToSelector:@selector(requestLocationAlwaysPermission:)]) {
         [del requestLocationAlwaysPermission:^(BOOL processed) {
             if (processed) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -235,7 +241,7 @@
 
 + (BOOL)requestLocationWhenInUse:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
-    if (del != nil && [del respondsToSelector:@selector(requestLocationWhenInUse:)]) {
+    if (del != nil && [del respondsToSelector:@selector(requestLocationWhenInUsePermission:)]) {
         [del requestLocationWhenInUsePermission:^(BOOL processed) {
             if (processed) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -258,7 +264,7 @@
 
 + (BOOL)requestPhotoLibrary:(id<SwrveCommonDelegate>)sdk {
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
-    if (del != nil && [del respondsToSelector:@selector(requestPhotoLibrary:)]) {
+    if (del != nil && [del respondsToSelector:@selector(requestPhotoLibraryPermission:)]) {
         [del requestPhotoLibraryPermission:^(BOOL processed) {
             if (processed) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -306,6 +312,28 @@
     id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
     if (del != nil && [del respondsToSelector:@selector(requestContactsPermission:)]) {
         [del requestContactsPermission:^(BOOL processed) {
+            if (processed) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sdk mergeWithCurrentDeviceInfo:[SwrvePermissions currentStatusWithSDK:sdk]];
+                });
+            }
+        }];
+        return TRUE;
+    }
+    return FALSE;
+}
+
++ (SwrvePermissionState)checkAdTracking:(id<SwrveCommonDelegate>)sdk {
+    id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
+    if (del != nil && [del respondsToSelector:@selector(adTrackingPermissionState)]) {
+        return [del adTrackingPermissionState];
+    }
+    return SwrvePermissionStateNotImplemented;
+}
++ (BOOL)requestAdTracking:(id<SwrveCommonDelegate>)sdk {
+    id<SwrvePermissionsDelegate> del = sdk.permissionsDelegate;
+    if (del != nil && [del respondsToSelector:@selector(requestAdTrackingPermission:)]) {
+        [del requestAdTrackingPermission:^(BOOL processed) {
             if (processed) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [sdk mergeWithCurrentDeviceInfo:[SwrvePermissions currentStatusWithSDK:sdk]];

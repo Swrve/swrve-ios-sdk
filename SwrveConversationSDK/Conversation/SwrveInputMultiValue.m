@@ -25,7 +25,7 @@
         self.style = style;
 
         // v1/v2/v3 of conversations have no style definitions in values
-        NSMutableArray *valuesMutable = [[NSMutableArray alloc] init];
+        NSMutableArray *valuesMutable = [NSMutableArray new];
         for (NSDictionary *valueJson in [dict objectForKey:kSwrveKeyValues]) {
             if ([valueJson objectForKey:kSwrveKeyStyle]) {
                 [valuesMutable addObject:valueJson];

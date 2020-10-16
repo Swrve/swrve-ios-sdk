@@ -17,7 +17,7 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 @synthesize cacheFolder;
 
 + (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsImage:(BOOL)isImage {
-    NSMutableDictionary *assetQItem = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *assetQItem = [NSMutableDictionary new];
     [assetQItem setObject:name forKey:SWRVE_ASSETQ_ITEM_NAME];
     [assetQItem setObject:digest forKey:SWRVE_ASSETQ_ITEM_DIGEST];
     [assetQItem setObject:[NSNumber numberWithBool:isImage] forKey:SWRVE_ASSETQ_ITEM_IS_IMAGE];

@@ -47,9 +47,9 @@
 }
 
 - (int)devicePropertyCount {
-    if (@available(iOS 14, *)) {
+    if (@available(iOS 14, tvOS 14, *)) {
         return 14;
-    } else{
+    } else {
         return 15;
     }
 }
@@ -68,7 +68,7 @@
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
     XCTAssertTrue(deviceInfo != nil);
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount]);
+    XCTAssertEqual([deviceInfo count], [self devicePropertyCount]);
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.conversation_version"] != nil);
@@ -78,14 +78,14 @@
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
     
-    if (@available(iOS 14, *)) {
-        // FIXME: Cannot check for IDFA in iOS14 due to platform changes
-    } else {
+    if (@available(iOS 14, tvOS 14, *)) {
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil );
+    }else{
         XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
     }
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
@@ -104,7 +104,7 @@
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 1);
+    XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 1);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sdk_version"], @SWRVE_SDK_VERSION);
 }
 
@@ -199,9 +199,9 @@
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.contacts"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.push_bg_refresh"]!= nil);
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.push_notifications"]!= nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.permission.ios.ad_tracking"]!= nil);
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 7);
-    
+    XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 8);
     [NSURLProtocol unregisterClass:[SwrveMockNSURLProtocol class]];
 }
 
@@ -223,8 +223,7 @@
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 1);
-
+    XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 1);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.language"] , config.language);
 }
 
@@ -249,7 +248,7 @@
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 3);
+    XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 3);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sim_operator.name"], @"vodafone IE");
     
     NSString *code = [deviceInfo valueForKey:@"swrve.sim_operator.code"];
@@ -272,7 +271,7 @@
                                                                                             carrierInfo:nil
                                                                                           swrveInitMode:@"auto"];
     NSDictionary *deviceInfoManagedAutostartFalse = [swrveDevicePropertiesManagedAutostartFalse deviceProperties];
-    XCTAssertTrue([deviceInfoManagedAutostartFalse count] == [self devicePropertyCount] + 1);
+    XCTAssertEqual([deviceInfoManagedAutostartFalse count], [self devicePropertyCount] + 1);
     XCTAssertEqualObjects([deviceInfoManagedAutostartFalse valueForKey:@"swrve.sdk_init_mode"] , @"auto");
 }
 

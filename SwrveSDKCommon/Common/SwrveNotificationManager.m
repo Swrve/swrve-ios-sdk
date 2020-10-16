@@ -425,7 +425,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             // send button click event
             NSString *actionText = [selectedButton objectForKey:SwrveNotificationButtonTitleKey];
             NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
-            NSMutableDictionary *eventPayload = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *eventPayload = [NSMutableDictionary new];
             if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
                 if ([userInfo objectForKey:SwrveNotificationEventPayload]) {
                     NSMutableDictionary *geoPayload = [userInfo objectForKey:SwrveNotificationEventPayload];
@@ -524,7 +524,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     DebugLog(@"SwrveNotificationManager: Selected Button:'%@' on Swrve notification with id: %@ and campaignType: %@", contextId, notificationId, campaignType);
 
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
-    NSMutableDictionary *eventData = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
     [eventData setValue:notificationId forKey:@"id"];
     [eventData setValue:campaignType forKey:@"campaignType"];
     [eventData setValue:@"button_click" forKey:@"actionType"];
@@ -543,7 +543,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
     if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
 
-        NSMutableDictionary *eventData = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *eventData = [NSMutableDictionary new];
         [eventData setValue:notificationId forKey:@"id"];
         [eventData setValue:@"geo" forKey:@"campaignType"];
         [eventData setValue:@"engaged" forKey:@"actionType"];
@@ -618,7 +618,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 }
 
 + (NSMutableArray *)authenticatedNotificationsFrom:(NSArray<UNNotification *> *)notifications API_AVAILABLE(ios(10.0)) {
-    NSMutableArray *identifierArray = [[NSMutableArray alloc] init];
+    NSMutableArray *identifierArray = [NSMutableArray new];
     for (UNNotification* notification in notifications) {
         if (notification != nil && notification.request != nil && notification.request.content != nil && notification.request.content.userInfo != nil) {
             NSDictionary *userInfo = notification.request.content.userInfo;

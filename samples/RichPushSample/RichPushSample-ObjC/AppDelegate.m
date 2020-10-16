@@ -12,7 +12,7 @@ NSString * const NotificationActionTwoIdentifier = @"ACTION2";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-    SwrveConfig* config = [[SwrveConfig alloc] init];
+    SwrveConfig *config = [SwrveConfig new];
 
     // Set the response delegate before swrve is intialised
     config.pushResponseDelegate = self;

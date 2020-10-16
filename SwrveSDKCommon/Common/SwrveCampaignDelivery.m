@@ -94,7 +94,7 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     DebugLog(@"Swrve Stored Info at app group %@: %@", appGroupId, deliveryConfig);
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:10];
 
-    NSMutableDictionary *eventBatch = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *eventBatch = [NSMutableDictionary new];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey] forKey:@"user"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigDeviceIdKey] forKey:@"unique_device_id"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigAppVersionKey] forKey:@"app_version"];

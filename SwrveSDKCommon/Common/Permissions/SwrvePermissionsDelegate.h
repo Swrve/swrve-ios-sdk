@@ -12,6 +12,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 
+/*! Status of the Ad Tracking permission.
+ *
+ * \returns SwrvePermissionState State of the Ad trackimng  permission.
+ */
+- (SwrvePermissionState)adTrackingPermissionState;
+
+/*! Request the Ad Tracking  permission
+ *
+ * \param callback Call this callback when the permission has been processed (after dialog or other).
+ */
+- (void)requestAdTrackingPermission:(void (^)(BOOL processed))callback;
+
 /*! Status of the Contact permission.
  *
  * \returns SwrvePermissionState State of the contacts permission.

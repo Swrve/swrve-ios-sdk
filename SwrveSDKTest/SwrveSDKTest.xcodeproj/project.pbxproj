@@ -13,6 +13,8 @@
 		2341DABAEE33BE73A4D692FE /* libPods-SwrveSDK-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */; };
 		527D29A423FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 527D29A323FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m */; };
 		527D29A523FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 527D29A323FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m */; };
+		52B3D372251A45B5005606D7 /* SwrveTestUtilsIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B3D371251A45B5005606D7 /* SwrveTestUtilsIOS.m */; };
+		52B3D378251A466C005606D7 /* SwrveTestUtilsTV.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B3D377251A466C005606D7 /* SwrveTestUtilsTV.m */; };
 		52FC409823FEBB6C0097E9BA /* campaignsPersonalisation.json in Resources */ = {isa = PBXBuildFile; fileRef = 52FC409523FEB5CE0097E9BA /* campaignsPersonalisation.json */; };
 		52FC409923FEBB6C0097E9BA /* campaignsPersonalisation.json in Resources */ = {isa = PBXBuildFile; fileRef = 52FC409523FEB5CE0097E9BA /* campaignsPersonalisation.json */; };
 		57A3FE3E1737DF38635C1CC6 /* libPods-SwrveSDK-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */; };
@@ -131,6 +133,8 @@
 		5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		960AA6CED41D6401FBEB237F /* libPods-SwrveSDK-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */; };
+		F612AB93251E2B84002B5775 /* SwrveTestPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */; };
+		F612AB94251E2B84002B5775 /* SwrveTestPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,6 +170,8 @@
 		3AF4634E24AA1731002A854B /* SwrveSDK-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwrveSDK-iOS.entitlements"; sourceTree = "<group>"; };
 		4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		527D29A323FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestRealTimeUserProperties.m; sourceTree = "<group>"; };
+		52B3D371251A45B5005606D7 /* SwrveTestUtilsIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUtilsIOS.m; sourceTree = "<group>"; };
+		52B3D377251A466C005606D7 /* SwrveTestUtilsTV.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUtilsTV.m; sourceTree = "<group>"; };
 		52FC409523FEB5CE0097E9BA /* campaignsPersonalisation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsPersonalisation.json; sourceTree = "<group>"; };
 		5B2B6DF423C49326000B1687 /* SwrveSDK-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SwrveSDK-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B2B6E0E23C49328000B1687 /* SwrveSDK-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SwrveSDK-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,6 +204,7 @@
 		F60B7F4D225F3BA3009AFCCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F60B7F4E225F3BA3009AFCCC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTVTestDeviceProperties.m; sourceTree = "<group>"; };
+		F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPermissions.m; sourceTree = "<group>"; };
 		F6411204227742B900399A66 /* SwrveTestMessageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageController.m; sourceTree = "<group>"; };
 		F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageCenterAPI.m; sourceTree = "<group>"; };
 		F641120A227742E200399A66 /* campaignsBothOrientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsBothOrientations.json; sourceTree = "<group>"; };
@@ -392,6 +399,7 @@
 				3AA08416226A251600ECA032 /* SwrveTestInitTV.m */,
 				F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */,
 				F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */,
+				52B3D377251A466C005606D7 /* SwrveTestUtilsTV.m */,
 			);
 			path = tvOS;
 			sourceTree = "<group>";
@@ -413,6 +421,7 @@
 				F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */,
 				3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */,
 				3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */,
+				52B3D371251A45B5005606D7 /* SwrveTestUtilsIOS.m */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -437,6 +446,7 @@
 				F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */,
 				F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */,
 				F6411204227742B900399A66 /* SwrveTestMessageController.m */,
+				F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */,
 			);
 			path = Universal;
 			sourceTree = "<group>";
@@ -890,6 +900,7 @@
 				5B2B6E1E23C49346000B1687 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
 				5B2B6E1B23C49346000B1687 /* SwrveTestUserResources.m in Sources */,
 				527D29A423FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m in Sources */,
+				F612AB93251E2B84002B5775 /* SwrveTestPermissions.m in Sources */,
 				5B2B6E1D23C49346000B1687 /* SwrveTestQA.m in Sources */,
 				5B2B6E6F23C4A05B000B1687 /* TestPermissionsDelegate.m in Sources */,
 				5B2B6E2923C4935F000B1687 /* SwrveTestInitIOS.m in Sources */,
@@ -915,6 +926,7 @@
 				5B2B6E3323C4935F000B1687 /* SwrveTestInitModeIOS.m in Sources */,
 				5B2B6E2423C49346000B1687 /* SwrveTestProfileManager.m in Sources */,
 				5BB9AD2B23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m in Sources */,
+				52B3D372251A45B5005606D7 /* SwrveTestUtilsIOS.m in Sources */,
 				5B2B6E6D23C4A05B000B1687 /* SwrveTestHelper.m in Sources */,
 				5B2B6E1F23C49346000B1687 /* SwrveTestInit.m in Sources */,
 				5B2B6E2D23C4935F000B1687 /* SwrveTestMigrationsManager.m in Sources */,
@@ -943,10 +955,12 @@
 				5B2B6F9A23C4E6AF000B1687 /* SwrveTestInitMode.m in Sources */,
 				5B2B6F9623C4E6AF000B1687 /* SwrveTestABTestDetails.m in Sources */,
 				5B2B6F9B23C4E6AF000B1687 /* SwrveTestCustomPayloads.m in Sources */,
+				F612AB94251E2B84002B5775 /* SwrveTestPermissions.m in Sources */,
 				5B2B6FA623C4E77F000B1687 /* SwrveTVTestDeviceProperties.m in Sources */,
 				5B2B6FA023C4E6AF000B1687 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */,
 				5B2B6F9723C4E6AF000B1687 /* SwrveTestQA.m in Sources */,
 				5B2B6F0423C4E4DA000B1687 /* SwrveMockNSURLProtocol.m in Sources */,
+				52B3D378251A466C005606D7 /* SwrveTestUtilsTV.m in Sources */,
 				5BB9AD2923E34620006125DD /* SwrveTestSwrveCampaignDelivery.m in Sources */,
 				5B2B6F9E23C4E6AF000B1687 /* SwrveTestProfileManager.m in Sources */,
 				5B2B6F8723C4E67A000B1687 /* SwrveTestInitTV.m in Sources */,

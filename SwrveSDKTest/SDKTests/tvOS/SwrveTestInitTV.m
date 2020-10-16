@@ -53,7 +53,7 @@
     NSDictionary *deviceInfo = ((id <SwrveCommonDelegate>) swrveMock).deviceInfo;
     XCTAssertNotNil(deviceInfo);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], [UIDevice currentDevice].systemName);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], @"tvos");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.ios_min_version"] isKindOfClass:[NSNumber class]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"], swrveMock.config.language);
@@ -67,10 +67,17 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
-
+    
+    // IDFA & Device Info count
+    if (@available(iOS 14, tvOS 14, *)) {
+        XCTAssertEqual([deviceInfo count], 16);
+    }else{
+        XCTAssertEqual([deviceInfo count], 17);
+        XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
+    }
 
     // IDFA & Device Info count
-    if (@available(iOS 14, *)) {
+    if (@available(iOS 14, tvOS 14, *)) {
         XCTAssertEqual([deviceInfo count], 16);
     } else {
         XCTAssertEqual([deviceInfo count], 17);

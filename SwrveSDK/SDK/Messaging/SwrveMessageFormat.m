@@ -160,7 +160,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     DebugLog(@"Format %@ Scale: %g  Size: %gx%g", self.name, self.scale, self.size.width, self.size.height);
 
     NSArray* jsonButtons = [json objectForKey:@"buttons"];
-    NSMutableArray* loadedButtons = [[NSMutableArray alloc] init];
+    NSMutableArray *loadedButtons = [NSMutableArray new];
 
     for (NSDictionary* jsonButton in jsonButtons)
     {
@@ -171,7 +171,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     self.text = [[NSArray alloc]init];
 
-    NSMutableArray* loadedImages = [[NSMutableArray alloc] init];
+    NSMutableArray *loadedImages = [NSMutableArray new];
 
     NSArray* jsonImages = [json objectForKey:@"images"];
     for (NSDictionary* jsonImage in jsonImages) {

@@ -202,9 +202,11 @@
                                 [NSURLQueryItem queryItemWithName:@"app_store" value:@"apple"],
                                 [NSURLQueryItem queryItemWithName:@"device_width" value:[NSString stringWithFormat:@"%d", (int) screen_bounds.size.width]],
                                 [NSURLQueryItem queryItemWithName:@"device_height" value:[NSString stringWithFormat:@"%d", (int) screen_bounds.size.height]],
-                                [NSURLQueryItem queryItemWithName:@"os_version" value:[device systemName]],
+                                [NSURLQueryItem queryItemWithName:@"os_version" value:[device systemVersion]],
                                 [NSURLQueryItem queryItemWithName:@"device_name" value:[device model]],
                                 [NSURLQueryItem queryItemWithName:@"conversation_version" value:[NSString stringWithFormat:@"%d", CONVERSATION_VERSION]],
+                                [NSURLQueryItem queryItemWithName:@"os" value:[[device systemName] lowercaseString]],
+                                [NSURLQueryItem queryItemWithName:@"device_type" value:[SwrveUtils platformDeviceType]],
                              ];
  
     NSURL *expectedUrl = components.URL;

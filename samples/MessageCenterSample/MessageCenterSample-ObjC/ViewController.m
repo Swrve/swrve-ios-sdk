@@ -71,7 +71,7 @@
     [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
 
     // Format the start date for display
-    NSDateFormatter *dformat = [[NSDateFormatter alloc] init];
+    NSDateFormatter *dformat = [NSDateFormatter new];
     [dformat setDateFormat:@"MMMM dd, yyyy (EEEE) HH:mm:ss z Z"];
 
     // Campaign start date, change cell background colour based on seen / unseen status

@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+
 #import "SwrveConfig.h"
 #import "SwrveIAPRewards.h"
 #import "SwrveResourceManager.h"
@@ -21,7 +22,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "6.6.2"
+#define SWRVE_SDK_VERSION "6.7.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.

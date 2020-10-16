@@ -18,6 +18,9 @@ static NSString* swrve_permission_contacts              = @"Swrve.permission.ios
 static NSString* swrve_permission_push_notifications    = @"Swrve.permission.ios.push_notifications";
 static NSString* swrve_permission_push_bg_refresh       = @"Swrve.permission.ios.push_bg_refresh";
 
+// all new device props should be lowercase s, do not change the ones above.
+static NSString* swrve_permission_ad_tracking           = @"swrve.permission.ios.ad_tracking";
+
 static NSString* swrve_permission_requestable           = @".requestable";
 
 /*! Used internally to offer permission request support */
@@ -39,6 +42,9 @@ static NSString* swrve_permission_requestable           = @".requestable";
 
 + (SwrvePermissionState)checkContacts:(id<SwrveCommonDelegate>)sdk;
 + (BOOL)requestContacts:(id<SwrveCommonDelegate>)sdk;
+
++ (SwrvePermissionState)checkAdTracking:(id<SwrveCommonDelegate>)sdk;
++ (BOOL)requestAdTracking:(id<SwrveCommonDelegate>)sdk;
 
 #if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional;

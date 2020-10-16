@@ -16,7 +16,7 @@
         return nil;
     }
 
-    NSMutableArray *resultantTriggers = [[NSMutableArray alloc] init];
+    NSMutableArray *resultantTriggers = [NSMutableArray new];
     for (NSDictionary* trigger in jsonTriggers){
         if (trigger) {
             SwrveTrigger *swrveTrigger = [[SwrveTrigger alloc] initWithDictionary:trigger];
@@ -45,7 +45,7 @@
 
 - (NSArray *) produceConditionsFromDictionary:(NSDictionary *) dictionary {
     
-    NSMutableArray *resultantConditions = [[NSMutableArray alloc] init];
+    NSMutableArray *resultantConditions = [NSMutableArray new];
     NSString *triggerOperator = [dictionary objectForKey:@"op"];
     
     if(![dictionary count]){
