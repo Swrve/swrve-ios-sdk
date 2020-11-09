@@ -1,0 +1,4 @@
+module SwrveSDKCommon {
+    umbrella header "/Users/josh/dev/opensource/iOS/swrve-ios-sdk/SwrveSDKCommon/Common/SwrveSDKCommon.h"
+    export *
+}
