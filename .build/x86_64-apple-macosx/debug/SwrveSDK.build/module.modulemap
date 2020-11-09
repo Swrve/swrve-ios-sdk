@@ -1,4 +1,0 @@
-module SwrveSDK {
-    umbrella header "/Users/josh/dev/opensource/iOS/swrve-ios-sdk/SwrveSDK/SDK/SwrveSDK.h"
-    export *
-}

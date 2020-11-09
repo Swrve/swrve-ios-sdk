@@ -1,4 +1,0 @@
-module SwrveConversationSDK {
-    umbrella header "/Users/josh/dev/opensource/iOS/swrve-ios-sdk/SwrveConversationSDK/Conversation/SwrveConversationSDK.h"
-    export *
-}
