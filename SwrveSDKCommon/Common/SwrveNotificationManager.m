@@ -50,6 +50,9 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             if (mutableNotificationContent != nil) {
                 NSMutableSet *generatedCategories = [NSMutableSet set];
                 [generatedCategories addObject:generatedCategory];
+                if (categories == nil) {
+                    categories = [NSMutableSet set];
+                }
                 NSSet *mergedSet = [categories setByAddingObjectsFromSet:generatedCategories];
                 mutableNotificationContent.categoryIdentifier = generatedCategory.identifier;
                 [center setNotificationCategories:mergedSet];

@@ -76,10 +76,10 @@
     OCMVerifyAll(currentMockCenter);
     
     // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
     [mediaHelperMock stopMocking];
     [swrvePushMock stopMocking];
+    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testAuthPushCompletionHandlerCallback {
@@ -136,7 +136,6 @@
     [currentMockCenter stopMocking];
     [swrvePushMock stopMocking];
 }
-
 
 // Auth push does not suppport fallback text for media, when media download fails, the auth push won't show
 - (void)testAuthPushMediaDownloadFails {
@@ -197,13 +196,14 @@
     OCMVerifyAll(currentMockCenter);
     
     // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
     [mediaHelperMock stopMocking];
     [swrvePushMock stopMocking];
+    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testNotHandlePushAuthDifferentUserId {
+    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
     currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
     id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
     // should not handle the push, different user.
@@ -241,8 +241,10 @@
     OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
 
+    // Test cleanup
     [currentMockCenter stopMocking];
     [swrvePushMock stopMocking];
+    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testNotHandleAuthPushWithoutSwrveKey {

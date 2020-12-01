@@ -111,6 +111,48 @@
     OCMVerifyAll(mockSwrveNotificationManager);
 }
 
+- (void)testPushCategories {
+    NSDictionary *userInfo = @{@"_sw":@{
+                                       @"media":@{
+                                                    @"title":@"Sample Title",
+                                                },
+                                       @"buttons": @[
+                                          @{
+                                            @"title": @"Custom button open app",
+                                            @"action_type": @"open_app",
+                                            @"action": @""
+                                          }]
+                                        },
+                              };
+    
+    UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
+    testContent.userInfo = userInfo;
+    
+    XCTestExpectation *handleContent = [self expectationWithDescription:@"handleContent"];
+    [SwrveNotificationManager handleContent:testContent withCompletionCallback:^(UNMutableNotificationContent *content) {
+        [handleContent fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
+    }];
+    
+    XCTestExpectation *checkContent = [self expectationWithDescription:@"checkContent"];
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *_Nonnull categories) {
+
+        UNNotificationCategory *cat =  [[categories allObjects] firstObject];
+        UNNotificationAction *action = [[cat actions] firstObject];
+        XCTAssertEqualObjects(@"Custom button open app", action.title);
+        
+        [checkContent fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
+    }];
+    
+    [center setNotificationCategories:[NSSet new]];
+}
+
 @end
 
 #endif // SWRVE_NO_PUSH
