@@ -21,8 +21,7 @@ let package = Package(
             path: "SwrveSDKCommon",
             resources: [
                    .process("LICENSE"),
-                 ],
-            publicHeadersPath: "include"),
+                 ]
         .target(
             name: "SwrveConversationSDK",
             dependencies: ["SwrveSDKCommon"],
@@ -32,16 +31,14 @@ let package = Package(
                    .process("Resources/VERSION"),
                    .process("Resources/VGConversationKitResources-Info.plist"),
                    .process("Conversation/SwrveConversationKit-Prefix.pch")
-                 ],
-            publicHeadersPath: "include"),
+                 ]
         .target(
             name: "SwrveSDK",
             dependencies: ["SwrveSDKCommon", "SwrveConversationSDK"],
             path: "SwrveSDK",
             resources: [
                    .process("LICENSE"),
-                 ],
-            publicHeadersPath: "include")
+                 ]
     ],
     swiftLanguageVersions: [.v5]
 )
