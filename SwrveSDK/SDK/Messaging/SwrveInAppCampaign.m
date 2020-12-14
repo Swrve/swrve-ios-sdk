@@ -14,7 +14,7 @@
 
 @synthesize messages;
 
--(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController*)controller
 {
     id instance = [super initAtTime:time fromDictionary:json];
     NSMutableArray *loadedMessages = [NSMutableArray new];
@@ -30,6 +30,8 @@
     if ([json objectForKey:@"subject"] != [NSNull null] && [json objectForKey:@"subject"] != nil) {
         self.subject = [json objectForKey:@"subject"];
     }
+    
+    self.campaignType = SWRVE_CAMPAIGN_IAM;
 
     return instance;
 }

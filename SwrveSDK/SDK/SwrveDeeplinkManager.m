@@ -258,6 +258,8 @@
         }
     } else if ([campaignDic objectForKey:@"messages"] != nil)  {
         campaign = [[SwrveInAppCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
+    } else if ([campaignDic objectForKey:@"embedded_message"] != nil) {
+        campaign = [[SwrveEmbeddedCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic forController:self.sdk.messaging];
     } else {
         DebugLog(@"Unknown campaign type", nil);
         return;
@@ -318,6 +320,11 @@
             } else {
                 DebugLog(@"Personalisaton options are not available for this message.", nil);
             }
+        }
+    } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+        SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *)campaign).message;
+        if(message != nil && self.sdk.config.embeddedMessageConfig.embeddedMessageCallback != nil){
+            self.sdk.config.embeddedMessageConfig.embeddedMessageCallback(message);
         }
     }
     

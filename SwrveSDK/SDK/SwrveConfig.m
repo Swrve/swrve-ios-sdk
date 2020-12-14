@@ -14,6 +14,7 @@
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize inAppMessageBackgroundColor;
 @synthesize inAppMessageConfig;
+@synthesize embeddedMessageConfig;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -61,6 +62,7 @@
         self.initMode = SWRVE_INIT_MODE_AUTO;
         self.managedModeAutoStartLastUser = true;
         self.inAppMessageConfig = [SwrveInAppMessageConfig new];
+        self.embeddedMessageConfig = [SwrveEmbeddedMessageConfig new];
     }
     return self;
 }
@@ -81,6 +83,7 @@
 @synthesize autoDownloadCampaignsAndResources;
 @synthesize inAppMessageBackgroundColor;
 @synthesize inAppMessageConfig;
+@synthesize embeddedMessageConfig;
 @synthesize newSessionInterval;
 @synthesize resourcesUpdatedCallback;
 @synthesize autoSendEventsOnResume;
@@ -116,6 +119,7 @@
         autoDownloadCampaignsAndResources = config.autoDownloadCampaignsAndResources;
         inAppMessageBackgroundColor = config.inAppMessageBackgroundColor;
         inAppMessageConfig = config.inAppMessageConfig;
+        embeddedMessageConfig = config.embeddedMessageConfig;
         newSessionInterval = config.newSessionInterval;
         resourcesUpdatedCallback = config.resourcesUpdatedCallback;
         autoSendEventsOnResume = config.autoSendEventsOnResume;

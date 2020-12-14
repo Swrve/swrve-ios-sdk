@@ -29,6 +29,7 @@ static NSString* SWRVE_IDFA  =                          @"swrve.IDFA";
 static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_authenticated_push";
 static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
+static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
 
 @implementation SwrveDeviceProperties
 
@@ -137,6 +138,7 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
     [deviceProperties setValue:timezone_name        forKey:SWRVE_TIMEZONE_NAME];
     [deviceProperties setValue:regionCountry        forKey:SWRVE_DEVICE_REGION];
     [deviceProperties setValue:self.swrveInitMode   forKey:SWRVE_SDK_INIT_MODE];
+    [deviceProperties setValue:[SwrveUtils platformDeviceType] forKey:SWRVE_DEVICE_TYPE];
 
 #if TARGET_OS_IOS /** retrieve the properties only supported by iOS **/
     [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];

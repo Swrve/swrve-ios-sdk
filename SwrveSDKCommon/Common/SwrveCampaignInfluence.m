@@ -1,8 +1,9 @@
 #import "SwrveCampaignInfluence.h"
 #import "SwrveCommon.h"
+#import "SwrveNotificationConstants.h"
 
 NSString *const SwrveInfluencedWindowMinsKey = @"_siw";
-NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
+NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
 
 @implementation SwrveCampaignInfluence
 
@@ -32,7 +33,18 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
 
         // set id passed in
         long maxWindowTimeSeconds = (long) [[date dateByAddingTimeInterval:influenceWindowMins * 60] timeIntervalSince1970];
-        [influencedData setValue:[NSNumber numberWithLong:maxWindowTimeSeconds] forKey:campaignId];
+
+        // Define if it's a silent push or a normal push.
+        BOOL isSilentPush = NO;
+        if ([userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey]) {
+            isSilentPush = YES;
+        }
+        // Add the new influence into cache!
+        [influencedData setValue:@{
+            @"trackingId": campaignId,
+            @"silent": [NSNumber numberWithBool: isSilentPush],
+            @"maxInfluencedMillis": [NSNumber numberWithLong:maxWindowTimeSeconds]
+        } forKey:campaignId];
 
         // set influenced data to either the appGroup or the NSUserDefaults of the main app
         [defaults setObject:influencedData forKey:SwrveInfluenceDataKey];
@@ -79,7 +91,15 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
     if (influencedData != nil) {
         double nowSeconds = [now timeIntervalSince1970];
         for (NSString *trackingId in influencedData) {
-            id maxInfluenceWindow = [influencedData objectForKey:trackingId];
+
+            // Read details about the influenced item to be queued.
+            NSDictionary *influenceItem = [influencedData objectForKey:trackingId];
+            id maxInfluenceWindow = [influenceItem objectForKey:@"maxInfluencedMillis"];
+            BOOL isSilentPush = NO;
+            if ([influenceItem objectForKey:@"silent"]) {
+                isSilentPush = [[influenceItem objectForKey:@"silent"] boolValue];
+            }
+
             if ([maxInfluenceWindow isKindOfClass:[NSNumber class]]) {
                 long maxWindowTimeSeconds = [(NSNumber *) maxInfluenceWindow longValue];
 
@@ -91,8 +111,11 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data";
                         [influencedEvent setValue:[NSNumber numberWithLong:trackingIdLong] forKey:@"id"];
                         [influencedEvent setValue:@"push" forKey:@"campaignType"];
                         [influencedEvent setValue:@"influenced" forKey:@"actionType"];
+
+                        // Influence payload.
                         NSMutableDictionary *eventPayload = [NSMutableDictionary new];
                         [eventPayload setValue:[NSString stringWithFormat:@"%i", (int) ((maxWindowTimeSeconds - nowSeconds) / 60)] forKey:@"delta"];
+                        [eventPayload setValue:[NSNumber numberWithBool:isSilentPush] forKey:@"silent"];
                         [influencedEvent setValue:eventPayload forKey:@"payload"];
 
                         [swrveCommon queueEvent:@"generic_campaign_event" data:influencedEvent triggerCallback:false];

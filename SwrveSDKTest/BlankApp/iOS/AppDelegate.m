@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import  "ViewController.h"
 
 @interface AppDelegate ()
 
@@ -12,8 +13,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // A default window set frame to avoid use of storyboard
-    [window setFrame:[UIScreen mainScreen].bounds];
-    [window makeKeyAndVisible];
+    ViewController *vc = [[ViewController alloc] init];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = vc;
+    [self.window makeKeyAndVisible];
     return YES;
 }
 

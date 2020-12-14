@@ -12,6 +12,8 @@
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 - (int)currentCacheVersion;
 + (void)setCurrentCacheVersion:(int)cacheVersion;
+- (void)migrateOldCacheFile:(NSString *)oldPath withNewPath:(NSString *)newPath;
+
 @property(nonatomic) NSString *cacheVersionFilePath;
 @end
 
@@ -512,6 +514,65 @@
         }
     }
     return YES;
+}
+
+- (void)testMigrateOneFilesContentsToAnother {
+    
+    NSError *error;
+    NSString *oldFilePath = [self createTestFile:@"old" withContent:@"hello"];
+    NSString *newFilePath = [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:@"new.txt"];
+
+    SwrveMigrationsManager *swrveMigrationsManager = [[SwrveMigrationsManager alloc] init];
+    [swrveMigrationsManager migrateOldCacheFile:oldFilePath withNewPath:newFilePath];
+    NSString *migratedString = [NSString stringWithContentsOfFile:newFilePath encoding:NSUTF8StringEncoding error:&error];
+    XCTAssertEqualObjects(migratedString, @"hello");
+}
+
+/**
+ *  Test to verify Migrating Converting our own files to NSFileProtectionNone
+ *  NB, this needs in order to correctly operate:
+ *   - the Project Capability 'File Protection' ON
+ *   - running on a real device
+ **/
+- (void)testMigrateFileProtection {
+#if !(TARGET_IPHONE_SIMULATOR)  // File Protection does not appear for simulators, can only test against device
+    
+    NSError *error;
+    NSString *filePath = [self createProtectedTestFile:@"test" withContent:@"super secret"];
+    
+    // No longer visible when building for device
+    // [SwrveMigrationsManager migrateFileProtectionAtPath:filePath];
+    
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+    XCTAssertNil(error);
+    XCTAssertEqualObjects([attributes objectForKey:NSFileProtectionKey], NSFileProtectionNone);
+    
+#endif //#if !(TARGET_IPHONE_SIMULATOR)
+}
+
+#pragma mark - private methods
+
+- (NSString *)createTestFile:(NSString *) fileName withContent:(NSString *)content {
+    
+    NSError *error;
+    NSString *name = [NSString stringWithFormat:@"%@.txt", fileName];
+    NSString *filePath = [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:name];
+    [content writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    
+    XCTAssertNil(error);
+    
+    return filePath;
+}
+
+- (NSString *)createProtectedTestFile:(NSString *) fileName withContent:(NSString *)content {
+    
+    NSError *error;
+    NSString *name = [NSString stringWithFormat:@"%@.txt", fileName];
+    NSString *filePath = [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:name];
+    [[content dataUsingEncoding:NSUTF8StringEncoding] writeToURL:[NSURL fileURLWithPath:filePath] options:NSDataWritingFileProtectionComplete error:&error];
+    XCTAssertNil(error);
+    
+    return filePath;
 }
 
 @end

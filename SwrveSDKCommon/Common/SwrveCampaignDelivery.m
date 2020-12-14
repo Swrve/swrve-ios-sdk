@@ -64,8 +64,8 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     // Define if it's a silent push.
     NSString *pushId = [userInfo objectForKey:SwrveNotificationIdentifierKey];
     BOOL isSilentPush = NO;
-    if ([userInfo objectForKey:@"_sp"]) {
-        pushId = [userInfo objectForKey:@"_sp"];
+    if ([userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey]) {
+        pushId = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
         isSilentPush = YES;
     }
     return @{

@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import "SwrveInAppCampaign.h"
+#import "SwrveEmbeddedCampaign.h"
 #import "SwrveConversation.h"
 #import "UISwrveButton.h"
 #import "SwrveButton.h"
@@ -49,7 +50,6 @@
 @property (nonatomic, retain) NSString *campaignsStateFilePath;
 @property (nonatomic, retain) NSDate *showMessagesAfterLaunch;
 @property (nonatomic, retain) NSDate *showMessagesAfterDelay;
-
 
 @end
 
@@ -132,7 +132,6 @@
 
 @end
 
-
 @interface TestingSwrveMessage : SwrveMessage
 @end
 
@@ -160,6 +159,33 @@
     TestingSwrveMessage *mockMessage = [[TestingSwrveMessage alloc] init];
     mockMessage.name = @"TestMessageName";
     return mockMessage;
+}
+
+@end
+
+@interface TestShowBaseMessageDelegate : NSObject<SwrveMessageDelegate>
+- (SwrveMessage*)baseMessageForEvent:(NSString *) eventName withPayload:(NSDictionary *)payload;
+- (void)showMessage:(SwrveMessage *)message;
+@property SwrveMessage *messageShown;
+@end
+
+@implementation TestShowBaseMessageDelegate
+
+- (id) init {
+    if (self = [super init]) {
+        [self setMessageShown:nil];
+    }
+    return self;
+}
+
+- (SwrveBaseMessage*)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload {
+    SwrveMessage *mockMessage = [[SwrveMessage alloc] init];
+    return mockMessage;
+}
+
+- (void)showMessage:(SwrveMessage *)message {
+    [self setMessageShown:message];
+    [message wasShownToUser];
 }
 
 @end
@@ -452,6 +478,23 @@
     XCTAssertEqualObjects(message.name,@"TestMessageName");
 }
 
+- (void)testShowBaseMessageDelegate {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    TestShowBaseMessageDelegate* testDelegate = [[TestShowBaseMessageDelegate alloc] init];
+    controller.showMessageDelegate = testDelegate;
+
+    NSDictionary* event = [NSDictionary dictionaryWithObjectsAndKeys:
+                           @"purchase", @"type",
+                           @"item", @"toy",
+                           nil];
+    [controller eventRaised:event];
+
+    SwrveBaseMessage *message = [testDelegate messageShown];
+    XCTAssertNotNil(message);
+}
+
 - (void)testShowMessageDelegateNoCustomFindMessage {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -539,6 +582,57 @@
     SwrveMessage *message = [testDelegate messageShown];
     XCTAssertNotNil(message);
     XCTAssertEqualObjects(message.name,@"Kindle");
+}
+
+- (void)testEmbeddedMessageCallback {
+    
+    __block SwrveEmbeddedMessage *embmessage = nil;
+    
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveEmbeddedMessageConfig *embeddedConfig = [SwrveEmbeddedMessageConfig new];
+    [embeddedConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+        embmessage = message;
+    }];
+    
+    config.embeddedMessageConfig = embeddedConfig;
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsEmbedded" withConfig:config];
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_embedded",
+                             @"payload": @{}};
+    
+    [controller eventRaised:event];
+    
+    XCTAssertNotNil(embmessage);
+    XCTAssertEqualObjects(embmessage.data, @"test string");
+    XCTAssertEqual(embmessage.type, kSwrveEmbeddedDataTypeOther);
+    NSArray<NSString *> *buttons = embmessage.buttons;
+    
+    XCTAssertEqualObjects(buttons[0], @"Button 1");
+    XCTAssertEqualObjects(buttons[1], @"Button 2");
+    XCTAssertEqualObjects(buttons[2], @"Button 3");
+    
+    
+    // Raise a different event for a JSON type embedded Campaign
+    
+    event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"embedded_payload",
+               @"payload": @{@"test": @"value"}};
+    
+    [controller eventRaised:event];
+    
+    XCTAssertNotNil(embmessage);
+    XCTAssertEqualObjects(embmessage.data, @"{\"test\": \"json_payload\"}");
+    XCTAssertEqual(embmessage.type, kSwrveEmbeddedDataTypeJson);
+    buttons = embmessage.buttons;
+    
+    XCTAssertEqualObjects(buttons[0], @"Button 1");
+    XCTAssertEqualObjects(buttons[1], @"Button 2");
+    XCTAssertEqualObjects(buttons[2], @"Button 3");
 }
 
 /**
@@ -1038,7 +1132,7 @@
         if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
             clickEventCount++;
             // Assert that the event contains the name of the button in the payload
-            XCTAssertTrue([event rangeOfString:@"{\"name\":\"custom\"}"].location != NSNotFound);
+            XCTAssertTrue([event rangeOfString:@"{\"name\":\"custom\",\"embedded\":\"false\"}"].location != NSNotFound);
         }
     }
     XCTAssertEqual(clickEventCount, 1);
@@ -1253,10 +1347,65 @@
         if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
             clickEventCount++;
             // Assert that the event contains the name of the button in the payload
-            XCTAssertTrue([event rangeOfString:@"{\"name\":\"clipboard_action\"}"].location != NSNotFound);
+            XCTAssertTrue([event rangeOfString:@"{\"name\":\"clipboard_action\",\"embedded\":\"false\"}"].location != NSNotFound);
         }
     }
     XCTAssertEqual(clickEventCount, 1);
+}
+
+- (void)testEmbeddedImpressionAndEngagement {
+    
+    __block SwrveEmbeddedMessage *embmessage = nil;
+    __block id swrveMock = nil;
+    
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveEmbeddedMessageConfig *embeddedConfig = [SwrveEmbeddedMessageConfig new];
+    [embeddedConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+        embmessage = message;
+        [[swrveMock messaging] embeddedMessageWasShownToUser:message];
+        [[swrveMock messaging] embeddedButtonWasPressed:message buttonName:message.buttons[0]];
+    }];
+    
+    config.embeddedMessageConfig = embeddedConfig;
+    
+    swrveMock = [self swrveMockWithTestJson:@"campaignsEmbedded" withConfig:config];
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_embedded",
+                             @"payload": @{}};
+    
+    [controller eventRaised:event];
+    
+    XCTAssertNotNil(embmessage);
+    XCTAssertEqualObjects(embmessage.data, @"test string");
+    XCTAssertEqual(embmessage.type, kSwrveEmbeddedDataTypeOther);
+    NSArray<NSString *> *buttons = embmessage.buttons;
+    
+    XCTAssertEqualObjects(buttons[0], @"Button 1");
+    XCTAssertEqualObjects(buttons[1], @"Button 2");
+    XCTAssertEqualObjects(buttons[2], @"Button 3");
+
+    // Check if correct events have sent to Swrve from these calls in the callback
+    int clickEventCount = 0;
+    for (NSString* event in [swrveMock eventBuffer]) {
+        
+        if ([event rangeOfString:@"Swrve.Messages.Message-20.impression"].location != NSNotFound) {
+            clickEventCount++;
+
+            // Assert that the event contains the embedded bool in the payload
+            XCTAssertTrue([event rangeOfString:@"{\"embedded\":\"true\"}"].location != NSNotFound);
+        }
+        
+        if ([event rangeOfString:@"Swrve.Messages.Message-20.click"].location != NSNotFound) {
+            clickEventCount++;
+            
+            // Assert that the event contains the button and embedded bool in the payload
+            XCTAssertTrue([event rangeOfString:@"{\"name\":\"Button 1\",\"embedded\":\"true\"}"].location != NSNotFound);
+        }
+    }
+    XCTAssertEqual(clickEventCount, 2);
 }
 
 /**
@@ -1306,26 +1455,27 @@
     [controller setShowMessageDelegate:testDelegate];
 
     // Message ID 1 should be highest priority
-    SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 1);
     [testDelegate showMessage:message];
 
     // Message ID 2 should be second highest priority
-    message = [controller messageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [testDelegate showMessage:message];
 
     // It should then go to round robin between 2 and 3
-    message = [controller messageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 3);
     [testDelegate showMessage:message];
 
-    message = [controller messageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
+    
 }
 
 - (void)testMessagePriorityReverse {
@@ -1338,21 +1488,39 @@
     [controller setShowMessageDelegate:testDelegate];
 
     // Highest priority first (first in round robin)
-    SwrveMessage *message = [controller messageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [testDelegate showMessage:message];
 
     // Round robin later
-    message = [controller messageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 3);
     [testDelegate showMessage:message];
 
     // Lowest priority (first message in JSON)
-    message = [controller messageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 1);
+}
+
+- (void)testMessagePriority_FavourEmbedded {
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsEmbeddedMessagePriority"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    // Message ID 4 should be highest priority and should be embedded
+    SwrveBaseMessage *message = [controller baseMessageForEvent:@"Swrve.currency_given"];
+    XCTAssertNotNil(message);
+    XCTAssertEqual([[message messageID] intValue], 4);
+    XCTAssertTrue([message isKindOfClass:[SwrveEmbeddedMessage class]]);
+    
+    // Now go over embedded message's message rules
+    [controller embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message];
+    message = [controller baseMessageForEvent:@"Swrve.currency_given"];
+    XCTAssertNotNil(message);
+    XCTAssertEqual([[message messageID] intValue], 1);
+    XCTAssertTrue([message isKindOfClass:[SwrveMessage class]]);
 }
 
 #if TARGET_OS_IOS /** exclude tvOS **/

@@ -48,15 +48,15 @@
 
 - (int)devicePropertyCount {
     if (@available(iOS 14, tvOS 14, *)) {
-        return 14;
-    } else {
         return 15;
+    } else {
+        return 16;
     }
 }
 
 - (void)testDevicePropertiesNil {
     
-    SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
+    SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:nil
                                                                             appInstallTimeSeconds:0
                                                                               conversationVersion:0
                                                                                       deviceToken:nil
@@ -73,9 +73,10 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.conversation_version"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_dpi"]!= nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_name"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_type"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
@@ -84,11 +85,11 @@
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
     
     if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil );
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil);
     }else{
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil);
     }
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil);
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {

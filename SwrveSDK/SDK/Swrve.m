@@ -1623,7 +1623,9 @@ enum {
                                                                               eventData:[copyEventData mutableCopy]
                                                                         triggerCallback:triggerCallback
                                                                 notifyMessageController:notifyMessageController];
-        [self.pausedEventsArray addObject:queueItem];
+        @synchronized (self.pausedEventsArray) {
+            [self.pausedEventsArray addObject:queueItem];
+        }
         return SWRVE_FAILURE;
     };
 
@@ -2539,16 +2541,14 @@ enum HttpStatus {
 }
 
 - (void)queuePausedEventsArray {
-    NSMutableArray *pausedEventsArrayToSend = nil;
     @synchronized (self.pausedEventsArray) {
         if ([self.pausedEventsArray count] == 0) {
             return;
         }
-        pausedEventsArrayToSend = [self.pausedEventsArray copy];
-        for (SwrveEventQueueItem *queueItem in pausedEventsArrayToSend) {
+        for (SwrveEventQueueItem *queueItem in [self.pausedEventsArray reverseObjectEnumerator]) {
             [self queueEvent:queueItem.eventType data:queueItem.eventData triggerCallback:queueItem.triggerCallback notifyMessageController:queueItem.notifyMessageController];
         }
-        if ([pausedEventsArrayToSend count] > 0) {
+        if ([self.pausedEventsArray count] > 0) {
             [self sendQueuedEvents];
         }
         [self.pausedEventsArray removeAllObjects];

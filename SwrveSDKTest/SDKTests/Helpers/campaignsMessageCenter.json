@@ -440,7 +440,32 @@
                     }]
                 }]
             }
-        }
+        },
+        {
+            "id":104,
+            "end_date":1364568900000,
+            "triggers":[],
+            "message_center": true,
+            "subject": "Embedded subject",
+            "start_date":1362671700000,
+            "embedded_message": {
+              "id": 20,
+              "buttons": [
+                "Button 1",
+                "Button 2",
+                "Button 3"
+              ],
+              "data": "test string",
+              "type": "other",
+              "priority": 500
+            },
+            "rules":{
+                "display_order":"random",
+                "dismiss_after_views":1,
+                "delay_first_message":10,
+                "min_delay_between_messages":10
+            }
+        },
     ],
     "game_data":{
         "150":{

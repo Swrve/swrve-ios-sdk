@@ -1,11 +1,16 @@
 #import <XCTest/XCTest.h>
 #import "SwrveTestHelper.h"
+#import "SwrveMigrationsManager.h"
 
 @interface Swrve (Internal)
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
 @property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 - (void)updateResources:(NSArray *)resourceJson writeToCache:(BOOL)writeToCache;
+@end
+
+@interface SwrveMigrationsManager ()
++ (void)markAsMigrated;
 @end
 
 @interface SwrveTestUserResources : XCTestCase
@@ -30,12 +35,13 @@
  */
 - (void)testResourceManager {
     NSString *testCacheFileContents = @"[{\"uid\": \"animal.ant\", \"name\": \"ant\", \"cost\": \"5.50\", \"quantity\": \"6\"},{\"uid\": \"animal.bear\",\"name\": \"bear\", \"cost\": \"9.99\",\"quantity\": \"20\"}]";
-
+    
     // Initialise Swrve and write to resources cache file
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
     
     // Restart swrve, resource manager will be initialised by contents of cache
     // Getting resources periodically from API will fail (invalid api key) so will keep using cached contents
@@ -92,18 +98,25 @@
 
 - (void)testGetUserResourcesCallback {
     NSString *testCacheFileContents = @"[{\"uid\": \"animal.ant\", \"name\": \"ant\", \"cost\": \"550\", \"cost_type\": \"gold\"},{\"uid\": \"animal.bear\",\"name\": \"bear\", \"cost\": \"999\",\"cost_type\": \"gold\"}]";
-
     // Initialise Swrve and write to resources cache file
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
 
     // Restart swrve, getting resources from API will fail, so resources initialised by cache
     [swrveMock shutdown];
     swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
+    
+    // Ensure that the sdk has all the necessary items in place before running the callback test
+    XCTestExpectation *expectation = [self expectationWithDescription:@"sdk has succesfully started"];
+    [SwrveTestHelper waitForBlock:0.05 conditionBlock:^BOOL(){
+        return ([swrveMock started] && [swrveMock resourcesFile] && [swrveMock resourcesDiffFile]);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
 
     BOOL __block calledBack = NO;
     [swrveMock userResources:^(NSDictionary *resources, NSString *resourcesAsJSON) {
@@ -187,6 +200,7 @@
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
 
     // Restart swrve, getting resources diff from API will fail, so resources diff initialised by cache
     [swrveMock shutdown];

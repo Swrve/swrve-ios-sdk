@@ -18,5 +18,6 @@
 + (NSString *)campaignCacheDirectory;
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 + (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation;
++ (NSString *)rootCacheDirectory;
 
 @end

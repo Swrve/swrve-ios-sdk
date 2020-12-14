@@ -140,14 +140,14 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
 
-    // IAM and Conversation support these orientations
+    // IAM, Embedded and Conversation support these orientations
 #if TARGET_OS_IOS
-    XCTAssertEqual([[controller messageCenterCampaigns] count], 2);
-    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 2);
-    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 2);
+    XCTAssertEqual([[controller messageCenterCampaigns] count], 3);
+    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 3);
+    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
 #elif TARGET_OS_TV
-    // should only get one now that the conversation is excluded from the message center response
-    XCTAssertEqual([[controller messageCenterCampaigns] count], 1);
+    // should only get two now that the conversation is excluded from the message center response
+    XCTAssertEqual([[controller messageCenterCampaigns] count], 2);
 #endif
     SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
@@ -389,17 +389,27 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
 }
 
-#if TARGET_OS_IOS /** Conversations are not supported on tvOS **/
-- (void)testConversationMessageCenter {
-
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
+- (void)testEmbeddedMessageCenter {
+#if TARGET_OS_IOS
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+#endif
+    
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
     
     id swrveMock = [self swrveMock];
     
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveEmbeddedMessageConfig *messageConfig = [SwrveEmbeddedMessageConfig new];
+    
+    [messageConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+        [[swrveMock messaging] embeddedMessageWasShownToUser:message];
+    }];
+    
+    config.embeddedMessageConfig = messageConfig;
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
-    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
@@ -409,71 +419,50 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
+    
+    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
+    [testDelegate setController:controller];
+    [controller setShowMessageDelegate:testDelegate];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[controller messageCenterCampaigns] count], 0);
-
+    
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
-
+    
+    // IAM, Embedded and Conversation support these orientations
+#if TARGET_OS_IOS
+    XCTAssertEqual([[controller messageCenterCampaigns] count], 3);
+    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 3);
+    XCTAssertEqual([[controller messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
+#elif TARGET_OS_TV
+    // should only get two now that the conversation is excluded from the message center response
     XCTAssertEqual([[controller messageCenterCampaigns] count], 2);
-
-    SwrveConversationCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:1];
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
-    XCTAssertEqualObjects(campaign.subject,@"Conversation subject");
-
-    // Display in-app message
-    [controller showMessageCenterCampaign:campaign];
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-    XCTAssertNotNil(controller.swrveConversationItemViewController);
-
-    //ensure that the corner radius was changed by the campaign JSON
-    XCTAssertEqual(controller.swrveConversationItemViewController.view.layer.cornerRadius,22.5);
-    
-    UIColor *lbUIColor = [SwrveConversationStyler convertToUIColor:@"#FFFF0000"];
-    XCTAssertTrue(CGColorEqualToColor(controller.swrveConversationItemViewController.view.superview.backgroundColor.CGColor, lbUIColor.CGColor));
-    
-    // Dismiss the conversation
-    [controller.swrveConversationItemViewController cancelButtonTapped:nil];
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-
-    XCTAssertEqual(campaign.state.impressions,1);
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_SEEN);
-
-    // We don't get the conversation because the assets suddently dissapeared
-    SwrveAssetsManager *assetsManager = [swrveMock messaging].assetsManager;
-    NSMutableSet* assetsOnDisk = [assetsManager valueForKey:@"assetsOnDiskSet"];
-    NSArray* previousAssets = [assetsOnDisk allObjects];
-    [assetsOnDisk removeAllObjects];
-    XCTAssertEqual([[controller messageCenterCampaigns] count], 0);
-
-    [assetsOnDisk addObjectsFromArray:previousAssets];
-
-    // We can still get the Conversation, even though the rules specify a limit of 1 impression
-    SwrveCampaign* firstCampaign = [[controller messageCenterCampaigns] objectAtIndex:1];
-    XCTAssertEqual(firstCampaign.ID, campaign.ID);
-
-    // ensure dateStart is present
-    XCTAssertNotNil(firstCampaign.dateStart);
-
-    NSDateFormatter *dformat = [[NSDateFormatter alloc] init];
-    [dformat setDateFormat:@"MMMM dd, yyyy (EEEE) HH:mm:ss z Z"];
-
-    // set the timeZone to UTC so it passes regardless of Simulator time
-    NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-    [dformat setTimeZone:timeZone];
-
-    XCTAssertEqualObjects([dformat stringFromDate:firstCampaign.dateStart],@"March 07, 2013 (Thursday) 15:55:00 GMT +0000");
-
-    // Remove the campaign, we will never get it again
-    [controller removeMessageCenterCampaign:campaign];
-
-    XCTAssertFalse([[controller messageCenterCampaigns] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_DELETED);
-    // Reset to default UIInterfaceOrientationPortrait orientation
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
-}
 #endif
+    NSArray<SwrveCampaign *> *campaigns = [controller messageCenterCampaigns];
+    SwrveEmbeddedCampaign *embeddedCampaign = nil;
+    
+    for (SwrveCampaign *canditate in campaigns) {
+        if([canditate isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+            embeddedCampaign = (SwrveEmbeddedCampaign *) canditate;
+        }
+    }
+    
+    XCTAssertNotNil(embeddedCampaign);
+    XCTAssertEqual(embeddedCampaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqualObjects(embeddedCampaign.subject,@"Embedded subject");
+    
+    [controller showMessageCenterCampaign:embeddedCampaign];
+    
+    XCTAssertEqual(embeddedCampaign.state.status,SWRVE_CAMPAIGN_STATUS_SEEN);
+    
+    // Remove the campaign, we will never get it again
+    [controller removeMessageCenterCampaign:embeddedCampaign];
+    
+    XCTAssertFalse([[controller messageCenterCampaigns] containsObject:embeddedCampaign]);
+    XCTAssertEqual(embeddedCampaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+}
+
 
 @end

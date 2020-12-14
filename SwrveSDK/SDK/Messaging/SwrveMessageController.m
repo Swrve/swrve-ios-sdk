@@ -3,6 +3,7 @@
 #import "SwrveMessageController+Private.h"
 #import "SwrveButton.h"
 #import "SwrveInAppCampaign.h"
+#import "SwrveEmbeddedCampaign.h"
 #import "SwrveConversationCampaign.h"
 
 #if __has_include(<SwrveConversationSDK/SwrveConversationItemViewController.h>)
@@ -74,6 +75,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 
 @interface SwrveCampaign (PrivateMethodsForMessageController)
 - (void)messageWasShownToUser:(SwrveMessage *)message at:(NSDate *)timeShown;
+- (void)wasShownToUserAt:(NSDate*)timeShown;
 @end
 
 @interface SwrveMessageController ()
@@ -131,6 +133,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 @synthesize showMessagesAfterDelay;
 @synthesize messagesLeftToShow;
 @synthesize inAppMessageConfig;
+@synthesize embeddedMessageConfig;
 @synthesize campaigns;
 @synthesize campaignsState;
 @synthesize assetsManager;
@@ -213,6 +216,7 @@ const static int DEFAULT_MIN_DELAY = 55;
     self.appStoreURLs = [NSMutableDictionary new];
 
     self.inAppMessageConfig = sdk.config.inAppMessageConfig;
+    self.embeddedMessageConfig = sdk.config.embeddedMessageConfig;
 
     if (self.inAppMessageConfig.backgroundColor == nil) {
         // current workaround since this isn't a major version
@@ -555,8 +559,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             } else {
                 DebugLog(@"Not all requirements were satisfied for this campaign: %@", lastCheckedFilter);
             }
-        } else {
+        } else if([dict objectForKey:@"messages"] != nil) {
             campaign = [[SwrveInAppCampaign alloc] initAtTime:self.initialisedTime fromDictionary:dict withAssetsQueue:assetsQueue forController:self];
+        } else if([dict objectForKey:@"embedded_message"] != nil) {
+            campaign = [[SwrveEmbeddedCampaign alloc] initAtTime:self.initialisedTime fromDictionary:dict forController:self];
         }
 
         if (campaign != nil) {
@@ -638,9 +644,27 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
 
     for (SwrveCampaign *campaign in self.campaigns) {
-        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            SwrveInAppCampaign *specificCampaign = (SwrveInAppCampaign *) campaign;
-            if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
+        if ([campaign isKindOfClass:[SwrveInAppCampaign class]] || [campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+            
+            BOOL hasEmbeddedPresent = NO;
+            BOOL hasInAppPresent = NO;
+            
+            if([campaign isKindOfClass:[SwrveInAppCampaign class]]){
+                SwrveInAppCampaign *specificCampaign = (SwrveInAppCampaign *) campaign;
+                if ([specificCampaign hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
+                    hasInAppPresent = YES;
+                }
+            }
+
+            if([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]){
+                SwrveEmbeddedCampaign *embedded = (SwrveEmbeddedCampaign *)campaign;
+                if ([embedded hasMessageForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
+                    hasEmbeddedPresent = YES;
+                }
+            }
+            
+            // if either message is available for display then proceed
+            if(hasInAppPresent || hasEmbeddedPresent) {
                 @synchronized (self) {
                     if ([self autoShowMessagesEnabled]) {
                         NSDictionary *event = @{@"type": @"event", @"name": AUTOSHOW_AT_SESSION_START_TRIGGER};
@@ -652,6 +676,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 }
                 break;
             }
+            
         } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
             SwrveConversationCampaign *specificCampaign = (SwrveConversationCampaign *) campaign;
             if ([specificCampaign hasConversationForEvent:AUTOSHOW_AT_SESSION_START_TRIGGER withPayload:nil]) {
@@ -715,21 +740,50 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return YES;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (SwrveMessage *)messageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload {
+    if (analyticsSDK == nil) {
+        return nil;
+    }
+    
+    SwrveMessage *result = nil;
+    SwrveBaseMessage *canditate = [self baseMessageForEvent:eventName withPayload:payload];
+    
+    if([canditate isKindOfClass:[SwrveMessage class]]) {
+        result = (SwrveMessage *)canditate;
+    }
+
+    if (result == nil) {
+        DebugLog(@"An InAppMessage was not selected for %@", eventName);
+    }
+    return result;
+}
+
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+- (SwrveMessage *)messageForEvent:(NSString *)event {
+    // By default does a simple by name look up.
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    return [self messageForEvent:event withPayload:nil];
+}
+
+- (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload {
     if (analyticsSDK == nil) {
         return nil;
     }
 
     NSDate *now = [self.analyticsSDK getNow];
-    SwrveMessage *result = nil;
+    SwrveBaseMessage *result = nil;
     SwrveCampaign *campaign = nil;
     BOOL isQALogging = [[SwrveQA sharedInstance] isQALogging];
 
     if (self.campaigns != nil) {
-        if (![self checkGlobalRulesForCampaignType:SWRVE_CAMPAIGN_IAM withEventName:eventName withEventPayload:payload withDate:now]) {
+        
+        if (![self checkGlobalRulesForCampaignType:SWRVE_CAMPAIGN_IAM withEventName:eventName withEventPayload:payload withDate:now]
+            && ![self checkGlobalRulesForCampaignType:SWRVE_CAMPAIGN_EMBEDDED withEventName:eventName withEventPayload:payload withDate:now]) {
             return nil;
         }
-
+        
         NSMutableArray<SwrveQACampaignInfo *> *qaCampaignInfoArray = nil;
         NSMutableDictionary *campaignReasons = nil;
         NSMutableDictionary *campaignMessages = nil;
@@ -745,36 +799,51 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         NSNumber *minPriority = [NSNumber numberWithInteger:INT_MAX];
         NSMutableArray *candidateMessages = [NSMutableArray new];
         for (SwrveCampaign *baseCampaignIt in self.campaigns) {
+            SwrveBaseMessage *nextMessage;
             if ([baseCampaignIt isKindOfClass:[SwrveInAppCampaign class]]) {
                 SwrveInAppCampaign *campaignIt = (SwrveInAppCampaign *) baseCampaignIt;
                 NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
-                SwrveMessage *nextMessage = [campaignIt messageForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
-                if (nextMessage != nil) {
-                    // Add to list of returned messages
-                    [availableMessages addObject:nextMessage];
-                    // Check if it is a candidate to be shown
-                    long nextMessagePriorityLong = [nextMessage.priority longValue];
-                    long minPriorityLong = [minPriority longValue];
-                    if (nextMessagePriorityLong <= minPriorityLong) {
-                        if (nextMessagePriorityLong < minPriorityLong) {
-                            // If it is lower than any of the previous ones
-                            // remove those from being candidates
-                            [candidateMessages removeAllObjects];
-                        }
-                        minPriority = nextMessage.priority;
-                        [candidateMessages addObject:nextMessage];
+                nextMessage = [campaignIt messageForEvent:eventName withPayload:payload withAssets:assetsOnDisk atTime:now withReasons:campaignReasons];
+            }else if([baseCampaignIt isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+                SwrveEmbeddedCampaign *campaignIt = (SwrveEmbeddedCampaign *) baseCampaignIt;
+                nextMessage = [campaignIt messageForEvent:eventName withPayload:payload atTime:now withReasons:campaignReasons];
+            }
+            
+            if (nextMessage != nil) {
+                // Add to list of returned messages
+                [availableMessages addObject:nextMessage];
+                // Check if it is a candidate to be shown
+                long nextMessagePriorityLong = [nextMessage.priority longValue];
+                long minPriorityLong = [minPriority longValue];
+                if (nextMessagePriorityLong <= minPriorityLong) {
+                    if (nextMessagePriorityLong < minPriorityLong) {
+                        // If it is lower than any of the previous ones
+                        // remove those from being candidates
+                        [candidateMessages removeAllObjects];
                     }
-                } else {
-                    // If we are a QA user and it's an invalid campaign we do save it as part of this loop.
-                    if (isQALogging && [[campaignIt messages] count] > 0) {
-                        SwrveMessage *message = [[campaignIt messages] firstObject];
+                    minPriority = nextMessage.priority;
+                    [candidateMessages addObject:nextMessage];
+                }
+            } else {
+                
+                if (isQALogging) {
+                    if ([baseCampaignIt isKindOfClass:[SwrveInAppCampaign class]]) {
+                        SwrveInAppCampaign *campaignIt = (SwrveInAppCampaign *) baseCampaignIt;
+                        // If we are a QA user and it's an invalid campaign we do save it as part of this loop.
+                        if ([[campaignIt messages] count] > 0) {
+                            SwrveMessage *message = [[campaignIt messages] firstObject];
+                            NSString *reason = [campaignReasons objectForKey:[NSString stringWithFormat:@"%ld", (long) [campaignIt ID]]];
+                            [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaignIt.ID variantID:[message.messageID unsignedLongValue] type:SWRVE_CAMPAIGN_IAM displayed:NO reason:reason]];
+                        }
+                    }else if([baseCampaignIt isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+                        SwrveEmbeddedCampaign *campaignIt = (SwrveEmbeddedCampaign *) baseCampaignIt;
                         NSString *reason = [campaignReasons objectForKey:[NSString stringWithFormat:@"%ld", (long) [campaignIt ID]]];
-                        [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaignIt.ID variantID:[message.messageID unsignedLongValue] type:SWRVE_CAMPAIGN_IAM displayed:NO reason:reason]];
+                        [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaignIt.ID variantID:[campaignIt.message.messageID unsignedLongValue] type:SWRVE_CAMPAIGN_EMBEDDED displayed:NO reason:reason]];
                     }
                 }
             }
         }
-
+        
         NSArray *shuffledCandidates = [SwrveMessageController shuffled:candidateMessages];
         if ([shuffledCandidates count] > 0) {
             result = [shuffledCandidates objectAtIndex:0];
@@ -783,29 +852,29 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
         if (isQALogging && campaign != nil && result != nil) {
             // A message was chosen, set the reason for the others
-            for (SwrveMessage *otherMessage in availableMessages) {
+            for (SwrveBaseMessage *otherMessage in availableMessages) {
                 SwrveCampaign *c = otherMessage.campaign;
                 if (result != otherMessage && c != nil) {
                     NSString *reason = [NSString stringWithFormat:@"Campaign %ld was selected for display ahead of this campaign", (long) campaign.ID];
-                    [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:c.ID variantID:[otherMessage.messageID unsignedLongValue] type:SWRVE_CAMPAIGN_IAM displayed:NO reason:reason]];
+                    [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:c.ID variantID:[otherMessage.messageID unsignedLongValue] type:c.campaignType displayed:NO reason:reason]];
                 }
             }
             // Add the chosen message as well.
-            [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaign.ID variantID:[result.messageID unsignedLongValue] type:SWRVE_CAMPAIGN_IAM displayed:YES reason:@""]];
+            [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaign.ID variantID:[result.messageID unsignedLongValue] type:campaign.campaignType displayed:YES reason:@""]];
         }
 
         [SwrveQA messageCampaignTriggered:eventName eventPayload:payload displayed:(result != nil) campaignInfoDict:qaCampaignInfoArray];
     }
 
     if (result == nil) {
-        DebugLog(@"Not showing message: no candidate messages for %@", eventName);
+        DebugLog(@"Not showing message: no candidate base message for %@", eventName);
     }
     return result;
 }
 
-- (SwrveMessage *)messageForEvent:(NSString *)event {
+- (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event {
     // By default does a simple by name look up.
-    return [self messageForEvent:event withPayload:nil];
+    return [self baseMessageForEvent:event withPayload:nil];
 }
 
 - (SwrveConversation *)conversationForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload {
@@ -960,8 +1029,28 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     [self saveCampaignsState];
 
     NSString *viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
+    NSDictionary *payload = @{@"embedded" : @"false"};
     DebugLog(@"Sending view event: %@", viewEvent);
-    [self.analyticsSDK eventInternal:viewEvent payload:nil triggerCallback:false];
+    [self.analyticsSDK eventInternal:viewEvent payload:payload triggerCallback:false];
+}
+
+- (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
+    NSDate *now = [self.analyticsSDK getNow];
+    // The message was shown. Take the current time so that we can throttle messages
+    // from being shown too quickly.
+    [self setMessageMinDelayThrottle];
+    [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
+
+    SwrveCampaign *campaign = message.campaign;
+    if (campaign != nil) {
+        [campaign wasShownToUserAt:now];
+    }
+    [self saveCampaignsState];
+
+    NSString *viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
+    NSDictionary *payload = @{@"embedded" : @"true"};
+    DebugLog(@"Sending view event: %@", viewEvent);
+    [self.analyticsSDK eventInternal:viewEvent payload:payload triggerCallback:false];
 }
 
 - (void)conversationWasShownToUser:(SwrveConversation *)conversation {
@@ -982,11 +1071,21 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if (button.actionType != kSwrveActionDismiss) {
         NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageID];
         DebugLog(@"Sending click event: %@", clickEvent);
-        [self.analyticsSDK eventInternal:clickEvent payload:@{@"name": button.name} triggerCallback:false];
+        NSDictionary *payload = @{@"name": button.name, @"embedded": @"false"};
+        [self.analyticsSDK eventInternal:clickEvent payload:payload triggerCallback:false];
     }
 
     // Save button name for processing later
     self.inAppButtonPressedName = button.name;
+}
+
+- (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
+    if (message != nil) {
+        NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", [message.messageID longValue]];
+        DebugLog(@"Sending click event: %@", clickEvent);
+        NSDictionary *payload = @{@"name": button, @"embedded": @"true"};
+        [self.analyticsSDK eventInternal:clickEvent payload:payload triggerCallback:false];
+    }
 }
 
 - (NSString *)appStoreURLForAppId:(long)appID {
@@ -1189,7 +1288,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     [self setMessageMinDelayThrottle];
     NSDate *now = [self.analyticsSDK getNow];
     SwrveMessage *message = ((SwrveMessageViewController *) self.inAppMessageWindow.rootViewController).message;
-    SwrveInAppCampaign *dismissedCampaign = message.campaign;
+    SwrveInAppCampaign *dismissedCampaign = (SwrveInAppCampaign *)message.campaign;
     [dismissedCampaign messageDismissed:now];
 
     id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
@@ -1307,44 +1406,50 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 }
 
 - (BOOL)eventRaised:(NSDictionary *)event {
+    
     BOOL campaignShown = NO;
     if (analyticsSDK == nil) {
         return campaignShown;
     }
-
+    
     NSString *eventName = [self eventName:event];
     NSDictionary *payload = [event objectForKey:@"payload"];
 
     [self registerForPushNotificationsWithEvent:eventName];
 
-    NSDictionary *personalisation;
-    if (self.personalisationCallback != nil) {
-        personalisation = self.personalisationCallback(payload);
-    }
-
     // Find a message that should be displayed
-    SwrveMessage *message = nil;
+    SwrveBaseMessage *message = nil;
     id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
-    if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
-        message = [strongMessageDelegate messageForEvent:eventName withPayload:payload];
+    if ([strongMessageDelegate respondsToSelector:@selector(baseMessageForEvent: withPayload:)]) {
+        message = [strongMessageDelegate baseMessageForEvent:eventName withPayload:payload];
+    } else if ([strongMessageDelegate respondsToSelector:@selector(messageForEvent: withPayload:)]) {
+        // fallback to deprecated messageForEvent function 
+        message = (SwrveBaseMessage *)[strongMessageDelegate messageForEvent:eventName withPayload:payload];
     } else {
-        message = [self messageForEvent:eventName withPayload:payload];
+        message = [self baseMessageForEvent:eventName withPayload:payload];
     }
 
-    // Show the message if it exists
-    if (message != nil) {
-        if (![message canResolvePersonalisation:personalisation]) {
+    // Show if the returned message is of type SwrveMessage
+    if (message != nil && [message isKindOfClass:[SwrveMessage class]]) {
+        SwrveMessage *messageToBeDisplayed = (SwrveMessage *)message;
+        
+        NSDictionary *personalisation;
+        if (self.personalisationCallback != nil) {
+            personalisation = self.personalisationCallback(payload);
+        }
+        
+        if (![messageToBeDisplayed canResolvePersonalisation:personalisation]) {
             DebugLog(@"Personalisation options are not available for this message.", nil);
             return campaignShown;
         }
 
         dispatch_block_t showMessageBlock = ^{
             if ([strongMessageDelegate respondsToSelector:@selector(showMessage:withPersonalisation:)]) {
-                [strongMessageDelegate showMessage:message withPersonalisation:personalisation];
+                [strongMessageDelegate showMessage:messageToBeDisplayed withPersonalisation:personalisation];
             } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                [strongMessageDelegate showMessage:message];
+                [strongMessageDelegate showMessage:messageToBeDisplayed];
             } else {
-                [self showMessage:message withPersonalisation:personalisation];
+                [self showMessage:messageToBeDisplayed withPersonalisation:personalisation];
             }
         };
 
@@ -1354,6 +1459,17 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             // Run in the main thread as we have been called from other thread
             dispatch_async(dispatch_get_main_queue(), showMessageBlock);
         }
+        campaignShown = YES;
+    }
+    
+    // Embedded callback if it is an embedded message
+    if (message != nil && [message isKindOfClass:[SwrveEmbeddedMessage class]]) {
+        SwrveEmbeddedMessage *messageToBeDisplayed = (SwrveEmbeddedMessage *) message;
+        
+        if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
+            self.embeddedMessageConfig.embeddedMessageCallback(messageToBeDisplayed);
+        }
+        
         campaignShown = YES;
     }
 
@@ -1425,8 +1541,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSString *deviceType = [SwrveUtils platformDeviceType];
     
 
-    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&os=%@&device_type=%@",
-                                      CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemVersion, encodedDeviceName, CONVERSATION_VERSION, systemName, deviceType];
+    return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&conversation_version=%d&os=%@&device_type=%@&embedded_campaign_version=%d",
+                                      CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemVersion, encodedDeviceName, CONVERSATION_VERSION, systemName, deviceType, EMBEDDED_CAMPAIGN_VERSION];
 }
 
 - (NSArray *)messageCenterCampaignsWithPredicate:(BOOL (^)(SwrveCampaign *))predicate {
@@ -1438,7 +1554,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSDate *now = [self.analyticsSDK getNow];
     for (SwrveCampaign *campaign in self.campaigns) {
 #if TARGET_OS_TV /** filter conversations for TV**/
-        if (![campaign isKindOfClass:[SwrveInAppCampaign class]]) continue;
+        if (![campaign isKindOfClass:[SwrveInAppCampaign class]] && ![campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) continue;
 #endif
 
         NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
@@ -1475,7 +1591,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 }
             }
         }
-
         return YES;
     }];
 }
@@ -1548,6 +1663,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             }
         }
 
+        return YES;
+    } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+        SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *) campaign).message;
+        if(message != nil && self.embeddedMessageConfig.embeddedMessageCallback != nil){
+            self.embeddedMessageConfig.embeddedMessageCallback(message);
+        }
+        
         return YES;
     }
 

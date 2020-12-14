@@ -207,6 +207,7 @@
                                 [NSURLQueryItem queryItemWithName:@"conversation_version" value:[NSString stringWithFormat:@"%d", CONVERSATION_VERSION]],
                                 [NSURLQueryItem queryItemWithName:@"os" value:[[device systemName] lowercaseString]],
                                 [NSURLQueryItem queryItemWithName:@"device_type" value:[SwrveUtils platformDeviceType]],
+                                [NSURLQueryItem queryItemWithName:@"embedded_campaign_version" value:[NSString stringWithFormat:@"%d", EMBEDDED_CAMPAIGN_VERSION]],
                              ];
  
     NSURL *expectedUrl = components.URL;
