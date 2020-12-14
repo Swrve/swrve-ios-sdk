@@ -3,6 +3,7 @@
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveConfig.h"
 #import "SwrveInAppMessageConfig.h"
+#import "SwrveEmbeddedMessageConfig.h"
 #import "SwrveReceiptProvider.h"
 #if __has_include(<SwrveSDKCommon/SwrvePermissionsDelegate.h>)
 #import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
@@ -85,6 +86,9 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 
 /*! in-app config */
 @property (nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;
+
+/*! embedded config */
+@property (nonatomic, retain) SwrveEmbeddedMessageConfig *embeddedMessageConfig;
 
 /*! Session timeout time in seconds. User activity after this time will be considered a new session. */
 @property (nonatomic) double newSessionInterval;
@@ -217,6 +221,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) BOOL autoDownloadCampaignsAndResources;
 @property (nonatomic, readonly) UIColor *inAppMessageBackgroundColor;
 @property (nonatomic, readonly) SwrveInAppMessageConfig *inAppMessageConfig;
+@property (nonatomic, readonly) SwrveEmbeddedMessageConfig *embeddedMessageConfig;
 @property (nonatomic, readonly) double newSessionInterval;
 @property (nonatomic, readonly) SwrveResourcesUpdatedListener resourcesUpdatedCallback;
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;

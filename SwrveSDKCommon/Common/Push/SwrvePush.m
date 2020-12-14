@@ -21,8 +21,6 @@ static id <SwrvePushResponseDelegate> _responseDelegate = NULL;
 static SwrvePush *pushInstance = NULL;
 static bool didSwizzle = false;
 static dispatch_once_t sharedInstanceToken = 0;
-NSString *const SwrveSilentPushIdentifierKey = @"_sp";
-NSString *const SwrveSilentPushPayloadKey = @"_s.SilentPayload";
 int const SwrveContentVersion = 1;
 NSString *const SwrveContentVersionKey = @"version";
 #endif
@@ -158,7 +156,7 @@ NSString *const SwrveContentVersionKey = @"version";
     if (_commonDelegate != NULL) {
         appGroupIdentifier = _commonDelegate.appGroupIdentifier;
     }
-    id silentPushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
+    id silentPushIdentifier = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
     if (silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]]) {
         [SwrveCampaignDelivery sendPushDelivery:userInfo withAppGroupID:appGroupIdentifier];
         return [self handleSilentPushNotification:userInfo withCompletionHandler:completionHandler];
@@ -355,7 +353,7 @@ NSString *const SwrveContentVersionKey = @"version";
 #pragma mark - silent push
 
 - (BOOL)handleSilentPushNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *)) completionHandler API_AVAILABLE(ios(7.0)) {
-    id pushIdentifier = [userInfo objectForKey:SwrveSilentPushIdentifierKey];
+    id pushIdentifier = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
     if (pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]]) {
         NSString *pushId = @"-1";
         if ([pushIdentifier isKindOfClass:[NSString class]]) {
@@ -379,7 +377,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
                 // Obtain the silent push payload and call the customers code
                 @try {
-                    id silentPayloadRaw = [userInfo objectForKey:SwrveSilentPushPayloadKey];
+                    id silentPayloadRaw = [userInfo objectForKey:SwrveNotificationSilentPushPayloadKey];
                     if (silentPayloadRaw != nil && [silentPayloadRaw isKindOfClass:[NSDictionary class]]) {
                         completionHandler(UIBackgroundFetchResultNoData, (NSDictionary *) silentPayloadRaw);
                     } else {

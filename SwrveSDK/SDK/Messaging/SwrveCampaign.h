@@ -1,4 +1,10 @@
 #import "SwrveCampaignStatus.h"
+#if __has_include(<SwrveSDKCommon/SwrveQACampaignInfo.h>)
+#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
+#else
+#import "SwrveQACampaignInfo.h"
+#endif
+
 @class SwrveMessageController;
 
 /*! Base campaign state. */
@@ -33,6 +39,7 @@
 @property (atomic)            bool messageCenter;                   /*!< Flag indicating if it is a Message Center campaign. */
 @property (nonatomic, retain) NSString* subject;                    /*!< Message Center subject of the campaign. */
 @property (nonatomic, retain) NSDate* dateStart;                    /*!< Timestamp representing the start date of Message Center campaign. */
+@property (atomic)            SwrveCampaignType campaignType;       /*!< Enum representing the campaign type for QA Logging. */
 
 /*! Initialize the campaign.
  *

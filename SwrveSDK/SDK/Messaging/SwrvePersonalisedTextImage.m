@@ -11,7 +11,6 @@ float const TEST_FONT_SIZE = 200.0f;
                     withFont:(UIFont *)font
                         size:(CGSize)size
 {
-    
     if (CGSizeEqualToSize(CGSizeZero, size)) {
         // if size is 0,0 just give an empty object back and avoid CG errors
         return [UIImage new];
@@ -25,7 +24,7 @@ float const TEST_FONT_SIZE = 200.0f;
     
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByClipping;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
 
     NSDictionary *baseAttributes = @{ NSFontAttributeName: currentFont,
                                   NSBackgroundColorAttributeName: background,
@@ -33,12 +32,16 @@ float const TEST_FONT_SIZE = 200.0f;
                                   NSParagraphStyleAttributeName:  paragraphStyle };
 
     NSDictionary *attributes = [SwrvePersonalisedTextImage fitTextSize:string withAttributes:baseAttributes maxWidth:(int)size.width maxHeight:(int)size.height];
-    
-    CGSize textBounds = [string sizeWithAttributes:attributes];
-    CGRect textRect = CGRectMake(0, (size.height - textBounds.height) / 2, size.width, size.height);
-    CGRect backgroundRect = CGRectMake(0, 0, size.width, size.height);
 
-    // start drawing an image with UIGraphics tools
+    CGRect backgroundRect = CGRectMake(0, 0, size.width, size.height);
+    
+    CGRect textRect = [string boundingRectWithSize:size options:NSStringDrawingUsesDeviceMetrics attributes:attributes context:nil];
+    
+    // Align vertically
+    textRect.origin.y = textRect.origin.y + (textRect.size.height + size.height) / 2.0f;
+    textRect.origin.x = ((size.width - textRect.size.width) / 2.0f) - textRect.origin.x;
+
+    // Start drawing an image with UIGraphics tools
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
 
     // Set background of the image to match the specified background
@@ -46,20 +49,19 @@ float const TEST_FONT_SIZE = 200.0f;
     UIRectFill(backgroundRect);
 
     // Now draw the resized rect with the text onto it
-    [string drawInRect:textRect withAttributes:attributes];
+    [string drawWithRect:textRect options:NSStringDrawingUsesDeviceMetrics attributes:attributes context:nil];
 
-    // finally render a UIImage object
+    // Finally render a UIImage object
     UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
 
-    // cleanup
+    // Cleanup
     UIGraphicsEndImageContext();
 
     return resultImage;
 }
 
-
-+ (NSDictionary *) fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(int)maxWidth maxHeight:(int) maxHeight {
-    if(text == nil || maxWidth <= 0 || maxHeight <= 0) return attributes;
++ (NSDictionary *) fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(int)maxWidth maxHeight:(int)maxHeight {
+    if (text == nil || maxWidth <= 0 || maxHeight <= 0) return attributes;
 
     // Retrieve the current font so we can resize against that specific styling
     UIFont *currentFont = (UIFont *)[attributes objectForKey:NSFontAttributeName];
@@ -67,11 +69,12 @@ float const TEST_FONT_SIZE = 200.0f;
     NSMutableDictionary *newAttributes = [attributes mutableCopy];
     [newAttributes setObject:[currentFont fontWithSize:TEST_FONT_SIZE] forKey:NSFontAttributeName];
     
-    CGSize bound = [text sizeWithAttributes:newAttributes];
-    double scalex = TEST_FONT_SIZE / bound.width;
-    double scaley = TEST_FONT_SIZE / bound.height;
+    CGSize maxSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    CGRect bound = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesDeviceMetrics attributes:newAttributes context:nil];
+    double scalex = TEST_FONT_SIZE / (bound.size.width + fabs(bound.origin.x));
+    double scaley = TEST_FONT_SIZE / (bound.size.height + fabs(bound.origin.y));
     
-    float fontSize = (float)SWRVE_MIN(scalex * maxWidth, scaley * maxHeight);
+    CGFloat fontSize = (CGFloat)floor(SWRVE_MIN(scalex * maxWidth, scaley * maxHeight));
     [newAttributes setObject:[currentFont fontWithSize:fontSize] forKey:NSFontAttributeName];
     
     return newAttributes;

@@ -6,8 +6,9 @@
 #endif
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
-const static int CAMPAIGN_VERSION            = 7;
+const static int CAMPAIGN_VERSION            = 8;
 const static int CAMPAIGN_RESPONSE_VERSION   = 2;
+const static int EMBEDDED_CAMPAIGN_VERSION   = 1;
 
 /*! In-app messages controller */
 @interface SwrveMessageController ()

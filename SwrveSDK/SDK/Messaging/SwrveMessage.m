@@ -17,11 +17,11 @@
 
 @implementation SwrveMessage
 
-@synthesize controller, campaign, messageID, name, priority, formats;
+@synthesize controller, campaign, name, formats;
 
 -(id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController*)_controller {
     if (self = [super init]) {
-        self.campaign     = _campaign;
+        self.campaign     = (SwrveCampaign *)_campaign;
         self.controller   = _controller;
         self.messageID    = [json objectForKey:@"id"];
         self.name         = [json objectForKey:@"name"];

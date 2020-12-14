@@ -59,9 +59,7 @@
     Return current time since the epoch in milliseconds
     @return UInt64 of current time
  */
-//TODO: review and update the Swrve.m to use this method instead of "[self getTime]". (need update few test mock to support this change as well)
 + (UInt64)getTimeEpoch;
-
 
 /**
  Returns YES if running on platforms that support Conversations
@@ -69,7 +67,6 @@
  @return BOOL
  */
 + (BOOL) supportsConversations;
-
 
 /**
  Returns one of three options "mobile" , "tv" or "desktop" based on the platform running it.

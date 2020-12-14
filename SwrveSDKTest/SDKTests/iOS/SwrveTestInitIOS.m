@@ -96,7 +96,7 @@
     XCTAssertEqualObjects(target.swizzleError, fakeError);
 }
 
--(void)testDeviceInfoWithiOS
+-(void)testDeviceInfo
 {
 #if !defined(SWRVE_NO_PUSH)
     id classMock = OCMClassMock([SwrvePermissions class]);
@@ -132,16 +132,26 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], @"ios");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.ios_min_version"] isKindOfClass:[NSNumber class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"],  [swrveMock config].language);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"],  device_width);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"],  device_height);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"], [swrveMock config].language);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], device_width);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"], device_height);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.device_dpi"] isKindOfClass:[NSNumber class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"],  @SWRVE_SDK_VERSION);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.app_store"],  @"apple");
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.utc_offset_seconds"],  [NSNumber numberWithInteger:[[NSTimeZone localTimeZone]secondsFromGMT]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"],  [NSTimeZone localTimeZone].name);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"], @SWRVE_SDK_VERSION);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.app_store"], @"apple");
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.utc_offset_seconds"], [NSNumber numberWithInteger:[[NSTimeZone localTimeZone]secondsFromGMT]]);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
+
+    NSString *expectedDeviceType = @"mobile";
+#if TARGET_OS_TV
+    expectedDeviceType = @"tv";
+#elif TARGET_OS_OSX
+    expectedDeviceType = @"desktop";
+#endif
+    
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_type"], expectedDeviceType);
     
     // Permissions
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_notifications"]);
@@ -149,9 +159,9 @@
     
     // IDFA & Device Info count
     if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 19);
-    } else {
         XCTAssertEqual([deviceInfo count], 20);
+    } else {
+        XCTAssertEqual([deviceInfo count], 21);
         XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     }
     
@@ -169,7 +179,7 @@
 #endif
     
     // Initialize SDK
-    SwrveConfig * config = [[SwrveConfig alloc]init];
+    SwrveConfig * config = [[SwrveConfig alloc] init];
     TestPermissionsDelegate *permissionsDelegate = [[TestPermissionsDelegate alloc] init];
     config.permissionsDelegate = permissionsDelegate;
 #if !defined(SWRVE_NO_PUSH)
@@ -185,10 +195,10 @@
     // Device Info count
     if (@available(iOS 14, tvOS 14, *)) {
         //IDFA string will be invalid on simulator
-        XCTAssertEqual([deviceInfo count], 25);
+        XCTAssertEqual([deviceInfo count], 26);
     }
     else {
-        XCTAssertEqual([deviceInfo count], 26);
+        XCTAssertEqual([deviceInfo count], 27);
     }
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);

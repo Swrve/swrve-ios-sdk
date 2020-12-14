@@ -148,9 +148,36 @@
                     "id": 3,
                     "name": "Message 3",
                     "rules": {},
-                    "priority": 9999
+                    "priority": 9998
                 }
             ],
+            "rules": {
+                "display_order": "robin",
+                "dismiss_after_views": 99999,
+                "delay_first_message": 0,
+                "min_delay_between_messages": 0
+            }
+        },
+        {
+            "id": 104,
+            "start_date": 1362671700000,
+            "end_date": 1364568900000,
+            "triggers": [
+                 {"event_name": "Swrve.currency_given",
+                 "conditions": {}
+                 }
+            ],
+            "embedded_message": {
+              "id": 4,
+              "buttons": [
+                "Button 1",
+                "Button 2",
+                "Button 3"
+              ],
+              "data": "test string",
+              "type": "other",
+              "priority": 9999
+            },
             "rules": {
                 "display_order": "robin",
                 "dismiss_after_views": 99999,

@@ -28,15 +28,15 @@
 
 - (int)devicePropertyCount {
     if (@available(iOS 14, tvOS 14, *)) {
-        return 13;
-    } else{
         return 14;
+    } else{
+        return 15;
     }
 }
 
 - (void)testDevicePropertiesNil {
     
-    SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
+    SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                             appInstallTimeSeconds:0
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
@@ -49,9 +49,10 @@
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
     XCTAssertNotNil([deviceInfo valueForKey:@"swrve.device_dpi"]);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_name"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_type"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"tvos");
@@ -61,9 +62,9 @@
     if (@available(iOS 14, tvOS 14, *)) {
         XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil);
     }else{
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil );
+        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil);
     }
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil );
+    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil);
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {

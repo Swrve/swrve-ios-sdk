@@ -1,4 +1,5 @@
 #import "SwrveMessageFormat.h"
+#import "SwrveBaseMessage.h"
 
 /*! Enumerates the possible types of action that can be associated with tapping a message button. */
 typedef enum {
@@ -17,12 +18,10 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
 @class SwrveInAppCampaign;
 
 /*! In-app message. */
-@interface SwrveMessage : NSObject
+@interface SwrveMessage : SwrveBaseMessage
 
-@property (nonatomic, weak)              SwrveInAppCampaign* campaign; /*!< Reference to parent campaign */
-@property (nonatomic, retain)            NSNumber* messageID;     /*!< Identifies the message in a campaign */
+// @property (nonatomic, weak)              SwrveInAppCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSString* name;          /*!< Name of the message */
-@property (nonatomic, retain)            NSNumber* priority;      /*!< Priority of the message */
 @property (nonatomic, retain)            NSArray*  formats;       /*!< Array of multiple formats for this message */
 
 /*! Create an in-app message from the JSON content.

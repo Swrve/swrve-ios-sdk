@@ -4,10 +4,11 @@
 
 typedef enum {
     SWRVE_CAMPAIGN_IAM = 0,
-    SWRVE_CAMPAIGN_CONVERSATION = 1
+    SWRVE_CAMPAIGN_CONVERSATION = 1,
+    SWRVE_CAMPAIGN_EMBEDDED = 2
 } SwrveCampaignType;
 // Macro to convert SwrveCampaignType to NSString
-#define swrveCampaignTypeToString(enum) [@[@"iam",@"conversation"] objectAtIndex:enum]
+#define swrveCampaignTypeToString(enum) [@[@"iam",@"conversation",@"embedded"] objectAtIndex:enum]
 
 @property (atomic)       NSUInteger             campaignID;
 @property (atomic)       NSUInteger             variantID;

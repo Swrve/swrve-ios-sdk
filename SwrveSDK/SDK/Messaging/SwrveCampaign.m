@@ -78,6 +78,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize randomOrder;
 @synthesize messageCenter;
 @synthesize subject;
+@synthesize campaignType;
 
 -(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json {
     if (self = [super init]) {

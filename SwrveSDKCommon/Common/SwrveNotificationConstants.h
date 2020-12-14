@@ -4,6 +4,8 @@
 extern NSString *const SwrveNotificationDeprecatedDeeplinkKey;
 extern NSString *const SwrveNotificationDeeplinkKey;
 extern NSString *const SwrveNotificationIdentifierKey;
+extern NSString *const SwrveNotificationSilentPushIdentifierKey;
+extern NSString *const SwrveNotificationSilentPushPayloadKey;
 
 #pragma mark - notification keys
 extern NSString *const SwrveNotificationContentIdentifierKey;

@@ -5,8 +5,6 @@
 #import "SwrveCommon.h"
 
 NS_ASSUME_NONNULL_BEGIN
-extern NSString *const SwrveSilentPushIdentifierKey;
-extern NSString *const SwrveSilentPushPayloadKey;
 extern NSString *const SwrveContentVersionKey;
 
 @protocol SwrvePushDelegate <NSObject>

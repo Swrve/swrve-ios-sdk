@@ -1,4 +1,6 @@
+#import "SwrveBaseMessage.h"
 #import "SwrveMessage.h"
+#import "SwrveEmbeddedMessage.h"
 #import "SwrveConversation.h"
 #import "SwrveMessageViewController.h"
 
@@ -18,7 +20,18 @@
  * \param payload Event payload.
  * \returns Message with the given trigger event.
  */
-- (SwrveMessage*)messageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
+- (SwrveMessage*)messageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload __deprecated;
+
+/*! Called when an event is raised by the Swrve SDK. Look up a base message
+ * which could be either embedded or InApp to display. Return nil if no message
+ * should be displayed. By default the SwrveMessageController will search for
+ * messages with the provided trigger.
+ *
+ * \param eventName Trigger event.
+ * \param payload Event payload.
+ * \returns BaseMessage with the given trigger event.
+ */
+- (SwrveBaseMessage*)baseMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
 
 /*! Called when an event is raised by the Swrve SDK. Look up a conversation
  * to display. Return nil if no conversation should be displayed. By default

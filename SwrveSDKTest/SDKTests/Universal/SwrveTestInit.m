@@ -166,7 +166,7 @@
     });
     [swrveMock setSwrveSessionDelegate:mockSwrveSessionDelegate1];
     [swrveMock appDidBecomeActive:nil];
-    [self waitForExpectationsWithTimeout:2 handler:^(NSError *error) {
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"Session1 started not invoked");
         }
@@ -191,7 +191,7 @@
     NSDate *date35SecondsLater = [[NSDate date] dateByAddingTimeInterval:35];
     OCMStub([swrveMock getNow]).andReturn(date35SecondsLater);
     [swrveMock appDidBecomeActive:nil];
-    [self waitForExpectationsWithTimeout:2 handler:^(NSError *error) {
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"Session3 started not invoked");
         }
@@ -207,7 +207,7 @@
     [swrveMock setSwrveSessionDelegate:mockSwrveSessionDelegate4];
     [swrveMock beginSession];
     
-    [self waitForExpectationsWithTimeout:2 handler:^(NSError *error) {
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"Session4 started not invoked");
         }

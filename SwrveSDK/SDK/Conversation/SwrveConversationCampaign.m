@@ -43,8 +43,10 @@
 
         self.filters = [json objectForKey:@"filters"];
         [self addAssetsToQueue:assetsQueue];
+        
+        self.campaignType = SWRVE_CAMPAIGN_CONVERSATION;
     }
-
+    
     return self;
 }
 

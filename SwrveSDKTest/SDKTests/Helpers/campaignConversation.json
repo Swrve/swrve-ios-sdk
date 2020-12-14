@@ -1,0 +1,42 @@
+{
+	"id": 82,
+	"name": "Choose one",
+	"pages": [
+		{
+			"tag": "1427124319447-2Button",
+			"title": "Page 1 of x",
+			"content": [
+				{
+					"type": "multi-value-input",
+					"description": "Please  select an answer from the  radio buttons below 1:",
+					"style": {
+						"bg": {
+							"type": "transparent"
+						},
+						"fg": {
+							"type": "color",
+							"value": "#9bf000"
+						}
+					},
+					"values": [
+						{
+							"answer_id": "13654815-option",
+							"answer_text": "Option 1"
+						}
+					],
+					"tag": "1427192631272-fragment"
+				}
+			],
+			"controls": [
+				{
+					"tag": "1427124319447-Button-1",
+					"description": "Call a number",
+					"target": "",
+					"action": {
+						"call": "453453453"
+					}
+				}
+			]
+		}
+	]
+}

@@ -519,4 +519,43 @@ NSString *mockCacheDir;
     XCTAssertNil(mvc);
 }
 
+- (void)testHandleDeeplink_Embedded_CallbackFired {
+    Swrve *swrve = [Swrve alloc];
+    
+    __block SwrveEmbeddedMessage *embmessage = nil;
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveEmbeddedMessageConfig *embConfig = [SwrveEmbeddedMessageConfig new];
+    [embConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+        embmessage = message;
+    }];
+    
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_embedded_message" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
+    [swrveDeeplinkManger handleDeeplink:url];
+
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Callback"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        return !(embmessage = nil);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+}
+
 @end

@@ -22,7 +22,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "6.7.1"
+#define SWRVE_SDK_VERSION "6.8.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -433,13 +433,25 @@ NSString * eventsPayloadAsJSON);
  */
 - (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
 
-/*!< TODO comment */
+/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+ * Tracking will begin using the last user or an auto generated userId if the first time the sdk is started.
+ * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ */
 - (void)start;
 
-/*!< TODO comment */
+/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+ * Tracking will begin using the userId passed in.
+ * Can be called multiple times to switch the current userId to something else. A new session is started if not already
+ * started or if is already started with different userId.
+ * The sdk will remain started until the createInstance is called again.
+ * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ * @param userId User id to start sdk with..
+ */
 - (void)startWithUserId:(NSString *)userId;
 
-/*!< TODO comment */
+/*! Check if the SDK has been started.
+ * @return true when in SWRVE_INIT_MODE_AUTO mode. When in SWRVE_INIT_MODE_MANAGED mode it will return true after one of the 'start' api's has been called.
+ */
 - (BOOL)started;
 
 #pragma mark - Properties

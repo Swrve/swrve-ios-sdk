@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-6_7_1.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-6_7_1)
+[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-6_8_0.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-6_8_0)
 
 What is Swrve
 -------------
@@ -22,6 +22,11 @@ You can use [Carthage](https://github.com/Carthage/Carthage) to install `Swrve` 
 ```
 github "Swrve/swrve-ios-sdk"
 ```
+Installing using Swift Package Manager (Xcode 12+)
+--------------------------
+For installing Swift packages, please see the [Apple Developer Docs](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app
+Requirements) 
+
 Requirements
 ------------
 ### Xcode (latest)

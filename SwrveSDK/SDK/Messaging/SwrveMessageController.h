@@ -1,7 +1,10 @@
 #import "SwrveMessageDelegate.h"
+#import "SwrveEmbeddedMessageConfig.h"
 
 @class SwrveCampaign;
 @class SwrveMessage;
+@class SwrveBaseMessage;
+@class SwrveEmbeddedMessage;
 @class SwrveConversation;
 @class SwrveButton;
 
@@ -51,6 +54,15 @@ typedef NSDictionary *(^SwrveMessagePersonalisationCallback)(NSDictionary *event
  */
 - (SwrveMessage *)messageForEvent:(NSString *)event;
 
+
+/*! Find a base message which could an in-app or embedded for the given trigger event
+ * that also satisfies the rules set up in the dashboard.
+ *
+ * \param event Trigger event name.
+ * \returns In-app message for the given tirgger.
+ */
+- (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event;
+
 /*! Find an in-app conversation for the given trigger event that also satisfies the rules
  * set up in the dashboard.
  *
@@ -70,6 +82,22 @@ typedef NSDictionary *(^SwrveMessagePersonalisationCallback)(NSDictionary *event
  * \param message Message that was shown to the user.
  */
 - (void)messageWasShownToUser:(SwrveMessage *)message;
+
+/*! Inform that am embedded message has been served and processed. This function should be called
+ * by your implementation to update the campaign information and send the appropriate data to
+ * Swrve.
+ *
+ * \param message embedded message that has been processed
+ */
+- (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message;
+
+/*! Process an embedded message engagement event. This function should be called by your
+ * implementation to inform Swrve of a button event.
+ *
+ * \param message embedded message that has been processed
+ * \param button  button that was pressed
+ */
+- (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button;
 
 /*! Obtain the app store URL configured for the given app.
  *
@@ -166,6 +194,7 @@ typedef NSDictionary *(^SwrveMessagePersonalisationCallback)(NSDictionary *event
 #pragma mark Properties
 
 @property(nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;                  /*!< Configuration for the InApp Messaging*/
+@property(nonatomic, retain) SwrveEmbeddedMessageConfig *embeddedMessageConfig;            /*!< Configuration for the Embedded Messaging*/
 @property(nonatomic, weak) id <SwrveMessageDelegate> showMessageDelegate;                  /*!< Implement this delegate to intercept in-app messages. */
 @property(nonatomic, copy) SwrveCustomButtonPressedCallback customButtonCallback;        /*!< Implement this delegate to process custom button actions. */
 @property(nonatomic, copy) SwrveDismissButtonPressedCallback dismissButtonCallback;      /*!< Implement this delegate to process dismiss button action. */

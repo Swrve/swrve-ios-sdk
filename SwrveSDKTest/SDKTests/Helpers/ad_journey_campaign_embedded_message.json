@@ -1,0 +1,25 @@
+{
+    "campaign": {
+        "id": 295411,
+        "embedded_message": {
+            "id": 20,
+            "buttons": [
+              "Button 1",
+              "Button 2",
+              "Button 3"
+            ],
+            "data": "test string",
+            "type": "other",
+            "priority": 500
+          },
+        "subject": "the description"
+    },
+    "additional_info": {
+        "version": 2,
+        "cdn_paths": {
+            "message_images": "https://content-cdn.swrve.com/messaging/message_image/",
+            "message_fonts": "https://content-cdn.swrve.com/messaging/fonts/"
+        }
+    }
+}
+

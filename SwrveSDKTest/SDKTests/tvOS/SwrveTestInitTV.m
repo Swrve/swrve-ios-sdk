@@ -67,20 +67,21 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_type"], @"tv");
     
     // IDFA & Device Info count
     if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 16);
-    }else{
         XCTAssertEqual([deviceInfo count], 17);
+    }else{
+        XCTAssertEqual([deviceInfo count], 18);
         XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     }
 
     // IDFA & Device Info count
     if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 16);
-    } else {
         XCTAssertEqual([deviceInfo count], 17);
+    } else {
+        XCTAssertEqual([deviceInfo count], 18);
         XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     }
     
