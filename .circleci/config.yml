@@ -6,7 +6,7 @@ jobs:
   build:
     # Specify the Xcode version to use.
     macos:
-      xcode: "11.5.0"
+      xcode: "12.4.0"
 
     # Remove fastlant warning.
     environment:
@@ -28,8 +28,8 @@ jobs:
             pod install
 
       # Run tests
-      - run: fastlane unitTestsiOS
-      - run: fastlane unitTeststvOS
+      - run: fastlane unitTestsiOS scheme:"SwrveSDKiOS"
+      - run: fastlane unitTeststvOS scheme:"SwrveSDKtvOS"
 
       - store_test_results:
           path: output/scan
