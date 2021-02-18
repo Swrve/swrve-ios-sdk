@@ -1965,7 +1965,6 @@
     // Set a custom delay low here for speed of testing
     [swrveMock shutdown];
     [config setAutoShowMessagesMaxDelay:2000];
-    [swrveMock stopMocking];
     
     swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
     [swrveMock appDidBecomeActive:nil];

@@ -44,8 +44,6 @@ typedef NSDictionary *(^SwrveMessagePersonalisationCallback)(NSDictionary *event
 @interface SwrveMessageController : NSObject<SwrveCampaignsSDK, SwrveMessageDelegate, SwrveMessageEventHandler>
 #endif
 
-- (instancetype)init NS_UNAVAILABLE;
-
 /*! Find an in-app message for the given trigger event that also satisfies the rules
  * set up in the dashboard.
  *

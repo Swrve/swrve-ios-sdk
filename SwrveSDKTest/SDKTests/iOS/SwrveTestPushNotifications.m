@@ -416,19 +416,11 @@
 }
 
 - (id)mockApplicationStateWith:(UIApplicationState)uiApplicationState {
-    [self checkMockUIApplicationWasRemoved];
     id mockApplication = OCMPartialMock([UIApplication sharedApplication]);
     OCMStub([mockApplication applicationState]).andReturn(uiApplicationState);
     // We have gotten failures in the form of "[UIApplication statusBarOrientation]: unrecognized selector sent to instance" so lets try and always mock it
     OCMStub([mockApplication statusBarOrientation]).andReturn(UIInterfaceOrientationPortrait);
     return mockApplication;
-}
-
-- (void)checkMockUIApplicationWasRemoved {
-    id app = [UIApplication sharedApplication];
-    if (![app isMemberOfClass:[UIApplication class]]) {
-        XCTFail(@"Application mock still active at the start of the test");
-    }
 }
 
 @end

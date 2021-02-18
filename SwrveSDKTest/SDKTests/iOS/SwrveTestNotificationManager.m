@@ -74,7 +74,6 @@
     [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
 
     OCMVerifyAll(mockSwrveCommon);
-    [mockSwrveCommon stopMocking];
 }
 
 - (void)testImageLoadFromCache {
@@ -133,8 +132,7 @@
         [handleContent fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
-    }];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
     
     XCTestExpectation *checkContent = [self expectationWithDescription:@"checkContent"];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -147,8 +145,7 @@
         [checkContent fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
-    }];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
     
     [center setNotificationCategories:[NSSet new]];
 }

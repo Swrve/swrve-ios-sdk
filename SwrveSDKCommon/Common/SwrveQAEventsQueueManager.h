@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SwrveQAEventsQueueManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSessionToken:(NSString *) sessionToken;
 - (void)queueEvent:(NSMutableDictionary *)qalogevent;
 - (void)flushEvents;

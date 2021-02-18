@@ -1,0 +1,340 @@
+{
+  "game_data": {},
+  "campaigns": [
+    {
+      "id": 15679,
+      "start_date": 1427120713000,
+      "end_date": 2145920400000,
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 60
+      },
+      "triggers": [
+        {
+          "event_name": "Swrve.Messages.showAtSessionStart",
+          "conditions": {}
+        }
+      ],
+      "conversation_version": 3,
+      "conversation": {
+        "id": 82,
+        "name": "Choose one",
+        "pages": [
+          {
+            "tag": "1427124319447-2Button",
+            "title": "Page 1 of x",
+            "style": {
+              "bg": {
+                "type": "color",
+                "value": "#666666"
+              },
+              "lb": {
+                "type": "color",
+                "value": "#FFFFFF"
+              },
+              "border_radius": 44
+            },
+            "content": [
+              {
+                "type": "multi-value-input",
+                "description": "Please select an answer from the radio buttons below 1:",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "values": [
+                  {
+                    "answer_id": "13654815-option",
+                    "answer_text": "Option 1"
+                  },
+                  {
+                    "answer_id": "82037856-option",
+                    "answer_text": "Option 2"
+                  },
+                  {
+                    "answer_id": "37240198-option",
+                    "answer_text": "Option 3"
+                  }
+                ],
+                "tag": "1427192631272-fragment"
+              },
+              {
+                "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_show_borders cke_focus\" contenteditable=\"false\" id=\"textedit-1427199673126-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427199673126-fragment\" title=\"Rich Text Editor, textedit-1427199673126-fragment\" aria-describedby=\"cke_40\"><h3 style=\"text-align: left;\"><span style=\"font-size:20px;\"><strong>some random text goes in here with content blah blah<em><u><span style=\"color:#FFFF00;\"></span><span style=\"color:#FF0000;\">​</span></u></em></strong></span></h3></div>",
+                "type": "html-fragment",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "tag": "1427199673126-fragment"
+              },
+              {
+                "value": "<h1>Customer Service</h1>",
+                "type": "star-rating",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "tag": "1427199673126-star-rating",
+                "stuff": "hello",
+                "star_color": "#F8F8F8"
+              },
+              {
+                "type": "multi-value-input",
+                "description": "Title",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "values": [
+                  {
+                    "answer_id": "94974061-option",
+                    "answer_text": "Mr"
+                  },
+                  {
+                    "answer_id": "98215530-option",
+                    "answer_text": "Mrs"
+                  },
+                  {
+                    "answer_id": "52489097-option",
+                    "answer_text": "Dr"
+                  },
+                  {
+                    "answer_id": "71815901-option",
+                    "answer_text": "other"
+                  }
+                ],
+                "tag": "1427199713875-fragment",
+                "optional": true
+              }
+            ],
+            "controls": [
+              {
+                "tag": "1427124319447-Button-1",
+                "description": "Call a number",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "border_radius": 50,
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": "",
+                "action": {
+                  "call": "453453453"
+                }
+              },
+              {
+                "tag": "1427124319447-Button-2",
+                "description": "Next",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": "1427305771170-2Button"
+              }
+            ]
+          },
+          {
+            "tag": "1427305771170-2Button",
+            "title": "Page 2 of x",
+            "style": {
+              "bg": {
+                "type": "color",
+                "value": "#666666"
+              }
+            },
+            "content": [
+              {
+                "value": "8d4f969706e6bf2aa344d6690496ecfdefc89f1f",
+                "src": "https://fake_cdn_root.com/someurl/image/8d4f969706e6bf2aa344d6690496ecfdefc89f1f",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "type": "image",
+                "tag": "1427305774817-fragment",
+                "css_class": "user-uploaded-image"
+              }
+            ],
+            "controls": [
+              {
+                "tag": "1427305771170-Button-1",
+                "description": "Go to web page",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "border_radius": 50,
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": "",
+                "action": {
+                  "visit": {
+                    "url": "http://en.wikipedia.org/wiki/Sun"
+                  }
+                }
+              },
+              {
+                "tag": "1427305771170-Button-2",
+                "description": "Next",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": "1427305795105-2Button"
+              }
+            ]
+          },
+          {
+            "tag": "1427305795105-2Button",
+            "title": "New page",
+            "style": {
+              "bg": {
+                "type": "color",
+                "value": "#666666"
+              }
+            },
+            "content": [
+              {
+                "type": "multi-value-input",
+                "description": "Question text here...",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "values": [
+                  {
+                    "answer_id": "10417438-option",
+                    "answer_text": "Option 1"
+                  },
+                  {
+                    "answer_id": "31102851-option",
+                    "answer_text": "Option 2"
+                  },
+                  {
+                    "answer_id": "71741945-option",
+                    "answer_text": "Option 3"
+                  }
+                ],
+                "tag": "1427305801160-fragment"
+              },
+              {
+                "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_focus cke_show_borders\" contenteditable=\"false\" id=\"textedit-1427305806432-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427305806432-fragment\" title=\"Rich Text Editor, textedit-1427305806432-fragment\" aria-describedby=\"cke_115\">blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah​&nbsp;blah blah</div>",
+                "type": "html-fragment",
+                "style": {
+                  "bg": {
+                    "type": "transparent"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#9bf000"
+                  }
+                },
+                "tag": "1427305806432-fragment"
+              }
+            ],
+            "controls": [
+              {
+                "tag": "1427305795105-Button-1",
+                "description": "Go to deep link",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "border_radius": 50,
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": "",
+                "action": {
+                  "deeplink": {
+                    "url": "http://en.wikipedia.org/wiki/Sun"
+                  }
+                }
+              },
+              {
+                "tag": "1427305795105-Button-2",
+                "description": "End",
+                "style": {
+                  "type": "solid",
+                  "bg": {
+                    "type": "color",
+                    "value": "#7C8D97"
+                  },
+                  "fg": {
+                    "type": "color",
+                    "value": "#cc8534"
+                  }
+                },
+                "target": ""
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rules": {},
+  "cdn_root": "https://fake_cdn_root.com/someurl/image/",
+  "version": 2
+}

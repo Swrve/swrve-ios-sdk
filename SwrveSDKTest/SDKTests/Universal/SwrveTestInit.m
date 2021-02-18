@@ -219,7 +219,6 @@
     id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
     XCTAssertNotNil(swrveMockAuto);
     XCTAssertTrue([SwrveSDK started]);
-    [swrveMockAuto stopMocking];
 }
 
 - (void)testSdkStartedManagedModeAndAutoStartFalse {
@@ -286,7 +285,6 @@
     OCMReject([swrveMockManaged1 initWithUserId:OCMOCK_ANY]);
     [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
     OCMVerifyAll(swrveMockManaged1);
-    [swrveMockManaged1 stopMocking];
 
     // second instance created but note that start api still hasn't been called so registerLifecycleCallbacks, etc still not called yet
     id swrveMockManaged2 = OCMPartialMock([Swrve alloc]);
@@ -294,7 +292,6 @@
     OCMReject([swrveMockManaged2 initWithUserId:OCMOCK_ANY]);
     [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
     OCMVerifyAll(swrveMockManaged2);
-    [swrveMockManaged2 stopMocking];
 
     //third instance created and sdk was started previously and userId created, therefore autostarted this time
     id swrveMockManaged3 = OCMPartialMock([Swrve alloc]);
@@ -314,7 +311,6 @@
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
 
     OCMVerifyAll(swrveMockManaged3);
-    [swrveMockManaged3 stopMocking];
 
 }
 
@@ -353,8 +349,6 @@
     OCMReject([swrveMockManaged beginSession]);
     [SwrveSDK start];
     OCMVerifyAll(swrveMockManaged);
-
-    [swrveMockManaged stopMocking];
 }
 
 - (void)testInitModeManagedStartWithSameUser {
@@ -396,8 +390,6 @@
 
     userId = [SwrveSDK userID];
     XCTAssertEqualObjects(userId, @"SomeUserId");
-
-    [swrveMockManaged stopMocking];
 }
 
 - (void)testAutoCantCallStartMethod {
@@ -410,7 +402,6 @@
         pass = true;
     }
     XCTAssertTrue(pass);
-    [swrveMockAuto stopMocking];
 }
 
 - (void)testAutoCantCallStartWithUserMethod {
@@ -423,7 +414,6 @@
         pass = true;
     }
     XCTAssertTrue(pass);
-    [swrveMockAuto stopMocking];
 }
 
 - (void)testManagedCantCallIdentityMethod {
@@ -443,7 +433,6 @@
     XCTAssertFalse([swrveMockManaged lifecycleCallbacksRegistered]);
     [swrveMockManaged registerLifecycleCallbacks];
     XCTAssertTrue([swrveMockManaged lifecycleCallbacksRegistered]);
-    [swrveMockManaged stopMocking];
 }
 
 - (void)testInitModeString {

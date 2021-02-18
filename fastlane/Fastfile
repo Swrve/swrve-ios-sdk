@@ -21,20 +21,29 @@ platform :ios do
   end
 
   desc "Run iOS Tests"
-  lane :unitTestsiOS do
+  lane :unitTestsiOS do |options|
     scan(
       workspace: "SwrveSDKTest/SwrveSDKTest.xcworkspace",
-      scheme: "SwrveSDKiOS",
-      clean: true
+      scheme: options[:scheme],
+      device: options[:device],
+      devices: options[:devices],
+      code_coverage: options[:coverage],
+      output_directory: options[:output_directory],
+      build_for_testing: options[:build_for_testing],
+      test_without_building: options[:test_without_building],
+      derived_data_path: options[:derived_data_path]
     )
   end
   
-  desc "Run tests"
-  lane :unitTeststvOS do
+  desc "Run tvOS tests"
+  lane :unitTeststvOS do |options|
     scan(
       workspace: "SwrveSDKTest/SwrveSDKTest.xcworkspace",
-      scheme: "SwrveSDKtvOS",
-      clean: true
+      scheme: options[:scheme],
+      device: options[:device],
+      code_coverage: options[:coverage],
+      output_directory: options[:output_directory],
+      derived_data_path: options[:derived_data_path]
     )
   end
 

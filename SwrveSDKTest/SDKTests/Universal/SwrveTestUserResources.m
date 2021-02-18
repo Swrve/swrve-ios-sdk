@@ -1,8 +1,10 @@
 #import <XCTest/XCTest.h>
 #import "SwrveTestHelper.h"
 #import "SwrveMigrationsManager.h"
+#import "SwrveRESTClient.h"
 
 @interface Swrve (Internal)
+@property(atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
 @property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;
 - (void)appDidBecomeActive:(NSNotification *)notification;
@@ -196,19 +198,16 @@
     NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
 
     // Initialise Swrve and write to resources diff cache file
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
     [SwrveMigrationsManager markAsMigrated];
 
-    // Restart swrve, getting resources diff from API will fail, so resources diff initialised by cache
-    [swrveMock shutdown];
-    swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
-    [swrveMock appDidBecomeActive:nil];
-
     XCTestExpectation *callback = [self expectationWithDescription:@"callback"];
+    // Getting resources diff from API will fail, so resources diff initialised by cache
     [swrveMock userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {
         XCTAssertEqualObjects(resourcesAsJSON, testCacheFileContents);
         

@@ -1,0 +1,176 @@
+{
+    "game_data": {},
+    "campaigns": [{
+                  "id": 17364,
+                  "end_date": 1364568900000,
+                  "start_date": 1362671700000,
+                  "rules": {
+                  "delay_first_message": 0,
+                  "dismiss_after_views": 99999,
+                  "display_order": "random",
+                  "min_delay_between_messages": 60
+                  },
+                  "triggers": [{
+                               "event_name": "conversation_test_event",
+                               "conditions": {}
+                               }],
+                  "conversation_version": 1,
+                  "filters": ["ios", "swrve.permission.ios.location.when_in_use.requestable"],
+                  "conversation": {
+                  "id": 4,
+                  "name": "Conversation Name",
+                  "pages": [{
+                            "tag": "1427220284416-2Button",
+                            "title": "Page 1",
+                            "style": {
+                                "bg": {
+                                    "type": "color",
+                                    "value": "#cc8534"
+                                },
+                                "lb": {
+                                    "type": "color",
+                                    "value": "#FFffffff"
+                                },
+                                "border_radius": 100
+                            },
+                            "content": [{
+                                        "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: 0 -1px 0 #fff\" class=\"editable\" contenteditable=\"false\" id=\"textedit-1427220312018-fragment\">First page</div>",
+                                        "type": "html-fragment",
+                                        "tag": "1427220312018-fragment",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#9bf000"
+                                        }
+                                        }
+                                        }, {
+                                        "value": "281af8272a42b2da21886fd36eef3829e6aadb80",
+                                        "src": "http://content-cdn.swrve.com/messaging/message_image/281af8272a42b2da21886fd36eef3829e6aadb80",
+                                        "type": "image",
+                                        "tag": "1428413702105-fragment",
+                                        "css_class": "user-uploaded-image",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#9bf000"
+                                        }
+                                        }
+                                        }, {
+                                        "tag": "1430239421165-fragment",
+                                        "value": "https://www.youtube.com/embed/WaBxJKx0z0c?html5=1&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0",
+                                        "height": 180,
+                                        "type": "video",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#9bf000"
+                                        }
+                                        }
+                                        }, {
+                                        "type": "multi-value-input",
+                                        "description": "Question text here...",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#9bf000"
+                                        }
+                                        },
+                                        "values": [{
+                                                   "answer_id": "51807382-option",
+                                                   "answer_text": "Option 1"
+                                                   }, {
+                                                   "answer_id": "83319030-option",
+                                                   "answer_text": "Option 2"
+                                                   }, {
+                                                   "answer_id": "29965747-option",
+                                                   "answer_text": "Option 3"
+                                                   }],
+                                        "tag": "1431355297048-fragment"
+                                        }, {
+                                        "tag": "1433942531169-fragment",
+                                        "type": "spacer",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#B22222"
+                                        }
+                                        },
+                                        "height": 20
+                                        }, {
+                                        "tag": "1430239421170-fragment",
+                                        "type": "star-rating",
+                                        "style": {
+                                        "bg": {
+                                        "type": "transparent"
+                                        },
+                                        "fg": {
+                                        "type": "color",
+                                        "value": "#28333C"
+                                        }
+                                        },
+                                        "value": "<h1>Customer Service</h1>",
+                                        "star_color": "#F8F8F8"
+                                        }],
+                            "controls": [{
+                                         "tag": "1427220284416-Button-1",
+                                         "description": "Request Location When In Use",
+                                         "target": "",
+                                         "style": {
+                                         "type": "solid",
+                                         "bg": {
+                                         "type": "color",
+                                         "value": "#FFDB01"
+                                         },
+                                         "fg": {
+                                         "type": "color",
+                                         "value": "#cc8534"
+                                         }
+                                         },
+                                         "action": {
+                                         "permission_request": { "permission" : "swrve.request_permission.ios.location.when_in_use" }
+                                         }
+                                         }, {
+                                         "tag": "1427220284416-Button-2",
+                                         "description": "Call a number",
+                                         "target": "",
+                                         "style": {
+                                         "type": "solid",
+                                         "bg": {
+                                         "type": "color",
+                                         "value": "#7C8D97"
+                                         },
+                                         "fg": {
+                                         "type": "color",
+                                         "value": "#cc8534"
+                                         }
+                                         },
+                                         "action": {
+                                         "call": "0831012430"
+                                         }
+                                         }]
+                            }]
+                  }
+                  }],
+    "rules": {
+        "min_delay_between_messages": 0,
+        "max_messages_per_session": 999999,
+        "delay_first_message": 0
+    },
+    "cdn_root": "http://content-cdn.swrve.com/messaging/message_image/",
+    "version": 2
+}

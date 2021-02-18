@@ -7,8 +7,6 @@
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrvePermissions.h"
 
-
-
 // Internal access to hidden Swrve methods for test only
 @interface Swrve (InternalAccess)
 
@@ -24,8 +22,7 @@
 // Note: This test cannot be run in parallel due to its use of static variables (currentMockCenter, currentPushStatus)
 @implementation SwrveTestPushSDK
 
-   static id currentMockCenter;
-   static NSInteger currentPushStatus;
+static NSInteger currentPushStatus;
 
 - (void)setUp {
     [super setUp];
@@ -39,15 +36,11 @@
     [super tearDown];
 }
 
-// This test temporarily replaces [UNUserNotificationCenter currentNotificationCenter] with this implementation to return a controllable mock
-+ (UNUserNotificationCenter *)currentNotificationCenter {
-    return currentMockCenter;
-}
-
 // Test that when push is disabled no requests are done to request the push authorization
 - (void)testStartWithNoPush {
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     OCMReject([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMReject([currentMockCenter setNotificationCategories:OCMOCK_ANY]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
@@ -70,11 +63,7 @@
 
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(mockUIApplication);
-
-    // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
-    [mockUIApplication stopMocking];
 }
 
 // Test that when push is enabled and configured to trigger on a certain event:
@@ -84,8 +73,9 @@
 // - We don't request push permission
 // - We don't request a fresh token
 - (void)testStartWithPushButNoTriggeredByEvent {
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMReject([currentMockCenter setNotificationCategories:OCMOCK_ANY]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
@@ -127,12 +117,7 @@
     OCMVerifyAll(currentMockCenter);
     OCMVerifyAll(swrveMock);
     OCMVerifyAll(mockUIApplication);
-
-    // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
-    [swrveMock stopMocking];
-    [mockUIApplication stopMocking];
 }
 
 // Test that when push is enabled and set to be requested at start:
@@ -144,8 +129,9 @@
 - (void)testPushRegistration {
     NSSet *customCategories = [NSSet setWithObject:@"my_category"];
 
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
     currentPushStatus = UNAuthorizationStatusNotDetermined;
@@ -200,12 +186,7 @@
 
     // Verify that the token was saved to disk
     XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token");
-
-    // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
-    [swrveMock stopMocking];
-    [mockUIApplication stopMocking];
 }
 
 // Test that when push is was enabled and a token was recieved:
@@ -218,8 +199,9 @@
     // Assume the app already gave us a token
     [SwrveLocalStorage saveDeviceToken:@"fake_token"];
 
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
     OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
     currentPushStatus = UNAuthorizationStatusAuthorized;
@@ -271,12 +253,7 @@
 
     // Verify that the token was saved to disk
     XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token_updated");
-
-    // Test cleanup
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
     [currentMockCenter stopMocking];
-    [swrveMock stopMocking];
-    [mockUIApplication stopMocking];
 }
 
 // Test that when provisioanl push is enabled and set to be requested at start:
@@ -289,8 +266,9 @@
     if (@available(iOS 12.0, *)) {
         NSSet *customCategories = [NSSet setWithObject:@"my_category"];
 
-        IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-        currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+        id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+        OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+        
         OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
         OCMExpect([currentMockCenter setNotificationCategories:customCategories]);
         currentPushStatus = UNAuthorizationStatusNotDetermined;
@@ -347,35 +325,11 @@
 
         // Verify that the token was saved to disk
         XCTAssertEqualObjects([SwrveLocalStorage deviceToken], @"fake_token");
-
-        // Test cleanup
-        [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
         [currentMockCenter stopMocking];
-        [swrveMock stopMocking];
-        [mockUIApplication stopMocking];
     }
 }
 
 /* HELPER METHODS */
-
-// Replace the [UNUserNotificationCenter currentNotificationCenter] method to return a mock using a method in this class and return the
-// original method implementation to be able to restore it at the end of the test
-- (IMP) replaceCurrentNotificationCenter {
-    Class notificationCenterClass = [UNUserNotificationCenter class];
-    SEL currentCenterSelector = @selector(currentNotificationCenter);
-    Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
-    IMP newImplementation = [[self class] methodForSelector:currentCenterSelector];
-
-    return method_setImplementation(originalMethod, newImplementation);
-}
-
-- (void) restoreCurrentNotificationCenter:(IMP)originalCurrentCenterImp {
-    Class notificationCenterClass = [UNUserNotificationCenter class];
-    SEL currentCenterSelector = @selector(currentNotificationCenter);
-    Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
-
-    method_setImplementation(originalMethod, originalCurrentCenterImp);
-}
 
 // Whenever the permission is asked, the 'currentPushStatus' value is returned
 - (void) mockNotificationCenterNotificationSettings:(id)mock {

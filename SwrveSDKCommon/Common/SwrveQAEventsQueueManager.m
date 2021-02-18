@@ -99,7 +99,13 @@ static NSString *const LOG_DETAILS_KEY = @"log_details";
         // When we queue an event we check if the timer is already running
         // if not we also start our timer, so it will [self flushEvents] after "queueQAFlushDelay".
         if (self.flushTimer == nil) {
-            self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:queueQAFlushDelay target:self selector:@selector(flushEvents) userInfo:nil repeats:YES];
+            if (NSThread.currentThread.isMainThread) {
+                self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:queueQAFlushDelay target:self selector:@selector(flushEvents) userInfo:nil repeats:YES];
+            } else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:queueQAFlushDelay target:self selector:@selector(flushEvents) userInfo:nil repeats:YES];
+                });
+            }
         }
         // Add common attributes (if not already present)
         if (![qalogevent objectForKey:@"type"]) {

@@ -1,11 +1,11 @@
 #import <XCTest/XCTest.h>
 #import "TextTemplating.h"
 
-@interface TestTextTemplating : XCTestCase
+@interface SwrveTestTextTemplating : XCTestCase
 
 @end
 
-@implementation TestTextTemplating
+@implementation SwrveTestTextTemplating
 
 - (void)testTemplatingWithMissingProperties {
     NSError *error = nil;

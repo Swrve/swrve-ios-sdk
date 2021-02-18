@@ -49,12 +49,10 @@
 - (void)tearDown {
     [SwrveLocalStorage saveQaUser:nil];
     [SwrveLocalStorage saveSwrveUserId:nil];
-    [classSwrveUtilsMock stopMocking];
-    [swrveCommonMock stopMocking];
     [super tearDown];
 }
 
-- (void)testQeueuEventsTimerStartAndStop {
+- (void)testQueueEventsTimerStartAndStop {
     [self enableQaLogging];
     SwrveQA *qa = [SwrveQA sharedInstance];
 
@@ -71,17 +69,16 @@
     }]completionHandler:OCMOCK_ANY]);
     [[qa queueManager] setRestClient:mockRestClient];
 
-    // Timer should be nil and start just after queue the first event.
+    // Timer should be nil and start just after we queue the first event.
     XCTAssertNil([[qa queueManager] flushTimer]);
     [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
     XCTAssertNotNil([[qa queueManager] flushTimer]);
-
+    
     [self waitForExpectationsWithTimeout:200.0 handler:^(NSError *error) {
         if (error) {
             NSLog(@"Expectation Error occured: %@", error);
         } else {
-            XCTAssertNotNil([[qa queueManager] flushTimer]);
-            // If we force a flush it should set timer to nill, because there is no events more to send.
+            // If we force a flush it should set timer to nil, because there are no more events to send.
             [[qa queueManager] flushEvents];
             XCTAssertNil([[qa queueManager] flushTimer]);
             XCTAssertTrue([[[qa queueManager] queue] count] == 0, @"Should have flush our events as well");
@@ -89,7 +86,7 @@
     }];
 }
 
-- (void)testQeueuAddEventsAndFlushThem {
+- (void)testQueueAddEventsAndFlushThem {
     [self enableQaLogging];
     SwrveQA *qa = [SwrveQA sharedInstance];
 
@@ -128,7 +125,7 @@
     }];
 }
 
-- (void)testQeueussAddEventsAndFlushThem {
+- (void)testQueuesAddEventsAndFlushThem {
     [self enableQaLogging];
     SwrveQA *qa = [SwrveQA sharedInstance];
 

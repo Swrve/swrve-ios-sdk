@@ -18,11 +18,10 @@
 
 @implementation SwrveTestAuthPush
 
-   static id currentMockCenter;
-
 - (void)testAuthPushMediaDownloadSucceeds {
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     id mediaHelperMock = OCMClassMock([SwrveNotificationManager class]);
     OCMStub([mediaHelperMock downloadAttachment:OCMOCK_ANY withCompletedContentCallback:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
    
@@ -62,7 +61,7 @@
 
         XCTAssertEqualObjects(request.content.userInfo[@"_sw"][@"media"][@"title"],@"rich_title");
         [addNotificationRequest fulfill];
-    };;
+    };
     
     OCMStub([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(addNotificationRequestObserver);
 
@@ -74,15 +73,13 @@
     }];
     OCMVerify([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
-    
-    // Test cleanup
     [currentMockCenter stopMocking];
-    [mediaHelperMock stopMocking];
-    [swrvePushMock stopMocking];
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testAuthPushCompletionHandlerCallback {
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
     id mediaHelperMock = OCMClassMock([SwrveNotificationManager class]);
     OCMStub([mediaHelperMock downloadAttachment:OCMOCK_ANY withCompletedContentCallback:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
@@ -112,6 +109,16 @@
                                @"version": @1
                                };
 
+    void (^addNotificationRequestObserver)(NSInvocation *) = ^(NSInvocation *invoke) {
+        void (^completionHandlerIntercepted)(UIBackgroundFetchResult fetch, NSDictionary *dic);
+        [invoke getArgument:&completionHandlerIntercepted atIndex:3];
+        
+        // Mimic what the inside block of SwrvePush
+        completionHandlerIntercepted(UIBackgroundFetchResultNewData, nil);
+    };
+    
+    OCMStub([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(addNotificationRequestObserver);
+    
     XCTestExpectation *completionHandler = [self expectationWithDescription:@"completionHandler"];
     BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
         XCTAssertTrue(fetch == UIBackgroundFetchResultNewData);
@@ -120,10 +127,6 @@
     }];
 
     XCTAssertTrue(isPushHandledBySwrve);
-    if (!isPushHandledBySwrve) {
-        XCTFail(@"isPushHandledBySwrve should be true");
-    }
-
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"completionHandler not called");
@@ -132,15 +135,13 @@
 
     OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
-
     [currentMockCenter stopMocking];
-    [swrvePushMock stopMocking];
 }
 
 // Auth push does not suppport fallback text for media, when media download fails, the auth push won't show
 - (void)testAuthPushMediaDownloadFails {
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
     
     XCTestExpectation *mediaFailedDownload = [self expectationWithDescription:@"mediaFailedDownload"];
     
@@ -194,17 +195,13 @@
     
     OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
-    
-    // Test cleanup
     [currentMockCenter stopMocking];
-    [mediaHelperMock stopMocking];
-    [swrvePushMock stopMocking];
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testNotHandlePushAuthDifferentUserId {
-    IMP originalCurrentCenterImp = [self replaceCurrentNotificationCenter];
-    currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
     // should not handle the push, different user.
     [SwrveLocalStorage saveSwrveUserId:@"4321"];
@@ -240,11 +237,7 @@
 
     OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
-
-    // Test cleanup
     [currentMockCenter stopMocking];
-    [swrvePushMock stopMocking];
-    [self restoreCurrentNotificationCenter:originalCurrentCenterImp];
 }
 
 - (void)testNotHandleAuthPushWithoutSwrveKey {
@@ -279,28 +272,6 @@
             XCTFail(@"addNotificationRequest not called");
         }
     }];
-    [swrvePushMock stopMocking];
-}
-
- //Replace the [UNUserNotificationCenter currentNotificationCenter] method to return a mock using a method in this class and return the
- //original method implementation to be able to restore it at the end of the test
-- (IMP) replaceCurrentNotificationCenter {
-    Class notificationCenterClass = [UNUserNotificationCenter class];
-    SEL currentCenterSelector = @selector(currentNotificationCenter);
-    Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
-    IMP newImplementation = [[self class] methodForSelector:currentCenterSelector];
-    return method_setImplementation(originalMethod, newImplementation);
-}
-- (void) restoreCurrentNotificationCenter:(IMP)originalCurrentCenterImp {
-    Class notificationCenterClass = [UNUserNotificationCenter class];
-    SEL currentCenterSelector = @selector(currentNotificationCenter);
-    Method originalMethod = class_getClassMethod(notificationCenterClass, currentCenterSelector);
-    method_setImplementation(originalMethod, originalCurrentCenterImp);
-}
-
-// This test temporarily replaces [UNUserNotificationCenter currentNotificationCenter] with this implementation to return a controllable mock
-+ (UNUserNotificationCenter *)currentNotificationCenter {
-    return currentMockCenter;
 }
 
 @end

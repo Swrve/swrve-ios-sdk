@@ -78,7 +78,6 @@
     SwrveQA *qa = [SwrveQA sharedInstance];
     XCTAssertTrue(qa.isQALogging);
     XCTAssertTrue(qa.resetDeviceState);
-    [mockSwrveCommon stopMocking];
 }
 
 - (void)testInitSwrveQAWithNoCachedQAUser {
@@ -97,7 +96,6 @@
     SwrveQA *qa = [SwrveQA sharedInstance];
     XCTAssertFalse(qa.isQALogging);
     XCTAssertFalse(qa.resetDeviceState);
-    [mockSwrveCommon stopMocking];
 }
 
 
@@ -126,7 +124,6 @@
     // Check if the event is on queue.
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testMessageCampaignTrigger {
@@ -174,8 +171,6 @@
     OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testConversationCampaignTrigger {
@@ -223,8 +218,6 @@
     OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testConversationCampaignTriggeredNoDisplay {
@@ -252,8 +245,6 @@
     OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testCampaignTrigger {
@@ -303,8 +294,6 @@
     OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 
@@ -341,7 +330,6 @@
     // Check if the event is on queue.
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 - (void)testGeoCampaignsDownloaded {
@@ -374,7 +362,6 @@
     // Check if the event is on queue.
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
-    [swrveQAEventsQueueMock stopMocking];
 }
 
 #pragma mark - helpers

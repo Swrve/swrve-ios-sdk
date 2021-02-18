@@ -4,10 +4,9 @@ target 'SwrveSDK-iOS' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.5.1'
 
   target 'SwrveSDK-iOSTests' do
-    pod 'OCMock', '~> 3.4.3'
+    pod 'OCMock', '~> 3.8.1'
     inherit! :search_paths
   end
 end
@@ -17,11 +16,10 @@ target 'SwrveSDK-tvOS' do
   pod 'SwrveSDKCommon', :path => '../'
   pod 'SwrveConversationSDK', :path => '../'
   pod 'SwrveSDK', :path => '../'
-  #pod 'SwrveSDK', '~> 6.5.1'
 
   target 'SwrveSDK-tvOSTests' do
     platform :tvos, '10.0'
-    pod 'OCMock', '~> 3.4.3'
+    pod 'OCMock', '~> 3.8.1'
     inherit! :search_paths
   end
 end

@@ -1,56 +1,72 @@
 #import "SwrveTestHelper.h"
-#import "SwrveRESTClient.h"
-#import "SwrveMigrationsManager.h"
-#import "SwrveSDK.h"
-#import "OCMock.h"
-
-#if TARGET_OS_IOS /** exclude tvOS **/
+#import "SwrvePrivateAccess.h"
 #import "SwrvePush.h"
-@interface SwrvePush (InternalAccess)
-+ (void)resetSharedInstance;
-@end
+#import "SwrveLocalStorage.h"
+#import "SwrveSDK.h"
+#import "SwrveMigrationsManager.h"
+#import "SwrveMockNSURLProtocol.h"
+#import "SwrvePermissions.h"
+
+#if __has_include(<OCMock/OCMock.h>)
+#import <OCMock/OCMock.h>
 #endif
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)markAsMigrated;
 @end
 
-@interface Swrve (Internal)
-@property(atomic) SwrveRESTClient *restClient;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
-- (void)appDidBecomeActive:(NSNotification *)notification;
-- (NSDate *)getNow;
+#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+@interface SwrvePush (SwrvePushInternalAccess)
++ (void)resetSharedInstance;
 @end
-
-@interface SwrveSDK (InternalAccess)
-+ (void)resetSwrveSharedInstance;
-+ (void)addSharedInstance:(Swrve*)instance;
-@end
+#endif //!defined(SWRVE_NO_PUSH)
 
 @implementation SwrveTestHelper
 
-+ (void)setUp {
-    [SwrveTestHelper tearDown];
++ (void)setAlreadyInstalledUserId:(NSString *)userId {
+    // Set user id
+    [SwrveLocalStorage saveSwrveUserId:userId];
+    // Mark user as fully migrated
+    [SwrveMigrationsManager markAsMigrated];
+    // Save fake install time
+    [SwrveLocalStorage saveUserJoinedTime:1234567889 forUserId:userId];
+    [SwrveLocalStorage saveAppInstallTime:1234567889];
 }
 
-+ (void)tearDown {
-    [SwrveTestHelper deleteUserDefaults];
-    [SwrveTestHelper deleteFilesInDirectory:[SwrveTestHelper rootCacheDirectory]];
-    [SwrveTestHelper deleteFilesInDirectory:[SwrveTestHelper rootApplicationSupportDirectory]];
-    [SwrveTestHelper deleteFilesInDirectory:[SwrveLocalStorage documentPath]];
-    [SwrveTestHelper deleteFilesInDirectory:[SwrveLocalStorage swrveCacheVersionFilePath]];
-    [SwrveTestHelper destroySharedInstance];
++ (NSString*)fileContentsFromURL:(NSURL*)url
+{
+    return [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
 }
 
-+ (void)destroySharedInstance {
-    [SwrveSDK resetSwrveSharedInstance];
-
-#if TARGET_OS_IOS /** exclude tvOS **/
-    [SwrvePush resetSharedInstance];
-#endif
++ (NSString*)fileContentsFromPath:(NSString*)path
+{
+    return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 }
 
-+ (NSString *)rootCacheDirectory {
++ (NSString*)fileContentsFromProtectedFile:(SwrveSignatureProtectedFile*)file
+{
+    NSData *data = [file readWithRespectToPlatform];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
++ (void)writeData:(NSString*)content toURL:(NSURL*)url
+{
+    [content writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
++ (void)writeData:(NSString*)content toPath:(NSString*)path
+{
+    [content writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
++ (void)writeData:(NSString*)content toProtectedFile:(SwrveSignatureProtectedFile*)file
+{
+    NSData *data = [content dataUsingEncoding:NSUTF8StringEncoding];
+    [file writeWithRespectToPlatform:data];
+}
+
++ (NSString*)rootCacheDirectory
+{
     static NSString *_dir = nil;
     if (!_dir) {
         _dir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
@@ -58,20 +74,35 @@
     return _dir;
 }
 
-+ (NSString *)rootApplicationSupportDirectory {
-    static NSString *_dir = nil;
-    if (!_dir) {
-        _dir = [SwrveLocalStorage applicationSupportPath];
-    }
-    return _dir;
++ (NSString*)campaignCacheDirectory
+{
+    return [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:@"com.ngt.msgs"];
 }
 
-+ (void)deleteFilesInDirectory:(NSString *)directory {
++ (void)removeSDKData {
+    [SwrveTestHelper deleteUserDefaults];
+    [SwrveTestHelper deleteFilesInDirectory:[SwrveTestHelper rootCacheDirectory]];
+    [SwrveTestHelper deleteFilesInDirectory:[SwrveLocalStorage applicationSupportPath]];
+    [SwrveTestHelper deleteFilesInDirectory:[SwrveLocalStorage documentPath]];
+    [SwrveLocalStorage resetDirectoryCreation];
+}
+
++ (void)deleteFilesInDirectory:(NSString*)directory {
     NSFileManager *fileMgr = [NSFileManager defaultManager];
     NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:directory error:nil];
-    for (NSString *filename in fileArray) {
+    for (NSString *filename in fileArray)  {
         [fileMgr removeItemAtPath:[directory stringByAppendingPathComponent:filename] error:NULL];
     }
+}
+
++ (void)createDirectory:(NSString*)path {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+}
+
++ (NSArray*)getFilesInDirectory:(NSString*)directory {
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    return [fileMgr contentsOfDirectoryAtPath:directory error:nil];
 }
 
 + (void)deleteUserDefaults {
@@ -80,14 +111,94 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (NSMutableArray *)stringArrayFromCachedContent:(NSString *)content {
-    NSMutableArray *cacheLines = [[NSMutableArray alloc] initWithArray:[content componentsSeparatedByString:@"\n"]];
-    [cacheLines removeLastObject];
-
-    return cacheLines;
++ (void)removeAssets:(NSArray*)assets {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for (NSString *asset in assets) {
+        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:asset];
+        [fileManager removeItemAtPath:path error:nil];
+    }
 }
 
-+ (NSMutableArray *)dicArrayFromCachedFile:(NSURL *)file {
++ (void)removeAllAssets {
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:[SwrveTestHelper campaignCacheDirectory] error:nil];
+    for (NSString *filename in fileArray) {
+        [fileMgr removeItemAtPath:[[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:filename] error:NULL];
+    }
+}
+
++ (void)createDummyAssets:(NSArray*)assets {
+    [self removeAssets:assets];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager createDirectoryAtPath:[SwrveTestHelper campaignCacheDirectory] withIntermediateDirectories:YES attributes:nil error:nil];
+
+    NSData *dummyData = [@"TestData" dataUsingEncoding:NSASCIIStringEncoding];
+
+    for (NSString *asset in assets) {
+        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:asset];
+        [fileManager createFileAtPath:path contents:dummyData attributes:nil];
+    }
+}
+
++ (NSDictionary*)makeDictionaryFromEventBufferEntry:(NSString*)entry
+{
+    return [NSJSONSerialization JSONObjectWithData:[entry dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+}
+
+
++ (NSArray*)makeArrayFromEventFileContents:(NSMutableData*)storedEvents {
+
+    // remove the ending comma allowing it to be turned into an acceptable UTF8 string
+    [storedEvents setLength:[storedEvents length] - 2];
+    NSString* file_contents = [[NSString alloc] initWithData:storedEvents encoding:NSUTF8StringEncoding];
+
+    // wrap it around [] brackets so it can be interpreted as an array in UTF8
+    NSString *eventArray = [NSString stringWithFormat:@"[%@]", file_contents];
+    NSData *bodyData = [eventArray dataUsingEncoding:NSUTF8StringEncoding];
+    NSArray* storedEventQueue = [NSJSONSerialization
+                     JSONObjectWithData:bodyData
+                     options:NSJSONReadingMutableContainers
+                     error:nil];
+
+    //will return a list of Dictionaries associated with events
+    return storedEventQueue;
+}
+
++ (void)destroySharedInstance {
+    [SwrveSDK resetSwrveSharedInstance];
+#if TARGET_OS_IOS /** exclude for tvOS **/
+    [SwrvePush resetSharedInstance];
+#endif //TARGET_OS_IOS
+}
+
++ (NSDictionary*)makeDictionaryFromEventRequest:(NSString*)eventRequest
+{
+    NSRange range = [eventRequest rangeOfString:@"{"];
+    NSString *dictString = [eventRequest substringFromIndex:range.location];
+    NSDictionary *dict = [SwrveTestHelper makeDictionaryFromEventBufferEntry:dictString];
+    return dict;
+}
+
++ (void)setUp {
+    [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
+    [SwrveTestHelper removeAllData];
+}
+
+#pragma mark - global teardown
+
++ (void)tearDown {
+    [SwrveTestHelper removeAllData];
+    [NSURLProtocol unregisterClass:[SwrveMockNSURLProtocol class]];
+}
+
++ (void)removeAllData {
+    /** Globally called Clean up method to ensure that each test runs individually without interference from others **/
+    [SwrveTestHelper removeSDKData];
+    [SwrveTestHelper destroySharedInstance];
+}
+
++ (NSMutableArray*)dicArrayFromCachedFile:(NSURL*)file {
 
     NSString *content = [SwrveTestHelper fileContentsFromURL:file];
     NSMutableArray *cacheLines = [[NSMutableArray alloc] initWithArray:[content componentsSeparatedByString:@"\n"]];
@@ -95,7 +206,6 @@
 
     NSMutableArray *formattedArray = [NSMutableArray new];
     for (NSString *s in cacheLines) {
-
         NSString *newString = [s substringToIndex:s.length-1];
         NSDictionary * dic = [NSJSONSerialization JSONObjectWithData:[newString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
 
@@ -104,12 +214,62 @@
     return formattedArray;
 }
 
-+ (NSString *) fileContentsFromURL:(NSURL *)url {
-    return [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
++ (id)mockPushRequest {
+    id classMock = nil;
+#if __has_include(<OCMock/OCMock.h>)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wgnu"
+#if !defined(SWRVE_NO_PUSH)
+    classMock = OCMClassMock([SwrvePermissions class]);
+    OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
+#endif
+#pragma GCC diagnostic pop
+#endif
+    return classMock;
 }
 
-+ (id) swrveMockWithMockedRestClient {
+// Wait for the condition to be true, once that happens the expectation is fulfilled. If it is not true on each delta time, it is checked again.
++ (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation {
+    [self waitForBlock:deltaSecs conditionBlock:conditionBlock expectation:expectation checkNow:TRUE];
+}
 
++ (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation checkNow:(BOOL)checkNow {
+    // Check right away on first invocation
+    if (checkNow) {
+        if (conditionBlock()) {
+            [expectation fulfill];
+            return;
+        }
+    }
+    
+    // Schedule a check of the condition
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(deltaSecs * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (conditionBlock()) {
+            [expectation fulfill];
+        } else {
+            [self waitForBlock:deltaSecs conditionBlock:conditionBlock expectation:expectation checkNow:NO];
+        }
+    });
+}
+
++ (id)swrveMockWithMockedRestClientResponseCode:(int)httpCode mockData:(NSData *)mockData {
+    // mock all rest calls with success and empty data
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMStub([mockResponse statusCode]).andReturn(httpCode);
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+        swrveMock.restClient = mockRestClient;
+    });
+
+    return swrveMock;
+}
+
++ (id)swrveMockWithMockedRestClient {
     // mock all rest calls with success and empty data
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
     id mockRestClient = OCMPartialMock(restClient);
@@ -160,15 +320,6 @@
     return swrveMock;
 }
 
-+ (void)overwriteCampaignFile:(SwrveSignatureProtectedFile *)signatureFile withFile:(NSString *)filename {
-    NSURL *path = [[NSBundle bundleForClass:[Swrve class]] URLForResource:filename withExtension:@"json"];
-    NSString *campaignData = [NSString stringWithContentsOfURL:path encoding:NSUTF8StringEncoding error:nil];
-    if (campaignData == nil) {
-        [NSException raise:@"No content in JSON test file" format:@"File %@ has no content", filename];
-    }
-    [SwrveTestHelper writeData:campaignData toProtectedFile:signatureFile];
-}
-
 + (NSArray *)testJSONAssets {
     static NSArray *assets = nil;
     if (!assets) {
@@ -179,67 +330,13 @@
     return assets;
 }
 
-+ (void)createDummyAssets:(NSArray *)assets {
-    [self removeAssets:assets];
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    [fileManager createDirectoryAtPath:[SwrveTestHelper campaignCacheDirectory] withIntermediateDirectories:YES attributes:nil error:nil];
-
-    NSData *dummyData = [@"TestData" dataUsingEncoding:NSASCIIStringEncoding];
-
-    for (NSString *asset in assets) {
-        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:asset];
-        [fileManager createFileAtPath:path contents:dummyData attributes:nil];
++ (void)overwriteCampaignFile:(SwrveSignatureProtectedFile *)signatureFile withFile:(NSString *)filename {
+    NSURL *path = [[NSBundle bundleForClass:[Swrve class]] URLForResource:filename withExtension:@"json"];
+    NSString *campaignData = [NSString stringWithContentsOfURL:path encoding:NSUTF8StringEncoding error:nil];
+    if (campaignData == nil) {
+        [NSException raise:@"No content in JSON test file" format:@"File %@ has no content", filename];
     }
-}
-
-+ (void)removeAssets:(NSArray *)assets {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *asset in assets) {
-        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:asset];
-        [fileManager removeItemAtPath:path error:nil];
-    }
-}
-
-+ (void)writeData:(NSString *)content toURL:(NSURL *)url {
-    [content writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil];
-}
-
-+ (void)writeData:(NSString *)content toPath:(NSString *)path {
-    [content writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
-}
-
-+ (void)writeData:(NSString *)content toProtectedFile:(SwrveSignatureProtectedFile *)file {
-    NSData *data = [content dataUsingEncoding:NSUTF8StringEncoding];
-    [file writeWithRespectToPlatform:data];
-}
-
-+ (NSString *)campaignCacheDirectory {
-    return [[SwrveTestHelper rootCacheDirectory] stringByAppendingPathComponent:@"com.ngt.msgs"];
-}
-
-// Wait for the condition to be true, once that happens the expectation is fulfilled. If it is not true on each delta time, it is checked again.
-+ (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation {
-    [self waitForBlock:deltaSecs conditionBlock:conditionBlock expectation:expectation checkNow:TRUE];
-}
-
-+ (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation checkNow:(BOOL)checkNow {
-    // Check right away on first invocation
-    if (checkNow) {
-        if (conditionBlock()) {
-            [expectation fulfill];
-            return;
-        }
-    }
-    
-    // Schedule a check of the condition
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(deltaSecs * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (conditionBlock()) {
-            [expectation fulfill];
-        } else {
-            [self waitForBlock:deltaSecs conditionBlock:conditionBlock expectation:expectation checkNow:NO];
-        }
-    });
+    [SwrveTestHelper writeData:campaignData toProtectedFile:signatureFile];
 }
 
 @end

@@ -11,7 +11,7 @@
 
 @interface SwrveConversation : SwrveBaseConversation
 
-@property (nonatomic, weak)              SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
+@property (nonatomic, retain)            SwrveConversationCampaign* campaign; /*!< Reference to parent campaign */
 @property (nonatomic, retain)            NSNumber* conversationID;            /*!< Identifies the conversation in a campaign */
 @property (nonatomic, retain)            NSString* name;                      /*!< Name of the conversation */
 @property (nonatomic, retain)            NSArray* pages;                      /*!< Pages of the message */
