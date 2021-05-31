@@ -1,0 +1,78 @@
+{
+    "campaign": {
+        "id": 295411,
+        "message": {
+            "id": 298087,
+            "template": {
+                "formats": [{
+                    "name": "[0.550660793]iOS - Portrait",
+                    "orientation": "portrait",
+                    "language": "*",
+                    "size": {
+                        "w": {
+                            "type": "number",
+                            "value": 750
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 1128
+                        }
+                    },
+                    "images": [],
+                    "buttons": [{
+                        "name": "Background",
+                        "x": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 846
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 1335
+                        },
+                        "image_width": 473,
+                        "image_height": 264,
+                        "image_filename": "spicygrilledchickenburrito.png",
+                        "dynamic_image_url": "https://fakeitem/${test_key_with_fallback}.png",
+                        "type": {
+                            "type": "text",
+                            "value": "DISMISS"
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "game_id": {
+                            "type": "number",
+                            "value": ""
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "fc972adec8076d203cbdfd8ca0e4b1bfa483abfb"
+                        }
+                    }],
+                    "scaled_by": 0.550660793,
+                    "scaled_from": "iOS - Portrait",
+                    "scale": 1
+                }]
+            },
+            "name": "Image Personalization Campaign"
+        },
+        "subject": "the description"
+    },
+    "additional_info": {
+        "version": 2,
+        "cdn_paths": {
+            "message_images": "https://content-cdn.swrve.com/messaging/message_image/",
+            "message_fonts": "https://content-cdn.swrve.com/messaging/fonts/"
+        }
+    }
+}
+

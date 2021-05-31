@@ -10,7 +10,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @implementation SwrveCampaignState
 
 @synthesize campaignID;
-@synthesize next;
 @synthesize impressions;
 @synthesize status;
 @synthesize showMsgsAfterDelay;
@@ -28,10 +27,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         NSNumber* idJson = [data objectForKey:@"ID"];
         if (idJson != nil) {
             self.campaignID = idJson.unsignedIntegerValue;
-        }        
-        NSNumber* nextJson = [data objectForKey:@"next"];
-        if (nextJson != nil) {
-            self.next = nextJson.unsignedIntegerValue;
         }
         NSNumber* impressionsJson = [data objectForKey:@"impressions"];
         if (impressionsJson != nil) {
@@ -51,7 +46,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     [state setValue:[NSNumber numberWithUnsignedInteger:self.campaignID] forKey:@"ID"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.impressions] forKey:@"impressions"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.status] forKey:@"status"];
-    [state setValue:[NSNumber numberWithUnsignedInteger:self.next] forKey:@"next"];
     return state;
 }
 
@@ -75,7 +69,6 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize dateEnd;
 @synthesize triggers;
 @synthesize initialisedTime;
-@synthesize randomOrder;
 @synthesize messageCenter;
 @synthesize subject;
 @synthesize campaignType;
@@ -142,8 +135,7 @@ static NSDate* read_date(id d, NSDate* default_date)
 -(void)loadRulesFrom:(NSDictionary*)json
 {
     NSDictionary* rules = [json objectForKey:@"rules"];
-    DebugLog(@"Rules: %@", rules);
-    self.randomOrder = [[rules objectForKey:@"display_order"] isEqualToString: @"random"];
+    [SwrveLogger debug:@"Rules: %@", rules];
     NSNumber* jsonMaxImpressions = [rules objectForKey:@"dismiss_after_views"];
     if (jsonMaxImpressions != nil)
     {
@@ -168,9 +160,9 @@ static NSDate* read_date(id d, NSDate* default_date)
     
     NSArray *triggerArray = [SwrveTrigger initTriggersFromDictionary:json];
     if (!triggerArray){
-        DebugLog(@"Error loading triggers", nil);
+        [SwrveLogger error:@"Error loading triggers", nil];
         return;
-    }else{
+    } else {
         [self.triggers addObjectsFromArray:triggerArray];
     }
 }
@@ -189,7 +181,7 @@ static NSDate* read_date(id d, NSDate* default_date)
 {
     if(campaignReasons != nil) {
         [campaignReasons setValue:reason forKey:[[NSNumber numberWithUnsignedInteger:self.ID] stringValue]];
-        DebugLog(@"%@", reason);
+        [SwrveLogger debug:@"%@", reason];
     }
 }
 
@@ -242,19 +234,14 @@ static NSDate* read_date(id d, NSDate* default_date)
 }
 
 -(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload {
-    
-    if([self triggers] != nil) {
+    if ([self triggers] != nil) {
         for (SwrveTrigger *trigger in [self triggers]) {
-            
-            if([trigger.eventName isEqualToString:[event lowercaseString]]) {
-                
-                DebugLog(@"checking conditions for %@", event);
-                if([trigger.conditions count] > 0) {
-                    
-                    if([trigger canTriggerWithPayload:payload]) {
+            if ([trigger.eventName isEqualToString:[event lowercaseString]]) {
+                if ([trigger.conditions count] > 0) {
+                    if ([trigger canTriggerWithPayload:payload]) {
                         return YES;
                     }
-                }else {
+                } else {
                     return YES;
                 }
             }
@@ -272,9 +259,9 @@ static NSDate* read_date(id d, NSDate* default_date)
 }
 #endif
 
--(BOOL)assetsReady:(NSSet *)assets
+-(BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization
 {
-#pragma unused(assets)
+#pragma unused(assets, personalization)
     // Implemented in sub classes
     return NO;
 }

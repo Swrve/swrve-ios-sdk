@@ -16,6 +16,7 @@
 @end
 
 @interface Swrve(privateAccess)
+@property(atomic) SwrveMessageController *messaging;
 @property(atomic) int eventBufferBytes;
 @property(atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrveProfileManager *profileManager;

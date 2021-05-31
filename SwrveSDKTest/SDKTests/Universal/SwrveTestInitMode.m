@@ -64,7 +64,7 @@
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.initMode = mode;
-    config.managedModeAutoStartLastUser = autoStart;
+    config.autoStartLastUser = autoStart;
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
     [SwrveSDK addSharedInstance:swrveMock];
@@ -74,21 +74,6 @@
 #pragma clang diagnostic pop
 
     return swrveMock;
-}
-
-- (void)testMessaging {
-
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
-    OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
-    SwrveMessageController *messagingManaged = [SwrveSDK messaging];
-    XCTAssertNotNil(messagingManaged);
-    OCMVerifyAll(swrveMockManaged);
-
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
-    OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
-    SwrveMessageController *messagingAuto = [SwrveSDK messaging];
-    XCTAssertNotNil(messagingAuto);
-    OCMVerifyAll(swrveMockAuto);
 }
 
 - (void)testPurchaseItem {

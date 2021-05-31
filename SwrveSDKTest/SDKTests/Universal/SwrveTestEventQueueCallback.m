@@ -1,6 +1,11 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import "SwrveSDK.h"
+#import "SwrveMessageController.h"
+
+@interface Swrve(privateAccess)
+@property(atomic) SwrveMessageController *messaging;
+@end
 
 @interface SwrveMessageController()
 - (BOOL)eventRaised:(NSDictionary *)event;

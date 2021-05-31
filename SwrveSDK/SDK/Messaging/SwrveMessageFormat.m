@@ -3,14 +3,20 @@
 #import "SwrveMessageController.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
-#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
+#import <SwrveSDK/SwrveLocalStorage.h>
+#import <SwrveSDK/SwrveUtils.h>
+#import <SwrveSDK/SwrveQA.h>
+#import <SwrveSDK/SwrveQAImagePersonalizationInfo.h>
 #else
 #import "SwrveLocalStorage.h"
+#import "SwrveUtils.h"
+#import "SwrveQA.h"
+#import "SwrveQAImagePersonalizationInfo.h"
 #endif
 
-#if __has_include(<SwrveSDKCommon/TextTemplating.h>)
-#import <SwrveSDKCommon/TextTemplating.h>
+#if __has_include(<SwrveSDK/TextTemplating.h>)
+#import <SwrveSDK/TextTemplating.h>
 #else
 #import "TextTemplating.h"
 #endif
@@ -42,11 +48,21 @@
     return CGSizeMake(w.floatValue, h.floatValue);
 }
 
-+(SwrveImage*)createImage:(NSDictionary*)imageData {
++(SwrveImage*)createImage:(NSDictionary*)imageData forMessage:(SwrveMessage *)message {
 
     SwrveImage* image = [[SwrveImage alloc] init];
-    image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
+    image.message = message;
+    
+    if ([imageData objectForKey:@"image"]) {
+        image.file = [(NSDictionary*)[imageData objectForKey:@"image"] objectForKey:@"value"];
+    }
+
+    if ([imageData objectForKey:@"dynamic_image_url"]) {
+        image.dynamicImageUrl = [imageData objectForKey:@"dynamic_image_url"];
+    }
+    
     image.center = [SwrveMessageFormat centerFromImageData:imageData];
+    image.size = [SwrveMessageFormat sizeFromImageData:imageData];
     
     NSDictionary *textDictionary = (NSDictionary*)[imageData objectForKey:@"text"];
     
@@ -54,10 +70,10 @@
         image.text = [textDictionary objectForKey:@"value"];
     }
     
-    DebugLog(@"Image Loaded: Asset: \"%@\" (x: %g y: %g)",
+    [SwrveLogger debug:@"Image Loaded: Asset: \"%@\" (x: %g y: %g)",
           image.file,
           image.center.x,
-          image.center.y);
+          image.center.y];
 
     return image;
 }
@@ -71,7 +87,15 @@
 
     button.name       = [buttonData objectForKey:@"name"];
     button.center     = [SwrveMessageFormat centerFromImageData:buttonData];
-    button.image      = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
+    button.size       = [SwrveMessageFormat sizeFromImageData:buttonData];
+    
+    if ([buttonData objectForKey:@"image_up"]) {
+        button.image = [(NSDictionary*)[buttonData objectForKey:@"image_up"] objectForKey:@"value"];
+    }
+
+    if ([buttonData objectForKey:@"dynamic_image_url"]) {
+        button.dynamicImageUrl = [buttonData objectForKey:@"dynamic_image_url"];
+    }
     
     NSDictionary *textDictionary = (NSDictionary*)[buttonData objectForKey:@"text"];
     if (textDictionary) {
@@ -90,15 +114,16 @@
         button.actionType   = kSwrveActionInstall;
         button.appID       = [[(NSDictionary*)[buttonData objectForKey:@"game_id"] objectForKey:@"value"] integerValue];
         button.actionString = [controller appStoreURLForAppId:button.appID];
-
     } else if ([buttonType isEqualToString:@"CUSTOM"]) {
         button.actionType   = kSwrveActionCustom;
         button.actionString = [(NSDictionary*)[buttonData objectForKey:@"action"] objectForKey:@"value"];
     } else if ([buttonType isEqualToString:@"COPY_TO_CLIPBOARD"]) {
         button.actionType = kSwrveActionClipboard;
         button.actionString = [(NSDictionary*)[buttonData objectForKey:@"action"] objectForKey:@"value"];
+    } else if ([buttonType isEqualToString:@"REQUEST_CAPABILITY"]) {
+        button.actionType = kSwrveActionCapability;
+        button.actionString = [(NSDictionary*)[buttonData objectForKey:@"action"] objectForKey:@"value"];
     }
-
     return button;
 }
 
@@ -115,6 +140,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     self.name     = [json objectForKey:@"name"];
     self.language = [json objectForKey:@"language"];
+    
 
     NSString* jsonOrientation = [json objectForKey:@"orientation"];
     if (jsonOrientation)
@@ -157,7 +183,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     self.size = [SwrveMessageFormat sizeFromImageData:[json objectForKey:@"size"]];
 
-    DebugLog(@"Format %@ Scale: %g  Size: %gx%g", self.name, self.scale, self.size.width, self.size.height);
+    [SwrveLogger debug:@"Format %@ Scale: %g  Size: %gx%g", self.name, self.scale, self.size.width, self.size.height];
 
     NSArray* jsonButtons = [json objectForKey:@"buttons"];
     NSMutableArray *loadedButtons = [NSMutableArray new];
@@ -176,7 +202,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     NSArray* jsonImages = [json objectForKey:@"images"];
     for (NSDictionary* jsonImage in jsonImages) {
 
-        [loadedImages addObject:[SwrveMessageFormat createImage:jsonImage]];
+        [loadedImages addObject:[SwrveMessageFormat createImage:jsonImage forMessage:message]];
     }
 
     self.images = [NSArray arrayWithArray:loadedImages];
@@ -190,7 +216,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
                   rotated:(BOOL)rotated
                     
 {
-    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent rotated:rotated personalisation:nil];
+    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent rotated:rotated personalization:nil];
 }
 
 
@@ -198,7 +224,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)sizeParent
                   rotated:(BOOL)rotated
-          personalisation:(NSDictionary* )personalisation
+          personalization:(NSDictionary*)personalization
                     
 {
     CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
@@ -218,11 +244,11 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     CGFloat screenScale = [[UIScreen mainScreen] scale];
     CGFloat renderScale = self.scale / screenScale;
 
-    DebugLog(@"MessageViewFormat scale :%g", self.scale);
-    DebugLog(@"UI scale :%g", screenScale);
+    [SwrveLogger debug:@"MessageViewFormat scale :%g", self.scale];
+    [SwrveLogger debug:@"UI scale :%g", screenScale];
 
-    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalisation:personalisation];
-    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalisation:personalisation];
+    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
+    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
     
     if (rotated) {
         containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
@@ -236,13 +262,13 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     thatDelegatesTo:(UIViewController*)delegate
            withSize:(CGSize)sizeParent
 {
-    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent personalisation:nil];
+    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent personalization:nil];
 }
 
 -(UIView*)createViewToFit:(UIView*)view
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)sizeParent
-          personalisation:(NSDictionary* )personalisation
+          personalization:(NSDictionary*)personalization
 {
     // Calculate the scale needed to fit the format in the current viewport
     CGFloat screenScale = [[UIScreen mainScreen] scale];
@@ -260,11 +286,11 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     // Adjust scale, accounting for retina devices
     CGFloat renderScale = (self.scale / screenScale) * viewportScale;
 
-    DebugLog(@"MessageViewFormat scale :%g", self.scale);
-    DebugLog(@"UI scale :%g", screenScale);
+    [SwrveLogger debug:@"MessageViewFormat scale :%g", self.scale];
+    [SwrveLogger debug:@"UI scale :%g", screenScale];
 
-    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale personalisation:personalisation];
-    [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale personalisation:personalisation];
+    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
+    [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
     
     [containerView setCenter:CGPointMake(centerX, centerY)];
     [view addSubview:containerView];
@@ -282,31 +308,49 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     return containerView;
 }
 
--(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalisation:(NSDictionary *)personalisation
+-(void)addButtonViews:(UIView*)containerView delegate:(UIViewController*)delegate centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalization:(NSDictionary *)personalization
 {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
 
     for (SwrveButton* button in self.buttons) {
         
-        NSString *personalisedTextStr = nil;
-        NSString *personalisedActionStr = nil;
+        NSString *personalizedTextStr = nil;
+        NSString *personalizedActionStr = nil;
+        NSString *personalizedUrlAssetSha1 = nil;
+        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
         
         if (button.text) {
              NSError *error;
-             personalisedTextStr = [TextTemplating templatedTextFromString:button.text withProperties:personalisation andError:&error];
+             personalizedTextStr = [TextTemplating templatedTextFromString:button.text withProperties:personalization andError:&error];
              
              if (error != nil){
-                 DebugLog(@"%@", error);
+                 [SwrveLogger error:@"%@", error];
              }
+        }
+        
+        if (button.dynamicImageUrl) {
+            // set up QA Info in case it doesn't work
+            imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:button.message.campaign.ID
+                                                                                         variantID:[button.message.messageID unsignedIntegerValue]
+                                                                                         assetName:nil
+                                                                                       hasFallback:(button.image != nil)
+                                                                                     unresolvedUrl:button.dynamicImageUrl
+                                                                                       resolvedUrl:nil
+                                                                                            reason:nil];
+            
+            personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:button.dynamicImageUrl
+                                                       withPersonalization:personalization
+                                                                 andQAInfo:imagePersonalizationQAInfo];
+            
         }
         
         if (button.actionType == kSwrveActionClipboard || button.actionType == kSwrveActionCustom) {
             NSError *error;
-            personalisedActionStr = [TextTemplating templatedTextFromString:button.actionString withProperties:personalisation andError:&error];
+            personalizedActionStr = [TextTemplating templatedTextFromString:button.actionString withProperties:personalization andError:&error];
             
             if (error != nil){
-                DebugLog(@"%@", error);
+                [SwrveLogger error:@"%@", error];
             }
         }
         
@@ -315,9 +359,11 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
                                                             andScale:(float)renderScale
                                                           andCenterX:(float)centerX
                                                           andCenterY:(float)centerY
-                                               andPersonalisedAction:personalisedActionStr
-                                                  andPersonalisation:personalisedTextStr
-                                                          withConfig:self.inAppConfig];
+                                               andPersonalizedAction:personalizedActionStr
+                                                  andPersonalization:personalizedTextStr
+                                         andPersonalizedUrlAssetSha1:personalizedUrlAssetSha1
+                                                          withConfig:self.inAppConfig
+                                                              qaInfo:imagePersonalizationQAInfo];
         buttonView.tag = buttonTag;
 
         NSString * buttonType;
@@ -343,24 +389,42 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalisation:(NSDictionary *)personalisation
+-(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalization:(NSDictionary *)personalization
 {
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
     for (SwrveImage* image in self.images)
     {
-        NSString *personalisedTextStr = nil;
+        NSString *personalizedTextStr = nil;
+        NSString *personalizedUrlAssetSha1 = nil;
+        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
         
         if (image.text) {
              NSError *error;
-             personalisedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:personalisation andError:&error];
+             personalizedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:personalization andError:&error];
              
              if (error != nil){
-                 DebugLog(@"%@", error);
+                 [SwrveLogger error:@"%@", error];
              }
         }
+        
+        if (image.dynamicImageUrl) {
+            imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:image.message.campaign.ID
+                                               variantID:[image.message.messageID unsignedIntegerValue]
+                                               assetName:nil
+                                             hasFallback:(image.file != nil)
+                                           unresolvedUrl:image.dynamicImageUrl
+                                             resolvedUrl:nil reason:nil];
+            
+            personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:image.dynamicImageUrl
+                                                       withPersonalization:personalization andQAInfo:imagePersonalizationQAInfo];
+        }
     
-        UIImage *background = [image createImage:cacheFolder personalisation:personalisedTextStr inAppConfig:self.inAppConfig];
-
+        UIImage *background = [image createImage:cacheFolder
+                                 personalization:personalizedTextStr
+                        personalizedUrlAssetSha1:personalizedUrlAssetSha1
+                                     inAppConfig:self.inAppConfig
+                                          qaInfo:imagePersonalizationQAInfo];
+        
         CGRect frame = CGRectMake(0, 0,
                                   background.size.width * renderScale,
                                   background.size.height * renderScale);
@@ -379,4 +443,27 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
         [containerView addSubview:imageView];
     }
 }
+
+- (NSString *)resolvePersonalizedImageAsset:(NSString *)assetUrl withPersonalization:(NSDictionary *)personalization andQAInfo:(SwrveQAImagePersonalizationInfo *) qaInfo {
+    if (assetUrl != nil) {
+        NSError *error;
+        NSString *resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:personalization andError:&error];
+        if (error != nil || resolvedUrl == nil) {
+            [SwrveLogger debug:@"Could not resolve personalization: %@", assetUrl];
+            [qaInfo setReason:@"Could not resolve url personalization"];
+            [SwrveQA assetFailedToDisplay:qaInfo];
+
+        } else {
+            NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+            NSString *canditateAsset = [SwrveUtils sha1:data];
+            // set QAInfo in case there is a cache failure later
+            [qaInfo setResolvedUrl:resolvedUrl];
+            [qaInfo setAssetName:canditateAsset];
+            return canditateAsset;
+        }
+    }
+    
+    return nil;
+}
+
 @end

@@ -1,8 +1,8 @@
 #import "SwrveProfileManager.h"
-#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
-#import <SwrveSDKCommon/SwrveUser.h>
-#import <SwrveSDKCommon/SwrveRESTClient.h>
+#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
+#import <SwrveSDK/SwrveLocalStorage.h>
+#import <SwrveSDK/SwrveUser.h>
+#import <SwrveSDK/SwrveRESTClient.h>
 #else
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"
@@ -192,7 +192,7 @@
         NSError *error = nil;
         data = [NSKeyedArchiver archivedDataWithRootObject:array requiringSecureCoding:false error:&error];
         if (error) {
-            DebugLog(@"Failed to archive swrve user: %@",[error localizedDescription]);
+            [SwrveLogger error:@"Failed to archive swrve user: %@", [error localizedDescription]];
         }
     } else {
         // Fallback on earlier versions
@@ -212,7 +212,7 @@
         NSSet *classes = [NSSet setWithArray:@[[NSArray class],[SwrveUser class]]];
         swrveUsers = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:encodedObject error:&error];
         if (error) {
-            DebugLog(@"Failed to un archive swrve user: %@",[error localizedDescription]);
+            [SwrveLogger error:@"Failed to un archive swrve user: %@", [error localizedDescription]];
         }
     } else {
         // Fallback on earlier versions

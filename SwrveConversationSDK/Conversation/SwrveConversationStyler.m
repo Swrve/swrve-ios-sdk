@@ -237,7 +237,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
                         }
                     } else {
                         CFStringRef errorDescription = CFErrorCopyDescription(cfError);
-                        DebugLog(@"Error registering font: %@ fontPath:%@ errorDescription:%@", fontFile, fontPath, errorDescription);
+                        [SwrveLogger error:@"Error registering font: %@ fontPath:%@ errorDescription:%@", fontFile, fontPath, errorDescription];
                         CFRelease(errorDescription);
                     }
                 }
@@ -247,7 +247,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
                     CFRelease(newFontPostscsriptNameCString);
                 }
             } else {
-                DebugLog(@"Swrve: fontFile %@ could not be loaded. Using default/fallback.", fontFile);
+                [SwrveLogger error:@"Swrve: fontFile %@ could not be loaded. Using default/fallback.", fontFile];
             }
         }
     }

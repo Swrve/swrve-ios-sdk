@@ -159,10 +159,10 @@
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
         if (@available(iOS 10.0, *)) {
             [[UIApplication sharedApplication] openURL:[nsurl URL] options:@{} completionHandler:^(BOOL success) {
-                DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+                [SwrveLogger debug:@"Opening url [%@] successfully: %d", nsurl, success];
             }];
         } else {
-            DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
+            [SwrveLogger error:@"Could not open url, not supported (should not reach this code)", nil];
         }
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
@@ -175,10 +175,10 @@
             if ([url containsString:@"youtube.com/"] && ![url containsString:@"youtube.com/embed/"]) {
                 if (@available(iOS 10.0, *)) {
                     [[UIApplication sharedApplication] openURL:[nsurl URL] options:@{} completionHandler:^(BOOL success) {
-                        DebugLog(@"Opening url [%@] successfully: %d", nsurl, success);
+                        [SwrveLogger debug:@"Opening url [%@] successfully: %d", nsurl, success];
                     }];
                 } else {
-                    DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
+                    [SwrveLogger error:@"Could not open url, not supported (should not reach this code)", nil];
                 }
                 decisionHandler(WKNavigationActionPolicyCancel);
                 return;

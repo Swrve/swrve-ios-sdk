@@ -1,11 +1,12 @@
 #import "SwrveDeeplinkManager.h"
 #import "Swrve.h"
-#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
-#import <SwrveSDKCommon/SwrveCommon.h>
-#import <SwrveSDKCommon/SwrveRESTClient.h>
-#import <SwrveSDKCommon/SwrveAssetsManager.h>
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
-#import <SwrveSDKCommon/SwrveUtils.h>
+#import "Swrve+Private.h"
+#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#import <SwrveSDK/SwrveCommon.h>
+#import <SwrveSDK/SwrveRESTClient.h>
+#import <SwrveSDK/SwrveAssetsManager.h>
+#import <SwrveSDK/SwrveLocalStorage.h>
+#import <SwrveSDK/SwrveUtils.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveRESTClient.h"
@@ -29,7 +30,7 @@
 @interface SwrveMessageController()
 - (NSString *)campaignQueryString;
 - (BOOL)filtersOk:(NSArray *)filters;
-- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalisation:(NSDictionary *)personalisation;
+- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
 @property (nonatomic, retain) NSDate *initialisedTime; // SDK init time
 @end
@@ -79,7 +80,7 @@
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 long code = [(NSHTTPURLResponse*)response statusCode];
                 if (code > 300) {
-                    DebugLog(@"Show Campaign Error: %@", responseDic);
+                    [SwrveLogger error:@"Show Campaign Error: %@", responseDic];
                 }
             }
             [self writeCampaignDataToCache:responseDic fileType:SWRVE_NOTIFICATION_CAMPAIGN_FILE_DEBUG];
@@ -124,7 +125,7 @@
                 if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     long code = [(NSHTTPURLResponse*)response statusCode];
                     if (code > 300) {
-                        DebugLog(@"Show Campaign Error: %@", responseDic);
+                        [SwrveLogger error:@"Show Campaign Error: %@", responseDic];
                     }
                 }
                 [self writeCampaignDataToCache:responseDic fileType:SWRVE_AD_CAMPAIGN_FILE];
@@ -168,7 +169,7 @@
                        acitonType:(NSString *)actionType {
 
     if (adSource == nil || [adSource isEqualToString:@""]) {
-        DebugLog(@"DeeplinkCampaign adSource was nil or an empty string. Generic event not queued", nil);
+        [SwrveLogger error:@"DeeplinkCampaign adSource was nil or an empty string. Generic event not queued", nil];
         return;
     }
     adSource = [@"external_source_" stringByAppendingString:adSource];
@@ -185,7 +186,7 @@
 
 - (void)fetchCampaign:(NSURL *)url
            completion:(void (^)(NSURLResponse *response,NSDictionary *responseDic, NSError *error))completion {
-    DebugLog(@"DeeplinkCampaign URL %@", url);
+    [SwrveLogger debug:@"DeeplinkCampaign URL %@", url];
 
     [self.sdk.restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response)
@@ -215,7 +216,7 @@
 - (void)campaignAssets:(NSDictionary *)campaignJson withCompletionHandler:(void (^)(SwrveCampaign * campaign))completionHandler {
 
     if (campaignJson == nil) {
-        DebugLog(@"Error parsing campaign JSON", nil);
+        [SwrveLogger error:@"Error parsing campaign JSON", nil];
         return;
     }
 
@@ -230,20 +231,20 @@
         [self.assetsManager setCdnImages:cdnImages];
         NSString *cdnFonts = [cdnPaths objectForKey:@"message_fonts"];
         [self.assetsManager setCdnFonts:cdnFonts];
-        DebugLog(@"CDN URL images: %@ fonts:%@", cdnImages, cdnFonts);
+        [SwrveLogger debug:@"CDN URL images: %@ fonts:%@", cdnImages, cdnFonts];
     } else {
         NSString *cdnRoot = [campaignJson objectForKey:@"cdn_root"];
         [self.assetsManager setCdnImages:cdnRoot];
-        DebugLog(@"CDN URL: %@", cdnRoot);
+        [SwrveLogger debug:@"CDN URL: %@", cdnRoot];
     }
 
     // Version check
     NSNumber *version = [additionalInfoDic objectForKey:@"version"];
     if ([version integerValue] != CAMPAIGN_RESPONSE_VERSION){
-        DebugLog(@"Campaign JSON has the wrong version. No campaigns loaded.", nil);
+        [SwrveLogger error:@"Campaign JSON has the wrong version. No campaigns loaded.", nil];
         return;
     }
-
+    
     NSMutableSet *assetsQueue = [[NSMutableSet alloc] init];
     SwrveCampaign *campaign = nil;
     if ([campaignDic objectForKey:@"conversation"] != nil) {
@@ -253,15 +254,19 @@
             if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
                 campaign = [[SwrveConversationCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
             } else {
-                DebugLog(@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion);
+                [SwrveLogger error:@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion];
             }
         }
-    } else if ([campaignDic objectForKey:@"messages"] != nil)  {
-        campaign = [[SwrveInAppCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
+    } else if ([campaignDic objectForKey:@"message"] != nil)  {
+        
+        // retrieve personalization
+        NSDictionary *personalization = [[_sdk messaging] retrievePersonalizationProperties:nil];
+        
+        campaign = [[SwrveInAppCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging withPersonalization:personalization];
     } else if ([campaignDic objectForKey:@"embedded_message"] != nil) {
         campaign = [[SwrveEmbeddedCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic forController:self.sdk.messaging];
     } else {
-        DebugLog(@"Unknown campaign type", nil);
+        [SwrveLogger error:@"Unknown campaign type", nil];
         return;
     }
 
@@ -291,23 +296,20 @@
             }
         });
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-        SwrveMessage *message = [((SwrveInAppCampaign *)campaign).messages objectAtIndex:0];
+        SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *)campaign;
+        SwrveMessage *message = swrveCampaign.message;
 
-        // Show the message if it exists and personalisation can be resolved
+        // Show the message if it exists and personalization can be resolved
         if (message != nil) {
-            NSDictionary *personalisation;
-            if (_sdk.messaging.personalisationCallback != nil) {
-                personalisation = _sdk.messaging.personalisationCallback(nil);
-            }
-            
-            if ([message canResolvePersonalisation:personalisation]) {
+            NSDictionary *personalization = [[self.sdk messaging] retrievePersonalizationProperties:nil];
+            if ([message canResolvePersonalization:personalization]) {
                 dispatch_block_t showMessageBlock = ^{
-                    if ([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:withPersonalisation:)]) {
-                        [self.sdk.messaging.showMessageDelegate showMessage:message withPersonalisation:personalisation];
+                    if ([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:withPersonalization:)]) {
+                        [self.sdk.messaging.showMessageDelegate showMessage:message withPersonalization:personalization];
                     } else if([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                         [self.sdk.messaging.showMessageDelegate showMessage:message];
                     } else {
-                        [self.sdk.messaging showMessage:message queue:true withPersonalisation:personalisation];
+                        [self.sdk.messaging showMessage:message queue:true withPersonalization:personalization];
                     }
                 };
 
@@ -318,7 +320,7 @@
                     dispatch_async(dispatch_get_main_queue(), showMessageBlock);
                 }
             } else {
-                DebugLog(@"Personalisaton options are not available for this message.", nil);
+                [SwrveLogger warning:@"Personalisaton options are not available for this message.", nil];
             }
         }
     } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
@@ -342,7 +344,7 @@
             };
         }];
     } else {
-        DebugLog(@"SwrveDeeplinkManager: unable to load campaignId:%@ from cache", campaignId);
+        [SwrveLogger debug:@"SwrveDeeplinkManager: unable to load campaignId:%@ from cache", campaignId];
     }
 }
 

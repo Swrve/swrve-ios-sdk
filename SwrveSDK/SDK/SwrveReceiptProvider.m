@@ -23,7 +23,7 @@
 - (SwrveReceiptProviderResult *)receiptForTransaction:(SKPaymentTransaction *)transaction API_AVAILABLE(ios(8.0)) {
     NSData *receipt = [self readMainBundleAppStoreReceipt];
     if (!receipt) {
-        DebugLog(@"Error reading receipt from device", nil);
+        [SwrveLogger error:@"Error reading receipt from device", nil];
         return nil;
     }
     NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];

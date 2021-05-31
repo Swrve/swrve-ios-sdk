@@ -11,7 +11,7 @@
 
 @synthesize controller, campaign, conversationID, name, pages, priority;
 
--(id) initWithJSON:(NSDictionary*)json forCampaign:(SwrveConversationCampaign*)_campaign forController:(SwrveMessageController*)_controller {
+-(id) initWithJSON:(NSDictionary*)json forCampaign:(SwrveConversationCampaign*)_campaign forController:(id<SwrveMessageEventHandler>)_controller {
     [self updateWithJSON:json forController:_controller];
     self.campaign       = _campaign;
     

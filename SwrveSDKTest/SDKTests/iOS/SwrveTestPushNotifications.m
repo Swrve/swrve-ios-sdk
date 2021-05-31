@@ -46,7 +46,7 @@
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.initMode = SWRVE_INIT_MODE_MANAGED;
-    config.managedModeAutoStartLastUser = false;
+    config.autoStartLastUser = false;
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
     config.pushNotificationEvents = nil;
@@ -128,7 +128,9 @@
     UNNotificationResponse *notificationResponse = [UNNotificationResponse alloc];
     [notificationResponse setValue:notification forKeyPath:@"notification"];
     [notificationResponse setValue:@"com.apple.UNNotificationDefaultActionIdentifier" forKeyPath:@"actionIdentifier"];
-    [puskSDK userNotificationCenter:[UNUserNotificationCenter currentNotificationCenter] didReceiveNotificationResponse:notificationResponse withCompletionHandler:nil];
+    void (^fakeCompletion)(void);
+    [puskSDK userNotificationCenter:[UNUserNotificationCenter currentNotificationCenter]
+     didReceiveNotificationResponse:notificationResponse withCompletionHandler:fakeCompletion];
 
     OCMVerifyAll(eventBufferMock);
     [mockApplication stopMocking];
@@ -368,7 +370,7 @@
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     [SwrveSDK addSharedInstance:swrveMock];
     [SwrveCommon addSharedInstance:swrveMock];
     OCMStub([swrveMock nextEventSequenceNumber]).andReturn(456);

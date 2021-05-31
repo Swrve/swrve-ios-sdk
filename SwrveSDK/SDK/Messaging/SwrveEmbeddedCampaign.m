@@ -22,24 +22,24 @@
     return instance;
 }
 
--(BOOL)hasMessageForEvent:(NSString*)event {
+-(BOOL)hasMessageForEvent:(NSString *)event {
 
     return [self hasMessageForEvent:event withPayload:nil];
 }
 
--(BOOL)hasMessageForEvent:(NSString*)event withPayload:(NSDictionary *)payload {
+-(BOOL)hasMessageForEvent:(NSString *)event withPayload:(NSDictionary *)payload {
 
     return [self canTriggerWithEvent:event andPayload:payload];
 }
 
-- (SwrveEmbeddedMessage*)messageForEvent:(NSString*)event
+- (SwrveEmbeddedMessage*)messageForEvent:(NSString *)event
                        withPayload:(NSDictionary *)payload
-                            atTime:(NSDate*)time
-                       withReasons:(NSMutableDictionary*)campaignReasons {
+                            atTime:(NSDate *)time
+                       withReasons:(NSMutableDictionary *)campaignReasons {
 
     if (![self hasMessageForEvent:event withPayload:payload]){
 
-        DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
+        [SwrveLogger debug:@"There is no trigger in %ld that matches %@", (long)self.ID, event];
         [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
         return nil;
     }
@@ -63,7 +63,7 @@
 }
 #endif
 
--(BOOL)assetsReady:(NSSet *)assets {
+-(BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization {
     return YES;
 }
 

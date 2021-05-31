@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
-#import "SwrveMessageDelegate.h"
 
-@interface ViewController : UITableViewController<SwrveMessageDelegate>
+@interface ViewController : UITableViewController
 
 @property (nonatomic, retain) NSArray *campaigns;
 

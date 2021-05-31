@@ -1,6 +1,6 @@
 #import "SwrveCampaignStatus.h"
-#if __has_include(<SwrveSDKCommon/SwrveQACampaignInfo.h>)
-#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
+#if __has_include(<SwrveSDK/SwrveQACampaignInfo.h>)
+#import <SwrveSDK/SwrveQACampaignInfo.h>
 #else
 #import "SwrveQACampaignInfo.h"
 #endif
@@ -12,7 +12,6 @@
 
 @property (atomic)            NSUInteger campaignID;                /*!< Unique identifier. */
 @property (atomic)            NSUInteger impressions;               /*!< Amount of times this campaign has been shown for a user. */
-@property (atomic)            NSUInteger next;                      /*!< Next message to be shown if set-up as round robin. */
 @property (nonatomic)         SwrveCampaignStatus status;           /*!< The status of the Message Center campaign. */
 @property (nonatomic, retain) NSDate* showMsgsAfterDelay;           /*!< Timestamp to block messages from appearing too frequently . */
 
@@ -61,6 +60,6 @@
  *
  * \returns TRUE if all assets have been downloaded.
  */
--(BOOL)assetsReady:(NSSet*)assets;
+-(BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization;
 
 @end

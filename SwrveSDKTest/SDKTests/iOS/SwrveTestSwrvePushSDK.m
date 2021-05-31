@@ -1,5 +1,3 @@
-#ifndef SWRVE_NO_PUSH
-
 #import <XCTest/XCTest.h>
 #import "SwrvePush.h"
 #import "SwrveTestHelper.h"
@@ -19,7 +17,7 @@
 @end
 
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 @interface SwrvePush (SwrvePushInternalAccess)
 
 + (SwrvePush *)sharedInstance;
@@ -38,7 +36,7 @@
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler;
 
 @end
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 @interface SwrveTestSwrvePushSDK : XCTestCase <SwrvePushDelegate, SwrvePushResponseDelegate>
 {
@@ -454,5 +452,3 @@
 }
 
 @end
-
-#endif // SWRVE_NO_PUSH

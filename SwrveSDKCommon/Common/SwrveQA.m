@@ -2,7 +2,7 @@
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveQAEventsQueueManager.h"
-
+#import "SwrveQAImagePersonalizationInfo.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -70,32 +70,6 @@ static dispatch_once_t onceToken;
     }
 }
 
-#pragma mark Geo Logs
-
-+ (void)geoCampaignTriggered:(NSArray *)campaigns
-              fromGeoPlaceId:(NSString *)geoplaceId
-               andGeofenceId:(NSString *)geofenceId
-               andActionType:(NSString *)actionType {
-    SwrveQA *swrveQA = [SwrveQA sharedInstance];
-    if (!swrveQA || ![swrveQA isQALogging] || campaigns == nil || [campaigns count] == 0) {
-        return;
-    }
-    NSMutableDictionary *qaLogEvent = [SwrveEvents qalogGeoCampaignTriggered:campaigns fromGeoPlaceId:geoplaceId andGeofenceId:geofenceId andActionType:actionType];
-    [swrveQA.queueManager queueEvent:qaLogEvent];
-}
-
-+ (void)geoCampaignsDownloaded:(NSArray *)campaigns
-                fromGeoPlaceId:(NSString *)geoplaceId
-                 andGeofenceId:(NSString *)geofenceId
-                 andActionType:(NSString *)actionType {
-    SwrveQA *swrveQA = [SwrveQA sharedInstance];
-    if (!swrveQA || ![swrveQA isQALogging] || campaigns == nil) {
-        return;
-    }
-    NSMutableDictionary *qaLogEvent = [SwrveEvents qalogGeoCampaignsDownloaded:campaigns fromGeoPlaceId:geoplaceId andGeofenceId:geofenceId andActionType:actionType];
-    [swrveQA.queueManager queueEvent:qaLogEvent];
-}
-
 #pragma mark SDK Logs
 
 + (void)wrappedEvent:(NSDictionary *) jsonDic {
@@ -104,6 +78,48 @@ static dispatch_once_t onceToken;
         return;
     }
     NSMutableDictionary *qaLogEvent = [SwrveEvents qalogWrappedEvent:jsonDic];
+    [swrveQA.queueManager queueEvent:qaLogEvent];
+}
+
++ (void)assetFailedToDownload:(NSString *)assetName
+                  resolvedUrl:(NSString *)resolvedUrl
+                       reason:(NSString *)reason {
+    SwrveQA *swrveQA = [SwrveQA sharedInstance];
+    if (!swrveQA || ![swrveQA isQALogging] || assetName == nil || resolvedUrl == nil) {
+        return;
+    }
+    
+    NSMutableDictionary *qaAssetDownloadFailedInfo = [NSMutableDictionary new];
+    [qaAssetDownloadFailedInfo setValue:assetName forKey:@"asset_name"];
+    [qaAssetDownloadFailedInfo setValue:resolvedUrl forKey:@"image_url"];
+    [qaAssetDownloadFailedInfo setValue:reason forKey:@"reason"];
+    
+    NSMutableDictionary *qaLogEvent = [SwrveEvents qaLogEvent:qaAssetDownloadFailedInfo logType:@"asset-failed-to-download"];
+    [swrveQA.queueManager queueEvent:qaLogEvent];
+}
+
++ (void)assetFailedToDisplay:(SwrveQAImagePersonalizationInfo *) qaImagePersonalizationInfo {
+    SwrveQA *swrveQA = [SwrveQA sharedInstance];
+    if (!swrveQA || ![swrveQA isQALogging] || qaImagePersonalizationInfo == nil) {
+        return;
+    }
+    
+    NSMutableDictionary *qaAssetDisplayFailedInfo = [NSMutableDictionary new];
+    [qaAssetDisplayFailedInfo setValue:[NSNumber numberWithUnsignedInteger:qaImagePersonalizationInfo.campaignID] forKey:@"campaign_id"];
+    [qaAssetDisplayFailedInfo setValue:[NSNumber numberWithUnsignedInteger:qaImagePersonalizationInfo.variantID] forKey:@"variant_id"];
+    [qaAssetDisplayFailedInfo setValue:qaImagePersonalizationInfo.unresolvedUrl forKey:@"unresolved_url"];
+    [qaAssetDisplayFailedInfo setValue:[NSNumber numberWithBool:qaImagePersonalizationInfo.hasFallback] forKey:@"has_fallback"];
+    [qaAssetDisplayFailedInfo setValue:qaImagePersonalizationInfo.reason forKey:@"reason"];
+    
+    if(qaImagePersonalizationInfo.assetName != nil && [qaImagePersonalizationInfo.assetName length] > 1) {
+        [qaAssetDisplayFailedInfo setValue:qaImagePersonalizationInfo.assetName forKey:@"asset_name"];
+    }
+    
+    if(qaImagePersonalizationInfo.resolvedUrl != nil && [qaImagePersonalizationInfo.resolvedUrl length] > 1) {
+        [qaAssetDisplayFailedInfo setValue:qaImagePersonalizationInfo.resolvedUrl forKey:@"image_url"];
+    }
+
+    NSMutableDictionary *qaLogEvent = [SwrveEvents qaLogEvent:qaAssetDisplayFailedInfo logType:@"asset-failed-to-display"];
     [swrveQA.queueManager queueEvent:qaLogEvent];
 }
 
@@ -140,6 +156,8 @@ static dispatch_once_t onceToken;
     NSMutableDictionary *qaLogEvent = [SwrveEvents qalogCampaignButtonClicked:qaCampaignButtonInfo];
     [swrveQA.queueManager queueEvent:qaLogEvent];
 }
+
+
 
 + (void) messageCampaignTriggered:(NSString *)eventName
                      eventPayload:(NSDictionary *)eventPayload

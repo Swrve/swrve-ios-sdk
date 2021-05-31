@@ -1,8 +1,8 @@
 #import "SwrvePermissions.h"
 #import "SwrveLocalStorage.h"
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 @implementation SwrvePermissions
 
@@ -25,14 +25,14 @@
 }
 
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
         [SwrvePermissions requestPushNotifications:sdk provisional:NO];
         return YES;
     }
 #else
 #pragma unused(sdk)
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.location.always"] == NSOrderedSame) {
         return [SwrvePermissions requestLocationAlways:sdk];
     }
@@ -62,7 +62,7 @@
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkCamera:sdk]) forKey:swrve_permission_camera];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkContacts:sdk]) forKey:swrve_permission_contacts];
     [permissionsStatus setValue:stringFromPermissionState([SwrvePermissions checkAdTracking:sdk]) forKey:swrve_permission_ad_tracking];
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
     NSString *pushAuthorization = [SwrvePermissions pushAuthorizationWithSDK:sdk];
     if (pushAuthorization) {
         [permissionsStatus setValue:pushAuthorization forKey:swrve_permission_push_notifications];
@@ -70,7 +70,7 @@
     [SwrvePermissions bgRefreshStatusToDictionary:permissionsStatus];
 #else
 #pragma unused(sdk)
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
     [SwrvePermissions updatePermissionsStatusCache:permissionsStatus];
 
@@ -85,7 +85,7 @@
     }
 }
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 
 + (NSString *)pushAuthorizationWithSDK:(id<SwrveCommonDelegate>)sdk {
     return [SwrvePermissions pushAuthorizationWithSDK:sdk WithCallback:nil];
@@ -122,7 +122,7 @@
             }
         }];
     } else {
-        DebugLog(@"Checking push auth not supported, should not reach this code", nil);
+        [SwrveLogger error:@"Checking push auth not supported, should not reach this code", nil];
     }
     return pushAuthorization;
 }
@@ -140,7 +140,7 @@
     [permissionsStatus setValue:backgroundRefreshStatus forKey:swrve_permission_push_bg_refresh];
 }
 
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 + (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk {
     NSDictionary *lastStatus = [SwrveLocalStorage getPermissions];
@@ -345,7 +345,7 @@
     return FALSE;
 }
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 +(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional {
     if (@available(iOS 10.0, *)) {
         UNAuthorizationOptions notificationAuthOptions = (UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge);
@@ -353,13 +353,13 @@
             if (@available(iOS 12.0, *)) {
                 notificationAuthOptions = notificationAuthOptions + UNAuthorizationOptionProvisional;
             } else {
-                DebugLog(@"Provisional push permission is only supported on iOS 12 and up.", nil);
+                [SwrveLogger warning:@"Provisional push permission is only supported on iOS 12 and up.", nil];
                 return;
             }
         }
         [SwrvePermissions registerForRemoteNotifications:notificationAuthOptions withCategories:sdk.notificationCategories andSDK:sdk];
     } else {
-        DebugLog(@"Could not request push permission, not supported (should not reach this code)", nil);
+        [SwrveLogger error:@"Could not request push permission, not supported (should not reach this code)", nil];
     }
 }
 
@@ -380,7 +380,7 @@
                               }
 
                               if (error) {
-                                  DebugLog(@"Error obtaining permission for notification center: %@ %@", [error localizedDescription], [error localizedFailureReason]);
+                                  [SwrveLogger error:@"Error obtaining permission for notification center: %@ %@", [error localizedDescription], [error localizedFailureReason]];
                               } else {
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       if (sdk != nil) {
@@ -393,7 +393,7 @@
     // Remember we asked for push permissions
     [SwrveLocalStorage saveAskedForPushPermission:YES];
 }
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 +(void)sendPermissionEvent:(NSString*)eventName withState:(SwrvePermissionState)state withSDK:(id<SwrveCommonDelegate>)sdk {
     NSString *eventNameWithState = [eventName stringByAppendingString:((state == SwrvePermissionStateAuthorized)? @".on" : @".off")];

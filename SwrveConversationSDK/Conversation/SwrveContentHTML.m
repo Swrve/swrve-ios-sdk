@@ -83,10 +83,10 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
     if ([predicate evaluateWithObject:request.URL.host]) {
         if (@available(iOS 10.0, *)) {
             [[UIApplication sharedApplication] openURL:request.URL options:@{} completionHandler:^(BOOL success) {
-                DebugLog(@"Opening url [%@] successfully: %d", request.URL, success);
+                [SwrveLogger debug:@"Opening url [%@] successfully: %d", request.URL, success];
             }];
         } else {
-            DebugLog(@"Could not load link, not supported (should not reach this code)", nil);
+            [SwrveLogger error:@"Could not load link, not supported (should not reach this code)", nil];
         }
         decisionHandler(WKNavigationActionPolicyCancel);
     } else {

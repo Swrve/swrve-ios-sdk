@@ -35,6 +35,7 @@
     // Initialize SDK
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
 
     UIScreen *screen = [UIScreen mainScreen];
@@ -70,23 +71,11 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_type"], @"tv");
     
     // IDFA & Device Info count
-    if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 17);
-    }else{
-        XCTAssertEqual([deviceInfo count], 18);
-        XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
-    }
-
-    // IDFA & Device Info count
-    if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 17);
-    } else {
-        XCTAssertEqual([deviceInfo count], 18);
-        XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
-    }
+    XCTAssertEqual([deviceInfo count], 17);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     
-    // Extra identifiers
-    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    // Wont collect unless config is set to auto collect.
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFV"]);
 }
 
 - (void)testInstallDateForTvOS {

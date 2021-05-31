@@ -1,5 +1,3 @@
-#if !defined(SWRVE_NO_PUSH)
-
 #import "SwrveNotificationOptions.h"
 #import "SwrveNotificationConstants.h"
 
@@ -74,6 +72,3 @@
 #endif
 
 @end
-
-#endif //#if !defined(SWRVE_NO_PUSH)
-

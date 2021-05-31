@@ -10,7 +10,7 @@
     NSError *regExError = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&regExError];
     if (regExError) {
-        DebugLog(@"Error applying NSRegularExpression pattern for text templating.\nError: %@\npattern: %@", regExError, pattern);
+        [SwrveLogger error:@"Error applying NSRegularExpression pattern for text templating.\nError: %@\npattern: %@", regExError, pattern];
         return nil;
     } else {
         NSArray *matches = [regex matchesInString:text options:0 range:searchedRange];
@@ -48,7 +48,7 @@
     NSError *regExError = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&regExError];
     if (regExError) {
-        DebugLog(@"Error applying NSRegularExpression pattern for text templating fallback.\nError: %@\npattern: %@", regExError, pattern);
+        [SwrveLogger error:@"Error applying NSRegularExpression pattern for text templating fallback.\nError: %@\npattern: %@", regExError, pattern];
         return nil;
     } else {
         NSArray *matches = [regex matchesInString:templateFullValue options:0 range:searchedRange];

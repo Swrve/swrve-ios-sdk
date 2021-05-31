@@ -1,7 +1,7 @@
 #import "SwrveEventsManager.h"
-#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
-#import <SwrveSDKCommon/SwrveCommon.h>
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#import <SwrveSDK/SwrveCommon.h>
+#import <SwrveSDK/SwrveLocalStorage.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
@@ -27,7 +27,7 @@
     NSMutableArray *restrictedNamesStartWith = [NSMutableArray arrayWithObjects:@"Swrve.", @"swrve.", nil];
     for (NSString *restricted in restrictedNamesStartWith) {
         if (eventName == nil || [eventName hasPrefix:restricted]) {
-            DebugLog(@"Event names cannot begin with %@* This event will not be sent. Eventname:%@", restricted, eventName);
+            [SwrveLogger error:@"Event names cannot begin with %@* This event will not be sent. Eventname:%@", restricted, eventName];
             return false;
         }
     }

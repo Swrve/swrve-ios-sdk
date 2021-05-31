@@ -367,7 +367,7 @@
     SwrveCampaign *campaign = [[SwrveConversationCampaign alloc] initAtTime:[NSDate new] fromDictionary:jsonDict withAssetsQueue:assetsQ forController:swrveMessageController];
     XCTAssertNotNil(campaign);
     XCTAssertEqual([assetsQ count], 1);
-    NSMutableDictionary *assetQItem = [SwrveAssetsManager assetQItemWith:@"someImageUrl" andDigest:@"someImageUrl" andIsImage:YES];
+    NSMutableDictionary *assetQItem = [SwrveAssetsManager assetQItemWith:@"someImageUrl" andDigest:@"someImageUrl" andIsExternal:NO andIsImage:YES];
     XCTAssertTrue([assetsQ containsObject:assetQItem]);
 }
 

@@ -4,7 +4,6 @@ NS_ASSUME_NONNULL_BEGIN
 /*! Swrve SDK static access class. */
 @interface SwrveSDK : NSObject
 
-
 /*! Accesses a single shared instance of a Swrve object.
  *
  * \returns A singleton instance of a Swrve object.
@@ -240,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)shutdown;
 
 #pragma mark - push support block
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 
 /*! Call this method when you get a push notification device token from Apple.
  *
@@ -266,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**! Should be included to a push response if not using SwrvePushResponseDelegate **/
 + (void)processNotificationResponse:(UNNotificationResponse *)response __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
 
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 /*!< Configuration for this Swrve object */
 + (ImmutableSwrveConfig *)config;
@@ -279,9 +278,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*!< User ID used to initialize this Swrve object. */
 + (NSString *)userID;
-
-/*!< In-app message component. */
-+ (SwrveMessageController *)messaging;
 
 /*! Call this method from application:openURL:option
  
@@ -403,6 +399,105 @@ NS_ASSUME_NONNULL_BEGIN
  * @return true when in SWRVE_INIT_MODE_AUTO mode. When in SWRVE_INIT_MODE_MANAGED mode it will return true after one of the 'start' api's has been called.
  */
 + (BOOL)started;
+
+#pragma mark Messaging
+
+/*! Inform that am embedded message has been served and processed. This function should be called
+ * by your implementation to update the campaign information and send the appropriate data to
+ * Swrve.
+ *
+ * \param message embedded message that has been processed
+ */
++ (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message;
+
+/*! Process an embedded message engagement event. This function should be called by your
+ * implementation to inform Swrve of a button event.
+ *
+ * \param message embedded message that has been processed
+ * \param button  button that was pressed
+ */
++ (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button;
+
+/*! Get the list active Message Center campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Message Center campaigns independent of their orientation support
+ * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
+ *
+ * \returns List of active Message Center campaigns.
+ */
++ (NSArray *)messageCenterCampaigns;
+
+/*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Message Center campaigns independent of their orientation support
+ * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
+ *
+ * \param personalization Personalization properties for in-app messages.
+ * \returns List of active Message Center campaigns.
+ */
++ (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+
+/*! Get the list active Message Center campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \param orientation Required orientation.
+ * \returns List of active Message Center campaigns that support the given orientation.
+ */
++ (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+
+/*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \param orientation Required orientation.
+ * \param personalization Personalization properties for in-app messages.
+ * \returns List of active Message Center campaigns that support the given orientation.
+*/
++ (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+
+#endif
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \returns if the campaign was shown.
+ */
++ (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign;
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \param personalization Dictionary <String, String> used to personalise the campaign
+ * \returns if the campaign was shown.
+ */
++ (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalization:(NSDictionary *)personalization;
+
+/*! Remove the given campaign. It won't be returned anymore by the method messageCenterCampaigns.
+ *
+ * \param campaign Campaign that will be removed.
+ */
++ (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign;
+
+/*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
+ *
+ * \param campaign Campaign that will be marked as seen.
+ */
++ (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign;
+
+/*! Call this method after getting the idfa string.
+ *
+ * \param idfa IDFA identifier
+ */
++ (void)idfa:(NSString *)idfa;
+
+#pragma mark -
 
 @end
 

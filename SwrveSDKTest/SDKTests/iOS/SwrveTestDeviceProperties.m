@@ -47,11 +47,7 @@
 }
 
 - (int)devicePropertyCount {
-    if (@available(iOS 14, tvOS 14, *)) {
-        return 15;
-    } else {
-        return 16;
-    }
+    return 14;
 }
 
 - (void)testDevicePropertiesNil {
@@ -71,25 +67,25 @@
     XCTAssertEqual([deviceInfo count], [self devicePropertyCount]);
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.conversation_version"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_dpi"]!= nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_name"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_type"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_dpi"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_width"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_height"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_type"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.install_date"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.ios_min_version"]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.utc_offset_seconds"]);
     
-    if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil);
-    }else{
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil);
-    }
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil);
+    // Needs to be manually set, after permission requested
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    
+    // Needs to be manually set, if autoCollectIDFV is true in config
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {
@@ -262,7 +258,7 @@
 
     SwrveConfig *configManagedAutostartFalse = [[SwrveConfig alloc]init];
     [configManagedAutostartFalse setInitMode:SWRVE_INIT_MODE_MANAGED];
-    [configManagedAutostartFalse setManagedModeAutoStartLastUser:false];
+    [configManagedAutostartFalse setAutoStartLastUser:false];
     SwrveDeviceProperties *swrveDevicePropertiesManagedAutostartFalse = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                                   appInstallTimeSeconds:0
                                                                                     conversationVersion:0

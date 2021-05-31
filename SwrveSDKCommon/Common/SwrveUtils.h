@@ -82,4 +82,19 @@
  */
 + (BOOL)isValidIDFA:(NSString *)idfa;
 
+/**
+ Produce a SHA1 code for a given piece of NSData
+ 
+ @return NSString representing the sha1 of the message argument
+ */
++ (NSString *)sha1:(NSData *)messageData;
+
+/**
+ Combine two NSDictionaries to make a single one.
+ One is considered the 'root' dictionary which will the other will be passed into. Any duplicate keys will have their contents overriden by the second.
+ 
+ @return NSDictionay with the duplicates stripped out
+ */
++ (NSDictionary *)combineDictionary:(NSDictionary*)rootDictionary withDictionary:(NSDictionary *)overiddingDictionary;
+
 @end

@@ -94,10 +94,10 @@
         NSData *signature = [self createHMACWithMD5:content];
         BOOL successSignatureFileWrite = [signature writeToURL:[self signatureFilename] options:NSDataWritingFileProtectionNone error:&error];
         if (!successSignatureFileWrite) {
-            DebugLog(@"Could not write to signature file: %@", [self signatureFilename]);
+            [SwrveLogger error:@"Could not write to signature file: %@", [self signatureFilename]];
         }
     } else {
-        DebugLog(@"Could not write to file: %@", [self filename]);
+        [SwrveLogger error:@"Could not write to file: %@", [self filename]];
     }
 }
 
@@ -188,7 +188,7 @@
 - (void)signatureError:(NSURL*)file
 {
     #pragma unused(file)
-    DebugLog(@"Signature check failed for file %@", file);
+    [SwrveLogger error:@"Signature check failed for file %@", file];
 }
 
 @end

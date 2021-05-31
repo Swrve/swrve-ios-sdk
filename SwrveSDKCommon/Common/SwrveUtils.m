@@ -103,7 +103,7 @@
 }
 
 
-+ (NSString *) platformDeviceType {
++ (NSString *)platformDeviceType {
 #if TARGET_OS_TV
     return @"tv";
 #elif TARGET_OS_OSX
@@ -116,6 +116,36 @@
     NSString *noDashes = [idfa stringByReplacingOccurrencesOfString: @"-" withString:@""];
     NSString *idfaNoZerosOrDashes = [noDashes stringByReplacingOccurrencesOfString: @"0" withString:@""];
     return (idfaNoZerosOrDashes != nil && idfaNoZerosOrDashes.length != 0);
+}
+
++ (NSString *)sha1:(NSData *)messageData {
+    unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+    // SHA-1 hash has been calculated and stored in 'digest'
+    unsigned int length = (unsigned int) [messageData length];
+    NSMutableString* result = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
+    if (CC_SHA1([messageData bytes], length, digest)) {
+        for (unsigned int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
+            [result appendFormat:@"%02x", digest[i]];
+        }
+    }
+    
+    return result;
+}
+
++ (NSDictionary *)combineDictionary:(NSDictionary*)rootDictionary withDictionary:(NSDictionary *)overiddingDictionary {
+    NSMutableDictionary *combinedDictionary = nil;
+    if (rootDictionary != nil) {
+        NSArray *overiddingkeys = [overiddingDictionary allKeys];
+        combinedDictionary = [rootDictionary mutableCopy];
+        for (NSString *key in overiddingkeys) {
+            NSString *value = [overiddingDictionary objectForKey:key];
+            [combinedDictionary setValue:value forKey:key];
+        }
+    } else {
+        combinedDictionary = [overiddingDictionary mutableCopy];
+    }
+    
+    return combinedDictionary;
 }
 
 @end

@@ -1,0 +1,6 @@
+framework module SwrveSDK {
+    umbrella "."
+    
+    export *
+    module * { export * }
+}

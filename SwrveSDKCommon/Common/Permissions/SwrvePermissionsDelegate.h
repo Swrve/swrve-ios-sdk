@@ -1,4 +1,3 @@
-#import "SwrvePermissionsDelegate.h"
 #import "SwrvePermissionState.h"
 
 #import <Foundation/Foundation.h>

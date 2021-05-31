@@ -1,13 +1,13 @@
 #import "Swrve.h"
 #import "SwrveConversationCampaign.h"
-#if __has_include(<SwrveConversationSDK/SwrveConversationPane.h>)
-#import <SwrveConversationSDK/SwrveConversationPane.h>
-#import <SwrveConversationSDK/SwrveContentItem.h>
-#import <SwrveConversationSDK/SwrveInputMultiValue.h>
-#import <SwrveConversationSDK/SwrveConversationButton.h>
-#import <SwrveConversationSDK/SwrveContentImage.h>
-#import <SwrveConversationSDK/SwrveContentHTML.h>
-#import <SwrveConversationSDK/SwrveContentStarRating.h>
+#if __has_include(<SwrveSDK/SwrveConversationPane.h>)
+#import <SwrveSDK/SwrveConversationPane.h>
+#import <SwrveSDK/SwrveContentItem.h>
+#import <SwrveSDK/SwrveInputMultiValue.h>
+#import <SwrveSDK/SwrveConversationButton.h>
+#import <SwrveSDK/SwrveContentImage.h>
+#import <SwrveSDK/SwrveContentHTML.h>
+#import <SwrveSDK/SwrveContentStarRating.h>
 #else
 #import "SwrveConversationPane.h"
 #import "SwrveContentItem.h"
@@ -17,8 +17,8 @@
 #import "SwrveContentHTML.h"
 #import "SwrveContentStarRating.h"
 #endif
-#if __has_include(<SwrveSDKCommon/SwrveAssetsManager.h>)
-#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#if __has_include(<SwrveSDK/SwrveAssetsManager.h>)
+#import <SwrveSDK/SwrveAssetsManager.h>
 #else
 #import "SwrveAssetsManager.h"
 #endif
@@ -83,7 +83,7 @@
 }
 
 - (void)addImageToQ:(NSMutableSet *)assetQueue withAsset:(SwrveContentItem *)contentItem {
-    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:contentItem.value andDigest:contentItem.value andIsImage:YES];
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:contentItem.value andDigest:contentItem.value andIsExternal:NO andIsImage:YES];
     [assetQueue addObject:assetQueueItem];
 }
 
@@ -91,7 +91,7 @@
     if (style && [style objectForKey:kSwrveKeyFontFile] && [style objectForKey:kSwrveKeyFontDigest] && ![SwrveBaseConversation isSystemFont:style]) {
         NSString *name = [style objectForKey:kSwrveKeyFontFile];
         NSString *digest = [style objectForKey:kSwrveKeyFontDigest];
-        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:name andDigest:digest andIsImage:NO];
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:name andDigest:digest andIsExternal:NO andIsImage:NO];
         [assetQueue addObject:assetQueueItem];
     }
 }
@@ -143,7 +143,7 @@
 
     if (![self hasConversationForEvent:event withPayload:payload]) {
 
-        DebugLog(@"There is no trigger in %ld that matches %@", (long)self.ID, event);
+        [SwrveLogger debug:@"There is no trigger in %ld that matches %@", (long)self.ID, event];
         [self logAndAddReason:[NSString stringWithFormat:@"There is no trigger in %ld that matches %@ with conditions %@", (long)self.ID, event, payload] withReasons:campaignReasons];
 
         return nil;
@@ -161,7 +161,7 @@
 
     SwrveMessageController* controllerStrongReference = self.controller;
     if (controllerStrongReference == nil) {
-        DebugLog(@"No message controller!", nil);
+        [SwrveLogger error:@"No message controller!", nil];
         return nil;
     } else {
         NSString* unsupportedFilter = [controllerStrongReference supportsDeviceFilters:filters];
@@ -177,7 +177,7 @@
     }
 
     if ([self.conversation assetsReady:assets]) {
-        DebugLog(@"%@ matches a trigger in %ld", event, (long)self.ID);
+        [SwrveLogger debug:@"%@ matches a trigger in %ld", event, (long)self.ID];
         return self.conversation;
     }
 
@@ -193,8 +193,9 @@
 }
 #endif
 
--(BOOL)assetsReady:(NSSet *)assets
+-(BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization
 {
+#pragma unused(personalization) //personalization is not supported in Conversations
     return [self.conversation assetsReady:assets];
 }
 

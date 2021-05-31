@@ -2,11 +2,14 @@
 #import "Swrve.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#import "SwrveMessageController.h"
 
-#if __has_include(<SwrveSDKCommon/TextTemplating.h>)
-#import <SwrveSDKCommon/TextTemplating.h>
+#if __has_include(<SwrveSDK/TextTemplating.h>)
+#import <SwrveSDK/TextTemplating.h>
+#import <SwrveSDK/SwrveUtils.h>
 #else
 #import "TextTemplating.h"
+#import "SwrveUtils.h"
 #endif
 
 @interface SwrveMessage()
@@ -74,46 +77,73 @@ static bool in_cache(NSString* file, NSSet* set){
     return [file length] == 0 || [set containsObject:file];
 }
 
--(BOOL)assetsReady:(NSSet*)assets
-{
-    for (SwrveMessageFormat* format in self.formats) {
-        for (SwrveButton* button in format.buttons) {
-            if (!in_cache(button.image, assets)){
-                DebugLog(@"Button Asset not yet downloaded: %@", button.image);
-                return false;
-            }
-        }
+-(BOOL)assetsReady:(NSSet*)assets withPersonalization:(NSDictionary *)personalization {
+    if (self.formats != nil) {
+        for (SwrveMessageFormat* format in self.formats) {
+            for (SwrveButton* button in format.buttons) {
+                BOOL hasButtonImage = in_cache(button.image, assets);
+                if (button.dynamicImageUrl) {
+                    if([self canResolvePersonalizedImageAsset:button.dynamicImageUrl withPersonalization:personalization withAssets:assets]){
+                        hasButtonImage = YES;
+                    }
+                }
 
-        for (SwrveImage* image in format.images) {
-            if (!in_cache(image.file, assets)){
-                DebugLog(@"Image Asset not yet downloaded: %@", image.file);
-                return false;
+                if (!hasButtonImage) {
+                    [SwrveLogger debug:@"Button Asset not yet downloaded: %@ / %@", button.image, button.dynamicImageUrl];
+                    return NO;
+                }
+            }
+
+            for (SwrveImage* image in format.images) {
+                BOOL hasImage = in_cache(image.file, assets);
+                if (image.dynamicImageUrl) {
+                    if([self canResolvePersonalizedImageAsset:image.dynamicImageUrl withPersonalization:personalization withAssets:assets]){
+                        hasImage = YES;
+                    }
+                }
+                if (!hasImage) {
+                    [SwrveLogger debug:@"Image Asset not yet downloaded: %@ / %@", image.file, image.dynamicImageUrl];
+                    return NO;
+                }
             }
         }
     }
-
-    return true;
+    return YES;
 }
 
--(BOOL)canResolvePersonalisation:(NSDictionary*)personalisation
-{
-    for (SwrveMessageFormat* format in self.formats) {
+- (BOOL)canResolvePersonalizedImageAsset:(NSString *)assetUrl withPersonalization:(NSDictionary *)personalization withAssets:(NSSet *)assets {
+    NSError *error;
+    NSString *resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:personalization andError:&error];
+    if (error != nil || resolvedUrl == nil) {
+        [SwrveLogger debug:@"Could not resolve personalization: %@", assetUrl];
+    } else {
+        NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        NSString *canditateAsset = [SwrveUtils sha1:data];
+        if (in_cache(canditateAsset, assets)) {
+            return YES;
+        }
+    }
+    return NO;
+}
 
+-(BOOL)canResolvePersonalization:(NSDictionary*)personalization {
+    for (SwrveMessageFormat* format in self.formats) {
+        
         for (SwrveButton *button in format.buttons) {
             if (button.text) {
                 NSError *error;
-                NSString *text = [TextTemplating templatedTextFromString:button.text withProperties:personalisation andError:&error];
+                NSString *text = [TextTemplating templatedTextFromString:button.text withProperties:personalization andError:&error];
                 if (error != nil || text == nil) {
-                    DebugLog(@"Button Asset has no personalisation for text: %@", button.text);
+                    [SwrveLogger warning:@"Button Asset has no personalization for text: %@", button.text];
                     return false;
                 }
             }
             
             if (button.actionType == kSwrveActionClipboard || button.actionType == kSwrveActionCustom) {
                 NSError *error;
-                NSString *text = [TextTemplating templatedTextFromString:button.actionString withProperties:personalisation andError:&error];
+                NSString *text = [TextTemplating templatedTextFromString:button.actionString withProperties:personalization andError:&error];
                 if (error != nil || text == nil) {
-                    DebugLog(@"Button Asset has no personalisation for action: %@", button.actionString);
+                    [SwrveLogger warning:@"Button Asset has no personalization for action: %@", button.actionString];
                     return false;
                 }
             }
@@ -122,9 +152,9 @@ static bool in_cache(NSString* file, NSSet* set){
         for (SwrveImage *image in format.images) {
             if (image.text) {
                 NSError *error;
-                NSString *text = [TextTemplating templatedTextFromString:image.text withProperties:personalisation andError:&error];
+                NSString *text = [TextTemplating templatedTextFromString:image.text withProperties:personalization andError:&error];
                 if (error != nil || text == nil) {
-                    DebugLog(@"Button Asset has no personalisation for text: %@", image.text);
+                    [SwrveLogger warning:@"Button Asset has no personalization for text: %@", image.text];
                     return false;
                 }
             }

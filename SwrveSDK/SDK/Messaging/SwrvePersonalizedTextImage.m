@@ -1,7 +1,7 @@
 #define SWRVE_MIN(a,b)    ((a) < (b) ? (a) : (b))
-#import "SwrvePersonalisedTextImage.h"
+#import "SwrvePersonalizedTextImage.h"
 
-@implementation SwrvePersonalisedTextImage
+@implementation SwrvePersonalizedTextImage
 
 float const TEST_FONT_SIZE = 200.0f;
 
@@ -31,7 +31,7 @@ float const TEST_FONT_SIZE = 200.0f;
                                   NSForegroundColorAttributeName: foreground,
                                   NSParagraphStyleAttributeName:  paragraphStyle };
 
-    NSDictionary *attributes = [SwrvePersonalisedTextImage fitTextSize:string withAttributes:baseAttributes maxWidth:(int)size.width maxHeight:(int)size.height];
+    NSDictionary *attributes = [SwrvePersonalizedTextImage fitTextSize:string withAttributes:baseAttributes maxWidth:(int)size.width maxHeight:(int)size.height];
 
     CGRect backgroundRect = CGRectMake(0, 0, size.width, size.height);
     

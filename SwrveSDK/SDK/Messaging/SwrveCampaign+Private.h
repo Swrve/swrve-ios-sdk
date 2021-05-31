@@ -4,24 +4,22 @@
 
 @interface SwrveCampaign()
 
-@property (atomic) BOOL randomOrder;
-
 /*! Set the message mimimum delay time. */
 -(void)setMessageMinDelayThrottle:(NSDate*)timeShown;
 
 /*! Log the reason for campaigns not being available. */
--(void)logAndAddReason:(NSString*)reason withReasons:(NSMutableDictionary*)campaignReasons;
+-(void)logAndAddReason:(NSString *)reason withReasons:(NSMutableDictionary*)campaignReasons;
 
 /*! Check if it is too soon to display a message after launch. */
--(BOOL)isTooSoonToShowMessageAfterLaunch:(NSDate*)now;
+-(BOOL)isTooSoonToShowMessageAfterLaunch:(NSDate *)now;
 
 /*! Check if it is too soon to display a message after a delay. */
--(BOOL)isTooSoonToShowMessageAfterDelay:(NSDate*)now;
+-(BOOL)isTooSoonToShowMessageAfterDelay:(NSDate *)now;
 
 /*! Check that rules pass. */
--(BOOL)checkCampaignRulesForEvent:(NSString*)event
-                           atTime:(NSDate*)time
-                      withReasons:(NSMutableDictionary*)campaignReasons;
+-(BOOL)checkCampaignRulesForEvent:(NSString *)event
+                           atTime:(NSDate *)time
+                      withReasons:(NSMutableDictionary *)campaignReasons;
 
 /*! Check that Triggers are valid. */
 -(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload;

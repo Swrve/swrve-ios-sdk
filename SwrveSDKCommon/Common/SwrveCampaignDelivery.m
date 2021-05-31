@@ -57,7 +57,7 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     return seqno;
 }
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 
 + (NSDictionary *)eventData:(NSDictionary *) userInfo forSeqno:(NSInteger)seqno {
 
@@ -91,7 +91,7 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     NSInteger seqno = [self nextEventSequenceWithUserId:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey] forUserDefaults:userDefaults];
 
     userDefaults = nil; //fast dealoc of NSUserDefaults - We do have limited memory at our SE calls.
-    DebugLog(@"Swrve Stored Info at app group %@: %@", appGroupId, deliveryConfig);
+    [SwrveLogger debug:@"Swrve Stored Info at app group %@: %@", appGroupId, deliveryConfig];
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:10];
 
     NSMutableDictionary *eventBatch = [NSMutableDictionary new];
@@ -118,7 +118,7 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     NSError *jsonError;
     NSData *jsonEventBatchNSData = [NSJSONSerialization dataWithJSONObject:eventBatch options:0 error:&jsonError];
     if (jsonError) {
-        DebugLog(@"Swrve Something went wrong when parsing the \"Push Delivery json event\" - invalid json format", nil);
+        [SwrveLogger error:@"Swrve Something went wrong when parsing the \"Push Delivery json event\" - invalid json format", nil];
         return;
     }
 
@@ -131,12 +131,12 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
                            jsonData:jsonData
                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response, data)
-        if(error == nil) {
-            DebugLog(@"Swrve Something went wrong with Push Send Delivery: %@", error.description);
+        if (error != nil) {
+            [SwrveLogger error:@"Swrve Something went wrong with Push Send Delivery: %@", error.description];
         }
     }];
 }
 
-#endif // !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#endif //TARGET_OS_IOS
 
 @end

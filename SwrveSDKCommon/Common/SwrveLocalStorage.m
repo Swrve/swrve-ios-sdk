@@ -37,6 +37,7 @@ static NSString *SWRVE_QA_USER = @"swrve.q1";
 static NSString *SWRVE_DEVICE_UUID = @"swrve_device_uuid";
 static NSString *SWRVE_BACKUP_DEFAULTS = @"swrve_backup_defaults";
 static NSString *SWRVE_USERS = @"swrve_users";
+static NSString *SWRVE_IDFA = @"swrve_ifda";
 
 static dispatch_once_t applicationSupportPathOnceToken = 0;
 static dispatch_once_t swrveAppSupportDirOnceToken = 0;
@@ -52,6 +53,21 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 
 + (NSUserDefaults*)defaults {
     return [NSUserDefaults standardUserDefaults];
+}
+
+//// SWRVE IDFA ////
+
++ (void)saveIDFA:(NSString *)idfa {
+    [[self defaults] setValue:idfa forKey:SWRVE_IDFA];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:idfa key:SWRVE_IDFA];
+}
+
++ (NSString *)idfa {
+    NSString *idfa = [[self defaults] stringForKey:SWRVE_IDFA];
+    if (idfa == nil) {
+        idfa = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_IDFA];
+    }
+    return idfa;
 }
 
 //// SWRVE FLUSH FREQEUNCY ////
@@ -270,9 +286,9 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
             NSError *error = nil;
             if (![[NSFileManager defaultManager] createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:
                   [NSDictionary dictionaryWithObject:NSFileProtectionNone forKey:NSFileProtectionKey] error:&error]) {
-                DebugLog(@"Error Creating an Application Support Directory %@", error.localizedDescription);
+                [SwrveLogger error:@"Error Creating an Application Support Directory %@", error.localizedDescription];
             } else {
-                DebugLog(@"Successfully Created Directory: %@", appSupportDir);
+                [SwrveLogger debug:@"Successfully Created Directory: %@", appSupportDir];
             }
         }
         _path = appSupportDir;
@@ -311,7 +327,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
             NSError *error = nil;
             [[NSFileManager defaultManager] createDirectoryAtPath:swrveAppSupportDir withIntermediateDirectories:YES attributes:@{NSFileProtectionKey:NSFileProtectionNone} error:&error];
             if (error == nil) {
-                DebugLog(@"First time migration or installation. Created Swrve app support directory: %@.", swrveAppSupportDir);
+                [SwrveLogger debug:@"First time migration or installation. Created Swrve app support directory", nil];
             }
         }
         _path = swrveAppSupportDir;
@@ -345,10 +361,10 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     seconds = [[self defaults] integerForKey:installDateKey];
     unsigned long long secondsSinceEpoch = (unsigned long long)([[NSDate date] timeIntervalSince1970]);
     if(seconds > secondsSinceEpoch){
-        DebugLog(@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage);
+        [SwrveLogger warning:@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage];
         seconds = seconds / 1000;
-        if(seconds > secondsSinceEpoch){
-            DebugLog(@"%@ from current file_contents was corrupted. setting as today", logMessage);
+        if (seconds > secondsSinceEpoch) {
+            [SwrveLogger warning:@"%@ from current file_contents was corrupted. setting as today", logMessage];
             //install time stored was corrupted and must be added as today.
             seconds = secondsSinceEpoch;
         }
@@ -362,11 +378,11 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
         seconds = (unsigned long long)[file_contents longLongValue];
         unsigned long long secondsSinceEpoch = (unsigned long long)([[NSDate date] timeIntervalSince1970]);
         // ensure the install time is stored in seconds, legacy from < iOS SDK 4.7
-        if(seconds > secondsSinceEpoch){
-            DebugLog(@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage);
+        if (seconds > secondsSinceEpoch) {
+            [SwrveLogger warning:@"%@ from current file_contents was in milliseconds. restoring as seconds", logMessage];
             seconds = seconds / 1000;
-            if(seconds > secondsSinceEpoch){
-                DebugLog(@"%@ from current file_contents was corrupted. setting as today", logMessage);
+            if (seconds > secondsSinceEpoch) {
+                [SwrveLogger warning:@"%@ from current file_contents was corrupted. setting as today", logMessage];
                 //install time stored was corrupted and must be added as today.
                 seconds = secondsSinceEpoch;
             }
@@ -376,14 +392,14 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
             error = nil;
             BOOL success = [file_contents writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
             if (!success) {
-                DebugLog(@"%@ could not be saved to fileName: %@ %@", logMessage, fileName, error);
+                [SwrveLogger error:@"%@ could not be saved to fileName: %@ %@", logMessage, [fileName lastPathComponent], error];
             } else {
                 [SwrveLocalStorage setFileProtectionNone:fileName];
             }
         }
 
     } else {
-        DebugLog(@"%@ could not read file: %@", logMessage, fileName);
+        [SwrveLogger error:@"%@ could not read file: %@", logMessage, [fileName lastPathComponent]];
     }
 #endif
    return (UInt64)seconds;
@@ -406,10 +422,10 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     NSString *logMessage = ([userId isEqualToString:@""]) ? @"App install time:" : @"User Joined time:";
 #pragma unused(logMessage) // for when debuglog is off
     if (success) {
-        DebugLog(@"%@ successfully saved to fileName: %@" ,logMessage, fileName);
+        [SwrveLogger debug:@"%@ successfully saved to fileName: %@", logMessage, [fileName lastPathComponent]];
         [SwrveLocalStorage setFileProtectionNone:fileName];
     } else {
-        DebugLog(@"%@ could not be saved to fileName: %@ %@" ,logMessage, fileName, error);
+        [SwrveLogger error:@"%@ could not be saved to fileName: %@ %@", logMessage, [fileName lastPathComponent], error];
     }
 #endif
 }
@@ -520,7 +536,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
                                                              options:NSJSONReadingMutableContainers
                                                                error:&error];
                 if (error) {
-                    DebugLog(@"Swrve: Unable to read from file name: %@, error: %@",fileName, [error localizedDescription]);
+                    [SwrveLogger error:@"Swrve: Unable to read from file name: %@, error: %@",fileName, [error localizedDescription]];
                     return nil;
                 }
             }
@@ -553,7 +569,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
             if (error) {
-                DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+                [SwrveLogger error:@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]];
                 return;
             }
         }
@@ -568,13 +584,13 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
                                                                options:NSJSONWritingPrettyPrinted
                                                                  error:&error];
         if (error) {
-             DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+            [SwrveLogger error:@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]];
              return;
          }
         
         [dataFromDict writeToFile:filePath options:NSDataWritingFileProtectionNone error:&error];
         if (error) {
-            DebugLog(@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]);
+            [SwrveLogger error:@"Swrve: Unable to write to file name: %@, error: %@",fileName, [error localizedDescription]];
         }
     }
 }
@@ -583,9 +599,9 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone} ofItemAtPath:filePath error:&error];
     if (success == YES) {
-        DebugLog(@"Successfully set NSFileProtectionNone on file:%@", filePath);
+        [SwrveLogger debug:@"Successfully set NSFileProtectionNone on file: %@", [filePath lastPathComponent]];
     } else {
-        DebugLog(@"Error setting NSFileProtectionNone on file:%@ error:%@", filePath, [error localizedDescription]);
+        [SwrveLogger error:@"Error setting NSFileProtectionNone on file: %@ error: %@", [filePath lastPathComponent], [error localizedDescription]];
     }
 }
 

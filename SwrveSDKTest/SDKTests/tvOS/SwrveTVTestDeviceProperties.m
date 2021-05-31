@@ -27,11 +27,7 @@
 }
 
 - (int)devicePropertyCount {
-    if (@available(iOS 14, tvOS 14, *)) {
-        return 14;
-    } else{
-        return 15;
-    }
+    return 13;
 }
 
 - (void)testDevicePropertiesNil {
@@ -48,23 +44,25 @@
     XCTAssertEqual([deviceInfo count],[self devicePropertyCount]);
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
-    XCTAssertNotNil([deviceInfo valueForKey:@"swrve.device_dpi"]);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_name"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_width"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_height"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.device_type"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.install_date"] != nil);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.ios_min_version"] != nil);
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_dpi"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_width"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_height"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_type"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.install_date"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.ios_min_version"]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"tvos");
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.utc_offset_seconds"] != nil);
-    if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] == nil);
-    }else{
-        XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFA"] != nil);
-    }
-    XCTAssertTrue([deviceInfo valueForKey:@"swrve.IDFV"] != nil);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.utc_offset_seconds"]);
+    
+    // Needs to be manually set, after permission requested
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    
+    // Needs to be manually set, if autoCollectIDFV is true in config
+    XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {
@@ -107,10 +105,12 @@
     [NSURLProtocol registerClass:[SwrveMockNSURLProtocol class]];
     TestPermissionsDelegate *permissionsDelegate = [[TestPermissionsDelegate alloc] init];
     SwrveConfig* config = [[SwrveConfig alloc] init];
+    config.autoCollectIDFV = true;
     config.autoDownloadCampaignsAndResources = false;
     config.permissionsDelegate = permissionsDelegate;
     [SwrveSDK sharedInstanceWithAppID:1 apiKey:@"Key" config:config];
     Swrve *sdk = [SwrveSDK sharedInstance];
+    [sdk idfa:@"12345"];
     
     NSDictionary *permissionStatus = [SwrvePermissions currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk];
     
@@ -120,6 +120,8 @@
                                                                                     sdk_language:nil
                                                                                    swrveInitMode:nil];
     
+    swrveDeviceProperties.autoCollectIDFV = config.autoCollectIDFV;
+    
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.location.always"]!= nil);
@@ -128,8 +130,11 @@
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.camera"]!= nil);
     XCTAssertTrue([deviceInfo valueForKey:@"Swrve.permission.ios.contacts"] != nil);
     XCTAssertTrue([deviceInfo valueForKey:@"swrve.permission.ios.ad_tracking"] != nil);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     
-    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 6);
+    
+    XCTAssertTrue([deviceInfo count] == [self devicePropertyCount] + 8);
     
     [NSURLProtocol unregisterClass:[SwrveMockNSURLProtocol class]];
 }

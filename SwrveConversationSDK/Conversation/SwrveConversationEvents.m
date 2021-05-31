@@ -23,12 +23,12 @@ static NSMutableDictionary *_customPayload = nil;
 
 + (void)setCustomPayload:(NSMutableDictionary *)newCustomPayload {
     if ([newCustomPayload count] > 5) {
-        DebugLog(@"Swrve custom payload rejected, attempted to add more than 5 key pair values", nil);
+        [SwrveLogger error:@"Swrve custom payload rejected, attempted to add more than 5 key pair values", nil];
         return;
     }
 
     if (![SwrveConversationEvents validatePayloadKeys:newCustomPayload]) {
-        DebugLog(@"Swrve custom payload rejected, attempted to add a key which is already reserved for Swrve internal events", nil);
+        [SwrveLogger error:@"Swrve custom payload rejected, attempted to add a key which is already reserved for Swrve internal events", nil];
         return;
     }
     _customPayload = [newCustomPayload copy];

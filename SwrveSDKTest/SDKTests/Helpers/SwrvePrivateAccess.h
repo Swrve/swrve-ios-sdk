@@ -34,9 +34,9 @@
 @property NSURL* baseCampaignsAndResourcesURL;
 @property (strong) NSMutableDictionary * userUpdates;
 @property(atomic) SwrveRESTClient *restClient;
-#if !defined(SWRVE_NO_PUSH)
+#if TARGET_OS_IOS
 @property (atomic, readonly)         SwrvePush *push;
-#endif //!defined(SWRVE_NO_PUSH)
+#endif
 @property (nonatomic) SwrveReceiptProvider* receiptProvider;
 
 - (int) sessionStart;

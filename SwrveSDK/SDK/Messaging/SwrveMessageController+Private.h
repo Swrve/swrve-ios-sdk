@@ -1,14 +1,17 @@
 #import "Swrve.h"
-#if __has_include(<SwrveConversationSDK/SwrveConversationItemViewController.h>)
-#import <SwrveConversationSDK/SwrveConversationItemViewController.h>
+#import "SwrveMessageController.h"
+
+#if __has_include(<SwrveSDK/SwrveConversationItemViewController.h>)
+#import <SwrveSDK/SwrveConversationItemViewController.h>
 #else
 #import "SwrveConversationItemViewController.h"
 #endif
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
-const static int CAMPAIGN_VERSION            = 8;
+const static int CAMPAIGN_VERSION            = 9;
 const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 const static int EMBEDDED_CAMPAIGN_VERSION   = 1;
+const static int IN_APP_CAMPAIGN_VERSION     = 4;
 
 /*! In-app messages controller */
 @interface SwrveMessageController ()
@@ -53,6 +56,13 @@ const static int EMBEDDED_CAMPAIGN_VERSION   = 1;
  * \returns nil if all devices are supported or the name of the filter that is not supported.
  */
 -(NSString*) supportsDeviceFilters:(NSArray*)filters;
+
+/**! Fire the personalization callback given as part of the SDK and combine it with real time user properties.
+ *
+ * \param payload the event payload that will be passed to the messageController's callback
+ * \returns NSDictionary of the personalization properties.
+ */
+- (NSDictionary*) retrievePersonalizationProperties:(NSDictionary *) payload;
 
 /*! Called when the app became active */
 -(void) appDidBecomeActive;

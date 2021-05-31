@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "SwrveRESTClient.h"
 #import "SwrveQACampaignInfo.h"
+#import "SwrveQAImagePersonalizationInfo.h"
 
 @interface SwrveQA : NSObject
 
@@ -9,8 +10,13 @@
 
 + (id)sharedInstance;
 + (void)updateQAUser:(NSDictionary *)jsonQa andSessionToken:(NSString *)sessionToken;
-
 + (void)wrappedEvent:(NSDictionary *)jsonDic;
++ (void)assetFailedToDownload:(NSString *)assetName
+                  resolvedUrl:(NSString *)resolvedUrl
+                       reason:(NSString *)reason;
+
++ (void)assetFailedToDisplay:(SwrveQAImagePersonalizationInfo *) qaImagePersonalizationInfo;
+
 + (void)campaignsDownloaded:(NSArray *)arrayWithCampaigns;
 + (void)campaignButtonClicked:(NSNumber *)campaignId
                     variantId:(NSNumber *)variantId
@@ -36,15 +42,5 @@
                  displayed:(BOOL)displayed
                     reason:(NSString *)reason
               campaignInfo:(NSArray<SwrveQACampaignInfo*> *)qaCampaignInfoArray;
-
-+ (void)geoCampaignTriggered:(NSArray *)campaigns
-              fromGeoPlaceId:(NSString *)geoplaceId
-               andGeofenceId:(NSString *)geofenceId
-               andActionType:(NSString *)actionType;
-
-+ (void)geoCampaignsDownloaded:(NSArray *)campaigns
-                fromGeoPlaceId:(NSString *)geoplaceId
-                 andGeofenceId:(NSString *)geofenceId
-                 andActionType:(NSString *)actionType;
 
 @end

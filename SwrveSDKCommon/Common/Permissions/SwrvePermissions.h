@@ -26,6 +26,7 @@ static NSString* swrve_permission_requestable           = @".requestable";
 /*! Used internally to offer permission request support */
 @interface SwrvePermissions : NSObject
 
++ (BOOL)didWeAskForPushPermissionsAlready;
 + (BOOL)processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk;
 + (NSDictionary*) currentStatusWithSDK:(id<SwrveCommonDelegate>)sdk;
 + (void)compareStatusAndQueueEventsWithSDK:(id<SwrveCommonDelegate>)sdk;
@@ -46,13 +47,13 @@ static NSString* swrve_permission_requestable           = @".requestable";
 + (SwrvePermissionState)checkAdTracking:(id<SwrveCommonDelegate>)sdk;
 + (BOOL)requestAdTracking:(id<SwrveCommonDelegate>)sdk;
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 + (void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional;
 + (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk;
 + (NSString*)pushAuthorizationWithSDK: (id<SwrveCommonDelegate>)sdk WithCallback:(nullable void (^)(NSString * pushAuthorization)) callback;
 + (void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(nullable id<SwrveCommonDelegate>)sdk NS_AVAILABLE_IOS(10.0);
 + (void)refreshDeviceToken:(nullable id<SwrveCommonDelegate>)sdk;
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 @end
 

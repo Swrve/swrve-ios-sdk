@@ -2,7 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SwrvePersonalisedTextImage : NSObject
+@interface SwrvePersonalizedTextImage : NSObject
 
 + (UIImage *)imageFromString:(NSString *)string
          withBackgroundColor:(UIColor* ) background

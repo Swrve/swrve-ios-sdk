@@ -1,7 +1,8 @@
 #import "SwrveButton.h"
-#import "SwrvePersonalisedTextImage.h"
-#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import "SwrvePersonalizedTextImage.h"
+#import "SwrveDynamicUrlImage.h"
+#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
+#import <SwrveSDK/SwrveLocalStorage.h>
 #else
 #import "SwrveLocalStorage.h"
 #endif
@@ -17,10 +18,12 @@
 
 @synthesize name;
 @synthesize image;
+@synthesize dynamicImageUrl;
 @synthesize text;
 @synthesize actionString;
 @synthesize message;
 @synthesize center;
+@synthesize size;
 @synthesize messageID;
 @synthesize appID;
 @synthesize actionType;
@@ -35,48 +38,52 @@ static CGPoint scaled(CGPoint point, float scale)
     self = [super init];
     self.name         = NULL;
     self.image        = @"buttonup.png";
+    self.dynamicImageUrl = NULL;
     self.text         = NULL;
     self.actionString = @"";
     self.appID       = 0;
     self.actionType   = kSwrveActionDismiss;
     self.center   = CGPointMake(100, 100);
+    self.size     = CGSizeMake(0, 0);
     return self;
 }
 
 - (UISwrveButton*)createButtonWithDelegate:(id)delegate
-                            andSelector:(SEL)selector
-                               andScale:(float)scale
-                             andCenterX:(float)cx
-                             andCenterY:(float)cy
-{
-    return [self createButtonWithDelegate:delegate andSelector:selector andScale:scale andCenterX:cx andCenterY:cy andPersonalisedAction:nil andPersonalisation:nil withConfig:nil];
-}
-
-- (UISwrveButton*)createButtonWithDelegate:(id)delegate
-                         andSelector:(SEL)selector
-                            andScale:(float)scale
-                          andCenterX:(float)cx
-                          andCenterY:(float)cy
-               andPersonalisedAction:(NSString*)personalisedActionStr
-                  andPersonalisation:(NSString*)personalisedTextStr
-                          withConfig:(SwrveInAppMessageConfig*)inAppConfig
+                               andSelector:(SEL)selector
+                                  andScale:(float)scale
+                                andCenterX:(float)cx
+                                andCenterY:(float)cy
+                     andPersonalizedAction:(NSString*)personalizedActionStr
+                        andPersonalization:(NSString*)personalizedTextStr
+               andPersonalizedUrlAssetSha1:(NSString*)personalizedUrlAssetSha1
+                                withConfig:(SwrveInAppMessageConfig*)inAppConfig
+                                    qaInfo:(SwrveQAImagePersonalizationInfo*)qaInfo
 {
 
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
     NSURL* url_up = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, image, nil]];
     UIImage* up   = [UIImage imageWithData:[NSData dataWithContentsOfURL:url_up]];
     
-    if (personalisedTextStr != nil) {
+    if (personalizedTextStr != nil) {
         // store the current 'up' image so we can use it as a guide
         UIImage *guideImage = up;
 
-        up = [SwrvePersonalisedTextImage imageFromString:personalisedTextStr
-                withBackgroundColor:inAppConfig.personalisationBackgroundColor
-                withForegroundColor:inAppConfig.personalisationForegroundColor
-                       withFont:inAppConfig.personalisationFont
+        up = [SwrvePersonalizedTextImage imageFromString:personalizedTextStr
+                withBackgroundColor:inAppConfig.personalizationBackgroundColor
+                withForegroundColor:inAppConfig.personalizationForegroundColor
+                       withFont:inAppConfig.personalizationFont
                                size:guideImage.size];
+        
+    } else if (personalizedUrlAssetSha1 != nil) {
+        UIImage *dynamicImage = [SwrveDynamicUrlImage dynamicImageToContainer:personalizedUrlAssetSha1
+                                                                  cacheFolder:cacheFolder
+                                                                         size:self.size
+                                                                        qaInfo:qaInfo];
+        if (dynamicImage != nil) {
+            up = dynamicImage;
+        }
     }
-    
+        
     UISwrveButton* result;
     if (up) {
         result = [UISwrveButton buttonWithType:UIButtonTypeCustom];
@@ -110,12 +117,12 @@ static CGPoint scaled(CGPoint point, float scale)
     [result setCenter: CGPointMake(position.x + cx, position.y + cy)];
     
     if (self.actionType == kSwrveActionClipboard || self.actionType == kSwrveActionCustom) {
-        result.actionString = personalisedActionStr;
+        result.actionString = personalizedActionStr;
     }
     
-    if (personalisedTextStr) {
+    if (personalizedTextStr) {
         // store the text that was displayed for testing
-        result.displayString = personalisedTextStr;
+        result.displayString = personalizedTextStr;
     }
 
     return result;

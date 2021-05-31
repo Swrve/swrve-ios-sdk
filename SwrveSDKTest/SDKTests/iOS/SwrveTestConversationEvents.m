@@ -32,9 +32,6 @@
 
 -(TestableSwrve*) helpSetupConversation:(NSString*)name permissionsDelegate:(TestPermissionsDelegate*)permissionsDelegate {
     SwrveConfig *config = [[SwrveConfig alloc] init];
-#if !defined(SWRVE_NO_PUSH)
-    config.autoCollectDeviceToken = NO;
-#endif
     config.permissionsDelegate = permissionsDelegate;
     
     TestableSwrve *testableSwrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:name andConfig:config];

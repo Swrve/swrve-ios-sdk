@@ -1,0 +1,1 @@
+../Common/Permissions/SwrveInAppCapabilitiesDelegate.h

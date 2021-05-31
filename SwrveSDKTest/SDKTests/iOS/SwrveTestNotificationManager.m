@@ -1,5 +1,3 @@
-#ifndef SWRVE_NO_PUSH
-
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 
@@ -151,5 +149,3 @@
 }
 
 @end
-
-#endif // SWRVE_NO_PUSH

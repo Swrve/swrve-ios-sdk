@@ -4,6 +4,7 @@
 #import "SwrveProfileManager.h"
 #import "SwrveRESTClient.h"
 #import "SwrveUser.h"
+#import "SwrveMessageController.h"
 
 @interface SwrveProfileManager ()
 - (instancetype)initWithIdentityUrl:(NSString *)identityBaseUrl deviceUUID:(NSString *)deviceUUID restClient:(SwrveRESTClient *)restClient appId:(long)appId apiKey:(NSString*)apiKey;

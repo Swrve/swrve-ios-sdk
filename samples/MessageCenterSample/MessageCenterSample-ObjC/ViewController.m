@@ -17,22 +17,11 @@
     [self.tableView reloadData];
 
     // Observe for the new campaigns
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newSwrveCampaigns) name:@"SwrveUserResourcesUpdated" object:nil];
-
-    // The Swrve SDK creates new UIWindows to display content to avoid
-    // creating issues for games etc. However, this means that the controllers
-    // do not get their callbacks called.
-    // We set this class as the delegate to listen to these events.
-    [SwrveSDK messaging].showMessageDelegate = self;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDataAndView) name:@"SwrveUserResourcesUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDataAndView) name:@"SwrveMessageWillBeHidden" object:nil];
 }
 
-- (void) messageWillBeHidden:(UIViewController*) viewController {
-    // An in-app message or conversation will be hidden.
-    // Notify the table view that the state of a campaign might have changed.
-    [self.tableView reloadData];
-}
-
-- (void) newSwrveCampaigns
+- (void) reloadDataAndView
 {
     [self refreshDataSource];
     [self.tableView reloadData];
@@ -48,7 +37,7 @@
     // Obtain latest campaigns and order by the campaign dateStart property
     NSSortDescriptor *dateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"dateStart" ascending:NO];
     NSArray *sortDescriptors = [NSArray arrayWithObject:dateDescriptor];
-    self.campaigns = [[[SwrveSDK messaging] messageCenterCampaigns] sortedArrayUsingDescriptors:sortDescriptors];
+    self.campaigns = [[SwrveSDK messageCenterCampaigns] sortedArrayUsingDescriptors:sortDescriptors];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -99,7 +88,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Display the campaign when clicked
-    [[SwrveSDK messaging] showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
+    [SwrveSDK showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -114,7 +103,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Remove campaign from the sliding button
         [tableView beginUpdates];
-        [[SwrveSDK messaging] removeMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
+        [SwrveSDK removeMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
         [self refreshDataSource];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
         [tableView endUpdates];

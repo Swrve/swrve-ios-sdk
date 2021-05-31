@@ -16,8 +16,9 @@
 @end
 
 @interface Swrve()
-- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
 @property(atomic) SwrveRESTClient *restClient;
+
+- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
 - (NSString *)signatureKey;
 @end
 
@@ -151,8 +152,7 @@
     NSDictionary *additionalInfoDic = [cachedDic objectForKey:@"additional_info"];
     XCTAssertTrue([additionalInfoDic[@"version"] isEqualToNumber:@2]);
 
-    NSArray *messageArray = [campaignDic objectForKey:@"messages"];
-    NSDictionary *messageDic = messageArray[0];
+    NSDictionary *messageDic = [campaignDic objectForKey:@"message"];
     XCTAssertTrue([messageDic[@"id"] isEqualToNumber:@298085]);
     XCTAssertTrue([messageDic[@"name"] isEqualToString:@"Double format"]);
 }

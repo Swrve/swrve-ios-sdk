@@ -7,7 +7,7 @@
 @property(nonatomic, retain) NSString *cdnFonts;
 @property(nonatomic, retain) NSString *cacheFolder;
 
-+ (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsImage:(BOOL)isImage;
++ (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsExternal:(BOOL)isExternal andIsImage:(BOOL)isImage;
 
 - (id)initWithRestClient:(SwrveRESTClient *)swrveRESTClient andCacheFolder:(NSString *)cacheFolder;
 

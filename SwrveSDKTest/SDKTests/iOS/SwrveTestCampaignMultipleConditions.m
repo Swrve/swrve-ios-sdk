@@ -4,6 +4,11 @@
 #import "SwrveTestHelper.h"
 #import "SwrveConversation.h"
 #import "SwrvePermissions.h"
+#import "SwrveMessageController.h"
+
+@interface Swrve(privateAccess)
+@property(atomic) SwrveMessageController *messaging;
+@end
 
 @interface SwrveMessageController ()
 
@@ -11,6 +16,7 @@
 - (void)writeToCampaignCache:(NSData*)campaignData;
 - (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (NSDate *)getNow;
+- (SwrveConversation*)conversationForEvent:(NSString *) eventName withPayload:(NSDictionary *)payload;
 
 @property (nonatomic, retain) NSDate *initialisedTime;
 @end
@@ -22,15 +28,12 @@
 
 @implementation SwrveTestCampaignMultipleConditions
 
-
 - (void)setUp {
     [super setUp];
     [SwrveTestHelper setUp];
     
-#ifndef SWRVE_NO_PUSH
     id classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
-#endif
 }
 
 - (void)tearDown {
@@ -74,6 +77,19 @@
     SwrveConversation *conv = [[swrveMock messaging] conversationForEvent:@"Swrve.multivalue" withPayload:payload];
     XCTAssertNotNil(conv, @"conversation was nil");
     
+    [swrveMock stopMocking];
+}
+
+- (void)testConversationMultiTriggerConditionCaseInsensitive {
+    id swrveMock = [self swrveMock];
+    NSDictionary *payload = @{
+                              @"key1" : @"valUE1",
+                              @"key2" : @"VALue2"
+                              };
+
+    SwrveConversation* conv = [[swrveMock messaging] conversationForEvent:@"Swrve.multivalue" withPayload:payload];
+    XCTAssertNotNil(conv, @"conversation was nil");
+
     [swrveMock stopMocking];
 }
 

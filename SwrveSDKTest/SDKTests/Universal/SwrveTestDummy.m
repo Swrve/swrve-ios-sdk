@@ -11,6 +11,10 @@
 
 #import "SwrveMessageController+Private.h"
 
+@interface Swrve(privateAccess)
+@property(atomic) SwrveMessageController *messaging;
+@end
+
 @interface SwrveTestDummy : XCTestCase
 
 @end
@@ -124,63 +128,36 @@
     XCTAssertEqualObjects(swrve.apiKey, @"SomeAPIKey");
     XCTAssertNil(swrve.userID);
     XCTAssertNil([((id<SwrveCommonDelegate>)swrve) deviceInfo]);
-    XCTAssertNotNil(swrve.messaging);
     XCTAssertNotNil(swrve.resourceManager);
     
 #if TARGET_OS_IOS
     XCTAssertNil(swrve.deviceToken);
 #endif
 
-    // Test public Talk methods of the Swrve SDK (should not crash)
-    XCTAssertNil([swrve.messaging messageForEvent:@"event"]);
-
-    XCTAssertNil([swrve.messaging conversationForEvent:@"event"]);
-
-    SwrveButton* button = [[SwrveButton alloc] init];
-    [swrve.messaging buttonWasPressedByUser:button];
-
-    SwrveMessage* message = [[SwrveMessage alloc] init];
-    [swrve.messaging messageWasShownToUser:message];
-
-    XCTAssertNil([swrve.messaging appStoreURLForAppId:1]);
-
 #if TARGET_OS_IOS
    [swrve setDeviceToken:[[NSData alloc] init]];
 #endif
 
-    [swrve.messaging dismissMessageWindow];
-
-    XCTAssert([[swrve.messaging messageCenterCampaigns] count] == 0);
+    XCTAssert([[swrve messageCenterCampaigns] count] == 0);
     
-    XCTAssert([[swrve.messaging messageCenterCampaignsWithPersonalisation:nil] count] == 0);
+    XCTAssert([[swrve messageCenterCampaignsWithPersonalization:nil] count] == 0);
  
 #if TARGET_OS_IOS
-    XCTAssert([[swrve.messaging messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count] == 0);
+    XCTAssert([[swrve messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count] == 0);
     
-    XCTAssert([[swrve.messaging messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalisation:nil] count] == 0);
+    XCTAssert([[swrve messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:nil] count] == 0);
 #endif
 
     SwrveCampaign* campaign = [[SwrveCampaign alloc] init];
-    [swrve.messaging showMessageCenterCampaign:campaign];
+    [swrve showMessageCenterCampaign:campaign];
     
-    [swrve.messaging showMessageCenterCampaign:campaign withPersonalisation:nil];
+    [swrve showMessageCenterCampaign:campaign withPersonalization:nil];
 
-    [swrve.messaging removeMessageCenterCampaign:campaign];
+    [swrve removeMessageCenterCampaign:campaign];
     
-    [swrve.messaging markMessageCenterCampaignAsSeen:campaign];
-
-    [swrve.messaging saveCampaignsState];
-
-    [swrve.messaging cleanupConversationUI];
-
-    NSDictionary* event = @{@"type": @"event", @"name": @"sample_event"};
-    [swrve.messaging eventRaised:event];
+    [swrve markMessageCenterCampaignAsSeen:campaign];
 
     XCTAssertFalse([[SwrveQA sharedInstance] isQALogging]);
-
-    [swrve.messaging supportsDeviceFilters:[[NSArray alloc] init]];
-
-    XCTAssertNil(swrve.messaging.analyticsSDK);
 }
 
 @end

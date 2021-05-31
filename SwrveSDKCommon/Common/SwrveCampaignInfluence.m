@@ -120,7 +120,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
 
                         [swrveCommon queueEvent:@"generic_campaign_event" data:influencedEvent triggerCallback:false];
                     } else {
-                        DebugLog(@"Could not find a shared instance to send the influence data", nil);
+                        [SwrveLogger error:@"Could not find a shared instance to send the influence data", nil];
                     }
                 }
             }

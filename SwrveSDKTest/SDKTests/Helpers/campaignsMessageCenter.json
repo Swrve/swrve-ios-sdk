@@ -1,481 +1,842 @@
-{
-    "cdn_root": "https://fake_cdn_root",
-    "campaigns":[
-        {
-            "id":102,
-            "end_date":1364568900000,
-            "triggers":[],
-            "message_center": true,
-            "subject": "IAM subject",
-            "start_date":1362671700000,
-            "messages":[
-                {
-                    "template":{
-                        "template_id":"20",
-                        "formats":[
-                            {
-                                "orientation":"landscape",
-                                "size":{
-                                    "w":{
-                                        "type":"number",
-                                        "value":320
-                                    },
-                                    "h":{
-                                        "type":"number",
-                                        "value":240
-                                    }
-                                },
-                                "images":[
-                                    {
-                                        "name":"Background",
-                                        "color":{
-                                            "type":"color",
-                                            "value":"FFFFFF"
-                                        },
-                                        "image":{
-                                            "type":"asset",
-                                            "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                        },
-                                        "x":{
-                                            "type":"number",
-                                            "value":0
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":0
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":900
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":600
-                                        }
-                                    }
-                                ],
-                                "buttons":[
-                                    {
-                                        "name":"accept",
-                                        "x":{
-                                            "type":"number",
-                                            "value":-200
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":80
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":229
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":114
-                                        },
-                                        "image_up":{
-                                            "type":"asset",
-                                            "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                        },
-                                        "action":{
-                                            "type":"text",
-                                            "value":""
-                                        },
-                                        "game_id":{
-                                            "type":"number",
-                                            "value":"2"
-                                        },
-                                        "type":{
-                                            "type":"text",
-                                            "value":"INSTALL"
-                                        }
-                                    },
-                                    {
-                                        "name":"close",
-                                        "x":{
-                                            "type":"number",
-                                            "value":932
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":32
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":50
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":50
-                                        },
-                                        "image_up":{
-                                            "type":"asset",
-                                            "value":"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
-                                        },
-                                        "action":{
-                                            "type":"text",
-                                            "value":""
-                                        },
-                                        "game_id":{
-                                            "type":"number",
-                                            "value":""
-                                        },
-                                        "type":{
-                                            "type":"text",
-                                            "value":"DISMISS"
-                                        }
-                                    }
-                                ],
-                                "name":"Kindle (English (US))",
-                                "language":"en-US"
-                            },
-                            {
-                                "orientation":"portrait",
-                                "size":{
-                                    "w":{
-                                        "type":"number",
-                                        "value":240
-                                    },
-                                    "h":{
-                                        "type":"number",
-                                        "value":320
-                                    }
-                                },
-                                "images":[
-                                    {
-                                        "name":"Background",
-                                        "color":{
-                                            "type":"color",
-                                            "value":"FFFFFF"
-                                        },
-                                        "image":{
-                                            "type":"asset",
-                                            "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                        },
-                                        "x":{
-                                            "type":"number",
-                                            "value":0
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":0
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":600
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":900
-                                        }
-                                    }
-                                ],
-                                "buttons":[
-                                    {
-                                        "name":"accept",
-                                        "x":{
-                                            "type":"number",
-                                            "value":-200
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":80
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":229
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":114
-                                        },
-                                        "image_up":{
-                                            "type":"asset",
-                                            "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
-                                        },
-                                        "action":{
-                                            "type":"text",
-                                            "value":""
-                                        },
-                                        "game_id":{
-                                            "type":"number",
-                                            "value":"2"
-                                        },
-                                        "type":{
-                                            "type":"text",
-                                            "value":"INSTALL"
-                                        }
-                                    },
-                                    {
-                                        "name":"close",
-                                        "x":{
-                                            "type":"number",
-                                            "value":932
-                                        },
-                                        "y":{
-                                            "type":"number",
-                                            "value":32
-                                        },
-                                        "w":{
-                                            "type":"number",
-                                            "value":50
-                                        },
-                                        "h":{
-                                            "type":"number",
-                                            "value":50
-                                        },
-                                        "image_up":{
-                                            "type":"asset",
-                                            "value":"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
-                                        },
-                                        "action":{
-                                            "type":"text",
-                                            "value":""
-                                        },
-                                        "game_id":{
-                                            "type":"number",
-                                            "value":""
-                                        },
-                                        "type":{
-                                            "type":"text",
-                                            "value":"DISMISS"
-                                        }
-                                    }
-                                ],
-                                "name":"Kindle Portrait  (English (US))",
-                                "language":"en-US"
-                            }
-                        ]
-                    },
-                    "id":165,
-                    "name":"Kindle",
-                    "rules":{
 
-                    }
-                }
-            ],
-            "rules":{
-                "display_order":"random",
-                "dismiss_after_views":1,
-                "delay_first_message":10,
-                "min_delay_between_messages":10
-            }
-        },
-        {
-            "id": 15679,
-            "start_date": 1362671700000,
-            "end_date": 1364568900000,
-            "rules": {
-                "delay_first_message": 10,
-                "dismiss_after_views": 1,
-                "display_order": "random",
-                "min_delay_between_messages": 10
-            },
-            "message_center": true,
-            "subject": "Conversation subject",
-            "triggers": [],
-            "conversation": {
-                "id": 82,
-                "name": "Choose one",
-                "pages": [{
-                    "tag": "1427124319447-2Button",
-                    "title": "Page 1 of x",
-                    "style": {
-                        "bg": {
-                          "type": "color",
-                          "value": "#cc8534"
-                          },
-                        "lb": {
-                          "type": "color",
-                          "value": "#FFFF0000"
-                        },
-                        "border_radius": 100
-                    },
-                    "content": [{
-                        "type": "multi-value-input",
-                        "description": "Please select an answer from the radio buttons below 1:",
-                        "style": {
-                            "bg": {
-                                "type": "transparent"
-                            },
-                            "fg": {
-                                "type": "color",
-                                "value": "#9bf000"
-                            }
-                        },
-                        "values": [{
-                            "answer_id": "13654815-option",
-                            "answer_text": "Option 1"
-                        }, {
-                            "answer_id": "82037856-option",
-                            "answer_text": "Option 2"
-                        }, {
-                            "answer_id": "37240198-option",
-                            "answer_text": "Option 3"
-                        }],
-                        "tag": "1427192631272-fragment"
-                    }, {
-                        "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_show_borders cke_focus\" contenteditable=\"false\" id=\"textedit-1427199673126-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427199673126-fragment\" title=\"Rich Text Editor, textedit-1427199673126-fragment\" aria-describedby=\"cke_40\"><h3 style=\"text-align: left;\"><span style=\"font-size:20px;\"><strong>some random text goes in here with content blah blah<em><u><span style=\"color:#FFFF00;\"></span><span style=\"color:#FF0000;\">​</span></u></em></strong></span></h3></div>",
-                        "type": "html-fragment",
-                        "tag": "1427199673126-fragment"
-                    }, {
-                        "type": "multi-value-input",
-                        "description": "Title",
-                        "style": {
-                            "bg": {
-                                "type": "transparent"
-                            },
-                            "fg": {
-                                "type": "color",
-                                "value": "#9bf000"
-                            }
-                        },
-                        "values": [{
-                            "answer_id": "94974061-option",
-                            "answer_text": "Mr"
-                        }, {
-                            "answer_id": "98215530-option",
-                            "answer_text": "Mrs"
-                        }, {
-                            "answer_id": "52489097-option",
-                            "answer_text": "Dr"
-                        }, {
-                            "answer_id": "71815901-option",
-                            "answer_text": "other"
-                        }],
-                        "tag": "1427199713875-fragment",
-                        "optional": true
-                    }],
-                    "controls": [{
-                        "tag": "1427124319447-Button-1",
-                        "description": "Call a number",
-                        "target": "",
-                        "action": {
-                            "call": "453453453"
-                        }
-                    }, {
-                        "tag": "1427124319447-Button-2",
-                        "description": "Next",
-                        "target": "1427305771170-2Button"
-                    }]
-                }, {
-                    "tag": "1427305771170-2Button",
-                    "title": "Page 2 of x",
-                    "style": {
-                          "bg": {
-                            "type": "color",
-                            "value": "#cc8534"
-                          },
-                          "lb": {
-                          "type": "color",
-                            "value": "#FFFF0000"
-                          },
-                        "border_radius": 100
-                    },
-                    "content": [{
-                        "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca",
-                        "src": "http://content-cdn.swrve.com/messaging/message_image/8721fd4e657980a5e12d498e73aed6e6a565dfca",
-                        "type": "image",
-                        "tag": "1427305774817-fragment",
-                        "css_class": "user-uploaded-image"
-                    }],
-                    "controls": [{
-                        "tag": "1427305771170-Button-1",
-                        "description": "Go to web page",
-                        "target": "",
-                        "action": {
-                            "visit": {
-                                "url": "http://en.wikipedia.org/wiki/Sun"
-                            }
-                        }
-                    }, {
-                        "tag": "1427305771170-Button-2",
-                        "description": "Next",
-                        "target": "1427305795105-2Button"
-                    }]
-                }, {
-                    "tag": "1427305795105-2Button",
-                    "title": "New page",
-                    "content": [{
-                        "type": "multi-value-input",
-                        "description": "Question text here...",
-                        "style": {
-                            "bg": {
-                                "type": "transparent"
-                            },
-                            "fg": {
-                                "type": "color",
-                                "value": "#9bf000"
-                            }
-                        },
-                        "values": [{
-                            "answer_id": "10417438-option",
-                            "answer_text": "Option 1"
-                        }, {
-                            "answer_id": "31102851-option",
-                            "answer_text": "Option 2"
-                        }, {
-                            "answer_id": "71741945-option",
-                            "answer_text": "Option 3"
-                        }],
-                        "tag": "1427305801160-fragment"
-                    }, {
-                        "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_focus cke_show_borders\" contenteditable=\"false\" id=\"textedit-1427305806432-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427305806432-fragment\" title=\"Rich Text Editor, textedit-1427305806432-fragment\" aria-describedby=\"cke_115\">blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah​&nbsp;blah blah</div>",
-                        "type": "html-fragment",
-                        "tag": "1427305806432-fragment"
-                    }],
-                    "controls": [{
-                        "tag": "1427305795105-Button-1",
-                        "description": "Go to deep link",
-                        "target": "",
-                        "action": {
-                            "deeplink": {
-                                "url": "http://en.wikipedia.org/wiki/Sun"
-                            }
-                        }
-                    }, {
-                        "tag": "1427305795105-Button-2",
-                        "description": "End",
-                        "target": ""
-                    }]
-                }]
-            }
-        },
-        {
-            "id":104,
-            "end_date":1364568900000,
-            "triggers":[],
-            "message_center": true,
-            "subject": "Embedded subject",
-            "start_date":1362671700000,
-            "embedded_message": {
-              "id": 20,
-              "buttons": [
-                "Button 1",
-                "Button 2",
-                "Button 3"
-              ],
-              "data": "test string",
-              "type": "other",
-              "priority": 500
-            },
-            "rules":{
-                "display_order":"random",
-                "dismiss_after_views":1,
-                "delay_first_message":10,
-                "min_delay_between_messages":10
-            }
-        },
-    ],
-    "game_data":{
-        "150":{
-            "app_store_url":"https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
-        }
-    },
-    "rules":{
-        "min_delay_between_messages":10,
-        "max_messages_per_session":1,
-        "delay_first_message":10
-    },
-    "version":2
+{
+   "cdn_root": "https://fake_cdn_root",
+   "real_time_user_properties": {
+     "test_key_realtime_only": "realtimeAsset1",
+     "test_key_with_fallback": "realtimeAsset2",
+     "test_key_additional": "realtimeAsset3"
+   },
+   "campaigns":[
+       {
+           "id":102,
+           "end_date":1364568900000,
+           "triggers":[],
+           "message_center": true,
+           "subject": "IAM subject",
+           "start_date":1362671700000,
+           "message":
+               {
+                   "template":{
+                       "template_id":"20",
+                       "formats":[
+                           {
+                               "orientation":"landscape",
+                               "size":{
+                                   "w":{
+                                       "type":"number",
+                                       "value":320
+                                   },
+                                   "h":{
+                                       "type":"number",
+                                       "value":240
+                                   }
+                               },
+                               "images":[
+                                   {
+                                       "name":"Background",
+                                       "color":{
+                                           "type":"color",
+                                           "value":"FFFFFF"
+                                       },
+                                       "image":{
+                                           "type":"asset",
+                                           "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                       },
+                                       "x":{
+                                           "type":"number",
+                                           "value":0
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":0
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":900
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":600
+                                       }
+                                   }
+                               ],
+                               "buttons":[
+                                   {
+                                       "name":"accept",
+                                       "x":{
+                                           "type":"number",
+                                           "value":-200
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":80
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":229
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":114
+                                       },
+                                       "image_up":{
+                                           "type":"asset",
+                                           "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                       },
+                                       "action":{
+                                           "type":"text",
+                                           "value":""
+                                       },
+                                       "game_id":{
+                                           "type":"number",
+                                           "value":"2"
+                                       },
+                                       "type":{
+                                           "type":"text",
+                                           "value":"INSTALL"
+                                       }
+                                   },
+                                   {
+                                       "name":"close",
+                                       "x":{
+                                           "type":"number",
+                                           "value":932
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":32
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":50
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":50
+                                       },
+                                       "image_up":{
+                                           "type":"asset",
+                                           "value":"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                                       },
+                                       "action":{
+                                           "type":"text",
+                                           "value":""
+                                       },
+                                       "game_id":{
+                                           "type":"number",
+                                           "value":""
+                                       },
+                                       "type":{
+                                           "type":"text",
+                                           "value":"DISMISS"
+                                       }
+                                   }
+                               ],
+                               "name":"Kindle (English (US))",
+                               "language":"en-US"
+                           },
+                           {
+                               "orientation":"portrait",
+                               "size":{
+                                   "w":{
+                                       "type":"number",
+                                       "value":240
+                                   },
+                                   "h":{
+                                       "type":"number",
+                                       "value":320
+                                   }
+                               },
+                               "images":[
+                                   {
+                                       "name":"Background",
+                                       "color":{
+                                           "type":"color",
+                                           "value":"FFFFFF"
+                                       },
+                                       "image":{
+                                           "type":"asset",
+                                           "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                       },
+                                       "x":{
+                                           "type":"number",
+                                           "value":0
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":0
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":600
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":900
+                                       }
+                                   }
+                               ],
+                               "buttons":[
+                                   {
+                                       "name":"accept",
+                                       "x":{
+                                           "type":"number",
+                                           "value":-200
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":80
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":229
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":114
+                                       },
+                                       "image_up":{
+                                           "type":"asset",
+                                           "value":"8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                       },
+                                       "action":{
+                                           "type":"text",
+                                           "value":""
+                                       },
+                                       "game_id":{
+                                           "type":"number",
+                                           "value":"2"
+                                       },
+                                       "type":{
+                                           "type":"text",
+                                           "value":"INSTALL"
+                                       }
+                                   },
+                                   {
+                                       "name":"close",
+                                       "x":{
+                                           "type":"number",
+                                           "value":932
+                                       },
+                                       "y":{
+                                           "type":"number",
+                                           "value":32
+                                       },
+                                       "w":{
+                                           "type":"number",
+                                           "value":50
+                                       },
+                                       "h":{
+                                           "type":"number",
+                                           "value":50
+                                       },
+                                       "image_up":{
+                                           "type":"asset",
+                                           "value":"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                                       },
+                                       "action":{
+                                           "type":"text",
+                                           "value":""
+                                       },
+                                       "game_id":{
+                                           "type":"number",
+                                           "value":""
+                                       },
+                                       "type":{
+                                           "type":"text",
+                                           "value":"DISMISS"
+                                       }
+                                   }
+                               ],
+                               "name":"Kindle Portrait  (English (US))",
+                               "language":"en-US"
+                           }
+                       ]
+                   },
+                   "id":165,
+                   "name":"Kindle",
+                   "rules":{
+
+                   }
+               },
+           "rules":{
+               "display_order":"random",
+               "dismiss_after_views":1,
+               "delay_first_message":10,
+               "min_delay_between_messages":10
+           }
+       },
+       {
+           "id": 15679,
+           "start_date": 1362671700000,
+           "end_date": 1364568900000,
+           "rules": {
+               "delay_first_message": 10,
+               "dismiss_after_views": 1,
+               "display_order": "random",
+               "min_delay_between_messages": 10
+           },
+           "message_center": true,
+           "subject": "Conversation subject",
+           "triggers": [],
+           "conversation": {
+               "id": 82,
+               "name": "Choose one",
+               "pages": [{
+                   "tag": "1427124319447-2Button",
+                   "title": "Page 1 of x",
+                   "style": {
+                       "bg": {
+                         "type": "color",
+                         "value": "#cc8534"
+                         },
+                       "lb": {
+                         "type": "color",
+                         "value": "#FFFF0000"
+                       },
+                       "border_radius": 100
+                   },
+                   "content": [{
+                       "type": "multi-value-input",
+                       "description": "Please select an answer from the radio buttons below 1:",
+                       "style": {
+                           "bg": {
+                               "type": "transparent"
+                           },
+                           "fg": {
+                               "type": "color",
+                               "value": "#9bf000"
+                           }
+                       },
+                       "values": [{
+                           "answer_id": "13654815-option",
+                           "answer_text": "Option 1"
+                       }, {
+                           "answer_id": "82037856-option",
+                           "answer_text": "Option 2"
+                       }, {
+                           "answer_id": "37240198-option",
+                           "answer_text": "Option 3"
+                       }],
+                       "tag": "1427192631272-fragment"
+                   }, {
+                       "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_show_borders cke_focus\" contenteditable=\"false\" id=\"textedit-1427199673126-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427199673126-fragment\" title=\"Rich Text Editor, textedit-1427199673126-fragment\" aria-describedby=\"cke_40\"><h3 style=\"text-align: left;\"><span style=\"font-size:20px;\"><strong>some random text goes in here with content blah blah<em><u><span style=\"color:#FFFF00;\"></span><span style=\"color:#FF0000;\">​</span></u></em></strong></span></h3></div>",
+                       "type": "html-fragment",
+                       "tag": "1427199673126-fragment"
+                   }, {
+                       "type": "multi-value-input",
+                       "description": "Title",
+                       "style": {
+                           "bg": {
+                               "type": "transparent"
+                           },
+                           "fg": {
+                               "type": "color",
+                               "value": "#9bf000"
+                           }
+                       },
+                       "values": [{
+                           "answer_id": "94974061-option",
+                           "answer_text": "Mr"
+                       }, {
+                           "answer_id": "98215530-option",
+                           "answer_text": "Mrs"
+                       }, {
+                           "answer_id": "52489097-option",
+                           "answer_text": "Dr"
+                       }, {
+                           "answer_id": "71815901-option",
+                           "answer_text": "other"
+                       }],
+                       "tag": "1427199713875-fragment",
+                       "optional": true
+                   }],
+                   "controls": [{
+                       "tag": "1427124319447-Button-1",
+                       "description": "Call a number",
+                       "target": "",
+                       "action": {
+                           "call": "453453453"
+                       }
+                   }, {
+                       "tag": "1427124319447-Button-2",
+                       "description": "Next",
+                       "target": "1427305771170-2Button"
+                   }]
+               }, {
+                   "tag": "1427305771170-2Button",
+                   "title": "Page 2 of x",
+                   "style": {
+                         "bg": {
+                           "type": "color",
+                           "value": "#cc8534"
+                         },
+                         "lb": {
+                         "type": "color",
+                           "value": "#FFFF0000"
+                         },
+                       "border_radius": 100
+                   },
+                   "content": [{
+                       "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca",
+                       "src": "http://content-cdn.swrve.com/messaging/message_image/8721fd4e657980a5e12d498e73aed6e6a565dfca",
+                       "type": "image",
+                       "tag": "1427305774817-fragment",
+                       "css_class": "user-uploaded-image"
+                   }],
+                   "controls": [{
+                       "tag": "1427305771170-Button-1",
+                       "description": "Go to web page",
+                       "target": "",
+                       "action": {
+                           "visit": {
+                               "url": "http://en.wikipedia.org/wiki/Sun"
+                           }
+                       }
+                   }, {
+                       "tag": "1427305771170-Button-2",
+                       "description": "Next",
+                       "target": "1427305795105-2Button"
+                   }]
+               }, {
+                   "tag": "1427305795105-2Button",
+                   "title": "New page",
+                   "content": [{
+                       "type": "multi-value-input",
+                       "description": "Question text here...",
+                       "style": {
+                           "bg": {
+                               "type": "transparent"
+                           },
+                           "fg": {
+                               "type": "color",
+                               "value": "#9bf000"
+                           }
+                       },
+                       "values": [{
+                           "answer_id": "10417438-option",
+                           "answer_text": "Option 1"
+                       }, {
+                           "answer_id": "31102851-option",
+                           "answer_text": "Option 2"
+                       }, {
+                           "answer_id": "71741945-option",
+                           "answer_text": "Option 3"
+                       }],
+                       "tag": "1427305801160-fragment"
+                   }, {
+                       "value": "<div style=\"text-align: center; font-size: 12pt; text-shadow: rgb(255, 255, 255) 0px -1px 0px; position: relative;\" class=\"editable cke_editable cke_editable_inline cke_contents_ltr cke_focus cke_show_borders\" contenteditable=\"false\" id=\"textedit-1427305806432-fragment\" tabindex=\"0\" spellcheck=\"false\" role=\"textbox\" aria-label=\"Rich Text Editor, textedit-1427305806432-fragment\" title=\"Rich Text Editor, textedit-1427305806432-fragment\" aria-describedby=\"cke_115\">blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah&nbsp;blah blah​&nbsp;blah blah</div>",
+                       "type": "html-fragment",
+                       "tag": "1427305806432-fragment"
+                   }],
+                   "controls": [{
+                       "tag": "1427305795105-Button-1",
+                       "description": "Go to deep link",
+                       "target": "",
+                       "action": {
+                           "deeplink": {
+                               "url": "http://en.wikipedia.org/wiki/Sun"
+                           }
+                       }
+                   }, {
+                       "tag": "1427305795105-Button-2",
+                       "description": "End",
+                       "target": ""
+                   }]
+               }]
+           }
+       },
+       {
+           "id":104,
+           "end_date":1364568900000,
+           "triggers":[],
+           "message_center": true,
+           "subject": "Embedded subject",
+           "start_date":1362671700000,
+           "embedded_message": {
+             "id": 20,
+             "buttons": [
+               "Button 1",
+               "Button 2",
+               "Button 3"
+             ],
+             "data": "test string",
+             "type": "other",
+             "priority": 500
+           },
+           "rules":{
+               "display_order":"random",
+               "dismiss_after_views":1,
+               "delay_first_message":10,
+               "min_delay_between_messages":10
+           }
+       },
+       {
+         "id": 105,
+         "end_date": 1364568900000,
+         "triggers": [],
+         "message_center": true,
+         "subject": "Personalized Image subject",
+         "start_date": 1362671700000,
+         "message": {
+             "template": {
+                 "template_id": "20",
+                 "formats": [
+                     {
+                         "orientation": "landscape",
+                         "size": {
+                             "w": {
+                                 "type": "number",
+                                 "value": 320
+                             },
+                             "h": {
+                                 "type": "number",
+                                 "value": 240
+                             }
+                         },
+                         "images": [
+                             {
+                                 "name": "Background",
+                                 "color": {
+                                     "type": "color",
+                                     "value": "FFFFFF"
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${test_key_with_fallback}.png",
+                                 "image_height": 114,
+                                 "image_width": 200,
+                                 "image": {
+                                     "type": "asset",
+                                     "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                 },
+                                 "x": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 900
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 600
+                                 }
+                             }
+                         ],
+                         "buttons": [
+                             {
+                                 "name": "accept",
+                                 "x": {
+                                     "type": "number",
+                                     "value": -200
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 80
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 229
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 114
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${test_key_no_fallback}.gif",
+                                 "image_height": 113,
+                                 "image_width": 199,
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": "150"
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "INSTALL"
+                                 }
+                             },
+                             {
+                                 "name": "custom",
+                                 "x": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 80
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 229
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 114
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${test_key_additional|fallback=\"asset3\"}.jpg",
+                                 "image_height": 112,
+                                 "image_width": 100,
+                                 "image_up": {
+                                     "type": "asset",
+                                     "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                 },
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": ""
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "DISMISS"
+                                 }
+                             },
+                             {
+                                 "name": "close",
+                                 "x": {
+                                     "type": "number",
+                                     "value": 932
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 32
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 50
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 50
+                                 },
+                                 "image_up": {
+                                     "type": "asset",
+                                     "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                 },
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": ""
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "DISMISS"
+                                 }
+                             }
+                         ],
+                         "name": "Kindle (English (US))",
+                         "language": "en-US"
+                     }
+                 ]
+             },
+             "id": 165,
+             "name": "Kindle",
+             "rules": {}
+         },
+         "rules": {
+             "display_order": "random",
+             "dismiss_after_views":1,
+             "delay_first_message":10,
+             "min_delay_between_messages": 0
+         }
+     },
+       {
+         "id": 106,
+         "end_date": 9964568900000,
+         "triggers": [],
+         "message_center": true,
+         "subject": "Personalized RTUP Image subject",
+         "start_date": 1362671700000,
+         "message": {
+             "template": {
+                 "template_id": "20",
+                 "formats": [
+                     {
+                         "orientation": "landscape",
+                         "size": {
+                             "w": {
+                                 "type": "number",
+                                 "value": 320
+                             },
+                             "h": {
+                                 "type": "number",
+                                 "value": 240
+                             }
+                         },
+                         "images": [
+                             {
+                                 "name": "Background",
+                                 "color": {
+                                     "type": "color",
+                                     "value": "FFFFFF"
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${user.test1}.png",
+                                 "image_height": 114,
+                                 "image_width": 200,
+                                 "image": {
+                                     "type": "asset",
+                                     "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                 },
+                                 "x": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 900
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 600
+                                 }
+                             }
+                         ],
+                         "buttons": [
+                             {
+                                 "name": "accept",
+                                 "x": {
+                                     "type": "number",
+                                     "value": -200
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 80
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 229
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 114
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${user.test2}.gif",
+                                 "image_height": 113,
+                                 "image_width": 199,
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": "150"
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "INSTALL"
+                                 }
+                             },
+                             {
+                                 "name": "custom",
+                                 "x": {
+                                     "type": "number",
+                                     "value": 0
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 80
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 229
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 114
+                                 },
+                                 "dynamic_image_url": "https://fakeitem/${test_key}.jpg",
+                                 "image_height": 112,
+                                 "image_width": 100,
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": ""
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "DISMISS"
+                                 }
+                             },
+                             {
+                                 "name": "close",
+                                 "x": {
+                                     "type": "number",
+                                     "value": 932
+                                 },
+                                 "y": {
+                                     "type": "number",
+                                     "value": 32
+                                 },
+                                 "w": {
+                                     "type": "number",
+                                     "value": 50
+                                 },
+                                 "h": {
+                                     "type": "number",
+                                     "value": 50
+                                 },
+                                 "image_up": {
+                                     "type": "asset",
+                                     "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                                 },
+                                 "action": {
+                                     "type": "text",
+                                     "value": ""
+                                 },
+                                 "game_id": {
+                                     "type": "number",
+                                     "value": ""
+                                 },
+                                 "type": {
+                                     "type": "text",
+                                     "value": "DISMISS"
+                                 }
+                             }
+                         ],
+                         "name": "Kindle (English (US))",
+                         "language": "en-US"
+                     }
+                 ]
+             },
+             "id": 165,
+             "name": "Kindle",
+             "rules": {}
+         },
+         "rules": {
+             "display_order": "random",
+             "dismiss_after_views":1,
+             "delay_first_message":10,
+             "min_delay_between_messages": 0
+         }
+     }
+   ],
+   "game_data":{
+       "150":{
+           "app_store_url":"https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
+       }
+   },
+   "rules":{
+       "min_delay_between_messages":10,
+       "max_messages_per_session":1,
+       "delay_first_message":10
+   },
+   "version": 2
 }

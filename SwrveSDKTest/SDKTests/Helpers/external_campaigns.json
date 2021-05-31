@@ -2,7 +2,7 @@
     "1": {
         "campaign": {
             "id": 295411,
-            "messages": [{
+            "message": {
                 "id": 298085,
                 "template": {
                     "formats": [{
@@ -64,7 +64,7 @@
                     }]
                 },
                 "name": "Double format"
-            }],
+            },
             "subject": "the description"
         },
         "additional_info": {
@@ -76,4 +76,3 @@
         }
     }
 }
-

@@ -1,9 +1,11 @@
 #import <CommonCrypto/CommonHMAC.h>
 #import "SwrveAssetsManager.h"
 #import "SwrveCommon.h"
+#import "SwrveQA.h"
 
 static NSString* const SWRVE_ASSETQ_ITEM_NAME = @"name";
 static NSString* const SWRVE_ASSETQ_ITEM_DIGEST = @"digest";
+static NSString* const SWRVE_ASSETQ_ITEM_IS_EXTERNAL = @"isExternal";
 static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 
 @implementation SwrveAssetsManager {
@@ -16,10 +18,11 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 @synthesize cdnFonts;
 @synthesize cacheFolder;
 
-+ (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsImage:(BOOL)isImage {
++ (NSMutableDictionary *)assetQItemWith:(NSString *)name andDigest:(NSString *)digest andIsExternal:(BOOL)isExternal andIsImage:(BOOL)isImage {
     NSMutableDictionary *assetQItem = [NSMutableDictionary new];
     [assetQItem setObject:name forKey:SWRVE_ASSETQ_ITEM_NAME];
     [assetQItem setObject:digest forKey:SWRVE_ASSETQ_ITEM_DIGEST];
+    [assetQItem setObject:[NSNumber numberWithBool:isExternal] forKey:SWRVE_ASSETQ_ITEM_IS_EXTERNAL];
     [assetQItem setObject:[NSNumber numberWithBool:isImage] forKey:SWRVE_ASSETQ_ITEM_IS_IMAGE];
     return assetQItem;
 }
@@ -44,7 +47,12 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     if ([assetItemsToDownload count] == 0 ) { completionHandler(); return;}
     
     for (NSDictionary *assetItem in assetItemsToDownload) {
-        [self downloadAsset:assetItem withCompletionHandler:completionHandler];
+        NSNumber *isExternal = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_IS_EXTERNAL];
+        if ([isExternal boolValue]) {
+            [self downloadAssetFromExternalSource:assetItem withCompletionHandler:completionHandler];
+        }else{
+            [self downloadAsset:assetItem withCompletionHandler:completionHandler];
+        }
     }
 }
 
@@ -63,21 +71,21 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
         NSNumber *isImage = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_IS_IMAGE];
         NSString *cdn = [isImage boolValue] ? cdnImages : cdnFonts;
         if ([cdn length] == 0) {
-            DebugLog(@"No cdn configured", nil);
+            [SwrveLogger error:@"No cdn configured", nil];
             return;
         }
 
         NSURL *url = [NSURL URLWithString:assetItemName relativeToURL:[NSURL URLWithString:cdn]];
-        DebugLog(@"Downloading asset: %@", url);
+        [SwrveLogger debug:@"Downloading asset: %@", url];
         [restClient sendHttpGETRequest:url
                      completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response)
                          if (error) {
-                             DebugLog(@"Could not download asset: %@", error);
+                             [SwrveLogger error:@"Could not download asset: %@", error];
                          } else {
                              NSString *assetItemDigest = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_DIGEST];
                              if (![self verifySHA:data against:assetItemDigest]) {
-                                 DebugLog(@"Error downloading %@ – SHA1 does not match.", assetItemName);
+                                 [SwrveLogger error:@"Error downloading %@ – SHA1 does not match.", assetItemName];
                              } else {
 
                                  NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, assetItemName, nil]];
@@ -88,12 +96,12 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
                                  @synchronized (self->assetsOnDiskSet) {
                                      [self->assetsOnDiskSet addObject:assetItemName];
                                  }
-                                 DebugLog(@"Asset downloaded: %@", assetItemName);
+                                 [SwrveLogger debug:@"Asset downloaded: %@", assetItemName];
                              }
                          }
 
                          // This asset has finished downloading
-                         // Check if all assets are finished and if so call autoShowMessage
+                         // Check if all assets are finished and if so call completionHandler
                          @synchronized (self->assetsCurrentlyDownloading) {
                              [self->assetsCurrentlyDownloading removeObject:assetItemName];
                              if ([self->assetsCurrentlyDownloading count] == 0) {
@@ -103,6 +111,52 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
                      }];
     }
 }
+
+- (void)downloadAssetFromExternalSource:(NSDictionary *)assetItem withCompletionHandler:(void (^)(void))completionHandler {
+    NSString *assetItemName = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_NAME];
+    NSString *assetDigest   = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_DIGEST];
+
+    BOOL mustDownload = YES;
+    @synchronized (self->assetsCurrentlyDownloading) {
+        mustDownload = ![assetsCurrentlyDownloading containsObject:assetItemName];
+        if (mustDownload) {
+            [self->assetsCurrentlyDownloading addObject:assetItemName];
+        }
+    }
+
+    if (mustDownload) {
+        NSURL *url = [NSURL URLWithString:assetDigest];
+        [SwrveLogger debug:@"Downloading external asset: %@", url];
+        [restClient sendHttpGETRequest:url
+                     completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+#pragma unused(response)
+                         if (error) {
+                             [SwrveLogger debug:@"Could not download external asset: %@", error];
+                             [SwrveQA assetFailedToDownload:assetItemName resolvedUrl:assetDigest reason:error.localizedDescription];
+                             
+                         } else {
+                             NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, assetItemName, nil]];
+                             [data writeToURL:dst atomically:YES];
+
+                             // Add the asset to the set of assets that we know are downloaded.
+                             @synchronized (self->assetsOnDiskSet) {
+                                 [self->assetsOnDiskSet addObject:assetItemName];
+                             }
+                             [SwrveLogger debug:@" External asset downloaded: %@", assetItemName];
+                         }
+
+                         // This asset has finished downloading
+                         // Check if all assets are finished and if so call completionHandler
+                         @synchronized (self->assetsCurrentlyDownloading) {
+                             [self->assetsCurrentlyDownloading removeObject:assetItemName];
+                             if ([self->assetsCurrentlyDownloading count] == 0) {
+                                 completionHandler();
+                             }
+                         }
+                     }];
+    }
+}
+
 
 - (NSSet *)filterExistingFiles:(NSSet *)assetSet {
     NSMutableSet *assetItemsToDownload = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
@@ -145,7 +199,7 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
             e = (unsigned char) hex[e];
 
             if (c != e) {
-                DebugLog(@"Wrong asset SHA[%d]. Expected: %d Computed %d", i, e, c);
+                [SwrveLogger error:@"Wrong asset SHA[%d]. Expected: %d Computed %d", i, e, c];
                 return false;
             }
         }

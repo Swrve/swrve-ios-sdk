@@ -11,13 +11,8 @@ class ViewController: UITableViewController {
         self.tableView.reloadData()
 
         // Observe for the new campaigns
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.newSwrveCampaigns(_:)), name:NSNotification.Name(rawValue: "SwrveUserResourcesUpdated"), object: nil)
-
-        // The Swrve SDK creates new UIWindows to display content to avoid
-        // creating issues for games etc. However, this means that the controllers
-        // do not get their callbacks called.
-        // We set this class as the delegate to listen to these events.
-        SwrveSDK.messaging().showMessageDelegate = self;
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.reloadData(_:)), name:NSNotification.Name(rawValue: "SwrveUserResourcesUpdated"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.reloadData(_:)), name:NSNotification.Name(rawValue: "SwrveMessageWillBeHidden"), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -26,24 +21,13 @@ class ViewController: UITableViewController {
     }
 
     func refreshDataSource() {
-        let unsortedCampaigns: NSArray = SwrveSDK.messaging().messageCenterCampaigns() as NSArray
+        let unsortedCampaigns: NSArray = SwrveSDK.messageCenterCampaigns() as NSArray
         let descriptor: NSSortDescriptor = NSSortDescriptor(key: "dateStart", ascending: false)
         campaigns = unsortedCampaigns.sortedArray(using: [descriptor]) as NSArray
     }
 
-    @objc func newSwrveCampaigns(_ notification: Notification) {
+    @objc func reloadData(_ notification: Notification) {
         refreshDataSource()
-        self.tableView.reloadData()
-    }
-}
-
-//MARK: SwrveMessageDelegate Delegate
-
-extension ViewController: SwrveMessageDelegate {
-
-    func messageWillBeHidden(_ viewController: UIViewController)  {
-        // An in-app message or conversation will be hidden.
-        // Notify the table view that the state of a campaign might have changed.
         self.tableView.reloadData()
     }
 }
@@ -52,7 +36,11 @@ extension ViewController: SwrveMessageDelegate {
 extension ViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        SwrveSDK.messaging().showMessageCenter(campaigns[indexPath.row] as? SwrveCampaign)
+        let campaign = campaigns[indexPath.row] as? SwrveCampaign
+        
+        if (campaign != nil) {
+            SwrveSDK.showMessageCenter(campaign!)
+        }
     }
 
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
@@ -67,7 +55,7 @@ extension ViewController {
         if editingStyle == UITableViewCell.EditingStyle.delete {
             guard let campaign = campaigns[indexPath.row] as? SwrveCampaign else { return }
             tableView.beginUpdates()
-            SwrveSDK.messaging().removeMessageCenter(campaign)
+            SwrveSDK.removeMessageCenter(campaign)
             tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
             tableView.endUpdates()
         }

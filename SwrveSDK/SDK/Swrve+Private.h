@@ -1,11 +1,14 @@
 #import "Swrve.h"
+#import "SwrveMessageController.h"
 
 @interface Swrve ()
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 @property (atomic, readonly)         SwrvePush *push;
-#endif //!defined(SWRVE_NO_PUSH)
+@property (atomic)                   SwrveMessageController *messaging;
+#endif //TARGET_OS_IOS
 
+- (SwrveMessageController *)messaging;
 - (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback;
 - (int)queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
 

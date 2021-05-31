@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
-
 #import "SwrveConversationStyler.h"
 #import "TestShowMessageDelegateWithViewController.h"
 #import "SwrveAssetsManager.h"
@@ -14,6 +13,7 @@
 @interface Swrve()
 
 @property (atomic) SwrveRESTClient *restClient;
+@property (atomic, readonly) SwrveMessageController *messaging;
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 @end
@@ -96,7 +96,7 @@
 
     XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
 
-    expectation = [self expectationWithDescription:@"WaitForRoatation"];
+    expectation = [self expectationWithDescription:@"WaitForRotation"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         CGRect frame = [[UIApplication sharedApplication] keyWindow].frame;
         return frame.size.width == height;

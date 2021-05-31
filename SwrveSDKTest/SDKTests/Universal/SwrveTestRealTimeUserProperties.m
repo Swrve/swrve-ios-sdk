@@ -36,4 +36,16 @@
      }];
  }
 
+- (void)testRealTimeUserPropertiesFromFile {
+    SwrveConfig* config = [[SwrveConfig alloc] init];
+    Swrve *swrve = [SwrveTestHelper initializeSwrveWithRealTimeUserPropertiesFile:@"realTimeUserProperties" andConfig:config];
+    [swrve realTimeUserProperties:^(NSDictionary *properties) {
+        NSArray *keys = [properties allKeys];
+        XCTAssertEqual(2, [keys count]);
+        XCTAssertEqualObjects([properties objectForKey:@"test1"], @"rtup_value1");
+        XCTAssertEqualObjects([properties objectForKey:@"test2"], @"rtup_value2");
+    }];
+    
+}
+
 @end

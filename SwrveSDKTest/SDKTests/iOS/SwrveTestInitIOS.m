@@ -10,6 +10,7 @@
 #import "AppDelegate.h"
 #import "SwrveEventQueueItem.h"
 #import "SwrveCampaignInfluence.h"
+#import "SwrveMessageController.h"
 
 @interface SwrveSDK (InternalAccess)
 + (void)addSharedInstance:(Swrve*)instance;
@@ -19,6 +20,7 @@
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)setCurrentCacheVersion:(int)cacheVersion;
 - (int)currentCacheVersion;
++ (void)markAsMigrated;
 @end
 
 @interface Swrve (Internal)
@@ -75,6 +77,7 @@
 
 - (void)testSharedInstance {
     [SwrveTestHelper destroySharedInstance];
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     [SwrveSDK sharedInstanceWithAppID:572 apiKey:@"SomeAPIKey"];
     Swrve *swrve = [SwrveSDK sharedInstance];
     XCTAssertNotNil(swrve);
@@ -98,18 +101,17 @@
 
 -(void)testDeviceInfo
 {
-#if !defined(SWRVE_NO_PUSH)
     id classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
-#endif
     
     // Initialize SDK
     SwrveConfig * config = [[SwrveConfig alloc]init];
-#if !defined(SWRVE_NO_PUSH)
-    config.pushEnabled = NO;
-#endif
+    config.autoCollectIDFV = true;
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+    
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
+    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+    [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
 
     UIScreen* screen   = [UIScreen mainScreen];
@@ -158,13 +160,9 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
     
     // IDFA & Device Info count
-    if (@available(iOS 14, tvOS 14, *)) {
-        XCTAssertEqual([deviceInfo count], 20);
-    } else {
-        XCTAssertEqual([deviceInfo count], 21);
-        XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
-    }
-    
+    XCTAssertEqual([deviceInfo count], 21);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
+
     // Extra identifiers
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
     // Feature versions
@@ -173,33 +171,26 @@
 
 -(void)testDeviceInfoWithiOSPermissions
 {
-#if !defined(SWRVE_NO_PUSH)
     id classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
-#endif
     
     // Initialize SDK
     SwrveConfig * config = [[SwrveConfig alloc] init];
+    config.autoCollectIDFV = true;
     TestPermissionsDelegate *permissionsDelegate = [[TestPermissionsDelegate alloc] init];
     config.permissionsDelegate = permissionsDelegate;
-#if !defined(SWRVE_NO_PUSH)
-    config.pushEnabled = NO;
-#endif
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
+    [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
 
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     
     XCTAssertNotNil(deviceInfo);
-    // Device Info count
-    if (@available(iOS 14, tvOS 14, *)) {
-        //IDFA string will be invalid on simulator
-        XCTAssertEqual([deviceInfo count], 26);
-    }
-    else {
-        XCTAssertEqual([deviceInfo count], 27);
-    }
+
+    XCTAssertEqual([deviceInfo count], 27);
+
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.photos"]);
@@ -208,16 +199,30 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_notifications"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.permission.ios.ad_tracking"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 }
 
 -(void)testSavePushInfoWithStart
 {
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
+    OCMStub([currentMockCenter getNotificationSettingsWithCompletionHandler:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
+        void (^callback)(UNNotificationSettings *_Nonnull settings);
+        [invoke getArgument:&callback atIndex:2];
+
+        id notificationSettingsMock = OCMClassMock([UNNotificationSettings class]);
+        OCMStub([notificationSettingsMock authorizationStatus]).andReturn(UNAuthorizationStatusAuthorized);
+        callback(notificationSettingsMock);
+    });
+    
     // Initialize SDK
     SwrveConfig *config = [SwrveConfig new];
-#if !defined(SWRVE_NO_PUSH)
     config.pushEnabled = YES;
-#endif
+
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     swrveMock = [swrveMock initWithAppID:123 apiKey:@"Neverson" config:config];
 
     id pushPartialMock = OCMPartialMock([swrveMock push]);
@@ -226,6 +231,7 @@
     [swrveMock appDidBecomeActive:nil]; // This call will force a "BeginSession" call that should trigger the [push saveConfigForPushDelivery];
     XCTAssertNotNil(pushPartialMock);
     OCMVerify([pushPartialMock saveConfigForPushDelivery]);
+    [currentMockCenter stopMocking];
 }
 
 -(void)testInstallDateForiOS {
@@ -348,7 +354,7 @@
 // This test will fail on 6.5.2 and pass in 6.5.3
 - (void)testReadFilesDuringInitWhileLocked {
 #if !(TARGET_IPHONE_SIMULATOR) //File Protection does not appear for simulators, can only test against device
-
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     Swrve *swrve1 = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
 
     // joined
@@ -467,6 +473,7 @@
 }
 
 - (void)testQueingAttributesWhileIdentifying {
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     
     // Confirming:
     // event 0 and user update 0 sent to swrve id A
@@ -558,7 +565,19 @@
 }
 
 - (void)testProcessInfluenceData {
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
+    OCMStub([currentMockCenter getNotificationSettingsWithCompletionHandler:OCMOCK_ANY]).andDo(^(NSInvocation *invoke) {
+        void (^callback)(UNNotificationSettings *_Nonnull settings);
+        [invoke getArgument:&callback atIndex:2];
 
+        id notificationSettingsMock = OCMClassMock([UNNotificationSettings class]);
+        OCMStub([notificationSettingsMock authorizationStatus]).andReturn(UNAuthorizationStatusAuthorized);
+        callback(notificationSettingsMock);
+    });
+    
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
     Swrve *swrve = [Swrve alloc];
@@ -576,6 +595,7 @@
     OCMExpect([campaignInfluenceMock processInfluenceDataWithDate:OCMOCK_ANY]);
     [swrve appDidBecomeActive:nil];
     OCMVerifyAll(campaignInfluenceMock);
+    [currentMockCenter stopMocking];
 }
 
 @end

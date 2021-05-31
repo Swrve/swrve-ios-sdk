@@ -6,9 +6,11 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveSDK.h"
 #import "SwrveProfileManager.h"
+#import "SwrveMessageController.h"
 
 
 @interface Swrve ()
+@property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrveProfileManager *profileManager;
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
 @property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;

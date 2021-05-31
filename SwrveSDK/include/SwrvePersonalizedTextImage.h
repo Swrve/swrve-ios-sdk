@@ -1,0 +1,1 @@
+../SDK/Messaging/SwrvePersonalizedTextImage.h

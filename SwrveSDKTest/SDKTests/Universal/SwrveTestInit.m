@@ -61,13 +61,6 @@
     XCTAssertEqualObjects(swrve, swrve2);
 }
 
-- (void)testMessagingEnabledByDefault {
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"456"];
-    [swrveMock appDidBecomeActive:nil];
-    XCTAssertNotNil(swrveMock.messaging);
-}
-
 - (void)testSharedInstanceWithConfig {
     [SwrveTestHelper destroySharedInstance];
     SwrveConfig *originalConfig = [[SwrveConfig alloc] init];
@@ -111,7 +104,7 @@
     XCTAssertTrue(config.autoDownloadCampaignsAndResources);
     XCTAssertTrue(config.autoSaveEventsOnResign);
     XCTAssertTrue(config.autoSendEventsOnResume);
-    XCTAssertTrue(config.prefersIAMStatusBarHidden);
+    XCTAssertTrue(config.inAppMessageConfig.prefersStatusBarHidden);
     XCTAssertFalse(config.prefersConversationsStatusBarHidden);
 }
 
@@ -155,9 +148,7 @@
 }
 
 - (void)testSessionDelegate {
-
     id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
 
     id mockSwrveSessionDelegate1 = OCMProtocolMock(@protocol(SwrveSessionDelegate)); // mock SessionDelegate for each verify
     XCTestExpectation *completionHandler1 = [self expectationWithDescription:@"SwrveSessionDelegate1"];
@@ -226,7 +217,7 @@
     [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
     XCTAssertFalse([SwrveSDK started]);
     [SwrveSDK start];
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     XCTestExpectation *expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -239,7 +230,7 @@
     [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
     XCTAssertFalse([SwrveSDK started]); // Should be false because the sdk should NOT be autostarted
     [SwrveSDK start];
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -254,7 +245,7 @@
     [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
     XCTAssertFalse([SwrveSDK started]);
     [SwrveSDK start];
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     XCTestExpectation *expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -302,7 +293,7 @@
     // start the sdk
     [SwrveSDK start];
 
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     XCTestExpectation *expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -326,7 +317,7 @@
 
     [SwrveSDK start];
 
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     XCTestExpectation *expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -366,7 +357,7 @@
 
     [SwrveSDK startWithUserId:@"SomeUserId"];
 
-    //events our flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
+    //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
     XCTestExpectation *expectation = [self expectationWithDescription:@"SDK Started"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
         return [SwrveSDK started];
@@ -472,7 +463,7 @@
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.initMode = mode;
-    config.managedModeAutoStartLastUser = autoStart;
+    config.autoStartLastUser = autoStart;
     Swrve *swrve = (Swrve *) swrveMock;
     [SwrveSDK addSharedInstance:swrveMock];
 #pragma clang diagnostic push

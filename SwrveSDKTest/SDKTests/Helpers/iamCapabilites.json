@@ -1,0 +1,263 @@
+
+{
+    "cdn_root": "https://fake_cdn_root",
+    "campaigns": [{
+        "id": 1,
+        "end_date": 1364568900000,
+        "triggers": [{
+                "event_name": "eventNotRequestable",
+                "conditions": {}
+            }
+        ],
+        "message_center": true,
+        "start_date": 1362671700000,
+        "subject": "IAM subject eventNotRequestable",
+        "message": {
+            "template": {
+                "template_id": "1",
+                "formats": [{
+                    "orientation": "portrait",
+                    "size": {
+                        "w": {
+                            "type": "number",
+                            "value": 320
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 240
+                        }
+                    },
+                    "images": [],
+                    "buttons": [{
+                        "name": "request1",
+                        "x": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": "swrve.contacts"
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "REQUEST_CAPABILITY"
+                        }
+                    },{
+                        "name": "request2",
+                        "x": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": "swrve.photo"
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "REQUEST_CAPABILITY"
+                        }
+                    }],
+                    "name": "Test Capability",
+                    "language": "en-US"
+                }]
+            },
+            "id": 165,
+            "name": "Capability Test",
+            "rules": {}
+        },
+        "rules": {
+            "display_order": "random",
+            "dismiss_after_views": 20,
+            "delay_first_message": 0,
+            "min_delay_between_messages": 30
+        }
+    },{
+        "id": 1,
+        "end_date": 1364568900000,
+        "triggers": [{
+                "event_name": "eventRequestable",
+                "conditions": {}
+            }
+        ],
+        "start_date": 1362671700000,
+        "message_center": true,
+        "subject": "IAM subject eventRequestable",
+        "message": {
+            "template": {
+                "template_id": "1",
+                "formats": [{
+                    "orientation": "portrait",
+                    "size": {
+                        "w": {
+                            "type": "number",
+                            "value": 320
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 240
+                        }
+                    },
+                    "images": [],
+                    "buttons": [{
+                        "name": "request1",
+                        "x": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": "swrve.contacts"
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "REQUEST_CAPABILITY"
+                        }
+                    }],
+                    "name": "Test Capability",
+                    "language": "en-US"
+                }]
+            },
+            "id": 165,
+            "name": "Capability Test",
+            "rules": {}
+        },
+        "rules": {
+            "display_order": "random",
+            "dismiss_after_views": 20,
+            "delay_first_message": 0,
+            "min_delay_between_messages": 30
+        }
+    },
+    {
+        "id": 1,
+        "end_date": 1364568900000,
+        "triggers": [{
+                "event_name": "eventRequestablePush",
+                "conditions": {}
+            }
+        ],
+        "start_date": 1362671700000,
+        "message_center": true,
+        "subject": "IAM subject eventRequestable",
+        "message": {
+            "template": {
+                "template_id": "1",
+                "formats": [{
+                    "orientation": "portrait",
+                    "size": {
+                        "w": {
+                            "type": "number",
+                            "value": 320
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 240
+                        }
+                    },
+                    "images": [],
+                    "buttons": [{
+                        "name": "request1",
+                        "x": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 100
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": "swrve.push"
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "REQUEST_CAPABILITY"
+                        }
+                    }],
+                    "name": "Test Capability",
+                    "language": "en-US"
+                }]
+            },
+            "id": 165,
+            "name": "Capability Test",
+            "rules": {}
+        },
+        "rules": {
+            "display_order": "random",
+            "dismiss_after_views": 20,
+            "delay_first_message": 0,
+            "min_delay_between_messages": 30
+        }
+    }],
+    "game_data": {
+        "150": {
+            "app_store_url": "https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
+        }
+    },
+    "rules": {
+        "min_delay_between_messages": 0,
+        "max_messages_per_session": 10,
+        "delay_first_message": 0
+    },
+    "version": 2
+}

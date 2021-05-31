@@ -1,5 +1,8 @@
 #import "SwrveSDK.h"
+#import "Swrve+Private.h"
 #import "SwrveEmpty.h"
+
+@class SwrveEmbeddedMessage;
 
 @implementation SwrveSDK
 
@@ -26,11 +29,6 @@ static dispatch_once_t sharedInstanceToken = 0;
     return [[SwrveSDK sharedInstance] userID];
 }
 
-+ (SwrveMessageController *)messaging {
-    [SwrveSDK checkInstance];
-    return [[SwrveSDK sharedInstance] messaging];
-}
-
 + (void)resetSwrveSharedInstance {
     if (_swrveSharedInstance) {
         [_swrveSharedInstance shutdown];
@@ -49,7 +47,7 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 + (Swrve *)sharedInstance {
     if (!_swrveSharedInstance) {
-        DebugLog(@"Warning: [SwrveSDK sharedInstance] called before sharedInstanceWithAppID:... method.", nil);
+        [SwrveLogger warning:@"Warning: [SwrveSDK sharedInstance] called before sharedInstanceWithAppID:... method.", nil];
     }
     return _swrveSharedInstance;
 }
@@ -185,7 +183,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] shutdown];
 }
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 
 + (void)setDeviceToken:(NSData *)deviceToken {
     [SwrveSDK checkInstance];
@@ -212,7 +210,7 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] processNotificationResponse:response];
 }
 
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 + (void)handleDeeplink:(NSURL *)url {
     [SwrveSDK checkInstance];
@@ -260,5 +258,68 @@ static dispatch_once_t sharedInstanceToken = 0;
     [SwrveSDK checkInstance];
     return [[SwrveSDK sharedInstance] started];
 }
+
+#pragma mark Messaging
+
++ (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] embeddedMessageWasShownToUser:message];
+}
+
++ (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] embeddedButtonWasPressed:message buttonName:button];
+}
+
++ (NSArray *)messageCenterCampaigns {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] messageCenterCampaigns];
+}
+
++ (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] messageCenterCampaignsWithPersonalization:personalization];
+}
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+
++ (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] messageCenterCampaignsThatSupportOrientation:orientation];
+}
+
++ (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] messageCenterCampaignsThatSupportOrientation:orientation withPersonalization:personalization];
+}
+
+#endif
+
++ (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] showMessageCenterCampaign:campaign];
+}
+
++ (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalization:(NSDictionary *)personalization {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] showMessageCenterCampaign:campaign withPersonalization:personalization];
+}
+
++ (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] removeMessageCenterCampaign:campaign];
+}
+
++ (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] markMessageCenterCampaignAsSeen:campaign];
+}
+
++ (void)idfa:(NSString *)idfa {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] idfa:idfa];
+}
+
+#pragma mark -
 
 @end

@@ -1,7 +1,7 @@
 #import "SwrveIAPRewards.h"
 
-#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
-#import <SwrveSDKCommon/SwrveCommon.h>
+#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#import <SwrveSDK/SwrveCommon.h>
 #else
 #import "SwrveCommon.h"
 #endif
@@ -33,7 +33,7 @@
 - (void) addObject:(NSString*) name withQuantity:(long) quantity ofType:(NSString*) type
 {
     if (![self checkArguments:name andQuantity:quantity andType:type]) {
-        DebugLog(@"ERROR: SwrveIAPRewards has not been added because it received an illegal argument", nil);
+        [SwrveLogger error:@"ERROR: SwrveIAPRewards has not been added because it received an illegal argument", nil];
         return;
     }
     
@@ -44,15 +44,15 @@
 - (bool) checkArguments:(NSString*) name andQuantity:(long) quantity andType:(NSString*) type
 {
     if (name == nil || [name length] <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: reward name cannot be empty", nil);
+        [SwrveLogger error:@"SwrveIAPRewards illegal argument: reward name cannot be empty", nil];
         return false;
     }
     if (quantity <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: reward amount must be greater than zero", nil);
+        [SwrveLogger error:@"SwrveIAPRewards illegal argument: reward amount must be greater than zero", nil];
         return false;
     }
     if (type == nil || [type length] <= 0) {
-        DebugLog(@"SwrveIAPRewards illegal argument: type cannot be empty", nil);
+        [SwrveLogger error:@"SwrveIAPRewards illegal argument: type cannot be empty", nil];
         return false;
     }
     

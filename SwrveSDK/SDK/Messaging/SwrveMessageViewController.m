@@ -1,6 +1,7 @@
 #import "Swrve.h"
 #import "SwrveMessageViewController.h"
 #import "SwrveButton.h"
+#import "SwrveMessageController.h"
 
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -27,7 +28,7 @@
 @synthesize viewportWidth;
 @synthesize viewportHeight;
 @synthesize prefersIAMStatusBarHidden;
-@synthesize personalisationDict;
+@synthesize personalizationDict;
 @synthesize inAppConfig;
 @synthesize messageController;
 
@@ -121,19 +122,19 @@
         // pass config for text generation
         current_format.inAppConfig = self.inAppConfig;
 
-        DebugLog(@"Selected message format: %@", current_format.name);
+        [SwrveLogger debug:@"Selected message format: %@", current_format.name];
         [current_format createViewToFit:self.view
                                   thatDelegatesTo:self
                                          withSize:self.view.bounds.size
                                           rotated:false
-                                  personalisation:personalisationDict];
+                                  personalization:personalizationDict];
         
         // Update background color
         if (current_format.backgroundColor != nil) {
             self.view.backgroundColor = current_format.backgroundColor;
         }
     } else {
-        DebugLog(@"Couldn't find a format for message: %@", message.name);
+        [SwrveLogger error:@"Couldn't find a format for message: %@", message.name];
     }
 }
 #endif
@@ -194,11 +195,11 @@
 
     current_format = closestFormat;
     current_format.inAppConfig = self.inAppConfig;
-    DebugLog(@"Selected message format: %@", current_format.name);
+    [SwrveLogger debug:@"Selected message format: %@", current_format.name];
     UIView *currentView = [current_format createViewToFit:self.view
                    thatDelegatesTo:self
                           withSize:size
-                   personalisation:personalisationDict];
+                   personalization:personalizationDict];
 
     [self setupFocusGuide:currentView];
 
@@ -287,7 +288,7 @@
             [self.focusGuide2.topAnchor constraintEqualToAnchor:buttons[0].topAnchor].active = YES;
             [self.focusGuide2.bottomAnchor constraintEqualToAnchor:buttons[0].bottomAnchor].active = YES;
         } else {
-            DebugLog(@"Top and bottom guide not supported, should not reach this code", nil);
+            [SwrveLogger error:@"Top and bottom guide not supported, should not reach this code", nil];
         }
     }
 

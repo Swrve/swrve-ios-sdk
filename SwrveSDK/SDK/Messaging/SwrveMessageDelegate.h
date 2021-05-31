@@ -11,39 +11,6 @@
 
 @optional
 
-/*! Called when an event is raised by the Swrve SDK. Look up a message
- * to display. Return nil if no message should be displayed. By default
- * the SwrveMessageController will search for messages with the provided
- * trigger.
- *
- * \param eventName Trigger event.
- * \param payload Event payload.
- * \returns Message with the given trigger event.
- */
-- (SwrveMessage*)messageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload __deprecated;
-
-/*! Called when an event is raised by the Swrve SDK. Look up a base message
- * which could be either embedded or InApp to display. Return nil if no message
- * should be displayed. By default the SwrveMessageController will search for
- * messages with the provided trigger.
- *
- * \param eventName Trigger event.
- * \param payload Event payload.
- * \returns BaseMessage with the given trigger event.
- */
-- (SwrveBaseMessage*)baseMessageForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
-
-/*! Called when an event is raised by the Swrve SDK. Look up a conversation
- * to display. Return nil if no conversation should be displayed. By default
- * the SwrveMessageController will search for conversations with the provided
- * trigger.
- *
- * \param eventName Trigger event.
- * \param payload Event payload.
- * \returns Conversation with the given trigger event.
- */
-- (SwrveConversation*)conversationForEvent:(NSString*) eventName withPayload:(NSDictionary *)payload;
-
 /*! Called when a message should be shown. Should show and react to the action
  * in the message. By default the SwrveMessageController will display the
  * message as a modal dialog. If an install action is returned by the dialog
@@ -61,9 +28,9 @@
  * should create a custom delegate to process it in your app.
  *
  * \param message Message to be displayed.
- * \param personalisation Dictionary of Strings which can be used to personalise the given message
+ * \param personalization Dictionary of Strings which can be used to personalise the given message
  */
-- (void)showMessage:(SwrveMessage *)message withPersonalisation:(NSDictionary *)personalisation;
+- (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 
 /*! Called when a conversation should be shown. Should show and react to the action
  * in the conversation.
@@ -77,7 +44,7 @@
  *
  * \param viewController Message view controller.
  */
-- (void) messageWillBeShown:(UIViewController *) viewController;
+- (void)messageWillBeShown:(UIViewController *) viewController;
 
 /*! Called when the message will be hidden from the user. The message is shown
  * in a separate UIWindow. This selector is called before that UIWindow is
@@ -85,14 +52,14 @@
  *
  * \param viewController Message view controller.
  */
-- (void) messageWillBeHidden:(UIViewController*) viewController;
+- (void)messageWillBeHidden:(UIViewController*) viewController;
 
 /*! Called to animate the display of a message. Implement this selector
  * to customize the display of the message.
  *
  * \param viewController Message view controller.
  */
-- (void) beginShowMessageAnimation:(SwrveMessageViewController*) viewController;
+- (void)beginShowMessageAnimation:(SwrveMessageViewController*) viewController;
 
 /*! Called to animate the hiding of a message. Implement this selector to
  * customize the hiding of the message. If you implement this you must call
@@ -101,6 +68,6 @@
  *
  * \param viewController Message view controller.
  */
-- (void) beginHideMessageAnimation:(SwrveMessageViewController*) viewController;
+- (void)beginHideMessageAnimation:(SwrveMessageViewController*) viewController;
 
 @end

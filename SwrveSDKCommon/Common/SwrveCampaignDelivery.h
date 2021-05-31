@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
                               ForAppGroupID:(NSString *)appGroupId
                                    isQAUser:(BOOL)isQaUser;
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 + (void)sendPushDelivery:(NSDictionary *)userInfo withAppGroupID:(NSString *)appGroupId;
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 @end
 

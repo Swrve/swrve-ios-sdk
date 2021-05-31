@@ -1,5 +1,3 @@
-#if !defined(SWRVE_NO_PUSH)
-
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import "SwrveCommon.h"
@@ -44,5 +42,3 @@ extern NSString *const SwrveContentVersionKey;
 @end
 
 NS_ASSUME_NONNULL_END
-#endif //!defined(SWRVE_NO_PUSH)
-

@@ -34,29 +34,29 @@
 
 - (BOOL) hasFulfilledCondition:(NSDictionary *)payload {
     
-    if(!payload){
+    if (!payload) {
         return NO;
     }
     
     NSArray *payloadKeys = [payload allKeys];
-    if([payloadKeys containsObject:_key]) {
-        if([payload objectForKey:_key] != [NSNull null]) {
+    if ([payloadKeys containsObject:_key]) {
+        if ([payload objectForKey:_key] != [NSNull null]) {
             id payloadObject = [payload objectForKey:_key];
             NSString *payloadValue = nil;
             if ([payloadObject isKindOfClass:[NSString class]]) {
                 payloadValue = payloadObject;
-            }else{
+            } else {
                 if ([payloadObject respondsToSelector:@selector(stringValue)]) {
                     payloadValue = [(id)payloadObject stringValue];
-                }else{
+                } else {
                     return NO;
                 }
             }
-            return (payloadValue && [payloadValue isEqualToString:_value]);
-        }else{
+            return (payloadValue && [payloadValue caseInsensitiveCompare:_value] == NSOrderedSame);
+        } else {
             return NO;
         }
-    }else{
+    } else {
         return NO;
     }
 }

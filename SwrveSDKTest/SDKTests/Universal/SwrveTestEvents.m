@@ -12,9 +12,7 @@
 NSString const *iso8601regex = @"\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\\d|3[0-1])T(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d.\\d\\d\\d(Z|[+]\\d\\d:\\d\\d)";
 
 @interface Swrve()
-
 @property(atomic) SwrveProfileManager *profileManager;
-@property(atomic) SwrveMessageController *messaging;
 @end
 
 
@@ -59,34 +57,89 @@ id classMockSwrvePermissions;
     return cacheLines;
 }
 
-- (void)setUp
-{
+- (void)setUp {
     [super setUp];
     [SwrveTestHelper setUp];
+    
     classMockSwrvePermissions = [SwrveTestHelper mockPushRequest];
-
-    SwrveConfig * config = [[SwrveConfig alloc]init];
-    config.autoSendEventsOnResume = false;
-    // TODO: We should move the SDK init into each test and let em device if they can skip migration or not otherwise we get tons of log errors
-    [SwrveLocalStorage saveSwrveUserId:@"SomeUserID"];
-    [self setSwrve:[[TestableSwrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]];
-    [self.swrve appDidBecomeActive:nil];
 }
 
-- (void)tearDown
-{
+- (void)tearDown {
     [self.swrve shutdown];
     self.swrve = nil;
     [SwrveTestHelper tearDown];
     if (classMockSwrvePermissions) {
         [classMockSwrvePermissions stopMocking];
     }
-
     [super tearDown];
 }
 
--(void)testInitialEvents
-{
+- (void)setupSwrveMigrated:(bool)markMigrated {
+    SwrveConfig *config = [[SwrveConfig alloc]init];
+    config.autoSendEventsOnResume = false;
+    config.autoDownloadCampaignsAndResources = false;
+    if (markMigrated) {
+        [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUserID"];
+    }
+    [self setSwrve:[[TestableSwrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]];
+    [self.swrve appDidBecomeActive:nil];
+}
+
+- (void)testInitialEventsMigrated {
+    [self setupSwrveMigrated:true];
+    // All events should be sent after init, buffer should be empty
+    NSArray* eventsBuffer = [[self swrve] eventBuffer];
+    XCTAssertEqual([eventsBuffer count], 0);
+
+    TestableSwrveRESTClient *restClient = (TestableSwrveRESTClient *)[self.swrve restClient];
+    
+    NSArray* eventRequests = [restClient eventRequests];
+    int initEventsFound = 0;
+
+    // We should find at 2 events in the event requests: session_start, device_update. Swrve.first_session should not be present
+    for (NSString* requestString in eventRequests) {
+        NSDictionary* eventRequest = [SwrveTestHelper makeDictionaryFromEventRequest:requestString];
+
+        // Should only contain batch events
+        NSString* eventRequestURL = [self getURLFromEventRequest:requestString];
+        XCTAssertEqualObjects(eventRequestURL, @"https://572.api.swrve.com/1/batch");
+
+        // Get event data from request
+        XCTAssertNotNil([eventRequest objectForKey:@"data"]);
+        NSArray* eventData = [eventRequest objectForKey:@"data"];
+
+        for (NSDictionary* event in eventData) {
+            // Check which event this is
+            XCTAssertNotNil([event objectForKey:@"type"]);
+            XCTAssertNotNil([event objectForKey:@"time"]);
+            XCTAssertNotNil([event objectForKey:@"seqnum"]);
+
+            XCTAssert([[event objectForKey:@"time"] isKindOfClass:[NSNumber class]]);
+            NSString* eventType = [event objectForKey:@"type"];
+
+            if ([eventType isEqualToString:@"session_start"]) {
+                initEventsFound += 1;
+            } else if ([eventType isEqualToString:@"event"]) {
+                NSString* eventName = [event objectForKey:@"name"];
+                if ([eventName isEqualToString:@"Swrve.first_session"]) {
+                    initEventsFound += 1;
+                }
+            } else if ([eventType isEqualToString:@"device_update"]) {
+                initEventsFound += 1;
+            }
+        }
+
+        XCTAssertEqual(initEventsFound, 2);
+
+        // Check order of the events
+        XCTAssertEqualObjects([eventData[0] objectForKey:@"type"], @"session_start");
+        XCTAssertEqualObjects([eventData[1] objectForKey:@"type"], @"device_update");
+        break;
+    }
+}
+
+- (void)testInitialEventsNotMigrated {
+    [self setupSwrveMigrated:false];
     // All events should be sent after init, buffer should be empty
     NSArray* eventsBuffer = [[self swrve] eventBuffer];
     XCTAssertEqual([eventsBuffer count], 0);
@@ -139,8 +192,8 @@ id classMockSwrvePermissions;
     }
 }
 
--(void)testPurchaseItem
-{
+- (void)testPurchaseItem {
+    [self setupSwrveMigrated:true];
     [self.swrve purchaseItem:@"toy" currency:@"silver" cost:23 quantity:43];
 
     //
@@ -165,8 +218,8 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
 }
 
--(void)testEvent_NoPayload
-{
+- (void)testEvent_NoPayload {
+    [self setupSwrveMigrated:true];
     [self.swrve event:@"Some.Event"];
 
     //
@@ -191,8 +244,8 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
 }
 
--(void)testRestrictedEventName
-{
+-(void)testRestrictedEventName {
+    [self setupSwrveMigrated:true];
     [self.swrve event:@"Some.Event"];
     [self.swrve event:nil];
     [self.swrve event:@"Swrve.thisEventIsRestrictedAndWillNotBeQueued"];
@@ -201,8 +254,8 @@ id classMockSwrvePermissions;
     XCTAssertEqual([eventsBuffer count], 1);
 }
 
--(void)testEvent_Payload
-{
+-(void)testEvent_Payload {
+    [self setupSwrveMigrated:true];
     [self.swrve event:@"SomeOther_Event"
               payload:[NSDictionary dictionaryWithObjectsAndKeys:
                        @"FirstValue", @"FirstKey",
@@ -234,8 +287,8 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
 }
 
--(void)testEvent_PayloadNoTrigger
-{
+-(void)testEvent_PayloadNoTrigger {
+    [self setupSwrveMigrated:true];
     [self.swrve eventWithNoCallback:@"NoTriggerEvent"
                             payload:[NSDictionary dictionaryWithObjectsAndKeys:
                                      @"SomeValue", @"SomeKey",
@@ -264,8 +317,8 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
 }
 
--(void)testEvent_PayloadNoTriggerNilPayload
-{
+-(void)testEvent_PayloadNoTriggerNilPayload {
+    [self setupSwrveMigrated:true];
     [self.swrve eventWithNoCallback:@"NoTriggerOrPayload"
                             payload:nil];
 
@@ -291,14 +344,9 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
 }
 
--(void)testIAP
-{
+-(void)testIAP {
+    [self setupSwrveMigrated:true];
     NSString* expectedReceipt = @"ZmFrZV9yZWNlaXB0";
-
-    SwrveConfig* config = [SwrveConfig new];
-    config.autoDownloadCampaignsAndResources = NO; // ensure IAP event isn't flushed immediately
-    [self setSwrve:[[TestableSwrve alloc] initWithAppID:1 apiKey:@"foo" config:config]];
-    [self.swrve appDidBecomeActive:nil];
 
     SwrveIAPRewards* iapRewards = [SwrveIAPRewards new];
     [iapRewards addCurrency:@"gold" withAmount:18];
@@ -350,12 +398,8 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([gold objectForKey:@"type"], @"currency");
 }
 
--(void)testUnvalidatedIAP
-{
-    SwrveConfig* config = [SwrveConfig new];
-    config.autoDownloadCampaignsAndResources = NO; // ensure IAP event isn't flushed immediately
-    [self setSwrve:[[TestableSwrve alloc] initWithAppID:1 apiKey:@"foo" config:config]];
-    [self.swrve appDidBecomeActive:nil];
+-(void)testUnvalidatedIAP {
+    [self setupSwrveMigrated:true];
 
     SwrveIAPRewards* iapRewards = [SwrveIAPRewards new];
     [iapRewards addCurrency:@"gold" withAmount:18];
@@ -386,8 +430,8 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([gold objectForKey:@"type"], @"currency");
 }
 
--(void)testBadRewards
-{
+-(void)testBadRewards {
+    [self setupSwrveMigrated:true];
     SwrveIAPRewards* iapRewards = [SwrveIAPRewards new];
     XCTAssertEqual([iapRewards.rewards count], 0);
 
@@ -404,8 +448,7 @@ id classMockSwrvePermissions;
     XCTAssertEqual([iapRewards.rewards count], 0);
 }
 
--(void)testGoodRewards
-{
+-(void)testGoodRewards {
     SwrveIAPRewards * iapRewards = [SwrveIAPRewards new];
     [iapRewards addCurrency:@"Gold" withAmount:23];
     XCTAssertEqual(iapRewards.rewards.count, 1);
@@ -415,8 +458,8 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([goldReward objectForKey:@"type"], @"currency");
 }
 
--(void)testCurrencyGiven
-{
+-(void)testCurrencyGiven {
+    [self setupSwrveMigrated:true];
     [self.swrve currencyGiven:@"USD" givenAmount:123.54];
 
     //
@@ -439,8 +482,8 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([line1 objectForKey:@"given_currency"], @"USD");
 }
 
--(void)testUserUpdate
-{
+- (void)testUserUpdate {
+    [self setupSwrveMigrated:true];
     [self.swrve userUpdate:[NSDictionary dictionaryWithObjectsAndKeys:
                             @"SomeVal", @"TestParam",
                             @"456", @"OtherTestParam",
@@ -464,8 +507,8 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([attributes objectForKey:@"TestParam"], @"SomeVal");
 }
 
--(void)testMultipleUserUpdates
-{
+-(void)testMultipleUserUpdates {
+    [self setupSwrveMigrated:true];
     [self.swrve userUpdate:[NSDictionary dictionaryWithObjectsAndKeys:
                             @"SomeVal", @"TestParam",
                             @"456", @"OtherTestParam",
@@ -500,8 +543,9 @@ id classMockSwrvePermissions;
     XCTAssertEqualObjects([attributes objectForKey:@"NewParam"], @"789");
 }
 
--(void)testUserUpdatesSaveToFile
-{    // Clear event cache file
+-(void)testUserUpdatesSaveToFile {
+    [self setupSwrveMigrated:true];
+    // Clear event cache file
     [[self swrve] resetEventCache];
 
     [self.swrve userUpdate:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -530,7 +574,7 @@ id classMockSwrvePermissions;
 }
 
 -(void)testUserUpdateWithNameAndDate {
-
+    [self setupSwrveMigrated:true];
     [self.swrve userUpdate:@"test_date" withDate:[NSDate date]];
 
     NSArray* eventsBuffer = [[self swrve] eventBuffer];
@@ -548,8 +592,8 @@ id classMockSwrvePermissions;
     XCTAssertTrue([testAttributes evaluateWithObject:dateString]);
 }
 
-- (void) testUserUpdateWithNameAndDateIsUTC {
-
+- (void)testUserUpdateWithNameAndDateIsUTC {
+    [self setupSwrveMigrated:true];
     NSInteger march10th2013 = 1362873600;
     NSDate *prospectDate = [NSDate dateWithTimeIntervalSince1970:march10th2013];
     NSTimeZone *timezone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -574,7 +618,7 @@ id classMockSwrvePermissions;
 }
 
 -(void)testUserUpdateWithNullName {
-
+    [self setupSwrveMigrated:true];
     [self.swrve userUpdate:nil withDate:[NSDate date]];
 
     NSArray *eventsBuffer = [[self swrve] eventBuffer];
@@ -584,7 +628,7 @@ id classMockSwrvePermissions;
 }
 
 -(void)testUserUpdateWithNullDate {
-
+   [self setupSwrveMigrated:true];
    [self.swrve userUpdate:@"test_date" withDate:nil];
 
     NSArray *eventsBuffer = [[self swrve] eventBuffer];
@@ -596,7 +640,6 @@ id classMockSwrvePermissions;
 // test iso8601Regex to ensure test regex is correct
 
 - (void)testActiveTestRegex {
-
     NSPredicate *regexTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", iso8601regex];
 
     NSArray *badStrings = [NSArray arrayWithObjects:@"2015-03-16T23:59:59+00:00", @"2015-03-16T23:59:59+00", @"2015-03-16T23:59:59+0000", @"2015-03-16T23:59:59.000+00", @"2015-03-16T23:59:59.000+0000", @"2015-03-16T23:59:59+09:00", @"2015-03-16T23:59:59+10", @"2015-03-16T23:59:59-0100", @"2015-03-16T23:59:59.000+00", @"2015-03-16T23:59:59.000+0000",@"2015-03-16T23:59:59.500+00", @"2015-03-16T23:59:59.600+0000", @"goldfish", nil];
@@ -614,8 +657,8 @@ id classMockSwrvePermissions;
     }
 }
 
--(void)testSaveEvents
-{
+-(void)testSaveEvents {
+    [self setupSwrveMigrated:true];
     // Clear event cache file
     [[self swrve] resetEventCache];
 
@@ -655,11 +698,10 @@ id classMockSwrvePermissions;
     XCTAssertNotNil([line1 objectForKey:@"time"]);
     XCTAssert([[line1 objectForKey:@"time"] isKindOfClass:[NSNumber class]]);
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
-
 }
 
--(void)testMultipleEventSaves
-{
+-(void)testMultipleEventSaves {
+    [self setupSwrveMigrated:true];
     [[self swrve] resetEventCache];
 
     [self.swrve event:@"randomEvent"];
@@ -683,23 +725,21 @@ id classMockSwrvePermissions;
     XCTAssert([[line1 objectForKey:@"time"] isKindOfClass:[NSNumber class]]);
     XCTAssertNotNil([line1 objectForKey:@"seqnum"]);
     XCTAssertEqualObjects([line1 objectForKey:@"name"], @"randomEvent");
-
 }
 
--(void)testEmptySave
-{
+-(void)testEmptySave {
+    [self setupSwrveMigrated:true];
     [[self swrve] resetEventCache];
     [[[self swrve] eventBuffer] removeAllObjects];
 
     [self.swrve saveEventsToDisk];
 
-
     NSString *eventCacheContents = [SwrveTestHelper fileContentsFromURL:[[self swrve] eventFilename]];
     XCTAssertEqualObjects(eventCacheContents, @"");
 }
 
-- (void)testSessionToken
-{
+- (void)testSessionToken {
+    [self setupSwrveMigrated:true];
     NSString *sessionToken = self.swrve.profileManager.sessionToken;
 
     //
@@ -726,8 +766,8 @@ id classMockSwrvePermissions;
     XCTAssertTrue((testRange.location == NSNotFound));
 }
 
-- (void)testSequenceNumbers
-{
+- (void)testSequenceNumbers {
+    [self setupSwrveMigrated:true];
     [self.swrve shutdown];
     self.swrve = nil;
 
@@ -759,9 +799,8 @@ id classMockSwrvePermissions;
     }
 }
 
-
-- (void)testUserUpdateSequenceNumbers
-{
+- (void)testUserUpdateSequenceNumbers {
+    [self setupSwrveMigrated:true];
     [self.swrve shutdown];
     self.swrve = nil;
 
@@ -800,7 +839,7 @@ id classMockSwrvePermissions;
 
 // SWRVE-6594 /SWRVE-14748 bug test
 - (void)testEventsPutBackInTheQueueAndSavedToDisk {
-
+    [self setupSwrveMigrated:true];
     // Clear event cache file
     TestableSwrveRESTClient *restClient = (TestableSwrveRESTClient *)[[self swrve] restClient];
     restClient.failPostRequests = TRUE;
@@ -831,7 +870,7 @@ id classMockSwrvePermissions;
 }
 
 - (void)testEventsAreSentOnAppPause {
-
+    [self setupSwrveMigrated:true];
     [self.swrve purchaseItem:@"toy" currency:@"silver" cost:23 quantity:43];
     NSArray* eventsBuffer = [[self swrve] eventBuffer];
     XCTAssertEqual([eventsBuffer count], 1);
@@ -844,8 +883,8 @@ id classMockSwrvePermissions;
     XCTAssertEqual([eventsBuffer count], 0);
 }
 
--(void)testDeviceUUID
-{
+- (void)testDeviceUUID {
+    [self setupSwrveMigrated:true];
     // Obtain last event in the
     TestableSwrveRESTClient *restClient = (TestableSwrveRESTClient *)[self.swrve restClient];
     NSString* lastEventRequestString = [[restClient eventRequests] lastObject];

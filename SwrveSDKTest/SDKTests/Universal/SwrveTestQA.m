@@ -247,6 +247,64 @@
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
 }
 
+- (void)testAssetFailedToDownload {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+
+    NSDictionary *expectedLogDetails = @{@"asset_name": @"asset1",
+            @"image_url":@"https://fake_url.com/asset1.jpg",
+            @"reason":@"test reason"
+    };
+
+    [SwrveQA assetFailedToDownload:@"asset1" resolvedUrl:@"https://fake_url.com/asset1.jpg" reason:@"test reason"];
+
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"asset-failed-to-download" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+}
+
+- (void)testAssetFailedToDisplay {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+    NSDictionary *expectedLogDetails = @{
+        @"campaign_id": @123,
+        @"variant_id": @1,
+        @"has_fallback": @NO,
+        @"unresolved_url": @"https://fake_url.com/${test_id}.jpg",
+        @"reason":@"test reason",
+        @"asset_name": @"asset1",
+        @"image_url": @"https://fake_url.com/asset1.jpg"
+    };
+    
+    SwrveQAImagePersonalizationInfo *testQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:123
+                                                                                 variantID:1
+                                                                                 assetName:@"asset1"
+                                                                               hasFallback:NO
+                                                                             unresolvedUrl:@"https://fake_url.com/${test_id}.jpg"
+                                                                               resolvedUrl:@"https://fake_url.com/asset1.jpg"
+                                                                                    reason:@"test reason"];
+
+    [SwrveQA assetFailedToDisplay:testQAInfo];
+
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"asset-failed-to-display" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+}
+
 - (void)testCampaignTrigger {
     [self enableQaLogging];
 
@@ -294,74 +352,6 @@
     OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
     XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-}
-
-
-#pragma mark - Geo SDK
-
-- (void)testGeoCampaignTriggered {
-    [self enableQaLogging];
-    SwrveQA *qa = [SwrveQA sharedInstance];
-    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
-    // Stub flushEvents so it would not try any request at all or clear our queue.
-    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
-    [qa setQueueManager:swrveQAEventsQueueMock];
-
-    NSMutableArray *qaLogs = [NSMutableArray new];
-    NSDictionary *log = @{
-                          @"variant_id": @123,
-                          @"displayed": [NSNumber numberWithBool:false],
-                          @"reason": @"some reason"
-                          };
-    [qaLogs addObject:log];
-
-    NSDictionary *logDetails = @{
-        @"action_type":@"exit",
-        @"campaigns": @[log],
-        @"geofence_id":@456,
-        @"geoplace_id":@123
-    };
-
-    NSMutableDictionary *expecectedQALoggedEvent = [self createExpectedEventWithLogDetails:logDetails withLogType:@"geo-campaign-triggered" withlogSource:@"geo-sdk"];
-
-    [SwrveQA geoCampaignTriggered:qaLogs fromGeoPlaceId:@"123" andGeofenceId:@"456" andActionType:@"exit"];
-
-    OCMVerify([swrveQAEventsQueueMock queueEvent:OCMOCK_ANY]);
-    // Check if the event is on queue.
-    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
-    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
-}
-
-- (void)testGeoCampaignsDownloaded {
-    [self enableQaLogging];
-    SwrveQA *qa = [SwrveQA sharedInstance];
-    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
-    // Stub flushEvents so it would not try any request at all or clear our queue.
-    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
-    [qa setQueueManager:swrveQAEventsQueueMock];
-
-    NSMutableArray *qaLogs = [NSMutableArray new];
-    NSDictionary *log = @{
-                          @"variant_id": @123,
-                          @"displayed": [NSNumber numberWithBool:false],
-                          @"reason": @"some reason"
-                          };
-    [qaLogs addObject:log];
-
-    NSDictionary *logDetails = @{
-        @"action_type":@"exit",
-        @"campaigns": @[log],
-        @"geofence_id":@456,
-        @"geoplace_id":@123
-    };
-
-    NSMutableDictionary *expecectedQALoggedEvent = [self createExpectedEventWithLogDetails:logDetails withLogType:@"geo-campaigns-downloaded" withlogSource:@"geo-sdk"];
-    [SwrveQA geoCampaignsDownloaded:qaLogs fromGeoPlaceId:@"123" andGeofenceId:@"456" andActionType:@"exit"];
-
-    OCMVerify([swrveQAEventsQueueMock queueEvent:OCMOCK_ANY]);
-    // Check if the event is on queue.
-    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
-    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQALoggedEvent);
 }
 
 #pragma mark - helpers

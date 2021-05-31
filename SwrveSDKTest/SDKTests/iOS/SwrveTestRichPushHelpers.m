@@ -1,5 +1,3 @@
-#ifndef SWRVE_NO_PUSH
-
 #import <XCTest/XCTest.h>
 #import "TestableSwrve.h"
 #import "SwrveTestHelper.h"
@@ -481,5 +479,3 @@
 }
 
 @end
-
-#endif // SWRVE_NO_PUSH

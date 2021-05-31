@@ -1,5 +1,9 @@
 #import "SwrveDeviceProperties.h"
-#import <AdSupport/ASIdentifierManager.h>
+#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
+#import <SwrveSDK/SwrveLocalStorage.h>
+#else
+#import "SwrveLocalStorage.h"
+#endif
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -40,6 +44,8 @@ static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
 @synthesize permissionStatus = _permissionStatus;
 @synthesize sdk_language = _sdk_language;
 @synthesize swrveInitMode = _swrveInitMode;
+@synthesize autoCollectIDFV = _autoCollectIDFV;
+@synthesize idfa = _idfa;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 @synthesize conversationVersion = _conversationVersion;
@@ -169,26 +175,19 @@ static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
 #endif //TARGET_OS_IOS
     
     // Optional identifiers
-#if defined(SWRVE_LOG_IDFA)
-    if (@available(iOS 14,tvOS 14, *)) {
-        NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        if ([SwrveUtils isValidIDFA:idfa]) {
-            [deviceProperties setValue:idfa forKey:SWRVE_IDFA];
-        }
-    } else {
-        if([[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled]) {
-            NSString *idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-            [deviceProperties setValue:idfa forKey:SWRVE_IDFA];
-        }
+    if (self.idfa == nil) {
+        self.idfa = [SwrveLocalStorage idfa];
+    }
+    
+    if (self.idfa != nil) {
+        [deviceProperties setValue:self.idfa forKey:SWRVE_IDFA];
+    }
+    
+    if (self.autoCollectIDFV) {
+        NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        [deviceProperties setValue:idfv forKey:SWRVE_IDFV];
     }
 
-#endif //defined(SWRVE_LOG_IDFA)
-    
-#if defined(SWRVE_LOG_IDFV)
-    NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    [deviceProperties setValue:idfv forKey:SWRVE_IDFV];
-#endif //defined(SWRVE_LOG_IDFV)
-    
     return deviceProperties;
 }
 

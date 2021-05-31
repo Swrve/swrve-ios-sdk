@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
-#if __has_include(<SwrveConversationSDK/SwrveBaseConversation.h>)
-#import <SwrveConversationSDK/SwrveBaseConversation.h>
+#if __has_include(<SwrveSDK/SwrveBaseConversation.h>)
+#import <SwrveSDK/SwrveBaseConversation.h>
 #else
 #import "SwrveBaseConversation.h"
 #endif

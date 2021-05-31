@@ -1,12 +1,13 @@
 #import "SwrveEmpty.h"
 #import "SwrveMessageController+Private.h"
-#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
-#import <SwrveSDKCommon/SwrveCommon.h>
+#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#import <SwrveSDK/SwrveCommon.h>
 #else
 #import "SwrveCommon.h"
 #endif
 
 @interface SwrveEmpty() <SwrveCommonDelegate>
+@property (atomic)         SwrveMessageController *messaging;
 @end
 
 // Used at runtime when the platform is not supported.
@@ -146,7 +147,7 @@
 - (void)shutdown {
 }
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 - (void)setDeviceToken:(NSData*)deviceToken {
 #pragma unused(deviceToken)
 }
@@ -164,7 +165,7 @@
     return NO;
 }
 
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 - (void)handleDeeplink:(NSURL *)url {
    #pragma unused(url)
@@ -273,5 +274,62 @@
 - (BOOL)started {
     return false;
 }
+
+#pragma mark Messaging
+
+- (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
+#pragma unused(message)
+}
+
+- (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
+#pragma unused(message, button)
+}
+
+- (NSArray *)messageCenterCampaigns {
+    return @[];
+}
+
+- (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
+#pragma unused(personalization)
+    return @[];
+}
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+
+- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
+#pragma unused(orientation)
+    return @[];
+}
+
+- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+#pragma unused(orientation, personalization)
+    return @[];
+}
+
+#endif
+
+- (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {
+#pragma unused(campaign)
+    return FALSE;
+}
+
+- (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalization:(NSDictionary *)personalization {
+#pragma unused(campaign, personalization)
+    return FALSE;
+}
+
+- (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign {
+#pragma unused(campaign)
+}
+
+- (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign {
+#pragma unused(campaign)
+}
+
+- (void)idfa:(NSString *)idfa {
+#pragma unused(idfa)
+}
+
+#pragma mark -
 
 @end

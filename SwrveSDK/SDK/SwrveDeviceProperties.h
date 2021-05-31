@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "SwrveConfig.h"
-#if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
-#import <SwrveSDKCommon/SwrveUtils.h>
+#if __has_include(<SwrveSDK/SwrveUtils.h>)
+#import <SwrveSDK/SwrveUtils.h>
 #else
 #import "SwrveUtils.h"
 #endif
@@ -15,6 +15,8 @@
 @property (nonatomic) NSString * deviceToken;
 @property (nonatomic) NSDictionary* permissionStatus;
 @property (nonatomic) NSString* swrveInitMode;
+@property (nonatomic) BOOL autoCollectIDFV;
+@property (nonatomic) NSString *idfa;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 @property (nonatomic) CTCarrier* carrierInfo;

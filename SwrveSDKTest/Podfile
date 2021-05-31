@@ -1,9 +1,7 @@
 platform :ios, '10.0'
 
 target 'SwrveSDK-iOS' do
-  pod 'SwrveSDKCommon', :path => '../'
-  pod 'SwrveConversationSDK', :path => '../'
-  pod 'SwrveSDK', :path => '../'
+  pod 'SwrveSDK', :path => '../../SwrveSDK-Private.podspec'
 
   target 'SwrveSDK-iOSTests' do
     pod 'OCMock', '~> 3.8.1'
@@ -13,9 +11,7 @@ end
 
 target 'SwrveSDK-tvOS' do
   platform :tvos, '10.0'
-  pod 'SwrveSDKCommon', :path => '../'
-  pod 'SwrveConversationSDK', :path => '../'
-  pod 'SwrveSDK', :path => '../'
+  pod 'SwrveSDK', :path => '../../SwrveSDK-Private.podspec'
 
   target 'SwrveSDK-tvOSTests' do
     platform :tvos, '10.0'
@@ -28,8 +24,6 @@ post_install do |installer_representation|
   unless installer_representation.pods_project.nil?
     installer_representation.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'SWRVE_LOG_IDFA', 'SWRVE_LOG_IDFV']
-
         # Need to specify the deployment version xcodebuild otherwise causes warnings
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = "10.0"
       end

@@ -12,6 +12,7 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 // Common - Permissions
 #import <SwrveSDKCommon/SwrvePermissionState.h>
 #import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
+#import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>
 
 // Common - Push
 #import <SwrveSDKCommon/SwrvePush.h>
@@ -27,6 +28,7 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveQA.h>
 #import <SwrveSDKCommon/SwrveQACampaignInfo.h>
 #import <SwrveSDKCommon/SwrveQAEventsQueueManager.h>
+#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
 #import <SwrveSDKCommon/SwrveCampaignInfluence.h>
 #import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #import <SwrveSDKCommon/SwrveUser.h>
@@ -36,3 +38,4 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveSessionDelegate.h>
 #import <SwrveSDKCommon/SwrveUtils.h>
 #import <SwrveSDKCommon/SwrveEvents.h>
+#import <SwrveSDKCommon/TextTemplating.h>

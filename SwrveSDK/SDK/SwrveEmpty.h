@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "SwrveProtocol.h"
 
-#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
-#import <SwrveSDKCommon/SwrveCommon.h>
+#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#import <SwrveSDK/SwrveCommon.h>
 #else
 #import "SwrveCommon.h"
 #endif

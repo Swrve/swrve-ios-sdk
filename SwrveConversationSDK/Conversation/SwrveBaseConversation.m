@@ -55,7 +55,7 @@
         for (SwrveContentItem* contentItem in page.content) {
             if([contentItem.type isEqualToString:kSwrveContentTypeImage]) {
                 if (![assets containsObject:contentItem.value]) {
-                    DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.value);
+                    [SwrveLogger error:@"Conversation asset not yet downloaded: %@", contentItem.value];
                     return false;
                 }
 
@@ -64,7 +64,7 @@
             else if ([contentItem isKindOfClass:
                         [SwrveContentHTML class]] || [contentItem isKindOfClass:[SwrveContentStarRating class]]) {
                 if([self isFontAssetMissing:contentItem.style inCache: assets]) {
-                    DebugLog(@"Conversation asset not yet downloaded: %@", contentItem.style);
+                    [SwrveLogger error:@"Conversation asset not yet downloaded: %@", contentItem.style];
                     return false;
                 }
             }
@@ -72,14 +72,14 @@
             else if ([contentItem isKindOfClass:[SwrveInputMultiValue class]]) {
                 SwrveInputMultiValue *inputMultiValue = (SwrveInputMultiValue*) contentItem;
                 if([self isFontAssetMissing:inputMultiValue.style inCache: assets]) {
-                    DebugLog(@"Conversation asset not yet downloaded: %@", inputMultiValue.style);
+                    [SwrveLogger error:@"Conversation asset not yet downloaded: %@", inputMultiValue.style];
                     return false;
                 }
 
                 for (NSDictionary *value in inputMultiValue.values) {
                     NSDictionary *style = [value objectForKey:@"style"];
                     if([self isFontAssetMissing:style inCache: assets]) {
-                        DebugLog(@"Conversation asset not yet downloaded: %@", style);
+                        [SwrveLogger error:@"Conversation asset not yet downloaded: %@", style];
                         return false;
                     }
                 }
@@ -89,7 +89,7 @@
         // check font asset in button
         for (SwrveConversationButton *button in page.controls) {
             if([self isFontAssetMissing:button.style inCache: assets]) {
-                DebugLog(@"Conversation asset not yet downloaded: %@", button.style);
+                [SwrveLogger error:@"Conversation asset not yet downloaded: %@", button.style];
                 return false;
             }
         }

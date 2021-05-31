@@ -9,9 +9,9 @@
                 "conditions": {}
             }],
             "message_center": true,
-            "subject": "Personalised Campaign",
+            "subject": "Personalized Campaign",
             "start_date":1362671700000,
-            "messages":[
+            "message":
                 {
                     "template":{
                         "template_id":"20",
@@ -59,7 +59,7 @@
                                 ],
                                 "buttons":[
                                     {
-                                        "name":"personalised_button",
+                                        "name":"personalized_button",
                                         "x":{
                                             "type":"number",
                                             "value":-200
@@ -183,7 +183,7 @@
                                 ],
                                 "buttons":[
                                     {
-                                        "name":"personalised_button",
+                                        "name":"personalized_button",
                                         "x":{
                                             "type":"number",
                                             "value":-200
@@ -271,8 +271,7 @@
                     "rules":{
 
                     }
-                }
-            ],
+                },
             "rules":{
                 "display_order":"random",
                 "dismiss_after_views":20,
@@ -291,5 +290,5 @@
         "max_messages_per_session":999,
         "delay_first_message":0
     },
-    "version":2
+    "version": 2
 }

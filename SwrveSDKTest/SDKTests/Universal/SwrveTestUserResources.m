@@ -82,7 +82,7 @@
 
     NSArray *resourcesExample = [NSArray arrayWithObjects:resourceExample, nil];
 
-    [swrveMock updateResources:resourcesExample writeToCache:YES]; // callbackCounter will increment once
+    [swrveMock updateResources:resourcesExample writeToCache:YES];
     XCTAssertEqual(1, [[resourceManager resources] count]);
 
     SwrveResource *resource = [resourceManager resourceWithId:@"animal.zebra"];
@@ -93,9 +93,9 @@
     XCTAssertTrue([resource attributeAsBool:@"tail" withDefault:NO]);
     XCTAssertFalse([resource attributeAsBool:@"purchased" withDefault:YES]);
     
-    XCTAssertEqual(callbackCounter, 3);
+    XCTAssertEqual(callbackCounter, 2);
     [swrveMock refreshCampaignsAndResources];
-    XCTAssertEqual(callbackCounter, 3); // callback should not be called again because the flag campaignsAndResourcesInitialized prevents it. 
+    XCTAssertEqual(callbackCounter, 2); // callback should not be called again because the flag campaignsAndResourcesInitialized prevents it. 
 }
 
 - (void)testGetUserResourcesCallback {

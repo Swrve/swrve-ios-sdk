@@ -1,6 +1,6 @@
 #import "SwrveMigrationsManager.h"
-#if __has_include(<SwrveSDKCommon/SwrveUser.h>)
-#import <SwrveSDKCommon/SwrveUser.h>
+#if __has_include(<SwrveSDK/SwrveUser.h>)
+#import <SwrveSDK/SwrveUser.h>
 #else
 #import "SwrveUser.h"
 #endif
@@ -49,7 +49,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
             if (oldCacheVersion < SWRVE_SDK_CACHE_VERSION) {
                 [self migrateFromVersion:oldCacheVersion];
             } else {
-                DebugLog(@"No cache migration required.", nil);
+                [SwrveLogger debug:@"No cache migration required.", nil];
             }
         }
 
@@ -82,7 +82,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSError *error = nil;
     BOOL success = [cacheVersionString writeToFile:_cacheVersionFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     if (!success) {
-        DebugLog(@"Could not set current cache version to %i in filePath:%@. Error: %@ %@", cacheVersion, _cacheVersionFilePath, error, [error userInfo]);
+        [SwrveLogger error:@"Could not set current cache version to %i in filePath:%@. Error: %@ %@", cacheVersion, _cacheVersionFilePath, error, [error userInfo]];
     } else {
         // file protection will inherit from parent(s) so explicitly set it here
         [SwrveLocalStorage setFileProtectionNone:_cacheVersionFilePath];
@@ -115,7 +115,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
 }
 
 - (void)migrate0 {
-    DebugLog(@"Executing version 0 migration code. Migrate legacy data from cache directory to application data. And change protection level.", nil);
+    [SwrveLogger debug:@"Executing version 0 migration code. Migrate legacy data from cache directory to application data. And change protection level.", nil];
     NSString* cachePath = [SwrveLocalStorage cachePath];
     NSString* applicationSupportPath = [SwrveLocalStorage applicationSupportPath];
     NSString* documentPath = [SwrveLocalStorage documentPath];
@@ -154,12 +154,12 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
         NSError *error1;
         [[NSFileManager defaultManager] copyItemAtURL:eventSecondaryFilename toURL:eventFilename error:&error1];
         if (error1) {
-            DebugLog(@"Event File migration failed while copying to new file. Error: %@", error1);
+            [SwrveLogger error:@"Event File migration failed while copying to new file. Error: %@", error1];
         }
         NSError *error2;
         [[NSFileManager defaultManager] removeItemAtURL:eventSecondaryFilename error:&error2];
         if (error2) {
-            DebugLog(@"Event File migration failed while deleting old file. Error: %@", error2);
+            [SwrveLogger error:@"Event File migration failed while deleting old file. Error: %@", error2];
         }
     }
 
@@ -218,12 +218,12 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
         NSError *error1;
         [[NSFileManager defaultManager] copyItemAtPath:oldPath toPath:newPath error:&error1];
         if (error1) {
-            DebugLog(@"Event File migration failed while copying to new file. oldPath:%@ newPath:%@ Error:%@", oldPath, newPath, error1);
+            [SwrveLogger error:@"Event File migration failed while copying to new file. oldPath:%@ newPath:%@ Error:%@", oldPath, newPath, error1];
         }
         NSError *error2;
         [[NSFileManager defaultManager] removeItemAtPath:oldPath error:&error2];
         if (error2) {
-            DebugLog(@"Event File migration failed while deleting old file oldPath:%@ Error: %@", oldPath, error2);
+            [SwrveLogger error:@"Event File migration failed while deleting old file oldPath:%@ Error: %@", oldPath, error2];
         }
     }
 }
@@ -241,7 +241,6 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSDictionary *attributes = nil;
     NSString *protectionAttributeValue = nil;
     NSError *error = nil;
-
     attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
     if (attributes != nil) {
         protectionAttributeValue = [attributes valueForKey:NSFileProtectionKey];
@@ -249,13 +248,17 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
             result = NO;
         }
     } else {
-        DebugLog(@"There was an issue finding the level of file protection for : %@  \nError: %@", path, error);
+        if (error) {
+            [SwrveLogger error:@"Unable to set file protection %@", [error localizedDescription]];
+        } else {
+            [SwrveLogger debug:@"Unable to set file protection, the file might not exist yet: %@", [path lastPathComponent]];
+        }
     }
     return result;
 }
 
 - (void)migrate1 {
-    DebugLog(@"Executing version 1 migration code. Migrate data per userId", nil);
+    [SwrveLogger debug:@"Executing version 1 migration code. Migrate data per userId", nil];
     NSString *userId = nil;
     userId = [SwrveLocalStorage swrveUserId];
 
@@ -264,7 +267,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
         [self migrate_1_SeqNumWithUserId:userId];
         [self migrate_1_ApplicationSupportFiles:userId];
     } else {
-        DebugLog(@"Cannot run userId dependent migrations for v1 because no user logged in.", nil);
+        [SwrveLogger debug:@"Cannot run userId dependent migrations for v1 because no user logged in.", nil];
     }
 }
 
@@ -277,12 +280,10 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] moveItemAtPath:currentFilePath toPath:newFilePath error:&error];
     if (success == YES) {
-        DebugLog(@"Migrated the install date file for userId: %@", userId);
-    } else {
-        DebugLog(@"There was an issue migrating the install date file for userId: %@", userId);
+        [SwrveLogger debug:@"Migrated the install date file for userId: %@", userId];
     }
-    if (error) {
-        DebugLog(@"There was an issue migrating the install date file for userId: %@  \nError: %@", userId, error);
+    else if (error) {
+        [SwrveLogger error:@"There was an issue migrating the install date file for userId: %@  \nError: %@", userId, [error localizedDescription]];
     }
 }
 
@@ -294,41 +295,41 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldSeqNumKey];
     BOOL success = [[NSUserDefaults standardUserDefaults] synchronize];
     if (success) {
-        DebugLog(@"Migrated the seqnum NSUserDefault for userId: %@", userId);
+        [SwrveLogger debug:@"Migrated the seqnum NSUserDefault for userId: %@", userId];
     } else {
-        DebugLog(@"There was an issue migrating the seqnum NSUserDefault for userId: %@", userId);
+        [SwrveLogger error:@"There was an issue migrating the seqnum NSUserDefault for userId: %@", userId];
     }
 }
 
 - (void)migrate_1_ApplicationSupportFiles:(NSString *)userId {
-    DebugLog(@"Migrating the com.swrve.messages.settings.plist file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the com.swrve.messages.settings.plist file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"com.swrve.messages.settings.plist"];
 
-    DebugLog(@"Migrating the cmcc2.json file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the cmcc2.json file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"cmcc2.json"];
 
-    DebugLog(@"Migrating the cmccsgt2.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the cmccsgt2.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"cmccsgt2.txt"];
 
-    DebugLog(@"Migrating the lc.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the lc.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"lc.txt"];
 
-    DebugLog(@"Migrating the lcsgt.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the lcsgt.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"lcsgt.txt"];
 
-    DebugLog(@"Migrating the srcngt2.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the srcngt2.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"srcngt2.txt"];
 
-    DebugLog(@"Migrating the srcngtsgt2.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the srcngtsgt2.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"srcngtsgt2.txt"];
 
-    DebugLog(@"Migrating the rsdfngt2.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the rsdfngt2.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"rsdfngt2.txt"];
 
-    DebugLog(@"Migrating the rsdfngtsgt2.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the rsdfngtsgt2.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"rsdfngtsgt2.txt"];
 
-    DebugLog(@"Migrating the swrve_events.txt file for userId: %@", userId);
+    [SwrveLogger debug:@"Migrating the swrve_events.txt file for userId: %@", userId];
     [self migrate_1_ApplicationSupportFilesForUserId:userId andFileName:@"swrve_events.txt"];
 }
 
@@ -343,17 +344,15 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] moveItemAtPath:currentFilePath toPath:newFilePath error:&error];
     if (success == YES) {
-        DebugLog(@"Migrated the %@ file for userId: %@", currentFileName, userId);
-    } else {
-        DebugLog(@"There was an issue migrating the %@ file for userId: %@", currentFileName, userId);
+        [SwrveLogger debug:@"Migrated the %@ file for userId: %@", currentFileName, userId];
     }
-    if (error) {
-        DebugLog(@"There was an issue migrating the %@ file for userId: %@ \nError: %@", currentFileName, userId, error);
+    else if (error) {
+        [SwrveLogger error:@"There was an issue migrating the %@ file for userId: %@ \nError: %@", currentFileName, userId, [error localizedDescription]];
     }
 }
 
 - (void)migrate2 {
-    DebugLog(@"Executing version 2 migration code.");
+    [SwrveLogger debug:@"Executing version 2 migration code.", nil];
     NSString *userId = [SwrveLocalStorage swrveUserId];
     if (userId && [userId length] > 0) {
         [self migrate_2_AppInstallDateForUserId:userId];
@@ -362,7 +361,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
 }
 
 - (void)migrate_2_AppInstallDateForUserId:(NSString *)userId {
-    DebugLog(@"Executing version 2 migration code. Copy existing swrve install date from current user to be used as the app install date.", nil);
+    [SwrveLogger debug:@"Executing version 2 migration code. Copy existing swrve install date from current user to be used as the app install date.", nil];
 
     NSString *documentPath = [SwrveLocalStorage documentPath];
     NSString *currentUserJoinedFileName = [userId stringByAppendingString:@"swrve_install.txt"];
@@ -372,37 +371,35 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] copyItemAtPath:currentUserJoinedFilePath toPath:newFilePath error:&error];
     if (success == YES) {
-        DebugLog(@"Copied the current user joined date file as app install date", nil);
-    } else {
-        DebugLog(@"There was an issue copying the current user joined date file as app install date", nil);
+        [SwrveLogger debug:@"Copied the current user joined date file as app install date", nil];
     }
-    if (error) {
-        DebugLog(@"There was an issue copying the current user joined date file as app install date:\nError: %@", error);
+    else if (error) {
+        [SwrveLogger error:@"There was an issue copying the current user joined date file as app install date:\nError: %@", [error localizedDescription]];
     }
 
     UInt64 installTime = [SwrveLocalStorage userJoinedTimeSeconds:userId];
     if (installTime > 0)  {
         [SwrveLocalStorage saveAppInstallTime:installTime];
-        DebugLog(@"Copied current user's joined date as the app install date for all users", nil);
+        [SwrveLogger debug:@"Copied current user's joined date as the app install date for all users", nil];
     }
 }
 
 - (void)migrate_2_EtagForUserId:(NSString *)userId {
-    DebugLog(@"Executing version 2 migration code. Migrate etag", nil);
+    [SwrveLogger debug:@"Executing version 2 migration code. Migrate etag", nil];
     NSString *oldETagKey = @"campaigns_and_resources_etag";
     NSString *currentETagValue = [[NSUserDefaults standardUserDefaults] stringForKey:oldETagKey];
     [SwrveLocalStorage saveETag:currentETagValue forUserId:userId];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:oldETagKey];
     BOOL success = [[NSUserDefaults standardUserDefaults] synchronize];
     if (success) {
-        DebugLog(@"Migrated the etag NSUserDefault for userId: %@", userId);
+        [SwrveLogger debug:@"Migrated the etag NSUserDefault for userId: %@", userId];
     } else {
-        DebugLog(@"There was an issue migrating the etag NSUserDefault for userId: %@", userId);
+        [SwrveLogger error:@"There was an issue migrating the etag NSUserDefault for userId: %@", userId];
     }
 }
 
 - (void)migrate3 {
-    DebugLog(@"Executing version 3 migration code - set file protection to NSFileProtectionNone", nil);
+    [SwrveLogger debug:@"Executing version 3 migration code - set file protection to NSFileProtectionNone", nil];
 
     // cache version file
     [SwrveLocalStorage setFileProtectionNone:cacheVersionFilePath];
@@ -428,7 +425,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
             NSSet *classes = [NSSet setWithArray:@[[NSArray class],[SwrveUser class]]];
             swrveUsers = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:swrveUsersData error:&error];
             if (error) {
-                DebugLog(@"Failed to un archive swrve user: %@",[error localizedDescription]);
+                [SwrveLogger error:@"Failed to un archive swrve user: %@", [error localizedDescription]];
             }
         } else {
             // Fallback on earlier versions
@@ -439,7 +436,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
         }
         
         if (error) {
-            DebugLog(@"Executing version 3 migration code - error getting swrve users:%@", [error localizedDescription]);
+            [SwrveLogger error:@"Executing version 3 migration code - error getting swrve users:%@", [error localizedDescription]];
         } else if (swrveUsers != nil) {
             for (SwrveUser *swrveUser in swrveUsers) {
                 if (![currentUserId isEqualToString:[swrveUser swrveId]]) { // No need to migrate the current user as it was done above.
@@ -451,7 +448,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
 }
 
 - (void)migrate_3_ForUserId:(NSString *)userId {
-    DebugLog(@"Executing version 3 migration code - for userdId:%@", userId);
+    [SwrveLogger debug:@"Executing version 3 migration code - for userdId:%@", userId];
 
     // user install file
     NSString *userInstallFilePath = [SwrveLocalStorage userInitDateFilePath:userId];

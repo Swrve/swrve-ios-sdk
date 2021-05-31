@@ -8,6 +8,7 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveConversationItemViewController.h"
 #import "SwrveCampaign.h"
+#import "SwrveMessageController.h"
 
 @interface SwrveMessageController ()
 - (NSString *)campaignQueryString API_AVAILABLE(ios(7.0));
@@ -28,6 +29,7 @@
 @end
 
 @interface Swrve()
+@property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrveRESTClient *restClient;
 @property NSMutableArray* eventBuffer;
 @property NSURL* eventFilename;
@@ -431,10 +433,10 @@ NSString *mockCacheDir;
     }]]);
 }
 
-- (void)testHandleDeeplink_Personalisation_MessageShown {
+- (void)testHandleDeeplink_Personalization_MessageShown {
     Swrve *swrve = [Swrve alloc];
 
-    SwrveMessagePersonalisationCallback personalisationCallback = ^(NSDictionary* eventPayload) {
+    SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary* eventPayload) {
         return @{@"test_key": @"test_value"};
     };
     
@@ -444,7 +446,7 @@ NSString *mockCacheDir;
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
     SwrveMessageController *vc = swrve.messaging;
-    [vc setPersonalisationCallback:personalisationCallback];
+    [vc setPersonalizationCallback:personalizationCallback];
     
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
     id mockRestClient = OCMPartialMock(restClient);
@@ -452,7 +454,7 @@ NSString *mockCacheDir;
     id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
     OCMExpect([mockResponse statusCode]).andReturn(200);
     
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalisation" ofType:@"json"];
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalization" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
@@ -488,7 +490,7 @@ NSString *mockCacheDir;
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }
 
-- (void)testHandleDeeplink_Personalisation_MessageNotShown {
+- (void)testHandleDeeplink_Personalization_MessageNotShown {
     Swrve *swrve = [Swrve alloc];
     id swrveMock = OCMPartialMock(swrve);
 #pragma clang diagnostic push
@@ -502,7 +504,7 @@ NSString *mockCacheDir;
     id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
     OCMExpect([mockResponse statusCode]).andReturn(200);
     
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalisation" ofType:@"json"];
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_personalization" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
@@ -517,6 +519,64 @@ NSString *mockCacheDir;
     
     SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
     XCTAssertNil(mvc);
+}
+
+- (void)testHandleDeeplink_ImagePersonalization_MessageShown {
+    Swrve *swrve = [Swrve alloc];
+    SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary* eventPayload) {
+        return @{@"test_key_with_fallback": @"asset1"};
+    };
+    
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveInAppMessageConfig *inAppConfig = [SwrveInAppMessageConfig new];
+    [inAppConfig setPersonalizationCallback:personalizationCallback];
+    [config setInAppMessageConfig:inAppConfig];
+    
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+    SwrveMessageController *vc = swrve.messaging;
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message_image_personalization" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
+    [swrveDeeplinkManger handleDeeplink:url];
+    
+    XCTAssertTrue(vc != nil);
+    
+    SwrveMessageViewController *mvc = (SwrveMessageViewController*)vc.inAppMessageWindow.rootViewController;
+    XCTAssertTrue(mvc != nil);
+    XCTAssertEqual(vc.inAppMessageWindow.backgroundColor, [UIColor clearColor]);
+    
+    SwrveMessage *message = mvc.message;
+    XCTAssertTrue([message.name isEqualToString:@"Image Personalization Campaign"]);
+    XCTAssertTrue([message.messageID isEqualToNumber:@298087]);
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        //Check events buffer for impression event
+        NSArray *eventsBuffer = [swrveMock eventBuffer];
+        if ([eventsBuffer count] >0) {
+            NSString *bufferString = (NSString*)(eventsBuffer[0]);
+            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298087.impression"]);
+
+        }
+        return false;
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }
 
 - (void)testHandleDeeplink_Embedded_CallbackFired {

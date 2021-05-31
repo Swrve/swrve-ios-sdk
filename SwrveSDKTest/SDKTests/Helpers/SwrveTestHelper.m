@@ -15,11 +15,11 @@
 + (void)markAsMigrated;
 @end
 
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 @interface SwrvePush (SwrvePushInternalAccess)
 + (void)resetSharedInstance;
 @end
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 @implementation SwrveTestHelper
 
@@ -219,7 +219,7 @@
 #if __has_include(<OCMock/OCMock.h>)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wgnu"
-#if !defined(SWRVE_NO_PUSH)
+#if TARGET_OS_IOS
     classMock = OCMClassMock([SwrvePermissions class]);
     OCMStub(ClassMethod([classMock pushAuthorizationWithSDK:OCMOCK_ANY])).andReturn(@"unittest");
 #endif
@@ -288,6 +288,14 @@
 }
 
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config {
+    return [self initialiseSwrveWithFile:filename type:SWRVE_CAMPAIGN_FILE andConfig:config];
+}
+
++ (Swrve *)initializeSwrveWithRealTimeUserPropertiesFile:(NSString *)filename andConfig:(SwrveConfig *)config {
+    return [self initialiseSwrveWithFile:filename type:SWRVE_REAL_TIME_USER_PROPERTIES_FILE andConfig:config];
+}
+
++ (Swrve *)initialiseSwrveWithFile:(NSString *)filename type:(int)fileType andConfig:(SwrveConfig *)config {
     NSArray *assets = [self testJSONAssets];
     [self createDummyAssets:assets];
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:1362873600];
@@ -302,7 +310,7 @@
     [SwrveLocalStorage saveUserJoinedTime:secondsSinceEpoch forUserId:userId];
     // Set as migrated to avoid running migrations in this tests
     [SwrveMigrationsManager markAsMigrated];
-    SwrveSignatureProtectedFile *campaignFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:SWRVE_CAMPAIGN_FILE
+    SwrveSignatureProtectedFile *campaignFile = [[SwrveSignatureProtectedFile alloc] protectedFileType:fileType
                                                                                                 userID:userId
                                                                                           signatureKey:signatureKey
                                                                                          errorDelegate:nil];
@@ -310,7 +318,7 @@
 
     [config setAutoDownloadCampaignsAndResources:NO];
 
-    DebugLog(@"Finished setting up campaign data for unit tests...", nil);
+    [SwrveLogger debug:@"Finished setting up campaign data for unit tests...", nil];
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     OCMStub([swrveMock getNow]).andReturn(date);
     swrveMock = [swrveMock initWithAppID:123 apiKey:apiKey config:config];

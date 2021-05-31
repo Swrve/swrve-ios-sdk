@@ -10,6 +10,12 @@
 
 @end
 
+@interface SwrveMessageController(SwrveTestAPI)
+
+- (SwrveConversation *)conversationForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
+
+@end
+
 @implementation SwrveTestConversationsHelper
 
 +(TestableSwrve*)initializeWithCampaignsFile:(NSString*)filename andConfig:(SwrveConfig*)config {
@@ -38,13 +44,10 @@
     // Start real SDK instance we are going to use
     if (config == nil) {
         config = [[SwrveConfig alloc] init];
-#if !defined(SWRVE_NO_PUSH)
-        config.autoCollectDeviceToken = NO;
-#endif
     }
     [config setAutoDownloadCampaignsAndResources:NO];
  
-    DebugLog(@"Finished setting up campaign data for unit tests...", nil);
+    [SwrveLogger debug:@"Finished setting up campaign data for unit tests...", nil];
     
     // March 10, 2013
     TestableSwrve* swrve = [TestableSwrve sharedInstanceWithAppID:123 apiKey:apiKey config:config customNow:date];

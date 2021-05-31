@@ -45,13 +45,4 @@
     return kSwrveEmbeddedDataTypeOther;
 }
 
--(void)wasShownToUser {
-//TODO: https://swrvedev.jira.com/browse/SWRVE-27162
-    
-    //SwrveMessageController* c = self.controller;
-//    if (c != nil) {
-//        [c messageWasShownToUser:self];
-//    }
-}
-
 @end

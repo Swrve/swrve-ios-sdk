@@ -94,12 +94,12 @@
 #if TARGET_OS_IOS /** exclude tvOS **/
 
     if (!conversation || conversationItemViewController == nil || conversationWindow == nil) {
-        DebugLog(@"Unable to showConversation.", nil);
+        [SwrveLogger error:@"Unable to showConversation.", nil];
         return false;
     }
 
     if ([SwrveConversationItemViewController hasUnknownContentAtoms:conversation]) {
-        DebugLog(@"Unable to showConversation. Conversation %i contains unknown atoms", [conversation.conversationID intValue]);
+        [SwrveLogger error:@"Unable to showConversation. Conversation %i contains unknown atoms", [conversation.conversationID intValue]];
         return false;
     }
 
@@ -135,7 +135,7 @@
     return true;
     
 #elif TARGET_OS_TV
-    DebugLog(@"Conversations are not supported on tvOS.", nil);
+    [SwrveLogger error:@"Conversations are not supported on tvOS.", nil];
     return false;
 #endif
 }
@@ -366,10 +366,10 @@
             NSURL *callUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", param]];
             if (@available(iOS 10.0, *)) {
                 [[UIApplication sharedApplication] openURL:callUrl options:@{} completionHandler:^(BOOL success) {
-                    DebugLog(@"Opening url [%@] successfully: %d", callUrl, success);
+                    [SwrveLogger debug:@"Opening url [%@] successfully: %d", callUrl, success];
                 }];
             } else {
-                DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
+                [SwrveLogger error:@"Could not open url, not supported (should not reach this code)", nil];
             }
             break;
         }
@@ -389,15 +389,15 @@
                 // the user doesn't have the app installed, which leads to confusing behaviour
                 // Notify the user that the app isn't available and then just return.
                 [SwrveConversationEvents error:conversation onPage:conversationPaneTag withControl:control.tag];
-                DebugLog(@"Could not open the Conversation URL: %@", param, nil);
+                [SwrveLogger error:@"Could not open the Conversation URL: %@", param, nil];
             } else {
                 [SwrveConversationEvents linkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
                 if (@available(iOS 10.0, *)) {
                     [[UIApplication sharedApplication] openURL:target options:@{} completionHandler:^(BOOL success) {
-                        DebugLog(@"Opening url [%@] successfully: %d", target, success);
+                        [SwrveLogger debug:@"Opening url [%@] successfully: %d", target, success];
                     }];
                 } else {
-                    DebugLog(@"Could not open url, not supported (should not reach this code)", nil);
+                    [SwrveLogger error:@"Could not open url, not supported (should not reach this code)", nil];
                 }
             }
             break;
@@ -405,7 +405,7 @@
         case SwrvePermissionRequestActionType: {
             // Ask for the configured permission
             if(![[SwrveCommon sharedInstance] processPermissionRequest:param]) {
-                DebugLog(@"Unknown permission request %@", param, nil);
+                [SwrveLogger error:@"Unknown permission request %@", param, nil];
             } else {
                 [SwrveConversationEvents permissionRequest:conversation onPage:conversationPaneTag withControl:control.tag];
             }
@@ -420,10 +420,10 @@
             [SwrveConversationEvents deeplinkVisit:conversation onPage:conversationPaneTag withControl:control.tag];
             if (@available(iOS 10.0, *)) {
                 [[UIApplication sharedApplication] openURL:target options:@{} completionHandler:^(BOOL success) {
-                    DebugLog(@"Opening url [%@] successfully: %d", target, success);
+                    [SwrveLogger debug:@"Opening url [%@] successfully: %d", target, success];
                 }];
             } else {
-                DebugLog(@"Could not open deeplink, not supported (should not reach this code)", nil);
+                [SwrveLogger error:@"Could not open deeplink, not supported (should not reach this code)", nil];
             }
         }
         default:

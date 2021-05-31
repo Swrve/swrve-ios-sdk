@@ -1,5 +1,3 @@
-#if !defined(SWRVE_NO_PUSH)
-
 #import "SwrvePush.h"
 #import "SwrveSwizzleHelper.h"
 #import "SwrveCampaignInfluence.h"
@@ -183,7 +181,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
         NSString *targetedUserId = userInfo[SwrveNotificationAuthenticatedUserKey];
         if (![targetedUserId isEqualToString:localUserId]) {
-            DebugLog(@"Could not handle authenticated notification.", nil);
+            [SwrveLogger error:@"Could not handle authenticated notification.", nil];
             return NO;
         }
 
@@ -217,7 +215,7 @@ NSString *const SwrveContentVersionKey = @"version";
                         
                         //if media url was present and failed to download, we wont show the push
                         if ([content.userInfo[SwrveNotificationMediaDownloadFailed] boolValue]) {
-                            DebugLog(@"Media download failed, authenticated push does not support fallback text", nil);
+                            [SwrveLogger error:@"Media download failed, authenticated push does not support fallback text", nil];
                             if (completionHandler != nil) {
                                 completionHandler(UIBackgroundFetchResultFailed, nil);
                             }
@@ -236,9 +234,9 @@ NSString *const SwrveContentVersionKey = @"version";
 
                         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *_Nullable error) {
                             if (error == nil) {
-                                DebugLog(@"Authenticated notification completed correctly", nil);
+                                [SwrveLogger debug:@"Authenticated notification completed correctly", nil];
                             } else {
-                                DebugLog(@"Authenticated Notification error %@", error);
+                                [SwrveLogger error:@"Authenticated Notification error %@", error];
                             }
                             if (completionHandler != nil) {
                                 completionHandler(UIBackgroundFetchResultNewData, nil);
@@ -262,7 +260,7 @@ NSString *const SwrveContentVersionKey = @"version";
     int contentVersion = [(NSNumber *) [sw objectForKey:SwrveContentVersionKey] intValue];
     sw = nil; // set pointer to nil so the OS can clean it up. This is done because Service Extensions have a low memory ceiling
     if (contentVersion > SwrveContentVersion) {
-        DebugLog(@"Could not process notification because version is incompatible", nil);
+        [SwrveLogger error:@"Could not process notification because version is incompatible", nil];
         callback([notificationContent mutableCopy]);
         return;
     }
@@ -277,14 +275,14 @@ NSString *const SwrveContentVersionKey = @"version";
         } else if ([pushIdentifier isKindOfClass:[NSNumber class]]) {
             pushId = [((NSNumber *) pushIdentifier) stringValue];
         } else {
-            DebugLog(@"Unknown Swrve notification ID class for _p attribute", nil);
+            [SwrveLogger error:@"Unknown Swrve notification ID class for _p attribute", nil];
             callback([notificationContent mutableCopy]);
             return;
         }
-        DebugLog(@"Got Swrve Notification with id:%@", pushId);
+        [SwrveLogger debug:@"Got Swrve Notification with id:%@", pushId];
         [SwrveCampaignInfluence saveInfluencedData:notificationContent.userInfo withId:pushId withAppGroupID:appGroupIdentifier atDate:[NSDate date]];
     } else {
-        DebugLog(@"Got unidentified notification", nil);
+        [SwrveLogger debug:@"Got unidentified notification", nil];
         callback([notificationContent mutableCopy]);
         return;
     }
@@ -294,7 +292,7 @@ NSString *const SwrveContentVersionKey = @"version";
         if (content) {
             callback(content);
         } else {
-            DebugLog(@"Push Content did not load correctly", nil);
+            [SwrveLogger error:@"Push Content did not load correctly", nil];
             callback([notificationContent mutableCopy]);
         }
     }];
@@ -361,7 +359,7 @@ NSString *const SwrveContentVersionKey = @"version";
         } else if ([pushIdentifier isKindOfClass:[NSNumber class]]) {
             pushId = [((NSNumber *) pushIdentifier) stringValue];
         } else {
-            DebugLog(@"Unknown Swrve notification ID class for _sp attribute", nil);
+            [SwrveLogger error:@"Unknown Swrve notification ID class for _sp attribute", nil];
             return NO;
         }
 
@@ -384,17 +382,17 @@ NSString *const SwrveContentVersionKey = @"version";
                         completionHandler(UIBackgroundFetchResultNoData, nil);
                     }
                 } @catch (NSException *exception) {
-                    DebugLog(@"Could not execute the silent push listener: %@", exception.reason);
+                    [SwrveLogger error:@"Could not execute the silent push listener: %@", exception.reason];
                 }
             }
-            DebugLog(@"Got Swrve silent notification with ID %@", pushId);
+            [SwrveLogger debug:@"Got Swrve silent notification with ID %@", pushId];
             return YES;
         } else {
-            DebugLog(@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId);
+            [SwrveLogger warning:@"Got Swrve notification with ID %@, ignoring as we already processed it", pushId];
             return NO;
         }
     } else {
-        DebugLog(@"Got unidentified notification", nil);
+        [SwrveLogger debug:@"Got unidentified notification", nil];
         return NO;
     }
 }
@@ -405,7 +403,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
 - (void)saveConfigForPushDelivery {
     if (_commonDelegate == NULL) {
-        DebugLog(@"Error: Could not storage SwrveCampaignDelivery necesarry info to trigger this event later", nil);
+        [SwrveLogger error:@"Error: Could not store SwrveCampaignDelivery necessary info to trigger this event later", nil];
     }
 
     [SwrveCampaignDelivery saveConfigForPushDeliveryWithUserId:_commonDelegate.userID
@@ -425,7 +423,7 @@ NSString *const SwrveContentVersionKey = @"version";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
     if (_commonDelegate == NULL) {
-        DebugLog(@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil);
+        [SwrveLogger error:@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil];
     } else {
         if (_pushDelegate) {
             [_pushDelegate deviceTokenIncoming:newDeviceToken];
@@ -440,9 +438,9 @@ NSString *const SwrveContentVersionKey = @"version";
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
     if (_commonDelegate == NULL) {
-        DebugLog(@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil);
+        [SwrveLogger error:@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil];
     } else {
-        DebugLog(@"Could not auto collected device token.", nil);
+        [SwrveLogger debug:@"Could not auto collected device token.", nil];
 
         if (pushInstance->didFailToRegisterForRemoteNotificationsWithErrorImpl != NULL) {
             id target = [SwrveCommon sharedUIApplication].delegate;
@@ -453,5 +451,3 @@ NSString *const SwrveContentVersionKey = @"version";
 
 #endif //!TARGET_OS_TV
 @end
-
-#endif

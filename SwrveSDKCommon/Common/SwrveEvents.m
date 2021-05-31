@@ -6,7 +6,6 @@
 
 @implementation SwrveEvents : NSObject
 
-static NSString *const LOG_SOURCE_GEO_SDK = @"geo-sdk";
 static NSString *const LOG_SOURCE_SDK = @"sdk";
 static NSString *const LOG_TYPE_KEY = @"log_type";
 static NSString *const TYPE_KEY = @"type";
@@ -47,7 +46,7 @@ static NSString *const SEQNUM_KEY = @"seqnum";
         NSMutableDictionary *campaignDic = [NSMutableDictionary new];
         [campaignDic setValue:[campaign objectForKey:@"id"] forKey:@"id"];
         NSDictionary *conversation = campaign[@"conversation"];
-        NSDictionary *message = campaign[@"messages"][0];
+        NSDictionary *message = campaign[@"message"];
 
         if (conversation != nil && conversation[@"id"] != nil) {
             NSInteger variantID = [conversation[@"id"] integerValue];
@@ -92,41 +91,6 @@ static NSString *const SEQNUM_KEY = @"seqnum";
 
     [qaLog setValue:logDetails forKey:LOG_DETAILS_KEY];
     
-    return qaLog;
-}
-
-#pragma mark QA GEO-SDK Events
-
-+ (NSMutableDictionary *)qalogGeoCampaignTriggered:(NSArray *)campaigns
-              fromGeoPlaceId:(NSString *)geoplaceId
-               andGeofenceId:(NSString *)geofenceId
-                                     andActionType:(NSString *)actionType {
-
-    NSNumber *time = [NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]];
-    NSMutableDictionary *qaLog = [@{TIME_KEY: time, TYPE_KEY: LOG_QA_TYPE, LOG_TYPE_KEY: @"geo-campaign-triggered", LOG_SOURCE_KEY: LOG_SOURCE_GEO_SDK} mutableCopy];
-    NSDictionary *logDetails = @{
-            @"geoplace_id": @([geoplaceId longLongValue]),
-            @"geofence_id": @([geofenceId longLongValue]),
-            @"action_type": ObjectOrNull(actionType),
-            @"campaigns": ObjectOrNull(campaigns)
-    };
-    [qaLog setValue:logDetails forKey:LOG_DETAILS_KEY];
-    return qaLog;
-}
-
-+ (NSMutableDictionary *)qalogGeoCampaignsDownloaded:(NSArray *)campaigns
-                               fromGeoPlaceId:(NSString *)geoplaceId
-                                andGeofenceId:(NSString *)geofenceId
-                                andActionType:(NSString *)actionType {
-    NSNumber *time = [NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]];
-    NSMutableDictionary *qaLog = [@{TIME_KEY: time, TYPE_KEY: LOG_QA_TYPE, LOG_TYPE_KEY: @"geo-campaigns-downloaded", LOG_SOURCE_KEY: LOG_SOURCE_GEO_SDK} mutableCopy];
-    NSDictionary *logDetails = @{
-            @"geoplace_id": @([geoplaceId longLongValue]),
-            @"geofence_id": @([geofenceId longLongValue]),
-            @"action_type": ObjectOrNull(actionType),
-            @"campaigns": ObjectOrNull(campaigns)
-    };
-    [qaLog setValue:logDetails forKey:LOG_DETAILS_KEY];
     return qaLog;
 }
 
@@ -181,15 +145,11 @@ static NSString *const SEQNUM_KEY = @"seqnum";
                                                          error:&error];
 
     if (! jsonData) {
-        DebugLog(@"Got an error: %@", error);
+        [SwrveLogger error:@"Got an error: %@", error];
         return @"{}";
     } else {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
-}
-
-static id ObjectOrNull(id object) {
-    return object ? object : [NSNull null];
 }
 
 @end

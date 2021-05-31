@@ -4,25 +4,24 @@
 #import "SwrveConfig.h"
 #import "SwrveIAPRewards.h"
 #import "SwrveResourceManager.h"
-#import "SwrveMessageController.h"
 #import "SwrveDeeplinkManager.h"
 
-#if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
-#import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
-#import <SwrveSDKCommon/SwrveLocalStorage.h>
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if __has_include(<SwrveSDK/SwrveSignatureProtectedFile.h>)
+#import <SwrveSDK/SwrveSignatureProtectedFile.h>
+#import <SwrveSDK/SwrveLocalStorage.h>
+#if TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
-#endif /*!defined(SWRVE_NO_PUSH) */
+#endif //TARGET_OS_IOS
 #else
 #import "SwrveSignatureProtectedFile.h"
 #import "SwrveLocalStorage.h"
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
-#endif /*!defined(SWRVE_NO_PUSH) */
+#endif //TARGET_OS_IOS
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "6.8.1"
+#define SWRVE_SDK_VERSION "7.0.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -299,7 +298,7 @@ NSString * eventsPayloadAsJSON);
 -(void) shutdown;
 
 #pragma mark - push support block
-#if !defined(SWRVE_NO_PUSH) && TARGET_OS_IOS
+#if TARGET_OS_IOS
 
 /*! Call this method when you get a push notification device token from Apple.
  *
@@ -325,7 +324,7 @@ NSString * eventsPayloadAsJSON);
  */
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary*))completionHandler API_AVAILABLE(ios(7.0));
 
-#endif //!defined(SWRVE_NO_PUSH)
+#endif //TARGET_OS_IOS
 
 /*! Call this method from application:openURL:option
 
@@ -454,12 +453,110 @@ NSString * eventsPayloadAsJSON);
  */
 - (BOOL)started;
 
+#pragma mark Messaging
+
+/*! Inform that am embedded message has been served and processed. This function should be called
+ * by your implementation to update the campaign information and send the appropriate data to
+ * Swrve.
+ *
+ * \param message embedded message that has been processed
+ */
+- (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message;
+
+/*! Process an embedded message engagement event. This function should be called by your
+ * implementation to inform Swrve of a button event.
+ *
+ * \param message embedded message that has been processed
+ * \param button  button that was pressed
+ */
+- (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button;
+
+/*! Get the list active Message Center campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Message Center campaigns independent of their orientation support
+ * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
+ *
+ * \returns List of active Message Center campaigns.
+ */
+- (NSArray *)messageCenterCampaigns;
+
+/*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the current orientation.
+ *
+ * To obtain all Message Center campaigns independent of their orientation support
+ * use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
+ *
+ * \param personalization Personalization properties for in-app messages.
+ * \returns List of active Message Center campaigns.
+ */
+- (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+
+/*! Get the list active Message Center campaigns targeted for this user.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \param orientation Required orientation.
+ * \returns List of active Message Center campaigns that support the given orientation.
+ */
+- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+
+/*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
+ * It will exclude campaigns that have been deleted with the
+ * removeCampaign method and those that do not support the given orientation.
+ *
+ * \param orientation Required orientation.
+ * \param personalization Personalization properties for in-app messages.
+ * \returns List of active Message Center campaigns that support the given orientation.
+*/
+- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+
+#endif
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \returns if the campaign was shown.
+ */
+- (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign;
+
+/*! Display the given campaign without the need to trigger an event and skipping
+ * the configured rules.
+ * \param campaign Campaign that will be displayed.
+ * \param personalization Dictionary <String, String> used to personalise the campaign
+ * \returns if the campaign was shown.
+ */
+- (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalization:(NSDictionary *)personalization;
+
+/*! Remove the given campaign. It won't be returned anymore by the method messageCenterCampaigns.
+ *
+ * \param campaign Campaign that will be removed.
+ */
+- (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign;
+
+/*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
+ *
+ * \param campaign Campaign that will be marked as seen.
+ */
+- (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign;
+
+/*! Call this method after getting the idfa string.
+ *
+ * \param idfa IDFA identifier
+ */
+- (void)idfa:(NSString *)idfa;
+
+#pragma mark -
+
 #pragma mark - Properties
 
 @property (atomic, readonly, strong) ImmutableSwrveConfig * config;           /*!< Configuration for this Swrve object */
 @property (atomic, readonly)         long appID;                              /*!< App ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSString * apiKey;                       /*!< Secret token used to initialize this Swrve object. */
-@property (atomic, readonly)         SwrveMessageController * messaging;      /*!< In-app message component. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */
 #pragma mark -
 

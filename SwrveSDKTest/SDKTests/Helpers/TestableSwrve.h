@@ -4,6 +4,7 @@
 #endif //TARGET_OS_IOS
 
 #import "SwrveSDK.h"
+#import "Swrve+Private.h"
 #import "SwrvePrivateAccess.h"
 
 @interface TestableSwrve : Swrve

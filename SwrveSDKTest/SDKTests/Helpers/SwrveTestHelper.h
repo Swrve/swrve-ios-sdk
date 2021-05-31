@@ -53,5 +53,6 @@
 + (id)swrveMockWithMockedRestClient;
 + (id)swrveMockWithMockedRestClientResponseCode:(int)httpCode mockData:(NSData *)mockData;
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
++ (Swrve *)initializeSwrveWithRealTimeUserPropertiesFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 
 @end

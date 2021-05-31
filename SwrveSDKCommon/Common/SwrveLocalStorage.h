@@ -65,5 +65,7 @@ enum SwrveTrackingState {
 + (NSString *)deviceUUID;
 + (void)saveSwrveUsers:(NSData *)data;
 + (NSData *)swrveUsers;
++ (void)saveIDFA:(NSString *)idfa;
++ (NSString *)idfa;
 
 @end
