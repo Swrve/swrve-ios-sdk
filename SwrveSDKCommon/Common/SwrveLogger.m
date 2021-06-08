@@ -21,7 +21,7 @@ static SwrveLogLevel logLevel = WARNING;
         va_start(args, format);
         NSString *formattedString = [[NSString alloc] initWithFormat:format
                                                            arguments:args];
-        NSLog(@"[SwrveSDK Warning] %@", formattedString);
+        NSLog(@"[SwrveSDK Error] %@", formattedString);
         va_end(args);
     }
 #endif
@@ -35,7 +35,7 @@ static SwrveLogLevel logLevel = WARNING;
         va_start(args, format);
         NSString *formattedString = [[NSString alloc] initWithFormat:format
                                                            arguments:args];
-        NSLog(@"[SwrveSDK Error] %@", formattedString);
+        NSLog(@"[SwrveSDK Warning] %@", formattedString);
         va_end(args);
     }
 #endif

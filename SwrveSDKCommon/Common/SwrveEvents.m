@@ -47,6 +47,7 @@ static NSString *const SEQNUM_KEY = @"seqnum";
         [campaignDic setValue:[campaign objectForKey:@"id"] forKey:@"id"];
         NSDictionary *conversation = campaign[@"conversation"];
         NSDictionary *message = campaign[@"message"];
+        NSDictionary *embedded = campaign[@"embedded_message"];
 
         if (conversation != nil && conversation[@"id"] != nil) {
             NSInteger variantID = [conversation[@"id"] integerValue];
@@ -55,6 +56,10 @@ static NSString *const SEQNUM_KEY = @"seqnum";
         } else if (message != nil && message[@"id"] != nil) {
             NSInteger variantID = [message[@"id"] integerValue];
             [campaignDic setValue:@"iam" forKey:@"type"];
+            [campaignDic setValue:[NSNumber numberWithInteger:variantID] forKey:@"variant_id"];
+        } else if (embedded != nil && embedded[@"id"] != nil){
+            NSInteger variantID = [embedded[@"id"] integerValue];
+            [campaignDic setValue:@"embedded" forKey:@"type"];
             [campaignDic setValue:[NSNumber numberWithInteger:variantID] forKey:@"variant_id"];
         }
 

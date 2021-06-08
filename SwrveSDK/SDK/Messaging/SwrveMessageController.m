@@ -1695,7 +1695,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
                     [self.showMessageDelegate showMessage:message];
                 } else {
-                    [self showMessage:message withPersonalization:personalization];
+                    [self showMessage:message withPersonalization:personalizationProperties];
                 }
             };
 

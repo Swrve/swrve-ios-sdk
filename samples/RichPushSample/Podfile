@@ -15,7 +15,7 @@ target 'RichPushSampleServiceExtension-ObjC' do
   pod 'SwrveSDKCommon', :path => '../../../SwrveSDKCommon-Private.podspec'
 
   #use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDKCommon', '7.0.0'
+  #pod 'SwrveSDKCommon', '7.0.1'
 end
 
 
@@ -28,5 +28,5 @@ target 'RichPushSampleServiceExtension-Swift' do
   use_frameworks!
   pod 'SwrveSDKCommon', :path => '../../../SwrveSDKCommon-Private.podspec'
   #use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDKCommon', '7.0.0'
+  #pod 'SwrveSDKCommon', '7.0.1'
 end
