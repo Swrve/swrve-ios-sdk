@@ -2,7 +2,7 @@ install! 'cocoapods', :generate_multiple_pod_projects => true, :incremental_inst
 platform :ios, '10.0'
 
 def shared_pods
-  pod 'SwrveSDK', :path => '../../../SwrveSDK-Private.podspec'
+  pod 'SwrveSDK', :path => '../../'
   # use remote podfile by commenting out above and uncommenting below
   #pod 'SwrveSDK'
 end
@@ -12,7 +12,7 @@ target 'RichPushSample-ObjC' do
 end
 
 target 'RichPushSampleServiceExtension-ObjC' do
-  pod 'SwrveSDKCommon', :path => '../../../SwrveSDKCommon-Private.podspec'
+  pod 'SwrveSDKCommon', :path => '../../'
 
   #use remote podfile by commenting out above and uncommenting below
   #pod 'SwrveSDKCommon', '7.0.1'
@@ -26,7 +26,7 @@ end
 
 target 'RichPushSampleServiceExtension-Swift' do
   use_frameworks!
-  pod 'SwrveSDKCommon', :path => '../../../SwrveSDKCommon-Private.podspec'
+  pod 'SwrveSDKCommon', :path => '../../'
   #use remote podfile by commenting out above and uncommenting below
   #pod 'SwrveSDKCommon', '7.0.1'
 end
