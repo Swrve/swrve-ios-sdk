@@ -1,7 +1,7 @@
 platform :ios, '10.0'
 
 target 'SwrveSDK-iOS' do
-  pod 'SwrveSDK', :path => '../../SwrveSDK-Private.podspec'
+  pod 'SwrveSDK', :path => '../'
 
   target 'SwrveSDK-iOSTests' do
     pod 'OCMock', '~> 3.8.1'
@@ -11,7 +11,7 @@ end
 
 target 'SwrveSDK-tvOS' do
   platform :tvos, '10.0'
-  pod 'SwrveSDK', :path => '../../SwrveSDK-Private.podspec'
+  pod 'SwrveSDK', :path => '../'
 
   target 'SwrveSDK-tvOSTests' do
     platform :tvos, '10.0'
