@@ -1581,7 +1581,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if (analyticsSDK == nil) {
         return result;
     }
-
+    
     NSDate *now = [self.analyticsSDK getNow];
     for (SwrveCampaign *campaign in self.campaigns) {
 #if TARGET_OS_TV /** filter conversations for TV**/
@@ -1608,13 +1608,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 }
 
 - (NSArray *)messageCenterCampaigns {
-    return [self messageCenterCampaignsWithPersonalization:nil andPredicate:nil];
+    return [self messageCenterCampaignsWithPersonalization:[self includeRealTimeUserProperties:nil] andPredicate:nil];
 }
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 - (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)messageOrientation {
-    return [self messageCenterCampaignsWithPersonalization:nil andPredicate:^BOOL(SwrveCampaign *campaign) {
+    return [self messageCenterCampaignsWithPersonalization:[self includeRealTimeUserProperties:nil] andPredicate:^BOOL(SwrveCampaign *campaign) {
         return [campaign supportsOrientation:messageOrientation];
     }];
 }

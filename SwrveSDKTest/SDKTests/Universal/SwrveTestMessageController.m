@@ -1227,6 +1227,9 @@
 
     NSArray* buttons = [[viewController current_format] buttons];
     XCTAssertEqual([buttons count], 5);
+    
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMExpect([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 
     // Pretend to press all buttons
     for (NSInteger i = 0; i < [buttons count]; i++) {
@@ -1249,6 +1252,10 @@
         }
     }
     XCTAssertEqual(clickEventCount, 1);
+    
+    OCMVerifyAll(mockUIApplication);
+    
+    [mockUIApplication stopMocking];
 }
 
 /**

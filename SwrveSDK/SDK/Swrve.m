@@ -984,6 +984,16 @@ enum {
                         self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
                         [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
                     }
+                    
+                    NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
+                    if (resourceJson != nil) {
+                        [self updateResources:resourceJson writeToCache:YES];
+                    }
+
+                    NSDictionary *realTimeUserPropertiesJson = [responseDict objectForKey:@"real_time_user_properties"];
+                    if (realTimeUserPropertiesJson != nil) {
+                        [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
+                    }
 
                     if (self.messaging) {
                         NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
@@ -1003,16 +1013,6 @@ enum {
                                 [self updateABTestDetails:abTestDetailsJson];
                             }
                         }
-                    }
-
-                    NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
-                    if (resourceJson != nil) {
-                        [self updateResources:resourceJson writeToCache:YES];
-                    }
-
-                    NSDictionary *realTimeUserPropertiesJson = [responseDict objectForKey:@"real_time_user_properties"];
-                    if (realTimeUserPropertiesJson != nil) {
-                        [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
                     }
                     
                     if (resourceJson != nil || realTimeUserPropertiesJson != nil) {

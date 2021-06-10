@@ -61,6 +61,9 @@ static NSString *const SEQNUM_KEY = @"seqnum";
             NSInteger variantID = [embedded[@"id"] integerValue];
             [campaignDic setValue:@"embedded" forKey:@"type"];
             [campaignDic setValue:[NSNumber numberWithInteger:variantID] forKey:@"variant_id"];
+        } else {
+            [SwrveLogger error: @"Unknown campaign type. Not adding to campaigns-downloaded qa log event."];
+            continue;
         }
 
         [campaigns addObject:campaignDic];

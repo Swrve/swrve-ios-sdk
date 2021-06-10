@@ -11,6 +11,8 @@
 		1B5CAC152464124B003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
 		1B5CAC1624641253003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
 		2341DABAEE33BE73A4D692FE /* libPods-SwrveSDK-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */; };
+		52051B422670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */ = {isa = PBXBuildFile; fileRef = 52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */; };
+		52051B432670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */ = {isa = PBXBuildFile; fileRef = 52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */; };
 		521F4344256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */ = {isa = PBXBuildFile; fileRef = 521F4343256D7FC400D9623B /* ad_journey_campaign_embedded_message.json */; };
 		521F4345256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */ = {isa = PBXBuildFile; fileRef = 521F4343256D7FC400D9623B /* ad_journey_campaign_embedded_message.json */; };
 		5228726A25F67E3D0014FD1B /* campaignsImagePersonalizationTriggered.json in Resources */ = {isa = PBXBuildFile; fileRef = 5228725B25F67BB00014FD1B /* campaignsImagePersonalizationTriggered.json */; };
@@ -238,6 +240,7 @@
 		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
 		3AF4634E24AA1731002A854B /* SwrveSDK-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwrveSDK-iOS.entitlements"; sourceTree = "<group>"; };
 		4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsMessageCenterInvalid.json; sourceTree = "<group>"; };
 		521F4343256D7FC400D9623B /* ad_journey_campaign_embedded_message.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ad_journey_campaign_embedded_message.json; sourceTree = "<group>"; };
 		5228725B25F67BB00014FD1B /* campaignsImagePersonalizationTriggered.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsImagePersonalizationTriggered.json; sourceTree = "<group>"; };
 		5264BF912609135100264777 /* ad_journey_campaign_message_image_personalization.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ad_journey_campaign_message_image_personalization.json; sourceTree = "<group>"; };
@@ -672,6 +675,7 @@
 				F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */,
 				F685B50325F0CD88008F5BAA /* iamCapabilites.json */,
 				52AF58B52614C94C00697B09 /* realTimeUserProperties.json */,
+				52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -846,6 +850,7 @@
 				F669899D25BEE36000950E98 /* conversationCampaignsPriority.json in Resources */,
 				5B2B6F6A23C4E55E000B1687 /* campaignsRRGGBB.json in Resources */,
 				F6698A5F25BEF19200950E98 /* campaignsConversationFilters.json in Resources */,
+				52051B422670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */,
 				F6698A7325BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb in Resources */,
 				5B2B6F5F23C4E55E000B1687 /* campaignSessionStart.json in Resources */,
 				F669893625BEC4B800950E98 /* conversationAnnounce.json in Resources */,
@@ -891,6 +896,7 @@
 				5B2B6F8123C4E55F000B1687 /* campaignsQAReset.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				F685B59D25F10E51008F5BAA /* iamCapabilites.json in Resources */,
+				52051B432670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				5B2B6F6D23C4E55F000B1687 /* campaigns.json in Resources */,
 				5B2B6F7623C4E55F000B1687 /* campaignsAutoshow.json in Resources */,

@@ -74,7 +74,7 @@
 #endif
 
 static bool in_cache(NSString* file, NSSet* set){
-    return [file length] == 0 || [set containsObject:file];
+    return [set containsObject:file];
 }
 
 -(BOOL)assetsReady:(NSSet*)assets withPersonalization:(NSDictionary *)personalization {

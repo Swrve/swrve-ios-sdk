@@ -531,8 +531,10 @@
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
     
 #if TARGET_OS_IOS
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 3); // should not display since there's no personalization
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
 #elif TARGET_OS_TV
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 2);
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 3);
 #endif
     
@@ -611,9 +613,9 @@
     [controller setShowMessageDelegate:testDelegate];
     
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 5);
 #elif TARGET_OS_TV
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
 #endif
     
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:testPersonalization];
@@ -649,6 +651,124 @@
 #if TARGET_OS_IOS
     XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
 #endif
+}
+
+- (void)testPersonalizedImageMessageCenterWithRealTimeUserPropertiesOnTheirOwn {
+#if TARGET_OS_IOS
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+#endif
+    
+    // set no Personalization Provider
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [SwrveTestHelper removeAllAssets];
+
+    NSString *asset1 = [SwrveUtils sha1:[@"https://fakeitem/rtup_value1.png" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+    NSString *asset2 = [SwrveUtils sha1:[@"https://fakeitem/rtup_value2.gif" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    NSMutableArray *testAssets = [[SwrveTestMessageCenterAPI testJSONAssets] mutableCopy];
+    [testAssets addObjectsFromArray:@[asset1, asset2]];
+    [SwrveTestHelper createDummyAssets:testAssets];
+
+    Swrve *swrveMock = [SwrveTestHelper initializeSwrveWithRealTimeUserPropertiesFile:@"realTimeUserProperties" andConfig:config];
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
+    [testDelegate setController:controller];
+    [controller setShowMessageDelegate:testDelegate];
+    
+#if TARGET_OS_IOS
+    //  include no personalization dictionary and we should still get 4
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:XCUIDevice.sharedDevice.orientation] count], 3);
+#elif TARGET_OS_TV
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
+#endif
+    
+    NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:nil];
+    SwrveCampaign *campaign = nil;
+    for (SwrveCampaign *canditate in campaigns) {
+        if([canditate.subject isEqual:@"RTUP Only IAM"]){
+            campaign = canditate;
+        }
+    }
+    
+    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    
+
+    // Display in-app message with no personalization, should be resolved by injected RTUPs
+    [controller showMessageCenterCampaign:campaign withPersonalization:nil];
+    SwrveMessageViewController* viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    [viewController viewDidAppear:NO];
+
+    XCTAssertEqual(campaign.state.impressions, 1);
+    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+
+    // Remove the campaign
+    [controller removeMessageCenterCampaign:campaign];
+    
+    XCTAssertFalse([[swrveMock messageCenterCampaignsWithPersonalization:nil] containsObject:campaign]);
+    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    
+#if TARGET_OS_IOS
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+#endif
+}
+
+
+- (void)testInvalidCampaignsInMessageCenter {
+#if TARGET_OS_IOS
+    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+#endif
+    [SwrveTestHelper removeAllAssets];
+
+    NSString *asset1 = [SwrveUtils sha1:[@"https://fakeitem/asset1.png" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+    NSString *asset2 = [SwrveUtils sha1:[@"https://fakeitem/asset2.gif" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+    NSString *asset3 = [SwrveUtils sha1:[@"https://fakeitem/asset3.jpg" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    NSMutableArray *testAssets = [[SwrveTestMessageCenterAPI testJSONAssets] mutableCopy];
+    [testAssets addObjectsFromArray:@[asset1, asset2, asset3]];
+    [SwrveTestHelper createDummyAssets:testAssets];
+    
+    id swrveMock = [self swrveMock];
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenterInvalid" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
+    [testDelegate setController:controller];
+    [controller setShowMessageDelegate:testDelegate];
+
+    // mock date
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+    
+    // All campaigns are considered invalid because they're either missing an asset or won't personalize
+#if TARGET_OS_IOS
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 0);
+#elif TARGET_OS_TV
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 0);
+#endif
+    
 }
 
 
