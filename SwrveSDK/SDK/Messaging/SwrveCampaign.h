@@ -1,6 +1,6 @@
 #import "SwrveCampaignStatus.h"
-#if __has_include(<SwrveSDK/SwrveQACampaignInfo.h>)
-#import <SwrveSDK/SwrveQACampaignInfo.h>
+#if __has_include(<SwrveSDKCommon/SwrveQACampaignInfo.h>)
+#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
 #else
 #import "SwrveQACampaignInfo.h"
 #endif

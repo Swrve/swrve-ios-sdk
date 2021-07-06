@@ -1,7 +1,8 @@
 #import "AppDelegate.h"
-#import "SwrveSDK.h"
+#import <SwrveSDK/SwrveSDK.h>
+#import <SwrveSDKCommon/SwrvePush.h>
 
-@interface AppDelegate ()
+@interface AppDelegate () <SwrvePushResponseDelegate>
 @end
 
 @implementation AppDelegate

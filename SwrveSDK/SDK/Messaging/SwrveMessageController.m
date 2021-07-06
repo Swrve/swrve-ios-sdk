@@ -6,23 +6,20 @@
 #import "SwrveEmbeddedCampaign.h"
 #import "SwrveConversationCampaign.h"
 
-#if __has_include(<SwrveSDK/SwrveConversationItemViewController.h>)
-#import <SwrveSDK/SwrveConversationItemViewController.h>
-#else
 #import "SwrveConversationItemViewController.h"
-#endif
 
 #import "Swrve+Private.h"
 
-#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 
-#import <SwrveSDK/SwrveAssetsManager.h>
-#import <SwrveSDK/SwrveUtils.h>
-#import <SwrveSDK/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
+#import <SwrveSDKCommon/SwrveQA.h>
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
-#import <SwrveSDK/SwrvePermissions.h>
+#import <SwrveSDKCommon/SwrvePermissions.h>
 
 #endif //TARGET_OS_IOS
 #else

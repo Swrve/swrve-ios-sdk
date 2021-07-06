@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDK"
-  s.version          = "7.0.2"
+  s.version          = "7.0.3"
   s.summary          = "iOS SDK for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => s.name.to_s + "/LICENSE" }
@@ -12,9 +12,11 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "9.0", :tvos => "9.0" }
   s.requires_arc = true
 
-  s.source_files = 'SwrveSDKCommon/Common/**/*.{m,h}', 'SwrveConversationSDK/Conversation/**/*.{m,h}', 'SwrveSDK/SDK/**/*.{m,h}'
-  s.public_header_files = 'SwrveSDKCommon/Common/**/*.h', 'SwrveConversationSDK/Conversation/**/*.h', 'SwrveSDK/SDK/**/*.h'
+  s.source_files = 'SwrveConversationSDK/Conversation/**/*.{m,h}', 'SwrveSDK/SDK/**/*.{m,h}'
+  s.public_header_files = 'SwrveConversationSDK/Conversation/**/*.h', 'SwrveSDK/SDK/**/*.h'
   s.resource_bundles = { 'SwrveConversationSDK' => ['SwrveConversationSDK/Resources/**/*.*']}
+
+  s.dependency 'SwrveSDKCommon', '7.0.3'
 
   s.frameworks = 'UIKit', 'QuartzCore', 'CFNetwork', 'StoreKit', 'Security', 'AVFoundation', 'CoreText'
   s.ios.frameworks = 'MessageUI', 'CoreTelephony'

@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "SwrveConfig.h"
-#if __has_include(<SwrveSDK/SwrveUtils.h>)
-#import <SwrveSDK/SwrveUtils.h>
+#if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "SwrveUtils.h"
 #endif

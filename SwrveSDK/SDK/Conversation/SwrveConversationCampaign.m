@@ -1,14 +1,5 @@
 #import "Swrve.h"
 #import "SwrveConversationCampaign.h"
-#if __has_include(<SwrveSDK/SwrveConversationPane.h>)
-#import <SwrveSDK/SwrveConversationPane.h>
-#import <SwrveSDK/SwrveContentItem.h>
-#import <SwrveSDK/SwrveInputMultiValue.h>
-#import <SwrveSDK/SwrveConversationButton.h>
-#import <SwrveSDK/SwrveContentImage.h>
-#import <SwrveSDK/SwrveContentHTML.h>
-#import <SwrveSDK/SwrveContentStarRating.h>
-#else
 #import "SwrveConversationPane.h"
 #import "SwrveContentItem.h"
 #import "SwrveInputMultiValue.h"
@@ -16,12 +7,13 @@
 #import "SwrveContentImage.h"
 #import "SwrveContentHTML.h"
 #import "SwrveContentStarRating.h"
-#endif
-#if __has_include(<SwrveSDK/SwrveAssetsManager.h>)
-#import <SwrveSDK/SwrveAssetsManager.h>
+
+#if __has_include(<SwrveSDKCommon/SwrveAssetsManager.h>)
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
 #else
 #import "SwrveAssetsManager.h"
 #endif
+
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 

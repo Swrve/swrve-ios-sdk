@@ -1,7 +1,7 @@
 #import "SwrveEventsManager.h"
-#if __has_include(<SwrveSDK/SwrveCommon.h>)
-#import <SwrveSDK/SwrveCommon.h>
-#import <SwrveSDK/SwrveLocalStorage.h>
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"

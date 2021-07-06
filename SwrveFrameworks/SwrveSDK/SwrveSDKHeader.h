@@ -8,37 +8,6 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <SwrveSDK/PublicHeader.h>
 
-// Common - Permissions
-#import <SwrveSDK/SwrvePermissionState.h>
-#import <SwrveSDK/SwrvePermissionsDelegate.h>
-#import <SwrveSDK/SwrveInAppCapabilitiesDelegate.h>
-
-// Common - Push
-#import <SwrveSDK/SwrvePush.h>
-#import <SwrveSDK/SwrveSwizzleHelper.h>
-
-// Common
-#import <SwrveSDK/SwrveAssetsManager.h>
-#import <SwrveSDK/SwrveCommon.h>
-#import <SwrveSDK/SwrvePermissions.h>
-#import <SwrveSDK/SwrveRESTClient.h>
-#import <SwrveSDK/SwrveSignatureProtectedFile.h>
-#import <SwrveSDK/SwrveLocalStorage.h>
-#import <SwrveSDK/SwrveQA.h>
-#import <SwrveSDK/SwrveQACampaignInfo.h>
-#import <SwrveSDK/SwrveQAEventsQueueManager.h>
-#import <SwrveSDK/SwrveQAImagePersonalizationInfo.h>
-#import <SwrveSDK/SwrveCampaignInfluence.h>
-#import <SwrveSDK/SwrveCampaignDelivery.h>
-#import <SwrveSDK/SwrveUser.h>
-#import <SwrveSDK/SwrveNotificationManager.h>
-#import <SwrveSDK/SwrveNotificationOptions.h>
-#import <SwrveSDK/SwrveNotificationConstants.h>
-#import <SwrveSDK/SwrveSessionDelegate.h>
-#import <SwrveSDK/SwrveUtils.h>
-#import <SwrveSDK/SwrveEvents.h>
-#import <SwrveSDK/TextTemplating.h>
-
 // ConversationsSDK
 #import <SwrveSDK/UINavigationController+KeyboardResponderFix.h>
 #import <SwrveSDK/SwrveBaseConversation.h>

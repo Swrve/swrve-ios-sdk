@@ -1,6 +1,6 @@
 #import "SwrveMigrationsManager.h"
-#if __has_include(<SwrveSDK/SwrveUser.h>)
-#import <SwrveSDK/SwrveUser.h>
+#if __has_include(<SwrveSDKCommon/SwrveUser.h>)
+#import <SwrveSDKCommon/SwrveUser.h>
 #else
 #import "SwrveUser.h"
 #endif

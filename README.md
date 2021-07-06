@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_0_2.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_0_2)
+[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_0_3.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_0_3)
 
 What is Swrve
 -------------

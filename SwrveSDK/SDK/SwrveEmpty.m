@@ -1,7 +1,7 @@
 #import "SwrveEmpty.h"
 #import "SwrveMessageController+Private.h"
-#if __has_include(<SwrveSDK/SwrveCommon.h>)
-#import <SwrveSDK/SwrveCommon.h>
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
 #else
 #import "SwrveCommon.h"
 #endif

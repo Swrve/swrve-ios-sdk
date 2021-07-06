@@ -3,21 +3,17 @@
 #import "SwrveMessageController.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
-#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
-#import <SwrveSDK/SwrveLocalStorage.h>
-#import <SwrveSDK/SwrveUtils.h>
-#import <SwrveSDK/SwrveQA.h>
-#import <SwrveSDK/SwrveQAImagePersonalizationInfo.h>
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
+#import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
+#import <SwrveSDKCommon/TextTemplating.h>
 #else
 #import "SwrveLocalStorage.h"
 #import "SwrveUtils.h"
 #import "SwrveQA.h"
 #import "SwrveQAImagePersonalizationInfo.h"
-#endif
-
-#if __has_include(<SwrveSDK/TextTemplating.h>)
-#import <SwrveSDK/TextTemplating.h>
-#else
 #import "TextTemplating.h"
 #endif
 

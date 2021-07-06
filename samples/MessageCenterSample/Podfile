@@ -3,6 +3,7 @@ platform :ios, '10.0'
 
 def shared_pods
   pod 'SwrveSDK', :path => '../../'
+  pod 'SwrveSDKCommon', :path => '../../'
   # use remote podfile by commenting out above and uncommenting below
   #pod 'SwrveSDK'
 end

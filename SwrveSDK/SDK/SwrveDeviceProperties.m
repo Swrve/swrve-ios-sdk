@@ -1,6 +1,6 @@
 #import "SwrveDeviceProperties.h"
-#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
-#import <SwrveSDK/SwrveLocalStorage.h>
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
 #else
 #import "SwrveLocalStorage.h"
 #endif

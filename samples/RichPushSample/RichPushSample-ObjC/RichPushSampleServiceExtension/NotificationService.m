@@ -1,5 +1,5 @@
 #import "NotificationService.h"
-#import "SwrvePush.h"
+#import <SwrveSDKCommon/SwrvePush.h>
 
 @interface NotificationService ()
 

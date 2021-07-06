@@ -6,15 +6,15 @@
 #import "SwrveEmbeddedMessageConfig.h"
 #import "SwrveReceiptProvider.h"
 #import "SwrveDeeplinkDelegate.h"
-#if __has_include(<SwrveSDK/SwrvePermissionsDelegate.h>)
-#import <SwrveSDK/SwrvePermissionsDelegate.h>
+#if __has_include(<SwrveSDKCommon/SwrvePermissionsDelegate.h>)
+#import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
 #else
 #import "SwrvePermissionsDelegate.h"
 #endif
 
 #if TARGET_OS_IOS
-#if __has_include(<SwrveSDK/SwrvePush.h>)
-#import <SwrveSDK/SwrvePush.h>
+#if __has_include(<SwrveSDKCommon/SwrvePush.h>)
+#import <SwrveSDKCommon/SwrvePush.h>
 #else
 #import "SwrvePush.h"
 #endif

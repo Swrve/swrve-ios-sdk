@@ -1,8 +1,8 @@
 #include <UIKit/UIKit.h>
 #import "SwrveDynamicUrlImage.h"
 
-#if __has_include(<SwrveSDK/SwrveQA.h>)
-#import <SwrveSDK/SwrveQA.h>
+#if __has_include(<SwrveSDKCommon/SwrveQA.h>)
+#import <SwrveSDKCommon/SwrveQA.h>
 #else
 #import "SwrveQA.h"
 #endif

@@ -1,10 +1,6 @@
 #import <Foundation/Foundation.h>
-
-#if __has_include(<SwrveSDK/SwrveBaseConversation.h>)
-#import <SwrveSDK/SwrveBaseConversation.h>
-#else
 #import "SwrveBaseConversation.h"
-#endif
+
 
 @class SwrveMessageController;
 @class SwrveConversationCampaign;

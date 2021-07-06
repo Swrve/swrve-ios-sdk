@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#if __has_include(<SwrveSDK/SwrveInAppCapabilitiesDelegate.h>)
-#import <SwrveSDK/SwrveInAppCapabilitiesDelegate.h>
+#if __has_include(<SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>)
+#import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>
 #else
 #import "SwrveInAppCapabilitiesDelegate.h"
 #endif

@@ -6,9 +6,9 @@
 #import "SwrveResourceManager.h"
 #import "SwrveDeeplinkManager.h"
 
-#if __has_include(<SwrveSDK/SwrveSignatureProtectedFile.h>)
-#import <SwrveSDK/SwrveSignatureProtectedFile.h>
-#import <SwrveSDK/SwrveLocalStorage.h>
+#if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
+#import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
 #if TARGET_OS_IOS
 #import <UserNotifications/UserNotifications.h>
 #endif //TARGET_OS_IOS
@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "7.0.2"
+#define SWRVE_SDK_VERSION "7.0.3"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.

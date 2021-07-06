@@ -1,8 +1,8 @@
 #import "SwrveProfileManager.h"
-#if __has_include(<SwrveSDK/SwrveLocalStorage.h>)
-#import <SwrveSDK/SwrveLocalStorage.h>
-#import <SwrveSDK/SwrveUser.h>
-#import <SwrveSDK/SwrveRESTClient.h>
+#if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveUser.h>
+#import <SwrveSDKCommon/SwrveRESTClient.h>
 #else
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"

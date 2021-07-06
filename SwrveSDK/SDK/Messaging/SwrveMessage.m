@@ -4,9 +4,9 @@
 #import "SwrveImage.h"
 #import "SwrveMessageController.h"
 
-#if __has_include(<SwrveSDK/TextTemplating.h>)
-#import <SwrveSDK/TextTemplating.h>
-#import <SwrveSDK/SwrveUtils.h>
+#if __has_include(<SwrveSDKCommon/TextTemplating.h>)
+#import <SwrveSDKCommon/TextTemplating.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "TextTemplating.h"
 #import "SwrveUtils.h"

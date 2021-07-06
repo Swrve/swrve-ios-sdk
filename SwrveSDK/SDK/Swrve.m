@@ -10,15 +10,13 @@
 #import "Swrve.h"
 #import "SwrveCampaign.h"
 
-#if __has_include(<SwrveSDK/SwrveRESTClient.h>)
-
-#import <SwrveSDK/SwrveRESTClient.h>
-#import <SwrveSDK/SwrveQA.h>
-#import <SwrveSDK/SwrveUser.h>
-#import <SwrveSDK/SwrveNotificationManager.h>
-#import <SwrveSDK/SwrvePermissions.h>
-#import <SwrveSDK/SwrveCampaignDelivery.h>
-
+#if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/SwrveUser.h>
+#import <SwrveSDKCommon/SwrveNotificationManager.h>
+#import <SwrveSDKCommon/SwrvePermissions.h>
+#import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #else
 #import "SwrveQA.h"
 #import "SwrveRESTClient.h"
@@ -33,13 +31,7 @@
 #import "SwrveDeviceProperties.h"
 #import "SwrveEventsManager.h"
 
-#if __has_include(<SwrveSDK/SwrveConversationEvents.h>)
-
-#import <SwrveSDK/SwrveConversationEvents.h>
-
-#else
 #import "SwrveConversationEvents.h"
-#endif
 
 #import "SwrveProfileManager.h"
 #import "SwrveEventQueueItem.h"

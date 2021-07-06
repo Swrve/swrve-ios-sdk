@@ -1,12 +1,12 @@
 #import "SwrveDeeplinkManager.h"
 #import "Swrve.h"
 #import "Swrve+Private.h"
-#if __has_include(<SwrveSDK/SwrveCommon.h>)
-#import <SwrveSDK/SwrveCommon.h>
-#import <SwrveSDK/SwrveRESTClient.h>
-#import <SwrveSDK/SwrveAssetsManager.h>
-#import <SwrveSDK/SwrveLocalStorage.h>
-#import <SwrveSDK/SwrveUtils.h>
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveRESTClient.h"

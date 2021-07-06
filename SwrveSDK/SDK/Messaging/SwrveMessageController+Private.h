@@ -1,11 +1,7 @@
 #import "Swrve.h"
 #import "SwrveMessageController.h"
 
-#if __has_include(<SwrveSDK/SwrveConversationItemViewController.h>)
-#import <SwrveSDK/SwrveConversationItemViewController.h>
-#else
 #import "SwrveConversationItemViewController.h"
-#endif
 
 static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 const static int CAMPAIGN_VERSION            = 9;

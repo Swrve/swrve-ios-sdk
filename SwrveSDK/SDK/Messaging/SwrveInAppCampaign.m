@@ -3,10 +3,10 @@
 #import "SwrveButton.h"
 #import "SwrveImage.h"
 
-#if __has_include(<SwrveSDK/SwrveAssetsManager.h>)
-#import <SwrveSDK/SwrveAssetsManager.h>
-#import <SwrveSDK/SwrveUtils.h>
-#import <SwrveSDK/TextTemplating.h>
+#if __has_include(<SwrveSDKCommon/SwrveAssetsManager.h>)
+#import <SwrveSDKCommon/SwrveAssetsManager.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
+#import <SwrveSDKCommon/TextTemplating.h>
 #else
 #import "SwrveAssetsManager.h"
 #import "SwrveUtils.h"

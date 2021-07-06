@@ -1,8 +1,8 @@
 #import "UISwrveButton.h"
 #import "SwrveMessage.h"
 
-#if __has_include(<SwrveSDK/SwrveQAImagePersonalizationInfo.h>)
-#import <SwrveSDK/SwrveQAImagePersonalizationInfo.h>
+#if __has_include(<SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>)
+#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
 #else
 #import "SwrveQAImagePersonalizationInfo.h"
 #endif

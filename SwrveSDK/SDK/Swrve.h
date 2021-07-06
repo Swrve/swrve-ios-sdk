@@ -1,10 +1,10 @@
 #import "SwrveProtocol.h"
 #import "SwrveConfig.h"
 
-#if __has_include(<SwrveSDK/SwrveCommon.h>)
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 
-#import <SwrveSDK/SwrveSignatureProtectedFile.h>
-#import <SwrveSDK/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
+#import <SwrveSDKCommon/SwrveCommon.h>
 
 #else
 #import "SwrveSignatureProtectedFile.h"
@@ -12,9 +12,9 @@
 #endif
 
 #if TARGET_OS_IOS
-#if __has_include(<SwrveSDK/SwrvePush.h>)
+#if __has_include(<SwrveSDKCommon/SwrvePush.h>)
 
-#import <SwrveSDK/SwrvePush.h>
+#import <SwrveSDKCommon/SwrvePush.h>
 
 #else
 #import "SwrvePush.h"
