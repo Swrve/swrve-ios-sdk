@@ -144,7 +144,7 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto_auto");
 
     NSString *expectedDeviceType = @"mobile";
 #if TARGET_OS_TV
@@ -160,7 +160,7 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
     
     // IDFA & Device Info count
-    XCTAssertEqual([deviceInfo count], 21);
+    XCTAssertEqual([deviceInfo count], 22);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 
     // Extra identifiers
@@ -189,7 +189,7 @@
     
     XCTAssertNotNil(deviceInfo);
 
-    XCTAssertEqual([deviceInfo count], 27);
+    XCTAssertEqual([deviceInfo count], 28);
 
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);

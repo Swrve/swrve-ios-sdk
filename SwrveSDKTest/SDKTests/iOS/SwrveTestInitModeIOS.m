@@ -62,19 +62,33 @@
 - (void)testDeviceToken {
 
     id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
-    OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     NSString *deviceTokenManaged = [SwrveSDK deviceToken];
-    XCTAssertEqualObjects(@"", deviceTokenManaged);
-    OCMVerifyAll(swrveMockManaged);
+    XCTAssertNil(deviceTokenManaged);
     
     id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
-    OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     NSString *deviceTokenAuto = [SwrveSDK deviceToken];
     XCTAssertNil(deviceTokenAuto);
-    OCMVerifyAll(swrveMockAuto);
+    
+    //Mock/Set the internal instance varaible _deviceToken
+    [swrveMockManaged setValue:@"SomeUserToken" forKeyPath:@"_deviceToken"];
+    [swrveMockAuto setValue:@"SomeUserToken" forKeyPath:@"_deviceToken"];
+    
+    deviceTokenManaged = [SwrveSDK deviceToken];
+    XCTAssertEqualObjects(deviceTokenManaged, @"SomeUserToken");
+    deviceTokenAuto = [SwrveSDK deviceToken];
+    XCTAssertEqualObjects(deviceTokenManaged, @"SomeUserToken");
+    
+    //Stop tracking, check device token still available
+    [swrveMockManaged stopTracking];
+    [swrveMockAuto stopTracking];
+    
+    deviceTokenManaged = [SwrveSDK deviceToken];
+    XCTAssertEqualObjects(deviceTokenManaged, @"SomeUserToken");
+    
+    deviceTokenAuto = [SwrveSDK deviceToken];
+    XCTAssertEqualObjects(deviceTokenAuto, @"SomeUserToken");
+    
 }
-
-
 
 @end
 

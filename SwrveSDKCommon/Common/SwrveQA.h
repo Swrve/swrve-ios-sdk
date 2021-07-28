@@ -17,6 +17,11 @@
 
 + (void)assetFailedToDisplay:(SwrveQAImagePersonalizationInfo *) qaImagePersonalizationInfo;
 
++ (void)embeddedPersonalizationFailed:(NSNumber *) campaignId
+                            variantId:(NSNumber *) variantId
+                       unresolvedData:(NSString *) unresolvedData
+                               reason:(NSString *) reason;
+
 + (void)campaignsDownloaded:(NSArray *)arrayWithCampaigns;
 + (void)campaignButtonClicked:(NSNumber *)campaignId
                     variantId:(NSNumber *)variantId

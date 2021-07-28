@@ -123,6 +123,26 @@ static dispatch_once_t onceToken;
     [swrveQA.queueManager queueEvent:qaLogEvent];
 }
 
++ (void)embeddedPersonalizationFailed:(NSNumber *) campaignId
+                            variantId:(NSNumber *) variantId
+                       unresolvedData:(NSString *) unresolvedData
+                               reason:(NSString *) reason {
+    
+    SwrveQA *swrveQA = [SwrveQA sharedInstance];
+    if (!swrveQA || ![swrveQA isQALogging] || campaignId == nil || variantId == nil || unresolvedData == nil || reason == nil) {
+        return;
+    }
+    
+    NSMutableDictionary *qaAssetDisplayFailedInfo = [NSMutableDictionary new];
+    [qaAssetDisplayFailedInfo setValue:campaignId forKey:@"campaign_id"];
+    [qaAssetDisplayFailedInfo setValue:variantId forKey:@"variant_id"];
+    [qaAssetDisplayFailedInfo setValue:unresolvedData forKey:@"unresolved_data"];
+    [qaAssetDisplayFailedInfo setValue:reason forKey:@"reason"];
+    
+    NSMutableDictionary *qaLogEvent = [SwrveEvents qaLogEvent:qaAssetDisplayFailedInfo logType:@"embedded-personalization-failed"];
+    [swrveQA.queueManager queueEvent:qaLogEvent];
+}
+
 + (void)campaignsDownloaded:(NSArray *)campaigns {
     SwrveQA *swrveQA = [SwrveQA sharedInstance];
     if (!swrveQA || ![swrveQA isQALogging] || campaigns == nil) {

@@ -316,8 +316,8 @@
     }];
 
     /** Check if influenced has been written **/
-    NSDictionary *influnencedData = [[NSUserDefaults standardUserDefaults] objectForKey:SwrveInfluenceDataKey];
-    XCTAssertNotNil(influnencedData, @"influenced data with the correct credentials should not be nil");
+    NSDictionary *influencedData = [[NSUserDefaults standardUserDefaults] objectForKey:SwrveInfluenceDataKey];
+    XCTAssertNotNil(influencedData, @"influenced data with the correct credentials should not be nil");
 
     // Cleanup
     OCMVerifyAll(passingMediaHelperMock);

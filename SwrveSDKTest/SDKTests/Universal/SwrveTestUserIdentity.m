@@ -7,9 +7,6 @@
 #import "SwrveProfileManager.h"
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrveMigrationsManager.h"
-#import "SwrveEventQueueItem.h"
-
-#import <OCMock/OCMock.h>
 
 @interface SwrveMigrationsManager()
 + (void)setCurrentCacheVersion:(int)cacheVersion;
@@ -1105,13 +1102,13 @@
 
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
     Swrve *swrve = [SwrveSDK sharedInstance];
+    SwrveProfileManager *profileManager = [swrve profileManager];
     [swrve pauseEventSending];
-    //private ivar , can access with KVC
-    NSNumber *trackingState = (NSNumber*)[swrve valueForKey:@"trackingState"];
-    XCTAssertTrue([trackingState intValue] == 1 ); //event sending paused
+    enum SwrveTrackingState trackingState = [profileManager trackingState];
+    XCTAssertTrue(trackingState == EVENT_SENDING_PAUSED);
     [swrve appDidBecomeActive:nil];
-    trackingState = (NSNumber*)[swrve valueForKey:@"trackingState"];
-    XCTAssert([trackingState intValue] == 0); //on
+    trackingState = [profileManager trackingState];
+    XCTAssertTrue(trackingState == STARTED);
 }
 
 - (void)testQueuePausedEventsIsTheadSafe {

@@ -320,13 +320,18 @@
                     dispatch_async(dispatch_get_main_queue(), showMessageBlock);
                 }
             } else {
-                [SwrveLogger warning:@"Personalisaton options are not available for this message.", nil];
+                [SwrveLogger warning:@"Personalizaton options are not available for this message.", nil];
             }
         }
     } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+        NSDictionary *personalization = [[self.sdk messaging] retrievePersonalizationProperties:nil];
         SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *)campaign).message;
-        if(message != nil && self.sdk.config.embeddedMessageConfig.embeddedMessageCallback != nil){
-            self.sdk.config.embeddedMessageConfig.embeddedMessageCallback(message);
+        if(message != nil) {
+            if(self.sdk.config.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+                self.sdk.config.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(message, personalization);
+            } else if (self.sdk.config.embeddedMessageConfig.embeddedMessageCallback != nil) {
+                self.sdk.config.embeddedMessageConfig.embeddedMessageCallback(message);
+            }
         }
     }
     

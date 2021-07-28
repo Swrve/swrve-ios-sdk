@@ -143,6 +143,16 @@
     XCTAssertTrue([result isEqualToString:@"SomeUserID"]);
 }
 
+- (void)testSwrveTrackingStateKey {
+    enum SwrveTrackingState trackingStateUnknown = [SwrveLocalStorage trackingState];
+    XCTAssertEqual(UNKNOWN, trackingStateUnknown); // UNKNOWN to start with
+    [SwrveLocalStorage saveTrackingState:EVENT_SENDING_PAUSED];
+    enum SwrveTrackingState trackingStatePaused = [SwrveLocalStorage trackingState];
+    XCTAssertEqual(EVENT_SENDING_PAUSED, trackingStatePaused);
+    NSNumber *expected = [[self defaults] objectForKey:@"swrve_tracking_state"];
+    XCTAssertEqual([expected intValue], trackingStatePaused);
+}
+
 - (void)testPermissionsKey {
     [SwrveLocalStorage savePermissions:@{@"SomeKey" : @"SomeValue"}];
     NSDictionary *expectedDic = [SwrveLocalStorage getPermissions];

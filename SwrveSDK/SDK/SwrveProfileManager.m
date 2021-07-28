@@ -24,7 +24,6 @@
 @property (strong, nonatomic) SwrveRESTClient *restClient;
 @property (strong, nonatomic) NSURL *identityURL;
 @property (strong, nonatomic) NSString *deviceUUID;
-
 @property (nonatomic) long appId;
 @property (strong, nonatomic) NSString *apiKey;
 
@@ -35,6 +34,7 @@
 @implementation SwrveProfileManager
 
 @synthesize userId = _userId;
+@synthesize trackingState = _trackingState;
 @synthesize sessionToken = _sessionToken;
 @synthesize isNewUser;
 @synthesize restClient = _restClient;
@@ -59,6 +59,7 @@
         self.apiKey = _apiKey;
 
         [self switchUser:initialUser];
+        _trackingState = [SwrveLocalStorage trackingState];
     }
     return self;
 }
@@ -236,6 +237,20 @@
         }
     }
     return nil;
+}
+
+- (enum SwrveTrackingState)trackingState {
+    return _trackingState;
+}
+
+- (void)setTrackingState:(enum SwrveTrackingState)trackingState {
+    _trackingState = trackingState;
+    if (trackingState == EVENT_SENDING_PAUSED) {
+        return; // never save EVENT_SENDING_PAUSED tracking state
+    } else {
+        [SwrveLocalStorage saveTrackingState:trackingState];
+        [SwrveLogger debug:@"SwrveSDK: trackingState is set to: %ld", trackingState];
+    }
 }
 
 @end

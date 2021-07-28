@@ -1,15 +1,19 @@
 #import <XCTest/XCTest.h>
 #import "SwrveSDK.h"
 #import "SwrveNotificationManager.h"
+#import "SwrveSEConfig.h"
 #import <OCMock/OCMock.h>
 
 @interface SwrveNotificationManager()
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback;
 @end
 
-@interface SwrvePush()
+@interface SwrvePush ()
++ (BOOL)isValidNotificationContent:(NSDictionary *)userInfo;
 + (SwrvePush *)sharedInstance;
-- (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *)) completionHandler;
+- (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo
+                            withLocalUserId:(NSString *)localUserId
+                      withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0));
 @end
 
 @interface SwrveTestAuthPush : XCTestCase
@@ -17,6 +21,12 @@
 @end
 
 @implementation SwrveTestAuthPush
+
+- (void)setUp {
+    [super setUp];
+    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:nil];
+    [userDefaults setObject:nil forKey:@"swrve.is_tracking_state_stopped"];
+}
 
 - (void)testAuthPushMediaDownloadSucceeds {
     id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
@@ -65,7 +75,9 @@
     
     OCMStub([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(addNotificationRequestObserver);
 
-    XCTAssertTrue([swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:nil]);
+    XCTAssertTrue([swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                     withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                               withCompletionHandler:nil]);
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"addNotificationRequest not called");
@@ -118,13 +130,15 @@
     };
     
     OCMStub([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(addNotificationRequestObserver);
-    
+
     XCTestExpectation *completionHandler = [self expectationWithDescription:@"completionHandler"];
-    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
-        XCTAssertTrue(fetch == UIBackgroundFetchResultNewData);
-        XCTAssertEqualObjects(dic, nil);
-        [completionHandler fulfill];
-    }];
+    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                                   withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                             withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
+                                                                 XCTAssertTrue(fetch == UIBackgroundFetchResultNewData);
+                                                                 XCTAssertEqualObjects(dic, nil);
+                                                                 [completionHandler fulfill];
+                                                             }];
 
     XCTAssertTrue(isPushHandledBySwrve);
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
@@ -176,11 +190,13 @@
                                };
 
     XCTestExpectation *completionHandler = [self expectationWithDescription:@"completionHandler"];
-    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
-        XCTAssertTrue(fetch == UIBackgroundFetchResultFailed);
-        XCTAssertEqualObjects(dic, nil);
-        [completionHandler fulfill];
-    }];
+    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                                   withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                             withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
+                                                                 XCTAssertTrue(fetch == UIBackgroundFetchResultFailed);
+                                                                 XCTAssertEqualObjects(dic, nil);
+                                                                 [completionHandler fulfill];
+                                                             }];
 
     XCTAssertTrue(isPushHandledBySwrve);
     if (!isPushHandledBySwrve) {
@@ -220,9 +236,11 @@
                                };
 
     XCTestExpectation *notHandledPushExpectation = [self expectationWithDescription:@"completionHandler"];
-    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
-        XCTFail(@"completionHandler should not called");
-    }];
+    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                                   withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                             withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
+                                                                 XCTFail(@"completionHandler should not called");
+                                                             }];
 
     XCTAssertFalse(isPushHandledBySwrve);
     if (!isPushHandledBySwrve) {
@@ -232,6 +250,69 @@
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
             XCTFail(@"addNotificationRequest not called");
+        }
+    }];
+
+    OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
+    OCMVerifyAll(currentMockCenter);
+    [currentMockCenter stopMocking];
+}
+
+- (void)testNotHandlePushAuth_SDKStopped {
+
+    [SwrveSEConfig saveTrackingStateStopped:nil isTrackingStateStopped:YES]; // should not handle because stopped
+    [SwrveLocalStorage saveSwrveUserId:@"1234"]; // same user
+
+    [self assertAuthPush: NO];
+}
+
+- (void)testHandlePushAuth {
+
+    [SwrveSEConfig saveTrackingStateStopped:nil isTrackingStateStopped:NO]; // should handle because NOT stopped
+    [SwrveLocalStorage saveSwrveUserId:@"1234"]; // same user
+
+    [self assertAuthPush: YES];
+}
+
+- (void)assertAuthPush:(BOOL) shouldHandle {
+
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+
+    id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
+    NSDictionary *userInfo = @{
+            @"_p":@"1",
+            @"_aui": @"1234",
+            @"_sw":@{
+                    @"media": @{
+                            @"title": @"rich_title",
+                            @"body":  @"rich_body",
+                            @"subtitle": @"rich_subtitle",
+                            @"url": @"media download will fail"
+                    }
+            },
+            @"version": @1
+    };
+
+    XCTestExpectation *completionHandlerExpectation = [self expectationWithDescription:@"completionHandler"];
+    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                                   withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                             withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
+                                                                 if (shouldHandle) {
+                                                                     [completionHandlerExpectation fulfill];
+                                                                 } else {
+                                                                     XCTFail(@"completionHandler should not be called");
+                                                                 }
+                                                             }];
+
+    XCTAssertTrue(isPushHandledBySwrve == shouldHandle);
+    if (!isPushHandledBySwrve) {
+        [completionHandlerExpectation fulfill];
+    }
+
+    [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
+        if (error) {
+            XCTFail(@"completionHandler not called");
         }
     }];
 
@@ -258,9 +339,11 @@
                                };
 
     XCTestExpectation *notHandledPushExpectation = [self expectationWithDescription:@"completionHandler"];
-    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
-        XCTFail(@"completionHandler should not called");
-    }];
+    BOOL isPushHandledBySwrve = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                                   withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                             withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
+                                                                 XCTFail(@"completionHandler should not called");
+                                                             }];
 
     XCTAssertFalse(isPushHandledBySwrve);
     if (!isPushHandledBySwrve) {
@@ -272,6 +355,44 @@
             XCTFail(@"addNotificationRequest not called");
         }
     }];
+}
+
+
+- (void)testIsValidNotificationContent {
+    //Invalid cases
+    NSDictionary *invalid = nil;
+    XCTAssertFalse([SwrvePush isValidNotificationContent:invalid]);
+    
+    invalid = @{};
+    XCTAssertFalse([SwrvePush isValidNotificationContent:invalid]);
+    
+    invalid = @{
+        @"_sp" : @"1"
+    };
+    XCTAssertFalse([SwrvePush isValidNotificationContent:invalid]);
+
+    invalid = @{
+        @"_sw" : @{@"version" : @3},
+    };
+    XCTAssertFalse([SwrvePush isValidNotificationContent:invalid]);
+
+    invalid = @{
+        @"_sp" : @"1",
+        @"_sw" : @{@"version" : @3},
+    };
+    XCTAssertFalse([SwrvePush isValidNotificationContent:invalid]);
+
+    //Valid cases
+    NSDictionary *valid = @{
+        @"_p" : @"1"
+    };
+    XCTAssertTrue([SwrvePush isValidNotificationContent:valid]);
+    
+    valid = @{
+        @"_p" : @"1",
+        @"_sw" : @{@"version" : @1}
+    };
+    XCTAssertTrue([SwrvePush isValidNotificationContent:valid]);
 }
 
 @end

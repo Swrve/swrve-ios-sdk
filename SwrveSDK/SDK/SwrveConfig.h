@@ -180,9 +180,9 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  */
 @property(nonatomic) SwrveInitMode initMode;
 
-/*! This configuration can only be used in initMode SWRVE_INIT_MODE_MANAGED. If true, the sdk will delay starting until
- * the start api is called and the userId is set. Once set, it will autostart when UI is shown. Set to false to force the
- * sdk to always delay tracking until a start api is called.
+/*! If true, the sdk will delay starting until the start api is called and the userId is set.
+ * Once set, it will autostart when UI is shown. Set to false to force the sdk to always delay tracking until a
+ * start api is called.
  */
 @property(nonatomic) BOOL autoStartLastUser;
 

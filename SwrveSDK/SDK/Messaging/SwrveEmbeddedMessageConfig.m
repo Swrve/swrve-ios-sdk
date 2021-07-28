@@ -3,6 +3,7 @@
 @implementation SwrveEmbeddedMessageConfig
 
 @synthesize embeddedMessageCallback;
+@synthesize embeddedMessageCallbackWithPersonalization;
 
 -(id) init {
     if ( self = [super init] ) {

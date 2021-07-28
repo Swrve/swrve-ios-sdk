@@ -34,6 +34,7 @@ static NSString* SWRVE_IDFV =                           @"swrve.IDFV";
 static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_authenticated_push";
 static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
+static NSString* SWRVE_TRACKING_STATE =                 @"swrve.tracking_state";
 
 @implementation SwrveDeviceProperties
 
@@ -145,6 +146,9 @@ static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
     [deviceProperties setValue:regionCountry        forKey:SWRVE_DEVICE_REGION];
     [deviceProperties setValue:self.swrveInitMode   forKey:SWRVE_SDK_INIT_MODE];
     [deviceProperties setValue:[SwrveUtils platformDeviceType] forKey:SWRVE_DEVICE_TYPE];
+    
+    NSString *trackingState =  [SwrveDeviceProperties trackingStateString:[SwrveLocalStorage trackingState]];
+    [deviceProperties setValue:trackingState forKey:SWRVE_TRACKING_STATE];
 
 #if TARGET_OS_IOS /** retrieve the properties only supported by iOS **/
     [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
@@ -189,6 +193,26 @@ static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
     }
 
     return deviceProperties;
+}
+
++ (NSString *)trackingStateString:(enum SwrveTrackingState)swrveTrackingState {
+    switch (swrveTrackingState) {
+        case UNKNOWN:
+            return @"UNKNOWN";
+            break;
+        case STARTED:
+            return @"STARTED";
+            break;
+        case EVENT_SENDING_PAUSED:
+            return @"EVENT_SENDING_PAUSED";
+            break;
+        case STOPPED:
+            return @"STOPPED";
+            break;
+        default:
+            return @"UNKNOWN";
+            break;
+    }
 }
 
 @end

@@ -39,3 +39,5 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveUtils.h>
 #import <SwrveSDKCommon/SwrveEvents.h>
 #import <SwrveSDKCommon/TextTemplating.h>
+#import <SwrveSDKCommon/SwrveSEConfig.h>
+#import <SwrveSDKCommon/SwrveLogger.h>

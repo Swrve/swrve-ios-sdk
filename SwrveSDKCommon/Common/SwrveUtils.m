@@ -1,7 +1,7 @@
 #import "SwrveUtils.h"
 #import "SwrveCommon.h"
+#import "SwrveNotificationConstants.h"
 #import <CommonCrypto/CommonHMAC.h>
-#import <sys/time.h>
 
 @implementation SwrveUtils
 
@@ -146,6 +146,50 @@
     }
     
     return combinedDictionary;
+}
+
++ (BOOL)isDifferentUserForAuthenticatedPush:(NSDictionary *)authenticatedPushUserInfo userId:(NSString *)userId {
+    BOOL isDifferentUser = NO;
+    if ([SwrveUtils isAuthenticatedPush:authenticatedPushUserInfo]) {
+        NSString *targetedUserId = authenticatedPushUserInfo[SwrveNotificationAuthenticatedUserKey];
+        if (![targetedUserId isEqualToString:userId]) {
+            [SwrveLogger warning:@"Swrve received authenticated push targeted for different user.", nil];
+            isDifferentUser = YES;
+        }
+    }
+    return isDifferentUser;
+}
+
++ (BOOL)isAuthenticatedPush:(NSDictionary *)userInfo {
+    BOOL isAuthenticatedPush = NO;
+    NSString *authenticatedPush = userInfo[SwrveNotificationAuthenticatedUserKey];
+    if (authenticatedPush && ![authenticatedPush isKindOfClass:[NSNull class]]) {
+        isAuthenticatedPush = YES;
+    }
+    return isAuthenticatedPush;
+}
+
++ (UIBackgroundTaskIdentifier)startBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name {
+    __block UIBackgroundTaskIdentifier taskID = UIBackgroundTaskInvalid;
+    UIApplication *app = [SwrveCommon sharedUIApplication];
+    if (app == nil) {
+        return taskID;
+    } else {
+        taskID = [[SwrveCommon sharedUIApplication] beginBackgroundTaskWithName:name expirationHandler:^{
+            [SwrveUtils stopBackgroundTaskCommon:taskID withName:name];
+        }];
+        [SwrveLogger debug:@"Start taskID: %lu name: %@", (unsigned long)taskID, name];
+        return taskID;
+    }
+}
+
++ (void)stopBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name {
+    UIApplication *app = [SwrveCommon sharedUIApplication];
+    if (bgTask != UIBackgroundTaskInvalid) {
+        [SwrveLogger debug:@"Stop taskID: %lu name: %@", (unsigned long)bgTask, name];
+        [app endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }
 }
 
 @end

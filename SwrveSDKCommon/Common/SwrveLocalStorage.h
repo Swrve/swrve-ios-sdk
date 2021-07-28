@@ -1,8 +1,10 @@
 #import <Foundation/Foundation.h>
 
 enum SwrveTrackingState {
-    ON,
-    EVENT_SENDING_PAUSED
+    UNKNOWN = 0,
+    STARTED = 1,
+    EVENT_SENDING_PAUSED = 2,
+    STOPPED = 3
 };
 
 @interface SwrveLocalStorage : NSObject
@@ -55,6 +57,8 @@ enum SwrveTrackingState {
 + (void)saveSwrveUserId:(NSString *)swrveUserId;
 + (NSString *)swrveUserId;
 + (void)removeSwrveUserId;
++ (enum SwrveTrackingState)trackingState;
++ (void)saveTrackingState:(enum SwrveTrackingState)trackingState;
 + (void)savePermissions:(NSDictionary *)permissions;
 + (NSDictionary *)getPermissions;
 + (void)saveAskedForPushPermission:(bool)status;

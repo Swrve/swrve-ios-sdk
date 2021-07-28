@@ -379,9 +379,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
 
-/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+/*! Start the sdk if stopped or in SWRVE_INIT_MODE_MANAGED mode.
  * Tracking will begin using the last user or an auto generated userId if the first time the sdk is started.
- * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
  */
 + (void)start;
 
@@ -400,6 +399,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (BOOL)started;
 
+/*!
+ * Stop the SDK from tracking. The sdk will remain stopped until a start api is called.
+ */
++ (void)stopTracking;
+
 #pragma mark Messaging
 
 /*! Inform that am embedded message has been served and processed. This function should be called
@@ -417,6 +421,23 @@ NS_ASSUME_NONNULL_BEGIN
  * \param button  button that was pressed
  */
 + (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button;
+
+/*! Get the personalized data string from a SwrveEmbeddedMessage campaign with a map of custom
+ * personalization properties.
+ *
+ * \param message Embedded message campaign to personalize
+ * \param personalizationProperties  personalizationProperties Custom properties which are used for personalization.
+ * \return The data string with personalization properties applied. Null is returned if personalization fails with the custom properties passed in.
+ */
++ (NSString *)personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties;
+
+/*! Get the personalized data string from a piece of text with a map of custom personalization properties.
+ *
+ * \param text String value which will be personalized
+ * \param personalizationProperties  personalizationProperties Custom properties which are used for personalization.
+ * \return The data string with personalization properties applied. Null is returned if personalization fails with the custom properties passed in.
+ */
++ (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties;
 
 /*! Get the list active Message Center campaigns targeted for this user.
  * It will exclude campaigns that have been deleted with the

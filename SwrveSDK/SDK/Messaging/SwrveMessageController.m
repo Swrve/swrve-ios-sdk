@@ -16,6 +16,7 @@
 #import <SwrveSDKCommon/SwrveAssetsManager.h>
 #import <SwrveSDKCommon/SwrveUtils.h>
 #import <SwrveSDKCommon/SwrveQA.h>
+#import <SwrveSDKCommon/TextTemplating.h>
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
@@ -27,6 +28,7 @@
 #import "SwrveAssetsManager.h"
 #import "SwrveUtils.h"
 #import "SwrveQA.h"
+#import "TextTemplating.h"
 #if TARGET_OS_IOS /** exclude tvOS **/
 #import "SwrvePermissions.h"
 #endif //TARGET_OS_IOS
@@ -1107,6 +1109,44 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
 }
 
+- (NSString *) personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
+    if (message != nil) {
+        NSError *error;
+        NSString *resolvedMessageData = nil;
+        
+        if(message.type == kSwrveEmbeddedDataTypeJson) {
+            resolvedMessageData = [TextTemplating templatedTextFromJSONString:message.data withProperties:personalizationProperties andError:&error];
+        }else {
+            resolvedMessageData = [TextTemplating templatedTextFromString:message.data withProperties:personalizationProperties andError:&error];
+        }
+        
+        if (error != nil || resolvedMessageData == nil) {
+            SwrveEmbeddedCampaign *campaign = (SwrveEmbeddedCampaign *)message.campaign;
+            [SwrveLogger debug:@"For campaign id: %ld. Could not resolve personalization: %@", campaign.ID, message.data];
+            [SwrveQA embeddedPersonalizationFailed:[NSNumber numberWithUnsignedInteger:message.campaign.ID] variantId:message.messageID unresolvedData:message.data reason:@"Failed to resolve personalization"];
+            return nil;
+        } else {
+            return resolvedMessageData;
+        }
+    }
+
+    return nil;
+}
+
+- (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties {
+    if(text != nil) {
+        NSError *error;
+        NSString *resolvedText = [TextTemplating templatedTextFromString:text withProperties:personalizationProperties andError:&error];
+        if (error != nil || resolvedText == nil) {
+            [SwrveLogger debug:@"Could not resolve personalization: %@", text];
+            return nil;
+        } else {
+            return resolvedText;
+        }
+    }
+    return nil;
+}
+
 - (NSString *)appStoreURLForAppId:(long)appID {
     return [self.appStoreURLs objectForKey:[NSString stringWithFormat:@"%ld", appID]];
 }
@@ -1256,8 +1296,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         self.conversationWindow = nil;
     }
     self.swrveConversationItemViewController = nil;
-
-    [self handleNextConversation:self.conversationsMessageQueue];
+    
+    if ([SwrveLocalStorage trackingState] != STOPPED) {
+        [self handleNextConversation:self.conversationsMessageQueue];
+    }
 }
 
 - (void)handleNextConversation:(NSMutableArray *)queue {
@@ -1410,7 +1452,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     self.inAppMessageAction = nil;
     self.inAppButtonPressedName = nil;
 
-    [self handleNextConversation:self.conversationsMessageQueue];
+    if ([SwrveLocalStorage trackingState] != STOPPED) {
+        [self handleNextConversation:self.conversationsMessageQueue];
+    }
 }
 
 - (void)beginShowMessageAnimation:(SwrveMessageViewController *)viewController {
@@ -1457,6 +1501,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSDictionary *payload = [event objectForKey:@"payload"];
 
     [self registerForPushNotificationsWithEvent:eventName];
+    NSDictionary *personalizationProperties = [self retrievePersonalizationProperties:payload];
 
     // Find a message that should be displayed
     SwrveBaseMessage *message = [self baseMessageForEvent:eventName withPayload:payload];
@@ -1465,8 +1510,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     // Show if the returned message is of type SwrveMessage
     if (message != nil && [message isKindOfClass:[SwrveMessage class]]) {
         SwrveMessage *messageToBeDisplayed = (SwrveMessage *)message;
-        
-        NSDictionary *personalizationProperties = [self retrievePersonalizationProperties:payload];
         
         if (![messageToBeDisplayed canResolvePersonalization:personalizationProperties]) {
             [SwrveLogger warning:@"Personalization options are not available for this message.", nil];
@@ -1502,7 +1545,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if (message != nil && [message isKindOfClass:[SwrveEmbeddedMessage class]]) {
         SwrveEmbeddedMessage *messageToBeDisplayed = (SwrveEmbeddedMessage *) message;
         
-        if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
+        if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+            self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(messageToBeDisplayed, personalizationProperties);
+        } else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
             self.embeddedMessageConfig.embeddedMessageCallback(messageToBeDisplayed);
         }
         
@@ -1707,8 +1752,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         return YES;
     } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
         SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *) campaign).message;
-        if(message != nil && self.embeddedMessageConfig.embeddedMessageCallback != nil){
-            self.embeddedMessageConfig.embeddedMessageCallback(message);
+        if (message != nil) {
+            if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+                self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(message, personalizationProperties);
+            }else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
+                self.embeddedMessageConfig.embeddedMessageCallback(message);
+            }
+            
         }
         
         return YES;

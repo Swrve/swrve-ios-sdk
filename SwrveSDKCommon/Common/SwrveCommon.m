@@ -14,23 +14,20 @@ static id <SwrveCommonDelegate> _sharedInstance = NULL;
     return _sharedInstance;
 }
 
-+(BOOL)supportedOS {
++ (BOOL)supportedOS {
   // Detect if the SDK can run on this OS
   return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0");
 }
 
-+ (UIApplication *) sharedUIApplication {
-    UIApplication* sharedApplication = nil;
++ (UIApplication *)sharedUIApplication {
+    UIApplication *sharedApplication = nil;
     BOOL respondsToApplication = [UIApplication respondsToSelector:@selector(sharedApplication)];
     if (respondsToApplication) {
         sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
         if (!sharedApplication) {
-            // WARNING: This should never be called from an extension
-            NSException *exec = [[NSException alloc] initWithName:@"ApplicationNotAvailable" reason:@"Service Extensions can't access a shared application" userInfo:nil];
-            [exec raise];
+            [SwrveLogger error:@"ApplicationNotAvailable - Service Extensions can't access a shared application"];
         }
     }
-
     return sharedApplication;
 }
 

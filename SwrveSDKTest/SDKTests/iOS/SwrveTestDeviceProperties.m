@@ -47,7 +47,7 @@
 }
 
 - (int)devicePropertyCount {
-    return 14;
+    return 15;
 }
 
 - (void)testDevicePropertiesNil {
@@ -80,6 +80,7 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.utc_offset_seconds"]);
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.tracking_state"]);
     
     // Needs to be manually set, after permission requested
     XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFV"]);

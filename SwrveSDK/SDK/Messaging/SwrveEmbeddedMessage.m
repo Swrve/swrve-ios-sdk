@@ -26,12 +26,12 @@
             self.buttons = [json mutableArrayValueForKey:@"buttons"];
         }
         
-        if ([json objectForKey:@"data"]) {
-            self.data = [json objectForKey:@"data"];
-        }
-        
         if ([json objectForKey:@"type"]) {
             self.type = [self retrieveType:[json objectForKey:@"type"]];
+        }
+        
+        if ([json objectForKey:@"data"]) {
+            self.data = [json objectForKey:@"data"];
         }
     }
     return self;

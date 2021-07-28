@@ -41,21 +41,27 @@
     [super tearDown];
 }
 
-- (void)testSdkReadyManaged {
-    
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
-    BOOL sdkReady = [swrveMockManaged sdkReady];
-    XCTAssertFalse(sdkReady);
-    OCMStub([swrveMockManaged started])._andReturn([NSNumber numberWithBool:YES]);
-    sdkReady = [swrveMockManaged sdkReady];
+- (void)testSdkReadyAutoStartTrue {
+    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    BOOL sdkReady = [swrveMock sdkReady];
     XCTAssertTrue(sdkReady);
 }
+- (void)testSdkReadyAutoStartFalse {
+    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:false];
+    BOOL sdkReady = [swrveMock sdkReady];
+    XCTAssertFalse(sdkReady);
+}
 
-- (void)testSdkReadyAuto {
-    
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
-    BOOL sdkReady = [swrveMockAuto sdkReady];
+- (void)testSdkReadyStopped {
+    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    BOOL sdkReady = [swrveMock sdkReady];
     XCTAssertTrue(sdkReady);
+
+    [SwrveLocalStorage saveTrackingState:STOPPED];
+
+    swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    sdkReady = [swrveMock sdkReady];
+    XCTAssertFalse(sdkReady);
 }
 
 - (id)initSwrveSDKWithMode:(SwrveInitMode)mode autoStart:(BOOL) autoStart{
@@ -396,6 +402,7 @@
 }
 
 - (void)testPushToCampaignBlocked {
+    [SwrveLocalStorage saveSwrveUserId:@"SomeUser"];
 
     NSURL *url = [NSURL URLWithString:@"swrve://app?param1=1&ad_content=2"];
 
@@ -425,6 +432,35 @@
     [swrveMockAuto handleNotificationToCampaign:[url absoluteString]];
     OCMVerifyAll(swrveMockAuto);
     OCMVerifyAll(deeplinkManagerAutoMock);
+}
+
+- (void)testPushToCampaignBlockedStopped {
+    [SwrveLocalStorage saveSwrveUserId:@"SomeUser"];
+
+    NSURL *url = [NSURL URLWithString:@"swrve://app?param1=1&ad_content=2"];
+
+    id swrveMockManagedAutostartFalse = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [swrveMockManagedAutostartFalse stopTracking];
+    
+    OCMReject([swrveMockManagedAutostartFalse initSwrveDeeplinkManager]);
+    id deeplinkManagerManagedMock = OCMClassMock([SwrveDeeplinkManager class]);
+    [swrveMockManagedAutostartFalse setSwrveDeeplinkManager:deeplinkManagerManagedMock];
+    OCMReject([deeplinkManagerManagedMock handleNotificationToCampaign:OCMOCK_ANY]);
+    [swrveMockManagedAutostartFalse handleNotificationToCampaign:[url absoluteString]];
+    OCMVerifyAll(swrveMockManagedAutostartFalse);
+    OCMVerifyAll(deeplinkManagerManagedMock);
+
+    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    [swrveMockAuto stopTracking];
+    
+    OCMReject([swrveMockAuto initSwrveDeeplinkManager]);
+    id deeplinkManagerAutoMock = OCMClassMock([SwrveDeeplinkManager class]);
+    [swrveMockAuto setSwrveDeeplinkManager:deeplinkManagerAutoMock];
+    OCMReject([deeplinkManagerAutoMock handleNotificationToCampaign:OCMOCK_ANY]);
+    [swrveMockAuto handleNotificationToCampaign:[url absoluteString]];
+    OCMVerifyAll(swrveMockAuto);
+    OCMVerifyAll(deeplinkManagerAutoMock);
+
 }
 
 - (void)testFirstSessionEvent {

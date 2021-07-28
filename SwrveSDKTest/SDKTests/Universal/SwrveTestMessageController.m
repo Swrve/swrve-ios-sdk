@@ -737,6 +737,50 @@
     XCTAssertEqualObjects(buttons[2], @"Button 3");
 }
 
+- (void)testEmbeddedMessageWithPersonalizationCallback {
+    
+    __block SwrveEmbeddedMessage *embmessage = nil;
+    __block NSDictionary *personalizationProps = nil;
+    
+    
+    SwrveConfig *config = [SwrveConfig new];
+    
+    SwrveInAppMessageConfig *inAppConfig = [SwrveInAppMessageConfig new];
+    inAppConfig.personalizationCallback = ^NSDictionary *(NSDictionary *eventPayload) {
+        return @{@"testkey": @"WORKING"};
+    };
+    
+    SwrveEmbeddedMessageConfig *embeddedConfig = [SwrveEmbeddedMessageConfig new];
+    [embeddedConfig setEmbeddedMessageCallbackWithPersonalization:^(SwrveEmbeddedMessage *message, NSDictionary *personalizationProperties) {
+        embmessage = message;
+        personalizationProps = personalizationProperties;
+        
+    }];
+    
+    config.embeddedMessageConfig = embeddedConfig;
+    config.inAppMessageConfig = inAppConfig;
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsEmbedded" withConfig:config];
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_embedded_personalization",
+                             @"payload": @{}};
+    
+    [controller eventRaised:event];
+    
+    XCTAssertNotNil(embmessage);
+    XCTAssertEqualObjects(embmessage.data, @"PERSONALIZATION: ${testkey}");
+    XCTAssertNotNil(personalizationProps);
+    XCTAssertEqualObjects(personalizationProps[@"testkey"], @"WORKING");
+    XCTAssertEqual(embmessage.type, kSwrveEmbeddedDataTypeOther);
+    NSArray<NSString *> *buttons = embmessage.buttons;
+    
+    XCTAssertEqualObjects(buttons[0], @"Button 1");
+    XCTAssertEqualObjects(buttons[1], @"Button 2");
+}
+
 /**
  * Ensure QA trigger function gets called when QA user is set and message is requested
  */
@@ -1227,7 +1271,7 @@
 
     NSArray* buttons = [[viewController current_format] buttons];
     XCTAssertEqual([buttons count], 5);
-    
+
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
     OCMExpect([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 
@@ -2768,6 +2812,24 @@
     OCMVerifyAll(testDeeplinkDelegate);
     OCMVerifyAll(mockUIApplication);
     [mockUIApplication stopMocking];
+}
+
+
+/**
+ * Test message window dismissed when stop tracking is called.
+ */
+- (void)testMessageWindowDismissedWhenStopCalled {
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsAARRGGBB"];
+    [swrveMock currencyGiven:@"gold" givenAmount:2];
+
+    // Assets ready, should display message
+    UIWindow *window = [swrveMock messaging].inAppMessageWindow;
+    XCTAssertNotNil(window);
+    
+    [swrveMock stopTracking];
+    
+    window = [swrveMock messaging].inAppMessageWindow;
+    XCTAssertNil(window);
 }
 
 @end

@@ -149,6 +149,7 @@
 
 - (void)testSessionDelegate {
     id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
 
     id mockSwrveSessionDelegate1 = OCMProtocolMock(@protocol(SwrveSessionDelegate)); // mock SessionDelegate for each verify
     XCTestExpectation *completionHandler1 = [self expectationWithDescription:@"SwrveSessionDelegate1"];
@@ -383,18 +384,6 @@
     XCTAssertEqualObjects(userId, @"SomeUserId");
 }
 
-- (void)testAutoCantCallStartMethod {
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
-    XCTAssertNotNil(swrveMockAuto);
-    BOOL pass = false;
-    @try {
-        [SwrveSDK start];
-    } @catch (NSException *exception) {
-        pass = true;
-    }
-    XCTAssertTrue(pass);
-}
-
 - (void)testAutoCantCallStartWithUserMethod {
     id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
     XCTAssertNotNil(swrveMockAuto);
@@ -427,9 +416,13 @@
 }
 
 - (void)testInitModeString {
-    id swrveMockAuto = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockAuto mode:SWRVE_INIT_MODE_AUTO autoStart:false];
-    XCTAssertEqualObjects([swrveMockAuto swrveInitModeString], @"auto");
+    id swrveMockAutoAutostartFalse = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockAutoAutostartFalse mode:SWRVE_INIT_MODE_AUTO autoStart:false];
+    XCTAssertEqualObjects([swrveMockAutoAutostartFalse swrveInitModeString], @"auto");
+
+    id swrveMockAutoAutostartTrue = OCMPartialMock([Swrve alloc]);
+    [self initSwrveMock:swrveMockAutoAutostartTrue mode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    XCTAssertEqualObjects([swrveMockAutoAutostartTrue swrveInitModeString], @"auto_auto");
 
     id swrveMockManagedAutostartFalse = OCMPartialMock([Swrve alloc]);
     [self initSwrveMock:swrveMockManagedAutostartFalse mode:SWRVE_INIT_MODE_MANAGED autoStart:false];

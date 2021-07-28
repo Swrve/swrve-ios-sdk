@@ -29,6 +29,7 @@ static NSString *SWRVE_CAMPAIGN_RESOURCE_ETAG = @"campaigns_and_resources_etag";
 static NSString *SWRVE_DEVICE_TOKEN = @"swrve_device_token";
 static NSString *SWRVE_EVENT_SEQNUM = @"swrve_event_seqnum";
 static NSString *SWRVE_USER_ID_KEY = @"swrve_user_id";
+static NSString *SWRVE_TRACKING_STATE_KEY = @"swrve_tracking_state";
 static NSString *SWRVE_PERMISSION_STATUS = @"swrve_permission_status";
 static NSString *SWRVE_ASKED_FOR_PUSH_PERMISSIONS = @"swrve.asked_for_push_permission";
 static NSString *SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
@@ -184,6 +185,24 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 + (void)removeSwrveUserId {
     [[self defaults] removeObjectForKey:SWRVE_USER_ID_KEY];
     [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_USER_ID_KEY];
+}
+
+//// SWRVE TRACKINGSTATE ////
+
++ (enum SwrveTrackingState)trackingState {
+    int trackingStateInt = (int)[[self defaults] integerForKey:SWRVE_TRACKING_STATE_KEY];
+    enum SwrveTrackingState trackingState = (enum SwrveTrackingState)trackingStateInt;
+    if (trackingState == UNKNOWN) {
+        NSNumber *trackingStateNumber = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_TRACKING_STATE_KEY];
+        trackingState = (enum SwrveTrackingState)trackingStateNumber.intValue;
+    }
+    return trackingState;
+}
+
++ (void)saveTrackingState:(enum SwrveTrackingState)trackingState {
+    NSNumber *trackingStateNumber = [NSNumber numberWithUnsignedInt:trackingState];
+    [[self defaults] setValue:trackingStateNumber forKey:SWRVE_TRACKING_STATE_KEY];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:trackingStateNumber key:SWRVE_TRACKING_STATE_KEY];
 }
 
 //// SWRVE PERMISSIONS ////

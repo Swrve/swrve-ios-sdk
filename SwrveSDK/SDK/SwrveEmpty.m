@@ -275,6 +275,9 @@
     return false;
 }
 
+- (void)stopTracking {
+}
+
 #pragma mark Messaging
 
 - (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
@@ -283,6 +286,15 @@
 
 - (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
 #pragma unused(message, button)
+}
+
+- (NSString *)personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
+#pragma unused(message, personalizationProperties)
+    return nil;
+}
+- (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties {
+#pragma unused(text, personalizationProperties)
+    return nil;
 }
 
 - (NSArray *)messageCenterCampaigns {

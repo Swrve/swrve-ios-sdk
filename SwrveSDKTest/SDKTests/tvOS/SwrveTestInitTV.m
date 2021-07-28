@@ -67,11 +67,12 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.install_date"] isKindOfClass:[NSString class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto");
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_init_mode"], @"auto_auto");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_type"], @"tv");
+    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.tracking_state"]);
     
     // IDFA & Device Info count
-    XCTAssertEqual([deviceInfo count], 17);
+    XCTAssertEqual([deviceInfo count], 18);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     
     // Wont collect unless config is set to auto collect.

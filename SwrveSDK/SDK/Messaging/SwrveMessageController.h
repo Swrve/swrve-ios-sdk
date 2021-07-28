@@ -59,6 +59,23 @@
  */
 - (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button;
 
+/*! Get the personalized data string from a SwrveEmbeddedMessage campaign with a map of custom
+ * personalization properties.
+ *
+ * \param message Embedded message campaign to personalize
+ * \param personalizationProperties  personalizationProperties Custom properties which are used for personalization.
+ * \return The data string with personalization properties applied. Null is returned if personalization fails with the custom properties passed in.
+ */
+- (NSString *)personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties;
+
+/*! Get the personalized data string from a piece of text with a map of custom personalization properties.
+ *
+ * \param text String value which will be personalized
+ * \param personalizationProperties  personalizationProperties Custom properties which are used for personalization.
+ * \return The data string with personalization properties applied. Null is returned if personalization fails with the custom properties passed in.
+ */
+- (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties;
+
 /*! Obtain the app store URL configured for the given app.
  *
  * \param appID App ID of the target app.

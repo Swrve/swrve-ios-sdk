@@ -84,4 +84,34 @@
     XCTAssertEqualObjects(templatedText, @"http://www.deeplink.com/param1=1&param2=2");
 }
 
+- (void)testTemplatingJSONStringWithValidProperties {
+    NSError *error = nil;
+    NSDictionary *properties = @{
+            @"campaignId": @"1",
+            @"item.label": @"swrve",
+            @"key1": @"value1",
+            @"key2": @"value2",
+            @"key_not_used": @"value_not_used"
+    };
+    NSString *string = @"{\"${item.label}\": \"${key1}/${key2}\", \"keys\": \"${key1}/${key2}\"}";
+    NSString *templatedText = [TextTemplating templatedTextFromJSONString:string withProperties:properties andError:&error];
+    XCTAssertEqualObjects(templatedText, @"{\"swrve\": \"value1/value2\", \"keys\": \"value1/value2\"}");
+}
+
+- (void)testTemplatingJSONStringWithFallback {
+    NSError *error = nil;
+    NSDictionary *properties = nil;
+    NSString *string = @"{\"key\":\"${user.firstname|fallback=\\\"working\\\"}\"}";
+    NSString *templatedText = [TextTemplating templatedTextFromJSONString:string withProperties:properties andError:&error];
+    XCTAssertEqualObjects(templatedText, @"{\"key\":\"working\"}");
+}
+
+- (void)testTemplatingJSONStringWithFallback2 {
+    NSError *error = nil;
+    NSDictionary *properties = nil;
+    NSString *string = @"{\"${user.firstname|fallback=\\\"key\\\"}\":\"${user.firstname|fallback=\\\"working\\\"}\"}";
+    NSString *templatedText = [TextTemplating templatedTextFromJSONString:string withProperties:properties andError:&error];
+    XCTAssertEqualObjects(templatedText, @"{\"key\":\"working\"}");
+}
+
 @end

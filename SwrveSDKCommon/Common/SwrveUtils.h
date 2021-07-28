@@ -97,4 +97,12 @@
  */
 + (NSDictionary *)combineDictionary:(NSDictionary*)rootDictionary withDictionary:(NSDictionary *)overiddingDictionary;
 
++ (BOOL)isDifferentUserForAuthenticatedPush:(NSDictionary *)authenticatedPushUserInfo userId:(NSString *)userId;
+
++ (BOOL)isAuthenticatedPush:(NSDictionary *)userInfo;
+                              
++ (UIBackgroundTaskIdentifier)startBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name;
+
++ (void)stopBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name;
+
 @end

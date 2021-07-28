@@ -17,6 +17,7 @@
 #import <SwrveSDKCommon/SwrveNotificationManager.h>
 #import <SwrveSDKCommon/SwrvePermissions.h>
 #import <SwrveSDKCommon/SwrveCampaignDelivery.h>
+#import <SwrveSDKCommon/SwrveSEConfig.h>
 #else
 #import "SwrveQA.h"
 #import "SwrveRESTClient.h"
@@ -24,6 +25,7 @@
 #import "SwrveNotificationManager.h"
 #import "SwrvePermissions.h"
 #import "SwrveCampaignDelivery.h"
+#import "SwrveSEConfig.h"
 #endif
 
 #import "SwrveMigrationsManager.h"
@@ -185,7 +187,6 @@ enum {
     NSDate *lastSessionDate;
     SwrveEventQueuedCallback event_queued_callback;
     long instanceID; // The unique id associated with this instance of Swrve
-    enum SwrveTrackingState trackingState;
     id <SwrveSessionDelegate> sessionDelegate;
 }
 
@@ -485,8 +486,10 @@ enum {
 
         [self initAppInstallTime];
 
-        self.sdkStarted = [self shouldAutoStart];
-        if (self.sdkStarted) {
+        if(profileManager.trackingState == STOPPED) {
+            [SwrveLogger warning:@"SwrveSDK is currently in stopped state and will not start until an api is called.", nil];
+        } else if([self shouldAutoStart]) {
+            self.sdkStarted = true;
             [profileManager persistUser];
             [self registerLifecycleCallbacks];
             [self initWithUserId:[profileManager userId]];
@@ -496,10 +499,9 @@ enum {
     return self;
 }
 
-
 - (void)initWithUserId:(NSString *)swrveUserId {
 
-    trackingState = ON;
+    [profileManager setTrackingState:STARTED];
 
     NSCAssert(swrveUserId != nil, @"UserId cannot be nil. Something has gone wrong.", nil);
     NSCAssert([swrveUserId length] > 0, @"UserId cannot be blank.", nil);
@@ -582,6 +584,7 @@ enum {
 - (void)beginSession:(dispatch_group_t)sendEventsCallbackForBeginSessionGroup {
 
     sdkStarted = true;
+    [profileManager setTrackingState:STARTED];
 
     // The app has started and thus our session
     lastSessionDate = [self getNow];
@@ -625,6 +628,7 @@ enum {
     if (self.config.pushEnabled) {
         [self.push processInfluenceData];
         [self.push saveConfigForPushDelivery];
+        [SwrveSEConfig saveTrackingStateStopped:self.appGroupIdentifier isTrackingStateStopped:NO];
     }
 #endif
 
@@ -636,15 +640,16 @@ enum {
 }
 
 - (BOOL)shouldAutoStart {
-    if ([config initMode] == SWRVE_INIT_MODE_AUTO) {
-        return true;
-    } else if ([config initMode] == SWRVE_INIT_MODE_MANAGED &&
-            [config autoStartLastUser] &&
-            [[SwrveLocalStorage swrveUserId] length] > 0) {
-        return true;
-    } else {
-        return false;
+    BOOL shouldAutostart = false;
+    if ([config initMode] == SWRVE_INIT_MODE_AUTO && [config autoStartLastUser]) {
+        shouldAutostart = true;
+    } else if ([config initMode] == SWRVE_INIT_MODE_MANAGED && [config autoStartLastUser]) {
+        NSString *savedUserId = [SwrveLocalStorage swrveUserId];
+        if ([savedUserId length] > 0) {
+            shouldAutostart = true;
+        }
     }
+    return shouldAutostart;
 }
 
 - (void)queueSessionStart {
@@ -827,7 +832,7 @@ enum {
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
             }
-            if (trackingState == EVENT_SENDING_PAUSED) {
+            if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
                 // this will queue the current device info attributes into the paused event queue.
                 [self queueDeviceInfo];
             }
@@ -850,7 +855,7 @@ enum {
                 id attribute = [attributes objectForKey:attributeKey];
                 [currentAttributes setObject:attribute forKey:attributeKey];
             }
-            if (trackingState == EVENT_SENDING_PAUSED) {
+            if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
                 // this will queue current user update attributes into the paused event queue.
                 [self queueUserUpdates];
             }
@@ -869,7 +874,7 @@ enum {
             NSMutableDictionary *currentAttributes = (NSMutableDictionary *) [self.userUpdates objectForKey:@"attributes"];
             [self.userUpdates setValue:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"time"];
             [currentAttributes setObject:[self convertDateToString:date] forKey:name];
-            if (trackingState == EVENT_SENDING_PAUSED) {
+            if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
                 // this will queue the current user update attributes into the paused event queue.
                 [self queueUserUpdates];
             }
@@ -947,22 +952,22 @@ enum {
                             loadPreviousCampaignState = NO;
                         }
                         [SwrveQA updateQAUser:[responseDict objectForKey:@"qa"] andSessionToken:self.sessionToken];
-                        [SwrveCampaignDelivery saveConfigForPushDeliveryWithUserId:self.userID
-                                                                WithEventServerUrl:self.eventsServer
-                                                                      WithDeviceId:self.deviceUUID
-                                                                  WithSessionToken:self.sessionToken
-                                                                    WithAppVersion:self.appVersion
-                                                                     ForAppGroupID:self.appGroupIdentifier
-                                                                          isQAUser:[[SwrveQA sharedInstance] isQALogging]];
+                        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
+                                               userId:self.userID
+                                       eventServerUrl:self.eventsServer
+                                             deviceId:self.deviceUUID
+                                         sessionToken:self.sessionToken
+                                           appVersion:self.appVersion
+                                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
                     } else {
                         [SwrveQA updateQAUser:@{@"logging": @NO, @"reset_device_state": @NO} andSessionToken:self.sessionToken];
-                        [SwrveCampaignDelivery saveConfigForPushDeliveryWithUserId:self.userID
-                                                                WithEventServerUrl:self.eventsServer
-                                                                      WithDeviceId:self.deviceUUID
-                                                                  WithSessionToken:self.sessionToken
-                                                                    WithAppVersion:self.appVersion
-                                                                     ForAppGroupID:self.appGroupIdentifier
-                                                                          isQAUser:[[SwrveQA sharedInstance] isQALogging]];
+                        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
+                                               userId:self.userID
+                                       eventServerUrl:self.eventsServer
+                                             deviceId:self.deviceUUID
+                                         sessionToken:self.sessionToken
+                                           appVersion:self.appVersion
+                                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
                     }
 
                     NSNumber *flushFrequency = [responseDict objectForKey:@"flush_frequency"];
@@ -1099,7 +1104,7 @@ enum {
     if (![self sdkReady]) {
         return;
     }
-    if (trackingState == EVENT_SENDING_PAUSED) {
+    if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
         [SwrveLogger error:@"Swrve event sending paused so attempt to send queued events has failed.", nil];
         return;
     }
@@ -1116,7 +1121,7 @@ enum {
                    eventFileCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventFileCallback
                           forceFlush:(BOOL)isForceFlush {
 
-    if (trackingState == EVENT_SENDING_PAUSED && !isForceFlush) {
+    if (profileManager.trackingState == EVENT_SENDING_PAUSED && !isForceFlush) {
         [SwrveLogger warning:@"Swrve event sending paused.", nil];
         if (eventBufferCallback != nil) {
             eventBufferCallback(nil, nil, nil);
@@ -1337,8 +1342,12 @@ enum {
 
 - (void)appDidBecomeActive:(NSNotification *)notification {
 #pragma unused(notification)
+    
+    if (![self sdkReady]) {
+        return;
+    }
 
-    trackingState = ON;
+    [profileManager setTrackingState:STARTED];
 
     if (!initialised) {
         initialised = YES;
@@ -1527,9 +1536,6 @@ enum {
 }
 
 - (NSString *)deviceToken {
-    if (![self sdkReady]) {
-        return @"";
-    }
     return self->_deviceToken;
 }
 
@@ -1602,7 +1608,7 @@ enum {
 }
 
 - (void)maybeFlushToDisk {
-    if (trackingState == EVENT_SENDING_PAUSED) {
+    if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
         [SwrveLogger error:@"Swrve event sending paused so attempt to flush disk has failed.", nil];
         return;
     }
@@ -1619,7 +1625,7 @@ enum {
 }
 
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController {
-    if (trackingState == EVENT_SENDING_PAUSED) {
+    if (profileManager.trackingState == EVENT_SENDING_PAUSED) {
         [SwrveLogger warning:@"Swrve event sending paused so attempt to queue events has failed. Will auto retry when event sending resumes.", nil];
 
         // we want a deep copy of eventData attributes as they get cleared when user update is queued and that can happen before our paused event queue is sent.
@@ -1738,13 +1744,14 @@ enum {
 }
 
 - (NSString *)swrveInitModeString {
-    NSString *initMode = @"unknown";
+    NSString *initMode;
     if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
         initMode = @"auto";
-    } else if (self.config.initMode == SWRVE_INIT_MODE_MANAGED && self.config.autoStartLastUser) {
-        initMode = @"managed_auto";
-    } else if (self.config.initMode == SWRVE_INIT_MODE_MANAGED && !self.config.autoStartLastUser) {
+    } else {
         initMode = @"managed";
+    }
+    if (self.config.autoStartLastUser) {
+        initMode = [initMode stringByAppendingString:@"_auto"];
     }
     return initMode;
 }
@@ -2369,6 +2376,9 @@ enum HttpStatus {
 }
 
 - (void)handleNotificationToCampaign:(NSString *)campaignId {
+    if (![self sdkReady]) {
+        return;
+    }
 
     if ([config initMode] == SWRVE_INIT_MODE_MANAGED && ![config autoStartLastUser]) {
         [SwrveLogger warning:@"Warning: SwrveSDK Push to IAM/Conv cannot execute in MANAGED mode and autoStartLastUser==false.", nil];
@@ -2568,12 +2578,12 @@ enum HttpStatus {
 
 - (void)enableEventSending {
     [SwrveLogger debug:@"Swrve: Event sending reenabled", nil];
-    trackingState = ON;
+    [profileManager setTrackingState:STARTED];
     [self resumeCampaignsAndResourcesTimer];
 }
 
 - (void)pauseEventSending {
-    trackingState = EVENT_SENDING_PAUSED;
+    [profileManager setTrackingState:EVENT_SENDING_PAUSED];
     [self stopCampaignsAndResourcesTimer];
 }
 
@@ -2618,14 +2628,17 @@ enum HttpStatus {
 }
 
 - (void)start {
-    [self startWithUserId:self.userID];
+    [self startWithUserIdAllInitModes:self.userID];
 }
 
 - (void)startWithUserId:(NSString *)userId {
     if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
-        [self throwIllegalOperationException:@"Cannot call start api in SWRVE_INIT_MODE_AUTO initMode."];
+        [self throwIllegalOperationException:@"Cannot call startWithUserId api in SWRVE_INIT_MODE_AUTO initMode."];
     }
+    [self startWithUserIdAllInitModes:userId];
+}
 
+- (void)startWithUserIdAllInitModes:(NSString *)userId {
     if (userId == nil) {
         userId = self.profileManager.userId;
     }
@@ -2655,12 +2668,37 @@ enum HttpStatus {
 }
 
 - (BOOL)sdkReady {
-    if (([config initMode] == SWRVE_INIT_MODE_MANAGED) && [self started] == NO) {
-        [SwrveLogger error:@"Warning: SwrveSDK needs to be started in MANAGED mode before calling this api.", nil];
-        return NO;
-    } else {
-        return YES;
+    BOOL sdkReady = YES;
+    if (self.profileManager.trackingState == STOPPED) {
+        [SwrveLogger warning:@"Warning: SwrveSDK is stopped and needs to be started before calling this api.", nil];
+        sdkReady = NO;
+    } else if (self.sdkStarted == NO) {
+        [SwrveLogger warning:@"Warning: SwrveSDK needs to be started before calling this api.", nil];
+        sdkReady = NO;
     }
+    return sdkReady;
+}
+
+- (void)stopTracking {
+    self.sdkStarted = false;
+    [profileManager setTrackingState:STOPPED];
+    [SwrveSEConfig saveTrackingStateStopped:self.appGroupIdentifier isTrackingStateStopped:YES];
+
+    NSDictionary *deviceInfo = [self deviceInfo];
+    [self mergeWithCurrentDeviceInfo:deviceInfo];
+    [self logDeviceInfo:deviceInfo];
+    
+    // This call isn't blocked when Stopped and is not publicly exposed.
+    [self sendQueuedEventsWithCallback:nil eventFileCallback:nil forceFlush:true];
+    
+    [self stopCampaignsAndResourcesTimer];
+
+#if TARGET_OS_IOS
+    [SwrveNotificationManager clearAllAuthenticatedNotifications];
+#endif
+
+    [self.messaging cleanupConversationUI];
+    [self.messaging dismissMessageWindow];
 }
 
 - (SwrveResourceManager *)resourceManager {
@@ -2681,46 +2719,90 @@ enum HttpStatus {
 #pragma mark Messaging
 
 - (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
+    if (![self sdkReady]) {
+        return;
+    }
     [messaging embeddedMessageWasShownToUser:message];
 }
 
 - (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
+    if (![self sdkReady]) {
+        return;
+    }
     [messaging embeddedButtonWasPressed:message buttonName:button];
 }
 
+- (NSString *) personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
+    if (![self sdkReady]) {
+        return nil;
+    }
+    return [messaging personalizeEmbeddedMessageData:message withPersonalization:personalizationProperties];
+}
+
+- (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties {
+    if (![self sdkReady]) {
+        return nil;
+    }
+    return [messaging personalizeText:text withPersonalization:personalizationProperties];
+}
+
 - (NSArray *)messageCenterCampaigns {
+    if (![self sdkReady]) {
+        return @[];
+    }
     return [messaging messageCenterCampaigns];
 }
 
 - (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
+    if (![self sdkReady]) {
+        return @[];
+    }
     return [messaging messageCenterCampaignsWithPersonalization:personalization];
 }
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 - (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
+    if (![self sdkReady]) {
+        return @[];
+    }
     return [messaging messageCenterCampaignsThatSupportOrientation:orientation];
 }
 
 - (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+    if (![self sdkReady]) {
+        return @[];
+    }
     return [messaging messageCenterCampaignsThatSupportOrientation:orientation withPersonalization:personalization];
 }
 
 #endif
 
 - (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {
+    if (![self sdkReady]) {
+        return false;
+    }
     return [messaging showMessageCenterCampaign:campaign];
 }
 
 - (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign withPersonalization:(NSDictionary *)personalization {
+    if (![self sdkReady]) {
+        return false;
+    }
     return [messaging showMessageCenterCampaign:campaign withPersonalization:personalization];
 }
 
 - (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign {
+    if (![self sdkReady]) {
+        return;
+    }
     [messaging removeMessageCenterCampaign:campaign];
 }
 
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign {
+    if (![self sdkReady]) {
+        return;
+    }
     [messaging markMessageCenterCampaignAsSeen:campaign];
 }
 

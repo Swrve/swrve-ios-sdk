@@ -305,6 +305,30 @@
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
 }
 
+- (void)testEmbeddedPersonalizationFailed {
+    [self enableQaLogging];
+
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+
+    NSDictionary *expectedLogDetails = @{
+        @"campaign_id": @123,
+        @"variant_id": @1,
+        @"unresolved_data": @"${test_id}",
+        @"reason":@"test reason"
+    };
+
+    [SwrveQA embeddedPersonalizationFailed:@123 variantId:@1 unresolvedData:@"${test_id}" reason:@"test reason"];
+
+    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"embedded-personalization-failed" withlogSource:@"sdk"];
+    // verify the expected event got queue and check its count.
+    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
+    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
+    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
+}
+
 - (void)testCampaignTrigger {
     [self enableQaLogging];
 

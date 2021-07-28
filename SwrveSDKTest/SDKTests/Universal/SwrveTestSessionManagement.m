@@ -37,8 +37,9 @@
     
     Swrve *swrve = [Swrve alloc];
     id mockSwrve = OCMPartialMock(swrve);
+    mockSwrve = [mockSwrve initWithAppID:123 apiKey:@"SomeAPIKey"];
     OCMStub([mockSwrve config]).andReturn(config);
-
+    
     __block int callCount = 0;
      OCMStub([mockSwrve queueSessionStart]).andDo(^(NSInvocation *invocation) {
          ++callCount;

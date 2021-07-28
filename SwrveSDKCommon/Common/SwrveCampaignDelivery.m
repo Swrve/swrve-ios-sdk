@@ -3,111 +3,62 @@
 #import "SwrveRESTClient.h"
 #import "SwrveUtils.h"
 #import "SwrveNotificationConstants.h"
-#import "SwrveQA.h"
 #import "SwrveEvents.h"
+#import "SwrveSEConfig.h"
 
-// Main key for storage NSDictionary with info related with SwrveCampaing items.
-NSString *const SwrveDeliveryConfigKey = @"swrve.delivery_rest_config";
-
-// Dictionary Keys of the items required for network calls
-NSString *const SwrveDeliveryRequiredConfigUserIdKey = @"swrve.userId";
-NSString *const SwrveDeliveryRequiredConfigEventsUrlKey = @"swrve.events_url";
-NSString *const SwrveDeliveryRequiredConfigDeviceIdKey = @"swrve.device_id";
-NSString *const SwrveDeliveryRequiredConfigSessionTokenKey = @"swrve.session_token";
-NSString *const SwrveDeliveryRequiredConfigAppVersionKey = @"swrve.app_version";
-NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
+@interface SwrveCampaignDelivery ()
+#if TARGET_OS_IOS
+@property(nonatomic, retain) NSString *appGroupId;
+#endif //TARGET_OS_IOS
+@end
 
 @implementation SwrveCampaignDelivery
 
-+ (BOOL)isValidAppGroupId:(NSString *)appGroupId {
-    return ((appGroupId != nil && [appGroupId length]) && [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:appGroupId] != nil);
-}
-
-+ (void)saveConfigForPushDeliveryWithUserId:(NSString *)userId
-                         WithEventServerUrl:(NSString *)eventServerUrl
-                               WithDeviceId:(NSString *)deviceId
-                           WithSessionToken:(NSString *)sessionToken
-                             WithAppVersion:(NSString *)appVersion
-                              ForAppGroupID:(NSString *)appGroupId
-                                   isQAUser:(BOOL)isQaUser {
-    if (![self isValidAppGroupId:appGroupId]) {
-        return; // We need a valid App group to procced this method.
-    }
-    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupId];
-    // Save NSDictionary into NSUserDefaults
-    [userDefaults setObject:@{
-        SwrveDeliveryRequiredConfigUserIdKey: userId,
-        SwrveDeliveryRequiredConfigEventsUrlKey: eventServerUrl,
-        SwrveDeliveryRequiredConfigDeviceIdKey: deviceId,
-        SwrveDeliveryRequiredConfigSessionTokenKey: sessionToken,
-        SwrveDeliveryRequiredConfigAppVersionKey: appVersion,
-        SwrveDeliveryRequiredConfigIsQAUser:[NSNumber numberWithBool:isQaUser]
-    } forKey:SwrveDeliveryConfigKey];
-}
-
-+ (NSInteger)nextEventSequenceWithUserId:(NSString *)userId forUserDefaults:(NSUserDefaults *)defaults {
-    NSInteger seqno;
-    @synchronized (self) {
-        NSString *seqNumKey = [userId stringByAppendingString:@"swrve_event_seqnum"];
-        // Defaults to 0 if this value is not available
-        seqno = [defaults integerForKey:seqNumKey];
-        seqno += 1;
-        [defaults setInteger:seqno forKey:seqNumKey];
-    }
-    return seqno;
-}
-
 #if TARGET_OS_IOS
 
-+ (NSDictionary *)eventData:(NSDictionary *) userInfo forSeqno:(NSInteger)seqno {
+@synthesize appGroupId;
 
-    // Define if it's a silent push.
-    NSString *pushId = [userInfo objectForKey:SwrveNotificationIdentifierKey];
-    BOOL isSilentPush = NO;
-    if ([userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey]) {
-        pushId = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
-        isSilentPush = YES;
+- (id)initAppGroupId:(NSString *)appgroupid {
+    self = [super init];
+    if (self) {
+        self.appGroupId = appgroupid;
     }
-    return @{
-        @"type":@"generic_campaign_event",
-        @"time":[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]],
-        @"seqnum":[NSString stringWithFormat: @"%ld", (long)seqno],
-        @"actionType":@"delivered",
-        @"campaignType":@"push",
-        @"payload":@{
-                @"silent": [NSNumber numberWithBool:isSilentPush]
-        },
-        @"id":pushId
-    };
+    return self;
 }
 
-+ (void)sendPushDelivery:(NSDictionary *)userInfo withAppGroupID:(NSString *)appGroupId {
-    if (![self isValidAppGroupId:appGroupId] || ![userInfo objectForKey:SwrveNotificationIdentifierKey]) {
-        return; // We need a valid App group to procced this method, and must contain a "SwrveNotificationIdentifierKey" to proceed.
+- (void)sendPushDelivery:(NSDictionary *)userInfo {
+    if (![SwrveSEConfig isValidAppGroupId:appGroupId]) {
+        [SwrveLogger warning:@"Swrve not sending push delivery event because of invalid app group id.", nil];
+        return;
+    } else {
+        id pushIdentifier = [userInfo objectForKey:SwrveNotificationIdentifierKey];
+        id silentPushIdentifier = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
+        BOOL isSwrveRegularPush = pushIdentifier && ![pushIdentifier isKindOfClass:[NSNull class]];
+        BOOL isSwrveSilentPush = silentPushIdentifier && ![silentPushIdentifier isKindOfClass:[NSNull class]];
+        if (!(isSwrveRegularPush || isSwrveSilentPush)) {
+            [SwrveLogger warning:@"Swrve not sending push delivery event because it is not a Swrve push.", nil];
+            return;
+        }
     }
-    
-    NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupId];
-    NSDictionary *deliveryConfig = [userDefaults dictionaryForKey:SwrveDeliveryConfigKey];
-    NSInteger seqno = [self nextEventSequenceWithUserId:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey] forUserDefaults:userDefaults];
 
-    userDefaults = nil; //fast dealoc of NSUserDefaults - We do have limited memory at our SE calls.
-    [SwrveLogger debug:@"Swrve Stored Info at app group %@: %@", appGroupId, deliveryConfig];
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:10];
+    NSDictionary *deliveryConfig = [SwrveSEConfig deliveryConfig:self.appGroupId];
+    [SwrveLogger debug:@"Swrve deliveryConfig from app group %@: %@", self.appGroupId, deliveryConfig];
+    NSString *userId = [deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey];
 
     NSMutableDictionary *eventBatch = [NSMutableDictionary new];
-    [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigUserIdKey] forKey:@"user"];
+    [eventBatch setValue:userId forKey:@"user"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigDeviceIdKey] forKey:@"unique_device_id"];
     [eventBatch setValue:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigAppVersionKey] forKey:@"app_version"];
 
-    NSMutableArray *eventData = [NSMutableArray new];
-    NSDictionary *pushDeliveryData = [self eventData:userInfo forSeqno:seqno];
-    [eventData addObject: pushDeliveryData];
+    NSMutableArray *events = [NSMutableArray new];
+    NSDictionary *pushDeliveryEvent = [self pushDeliveryEvent:userInfo userId:userId];
+    [events addObject:pushDeliveryEvent];
 
     // If is a QA user we also append the QA LogEvent.
-    if([[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigIsQAUser] boolValue]) {
-        [eventData addObject:[SwrveEvents qalogWrappedEvent:pushDeliveryData]];
+    if ([[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigIsQAUser] boolValue]) {
+        [events addObject:[SwrveEvents qalogWrappedEvent:pushDeliveryEvent]];
     }
-    [eventBatch setValue:[eventData copy] forKey:@"data"];
+    [eventBatch setValue:[events copy] forKey:@"data"];
 
     NSDictionary *sw = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
     NSNumber *contentVersion = [sw objectForKey:@"version"];
@@ -126,15 +77,63 @@ NSString *const SwrveDeliveryRequiredConfigIsQAUser = @"swrve.is_qa_user";
     NSData *jsonData = [batchImpressionEvent dataUsingEncoding:NSUTF8StringEncoding];
     NSURL *baseBatchUrl = [NSURL URLWithString:[deliveryConfig objectForKey:SwrveDeliveryRequiredConfigEventsUrlKey]];
     NSURL *batchURL = [NSURL URLWithString:@"1/batch" relativeToURL:baseBatchUrl];
-
+    
+    __block UIBackgroundTaskIdentifier handleContentTask = UIBackgroundTaskInvalid;
+    __block NSString *taskName = @"PushDelivery";
+    // if called from service ext flow for rich push, startBackgroundTaskCommon will return UIBackgroundTaskInvalid and have no affect
+    handleContentTask = [SwrveUtils startBackgroundTaskCommon:handleContentTask withName:taskName];
+    
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:10];
     [restClient sendHttpPOSTRequest:batchURL
                            jsonData:jsonData
                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 #pragma unused(response, data)
-        if (error != nil) {
-            [SwrveLogger error:@"Swrve Something went wrong with Push Send Delivery: %@", error.description];
+                      if (error != nil) {
+                          [SwrveLogger error:@"Swrve Something went wrong with Push Send Delivery: %@", error.description];
+                      }
+                      [SwrveUtils stopBackgroundTaskCommon:handleContentTask withName:taskName];
+                  }];
+}
+
+- (NSDictionary *)pushDeliveryEvent:(NSDictionary *)userInfo userId:(NSString *)userId {
+
+    NSInteger seqnum = [SwrveSEConfig nextSeqnumForAppGroupId:self.appGroupId userId:userId];
+
+    NSString *pushId = [userInfo objectForKey:SwrveNotificationIdentifierKey];
+    BOOL isSilentPush = NO;
+    BOOL displayed = YES;
+    if ([userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey]) {
+        pushId = [userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey];
+        isSilentPush = YES;
+        displayed = NO;
+    }
+
+    NSString *reason = @"";
+    if ([SwrveUtils isDifferentUserForAuthenticatedPush:userInfo userId:userId]) {
+        displayed = NO;
+        reason = @"different_user";
+    } else {
+        if ([SwrveUtils isAuthenticatedPush:userInfo]) {
+            if ([SwrveSEConfig isTrackingStateStopped:self.appGroupId]) {
+                displayed = NO;
+                reason = @"stopped";
+            }
         }
-    }];
+    }
+
+    return @{
+            @"type": @"generic_campaign_event",
+            @"time": [NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]],
+            @"seqnum": [NSString stringWithFormat:@"%ld", (long) seqnum],
+            @"actionType": @"delivered",
+            @"campaignType": @"push",
+            @"payload": @{
+                    @"displayed": [NSNumber numberWithBool:displayed],
+                    @"reason": reason,
+                    @"silent": [NSNumber numberWithBool:isSilentPush]
+            },
+            @"id": pushId
+    };
 }
 
 #endif //TARGET_OS_IOS

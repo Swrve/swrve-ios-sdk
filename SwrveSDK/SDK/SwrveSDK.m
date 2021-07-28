@@ -1,5 +1,4 @@
 #import "SwrveSDK.h"
-#import "Swrve+Private.h"
 #import "SwrveEmpty.h"
 
 @class SwrveEmbeddedMessage;
@@ -259,6 +258,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     return [[SwrveSDK sharedInstance] started];
 }
 
++ (void)stopTracking {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] stopTracking];
+}
+
 #pragma mark Messaging
 
 + (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
@@ -269,6 +273,16 @@ static dispatch_once_t sharedInstanceToken = 0;
 + (void)embeddedButtonWasPressed:(SwrveEmbeddedMessage *)message buttonName:(NSString *)button {
     [SwrveSDK checkInstance];
     [[SwrveSDK sharedInstance] embeddedButtonWasPressed:message buttonName:button];
+}
+
++ (NSString *) personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] personalizeEmbeddedMessageData:message withPersonalization:personalizationProperties];
+}
+
++ (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] personalizeText:text withPersonalization:personalizationProperties];
 }
 
 + (NSArray *)messageCenterCampaigns {
