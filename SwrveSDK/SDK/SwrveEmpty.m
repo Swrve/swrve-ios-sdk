@@ -125,6 +125,10 @@
 #pragma unused(callbackBlock)
 }
 
+- (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener {
+#pragma unused(listener)
+}
+
 -(void) realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock{
 #pragma unused(callbackBlock)
 }

@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "7.1.0"
+#define SWRVE_SDK_VERSION "7.2.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -32,7 +32,7 @@
 typedef void (^SwrveUserResourcesCallback) (NSDictionary* resources,
 NSString * resourcesAsJSON);
 
-/*! Defines the block signature for receiving resouces after calling
+/*! Defines the block signature for receiving resources after calling
  * Swrve userResourcesDiff.
  *
  * \param oldResourcesValues    A dictionary containing the old values of changed resources.
@@ -42,6 +42,21 @@ NSString * resourcesAsJSON);
 typedef void (^SwrveUserResourcesDiffCallback) (NSDictionary * oldResourcesValues,
 NSDictionary * newResourcesValues,
 NSString * resourcesAsJSON);
+
+/*! Defines the block signature for receiving user resources diff after calling
+ * Swrve userResourcesDiffWithListener. If no error, then values are returned from server or cache.
+ *
+ * \param oldResourcesValues    A dictionary containing the old values of changed resources.
+ * \param newResourcesValues    A dictionary containing the new values of changed resources.
+ * \param resourcesAsJSON       A string containing the resources diff JSON.
+ * \param fromServer            True if the resources returned were retrieved from server.
+ * \param error                 Potential errors such as network. Nil if no error.
+ */
+typedef void (^SwrveUserResourcesDiffListener)(NSDictionary *oldResourcesValues,
+        NSDictionary *newResourcesValues,
+        NSString *resourcesAsJSON,
+        BOOL fromServer,
+        NSError *error);
 
 /*! Defines the block signature for receiving real time user properties after calling
  *  Swrve realTimeUserProperties
@@ -254,6 +269,23 @@ NSString * eventsPayloadAsJSON);
  *                      A/B test data is available.
  */
 -(void) userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
+
+/*! Gets the user resource differences that should be applied to items for the
+ * given user based on the A/B test the user is involved in.  Please refer to
+ * our online documentation for more details:
+ *
+ * https://docs.swrve.com/swrves-apis/api-guides/swrve-ab-test-api-guide/#Get_user_resources_diff
+ *
+ * This function issues an asynchronous HTTP request to the Swrve content server
+ * specified in #swrve_init. This function will return immediately, and the
+ * callback may be fired at some unspecified time in the future. The callback
+ * will be fired after the Swrve server has sent some AB-Test modifications to
+ * the SDK, or if the HTTP request fails (when the iOS device is offline or has
+ * limited connectivity.
+ *
+ * \param listener A listener block that will be called (usually asynchronously) with results.
+ */
+- (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener;
 
 /*! Gets a dictionary of real time user properties for a user
  *

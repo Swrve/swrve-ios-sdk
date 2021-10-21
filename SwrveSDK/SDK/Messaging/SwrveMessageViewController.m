@@ -34,7 +34,7 @@
 
 @synthesize focusGuide1, focusGuide2, tvOSFocusForSelection;
 
-- (UIWindow*)keyWindow {
+- (UIWindow*)keyWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
     UIWindow *keyWindow = nil;
     if (@available(iOS 13, *)) {
         NSArray *windows = [[UIApplication sharedApplication] windows];

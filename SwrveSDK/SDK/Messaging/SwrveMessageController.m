@@ -1240,7 +1240,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 }
 #endif
 
-- (UIWindow *)createUIWindow {
+- (UIWindow *)createUIWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
     // Check if using Swift UI
     if (@available(iOS 13.0, tvOS 13.0, *)) {
         for (UIWindowScene *wScene in [UIApplication sharedApplication].connectedScenes) {
@@ -1341,7 +1341,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
 }
 
-- (void)dismissMessageWindow {
+- (void)dismissMessageWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (self.inAppMessageWindow == nil) {
         [SwrveLogger error:@"No message to dismiss.", nil];
         return;

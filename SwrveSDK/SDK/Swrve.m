@@ -1560,7 +1560,7 @@ enum {
     [self processNotificationResponseWithIdentifier:response.actionIdentifier andUserInfo:response.notification.request.content.userInfo];
 }
 
-- (void)deeplinkReceived:(NSURL *)url {
+- (void)deeplinkReceived:(NSURL *)url NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (@available(iOS 10.0, *)) {
         id<SwrveDeeplinkDelegate> del = self.config.deeplinkDelegate;
         if (del != nil && [del respondsToSelector:@selector(handleDeeplink:)]) {
@@ -2287,6 +2287,69 @@ enum HttpStatus {
         }
         @catch (NSException *e) {
             [SwrveLogger error:@"Exception in userResourcesDiff callback. %@", e];
+        }
+    }];
+}
+
+- (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener {
+    if (![self sdkReady]) {
+        NSString *errorMsgSdkReady = @"SwrveSDK: Could not call userResourcesDiffWithListener. Perhaps sdk is stopped or not started.";
+        NSError *errorSdkReady = [NSError errorWithDomain:@"com.swrve" code:-1 userInfo: @{NSLocalizedDescriptionKey:errorMsgSdkReady}];
+        listener(nil, nil, nil, false, errorSdkReady);
+        return;
+    }
+    NSCAssert(listener, @"getUserResourcesDiff: userResourcesDiffWithListener must not be nil.", nil);
+    NSURL *url = [self userResourcesDiffURL];
+    [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        NSData *resourcesDiffCacheContent = [[self resourcesDiffFile] readWithRespectToPlatform];
+
+        bool fromServer = false;
+        if (!error) {
+            enum HttpStatus status = HTTP_SUCCESS;
+            if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+                status = [self httpStatusFromResponse:(NSHTTPURLResponse *) response];
+            }
+
+            if (status == SWRVE_SUCCESS) {
+                if ([self isValidJson:data]) {
+                    resourcesDiffCacheContent = data;
+                    [self.resourcesDiffFile writeWithRespectToPlatform:data];
+                    fromServer = true;
+                } else {
+                    [SwrveLogger error:@"Invalid JSON received for user resources diff", nil];
+                }
+            }
+        }
+
+        @try {
+            NSArray *resourcesArray = [NSJSONSerialization JSONObjectWithData:resourcesDiffCacheContent options:NSJSONReadingMutableContainers error:nil];
+            NSMutableDictionary *oldResourcesDict = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *newResourcesDict = [[NSMutableDictionary alloc] init];
+            for (NSDictionary *resourceObj in resourcesArray) {
+                NSString *itemName = [resourceObj objectForKey:@"uid"];
+                NSDictionary *itemDiff = [resourceObj objectForKey:@"diff"];
+                NSMutableDictionary *oldValues = [[NSMutableDictionary alloc] init];
+                NSMutableDictionary *newValues = [[NSMutableDictionary alloc] init];
+                for (NSString *propertyKey in itemDiff) {
+                    NSDictionary *propertyVals = [itemDiff objectForKey:propertyKey];
+                    [oldValues setObject:[propertyVals objectForKey:@"old"] forKey:propertyKey];
+                    [newValues setObject:[propertyVals objectForKey:@"new"] forKey:propertyKey];
+                }
+                [oldResourcesDict setObject:oldValues forKey:itemName];
+                [newResourcesDict setObject:newValues forKey:itemName];
+            }
+            NSString *jsonString = [[NSString alloc] initWithData:resourcesDiffCacheContent encoding:NSUTF8StringEncoding];
+            listener(oldResourcesDict, newResourcesDict, jsonString, fromServer, error);
+        }
+        @catch (NSException *exception) {
+            [SwrveLogger error:@"Exception in userResourcesDiffWithListener. %@", exception];
+            NSString *errorDescription = @"SwrveSDK: Could not convert userResourcesDiff to Dictionary.";
+            NSMutableDictionary * userInfo = [NSMutableDictionary dictionary];
+            [userInfo setValue:exception.name forKey:@"ExceptionName"];
+            [userInfo setValue:exception.reason forKey:@"ExceptionReason"];
+            [userInfo setValue:errorDescription forKey:@"ExceptionDescription"];
+            NSError *errorFromException = [NSError errorWithDomain:@"com.swrve" code:-1 userInfo:userInfo];
+            listener(nil, nil, nil, fromServer, errorFromException);
         }
     }];
 }

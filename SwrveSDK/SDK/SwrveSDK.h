@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
  * given user based on the A/B test the user is involved in.  Please refer to
  * our online documentation for more details:
  *
- * http://dashboard.swrve.com/help/docs/abtest_api#GetUserResourcesDiff
+ * https://docs.swrve.com/swrves-apis/api-guides/swrve-ab-test-api-guide/#Get_user_resources_diff
  *
  * This function issues an asynchronous HTTP request to the Swrve content server
  * specified in #swrve_init. This function will return immediately, and the
@@ -195,7 +195,24 @@ NS_ASSUME_NONNULL_BEGIN
  * \param callbackBlock A callback block that will be called asynchronously when
  *                      A/B test data is available.
  */
-+ (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock;
++ (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock __deprecated_msg("Please use userResourcesDiffWithListener API instead");
+
+/*! Gets the user resource differences that should be applied to items for the
+ * given user based on the A/B test the user is involved in.  Please refer to
+ * our online documentation for more details:
+ *
+ * https://docs.swrve.com/swrves-apis/api-guides/swrve-ab-test-api-guide/#Get_user_resources_diff
+ *
+ * This function issues an asynchronous HTTP request to the Swrve content server
+ * specified in #swrve_init. This function will return immediately, and the
+ * callback may be fired at some unspecified time in the future. The callback
+ * will be fired after the Swrve server has sent some AB-Test modifications to
+ * the SDK, or if the HTTP request fails (when the iOS device is offline or has
+ * limited connectivity.
+ *
+ * \param listener A listener block that will be called (usually asynchronously) with results.
+ */
++ (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener;
 
 /*! Gets a dictionary of real time user properties
  * This function will return immediately, and the callback will be fired right

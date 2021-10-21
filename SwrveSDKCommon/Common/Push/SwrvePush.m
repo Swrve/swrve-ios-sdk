@@ -112,7 +112,7 @@ NSString *appGroupIdentifier;
 
 #pragma mark - Swizzling Handlers
 
-- (BOOL)observeSwizzling {
+- (BOOL)observeSwizzling NS_EXTENSION_UNAVAILABLE_IOS("") {
 
     if (!didSwizzle) {
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
@@ -132,7 +132,7 @@ NSString *appGroupIdentifier;
     return didSwizzle;
 }
 
-- (void)deswizzlePushMethods {
+- (void)deswizzlePushMethods NS_EXTENSION_UNAVAILABLE_IOS("") {
 
     if (didSwizzle) {
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
@@ -453,7 +453,7 @@ NSString *appGroupIdentifier;
 
 #pragma mark - UIApplication Functions
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (_commonDelegate == NULL) {
         [SwrveLogger error:@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil];
     } else {
@@ -467,7 +467,7 @@ NSString *appGroupIdentifier;
     }
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error NS_EXTENSION_UNAVAILABLE_IOS("") {
 
     if (_commonDelegate == NULL) {
         [SwrveLogger error:@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil];

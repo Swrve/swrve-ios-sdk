@@ -221,6 +221,8 @@
     }];
     [swrveMock userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {
     }];
+    [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
+    }];
     [swrveMock realTimeUserProperties:^(NSDictionary *properties) {
     }];
     [swrveMock sendQueuedEvents];
@@ -245,12 +247,12 @@
     int expectedNumberOfCalls;
     
 #if TARGET_OS_IOS
-    expectedNumberOfCalls = 33;
+    expectedNumberOfCalls = 34;
     [swrveMock setDeviceToken:nil];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0 withPersonalization:@{}];
 #else
-    expectedNumberOfCalls = 30;
+    expectedNumberOfCalls = 31;
 #endif
     XCTAssertEqual(loggerCount, expectedNumberOfCalls);
 }

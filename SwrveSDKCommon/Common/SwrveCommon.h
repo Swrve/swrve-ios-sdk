@@ -47,7 +47,7 @@
 +(id<SwrveCommonDelegate>) sharedInstance;
 +(void) addSharedInstance:(id<SwrveCommonDelegate>)swrveCommon;
 +(BOOL)supportedOS;
-+(UIApplication *) sharedUIApplication;
++(UIApplication *) sharedUIApplication NS_EXTENSION_UNAVAILABLE_IOS("");
 @end
 
 #define NullableNSString(x) ((x == nil)? [NSNull null] : x)

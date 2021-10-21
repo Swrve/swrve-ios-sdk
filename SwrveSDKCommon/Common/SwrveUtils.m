@@ -169,7 +169,7 @@
     return isAuthenticatedPush;
 }
 
-+ (UIBackgroundTaskIdentifier)startBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name {
++ (UIBackgroundTaskIdentifier)startBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name NS_EXTENSION_UNAVAILABLE_IOS("") {
     __block UIBackgroundTaskIdentifier taskID = UIBackgroundTaskInvalid;
     UIApplication *app = [SwrveCommon sharedUIApplication];
     if (app == nil) {
@@ -183,7 +183,7 @@
     }
 }
 
-+ (void)stopBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name {
++ (void)stopBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name NS_EXTENSION_UNAVAILABLE_IOS("") {
     UIApplication *app = [SwrveCommon sharedUIApplication];
     if (bgTask != UIBackgroundTaskInvalid) {
         [SwrveLogger debug:@"Stop taskID: %lu name: %@", (unsigned long)bgTask, name];

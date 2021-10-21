@@ -108,6 +108,9 @@
     [swrve userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {
     }];
 
+    [swrve userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
+    }];
+
     [swrve sendQueuedEvents];
 
     [swrve saveEventsToDisk];

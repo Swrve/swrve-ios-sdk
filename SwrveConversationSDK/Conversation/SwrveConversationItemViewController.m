@@ -330,7 +330,7 @@
     [self performActions:control withConversationPaneTag:self.conversationPane.tag];
 }
 
--(void) performActions:(SwrveConversationButton *)control withConversationPaneTag:(NSString *)conversationPaneTag {
+-(void) performActions:(SwrveConversationButton *)control withConversationPaneTag:(NSString *)conversationPaneTag NS_EXTENSION_UNAVAILABLE_IOS("") {
     NSDictionary *actions = control.actions;
     SwrveConversationActionType actionType = SwrveVisitURLActionType;
     id param;

@@ -152,6 +152,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] userResourcesDiff:callbackBlock];
 }
 
++ (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] userResourcesDiffWithListener:listener];
+}
+
 + (void)realTimeUserProperties:(SwrveRealTimeUserPropertiesCallback)callbackBlock {
     [SwrveSDK checkInstance];
     [[SwrveSDK sharedInstance] realTimeUserProperties:callbackBlock];

@@ -73,7 +73,7 @@ NSString* const DEFAULT_CSS = @"html, body, div, span, applet, object, iframe, h
      }];
 }
 
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler NS_EXTENSION_UNAVAILABLE_IOS("") {
 #pragma unused (webView)
     NSURLRequest *request = navigationAction.request;
 

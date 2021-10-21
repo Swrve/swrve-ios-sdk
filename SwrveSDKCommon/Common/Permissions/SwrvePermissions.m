@@ -127,7 +127,7 @@
     return pushAuthorization;
 }
 
-+ (void)bgRefreshStatusToDictionary:(NSMutableDictionary *)permissionsStatus API_AVAILABLE(ios(7.0)) {
++ (void)bgRefreshStatusToDictionary:(NSMutableDictionary *)permissionsStatus API_AVAILABLE(ios(7.0))NS_EXTENSION_UNAVAILABLE_IOS("") {
     NSString *backgroundRefreshStatus = swrve_permission_status_unknown;
     UIBackgroundRefreshStatus uiBackgroundRefreshStatus = [[SwrveCommon sharedUIApplication] backgroundRefreshStatus];
     if (uiBackgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {
@@ -363,7 +363,7 @@
     }
 }
 
-+(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(id<SwrveCommonDelegate>)sdk {
++(void)registerForRemoteNotifications:(UNAuthorizationOptions)notificationAuthOptions withCategories:(NSSet<UNNotificationCategory *> *)notificationCategories andSDK:(id<SwrveCommonDelegate>)sdk NS_EXTENSION_UNAVAILABLE_IOS("") {
     UIApplication* app = [SwrveCommon sharedUIApplication];
 
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
@@ -400,7 +400,7 @@
     [sdk eventInternal:eventNameWithState payload:nil triggerCallback:false];
 }
 
-+ (void)refreshDeviceToken:(id<SwrveCommonDelegate>)sdk {
++ (void)refreshDeviceToken:(id<SwrveCommonDelegate>)sdk NS_EXTENSION_UNAVAILABLE_IOS("") {
     // If the user denied push prompt initially and then reenabled it in settings we need to check for this scenario
     if (@available(iOS 10.0, *)) {
         UIApplication* app = [SwrveCommon sharedUIApplication];

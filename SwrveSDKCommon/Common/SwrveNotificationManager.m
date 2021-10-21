@@ -494,7 +494,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return deeplinkUrl;
 }
 
-+ (NSURL *)deeplinkFromUrl:(NSString *)deeplinkString {
++ (NSURL *)deeplinkFromUrl:(NSString *)deeplinkString NS_EXTENSION_UNAVAILABLE_IOS("") {
     NSURL *deeplinkUrl = [NSURL URLWithString:deeplinkString];
     BOOL canOpen = [[SwrveCommon sharedUIApplication] canOpenURL:deeplinkUrl];
     if (deeplinkUrl != nil && canOpen) {

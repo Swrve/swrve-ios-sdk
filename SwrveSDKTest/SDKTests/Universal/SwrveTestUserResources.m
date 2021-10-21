@@ -234,4 +234,127 @@
     }];
 }
 
+- (void)testUserResourcesDiffListenerWithFalseFromServer {
+    NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
+
+    // Initialise Swrve and write to resources diff cache file
+    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    [swrveMock appDidBecomeActive:nil];
+    [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
+
+    XCTestExpectation *callback = [self expectationWithDescription:@"callback"];
+    // Getting resources diff from API will fail, so resources diff initialised by cache
+    [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
+        XCTAssertFalse(fromServer);
+        XCTAssertNil(error);
+
+        XCTAssertEqualObjects(resourcesAsJSON, testCacheFileContents);
+
+        XCTAssertEqual(2, [newResourcesValues count]);
+        XCTAssertNotNil([newResourcesValues objectForKey:@"animal.ant"]);
+        NSDictionary *newValue1 = [newResourcesValues objectForKey:@"animal.ant"];
+        XCTAssertEqualObjects([newValue1 objectForKey:@"cost"], @"666");
+        NSDictionary *newValue2 = [newResourcesValues objectForKey:@"animal.bear"];
+        XCTAssertEqualObjects([newValue2 objectForKey:@"level"], @"9000");
+
+        XCTAssertEqual(2, [oldResourcesValues count]);
+        XCTAssertNotNil([oldResourcesValues objectForKey:@"animal.ant"]);
+        NSDictionary *oldValue1 = [oldResourcesValues objectForKey:@"animal.ant"];
+        XCTAssertEqualObjects([oldValue1 objectForKey:@"cost"], @"550");
+        NSDictionary *oldValue2 = [oldResourcesValues objectForKey:@"animal.bear"];
+        XCTAssertEqualObjects([oldValue2 objectForKey:@"level"], @"10");
+        [callback fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
+        if (error) {
+            XCTFail(@"No message shown");
+        }
+    }];
+}
+
+- (void)testUserResourcesDiffListenerWithCorruptData {
+    NSString *__block testCacheFileContents = @"[{ \"corrupt data\": \"corrupt data\"}]";
+
+    // Initialise Swrve and write to resources diff cache file
+    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    [swrveMock appDidBecomeActive:nil];
+    [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
+
+    XCTestExpectation *callback = [self expectationWithDescription:@"callback"];
+    // Getting resources diff from API will fail, so resources diff initialised by cache
+    [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
+        XCTAssertFalse(fromServer);
+        XCTAssertNotNil(error);
+        [callback fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
+        if (error) {
+            XCTFail(@"No message shown");
+        }
+    }];
+}
+
+- (void)testUserResourcesDiffListenerWithTrueFromServer {
+
+    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    [swrveMock appDidBecomeActive:nil];
+
+    NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
+    [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
+    [SwrveMigrationsManager markAsMigrated];
+
+    // mock server content with a new animal.ant difference......666 in cache, but 777 from server
+    NSString *__block testServerFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"777\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
+    NSData *userResorcesMockData = [testServerFileContents dataUsingEncoding:NSUTF8StringEncoding];
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMStub([mockResponse statusCode]).andReturn(200);
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, userResorcesMockData, [NSNull null], nil])]);
+    swrveMock.restClient = mockRestClient;
+
+    XCTestExpectation *callback = [self expectationWithDescription:@"callback"];
+    // Getting resources diff from API will fail, so resources diff initialised by cache
+    [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
+        XCTAssertTrue(fromServer);
+        XCTAssertNil(error);
+
+        XCTAssertEqualObjects(resourcesAsJSON, testServerFileContents);
+
+        XCTAssertEqual(2, [newResourcesValues count]);
+        XCTAssertNotNil([newResourcesValues objectForKey:@"animal.ant"]);
+        NSDictionary *newValue1 = [newResourcesValues objectForKey:@"animal.ant"];
+        XCTAssertEqualObjects([newValue1 objectForKey:@"cost"], @"777"); // this is the server difference from the cache
+        NSDictionary *newValue2 = [newResourcesValues objectForKey:@"animal.bear"];
+        XCTAssertEqualObjects([newValue2 objectForKey:@"level"], @"9000");
+
+        XCTAssertEqual(2, [oldResourcesValues count]);
+        XCTAssertNotNil([oldResourcesValues objectForKey:@"animal.ant"]);
+        NSDictionary *oldValue1 = [oldResourcesValues objectForKey:@"animal.ant"];
+        XCTAssertEqualObjects([oldValue1 objectForKey:@"cost"], @"550");
+        NSDictionary *oldValue2 = [oldResourcesValues objectForKey:@"animal.bear"];
+        XCTAssertEqualObjects([oldValue2 objectForKey:@"level"], @"10");
+        [callback fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
+        if (error) {
+            XCTFail(@"No message shown");
+        }
+    }];
+}
+
 @end
