@@ -4,6 +4,9 @@
 @implementation SwrveConversationResourceManagement
 
 + (NSBundle *)conversationBundle {
+#ifdef SWIFTPM_MODULE_BUNDLE
+    return SWIFTPM_MODULE_BUNDLE;
+#else
     NSBundle *mainBundle = [NSBundle bundleForClass:[SwrveConversationResourceManagement class]];
            
     // cocoapods uses SwrveConversationSDK.bundle , see resources_bundle in podspec
@@ -15,6 +18,7 @@
         return frameworkBundle;
     }
     return mainBundle;
+#endif
 }
 
 + (UIImage *) imageWithName:(NSString *)imageName API_AVAILABLE(ios(8.0)) {
