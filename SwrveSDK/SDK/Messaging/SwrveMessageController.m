@@ -81,6 +81,8 @@ const static int DEFAULT_MIN_DELAY = 55;
 
 @interface SwrveMessageController ()
 
+@property(nonatomic, assign) BOOL addedNotificiationsForMenuWindow;
+@property(nonatomic, assign) UIWindowLevel originalMenuWindowLevel;
 @property(nonatomic, retain) SwrveAssetsManager *assetsManager;
 @property(nonatomic, retain) NSString *user;
 @property(nonatomic, retain) NSString *apiKey;
@@ -125,6 +127,8 @@ const static int DEFAULT_MIN_DELAY = 55;
 
 @implementation SwrveMessageController
 
+@synthesize addedNotificiationsForMenuWindow;
+@synthesize originalMenuWindowLevel;
 @synthesize server, apiKey;
 @synthesize campaignFile;
 @synthesize manager;
@@ -598,6 +602,25 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         [assetsManager setCdnImages:cdnRoot];
         [SwrveLogger debug:@"CDN URL: %@", cdnRoot];
     }
+}
+
+
+- (void)refreshInAppCampaignAssets {
+    // Call personalization
+    NSDictionary *personalizationProperties = [self retrievePersonalizationProperties:nil];
+    
+    // Obtain all assets required for the available campaigns
+    NSMutableSet *assetsQ = [[NSMutableSet alloc] init];
+    for (SwrveCampaign *campaign in self.campaigns) {
+        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
+            SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
+            [swrveCampaign addAssetsToQueue:assetsQ withPersonalization:personalizationProperties];
+        }
+    }
+    
+    [assetsManager downloadAssets:assetsQ withCompletionHandler:^{
+        // do nothing, we're just refreshing
+    }];
 }
 
 - (void)appDidBecomeActive {
@@ -1339,6 +1362,54 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     } else {
         [self beginShowMessageAnimation:messageViewController];
     }
+    
+    if (@available(iOS 13.0, *)) {
+        if (!self.addedNotificiationsForMenuWindow) {
+            self.addedNotificiationsForMenuWindow = true;
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(willShowMenuNotification)
+                                                         name:@"UIMenuControllerWillShowMenuNotification"
+                                                       object:nil];
+
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(willHideMenuNotification)
+                                                         name:@"UIMenuControllerWillHideMenuNotification"
+                                                       object:nil];
+        }
+    }
+}
+
+- (void)willShowMenuNotification {
+    if (self.inAppMessageWindow == nil) return;
+    
+    UIWindow *menuWindow = [self menuWindow];
+    if (menuWindow != nil) {
+        self.originalMenuWindowLevel = menuWindow.windowLevel;
+        menuWindow.windowLevel = self.inAppMessageWindow.windowLevel + 1;
+    }
+}
+
+- (void)willHideMenuNotification {
+    if (self.inAppMessageWindow == nil) return;
+    
+    UIWindow *menuWindow = [self menuWindow];
+    if (menuWindow != nil) {
+        menuWindow.windowLevel = self.originalMenuWindowLevel;
+        self.originalMenuWindowLevel = 0;
+    }
+}
+
+-(UIWindow *)menuWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
+    for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if (!window.hidden && [window isKindOfClass:NSClassFromString(@"UITextEffectsWindow")]) {
+            for (UIView *subview in [window subviews]) {
+                if ([subview isKindOfClass:NSClassFromString(@"UICalloutBar")]) {
+                    return window;
+                }
+            }
+        }
+    }
+    return nil;
 }
 
 - (void)dismissMessageWindow NS_EXTENSION_UNAVAILABLE_IOS("") {

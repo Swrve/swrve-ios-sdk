@@ -1,5 +1,5 @@
 #import "SwrveButton.h"
-#import "SwrvePersonalizedTextImage.h"
+#import "SwrveTextImageView.h"
 #import "SwrveDynamicUrlImage.h"
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
@@ -68,7 +68,7 @@ static CGPoint scaled(CGPoint point, float scale)
         // store the current 'up' image so we can use it as a guide
         UIImage *guideImage = up;
 
-        up = [SwrvePersonalizedTextImage imageFromString:personalizedTextStr
+        up = [SwrveTextImageView imageFromString:personalizedTextStr
                 withBackgroundColor:inAppConfig.personalizationBackgroundColor
                 withForegroundColor:inAppConfig.personalizationForegroundColor
                        withFont:inAppConfig.personalizationFont

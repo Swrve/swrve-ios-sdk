@@ -3,8 +3,11 @@
 @interface SwrveRESTClient : NSObject
 
 @property(atomic) NSTimeInterval timeoutInterval;
+@property (nonatomic, weak) id <NSURLSessionDelegate> urlSessionDelegate;
 
 - (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInterval;
+
+- (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInterval urlSessionDelegate:(id <NSURLSessionDelegate>)nsurlSessionDelegate;
 
 - (void)sendHttpGETRequest:(NSURL *)url queryString:(NSString *)query;
 

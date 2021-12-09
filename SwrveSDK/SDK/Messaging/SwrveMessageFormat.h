@@ -1,6 +1,7 @@
 #include <UIKit/UIKit.h>
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveInAppMessageConfig.h"
+#import "SwrveCalibration.h"
 
 @class SwrveMessage;
 @class SwrveMessageController;
@@ -18,6 +19,7 @@
 @property (nonatomic)         SwrveInterfaceOrientation orientation;        /*!< The orientation of the format */
 @property (nonatomic)         float scale;                                  /*!< The scale that the format should render */
 @property (atomic)            CGSize size;                                  /*!< The size of the format */
+@property (nonatomic)         SwrveCalibration *calibration;                /*!< Calibration values used for font scaling*/
 
 /*! Create an in-app message format from the JSON content.
  *

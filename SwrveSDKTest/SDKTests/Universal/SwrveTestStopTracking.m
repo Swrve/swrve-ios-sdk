@@ -14,7 +14,7 @@
 @interface Swrve (Internal)
 - (BOOL)sdkReady;
 - (void)appDidBecomeActive:(NSNotification *)notification;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 @property(atomic) NSTimer *campaignsAndResourcesTimer;
 @property(atomic) SwrveProfileManager *profileManager;
 @property (atomic) SwrveRESTClient *restClient;
@@ -90,7 +90,7 @@
     OCMStub([mockResponse statusCode]).andReturn(200);
     
     Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrveMock.restClient = mockRestClient;
     });
     

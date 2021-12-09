@@ -28,7 +28,7 @@
 - (UInt64)joinedDateMilliSeconds;
 - (NSURL *)campaignsAndResourcesURL;
 - (NSURL *)userResourcesDiffURL;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 
 @end
 
@@ -67,7 +67,7 @@
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
     
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
                                          swrve.restClient = mockRestClient;
                                      });
 

@@ -86,9 +86,7 @@
     float tableWidth = (float)tableView.bounds.size.width;
     
     if (row == 0) {
-        UIFont *fallbackFont = [UIFont boldSystemFontOfSize:[kSwrveDefaultMultiValueDescriptionFontSize floatValue]];
-        UIFont *descriptionFont = [SwrveConversationStyler fontFromStyle:self.style withFallback:fallbackFont];
-        return [SwrveConversationStyler textHeight:self.description withFont:descriptionFont withMaxWidth:tableWidth];
+        return UITableViewAutomaticDimension;
     } else {
         NSUInteger finalRow = row - ([self hasDescription]? 1 : 0);
         NSDictionary *dict = [self.values objectAtIndex:finalRow];

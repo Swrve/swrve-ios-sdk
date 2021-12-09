@@ -17,6 +17,7 @@
 @property (atomic)            CGPoint center;   /*!< Center of the image */
 @property (atomic)            CGSize size;      /*!< Suggested size of the image container */
 @property (nonatomic, retain)   SwrveMessage* message; /*!< Reference to parent message. */
+@property (nonatomic, retain) NSDictionary *multilineText;
 
 - (UIImage*)createImage:(NSString *)cacheFolder
         personalization:(NSString *)personalizedTextStr

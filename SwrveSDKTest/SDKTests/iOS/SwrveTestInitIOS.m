@@ -37,8 +37,11 @@
 - (UInt64)userJoinedTimeSeconds;
 - (NSString *)signatureKey;
 @property(atomic) NSURL *eventFilename;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
+
 @property (atomic) SwrveRESTClient *restClient;
+- (void)initRealTimeUserProperties;
+- (void)invalidateETag;
 
 @end
 
@@ -46,7 +49,6 @@
 
 @property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
 
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
 @property (atomic) SwrveRESTClient *restClient;
 @end
 
@@ -138,7 +140,7 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], device_width);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"], device_height);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.device_dpi"] isKindOfClass:[NSNumber class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"], @SWRVE_SDK_VERSION);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"], [@"iOS " stringByAppendingString:@SWRVE_SDK_VERSION]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.app_store"], @"apple");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.utc_offset_seconds"], [NSNumber numberWithInteger:[[NSTimeZone localTimeZone]secondsFromGMT]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
@@ -494,7 +496,7 @@
     OCMStub([mockResponse statusCode]).andReturn(200);
     
     Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrveMock.restClient = mockRestClient;
     });
     
@@ -597,5 +599,19 @@
     OCMVerifyAll(campaignInfluenceMock);
     [currentMockCenter stopMocking];
 }
+
+- (void)testRTUPDontInvalidateEtag {
+    //Version 6.4.0 - 7.2.0 was invalidating etag when no RTUP
+    Swrve *swrve = [Swrve alloc];
+    id swrveMock = OCMPartialMock(swrve);
+    
+    OCMStub([swrveMock resourcesFile]).andReturn([SwrveSignatureProtectedFile new]);
+    OCMReject([swrveMock invalidateETag]);
+    
+    [swrveMock initRealTimeUserProperties];
+    
+    OCMVerifyAll(swrveMock);
+}
+
 
 @end

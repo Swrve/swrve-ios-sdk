@@ -201,6 +201,10 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
  */
 @property (nonatomic) BOOL autoCollectIDFV;
 
+/*! implement this delegate to listen to our restclient calls for authentication challenges
+ */
+@property (nonatomic, weak) id <NSURLSessionDelegate> urlSessionDelegate;
+
 @end
 
 /*! Immutable copy of a SwrveConfig object */
@@ -239,5 +243,6 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, weak, readonly) id <SwrvePermissionsDelegate> permissionsDelegate;
 @property (nonatomic, weak, readonly) id <SwrveDeeplinkDelegate> deeplinkDelegate;
 @property (nonatomic) BOOL autoCollectIDFV;
+@property (nonatomic, weak, readonly) id <NSURLSessionDelegate> urlSessionDelegate;
 
 @end

@@ -268,6 +268,10 @@
 #pragma unused (sessionDelegate)
 }
 
+- (id<NSURLSessionDelegate>)urlSessionDelegate {
+    return nil;
+}
+
 - (void)start {
 }
 

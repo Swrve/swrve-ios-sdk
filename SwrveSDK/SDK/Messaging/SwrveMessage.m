@@ -95,6 +95,9 @@ static bool in_cache(NSString* file, NSSet* set){
             }
 
             for (SwrveImage* image in format.images) {
+                if(image.multilineText) {
+                    return YES;
+                }
                 BOOL hasImage = in_cache(image.file, assets);
                 if (image.dynamicImageUrl) {
                     if([self canResolvePersonalizedImageAsset:image.dynamicImageUrl withPersonalization:personalization withAssets:assets]){

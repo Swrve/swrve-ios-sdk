@@ -1,9 +1,9 @@
 #define SWRVE_MIN(a,b)    ((a) < (b) ? (a) : (b))
-#import "SwrvePersonalizedTextImage.h"
+#import "SwrveTextImageView.h"
 
-@implementation SwrvePersonalizedTextImage
+@implementation SwrveTextImageView
 
-float const TEST_FONT_SIZE = 200.0f;
+CGFloat const TEST_FONT_SIZE = 200.0f;
 
 + (UIImage *)imageFromString:(NSString *)string
          withBackgroundColor:(UIColor* ) background
@@ -25,13 +25,19 @@ float const TEST_FONT_SIZE = 200.0f;
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByClipping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
-
-    NSDictionary *baseAttributes = @{ NSFontAttributeName: currentFont,
-                                  NSBackgroundColorAttributeName: background,
-                                  NSForegroundColorAttributeName: foreground,
-                                  NSParagraphStyleAttributeName:  paragraphStyle };
-
-    NSDictionary *attributes = [SwrvePersonalizedTextImage fitTextSize:string withAttributes:baseAttributes maxWidth:(int)size.width maxHeight:(int)size.height];
+  
+    NSMutableDictionary *attributes = [NSMutableDictionary new];
+    
+    //the font size will be scaled below
+    [attributes setObject:[currentFont fontWithSize:TEST_FONT_SIZE] forKey:NSFontAttributeName];
+    [attributes setObject:background forKey:NSBackgroundColorAttributeName];
+    [attributes setObject:foreground forKey:NSForegroundColorAttributeName];
+    [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+    
+    CGFloat scaledFontSize = [SwrveTextImageView fitTextSize:string withAttributes:attributes maxWidth:size.width maxHeight:size.height maxFontSize:TEST_FONT_SIZE];
+    
+    // set the font size to the correct scaled value
+    [attributes setObject:[currentFont fontWithSize:scaledFontSize] forKey:NSFontAttributeName];
 
     CGRect backgroundRect = CGRectMake(0, 0, size.width, size.height);
     
@@ -60,24 +66,15 @@ float const TEST_FONT_SIZE = 200.0f;
     return resultImage;
 }
 
-+ (NSDictionary *) fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(int)maxWidth maxHeight:(int)maxHeight {
-    if (text == nil || maxWidth <= 0 || maxHeight <= 0) return attributes;
++ (CGFloat)fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight maxFontSize:(CGFloat)maxFontSize {
+    if (text == nil || maxWidth <= 0 || maxHeight <= 0) return 0;
 
-    // Retrieve the current font so we can resize against that specific styling
-    UIFont *currentFont = (UIFont *)[attributes objectForKey:NSFontAttributeName];
-    
-    NSMutableDictionary *newAttributes = [attributes mutableCopy];
-    [newAttributes setObject:[currentFont fontWithSize:TEST_FONT_SIZE] forKey:NSFontAttributeName];
-    
     CGSize maxSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    CGRect bound = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesDeviceMetrics attributes:newAttributes context:nil];
-    double scalex = TEST_FONT_SIZE / (bound.size.width + fabs(bound.origin.x));
-    double scaley = TEST_FONT_SIZE / (bound.size.height + fabs(bound.origin.y));
-    
+    CGRect bound = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesDeviceMetrics attributes:attributes context:nil];
+    double scalex = maxFontSize / (bound.size.width + fabs(bound.origin.x));
+    double scaley = maxFontSize / (bound.size.height + fabs(bound.origin.y));
     CGFloat fontSize = (CGFloat)floor(SWRVE_MIN(scalex * maxWidth, scaley * maxHeight));
-    [newAttributes setObject:[currentFont fontWithSize:fontSize] forKey:NSFontAttributeName];
-    
-    return newAttributes;
+    return fontSize;
 }
 
 @end

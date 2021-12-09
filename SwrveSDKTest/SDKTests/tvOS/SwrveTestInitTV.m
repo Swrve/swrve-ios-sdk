@@ -61,7 +61,7 @@
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], device_width);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"], device_height);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.device_dpi"] isKindOfClass:[NSNumber class]]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"], @SWRVE_SDK_VERSION);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.sdk_version"], [@"iOS " stringByAppendingString:@SWRVE_SDK_VERSION]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.app_store"], @"apple");
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.utc_offset_seconds"], [NSNumber numberWithInteger:[[NSTimeZone localTimeZone] secondsFromGMT]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);

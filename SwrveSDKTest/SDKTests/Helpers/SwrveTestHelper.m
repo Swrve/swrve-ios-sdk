@@ -262,7 +262,7 @@
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
 
     Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrveMock.restClient = mockRestClient;
     });
 
@@ -280,7 +280,7 @@
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
 
     Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrveMock.restClient = mockRestClient;
     });
 

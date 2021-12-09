@@ -239,7 +239,17 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 
     __block UNNotificationAttachment *attachment = nil;
     __block NSURL *attachmentURL = [NSURL URLWithString:mediaUrl];
-    __weak NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSession *session = nil;
+    
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    id <NSURLSessionDelegate> del = swrveCommon.urlSessionDelegate;
+    if (del){
+        session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                delegate:del
+                                           delegateQueue:NSOperationQueue.mainQueue];
+    } else {
+        session = [NSURLSession sharedSession];
+    }
 
     [[session downloadTaskWithURL:attachmentURL
                 completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {

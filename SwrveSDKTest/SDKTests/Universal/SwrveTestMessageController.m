@@ -16,6 +16,7 @@
 #import "SwrveMigrationsManager.h"
 #import "TestCapabilitiesDelegate.h"
 #import "SwrveSDK.h"
+#import "SwrveTextView.h"
 #if TARGET_OS_IOS
 #import "SwrvePermissions.h"
 #import "SwrvePush.h"
@@ -36,7 +37,7 @@
 @property(atomic) SwrveMessageController *messaging;
 @property (nonatomic) SwrveReceiptProvider *receiptProvider;
 - (NSDate *)getNow;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (int)sessionStart;
 - (void)suspend:(BOOL)terminating;
 - (void)appDidBecomeActive:(NSNotification *)notification;
@@ -239,7 +240,7 @@
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockResponseData, [NSNull null], nil])]);
     
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrve.restClient = mockRestClient;
     });
     
@@ -2524,7 +2525,7 @@
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:OCMOCK_ANY]).andDo(nil);
     
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrve.restClient = mockRestClient;
     });
     
@@ -2574,7 +2575,7 @@
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:OCMOCK_ANY]).andDo(nil);
     
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrve.restClient = mockRestClient;
     });
     
@@ -2830,6 +2831,297 @@
     
     window = [swrveMock messaging].inAppMessageWindow;
     XCTAssertNil(window);
+}
+
+- (void)testMutliLineFormatTextview {
+    // No scrolling so no accesability and normal system font applied
+    SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
+    NSDictionary *format = @{
+        @"images" : @[
+                @{
+                @"w" : @{
+                    @"type": @"number",
+                    @"value": @846
+                },
+                @"h": @{
+                    @"type": @"number",
+                    @"value": @1335
+                },
+                @"multiline_text": @{
+                    @"value": @"This is the expected text",
+                    @"h_align": @"CENTER",
+                    @"font_size": @18,
+                    @"scrollable": @0
+                }
+                }
+            ],
+        @"buttons": @[],
+        @"name": @"[0.467005076142132]all - portrait",
+        @"orientation": @"portrait",
+        @"language": @"*",
+        @"scaled_by": @0.467005076142132,
+        @"scaled_from": @"all - portrait",
+        @"scale": @1,
+        @"size": @{
+            @"w": @{
+                @"type": @"number",
+                @"value": @828
+            },
+            @"h": @{
+                @"type": @"number",
+                @"value": @1472
+            }
+        }
+    };
+    
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+    // dont use calibration for this test
+    messageFormat.calibration = [[SwrveCalibration alloc]initWithDictionary:@{
+        @"width" : @0,
+        @"height" : @0,
+        @"base_font_size" : @0,
+        @"text" : @""
+
+    }];
+    SwrveInAppMessageConfig *config = [SwrveInAppMessageConfig new];
+    config.personalizationFont = [UIFont systemFontOfSize:18];
+    config.personalizationForegroundColor = [UIColor redColor];
+    config.personalizationBackgroundColor = [UIColor yellowColor];
+    
+    messageFormat.inAppConfig = config;
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
+    
+    NSString *expectedText = @"This is the expected text";
+    NSString *text = nil;
+    
+    bool expectedScrollable = false;
+    bool scrollable = false;
+    
+    NSTextAlignment expectedAlignment = NSTextAlignmentCenter;
+    NSTextAlignment alignment = NSTextAlignmentLeft;
+    
+    UIFont *expectedFont = [UIFont systemFontOfSize:18];
+    UIFont *font = [UIFont systemFontOfSize:12];
+    
+    UIColor *expectedForegroundColor = [UIColor redColor];
+    UIColor *foregroundColor = [UIColor blackColor];
+    
+    UIColor *expectedBackgroundColor = [UIColor yellowColor];
+    UIColor *backgroundColor = [UIColor blackColor];
+    
+    for (UIView *item in view.subviews){
+          if ([item isKindOfClass:[SwrveTextView class]]) {
+              SwrveTextView * tv = (SwrveTextView *)item;
+              text = tv.text;
+              scrollable = tv.isScrollEnabled;
+              alignment = tv.textAlignment;
+              font = tv.font;
+              foregroundColor = tv.textColor;
+              backgroundColor = tv.backgroundColor;
+          }
+    };
+       
+    XCTAssertEqualObjects(expectedText, text);
+    XCTAssertEqual(expectedScrollable, scrollable);
+    XCTAssertEqual(expectedAlignment, alignment);
+    XCTAssertEqual([expectedFont pointSize], [font pointSize]);
+    XCTAssertEqualObjects(expectedFont, font);
+    XCTAssertEqualObjects(expectedForegroundColor, foregroundColor);
+    XCTAssertEqualObjects(expectedBackgroundColor, backgroundColor);
+}
+
+- (void)testMutliLineFormatTextviewAccessabilityFont {
+    // Use scrolling so accesability font applied
+    SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
+    NSDictionary *format = @{
+        @"images" : @[
+                @{
+                @"w" : @{
+                    @"type": @"number",
+                    @"value": @846
+                },
+                @"h": @{
+                    @"type": @"number",
+                    @"value": @1335
+                },
+                @"multiline_text": @{
+                    @"value": @"This is the expected text",
+                    @"h_align": @"CENTER",
+                    @"font_size": @18,
+                    @"scrollable": @1
+                }
+                }
+            ],
+        @"buttons": @[],
+        @"name": @"[0.467005076142132]all - portrait",
+        @"orientation": @"portrait",
+        @"language": @"*",
+        @"scaled_by": @0.467005076142132,
+        @"scaled_from": @"all - portrait",
+        @"scale": @1,
+        @"size": @{
+            @"w": @{
+                @"type": @"number",
+                @"value": @828
+            },
+            @"h": @{
+                @"type": @"number",
+                @"value": @1472
+            }
+        }
+    };
+    
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+    // dont use calibration for this test
+    messageFormat.calibration = [[SwrveCalibration alloc]initWithDictionary:@{
+        @"width" : @0,
+        @"height" : @0,
+        @"base_font_size" : @0,
+        @"text" : @""
+
+    }];
+    SwrveInAppMessageConfig *config = [SwrveInAppMessageConfig new];
+    config.personalizationFont = [UIFont systemFontOfSize:18];
+    config.personalizationForegroundColor = [UIColor redColor];
+    config.personalizationBackgroundColor = [UIColor yellowColor];
+    
+    messageFormat.inAppConfig = config;
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
+    
+    NSString *expectedText = @"This is the expected text";
+    NSString *text = nil;
+    
+    bool expectedScrollable = false;
+#if TARGET_OS_IOS
+    expectedScrollable = true;
+#endif
+    bool scrollable = false;
+    
+    NSTextAlignment expectedAlignment = NSTextAlignmentCenter;
+    NSTextAlignment alignment = NSTextAlignmentLeft;
+    
+    UIFont *expectedFont = nil;
+    if (@available(iOS 11.0,tvOS 11.0, *)) {
+#if TARGET_OS_IOS
+        UIFontMetrics *metircs = [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
+        expectedFont = [metircs scaledFontForFont:[UIFont systemFontOfSize:18]];
+#else
+        expectedFont = [UIFont systemFontOfSize:18];
+#endif
+
+    } else {
+        expectedFont = [UIFont systemFontOfSize:18];
+    }
+   
+
+    UIFont *font = [UIFont systemFontOfSize:12];
+    
+    UIColor *expectedForegroundColor = [UIColor redColor];
+    UIColor *foregroundColor = [UIColor blackColor];
+    
+    UIColor *expectedBackgroundColor = [UIColor yellowColor];
+    UIColor *backgroundColor = [UIColor blackColor];
+    
+    for (UIView *item in view.subviews){
+          if ([item isKindOfClass:[SwrveTextView class]]) {
+              SwrveTextView * tv = (SwrveTextView *)item;
+              text = tv.text;
+              scrollable = tv.isScrollEnabled;
+              alignment = tv.textAlignment;
+              font = tv.font;
+              foregroundColor = tv.textColor;
+              backgroundColor = tv.backgroundColor;
+          }
+    };
+       
+    XCTAssertEqualObjects(expectedText, text);
+    XCTAssertEqual(expectedScrollable, scrollable);
+    XCTAssertEqual(expectedAlignment, alignment);
+    XCTAssertEqual([expectedFont pointSize], [font pointSize]);
+    XCTAssertEqualObjects(expectedFont, font);
+    XCTAssertEqualObjects(expectedForegroundColor, foregroundColor);
+    XCTAssertEqualObjects(expectedBackgroundColor, backgroundColor);
+}
+
+
+- (void)testMutliLineCalibration {
+    float sample_scaled_by = 0.467005076142132;
+    float sample_calibratedHeight = 5000 * sample_scaled_by;
+    float sample_calibratedWidth = 500 * sample_scaled_by;
+    float sample_json_size = 18;
+    float sample_base_size = 20;
+    NSString *sample_calibratedtext = @"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    float sample_multilineSize_Height = 800;
+    float sample_multilineSize_Width = 1500;
+    
+    float expected_scaled_point_size = 41;
+    
+    SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
+    NSDictionary *format = @{
+        @"calibration" : @{
+            @"width" : [NSNumber numberWithFloat:sample_calibratedHeight],
+            @"height" : [NSNumber numberWithFloat:sample_calibratedWidth],
+            @"base_font_size" : [NSNumber numberWithFloat:sample_base_size],
+            @"text" : sample_calibratedtext
+
+        },
+        @"images" : @[
+                @{
+                @"w" : @{
+                    @"type": @"number",
+                    @"value": [NSNumber numberWithFloat:sample_multilineSize_Width]
+                },
+                @"h": @{
+                    @"type": @"number",
+                    @"value" : [NSNumber numberWithFloat:sample_multilineSize_Height]
+                },
+                @"multiline_text": @{
+                    @"value": @"This is the expected text",
+                    @"h_align": @"CENTER",
+                    @"font_size": [NSNumber numberWithFloat:sample_json_size],
+                    @"scrollable": @1
+                }
+                }
+            ],
+        @"buttons": @[],
+        @"name": @"[0.467005076142132]all - portrait",
+        @"orientation": @"portrait",
+        @"language": @"*",
+        @"scaled_from": @"all - portrait",
+        @"scaled_by": @1,
+        @"scale": @1,
+        @"size": @{
+            @"w": @{
+                @"type": @"number",
+                @"value": [NSNumber numberWithFloat:sample_multilineSize_Width]
+            },
+            @"h": @{
+                @"type": @"number",
+                @"value": [NSNumber numberWithFloat:sample_multilineSize_Height]
+            }
+        }
+    };
+    
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+    SwrveInAppMessageConfig *config = [SwrveInAppMessageConfig new];
+    config.personalizationFont = [UIFont systemFontOfSize:18];
+    config.personalizationForegroundColor = [UIColor redColor];
+    config.personalizationBackgroundColor = [UIColor yellowColor];
+    
+    messageFormat.inAppConfig = config;
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
+    
+    UIFont *expectedFont = [UIFont systemFontOfSize:expected_scaled_point_size];
+    UIFont *font = [UIFont systemFontOfSize:12];
+    
+    for (UIView *item in view.subviews){
+          if ([item isKindOfClass:[SwrveTextView class]]) {
+              SwrveTextView * tv = (SwrveTextView *)item;
+              font = tv.font;
+          }
+    };
+       
+    XCTAssertEqualWithAccuracy([expectedFont pointSize], [font pointSize], 0.5);
 }
 
 @end

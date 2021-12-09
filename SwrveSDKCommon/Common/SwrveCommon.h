@@ -29,6 +29,9 @@
 - (NSString *)sessionToken;
 - (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
 
+@optional
+- (id <NSURLSessionDelegate>)urlSessionDelegate;
+
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString* deviceToken;
 @property(atomic, readonly) NSString *apiKey;

@@ -71,5 +71,8 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKVersionString[];
 #import <SwrveSDK/SwrveProfileManager.h>
 #import <SwrveSDK/SwrveEventQueueItem.h>
 #import <SwrveSDK/SwrveDynamicUrlImage.h>
-#import <SwrveSDK/SwrvePersonalizedTextImage.h>
+#import <SwrveSDK/SwrveTextView.h>
 #import <SwrveSDK/SwrveDeeplinkDelegate.h>
+#import <SwrveSDK/SwrveTextImageView.h>
+#import <SwrveSDK/SwrveTextViewStyle.h>
+#import <SwrveSDK/SwrveCalibration.h>

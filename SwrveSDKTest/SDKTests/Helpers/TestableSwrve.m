@@ -77,4 +77,11 @@
     [self setRestClient:restClient];
 }
 
+
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate {
+    TestableSwrveRESTClient *restClient = [[TestableSwrveRESTClient alloc] initWithTimeoutInterval:timeOut urlSessionDelegate:urlSssionDelegate];
+    [restClient initializeRequests];
+    [self setRestClient:restClient];
+}
+
 @end

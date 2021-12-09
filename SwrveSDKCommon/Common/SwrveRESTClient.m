@@ -4,11 +4,17 @@
 @implementation SwrveRESTClient
 
 @synthesize timeoutInterval;
+@synthesize urlSessionDelegate;
 
 - (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInt {
+    return [self initWithTimeoutInterval:timeoutInt urlSessionDelegate:nil];
+}
+
+- (id)initWithTimeoutInterval:(NSTimeInterval)timeoutInt urlSessionDelegate:(id <NSURLSessionDelegate>)nsurlSessionDelegate {
     self = [super init];
     if (self) {
         [self setTimeoutInterval:timeoutInt];
+        self.urlSessionDelegate = nsurlSessionDelegate;
     }
     return self;
 }
@@ -51,7 +57,16 @@
 }
 
 - (void)sendHttpRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler API_AVAILABLE(ios(7.0)) {
-    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSession *session = nil;
+    id<NSURLSessionDelegate> del = self.urlSessionDelegate;
+    if (del) {
+        session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                delegate:del
+                                           delegateQueue:NSOperationQueue.mainQueue];
+    } else {
+        session = [NSURLSession sharedSession];
+    }
+        
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             handler(response, data, error);

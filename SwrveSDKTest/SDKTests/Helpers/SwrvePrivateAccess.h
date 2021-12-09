@@ -47,7 +47,7 @@
 - (UInt64) getTime;
 - (UInt64) secondsSinceEpoch;
 - (void) suspend:(BOOL)terminating;
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (void) appDidBecomeActive:(NSNotification*)notification;
 - (UInt64)joinedDateMilliSeconds;
 - (NSURL *)campaignsAndResourcesURL;

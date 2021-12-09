@@ -1,5 +1,5 @@
 #import "SwrveImage.h"
-#import "SwrvePersonalizedTextImage.h"
+#import "SwrveTextImageView.h"
 #import "SwrveDynamicUrlImage.h"
 
 @implementation SwrveImage
@@ -10,6 +10,7 @@
 @synthesize center;
 @synthesize size;
 @synthesize message;
+@synthesize multilineText;
 
 - (UIImage*)createImage:(NSString *)cacheFolder
         personalization:(NSString *)personalizedTextStr
@@ -24,7 +25,7 @@ personalizedUrlAssetSha1:(NSString *)personalizedUrlAssetSha1
         // store the current image so we can use it as a guide
         UIImage *guideImage = image;
         
-        image = [SwrvePersonalizedTextImage imageFromString:personalizedTextStr
+        image = [SwrveTextImageView imageFromString:personalizedTextStr
                                         withBackgroundColor:inAppConfig.personalizationBackgroundColor
                                         withForegroundColor:inAppConfig.personalizationForegroundColor
                                                    withFont:inAppConfig.personalizationFont

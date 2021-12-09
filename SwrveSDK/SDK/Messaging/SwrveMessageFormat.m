@@ -3,6 +3,8 @@
 #import "SwrveMessageController.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#import "SwrveTextView.h"
+#import "SwrveTextViewStyle.h"
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #import <SwrveSDKCommon/SwrveUtils.h>
@@ -29,6 +31,7 @@
 @synthesize orientation;
 @synthesize backgroundColor;
 @synthesize inAppConfig;
+@synthesize calibration;
 
 +(CGPoint)centerFromImageData:(NSDictionary*)data
 {
@@ -66,6 +69,7 @@
         image.text = [textDictionary objectForKey:@"value"];
     }
     
+    image.multilineText = (NSDictionary*)[imageData objectForKey:@"multiline_text"];
     [SwrveLogger debug:@"Image Loaded: Asset: \"%@\" (x: %g y: %g)",
           image.file,
           image.center.x,
@@ -195,14 +199,16 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     NSMutableArray *loadedImages = [NSMutableArray new];
 
-    NSArray* jsonImages = [json objectForKey:@"images"];
-    for (NSDictionary* jsonImage in jsonImages) {
-
-        [loadedImages addObject:[SwrveMessageFormat createImage:jsonImage forMessage:message]];
+    NSArray *jsonImages = [json objectForKey:@"images"];
+    for (NSDictionary *jsonImage in jsonImages) {
+        SwrveImage *image = [SwrveMessageFormat createImage:jsonImage forMessage:message];
+        [loadedImages addObject:image];
     }
 
     self.images = [NSArray arrayWithArray:loadedImages];
-
+    
+    self.calibration = [[SwrveCalibration alloc] initWithDictionary:[json objectForKey:@"calibration"]];
+     
     return self;
 }
 
@@ -242,8 +248,28 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     [SwrveLogger debug:@"MessageViewFormat scale :%g", self.scale];
     [SwrveLogger debug:@"UI scale :%g", screenScale];
-
-    [self addImageViews:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
+    
+    for (SwrveImage *image in self.images) {
+        if (image.multilineText) {
+            SwrveTextViewStyle *style = [[SwrveTextViewStyle alloc] initWithDictionary:image.multilineText];
+            
+            NSError *error;
+            style.text = [TextTemplating templatedTextFromString:style.text withProperties:personalization andError:&error];
+            if (error != nil){
+                [SwrveLogger error:@"%@", error];
+                break;
+            }
+            
+            style.font = inAppConfig.personalizationFont;
+            style.backgroundColor = inAppConfig.personalizationBackgroundColor;
+            style.foregroundColor = inAppConfig.personalizationForegroundColor;
+            
+            [self addTextViewFrom:image withStyling:style toContainer:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
+        } else {
+            [self addImageViewFrom:image toContainer:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
+        }
+    }
+    
     [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
     
     if (rotated) {
@@ -284,8 +310,28 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 
     [SwrveLogger debug:@"MessageViewFormat scale :%g", self.scale];
     [SwrveLogger debug:@"UI scale :%g", screenScale];
+    
+    for (SwrveImage *image in self.images) {
+        if (image.multilineText) {
+            SwrveTextViewStyle *style = [[SwrveTextViewStyle alloc] initWithDictionary:image.multilineText];
+            
+            NSError *error;
+            style.text = [TextTemplating templatedTextFromString:style.text withProperties:personalization andError:&error];
+            if (error != nil){
+                [SwrveLogger error:@"%@", error];
+                break;
+            }
+            
+            style.font = inAppConfig.personalizationFont;
+            style.backgroundColor = inAppConfig.personalizationBackgroundColor;
+            style.foregroundColor = inAppConfig.personalizationForegroundColor;
+            
+            [self addTextViewFrom:image withStyling:style toContainer:containerView centerX:centerX centerY:centerY scale:renderScale];
+        } else {
+            [self addImageViewFrom:image toContainer:containerView centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
+        }
+    }
 
-    [self addImageViews:containerView centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
     [self addButtonViews:containerView delegate:delegate centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
     
     [containerView setCenter:CGPointMake(centerX, centerY)];
@@ -385,59 +431,64 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addImageViews:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalization:(NSDictionary *)personalization
-{
+-(void)addTextViewFrom:(SwrveImage *)image withStyling:(SwrveTextViewStyle *)style toContainer:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale {
+    CGRect frame = CGRectMake(0, 0, image.size.width * renderScale, image.size.height * renderScale);
+    self.calibration.renderScale = renderScale;
+    SwrveTextView *textView = [[SwrveTextView alloc] initWithStyle:style calbration:self.calibration frame:frame];
+    [textView setCenter:CGPointMake(centerX + (image.center.x * renderScale),
+                                    centerY + (image.center.y * renderScale))];
+    [containerView addSubview:textView];
+}
+
+-(void)addImageViewFrom:(SwrveImage *)image toContainer:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalization:(NSDictionary *)personalization {
     NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
-    for (SwrveImage* image in self.images)
-    {
-        NSString *personalizedTextStr = nil;
-        NSString *personalizedUrlAssetSha1 = nil;
-        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
-        
-        if (image.text) {
-             NSError *error;
-             personalizedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:personalization andError:&error];
-             
-             if (error != nil){
-                 [SwrveLogger error:@"%@", error];
-             }
-        }
-        
-        if (image.dynamicImageUrl) {
-            imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:image.message.campaign.ID
-                                               variantID:[image.message.messageID unsignedIntegerValue]
-                                               assetName:nil
-                                             hasFallback:(image.file != nil)
-                                           unresolvedUrl:image.dynamicImageUrl
-                                             resolvedUrl:nil reason:nil];
-            
-            personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:image.dynamicImageUrl
-                                                       withPersonalization:personalization andQAInfo:imagePersonalizationQAInfo];
-        }
+    NSString *personalizedTextStr = nil;
+    NSString *personalizedUrlAssetSha1 = nil;
+    SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
     
-        UIImage *background = [image createImage:cacheFolder
-                                 personalization:personalizedTextStr
-                        personalizedUrlAssetSha1:personalizedUrlAssetSha1
-                                     inAppConfig:self.inAppConfig
-                                          qaInfo:imagePersonalizationQAInfo];
+    if (image.text) {
+         NSError *error;
+         personalizedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:personalization andError:&error];
+         
+         if (error != nil){
+             [SwrveLogger error:@"%@", error];
+         }
+    }
+    else if (image.dynamicImageUrl) {
+        imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:image.message.campaign.ID
+                                           variantID:[image.message.messageID unsignedIntegerValue]
+                                           assetName:nil
+                                         hasFallback:(image.file != nil)
+                                       unresolvedUrl:image.dynamicImageUrl
+                                         resolvedUrl:nil reason:nil];
         
-        CGRect frame = CGRectMake(0, 0,
-                                  background.size.width * renderScale,
-                                  background.size.height * renderScale);
+        personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:image.dynamicImageUrl
+                                                   withPersonalization:personalization andQAInfo:imagePersonalizationQAInfo];
+    }
+    
+    UIImage *background = [image createImage:cacheFolder
+                             personalization:personalizedTextStr
+                    personalizedUrlAssetSha1:personalizedUrlAssetSha1
+                                 inAppConfig:self.inAppConfig
+                                      qaInfo:imagePersonalizationQAInfo];
+    
+    CGRect frame = CGRectMake(0, 0,
+                              background.size.width * renderScale,
+                              background.size.height * renderScale);
 
 
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
-        imageView.image = background;
+    UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
+    imageView.image = background;
 
-        //shows focus on tvOS
+    //shows focus on tvOS
 #if TARGET_OS_TV
-        imageView.adjustsImageWhenAncestorFocused = YES;
+    imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
 
-        [imageView setCenter:CGPointMake(centerX + (image.center.x * renderScale),
-                                         centerY + (image.center.y * renderScale))];
-        [containerView addSubview:imageView];
-    }
+    [imageView setCenter:CGPointMake(centerX + (image.center.x * renderScale),
+                                     centerY + (image.center.y * renderScale))];
+    [containerView addSubview:imageView];
+        
 }
 
 - (NSString *)resolvePersonalizedImageAsset:(NSString *)assetUrl withPersonalization:(NSDictionary *)personalization andQAInfo:(SwrveQAImagePersonalizationInfo *) qaInfo {

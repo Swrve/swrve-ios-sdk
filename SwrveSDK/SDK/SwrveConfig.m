@@ -34,6 +34,7 @@
 @synthesize permissionsDelegate;
 @synthesize deeplinkDelegate;
 @synthesize autoCollectIDFV;
+@synthesize urlSessionDelegate;
 
 
 -(id) init
@@ -104,6 +105,7 @@
 @synthesize permissionsDelegate;
 @synthesize deeplinkDelegate;
 @synthesize autoCollectIDFV;
+@synthesize urlSessionDelegate;
 
 - (id)initWithMutableConfig:(SwrveConfig*)config
 {
@@ -140,6 +142,7 @@
         permissionsDelegate = config.permissionsDelegate;
         deeplinkDelegate = config.deeplinkDelegate;
         autoCollectIDFV = config.autoCollectIDFV;
+        urlSessionDelegate = config.urlSessionDelegate;
     }
 
     return self;

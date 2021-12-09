@@ -36,6 +36,8 @@ static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
 static NSString* SWRVE_TRACKING_STATE =                 @"swrve.tracking_state";
 
+static NSString* PLATFORM =                             @"iOS "; // with trailing space
+
 @implementation SwrveDeviceProperties
 
 #pragma mark - properties
@@ -139,7 +141,10 @@ static NSString* SWRVE_TRACKING_STATE =                 @"swrve.tracking_state";
     [deviceProperties setValue:sdk_language         forKey:SWRVE_LANGUAGE];
     [deviceProperties setValue:device_height        forKey:SWRVE_DEVICE_HEIGHT];
     [deviceProperties setValue:device_width         forKey:SWRVE_DEVICE_WIDTH];
-    [deviceProperties setValue:self.sdk_version     forKey:SWRVE_SDK_VERSION];
+    if(self.sdk_version) {
+        NSString *sdkVersionString = [PLATFORM stringByAppendingString:self.sdk_version];
+        [deviceProperties setValue:sdkVersionString     forKey:SWRVE_SDK_VERSION];
+    }
     [deviceProperties setValue:@"apple"             forKey:SWRVE_APP_STORE];
     [deviceProperties setValue:secondsFromGMT       forKey:SWRVE_UTC_OFFSET_SECONDS ];
     [deviceProperties setValue:timezone_name        forKey:SWRVE_TIMEZONE_NAME];

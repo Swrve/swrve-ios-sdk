@@ -144,6 +144,8 @@
 		5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		960AA6CED41D6401FBEB237F /* libPods-SwrveSDK-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */; };
+		F6028D0A270504A300E0BB79 /* SwrveTestTextViewTV.m in Sources */ = {isa = PBXBuildFile; fileRef = F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */; };
+		F6028D0C2705073B00E0BB79 /* SwrveTestTextViewIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */; };
 		F612AB93251E2B84002B5775 /* SwrveTestPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */; };
 		F612AB94251E2B84002B5775 /* SwrveTestPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */; };
 		F619930B2540526D0014F72D /* SwrveTestEventsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F619930A2540526D0014F72D /* SwrveTestEventsManager.m */; };
@@ -209,6 +211,8 @@
 		F6A79AC72551C8C800E66E47 /* SwrveTestSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79AB32551C8C300E66E47 /* SwrveTestSwizzleHelper.m */; };
 		F6D0FD2425F772E400423C40 /* SwrveTestStaticVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D0FD2325F772E400423C40 /* SwrveTestStaticVersions.m */; };
 		F6D0FD2525F772E400423C40 /* SwrveTestStaticVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D0FD2325F772E400423C40 /* SwrveTestStaticVersions.m */; };
+		F6ED51FC2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
+		F6ED51FD2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
 		F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */; };
 /* End PBXBuildFile section */
 
@@ -282,6 +286,8 @@
 		BA862BC72F94BAE4B426A7BA /* Pods-SwrveSDK-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB8D0A7DABC671EA0E06C8A /* Pods-SwrveSDK-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewTV.m; sourceTree = "<group>"; };
+		F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewIOS.m; sourceTree = "<group>"; };
 		F60B7F42225F3BA1009AFCCC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F60B7F43225F3BA1009AFCCC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F60B7F45225F3BA1009AFCCC /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -393,6 +399,7 @@
 		F6A79A9E2551C84B00E66E47 /* SwrveTestTextTemplating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextTemplating.m; sourceTree = "<group>"; };
 		F6A79AB32551C8C300E66E47 /* SwrveTestSwizzleHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwizzleHelper.m; sourceTree = "<group>"; };
 		F6D0FD2325F772E400423C40 /* SwrveTestStaticVersions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestStaticVersions.m; sourceTree = "<group>"; };
+		F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNSURLSessionDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -534,6 +541,7 @@
 				F60B7F94225F412A009AFCCC /* SwrveTVTestDeviceProperties.m */,
 				F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */,
 				52B3D377251A466C005606D7 /* SwrveTestUtilsTV.m */,
+				F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */,
 			);
 			path = tvOS;
 			sourceTree = "<group>";
@@ -570,6 +578,7 @@
 				52B3D371251A45B5005606D7 /* SwrveTestUtilsIOS.m */,
 				F6A799B92550B01800E66E47 /* SwrveTestMessageCenterAPIIOS.m */,
 				F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */,
+				F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -606,6 +615,7 @@
 				52C0A63325F140E400BE4549 /* SwrveTestAssetsManager.m */,
 				F6D0FD2325F772E400423C40 /* SwrveTestStaticVersions.m */,
 				3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */,
+				F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */,
 			);
 			path = Universal;
 			sourceTree = "<group>";
@@ -1127,6 +1137,7 @@
 				5B2B6E7023C4A05B000B1687 /* SwrveMockNSURLProtocol.m in Sources */,
 				5B2B6E1E23C49346000B1687 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
 				F619930B2540526D0014F72D /* SwrveTestEventsManager.m in Sources */,
+				F6ED51FC2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */,
 				F685B52425F0E57F008F5BAA /* SwrveTestMessageController.m in Sources */,
 				F6A799BA2550B01900E66E47 /* SwrveTestMessageCenterAPIIOS.m in Sources */,
 				F66986C925BDA90B00950E98 /* SwrveTestConversationFlow.m in Sources */,
@@ -1165,6 +1176,7 @@
 				F66988CF25BE0C7800950E98 /* SwrveTestUserIdentity.m in Sources */,
 				5B2B6E2023C49346000B1687 /* SwrveTestInitMode.m in Sources */,
 				3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */,
+				F6028D0C2705073B00E0BB79 /* SwrveTestTextViewIOS.m in Sources */,
 				5B2B6E2B23C4935F000B1687 /* SwrveTestAuthPush.m in Sources */,
 				5B2B6E2223C49346000B1687 /* SwrveTestEventQueueCallback.m in Sources */,
 				5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */,
@@ -1219,6 +1231,7 @@
 				F6A79AAA2551C87700E66E47 /* SwrveTestTextTemplating.m in Sources */,
 				F612AB94251E2B84002B5775 /* SwrveTestPermissions.m in Sources */,
 				5B2B6FA623C4E77F000B1687 /* SwrveTVTestDeviceProperties.m in Sources */,
+				F6028D0A270504A300E0BB79 /* SwrveTestTextViewTV.m in Sources */,
 				5B2B6FA023C4E6AF000B1687 /* SwrveTestCampaignAndResourcesUpdate.m in Sources */,
 				5B2B6F9723C4E6AF000B1687 /* SwrveTestQA.m in Sources */,
 				5B2B6F0423C4E4DA000B1687 /* SwrveMockNSURLProtocol.m in Sources */,
@@ -1232,6 +1245,7 @@
 				5B2B6F9C23C4E6AF000B1687 /* SwrveTestEventQueueCallback.m in Sources */,
 				5B2B6F0223C4E4DA000B1687 /* TestShowMessageDelegateWithViewController.m in Sources */,
 				52C0A63525F140E400BE4549 /* SwrveTestAssetsManager.m in Sources */,
+				F6ED51FD2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */,
 				5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */,
 				5B2B6F9523C4E6AF000B1687 /* SwrveTestUserResources.m in Sources */,
 				5B2B6FA123C4E6AF000B1687 /* SwrveTestMessageCenterAPI.m in Sources */,

@@ -16,7 +16,7 @@
 @property (atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrveMessageController *messaging;
 
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 @end
 
@@ -76,7 +76,7 @@
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
     
-    OCMStub([swrveMock initSwrveRestClient:60]).andDo(^(NSInvocation *invocation) {
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
         swrve.restClient = mockRestClient;
     });
     

@@ -428,7 +428,7 @@ enum {
 
         instanceID = [[SwrveInstanceIDRecorder sharedInstance] addSwrveInstanceID];
         [self setHttpPerformanceMetrics:[[NSMutableArray alloc] init]];
-        [self initSwrveRestClient:config.httpTimeoutSeconds];
+        [self initSwrveRestClient:config.httpTimeoutSeconds urlSssionDelegate:config.urlSessionDelegate];
         [self initBuffer];
         [self setPausedEventsArray:[NSMutableArray array]];
 
@@ -635,8 +635,8 @@ enum {
     [self executeSessionStartedDelegate];
 }
 
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut {
-    [self setRestClient:[[SwrveRESTClient alloc] initWithTimeoutInterval:timeOut]];
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate {
+    [self setRestClient:[[SwrveRESTClient alloc] initWithTimeoutInterval:timeOut urlSessionDelegate:urlSssionDelegate]];
 }
 
 - (BOOL)shouldAutoStart {
@@ -1000,6 +1000,9 @@ enum {
                             NSData *campaignData = [NSJSONSerialization dataWithJSONObject:campaignJson options:0 error:nil];
                             [self.messaging writeToCampaignCache:campaignData];
                             [self.messaging autoShowMessages];
+                        } else if (realTimeUserPropertiesJson != nil) {
+                            // if real time user properties has changed then we need to resync InApp assets
+                            [self.messaging refreshInAppCampaignAssets];
                         }
                     }
                     if (self.config.abTestDetailsEnabled) {
@@ -1877,8 +1880,6 @@ enum {
         if (!error) {
             self.realTimeUserProperties = [realtimeUserProperties mutableCopy];
         }
-    } else {
-        [self invalidateETag];
     }
 }
 
@@ -2453,6 +2454,10 @@ enum HttpStatus {
 
 - (id <SwrvePermissionsDelegate>)permissionsDelegate {
     return self.config.permissionsDelegate;
+}
+
+- (id <NSURLSessionDelegate>)urlSessionDelegate {
+    return self.config.urlSessionDelegate;
 }
 
 - (NSString *)userID {

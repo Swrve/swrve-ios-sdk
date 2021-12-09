@@ -7,7 +7,7 @@ static NSString* const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
 const static int CAMPAIGN_VERSION            = 9;
 const static int CAMPAIGN_RESPONSE_VERSION   = 2;
 const static int EMBEDDED_CAMPAIGN_VERSION   = 1;
-const static int IN_APP_CAMPAIGN_VERSION     = 4;
+const static int IN_APP_CAMPAIGN_VERSION     = 5;
 
 /*! In-app messages controller */
 @interface SwrveMessageController ()
@@ -62,6 +62,8 @@ const static int IN_APP_CAMPAIGN_VERSION     = 4;
 
 /*! Called when the app became active */
 -(void) appDidBecomeActive;
+
+-(void) refreshInAppCampaignAssets;
 
 #pragma mark Properties
 

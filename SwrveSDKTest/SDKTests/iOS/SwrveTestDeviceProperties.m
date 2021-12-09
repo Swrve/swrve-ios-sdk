@@ -103,7 +103,7 @@
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
     
     XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 1);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sdk_version"], @SWRVE_SDK_VERSION);
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sdk_version"], [@"iOS " stringByAppendingString:@SWRVE_SDK_VERSION]);
 }
 
 - (void)testDevicePropertiesNil_WithInstallDate {
