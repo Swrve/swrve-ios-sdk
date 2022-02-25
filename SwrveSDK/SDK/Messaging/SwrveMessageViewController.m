@@ -3,7 +3,6 @@
 #import "SwrveButton.h"
 #import "SwrveMessageController.h"
 
-#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 @interface SwrveMessageViewController ()
@@ -21,7 +20,7 @@
 
 @implementation SwrveMessageViewController
 
-@synthesize block;
+@synthesize messageResultBlock;
 @synthesize message;
 @synthesize current_format;
 @synthesize wasShownToUserNotified;
@@ -108,37 +107,6 @@
 #endif
 }
 
-
-#if TARGET_OS_IOS /** exclude tvOS **/
--(void)addViewForOrientation:(UIInterfaceOrientation)orientation
-{
-    current_format = [self.message bestFormatForOrientation:orientation];
-    if (!current_format) {
-        // Never leave the screen without a format
-        current_format = [self.message.formats objectAtIndex:0];
-    }
-
-    if (current_format) {
-        // pass config for text generation
-        current_format.inAppConfig = self.inAppConfig;
-
-        [SwrveLogger debug:@"Selected message format: %@", current_format.name];
-        [current_format createViewToFit:self.view
-                                  thatDelegatesTo:self
-                                         withSize:self.view.bounds.size
-                                          rotated:false
-                                  personalization:personalizationDict];
-        
-        // Update background color
-        if (current_format.backgroundColor != nil) {
-            self.view.backgroundColor = current_format.backgroundColor;
-        }
-    } else {
-        [SwrveLogger error:@"Couldn't find a format for message: %@", message.name];
-    }
-}
-#endif
-
 -(IBAction)onButtonPressed:(id)sender
 {
     UISwrveButton* button = sender;
@@ -155,7 +123,7 @@
         action = pressed.actionString;
     }
 
-    self.block(pressed.actionType, action, pressed.appID);
+    self.messageResultBlock(pressed.actionType, action, pressed.appID);
 }
 
 #if TARGET_OS_IOS
@@ -213,18 +181,6 @@
     }
 }
 
-#if TARGET_OS_IOS
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskAll;
-}
-
-- (BOOL)shouldAutorotate
-{
-    return YES;
-}
-#endif
-
 #pragma mark - Focus
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
 #pragma unused(coordinator)
@@ -237,7 +193,6 @@
         } completion:^(BOOL finished) {
 #pragma unused(finished)
         }];
-
     }
 
     UIView *nextFocusedView = context.nextFocusedView;
@@ -291,24 +246,6 @@
             [SwrveLogger error:@"Top and bottom guide not supported, should not reach this code", nil];
         }
     }
-
-}
-
-- (UIButton *)nextFocusableButtonWithCurrentFocusedView:(UIView *)view {
-    NSArray *allButtons = [SwrveMessageViewController buttonsInView:self.view];
-    if (allButtons.count < 2) {
-        return nil;
-    }
-    // Here we are finding the next focusable button that is then set (by the caller) as the preferred focusable view for the focusGuide.
-    NSUInteger idx = [allButtons indexOfObject:view];
-    if (idx == NSNotFound) {
-        return nil;
-    }
-    // The following lines are equivalent to: return allButtons[(idx+1) % allButtons.count], i.e. we find the next button in the array, or if there are none we return the first button.
-    if (idx == allButtons.count - 1) {
-        return allButtons.firstObject;
-    }
-    return allButtons[idx + 1];
 }
 
 + (NSArray<UIButton *> *)buttonsInView:(UIView *)view {

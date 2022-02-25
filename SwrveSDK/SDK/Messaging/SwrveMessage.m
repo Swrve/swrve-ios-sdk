@@ -96,17 +96,24 @@ static bool in_cache(NSString* file, NSSet* set){
 
             for (SwrveImage* image in format.images) {
                 if(image.multilineText) {
-                    return YES;
-                }
-                BOOL hasImage = in_cache(image.file, assets);
-                if (image.dynamicImageUrl) {
-                    if([self canResolvePersonalizedImageAsset:image.dynamicImageUrl withPersonalization:personalization withAssets:assets]){
-                        hasImage = YES;
+                    NSString *font_file = [image.multilineText objectForKey:@"font_file"];
+                    if (font_file && ![font_file isEqualToString:@"_system_font_"]) {
+                        if (!in_cache(font_file, assets)) {
+                            [SwrveLogger debug:@"Font Asset not yet downloaded: %@", name];
+                            return NO;
+                        }
                     }
-                }
-                if (!hasImage) {
-                    [SwrveLogger debug:@"Image Asset not yet downloaded: %@ / %@", image.file, image.dynamicImageUrl];
-                    return NO;
+                } else {
+                    BOOL hasImage = in_cache(image.file, assets);
+                    if (image.dynamicImageUrl) {
+                        if([self canResolvePersonalizedImageAsset:image.dynamicImageUrl withPersonalization:personalization withAssets:assets]){
+                            hasImage = YES;
+                        }
+                    }
+                    if (!hasImage) {
+                        [SwrveLogger debug:@"Image Asset not yet downloaded: %@ / %@", image.file, image.dynamicImageUrl];
+                        return NO;
+                    }
                 }
             }
         }

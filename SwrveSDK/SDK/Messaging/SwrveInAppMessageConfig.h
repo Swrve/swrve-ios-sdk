@@ -42,13 +42,13 @@ typedef NSDictionary *(^SwrveMessagePersonalizationCallback)(NSDictionary *event
  */
 @property (nonatomic) BOOL prefersStatusBarHidden;
 
-/*! in-app background color used for all personalized text */
+/*! in-app background color used for all personalized text, can be overridden by server value */
 @property (nonatomic, retain) UIColor *personalizationBackgroundColor;
 
-/*! in-app text color used for all personalized text */
+/*! in-app text color used for all personalized text, can be overridden by server value */
 @property (nonatomic, retain) UIColor *personalizationForegroundColor;
 
-/*! in-app text font used for all personalized text */
+/*! in-app text font used for all personalized text, can be overridden by server value */
 @property (nonatomic, retain) UIFont *personalizationFont;
 
 /*!< Implement this delegate to intercept in-app messages. */

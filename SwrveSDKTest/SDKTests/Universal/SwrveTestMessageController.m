@@ -61,7 +61,7 @@
 
 @interface SwrveMessageController ()
 - (NSMutableDictionary *)capabilities:(SwrveMessage *)swrveMessage withCapabilityDelegate:(id<SwrveInAppCapabilitiesDelegate>)delegate;
-- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued;
+- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
 - (void)dismissMessageWindow;
 - (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
@@ -100,6 +100,10 @@
 - (void)showConversation:(SwrveConversation *)conversation;
 @property SwrveMessage *messageShown;
 @property SwrveConversation* conversationShown;
+@end
+
+@interface SwrveMessage()
+-(BOOL)assetsReady:(NSSet*)assets withPersonalization:(NSDictionary *)personalization;
 @end
 
 @implementation TestShowMessageDelegateNoCustomFind
@@ -283,7 +287,7 @@
     [controller showMessage:message1];
     
     SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message2 queue:true];
+    [controller showMessage:message2 queue:true withPersonalization:nil];
     
     SwrveMessage *message3 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
     [controller showMessage:message3];
@@ -300,7 +304,7 @@
     SwrveMessageController *controller = [swrveMock messaging];
     
     SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
-    [controller showMessage:message1  queue:true];
+    [controller showMessage:message1 queue:true withPersonalization:nil];
     
     XCTAssertEqual([[controller conversationsMessageQueue] count], 0);
     
@@ -1984,7 +1988,7 @@
  * rotate the device and show the same message again it should show in landscape format
  */
 - (void)testMessageAppearsWithCorrectFormat {
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -2012,8 +2016,8 @@
     [viewController onButtonPressed:dismissButton];
 
     // Rotate device
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
-
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationLandscapeRight];
+    
     // Show same message again
     [controller showMessage:message];
     viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
@@ -2024,7 +2028,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 }
 
 /**
@@ -2032,7 +2036,7 @@
  * rotated, the message should still be there after rotation but with the new orientation format
  */
 - (void)testMessageReappearsWithDifferentFormat {
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -2051,7 +2055,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Rotate device
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationLandscapeRight];
 
     [viewController viewDidAppear:NO];
 
@@ -2060,7 +2064,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 }
 
 /**
@@ -2068,7 +2072,7 @@
  * rotated, the message should still be there after rotation with the same format
  */
 - (void)testMessageReappearsWithSameFormat {
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPortraitOnly"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -2087,7 +2091,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Rotate device
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationLandscapeRight];
 
     viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
 
@@ -2096,7 +2100,7 @@
     XCTAssertEqual([[[viewController message] messageID] intValue], 165);
 
     // Change orientation back to original
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 }
 #endif //TARGET_OS_IOS
 
@@ -2889,8 +2893,8 @@
     config.personalizationBackgroundColor = [UIColor yellowColor];
     
     messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
-    
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
+
     NSString *expectedText = @"This is the expected text";
     NSString *text = nil;
     
@@ -2986,7 +2990,7 @@
     config.personalizationBackgroundColor = [UIColor yellowColor];
     
     messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
     
     NSString *expectedText = @"This is the expected text";
     NSString *text = nil;
@@ -3109,7 +3113,7 @@
     config.personalizationBackgroundColor = [UIColor yellowColor];
     
     messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000)];
+    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
     
     UIFont *expectedFont = [UIFont systemFontOfSize:expected_scaled_point_size];
     UIFont *font = [UIFont systemFontOfSize:12];
@@ -3122,6 +3126,43 @@
     };
        
     XCTAssertEqualWithAccuracy([expectedFont pointSize], [font pointSize], 0.5);
+}
+
+- (void)testMultiLineAssetSystemFontDownload {
+    NSDictionary *messageDictStripped =
+@{
+     @"template": @{
+         @"formats": @[
+             @{
+             @"images": @[
+                 @{
+                     @"multiline_text": @{
+                         @"font_file": @"_system_font_",
+                     }
+                 },
+                 @{
+                     @"multiline_text": @{
+                         @"font_file": @"SomeNativeFont",
+                     }
+                 }
+             ]
+         }]
+     }
+};
+    
+    SwrveMessage *message = [[SwrveMessage alloc] initWithDictionary:messageDictStripped forCampaign:nil forController:nil];
+
+    NSSet *assets = [NSSet setWithArray:@[]];
+    XCTAssertFalse([message assetsReady:assets withPersonalization:nil]); // missing SomeNativeFont
+    
+    assets = [NSSet setWithArray:@[@"_system_font_"]];
+    XCTAssertFalse([message assetsReady:assets withPersonalization:nil]); // missing SomeNativeFont
+    
+    assets = [NSSet setWithArray:@[@"SomeNativeFont"]];
+    XCTAssertTrue([message assetsReady:assets withPersonalization:nil]); // _system_font_ not needed
+    
+    assets = [NSSet setWithArray:@[@"_system_font_", @"SomeNativeFont"]];
+    XCTAssertTrue([message assetsReady:assets withPersonalization:nil]);
 }
 
 @end

@@ -76,7 +76,20 @@
                 NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:image.file andDigest:image.file andIsExternal:NO andIsImage:YES];
                 [assetsQueue addObject:assetQueueItem];
             }
+            
+            if (image.multilineText) {
+                [self addFontToQ:assetsQueue withAsset:image.multilineText];
+            }
         }
+    }
+}
+
+- (void)addFontToQ:(NSMutableSet *)assetQueue withAsset:(NSDictionary *)style {
+    NSString *name = [style objectForKey:@"font_file"];
+    NSString *digest = [style objectForKey:@"font_digest"];
+    if (name && digest && ![SwrveBaseConversation isSystemFont:style]) {
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:name andDigest:digest andIsExternal:NO andIsImage:NO];
+        [assetQueue addObject:assetQueueItem];
     }
 }
 

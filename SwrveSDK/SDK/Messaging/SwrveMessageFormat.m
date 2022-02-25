@@ -215,81 +215,6 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
 -(UIView*)createViewToFit:(UIView*)view
           thatDelegatesTo:(UIViewController*)delegate
                  withSize:(CGSize)sizeParent
-                  rotated:(BOOL)rotated
-                    
-{
-    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent rotated:rotated personalization:nil];
-}
-
-
--(UIView*)createViewToFit:(UIView*)view
-          thatDelegatesTo:(UIViewController*)delegate
-                 withSize:(CGSize)sizeParent
-                  rotated:(BOOL)rotated
-          personalization:(NSDictionary*)personalization
-                    
-{
-    CGRect containerViewSize = CGRectMake(0, 0, sizeParent.width, sizeParent.height);
-    if (rotated) {
-        containerViewSize = CGRectMake(0, 0, sizeParent.height, sizeParent.width);
-    }
-    UIView* containerView = [[UIView alloc] initWithFrame:containerViewSize];
-
-    // Find the center point of the view
-    CGFloat half_screen_width = sizeParent.width/2;
-    CGFloat half_screen_height = sizeParent.height/2;
-
-    CGFloat logical_half_screen_width = (rotated)? half_screen_height : half_screen_width;
-    CGFloat logical_half_screen_height = (rotated)? half_screen_width : half_screen_height;
-
-    // Adjust scale, accounting for retina devices
-    CGFloat screenScale = [[UIScreen mainScreen] scale];
-    CGFloat renderScale = self.scale / screenScale;
-
-    [SwrveLogger debug:@"MessageViewFormat scale :%g", self.scale];
-    [SwrveLogger debug:@"UI scale :%g", screenScale];
-    
-    for (SwrveImage *image in self.images) {
-        if (image.multilineText) {
-            SwrveTextViewStyle *style = [[SwrveTextViewStyle alloc] initWithDictionary:image.multilineText];
-            
-            NSError *error;
-            style.text = [TextTemplating templatedTextFromString:style.text withProperties:personalization andError:&error];
-            if (error != nil){
-                [SwrveLogger error:@"%@", error];
-                break;
-            }
-            
-            style.font = inAppConfig.personalizationFont;
-            style.backgroundColor = inAppConfig.personalizationBackgroundColor;
-            style.foregroundColor = inAppConfig.personalizationForegroundColor;
-            
-            [self addTextViewFrom:image withStyling:style toContainer:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale];
-        } else {
-            [self addImageViewFrom:image toContainer:containerView centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
-        }
-    }
-    
-    [self addButtonViews:containerView delegate:delegate centerX:logical_half_screen_width centerY:logical_half_screen_height scale:renderScale personalization:personalization];
-    
-    if (rotated) {
-        containerView.transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
-    }
-    [containerView setCenter:CGPointMake(half_screen_width, half_screen_height)];
-    [view addSubview:containerView];
-    return containerView;
-}
-
--(UIView*)createViewToFit:(UIView*)view
-    thatDelegatesTo:(UIViewController*)delegate
-           withSize:(CGSize)sizeParent
-{
-    return [self createViewToFit:view thatDelegatesTo:delegate withSize:sizeParent personalization:nil];
-}
-
--(UIView*)createViewToFit:(UIView*)view
-          thatDelegatesTo:(UIViewController*)delegate
-                 withSize:(CGSize)sizeParent
           personalization:(NSDictionary*)personalization
 {
     // Calculate the scale needed to fit the format in the current viewport
@@ -313,20 +238,7 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     
     for (SwrveImage *image in self.images) {
         if (image.multilineText) {
-            SwrveTextViewStyle *style = [[SwrveTextViewStyle alloc] initWithDictionary:image.multilineText];
-            
-            NSError *error;
-            style.text = [TextTemplating templatedTextFromString:style.text withProperties:personalization andError:&error];
-            if (error != nil){
-                [SwrveLogger error:@"%@", error];
-                break;
-            }
-            
-            style.font = inAppConfig.personalizationFont;
-            style.backgroundColor = inAppConfig.personalizationBackgroundColor;
-            style.foregroundColor = inAppConfig.personalizationForegroundColor;
-            
-            [self addTextViewFrom:image withStyling:style toContainer:containerView centerX:centerX centerY:centerY scale:renderScale];
+            [self addTextViewFrom:image toContainer:containerView centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
         } else {
             [self addImageViewFrom:image toContainer:containerView centerX:centerX centerY:centerY scale:renderScale personalization:personalization];
         }
@@ -431,7 +343,19 @@ static CGFloat extractHex(NSString* color, NSUInteger index) {
     }
 }
 
--(void)addTextViewFrom:(SwrveImage *)image withStyling:(SwrveTextViewStyle *)style toContainer:(UIView*)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale {
+- (void)addTextViewFrom:(SwrveImage *)image toContainer:(UIView *)containerView centerX:(CGFloat)centerX centerY:(CGFloat)centerY scale:(CGFloat)renderScale personalization:(NSDictionary *)personalization {
+
+    SwrveTextViewStyle *style = [[SwrveTextViewStyle alloc] initWithDictionary:image.multilineText
+                                                                   defaultFont:inAppConfig.personalizationFont
+                                                        defaultForegroundColor:inAppConfig.personalizationForegroundColor
+                                                        defaultBackgroundColor:inAppConfig.personalizationBackgroundColor];
+    NSError *error;
+    style.text = [TextTemplating templatedTextFromString:style.text withProperties:personalization andError:&error];
+    if (error != nil) {
+        [SwrveLogger error:@"Error applying IAM text personalization: %@", error];
+        return;
+    }
+
     CGRect frame = CGRectMake(0, 0, image.size.width * renderScale, image.size.height * renderScale);
     self.calibration.renderScale = renderScale;
     SwrveTextView *textView = [[SwrveTextView alloc] initWithStyle:style calbration:self.calibration frame:frame];

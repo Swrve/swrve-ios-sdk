@@ -1203,10 +1203,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     [self showMessage:message queue:false withPersonalization:nil];
 }
 
-- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued {
-    [self showMessage:message queue:isQueued withPersonalization:nil];
-}
-
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization {
     [self showMessage:message queue:false withPersonalization:personalization];
 }
@@ -1225,7 +1221,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             messageViewController.personalizationDict = personalization;
             messageViewController.inAppConfig = self.inAppMessageConfig;
 
-            messageViewController.block = ^(SwrveActionType type, NSString *action, NSInteger appId) {
+            messageViewController.messageResultBlock = ^(SwrveActionType type, NSString *action, NSInteger appId) {
 #pragma unused(appId)
                 // Save button type and action for processing later
                 self.inAppMessageActionType = type;

@@ -30,43 +30,6 @@
  */
 -(id)initFromJson:(NSDictionary*)json forController:(SwrveMessageController*)controller forMessage:(SwrveMessage*)message;
 
-/*! Create a view to display this format.
- *
- * \param view Parent view.
- * \param delegate View delegate.
- * \param size Expected size of the view.
- * \returns View representing this in-app message format.
- */
--(UIView*)createViewToFit:(UIView*)view
-          thatDelegatesTo:(UIViewController*)delegate
-                 withSize:(CGSize)size
-                  rotated:(BOOL)rotated;
-
-/*! Create a view to display this format.
- *
- * \param view Parent view.
- * \param delegate View delegate.
- * \param sizeParent Expected size of the view.
- * \returns View representing this in-app message format.
- */
--(UIView*)createViewToFit:(UIView*)view
-          thatDelegatesTo:(UIViewController*)delegate
-                 withSize:(CGSize)sizeParent;
-
-/*! Create a view to display this format (with personalization)
- *
- * \param view Parent view.
- * \param delegate View delegate.
- * \param size Expected size of the view.
- * \param personalization Dictionary of personalization for text type items
- * \returns View representing this in-app message format.
- */
--(UIView*)createViewToFit:(UIView*)view
-          thatDelegatesTo:(UIViewController*)delegate
-                 withSize:(CGSize)size
-                  rotated:(BOOL)rotated
-          personalization:(NSDictionary *)personalization;
-
 /*! Create a view to display this format (with personalization)
  *
  * \param view Parent view.

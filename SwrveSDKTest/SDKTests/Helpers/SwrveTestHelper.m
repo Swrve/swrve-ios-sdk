@@ -347,4 +347,11 @@
     [SwrveTestHelper writeData:campaignData toProtectedFile:signatureFile];
 }
 
+#if TARGET_OS_IOS
++ (void)setScreenOrientation:(enum UIInterfaceOrientation)orientation {
+    [[UIDevice currentDevice] setValue: [NSNumber numberWithInteger: orientation]
+                                forKey:@"orientation"];
+}
+#endif //TARGET_OS_IOS
+
 @end

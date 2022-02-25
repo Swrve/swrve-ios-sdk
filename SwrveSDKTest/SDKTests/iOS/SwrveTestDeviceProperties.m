@@ -76,8 +76,15 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_region"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.install_date"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.ios_min_version"]);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
+    
+    NSString *osVersion = [[UIDevice currentDevice] systemVersion];
+    if ([osVersion floatValue] >= 15 && [[[UIDevice currentDevice] name] containsString:@"iPad"]) {
+        XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ipados");
+    } else {
+        XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
+    }
+
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os_version"], osVersion);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.timezone_name"], [NSTimeZone localTimeZone].name);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.utc_offset_seconds"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.tracking_state"]);

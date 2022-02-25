@@ -133,8 +133,15 @@
     XCTAssertNotNil(deviceInfo);
     
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os"], @"ios");
-    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], [[UIDevice currentDevice] systemVersion]);
+    
+    NSString *osVersion = [[UIDevice currentDevice] systemVersion];
+    if ([osVersion floatValue] >= 15 && [[[UIDevice currentDevice] name] containsString:@"iPad"]) {
+        XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ipados");
+    } else {
+        XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.os"], @"ios");
+    }
+
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.os_version"], osVersion);
     XCTAssertTrue([[deviceInfo objectForKey:@"swrve.ios_min_version"] isKindOfClass:[NSNumber class]]);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"], [swrveMock config].language);
     XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], device_width);

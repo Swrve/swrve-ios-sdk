@@ -82,7 +82,7 @@
 }
 
 - (void)testConversationMessageCenter {
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 
     CGFloat height = [[UIScreen mainScreen] bounds].size.height;
 
@@ -94,7 +94,7 @@
     } expectation:expectation];
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
 
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationLandscapeRight;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationLandscapeRight];
 
     expectation = [self expectationWithDescription:@"WaitForRotation"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
@@ -193,7 +193,7 @@
     XCTAssertFalse([[controller messageCenterCampaigns] containsObject:campaign]);
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_DELETED);
     // Reset to default UIInterfaceOrientationPortrait orientation
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 }
 
 @end

@@ -110,9 +110,9 @@
 
 - (void)testIAMMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
-    
+
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
    
     id swrveMock = [self swrveMock];
@@ -178,13 +178,13 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testIAMMessageCenterProgrammaticallySeen {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -214,13 +214,13 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testPersonalizedIAMMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -396,13 +396,13 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testEmbeddedMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -475,13 +475,13 @@
     XCTAssertEqual(embeddedCampaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testEmbeddedWithPersonalizationMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
@@ -549,13 +549,13 @@
     XCTAssertEqual(embeddedCampaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testPersonalizedImageMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     NSDictionary *testPersonalization = @{@"test_key_with_fallback": @"asset1", @"test_key_no_fallback":@"asset2"};
@@ -643,13 +643,13 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testPersonalizedImageMessageCenterWithRealTimeUserProperties {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     // set this to nothing
@@ -723,13 +723,13 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 - (void)testPersonalizedImageMessageCenterWithRealTimeUserPropertiesOnTheirOwn {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     
     // set no Personalization Provider
@@ -761,7 +761,7 @@
 #if TARGET_OS_IOS
     //  include no personalization dictionary and we should still get 4
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:XCUIDevice.sharedDevice.orientation] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
 #elif TARGET_OS_TV
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
 #endif
@@ -792,14 +792,14 @@
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
     
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
 }
 
 
 - (void)testInvalidCampaignsInMessageCenter {
 #if TARGET_OS_IOS
-    XCUIDevice.sharedDevice.orientation = UIInterfaceOrientationPortrait;
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
     [SwrveTestHelper removeAllAssets];
 

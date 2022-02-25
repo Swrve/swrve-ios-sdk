@@ -55,4 +55,9 @@
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 + (Swrve *)initializeSwrveWithRealTimeUserPropertiesFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 
+#if TARGET_OS_IOS
++ (void)setScreenOrientation:(enum UIInterfaceOrientation)orientation;
+#endif //TARGET_OS_IOS
+
+
 @end
