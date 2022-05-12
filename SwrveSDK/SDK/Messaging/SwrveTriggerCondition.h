@@ -2,6 +2,7 @@
 
 typedef enum SwrveTriggerOperator : NSUInteger {
     SwrveTriggerOperatorAND,
+    SwrveTriggerOperatorOR,
     SwrveTriggerOperatorEQUALS,
     SwrveTriggerOperatorOTHER
 } SwrveTriggerOperator;

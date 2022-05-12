@@ -1,0 +1,886 @@
+{
+  "game_data": {
+    "31970": {
+    }
+  },
+  "campaigns": [
+    {
+      "id": 89095,
+      "start_date": 1262671700000,
+      "end_date": 2145920400000,
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 3,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+      ],
+      "message_center": true,
+      "message": {
+        "id": 89355,
+        "template": {
+          "formats": [
+            {
+              "name": "FormatName-Portrait",
+              "orientation": "portrait",
+              "color": "d40f40",
+              "calibration": {
+                "width": 2115,
+                "height": 212,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+              },
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1080
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1730
+                }
+              },
+              "scaled_by": 0.675844806,
+              "scaled_from": "Google - Portrait",
+              "scale": 1,
+              "pages": [
+                {
+                  "page_id": 1,
+                  "page_name": "page 1",
+                  "swipe_forward": 2,
+                  "swipe_backward": -1,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 183
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "1",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 1",
+                      "button_id": 100,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -600
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "5"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Page5"
+                      }
+                    },
+                    {
+                      "name": "Button next page 1",
+                      "button_id": 101,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "2"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Next"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "page_id": 2,
+                  "page_name": "page 2",
+                  "swipe_forward": 3,
+                  "swipe_backward": 1,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 183
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "2",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 2 page 2 previous",
+                      "button_id": 200,
+                      "x": {
+                        "type": "number",
+                        "value": -270
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "1"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Previous"
+                      }
+                    },
+                    {
+                      "name": "Button 3 - page 2 next",
+                      "button_id": 201,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "3"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Next"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "page_id": 3,
+                  "page_name": "page 3",
+                  "swipe_forward": -1,
+                  "swipe_backward": 2,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 300
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "3",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 4 page 3 previous",
+                      "button_id": 300,
+                      "x": {
+                        "type": "number",
+                        "value": -270
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "2"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Previous"
+                      }
+                    },
+                    {
+                      "name": "Button 5 page 3 dismiss",
+                      "button_id": 301,
+                      "x": {
+                        "type": "number",
+                        "value": 300
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Dismiss"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "FormatName-Landscape",
+              "orientation": "landscape",
+              "color": "d40f40",
+              "calibration": {
+                "width": 2115,
+                "height": 212,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+              },
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1730
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1080
+                }
+              },
+              "scaled_by": 0.675844806,
+              "scaled_from": "Google - Portrait",
+              "scale": 1,
+              "pages": [
+                {
+                  "page_id": 1,
+                  "page_name": "page 1",
+                  "swipe_forward": 2,
+                  "swipe_backward": -1,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 183
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "1",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 1",
+                      "button_id": 100,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -600
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "5"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Page5"
+                      }
+                    },
+                    {
+                      "name": "Button next page 1",
+                      "button_id": 101,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "2"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Next"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "page_id": 2,
+                  "page_name": "page 2",
+                  "swipe_forward": 3,
+                  "swipe_backward": 1,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 183
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "2",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 2 page 2 previous",
+                      "button_id": 200,
+                      "x": {
+                        "type": "number",
+                        "value": -270
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "1"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Previous"
+                      }
+                    },
+                    {
+                      "name": "Button 3 - page 2 next",
+                      "button_id": 201,
+                      "x": {
+                        "type": "number",
+                        "value": 350
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "3"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Next"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "page_id": 3,
+                  "page_name": "page 3",
+                  "swipe_forward": -1,
+                  "swipe_backward": 2,
+                  "images": [
+                    {
+                      "name": "Button 1",
+                      "x": {
+                        "type": "number",
+                        "value": -32
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -68
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 300
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 609
+                      },
+                      "multiline_text": {
+                        "value": "3",
+                        "h_align": "CENTER",
+                        "font_size": 250,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 0,
+                          "right": 0,
+                          "bottom": 0,
+                          "left": 0
+                        },
+                        "font_color": "#ff55ab61"
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "Button 4 page 3 previous",
+                      "button_id": 300,
+                      "x": {
+                        "type": "number",
+                        "value": -270
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "2"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Previous"
+                      }
+                    },
+                    {
+                      "name": "Button 5 page 3 dismiss",
+                      "button_id": 301,
+                      "x": {
+                        "type": "number",
+                        "value": 300
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 850
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 135
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 108
+                      },
+                      "image_width": 609,
+                      "image_height": 108,
+                      "image_filename": "1000x178.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "6c871366c876fdb495d96eff3d2905f9d4594c62"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Dismiss"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "name": "Swipeable",
+        "rules": {
+          "orientations": "portrait"
+        },
+        "priority": 9999
+      },
+      "subject": "Swipeable",
+      "in_app_version": 7
+    }
+  ],
+  "rules": {
+    "delay_first_message": 0,
+    "max_messages_per_session": 99999,
+    "min_delay_between_messages": 0
+  },
+  "cdn_paths": {
+    "message_images": "https:\/\/content-cdn.swrve.com\/messaging\/message_image\/",
+    "message_fonts": "https:\/\/content-cdn.swrve.com\/messaging\/fonts\/"
+  },
+  "version": 2
+}

@@ -11,8 +11,14 @@
 		1B5CAC152464124B003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
 		1B5CAC1624641253003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
 		2341DABAEE33BE73A4D692FE /* libPods-SwrveSDK-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */; };
+		239EBD5387C83C973971A8A6 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
+		239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
+		3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
+		3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
 		3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
 		3A5BBFD3266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
+		3AB1C04E27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
+		3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		52051B422670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */ = {isa = PBXBuildFile; fileRef = 52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */; };
 		52051B432670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */ = {isa = PBXBuildFile; fileRef = 52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */; };
 		521F4344256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */ = {isa = PBXBuildFile; fileRef = 521F4343256D7FC400D9623B /* ad_journey_campaign_embedded_message.json */; };
@@ -144,6 +150,8 @@
 		5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		960AA6CED41D6401FBEB237F /* libPods-SwrveSDK-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */; };
+		F119406027F1F64C00098913 /* campaignsAccess.json in Resources */ = {isa = PBXBuildFile; fileRef = F119405F27F1F64C00098913 /* campaignsAccess.json */; };
+		F119406127F1F64C00098913 /* campaignsAccess.json in Resources */ = {isa = PBXBuildFile; fileRef = F119405F27F1F64C00098913 /* campaignsAccess.json */; };
 		F6028D0A270504A300E0BB79 /* SwrveTestTextViewTV.m in Sources */ = {isa = PBXBuildFile; fileRef = F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */; };
 		F6028D0C2705073B00E0BB79 /* SwrveTestTextViewIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */; };
 		F612AB93251E2B84002B5775 /* SwrveTestPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */; };
@@ -237,8 +245,10 @@
 		07E802CEBAA79A4641AAFB62 /* Pods-SwrveSDK-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOS.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_message_personalization.json; sourceTree = "<group>"; };
 		204C9FEC8C4AAF6C5174CEBB /* Pods-SwrveSDK-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = multipage_campaign_swipe.json; sourceTree = "<group>"; };
 		3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitMode.m; sourceTree = "<group>"; };
 		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
+		3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage_orientations.json; sourceTree = "<group>"; };
 		3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestStopTracking.m; sourceTree = "<group>"; };
 		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
 		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
@@ -246,6 +256,7 @@
 		3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestQA.m; sourceTree = "<group>"; };
 		3AA0842A2271AE9900ECA032 /* abTestDetails.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = abTestDetails.json; sourceTree = "<group>"; };
 		3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestABTestDetails.m; sourceTree = "<group>"; };
+		3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage.json; sourceTree = "<group>"; };
 		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
 		3AF4634E24AA1731002A854B /* SwrveSDK-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwrveSDK-iOS.entitlements"; sourceTree = "<group>"; };
 		4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -286,6 +297,7 @@
 		BA862BC72F94BAE4B426A7BA /* Pods-SwrveSDK-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB8D0A7DABC671EA0E06C8A /* Pods-SwrveSDK-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F119405F27F1F64C00098913 /* campaignsAccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsAccess.json; sourceTree = "<group>"; };
 		F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewTV.m; sourceTree = "<group>"; };
 		F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewIOS.m; sourceTree = "<group>"; };
 		F60B7F42225F3BA1009AFCCC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -623,6 +635,8 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */,
+				3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */,
 				F669874925BDABA100950E98 /* TestPushResponseDelegateClass.h */,
 				F669873B25BDAB1200950E98 /* TestableDummySwrve.h */,
 				F669873925BDAB1200950E98 /* TestableDummySwrve.m */,
@@ -669,6 +683,7 @@
 				F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */,
 				F641123F2277482300399A66 /* campaignsQAReset.json */,
 				F641123D2277482300399A66 /* campaignsQAUser.json */,
+				F119405F27F1F64C00098913 /* campaignsAccess.json */,
 				F6411246227748AD00399A66 /* campaignsRRGGBB.json */,
 				F64112492277490200399A66 /* campaignsPortraitOnly.json */,
 				F6698A7A25BEF3BF00950E98 /* campaignsIdentity.json */,
@@ -694,6 +709,7 @@
 				52AF58B52614C94C00697B09 /* realTimeUserProperties.json */,
 				52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */,
 				52F4B3A3268C8A2300C40B1E /* campaignsEmbeddedPersonalizationMessageCenter.json */,
+				239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -843,6 +859,7 @@
 				52FC409823FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F6023C4E55E000B1687 /* campaignsFuture.json in Resources */,
 				5B2B6F6123C4E55E000B1687 /* campaignsImpressions.json in Resources */,
+				3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
 				5B2B6F5523C4E55E000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				5264BF922609135100264777 /* ad_journey_campaign_message_image_personalization.json in Resources */,
 				F669891025BEC16F00950E98 /* conversationContactsPermission.json in Resources */,
@@ -852,6 +869,7 @@
 				F669891525BEC17300950E98 /* conversationLocationAlwaysPermission.json in Resources */,
 				1B5CAC152464124B003AE19C /* ad_journey_campaign_message_personalization.json in Resources */,
 				F6698A7B25BEF3BF00950E98 /* campaignsIdentity.json in Resources */,
+				3AB1C04E27C7DCB0007B8906 /* campaigns_multipage.json in Resources */,
 				5B2B6F6723C4E55E000B1687 /* campaignsQAReset.json in Resources */,
 				F6698A7425BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf in Resources */,
 				5B2B6F5A23C4E55E000B1687 /* campaignSingle.json in Resources */,
@@ -883,6 +901,7 @@
 				52AF58B62614C94C00697B09 /* realTimeUserProperties.json in Resources */,
 				5B2B6F6323C4E55E000B1687 /* campaignsMessagePriority.json in Resources */,
 				5B2B6F5823C4E55E000B1687 /* external_campaigns.json in Resources */,
+				F119406027F1F64C00098913 /* campaignsAccess.json in Resources */,
 				5228726A25F67E3D0014FD1B /* campaignsImagePersonalizationTriggered.json in Resources */,
 				5B2B6F6623C4E55E000B1687 /* conversationCampaignsPriorityReverse.json in Resources */,
 				F6698A7525BEF30A00950E98 /* swrve_logo.png in Resources */,
@@ -891,6 +910,7 @@
 				52843EBE256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				5B2B6F6B23C4E55E000B1687 /* campaignsPortraitOnly.json in Resources */,
 				5B2B6F5423C4E55E000B1687 /* abTestDetails.json in Resources */,
+				239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -905,6 +925,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */,
 				5B2B6F7E23C4E55F000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				52FC409923FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F7A23C4E55F000B1687 /* campaignsFuture.json in Resources */,
@@ -939,8 +960,11 @@
 				F6698A8025BEF49E00950E98 /* campaignsIdentity.json in Resources */,
 				52843EBF256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				52F1C9272567F180003B68AF /* campaignsEmbedded.json in Resources */,
+				F119406127F1F64C00098913 /* campaignsAccess.json in Resources */,
 				F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */,
 				5B2B6F6E23C4E55F000B1687 /* abTestDetails.json in Resources */,
+				3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
+				239EBD5387C83C973971A8A6 /* multipage_campaign_swipe.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

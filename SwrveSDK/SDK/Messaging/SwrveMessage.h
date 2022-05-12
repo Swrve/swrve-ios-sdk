@@ -7,11 +7,11 @@ typedef enum {
     kSwrveActionCustom,     /*!< Handle the custom action string associated with the button */
     kSwrveActionInstall,    /*!< Go to the url specified in the button’s action string */
     kSwrveActionClipboard,  /*!< Add Dynamic Text in place of the image */
-    kSwrveActionCapability  /*!< Request IAM capability*/
+    kSwrveActionCapability, /*!< Request IAM capability*/
+    kSwrveActionPageLink    /*!< Link to another page in the message */
 } SwrveActionType;
 
-/*! A block that will be called when a button is pressed inside
- * an in-app message.
+/*! A block that will be called when a button is pressed inside an in-app message.
  */
 typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInteger appId);
 
@@ -21,9 +21,8 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
 /*! In-app message. */
 @interface SwrveMessage : SwrveBaseMessage
 
-// @property (nonatomic, weak)              SwrveInAppCampaign* campaign; /*!< Reference to parent campaign */
-@property (nonatomic, retain)            NSString* name;          /*!< Name of the message */
-@property (nonatomic, retain)            NSArray*  formats;       /*!< Array of multiple formats for this message */
+@property(nonatomic, retain) NSString *name;         /*!< Name of the message */
+@property(nonatomic, retain) NSArray *formats;       /*!< Array of multiple formats for this message */
 
 /*! Create an in-app message from the JSON content.
  *
@@ -32,8 +31,7 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
  * \param controller Message controller.
  * \returns Parsed in-app message.
  */
--(id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController*)controller;
-
+- (id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController *)controller;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
@@ -42,14 +40,14 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
  * \param orientation Wanted orientation for the message.
  * \returns In-app message format for the given orientation.
  */
--(SwrveMessageFormat*)bestFormatForOrientation:(UIInterfaceOrientation)orientation;
+- (SwrveMessageFormat *)bestFormatForOrientation:(UIInterfaceOrientation)orientation;
 
 /*! Check if the message has any format for the given device orientation.
  *
  * \param orientation Device orientation.
  * \returns TRUE if the message has any format with the given orientation.
  */
--(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
+- (BOOL)supportsOrientation:(UIInterfaceOrientation)orientation;
 
 #endif
 
@@ -57,17 +55,16 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
  *
  * \returns TRUE if all assets have been downloaded.
  */
--(BOOL)assetsReady:(NSSet*)assets withPersonalization:(NSDictionary *) personalization;
-
+- (BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization;
 
 /*! Check if all personalized text in this message has been accounted for and can be set
 *
 * \returns TRUE if all personalized text parts have either fallbacks or values available to them
 */
--(BOOL)canResolvePersonalization:(NSDictionary*)personalization;
+- (BOOL)canResolvePersonalization:(NSDictionary *)personalization;
 
 /*! Notify that this message was shown to the user.
  */
--(void)wasShownToUser;
+- (void)wasShownToUser;
 
 @end

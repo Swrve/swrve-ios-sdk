@@ -201,7 +201,10 @@ NSString *mockCacheDir;
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
-    
+
+    NSDictionary *payload = @{@"embedded": @"false"};
+    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298085.impression" payload:payload triggerCallback:false]);
+
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
     id mockRestClient = OCMPartialMock(restClient);
     OCMStub([swrveMock restClient]).andReturn(mockRestClient);
@@ -210,7 +213,7 @@ NSString *mockCacheDir;
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
-    
+
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
     
@@ -229,20 +232,8 @@ NSString *mockCacheDir;
     
     XCTAssertTrue([message.name isEqualToString:@"Double format"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
-    
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
-    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
-        //Check events buffer for impression event
-        NSArray *eventsBuffer = [swrveMock eventBuffer];
-        if ([eventsBuffer count] >0) {
-            NSString *bufferString = (NSString*)(eventsBuffer[0]);
-            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
 
-        }
-        return false;
-    } expectation:expectation];
-    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+    OCMVerifyAllWithDelay(swrveMock, 5);
 }
 
 - (void)testHandleDeeplink_ConversationShown {
@@ -445,6 +436,10 @@ NSString *mockCacheDir;
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
+
+    NSDictionary *payload = @{@"embedded": @"false"};
+    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298085.impression" payload:payload triggerCallback:false]);
+
     SwrveMessageController *vc = swrve.messaging;
     [vc setPersonalizationCallback:personalizationCallback];
     
@@ -474,20 +469,8 @@ NSString *mockCacheDir;
     
     XCTAssertTrue([message.name isEqualToString:@"Double format"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
-    
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
-    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
-        //Check events buffer for impression event
-        NSArray *eventsBuffer = [swrveMock eventBuffer];
-        if ([eventsBuffer count] >0) {
-            NSString *bufferString = (NSString*)(eventsBuffer[0]);
-            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298085.impression"]);
 
-        }
-        return false;
-    } expectation:expectation];
-    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+    OCMVerifyAllWithDelay(swrveMock, 5);
 }
 
 - (void)testHandleDeeplink_Personalization_MessageNotShown {
@@ -537,6 +520,10 @@ NSString *mockCacheDir;
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
+
+    NSDictionary *payload = @{@"embedded": @"false"};
+    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298087.impression" payload:payload triggerCallback:false]);
+
     SwrveMessageController *vc = swrve.messaging;
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
     id mockRestClient = OCMPartialMock(restClient);
@@ -563,20 +550,8 @@ NSString *mockCacheDir;
     SwrveMessage *message = mvc.message;
     XCTAssertTrue([message.name isEqualToString:@"Image Personalization Campaign"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298087]);
-    
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
-    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
-        //Check events buffer for impression event
-        NSArray *eventsBuffer = [swrveMock eventBuffer];
-        if ([eventsBuffer count] >0) {
-            NSString *bufferString = (NSString*)(eventsBuffer[0]);
-            NSDictionary *bufferDic = [NSJSONSerialization JSONObjectWithData:[bufferString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-            return ([bufferDic[@"name"] isEqualToString:@"Swrve.Messages.Message-298087.impression"]);
 
-        }
-        return false;
-    } expectation:expectation];
-    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+    OCMVerifyAllWithDelay(swrveMock, 5);
 }
 
 - (void)testHandleDeeplink_Embedded_CallbackFired {

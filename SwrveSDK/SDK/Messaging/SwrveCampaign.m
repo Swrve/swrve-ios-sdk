@@ -3,9 +3,9 @@
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 
-const static int  DEFAULT_MAX_IMPRESSIONS        = 99999;
-const static int  DEFAULT_DELAY_FIRST_MSG        = 180;
-const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
+const static int DEFAULT_MAX_IMPRESSIONS = 99999;
+const static int DEFAULT_DELAY_FIRST_MSG = 180;
+const static int DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
 @implementation SwrveCampaignState
 
@@ -14,7 +14,7 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize status;
 @synthesize showMsgsAfterDelay;
 
--(id)initWithID:(NSUInteger)ID {
+- (id)initWithID:(NSUInteger)ID {
     if (self = [super init]) {
         self.campaignID = ID;
         self.status = SWRVE_CAMPAIGN_STATUS_UNSEEN;
@@ -22,26 +22,26 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
     return self;
 }
 
--(id)initWithJSON:(NSDictionary*)data {
+- (id)initWithJSON:(NSDictionary *)data {
     if (self = [super init]) {
-        NSNumber* idJson = [data objectForKey:@"ID"];
+        NSNumber *idJson = [data objectForKey:@"ID"];
         if (idJson != nil) {
             self.campaignID = idJson.unsignedIntegerValue;
         }
-        NSNumber* impressionsJson = [data objectForKey:@"impressions"];
+        NSNumber *impressionsJson = [data objectForKey:@"impressions"];
         if (impressionsJson != nil) {
             self.impressions = impressionsJson.unsignedIntegerValue;
         }
-        NSNumber* statusJson = [data objectForKey:@"status"];
+        NSNumber *statusJson = [data objectForKey:@"status"];
         if (statusJson != nil) {
-            self.status = (SwrveCampaignStatus)statusJson.unsignedIntegerValue;
+            self.status = (SwrveCampaignStatus) statusJson.unsignedIntegerValue;
         }
     }
-    
+
     return self;
 }
 
--(NSDictionary*)asDictionary {
+- (NSDictionary *)asDictionary {
     NSMutableDictionary *state = [NSMutableDictionary new];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.campaignID] forKey:@"ID"];
     [state setValue:[NSNumber numberWithUnsignedInteger:self.impressions] forKey:@"impressions"];
@@ -51,10 +51,10 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
 @end
 
-@interface SwrveCampaign()
-@property (retain, nonatomic) NSDate*       dateEnd;
-@property (retain, nonatomic) NSMutableSet* triggers;
-@property (retain, nonatomic) NSDate* initialisedTime;
+@interface SwrveCampaign ()
+@property(retain, nonatomic) NSDate *dateEnd;
+@property(retain, nonatomic) NSMutableSet *triggers;
+@property(retain, nonatomic) NSDate *initialisedTime;
 @end
 
 @implementation SwrveCampaign
@@ -73,52 +73,49 @@ const static int  DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize subject;
 @synthesize campaignType;
 
--(id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json {
+- (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json {
     if (self = [super init]) {
         // Default both dates to now
-        NSDate* now = [NSDate date];
+        NSDate *now = [NSDate date];
         [self setDateStart:now];
         [self setDateEnd:now];
-        
+
         [self setMaxImpressions:DEFAULT_MAX_IMPRESSIONS];
         [self setMinDelayBetweenMsgs:DEFAULT_MIN_DELAY_BETWEEN_MSGS];
         [self setInitialisedTime:time];
         [self setShowMsgsAfterLaunch:[[self initialisedTime] dateByAddingTimeInterval:DEFAULT_DELAY_FIRST_MSG]];
-        
+
         [self setTriggers:[[NSMutableSet alloc] init]];
-        
+
         // Load from JSON
-        self.ID   = [[json objectForKey:@"id"] unsignedIntegerValue];
+        self.ID = [[json objectForKey:@"id"] unsignedIntegerValue];
         self.name = [json objectForKey:@"name"];
         self.messageCenter = [[json objectForKey:@"message_center"] boolValue];
-        NSString* subjectString = [json objectForKey:@"subject"];
-        self.subject = (subjectString == (id)[NSNull null])? @"" : subjectString;
+        NSString *subjectString = [json objectForKey:@"subject"];
+        self.subject = (subjectString == (id) [NSNull null]) ? @"" : subjectString;
         self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
-        
+
         [self loadTriggersFrom:json];
-        [self loadRulesFrom:   json];
-        [self loadDatesFrom:   json];
+        [self loadRulesFrom:json];
+        [self loadDatesFrom:json];
     }
     return self;
 }
 
--(void)setMessageMinDelayThrottle:(NSDate*)timeShown
-{
+- (void)setMessageMinDelayThrottle:(NSDate *)timeShown {
     self.state.showMsgsAfterDelay = [timeShown dateByAddingTimeInterval:self.minDelayBetweenMsgs];
 }
 
--(void)wasShownToUserAt:(NSDate*)timeShown
-{
+- (void)wasShownToUserAt:(NSDate *)timeShown {
     self.state.impressions += 1;
     [self setMessageMinDelayThrottle:timeShown];
     self.state.status = SWRVE_CAMPAIGN_STATUS_SEEN;
 }
 
-static NSDate* read_date(id d, NSDate* default_date)
-{
+static NSDate *read_date(id d, NSDate *default_date) {
     double millis = [d doubleValue];
-    
-    if (millis > 0){
+
+    if (millis > 0) {
         double seconds = millis / 1000.0;
         return [NSDate dateWithTimeIntervalSince1970:seconds];
     } else {
@@ -126,40 +123,31 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
 }
 
--(void)loadDatesFrom:(NSDictionary*)json
-{
+- (void)loadDatesFrom:(NSDictionary *)json {
     self.dateStart = read_date([json objectForKey:@"start_date"], self.dateStart);
-    self.dateEnd   = read_date([json objectForKey:@"end_date"],   self.dateEnd);
+    self.dateEnd = read_date([json objectForKey:@"end_date"], self.dateEnd);
 }
 
--(void)loadRulesFrom:(NSDictionary*)json
-{
-    NSDictionary* rules = [json objectForKey:@"rules"];
+- (void)loadRulesFrom:(NSDictionary *)json {
+    NSDictionary *rules = [json objectForKey:@"rules"];
     [SwrveLogger debug:@"Rules: %@", rules];
-    NSNumber* jsonMaxImpressions = [rules objectForKey:@"dismiss_after_views"];
-    if (jsonMaxImpressions != nil)
-    {
+    NSNumber *jsonMaxImpressions = [rules objectForKey:@"dismiss_after_views"];
+    if (jsonMaxImpressions != nil) {
         self.maxImpressions = jsonMaxImpressions.unsignedIntegerValue;
     }
-    
-    
-    NSNumber* delayFirstMsg = [rules objectForKey:@"delay_first_message"];
-    if (delayFirstMsg != nil)
-    {
+    NSNumber *delayFirstMsg = [rules objectForKey:@"delay_first_message"];
+    if (delayFirstMsg != nil) {
         self.showMsgsAfterLaunch = [self.initialisedTime dateByAddingTimeInterval:delayFirstMsg.integerValue];
     }
-    
-    NSNumber* jsonMinDelayBetweenMsgs = [rules objectForKey:@"min_delay_between_messages"];
-    if (jsonMinDelayBetweenMsgs != nil)
-    {
+    NSNumber *jsonMinDelayBetweenMsgs = [rules objectForKey:@"min_delay_between_messages"];
+    if (jsonMinDelayBetweenMsgs != nil) {
         self.minDelayBetweenMsgs = [jsonMinDelayBetweenMsgs doubleValue];
     }
 }
 
--(void)loadTriggersFrom:(NSDictionary*)json {
-    
+- (void)loadTriggersFrom:(NSDictionary *)json {
     NSArray *triggerArray = [SwrveTrigger initTriggersFromDictionary:json];
-    if (!triggerArray){
+    if (!triggerArray) {
         [SwrveLogger error:@"Error loading triggers", nil];
         return;
     } else {
@@ -167,73 +155,60 @@ static NSDate* read_date(id d, NSDate* default_date)
     }
 }
 
--(BOOL)isTooSoonToShowMessageAfterLaunch:(NSDate*)now
-{
+- (BOOL)isTooSoonToShowMessageAfterLaunch:(NSDate *)now {
     return [now compare:[self showMsgsAfterLaunch]] == NSOrderedAscending;
 }
 
--(BOOL)isTooSoonToShowMessageAfterDelay:(NSDate*)now
-{
+- (BOOL)isTooSoonToShowMessageAfterDelay:(NSDate *)now {
     return [now compare:self.state.showMsgsAfterDelay] == NSOrderedAscending;
 }
 
--(void)logAndAddReason:(NSString*)reason withReasons:(NSMutableDictionary*)campaignReasons
-{
-    if(campaignReasons != nil) {
+- (void)logAndAddReason:(NSString *)reason withReasons:(NSMutableDictionary *)campaignReasons {
+    if (campaignReasons != nil) {
         [campaignReasons setValue:reason forKey:[[NSNumber numberWithUnsignedInteger:self.ID] stringValue]];
         [SwrveLogger debug:@"%@", reason];
     }
 }
 
--(BOOL)isActive:(NSDate*)time withReasons:(NSMutableDictionary*)campaignReasons
-{
-    if ([self.dateStart compare:time] != NSOrderedAscending)
-    {
-        [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has not started yet", (long)self.ID] withReasons:campaignReasons];
+- (BOOL)isActive:(NSDate *)time withReasons:(NSMutableDictionary *)campaignReasons {
+    if ([self.dateStart compare:time] != NSOrderedAscending) {
+        [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has not started yet", (long) self.ID] withReasons:campaignReasons];
         return FALSE;
     }
-    
-    if ([time compare:self.dateEnd] != NSOrderedAscending)
-    {
-        [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has finished", (long)self.ID] withReasons:campaignReasons];
+    if ([time compare:self.dateEnd] != NSOrderedAscending) {
+        [self logAndAddReason:[NSString stringWithFormat:@"Campaign %ld has finished", (long) self.ID] withReasons:campaignReasons];
         return FALSE;
     }
-    
     return TRUE;
 }
 
--(BOOL)checkCampaignRulesForEvent:(NSString*)event
-                           atTime:(NSDate*)time
-                      withReasons:(NSMutableDictionary*)campaignReasons
-{
-    if (![self isActive:time withReasons:campaignReasons])
-    {
+- (BOOL)checkCampaignRulesForEvent:(NSString *)event
+                            atTime:(NSDate *)time
+                       withReasons:(NSMutableDictionary *)campaignReasons {
+    if (![self isActive:time withReasons:campaignReasons]) {
         return FALSE;
     }
-    
+
     // Ignore delay after launch throttle limit for auto show messages
-    if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:time])
-    {
+    if ([event caseInsensitiveCompare:AUTOSHOW_AT_SESSION_START_TRIGGER] != NSOrderedSame && [self isTooSoonToShowMessageAfterLaunch:time]) {
         [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Too soon after launch. Wait until %@", [SwrveMessageController formattedTime:self.showMsgsAfterLaunch]] withReasons:campaignReasons];
         return FALSE;
     }
-    
-    if ([self isTooSoonToShowMessageAfterDelay:time])
-    {
+
+    if ([self isTooSoonToShowMessageAfterDelay:time]) {
         [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Too soon after last message. Wait until %@", [SwrveMessageController formattedTime:self.state.showMsgsAfterDelay]] withReasons:campaignReasons];
         return FALSE;
     }
-    
-    if (self.state.impressions >= self.maxImpressions)
-    {
-        [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Campaign %ld has been shown %ld times already", (long)self.ID, (long)self.maxImpressions] withReasons:campaignReasons];
+
+    if (self.state.impressions >= self.maxImpressions) {
+        [self logAndAddReason:[NSString stringWithFormat:@"{Campaign throttle limit} Campaign %ld has been shown %ld times already", (long) self.ID, (long) self.maxImpressions] withReasons:campaignReasons];
         return FALSE;
     }
-    
+
     return TRUE;
 }
 
--(BOOL)canTriggerWithEvent:(NSString*)event andPayload:(NSDictionary*)payload {
+- (BOOL)canTriggerWithEvent:(NSString *)event andPayload:(NSDictionary *)payload {
     if ([self triggers] != nil) {
         for (SwrveTrigger *trigger in [self triggers]) {
             if ([trigger.eventName isEqualToString:[event lowercaseString]]) {
@@ -247,27 +222,26 @@ static NSDate* read_date(id d, NSDate* default_date)
             }
         }
     }
-    
+
     return NO;
 }
 
 #if TARGET_OS_IOS /** exclude tvOS **/
--(BOOL)supportsOrientation:(UIInterfaceOrientation)orientation
-{
+
+- (BOOL)supportsOrientation:(UIInterfaceOrientation)orientation {
 #pragma unused(orientation)
     return NO;
 }
+
 #endif
 
--(BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization
-{
+- (BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization {
 #pragma unused(assets, personalization)
     // Implemented in sub classes
     return NO;
 }
 
--(NSDictionary*)stateDictionary
-{
+- (NSDictionary *)stateDictionary {
     return [self.state asDictionary];
 }
 

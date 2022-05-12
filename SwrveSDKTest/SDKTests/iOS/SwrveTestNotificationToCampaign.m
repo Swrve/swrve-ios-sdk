@@ -61,9 +61,8 @@
 
 @end
 
-@interface SwrveTestNotificationToCampaign : XCTestCase <SwrvePushResponseDelegate> {
-    id convoViewControllerMock;
-}
+@interface SwrveTestNotificationToCampaign : XCTestCase <SwrvePushResponseDelegate>
+
 @end
 
 @implementation SwrveTestNotificationToCampaign

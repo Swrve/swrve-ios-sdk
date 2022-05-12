@@ -27,7 +27,9 @@
         return SwrveTriggerOperatorAND;
     }else if([op isEqualToString:@"eq"]){
         return SwrveTriggerOperatorEQUALS;
-    }else{
+    }else if([op isEqualToString:@"or"]){
+        return SwrveTriggerOperatorOR;
+    } else{
         return SwrveTriggerOperatorOTHER;
     }
 }

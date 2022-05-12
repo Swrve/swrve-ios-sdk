@@ -117,7 +117,7 @@ static NSString *const SEQNUM_KEY = @"seqnum";
     }
 
     if ([event valueForKey:@"time"]) {
-        [logDetails setObject:[NSNumber numberWithUnsignedLongLong:[SwrveUtils getTimeEpoch]] forKey:@"client_time"];
+        [logDetails setObject:[event valueForKey:@"time"] forKey:@"client_time"];
         [event removeObjectForKey:@"time"];
     }
 

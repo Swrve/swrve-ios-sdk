@@ -6,7 +6,7 @@
 /*! In-app campaign. */
 @interface SwrveInAppCampaign : SwrveCampaign
 
-@property (atomic, retain) SwrveMessage *message; /*!< Message attached to this campaign. */
+@property(atomic, retain) SwrveMessage *message; /*!< Message attached to this campaign. */
 
 - (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json withAssetsQueue:(NSMutableSet *)assetsQueue forController:(SwrveMessageController *)controller withPersonalization:(NSDictionary *)personalization;
 
@@ -40,10 +40,10 @@
  * \param time Device time.
  * \returns Message setup for the given trigger or nil.
  */
--(SwrveMessage*)messageForEvent:(NSString *)event
-                     withAssets:(NSSet *)assets
-            withPersonalization:(NSDictionary *)personalization
-                         atTime:(NSDate *)time;
+- (SwrveMessage *)messageForEvent:(NSString *)event
+                       withAssets:(NSSet *)assets
+              withPersonalization:(NSDictionary *)personalization
+                           atTime:(NSDate *)time;
 
 /*! Search for a message with the given trigger event and that satisfies
  * the specific rules for the campaign.
@@ -56,12 +56,12 @@
  * \param campaignReasons Will contain the reason the campaign returned no message.
  * \returns Message setup for the given trigger or nil.
  */
--(SwrveMessage *)messageForEvent:(NSString *)event
-                    withPayload:(NSDictionary *)payload
-                     withAssets:(NSSet *)assets
-            withPersonalization:(NSDictionary *)personalization
-                         atTime:(NSDate *)time
-                    withReasons:(NSMutableDictionary *)campaignReasons;
+- (SwrveMessage *)messageForEvent:(NSString *)event
+                      withPayload:(NSDictionary *)payload
+                       withAssets:(NSSet *)assets
+              withPersonalization:(NSDictionary *)personalization
+                           atTime:(NSDate *)time
+                      withReasons:(NSMutableDictionary *)campaignReasons;
 
 /*! Notify that a message was shown to the user.
  *

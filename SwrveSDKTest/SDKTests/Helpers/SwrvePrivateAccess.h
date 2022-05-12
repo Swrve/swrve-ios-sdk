@@ -77,19 +77,10 @@
 @property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic, retain) SwrveAssetsManager*   assetsManager;
 
--(void) updateCampaigns:(NSDictionary*)campaignJson;
 -(void) saveCampaignsState;
 
 @end
 
-
-@interface SwrveMessageViewController(SwrveTestAPI)
-
--(IBAction)onButtonPressed:(id)sender;
-
-@property (nonatomic, retain) SwrveMessageFormat* current_format;
-
-@end
 
 @interface SwrveConversationItemViewController(SwrveTestAPI)
 

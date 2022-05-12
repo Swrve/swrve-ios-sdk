@@ -18,10 +18,6 @@
 - (void)appDidBecomeActive:(NSNotification *)notification;
 @end
 
-@interface SwrveMessageViewController ()
-@property (nonatomic, retain) SwrveMessageFormat* current_format;
-@end
-
 @interface SwrveMessageController ()
 
 - (id)initWithSwrve:(Swrve*)sdk;

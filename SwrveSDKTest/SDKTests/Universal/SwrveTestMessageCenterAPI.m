@@ -1,16 +1,14 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
+#import <SwrveMessagePage.h>
+#import <SwrveMessagePageViewController.h>
 #import "SwrveTestHelper.h"
 
-#import "SwrveConversationStyler.h"
 #import "TestShowMessageDelegateWithViewController.h"
 #import "SwrveAssetsManager.h"
-#import "SwrveMessageController+Private.h"
-#import "SwrveCampaign.h"
 #import "UISwrveButton.h"
 #import "SwrveUtils.h"
 #import "SwrveButton.h"
-#import "SwrveConversationCampaign.h"
 
 @interface Swrve()
 @property (atomic) SwrveRESTClient *restClient;
@@ -18,10 +16,6 @@
 
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (void)appDidBecomeActive:(NSNotification *)notification;
-@end
-
-@interface SwrveMessageViewController ()
-@property (nonatomic, retain) SwrveMessageFormat* current_format;
 @end
 
 @interface SwrveMessageController ()
@@ -114,29 +108,29 @@
 #endif
 
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
-   
+
     id swrveMock = [self swrveMock];
-    
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
-    
+
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    
+
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
-    
+
     SwrveMessageController* controller = [swrveMock messaging];
-    
+
     TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
     [controller setShowMessageDelegate:testDelegate];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
-    
+
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
@@ -161,22 +155,22 @@
 
     // Press dismiss button
     UISwrveButton* dismissButton = [UISwrveButton new];
-    [viewController onButtonPressed:dismissButton];
+    [viewController onButtonPressed:dismissButton pageId:[NSNumber numberWithInt:0]];
 
     XCTAssertEqual(campaign.state.impressions, 1);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
 
     // We can still get the IAM, even though the rules specify a limit of 1 impression
     SwrveCampaign *firstCampaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    
+
     XCTAssertEqual(firstCampaign.ID, campaign.ID);
- 
+
     // Remove the campaign, we will never get it again
     [controller removeMessageCenterCampaign:campaign];
-    
+
     XCTAssertFalse([[swrveMock messageCenterCampaigns] containsObject:campaign]);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
-    
+
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
@@ -222,86 +216,91 @@
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
-    
+
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
-   
+
     id swrveMock = [self swrveMock];
-    
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
-    
+
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsPersonalization" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    
+
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
-    
+
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
     [controller setShowMessageDelegate:testDelegate];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
-    
+
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
-    
+
     // Should be only 1 message centerCampaign
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 0);
-    
+
     // IAM and Conversation support these orientations
 #if TARGET_OS_IOS
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 1);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 1);
-    
+
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:nil] count], 0);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:nil] count], 0);
 #endif
-    
+
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(campaign.subject,@"Personalized Campaign");
-    
-    SwrveMessageViewController *viewController = nil;
-    
+
     // Should be invalid due to missing personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:nil];
-    viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = nil;
+#if TARGET_OS_TV
+    viewController = [messageViewController.childViewControllers firstObject];
+#else
+    viewController = [messageViewController.viewControllers firstObject];
+#endif
     [viewController viewDidAppear:NO];
-    
+    [messageViewController viewDidAppear:NO];
+
     // No Impression should be registered nor state change
     XCTAssertEqual(campaign.state.impressions, 0);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
-    
+
     NSDictionary *invalidPersonalization = @{@"invalid_key": @"test_value"};
-    
+
     // Should not appear now in the message center APIs
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:invalidPersonalization] count], 0);
 #if TARGET_OS_IOS
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:invalidPersonalization] count], 0);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:invalidPersonalization] count], 0);
 #endif
-    
+
     // Should be invalid due to invalid personalization dictionary
     [controller showMessageCenterCampaign:campaign withPersonalization:invalidPersonalization];
     viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
     [viewController viewDidAppear:NO];
-    
+
     // No Impression should be registered nor state change
     XCTAssertEqual(campaign.state.impressions, 0);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
-    
+
     // Now use valid, Expected by campaign personalization Dictionary
     NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
                                            @"test_custom":@"urlprocessed",
                                            @"test_display": @"display"};
-    
+
 
     // Should appear now in the message center APIs
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 1);
@@ -309,16 +308,23 @@
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:validPersonalization] count], 1);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:validPersonalization] count], 1);
 #endif
-    
+
     // Display in-app message
     [controller showMessageCenterCampaign:campaign withPersonalization:validPersonalization];
-    viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    [messageViewController viewDidAppear:NO];
+#if TARGET_OS_TV
+    viewController = [messageViewController.childViewControllers firstObject];
+#else
+    viewController = [messageViewController.viewControllers firstObject];
+#endif
     [viewController viewDidAppear:NO];
 
-    NSArray *buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format = [viewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 2);
-    
-    
+
     __block int clipboardActionCount = 0;
     __block NSString *clipboardAction;
 
@@ -327,18 +333,18 @@
         clipboardActionCount++;
         clipboardAction = action;
     }];
-    
+
     // access the UIViews in the subview of the SwrveMessageViewController
     NSArray *vcSubviews = [[[[viewController view] subviews] firstObject] subviews];
     NSMutableArray *uiButtons = [NSMutableArray new];
-    
+
     // get all the buttons
     for (UIView *item in vcSubviews){
         if ([item isKindOfClass:[UISwrveButton class]]) {
             [uiButtons addObject:item];
         }
     }
-    
+
     XCTAssertEqual([uiButtons count], 2);
     UISwrveButton *clipboardButton = nil;
 
@@ -354,7 +360,7 @@
                 }
             }
         }
-        
+
         // verify that a UISwrveButton matching the tag has clipboard action
         if ([swrveButton actionType] == kSwrveActionClipboard) {
             for (UISwrveButton *button in uiButtons){
@@ -373,7 +379,7 @@
 
     XCTAssertEqual(campaign.state.impressions, 1);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
-    
+
     // Check clipboard callback was called with correct parameters
     XCTAssertEqual(clipboardActionCount, 1);
     XCTAssertEqualObjects(clipboardAction, @"test_value");
@@ -383,18 +389,18 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     XCTAssertEqualObjects(pasteboard.string, @"test_value");
 #endif /**TARGET_OS_IOS **/
-    
+
     // We can still get the IAM, even though the rules specify a limit of 1 impression
     SwrveCampaign *firstCampaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    
+
     XCTAssertEqual(firstCampaign.ID, campaign.ID);
 
     // Remove the campaign, we will never get it again
     [swrveMock removeMessageCenterCampaign:campaign];
-    
+
     XCTAssertFalse([[swrveMock messageCenterCampaigns] containsObject:campaign]);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
-    
+
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif

@@ -1,7 +1,8 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
+#import <SwrveMessagePage.h>
+#import <SwrveMessageUIView.h>
 #import "SwrveInAppCampaign.h"
-#import "SwrveEmbeddedCampaign.h"
 #import "SwrveConversation.h"
 #import "UISwrveButton.h"
 #import "SwrveButton.h"
@@ -12,14 +13,17 @@
 #import "TestShowMessageDelegateWithViewController.h"
 #import "SwrveAssetsManager.h"
 #import "SwrveMessageController+Private.h"
-#import "SwrveLocalStorage.h"
 #import "SwrveMigrationsManager.h"
 #import "TestCapabilitiesDelegate.h"
 #import "SwrveSDK.h"
 #import "SwrveTextView.h"
+#import "SwrveMessagePageViewController.h"
+#import "SwrveCommon.h"
+#import "SwrveMessageFocus.h"
+
 #if TARGET_OS_IOS
 #import "SwrvePermissions.h"
-#import "SwrvePush.h"
+
 #endif //TARGET_OS_IOS
 
 @interface TestDeeplinkDelegate2:NSObject<SwrveDeeplinkDelegate>
@@ -46,6 +50,8 @@
 #if TARGET_OS_IOS
 @property(atomic, readonly) SwrvePush *push;
 #endif //TARGET_OS_IOS
+- (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
+
 @end
 
 #if TARGET_OS_IOS
@@ -67,6 +73,7 @@
 - (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
+@property(nonatomic, retain) SwrveMessageViewController *swrveMessageViewController;
 @property (nonatomic, retain) NSMutableDictionary *appStoreURLs;
 @property (nonatomic, retain) NSArray *campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
@@ -92,14 +99,16 @@
 @end
 
 @interface SwrveMessageViewController ()
-@property (nonatomic, retain) SwrveMessageFormat* current_format;
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(SwrveMessagePageViewController *)viewController;
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(SwrveMessagePageViewController *)viewController;
+- (CGSize)windowSize;
+@property(nonatomic, retain) SwrveMessageFocus *messageFocus;
 @end
 
 @interface TestShowMessageDelegateNoCustomFind : NSObject<SwrveMessageDelegate>
 - (void)showMessage:(SwrveMessage*)message;
 - (void)showConversation:(SwrveConversation *)conversation;
 @property SwrveMessage *messageShown;
-@property SwrveConversation* conversationShown;
 @end
 
 @interface SwrveMessage()
@@ -121,7 +130,6 @@
 }
 
 - (void)showConversation:(SwrveConversation *)conversation {
-    [self setConversationShown:conversation];
     [conversation wasShownToUser];
 }
 
@@ -318,7 +326,7 @@
     XCTAssertNotNil(controller);
 }
 
-- (void)testJsonParser {
+- (void)testJsonParserNoPages {
     [SwrveLocalStorage saveSwrveUserId:@"someUserID"];
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
@@ -396,72 +404,226 @@
     XCTAssertEqual([format size].height, 240.0);
     XCTAssertEqual([format size].width, 320.0);
 
-    XCTAssertNotNil([format buttons]);
-    XCTAssertEqual([[format buttons] count], 5);
+    XCTAssertNotNil([format pages]);
+    XCTAssertEqual(format.firstPageId, 0);
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    XCTAssertNotNil([page buttons]);
+    XCTAssertEqual([[page buttons] count], 5);
 
-    SwrveButton* button1 = [[format buttons] firstObject];
+    SwrveButton* button1 = [[page buttons] firstObject];
     XCTAssertNotNil(button1);
     XCTAssertEqualObjects([button1 image],@"8721fd4e657980a5e12d498e73aed6e6a565dfca");
     XCTAssertEqualObjects([button1 actionString], @"https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8");
-    XCTAssertEqualObjects([button1 message], message);
+    XCTAssertEqual([button1 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button1 center].x, -200);
     XCTAssertEqual([button1 center].y, 80);
-    XCTAssertEqual((int)[button1 messageID], 165);
+    XCTAssertEqual((int)[button1 messageId], 165);
     XCTAssertEqual((int)[button1 appID], 150);
     XCTAssertEqual([button1 actionType], kSwrveActionInstall);
 
-    SwrveButton* button2 = [[format buttons] objectAtIndex:1];
+    SwrveButton* button2 = [[page buttons] objectAtIndex:1];
     XCTAssertNotNil(button2);
     XCTAssertEqualObjects([button2 image], @"8721fd4e657980a5e12d498e73aed6e6a565dfca");
     XCTAssertEqualObjects([button2 actionString], @"custom_action");
-    XCTAssertEqualObjects([button2 message], message);
+    XCTAssertEqual([button2 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button2 center].x, 0);
     XCTAssertEqual([button2 center].y, 80);
-    XCTAssertEqual((int)[button2 messageID], 165);
+    XCTAssertEqual((int)[button2 messageId], 165);
     XCTAssertEqual((int)[button2 appID], 0);
     XCTAssertEqual([button2 actionType], kSwrveActionCustom);
 
-    SwrveButton* button3 = [[format buttons] objectAtIndex:2];
+    SwrveButton* button3 = [[page buttons] objectAtIndex:2];
     XCTAssertNotNil(button3);
     XCTAssertEqualObjects([button3 image], @"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e");
     XCTAssertEqualObjects([button3 actionString], @"");
-    XCTAssertEqualObjects([button3 message], message);
+    XCTAssertEqual([button3 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button3 center].x,932);
     XCTAssertEqual([button3 center].y, 32);
-    XCTAssertEqual((int)[button3 messageID], 165);
+    XCTAssertEqual((int)[button3 messageId], 165);
     XCTAssertEqual((int)[button3 appID], 0);
     XCTAssertEqual([button3 actionType], kSwrveActionDismiss);
     
-    SwrveButton* button4 = [[format buttons] objectAtIndex:3];
+    SwrveButton* button4 = [[page buttons] objectAtIndex:3];
     XCTAssertNotNil(button4);
     XCTAssertEqualObjects([button4 image], @"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e");
     XCTAssertEqualObjects([button4 actionString], @"${test_cp|fallback=\"test\"}");
-    XCTAssertEqualObjects([button4 message], message);
+    XCTAssertEqual([button4 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button4 center].x,999);
     XCTAssertEqual([button4 center].y, 23);
-    XCTAssertEqual((int)[button4 messageID], 165);
+    XCTAssertEqual((int)[button4 messageId], 165);
     XCTAssertEqual((int)[button4 appID], 0);
     XCTAssertEqual([button4 actionType], kSwrveActionClipboard);
     
-    SwrveButton* button5 = [[format buttons] lastObject];
+    SwrveButton* button5 = [[page buttons] lastObject];
     XCTAssertNotNil(button5);
     XCTAssertEqualObjects([button5 image], @"8721fd4e657980a5e12d498e73aed6e6a565dfca");
     XCTAssertEqualObjects([button5 actionString], @"swrve.contacts");
-    XCTAssertEqualObjects([button5 message], message);
+    XCTAssertEqual([button5 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button1 center].x, -200);
     XCTAssertEqual([button1 center].y, 80);
-    XCTAssertEqual((int)[button1 messageID], 165);
+    XCTAssertEqual((int)[button1 messageId], 165);
     XCTAssertEqual((int)[button1 appID], 150);
     XCTAssertEqual([button5 actionType], kSwrveActionCapability);
 
-    XCTAssertNotNil([format images]);
-    XCTAssertEqual([[format images] count], 1);
+    XCTAssertNotNil([page images]);
+    XCTAssertEqual([[page images] count], 1);
 
-    SwrveImage* image = [[format images] firstObject];
+    SwrveImage* image = [[page images] firstObject];
     XCTAssertNotNil(image);
     XCTAssertEqualObjects([image file], @"8f984a803374d7c03c97dd122bce3ccf565bbdb5");
     XCTAssertEqual([image center].x, 0);
     XCTAssertEqual([image center].y, 0);
+}
+
+- (void)testJsonParserWithPages {
+    [SwrveLocalStorage saveSwrveUserId:@"someUserID"];
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [config setAutoDownloadCampaignsAndResources:NO];
+    [config setContentServer:@"someContentServer"];
+    [config setOrientation:SWRVE_ORIENTATION_BOTH];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    XCTAssertNotNil(controller);
+
+    // Ensure calling updateCampaigns with nil doesn't change the current campaigns
+    NSArray *currentCampaigns = [controller campaigns];
+    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO];
+    if ([controller campaigns] != nil) {
+        XCTAssertEqualObjects([controller campaigns], currentCampaigns);
+    }
+
+    NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+    XCTAssertEqual([[controller campaigns] count], 0);
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"multipage_campaign_swipe" ofType:@"json"];
+    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
+
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    XCTAssertEqual([[controller campaigns] count], 1);
+
+    NSTimeInterval nowTime = [[swrveMock getNow] timeIntervalSince1970];
+
+    XCTAssertEqualObjects([controller user], @"someUserID");
+    XCTAssertEqualObjects([[[swrveMock messaging] assetsManager] cdnImages], @"http://www.someurl.com/");
+    XCTAssertEqualObjects([controller apiKey], @"someAPIKey");
+    XCTAssertEqualObjects([controller server], @"someContentServer");
+    XCTAssertEqualObjects([[controller assetsManager] cacheFolder], [SwrveTestHelper campaignCacheDirectory]);
+    XCTAssertEqualObjects([controller language], [config language]);
+    XCTAssertEqual([controller orientation], [config orientation]);
+    NSString *campaignsStatePath = [SwrveLocalStorage campaignsStateFilePathForUserId:[controller user]];
+    XCTAssertEqualObjects([controller campaignsStateFilePath], campaignsStatePath);
+    XCTAssertEqualObjects([[controller appStoreURLs] objectForKey:@"150"], @"https://www.someurl.com");
+
+    XCTAssertEqual(nowTime, ([[controller initialisedTime] timeIntervalSince1970]));
+    XCTAssertEqual(nowTime, ([[controller showMessagesAfterLaunch] timeIntervalSince1970]));
+    XCTAssertEqual(0, ([[controller showMessagesAfterDelay] timeIntervalSince1970]));
+
+    SwrveInAppCampaign *campaign = [[controller campaigns] firstObject];
+    XCTAssertNotNil(campaign);
+
+    XCTAssertEqual([campaign ID], 102);
+    XCTAssertEqual([campaign maxImpressions], 5);
+    XCTAssertEqual(campaign.state.impressions, 0);
+    XCTAssertEqual([campaign minDelayBetweenMsgs], 0);
+
+    XCTAssertEqual(nowTime, [[campaign showMsgsAfterLaunch] timeIntervalSince1970]);
+    XCTAssertEqual(0, [[campaign.state showMsgsAfterDelay] timeIntervalSince1970]);
+
+    SwrveMessage *message = campaign.message;
+    XCTAssertNotNil(message);
+
+    XCTAssertEqualObjects([message campaign], campaign);
+    XCTAssertEqual([[message messageID] integerValue], 165);
+    XCTAssertEqualObjects([message name], @"campaign name");
+    XCTAssertEqual([[message priority] integerValue], 9999);
+
+    XCTAssertNotNil([message formats]);
+    XCTAssertEqual([[message formats] count], 1);
+    SwrveMessageFormat *format = [[message formats] firstObject];
+    XCTAssertNotNil(format);
+
+    XCTAssertEqualObjects([format name], @"my multipage campaign");
+    XCTAssertEqualObjects([format language], @"en-US");
+    XCTAssertEqual([format scale], 1.0);
+    XCTAssertEqual([format size].height, 240.0);
+    XCTAssertEqual([format size].width, 320.0);
+
+    XCTAssertNotNil([format pages]);
+    XCTAssertEqual(format.firstPageId, 123);
+    SwrveMessagePage *page123 = [[format pages] objectForKey:[NSNumber numberWithInt:123]];
+    XCTAssertNotNil([page123 buttons]);
+    XCTAssertEqual([[page123 buttons] count], 2);
+
+    SwrveButton *button123_1 = [[page123 buttons] firstObject];
+    XCTAssertNotNil(button123_1);
+    XCTAssertEqualObjects([button123_1 image], @"asset2");
+    XCTAssertEqualObjects([button123_1 actionString], @"456");
+    XCTAssertEqual([button123_1 messageId], [message.messageID integerValue]);
+    XCTAssertEqual([button123_1 center].x, -200);
+    XCTAssertEqual([button123_1 center].y, 80);
+    XCTAssertEqual((int) [button123_1 messageId], 165);
+    XCTAssertEqual((int) [button123_1 appID], 2);
+    XCTAssertEqual([button123_1 actionType], kSwrveActionPageLink);
+
+    SwrveButton *button123_2 = [[page123 buttons] objectAtIndex:1];
+    XCTAssertNotNil(button123_2);
+    XCTAssertEqualObjects([button123_2 image], @"asset5");
+    XCTAssertEqualObjects([button123_2 actionString], @"");
+    XCTAssertEqual([button123_2 messageId], [message.messageID integerValue]);
+    XCTAssertEqual([button123_2 center].x, 932);
+    XCTAssertEqual([button123_2 center].y, 32);
+    XCTAssertEqual((int) [button123_2 messageId], 165);
+    XCTAssertEqual((int) [button123_2 appID], 0);
+    XCTAssertEqual([button123_2 actionType], kSwrveActionDismiss);
+
+    XCTAssertNotNil([page123 images]);
+    XCTAssertEqual([[page123 images] count], 1);
+
+    SwrveImage *image123 = [[page123 images] firstObject];
+    XCTAssertNotNil(image123);
+    XCTAssertEqualObjects([image123 file], @"asset1");
+    XCTAssertEqual([image123 center].x, 0);
+    XCTAssertEqual([image123 center].y, 0);
+
+    SwrveMessagePage *page456 = [[format pages] objectForKey:[NSNumber numberWithInt:456]];
+    XCTAssertNotNil([page456 buttons]);
+    XCTAssertEqual([[page456 buttons] count], 2);
+
+    SwrveButton *button456_1 = [[page456 buttons] firstObject];
+    XCTAssertNotNil(button456_1);
+    XCTAssertEqualObjects([button456_1 image], @"asset4");
+    XCTAssertEqualObjects([button456_1 actionString], @"123");
+    XCTAssertEqual([button456_1 messageId], [message.messageID integerValue]);
+    XCTAssertEqual([button456_1 center].x, -200);
+    XCTAssertEqual([button456_1 center].y, 80);
+    XCTAssertEqual((int) [button456_1 messageId], 165);
+    XCTAssertEqual((int) [button456_1 appID], 2);
+    XCTAssertEqual([button456_1 actionType], kSwrveActionPageLink);
+
+    SwrveButton *button456_2 = [[page456 buttons] objectAtIndex:1];
+    XCTAssertNotNil(button456_2);
+    XCTAssertEqualObjects([button456_2 image], @"asset5");
+    XCTAssertEqualObjects([button456_2 actionString], @"");
+    XCTAssertEqual([button456_2 messageId], [message.messageID integerValue]);
+    XCTAssertEqual([button456_2 center].x, 932);
+    XCTAssertEqual([button456_2 center].y, 32);
+    XCTAssertEqual((int) [button456_2 messageId], 165);
+    XCTAssertEqual((int) [button456_2 appID], 0);
+    XCTAssertEqual([button456_2 actionType], kSwrveActionDismiss);
+
+    XCTAssertNotNil([page456 images]);
+    XCTAssertEqual([[page456 images] count], 1);
+
+    SwrveImage *image456 = [[page456 images] firstObject];
+    XCTAssertNotNil(image456);
+    XCTAssertEqualObjects([image456 file], @"asset3");
+    XCTAssertEqual([image456 center].x, 0);
+    XCTAssertEqual([image456 center].y, 0);
 }
 
 - (void)testShowMessageDelegate {
@@ -840,7 +1002,8 @@
 #endif
 
     BOOL correct = NO;
-    for (SwrveButton* button in [format buttons]) {
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    for (SwrveButton* button in [page buttons]) {
         if ([button actionType] == kSwrveActionInstall && [button appID] == 150) {
             correct = YES;
         }
@@ -971,14 +1134,14 @@
 - (void)testMessageIntervalCalculatedAfterDismissal {
     id swrveMock = [self swrveMockWithTestJson:@"campaignsDelay"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     TestShowMessageDelegateWithViewController *testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
     [controller setShowMessageDelegate:testDelegate];
 
     // First message display
     self.swrveNowDate = [NSDate dateWithTimeInterval:130 sinceDate:self.swrveNowDate];
-    
+
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
     [controller showMessage:message];
@@ -987,19 +1150,19 @@
     [viewController viewDidAppear:NO];
 
     self.swrveNowDate = [NSDate dateWithTimeInterval:130 sinceDate:self.swrveNowDate];
-    
+
     // Press dismiss button
     UISwrveButton* dismissButton = [UISwrveButton new];
     [dismissButton setTag:2];
-    [viewController onButtonPressed:dismissButton];
+    [viewController onButtonPressed:dismissButton pageId:[NSNumber numberWithInt:0]];
 
     // No message should be shown as the message has just been dismissed
     message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNil(message);
-    
+
     // Another 35 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:35 sinceDate:self.swrveNowDate];
-    
+
     message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     XCTAssertNotNil(message);
 }
@@ -1184,7 +1347,7 @@
 - (void)testCustomButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -1195,8 +1358,8 @@
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
-    [viewController viewDidAppear:NO];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
 
     __block int customActionCount = 0;
     __block NSString *customAction;
@@ -1207,20 +1370,22 @@
         customAction = action;
     }];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format = [pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 5);
-    
+
     // access the UIViews in the subview of the SwrveMessageViewController
-    NSArray *vcSubviews = [[[[viewController view] subviews] firstObject] subviews];
+    NSArray *vcSubviews = [[[[pageViewController view] subviews] firstObject] subviews];
     NSMutableArray *uiButtons = [NSMutableArray new];
-    
+
     // get all the buttons
     for (UIView *item in vcSubviews){
         if ([item isKindOfClass:[UISwrveButton class]]) {
             [uiButtons addObject:item];
         }
     }
-    
+
     XCTAssertEqual([uiButtons count], 5);
 
     for (NSInteger i = 0; i < [buttons count]; i++) {
@@ -1231,7 +1396,7 @@
             for (UISwrveButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     // pretend to press it
-                    [viewController onButtonPressed:button];
+                    [pageViewController onButtonPressed:button];
                 }
             }
         }
@@ -1254,13 +1419,84 @@
     XCTAssertEqual(clickEventCount, 1);
 }
 
+- (void)testDismissButtonPressedWithPages {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [[controller inAppMessageWindow] rootViewController];
+    [messageViewController viewDidAppear:NO];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+
+    // go straight to last page which has a dismiss button
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Page5"]);
+    pageViewController = [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 5);
+
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"dismiss" forKey:@"actionType"];
+    [eventData setValue:[NSNumber numberWithLong:89355] forKey:@"id"];
+    [eventData setValue:[NSNumber numberWithLong:5] forKey:@"contextId"];
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    [eventPayload setValue:@"page 5" forKey:@"pageName"];
+    [eventPayload setValue:@"Button 5 page 5 dismiss" forKey:@"buttonName"];
+    [eventPayload setValue:[NSNumber numberWithLong:501] forKey:@"buttonId"];
+    [eventData setValue:eventPayload forKey:@"payload"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
+
+    // press the dismiss button
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Dismiss"]);
+
+    OCMVerifyAll(swrveMock);
+}
+
+- (void)testCustomButtonPressedWithPages {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [[controller inAppMessageWindow] rootViewController];
+    [messageViewController viewDidAppear:NO];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+
+    NSMutableDictionary *payload = [self messageClickPayloadEvent:1 pageName:@"page 1" buttonId:102];
+    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-89355.click" payload:payload triggerCallback:false]);
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"custom"];
+
+    OCMVerifyAll(swrveMock);
+}
+
+- (NSMutableDictionary *)messageClickPayloadEvent:(long)pageId pageName:(NSString *)pageName buttonId:(long)buttonId {
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"false" forKey:@"embedded"];
+    [eventData setValue:[NSNumber numberWithLong:pageId] forKey:@"contextId"];
+    [eventData setValue:@"custom" forKey:@"name"];
+    [eventData setValue:[NSNumber numberWithLong:buttonId] forKey:@"buttonId"];
+    [eventData setValue:pageName forKey:@"pageName"];
+    return eventData;
+}
+
 /**
  * Tests install button pressed
  */
 - (void)testInstallButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -1271,10 +1507,12 @@
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
-    [viewController viewDidAppear:NO];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format =[pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 5);
 
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
@@ -1286,7 +1524,7 @@
         if ([swrveButton actionType] == kSwrveActionInstall) {
             UISwrveButton* button = [UISwrveButton new];
             [button setTag:i];
-            [viewController onButtonPressed:button];
+            [pageViewController onButtonPressed:button];
         }
     }
 
@@ -1301,9 +1539,9 @@
         }
     }
     XCTAssertEqual(clickEventCount, 1);
-    
+
     OCMVerifyAll(mockUIApplication);
-    
+
     [mockUIApplication stopMocking];
 }
 
@@ -1316,7 +1554,7 @@
 - (void)testDismissButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -1327,7 +1565,8 @@
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
     [viewController viewDidAppear:NO];
     __block NSString *campaignSubject = @"";
     __block NSString *buttonName = @"";
@@ -1346,12 +1585,14 @@
         campaignSubject = campaignS;
         buttonName = buttonN;
     }];
-    
+
     [controller setClipboardButtonCallback:^(NSString *processedText) {
         clipboardActionCount++;
     }];
 
-    NSArray *buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format =[viewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count],5);
 
     // Pretend to press all buttons
@@ -1382,6 +1623,398 @@
     XCTAssertEqual(clickEventCount, 0);
 }
 
+- (void)testPagingViaButtons {
+
+    __block BOOL *dismissed = NO;
+    SwrveDismissButtonPressedCallback dismissCallback = ^(NSString *campaignN, NSString *buttonN) {
+        dismissed = YES;
+    };
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    config.inAppMessageConfig.dismissButtonCallback = dismissCallback;
+
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage" withConfig:config];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [[controller inAppMessageWindow] rootViewController];
+    [messageViewController viewDidAppear:NO];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Next"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 2);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Next"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 3);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Next"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 4);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Next"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 5);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Previous"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 4);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Page2"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 2);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Previous"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Page5"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 5);
+    XCTAssertFalse(dismissed);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self pressUISwrveButton:messageUiView name:@"Dismiss"];
+    [self loadMessagePageViewController:messageViewController];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Dismiss button should be called"];
+    [SwrveTestHelper waitForBlock:0.5 conditionBlock:^BOOL() {
+        return dismissed;
+    }                 expectation:expectation];
+    [self waitForExpectationsWithTimeout:5.0 handler:nil];
+    XCTAssertTrue(dismissed);
+}
+
+- (void)testMultiPageEventsOnlyOnceWithNavigationViaButtons {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    NSMutableDictionary *eventDataPage1 = [self pageViewEventData:1 pageName:@"page 1"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage1 triggerCallback:false]);
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [[controller inAppMessageWindow] rootViewController];
+    [messageViewController viewDidAppear:NO];
+    [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+    OCMVerifyAll(swrveMock);
+
+    NSMutableDictionary *eventDataPage2 = [self pageViewEventData:2 pageName:@"page 2"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage2 triggerCallback:false]);
+    NSMutableDictionary *eventDataNextNavPage1 = [self pageNavEventData:1 pageName:@"page 1" toPageId:2 buttonId:101];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataNextNavPage1 triggerCallback:false]);
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Next"]);
+    [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 2);
+    OCMVerifyAll(swrveMock);
+
+    NSMutableDictionary *eventDataPage3 = [self pageViewEventData:3 pageName:@"page 3"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage3 triggerCallback:false]);
+    NSMutableDictionary *eventDataNextNavPage2 = [self pageNavEventData:2 pageName:@"page 2" toPageId:3 buttonId:201];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataNextNavPage2 triggerCallback:false]);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Next"]);
+    [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 3);
+    OCMVerifyAll(swrveMock);
+
+    // pressing the previous button (to go back to page 2) should not send another eventDataPage2 event, so use OCMReject
+    OCMReject([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage2 triggerCallback:false]);
+    NSMutableDictionary *eventDataPreviousNavPage3 = [self pageNavEventData:3 pageName:@"page 3" toPageId:2 buttonId:300];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPreviousNavPage3 triggerCallback:false]);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Previous"]);
+    [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 2);
+    OCMVerifyAll(swrveMock);
+
+    // pressing the next button AGAIN (to go back to page 3) should not send another eventDataPage3/eventDataNextNavPage2 event, so use OCMReject
+    OCMReject([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage3 triggerCallback:false]);
+    OCMReject([swrveMock queueEvent:@"generic_campaign_event" data:eventDataNextNavPage2 triggerCallback:false]);
+    messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Next"]);
+    [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 3);
+    OCMVerifyAll(swrveMock);
+}
+
+- (NSMutableDictionary *)pageViewEventData:(long)pageId pageName:(NSString *)pageName {
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"page_view" forKey:@"actionType"];
+    [eventData setValue:[NSNumber numberWithLong:89355] forKey:@"id"];
+    [eventData setValue:[NSNumber numberWithLong:pageId] forKey:@"contextId"];
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    [eventPayload setValue:pageName forKey:@"pageName"];
+    [eventData setValue:eventPayload forKey:@"payload"];
+    return eventData;
+}
+
+- (NSMutableDictionary*)pageNavEventData:(long)pageId pageName:(NSString *)pageName toPageId:(long)toPageId buttonId:(long)buttonId {
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"navigation" forKey:@"actionType"];
+    [eventData setValue:[NSNumber numberWithLong:89355] forKey:@"id"];
+    [eventData setValue:[NSNumber numberWithLong:pageId] forKey:@"contextId"];
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    [eventPayload setValue:pageName forKey:@"pageName"];
+    [eventPayload setValue:[NSNumber numberWithLong:toPageId] forKey:@"to"];
+    [eventPayload setValue:[NSNumber numberWithLong:buttonId] forKey:@"buttonId"];
+    [eventData setValue:eventPayload forKey:@"payload"];
+    return eventData;
+}
+
+#if TARGET_OS_IOS /** exclude tvOS **/
+// test behaviour (on iOS) with rotation. Tv does not rotate.
+- (void)testPagingAndRotationWithNavViaButtons {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage_orientations"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *viewController = [[controller inAppMessageWindow] rootViewController];
+    [viewController viewDidAppear:NO];
+
+    XCTAssertEqual([[viewController currentPageId] integerValue], 1);
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:viewController];
+    [self pressUISwrveButton:messageUiView name:@"Next"];
+
+    XCTAssertEqual([[viewController currentPageId] integerValue], 2);
+    NSString *formatName = [[viewController currentMessageFormat] name];
+    XCTAssertEqualObjects(formatName, @"FormatName-Portrait");
+    XCTAssertEqualObjects([controller apiKey], @"someAPIKey");
+
+    // Simulate rotating the device by calling viewWillTransitionToSize
+    CGSize sizeOriginal = [viewController windowSize];
+    CGSize sizeNew = CGSizeMake(sizeOriginal.height, sizeOriginal.width); // swap the width/height around to make a new CGSize
+    [viewController viewWillTransitionToSize:sizeNew withTransitionCoordinator:nil];
+
+    XCTAssertEqual([[viewController currentPageId] integerValue], 2); // same page
+    formatName = [[viewController currentMessageFormat] name];
+    XCTAssertEqualObjects(formatName, @"FormatName-Landscape"); // different format name
+}
+#endif /**TARGET_OS_IOS **/
+
+- (SwrveMessageUIView *)swrveMessageUIViewFromController:(SwrveMessageViewController *)viewController {
+    SwrveMessagePageViewController *messagePageViewController = [self loadMessagePageViewController:viewController];
+    return [[[messagePageViewController view] subviews] firstObject];
+}
+
+- (SwrveMessagePageViewController*)loadMessagePageViewController:(SwrveMessageViewController*) messageViewController {
+    SwrveMessagePageViewController *messagePageViewController = nil;
+#if TARGET_OS_TV
+    messagePageViewController = [messageViewController.childViewControllers firstObject];
+#else
+    messagePageViewController = [messageViewController.viewControllers firstObject];
+#endif
+    [messagePageViewController viewDidAppear:NO];
+    [messagePageViewController viewWillAppear:NO];
+    return messagePageViewController;
+}
+
+- (BOOL)pressUISwrveButton:(UIView *)view name:(NSString *)buttonName {
+    BOOL pressed = NO;
+    for (UIView *subview in view.subviews) {
+        if ([subview isKindOfClass:[UISwrveButton class]]) {
+            UISwrveButton *uiSwrveButton = (UISwrveButton *) subview;
+            if ([uiSwrveButton.displayString isEqualToString:buttonName]) {
+                [uiSwrveButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+                pressed = YES;
+                break;
+            }
+        }
+    };
+    return pressed;
+}
+
+// swipe supported on iOS only. Not supported on tvOS.
+#if TARGET_OS_IOS
+
+- (void)testPagingViaSwipeForward {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *viewController = [[controller inAppMessageWindow] rootViewController];
+    [viewController viewDidAppear:NO];
+
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:viewController];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 1);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 1);
+
+    // simulate swiping forward
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 2);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 2);
+
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 3);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 3);
+
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 4);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 4);
+
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 5);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 5);
+
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 5); // page remains at 5 because there's no more
+    XCTAssertNil(pageViewController);
+}
+
+- (void)testPagingViaSwipeBackward {
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [[controller inAppMessageWindow] rootViewController];
+    [messageViewController viewDidAppear:NO];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+
+    // jump to page 5 and simulate swiping backwards
+    [messageViewController showPage:[NSNumber numberWithInt:5]];
+
+    pageViewController = [self loadMessagePageViewController:messageViewController];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 5);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 5);
+
+    pageViewController = [messageViewController pageViewController:messageViewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 4);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 4);
+
+    pageViewController = [messageViewController pageViewController:messageViewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 3);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 3);
+
+    pageViewController = [messageViewController pageViewController:messageViewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 2);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 2);
+
+    pageViewController = [messageViewController pageViewController:messageViewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 1);
+
+    pageViewController = [messageViewController pageViewController:messageViewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[messageViewController currentPageId] integerValue], 1); // page remains at 1 because there's no more
+    XCTAssertNil(pageViewController);
+}
+
+- (void)testMultiPageEventsOnlyOnceWithNavigationViaSwipe {
+
+    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_multipage"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+
+    NSMutableDictionary *eventDataPage1 = [self pageViewEventData:1 pageName:@"page 1"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage1 triggerCallback:false]);
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign];
+    OCMVerifyAll(swrveMock);
+
+    SwrveMessageViewController *viewController = [[controller inAppMessageWindow] rootViewController];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 1);
+
+    // simulate swiping forward
+
+    NSMutableDictionary *eventDataPage2 = [self pageViewEventData:2 pageName:@"page 2"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage2 triggerCallback:false]);
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:viewController];
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 2);
+    OCMVerifyAll(swrveMock);
+
+    NSMutableDictionary *eventDataPage3 = [self pageViewEventData:3 pageName:@"page 3"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage3 triggerCallback:false]);
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 3);
+    OCMVerifyAll(swrveMock);
+
+    NSMutableDictionary *eventDataPage4 = [self pageViewEventData:4 pageName:@"page 4"];
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage4 triggerCallback:false]);
+    pageViewController = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 4);
+    OCMVerifyAll(swrveMock);
+
+    // simulate swiping backward to go back to page 3 but should not send another eventDataPage3 event, so use OCMReject
+    OCMReject([swrveMock queueEvent:@"generic_campaign_event" data:eventDataPage3 triggerCallback:false]);
+    pageViewController = [viewController pageViewController:viewController viewControllerBeforeViewController:pageViewController];
+    [pageViewController viewDidAppear:NO];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 3);
+    OCMVerifyAll(swrveMock);
+}
+
+#endif
+
+- (void)testPagingWithOldCampaigns {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message];
+    SwrveMessageViewController *viewController = [[controller inAppMessageWindow] rootViewController];
+    [viewController viewDidAppear:NO];
+
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:viewController];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 0);
+    XCTAssertEqual([[pageViewController pageId] integerValue], 0);
+
+    // simulate swiping forward
+    SwrveMessagePageViewController *pageViewControllerAfter = [viewController pageViewController:viewController viewControllerAfterViewController:pageViewController];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 0); // page remains at 0 because there's only one page
+    XCTAssertNil(pageViewControllerAfter);
+
+    // simulate swiping backward
+    SwrveMessagePageViewController *pageViewControllerBefore = [viewController pageViewController:viewController viewControllerBeforeViewController:pageViewController];
+    XCTAssertEqual([[viewController currentPageId] integerValue], 0); // page remains at 0 because there's only one page
+    XCTAssertNil(pageViewControllerBefore);
+}
+
 /**
  * Test actions when clipboard button pressed
  * - clipboard button callback called with correct action
@@ -1390,7 +2023,7 @@
 - (void)testClipboardButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -1401,7 +2034,8 @@
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
     [viewController viewDidAppear:NO];
 
     __block int clipboardActionCount = 0;
@@ -1413,7 +2047,9 @@
         clipboardAction = action;
     }];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format = [viewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 5);
 
     // access the UIViews in the subview of the SwrveMessageViewController
@@ -1474,21 +2110,24 @@
 - (void)testCapabilityButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     TestShowMessageDelegateWithViewController *testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
     [controller setShowMessageDelegate:testDelegate];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) [testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
     [viewController viewDidAppear:NO];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format =[viewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 5);
 
     // access the UIViews in the subview of the SwrveMessageViewController
@@ -1517,9 +2156,9 @@
         }
     }
 
-    // check capablity delegate called
+    // check capability delegate called
     OCMVerify([testCapabilitiesDelegateMock requestCapability:@"swrve.contacts" completionHandler:OCMOCK_ANY]);
-    
+
     int clickEventCount = 0;
     for (NSString* event in [swrveMock eventBuffer]) {
         if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
@@ -1540,24 +2179,27 @@
     id swrveMock = [self swrveMockWithTestJson:@"iamCapabilites"];
     SwrveMessageController *controller = [swrveMock messaging];
     controller.pushEnabled = true;
-    
+
     id swrvePushMock = OCMPartialMock([SwrvePush alloc]);
     OCMStub([swrveMock push]).andReturn(swrvePushMock);
-    
+
     TestShowMessageDelegateWithViewController *testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
     [testDelegate setController:controller];
     [controller setShowMessageDelegate:testDelegate];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
-    
+
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = [messageViewController.viewControllers firstObject];
     [viewController viewDidAppear:NO];
 
-    NSArray* buttons = [[viewController current_format] buttons];
+    SwrveMessageFormat *format =[viewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count], 1);
 
     // access the UIViews in the subview of the SwrveMessageViewController
@@ -1572,14 +2214,14 @@
     }
 
     XCTAssertEqual([uiButtons count], 1);
-    
+
     id swrvePermissions = OCMClassMock([SwrvePermissions class]);
     OCMStub([swrvePermissions requestPushNotifications:OCMOCK_ANY provisional:OCMOCK_ANY]).andDo(nil);
-    
+
     // check capablity delegate not called
     OCMReject([testCapabilitiesDelegateMock requestCapability:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
     OCMExpect([swrvePushMock registerForPushNotifications:FALSE]).andDo(nil);
-    
+
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
         // verify that a UISwrveButton matching the accessibility id
@@ -1592,7 +2234,7 @@
             }
         }
     }
-    
+
     OCMVerifyAll(swrvePushMock);
 
     int clickEventCount = 0;
@@ -1971,14 +2613,13 @@
     // Press dismiss button
     UISwrveButton* dismissButton = [UISwrveButton new];
     [dismissButton setTag:0];
-    [viewController onButtonPressed:dismissButton];
+    [viewController onButtonPressed:dismissButton pageId:[NSNumber numberWithInt:0]];
 
     // Ensure that new message is now shown correctly
     [controller showMessage:message2];
     viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
 
     XCTAssertEqualObjects([viewController message], message2);
-
 }
 
 #if TARGET_OS_IOS /** The concept of orientation is not on tvOS **/
@@ -1992,7 +2633,7 @@
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -2003,12 +2644,11 @@
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message];
 
-    SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessagePageViewController *viewController = [messageViewController.viewControllers firstObject];
     [viewController viewDidAppear:NO];
 
-    XCTAssertNotNil([viewController message]);
-    XCTAssertEqual([[[viewController message] messageID] intValue], 165);
-    XCTAssertEqual([[viewController current_format] orientation], SWRVE_ORIENTATION_PORTRAIT);
+    XCTAssertEqual([[messageViewController currentMessageFormat] orientation], SWRVE_ORIENTATION_PORTRAIT);
 
     // Press dismiss button
     UISwrveButton *dismissButton = [UISwrveButton new];
@@ -2017,15 +2657,12 @@
 
     // Rotate device
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationLandscapeRight];
-    
+
     // Show same message again
     [controller showMessage:message];
-    viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
-    [viewController viewDidAppear:NO];
 
     // Ensure message is now shown in landscape format
-    XCTAssertNotNil([viewController message]);
-    XCTAssertEqual([[[viewController message] messageID] intValue], 165);
+    XCTAssertEqual([[messageViewController currentMessageFormat] orientation], SWRVE_ORIENTATION_LANDSCAPE);
 
     // Change orientation back to original
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -2382,13 +3019,14 @@
 /**
  * Test default colors from config
  */
+ // TODO come back to this test - seems a bit strange?!
 - (void)testDefaultColors {
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.inAppMessageConfig.backgroundColor = [UIColor redColor];
-    
+
     id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
     SwrveMessageController *controller = [swrveMock messaging];
-    
+
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
@@ -2402,9 +3040,9 @@
     SwrveMessageViewController *viewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
     [viewController viewDidAppear:NO];
 
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationForegroundColor, [UIColor blackColor]);
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationBackgroundColor, [UIColor clearColor]);
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationFont, [UIFont systemFontOfSize:0]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationForegroundColor, [UIColor blackColor]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationBackgroundColor, [UIColor clearColor]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationFont, [UIFont systemFontOfSize:0]);
 }
 
 /**
@@ -2418,7 +3056,7 @@
     inAppConfig.personalizationBackgroundColor = [UIColor blackColor];
     inAppConfig.personalizationForegroundColor = [UIColor blueColor];
     config.inAppMessageConfig = inAppConfig;
-    
+
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalization" withConfig:config];
     SwrveMessageController *controller = [swrveMock messaging];
 
@@ -2429,9 +3067,9 @@
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
-    
+
     SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
-  
+
     [controller showMessageCenterCampaign:campaign withPersonalization: @{@"test_cp": @"test_value",
                                                                           @"test_custom":@"urlprocessed",
                                                                           @"test_display": @"display"}];
@@ -2440,9 +3078,9 @@
     [viewController viewDidAppear:NO];
 
     XCTAssertEqualObjects(viewController.view.backgroundColor, [UIColor redColor]);
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationForegroundColor, [UIColor blueColor]);
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationBackgroundColor, [UIColor blackColor]);
-    XCTAssertEqualObjects(viewController.inAppConfig.personalizationFont, [UIFont italicSystemFontOfSize:1]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationForegroundColor, [UIColor blueColor]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationBackgroundColor, [UIColor blackColor]);
+    XCTAssertEqualObjects(viewController.messageController.inAppMessageConfig.personalizationFont, [UIFont italicSystemFontOfSize:1]);
 }
 
 /**
@@ -2740,7 +3378,6 @@
     XCTAssertEqual([[controller campaigns] count], 3);
 }
 
-
 - (void)testRetrievePersonalizationProperties {
     SwrveConfig *config = [SwrveConfig new];
     config.inAppMessageConfig.personalizationCallback = ^NSDictionary *(NSDictionary *eventPayload) {
@@ -2819,7 +3456,6 @@
     [mockUIApplication stopMocking];
 }
 
-
 /**
  * Test message window dismissed when stop tracking is called.
  */
@@ -2877,8 +3513,8 @@
             }
         }
     };
-    
-    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format campaignId:0 messageId:0 appStoreURLs:nil];
     // dont use calibration for this test
     messageFormat.calibration = [[SwrveCalibration alloc]initWithDictionary:@{
         @"width" : @0,
@@ -2891,9 +3527,13 @@
     config.personalizationFont = [UIFont systemFontOfSize:18];
     config.personalizationForegroundColor = [UIColor redColor];
     config.personalizationBackgroundColor = [UIColor yellowColor];
-    
-    messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
+
+    SwrveMessageUIView *view = [[SwrveMessageUIView alloc] initWithMessageFormat:messageFormat
+                                                                          pageId:[NSNumber numberWithInt:0]
+                                                                      parentSize:CGSizeMake(1000, 2000)
+                                                                      controller:nil
+                                                                 personalization:nil
+                                                                     inAppConfig:config];
 
     NSString *expectedText = @"This is the expected text";
     NSString *text = nil;
@@ -2974,8 +3614,8 @@
             }
         }
     };
-    
-    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format campaignId:0 messageId:0 appStoreURLs:nil];
     // dont use calibration for this test
     messageFormat.calibration = [[SwrveCalibration alloc]initWithDictionary:@{
         @"width" : @0,
@@ -2988,10 +3628,14 @@
     config.personalizationFont = [UIFont systemFontOfSize:18];
     config.personalizationForegroundColor = [UIColor redColor];
     config.personalizationBackgroundColor = [UIColor yellowColor];
-    
-    messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
-    
+
+    SwrveMessageUIView *view = [[SwrveMessageUIView alloc] initWithMessageFormat:messageFormat
+                                                                          pageId:[NSNumber numberWithInt:0]
+                                                                      parentSize:CGSizeMake(1000, 2000)
+                                                                      controller:nil
+                                                                 personalization:nil
+                                                                     inAppConfig:config];
+
     NSString *expectedText = @"This is the expected text";
     NSString *text = nil;
     
@@ -3046,7 +3690,6 @@
     XCTAssertEqualObjects(expectedForegroundColor, foregroundColor);
     XCTAssertEqualObjects(expectedBackgroundColor, backgroundColor);
 }
-
 
 - (void)testMutliLineCalibration {
     float sample_scaled_by = 0.467005076142132;
@@ -3105,15 +3748,19 @@
             }
         }
     };
-    
-    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format forController:nil forMessage:nil];
+
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format campaignId:0 messageId:0 appStoreURLs:nil];
     SwrveInAppMessageConfig *config = [SwrveInAppMessageConfig new];
     config.personalizationFont = [UIFont systemFontOfSize:18];
     config.personalizationForegroundColor = [UIColor redColor];
     config.personalizationBackgroundColor = [UIColor yellowColor];
-    
-    messageFormat.inAppConfig = config;
-    UIView *view = [messageFormat createViewToFit:messageViewController.view thatDelegatesTo:nil withSize:CGSizeMake(1000, 2000) personalization:nil];
+
+    SwrveMessageUIView *view = [[SwrveMessageUIView alloc] initWithMessageFormat:messageFormat
+                                                                          pageId:[NSNumber numberWithInt:0]
+                                                                      parentSize:CGSizeMake(1000, 2000)
+                                                                      controller:nil
+                                                                 personalization:nil
+                                                                     inAppConfig:config];
     
     UIFont *expectedFont = [UIFont systemFontOfSize:expected_scaled_point_size];
     UIFont *font = [UIFont systemFontOfSize:12];
@@ -3163,6 +3810,52 @@
     
     assets = [NSSet setWithArray:@[@"_system_font_", @"SomeNativeFont"]];
     XCTAssertTrue([message assetsReady:assets withPersonalization:nil]);
+}
+
+- (void)testAccessibilityText {
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsAccess" ofType:@"json"];
+    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
+    
+    SwrveMessage *message = [[SwrveMessage alloc] initWithDictionary:jsonDict forCampaign:nil forController:nil];
+    SwrveMessageFormat *messageFormat = message.formats[0];
+    
+    SwrveMessageUIView *view = [[SwrveMessageUIView alloc] initWithMessageFormat:messageFormat
+                                                                          pageId:[NSNumber numberWithInt:0]
+                                                                      parentSize:CGSizeMake(1000, 2000)
+                                                                      controller:nil
+                                                                 personalization:@{@"test_1": @"TEST123",
+                                                                                   @"user": @"Jose"}
+                                                                     inAppConfig:[SwrveInAppMessageConfig new]];
+
+    UIView *background = view.subviews[0];
+    XCTAssertEqualObjects(@"Decorative Purple Background personalized", background.accessibilityLabel);
+    XCTAssertTrue(background.isAccessibilityElement);
+    
+    // for UITextview, VO will automaticaelly read out the text so no need to set accessibilityLabel
+    UIView *swrveTextView1 = view.subviews[1];
+    XCTAssertEqualObjects(nil, swrveTextView1.accessibilityLabel);
+    XCTAssertTrue(swrveTextView1.isAccessibilityElement);
+    
+    UIView *swrveTextView2 = view.subviews[2];
+    XCTAssertEqualObjects(nil, swrveTextView2.accessibilityLabel);
+    XCTAssertTrue(swrveTextView2.isAccessibilityElement);
+    
+    UIView *swrveTextImageView = view.subviews[3];
+    XCTAssertEqualObjects(@"Copy code to clipboard 01234566789", swrveTextImageView.accessibilityLabel);
+    XCTAssertTrue(swrveTextImageView.isAccessibilityElement);
+    
+    UIView *swrveTextButtonView = view.subviews[4];
+    XCTAssertEqualObjects(@"Dismiss Message Jose", swrveTextButtonView.accessibilityLabel);
+    XCTAssertTrue(swrveTextImageView.isAccessibilityElement);
+    
+    UIView *swrveTextImageView2 = view.subviews[5];
+    XCTAssertEqualObjects(@"Launch google", swrveTextImageView2.accessibilityLabel);
+    XCTAssertTrue(swrveTextImageView2.isAccessibilityElement);
+    
+    UIView *swrveTextImageView3 = view.subviews[6];
+    XCTAssertEqualObjects(@"Text TEST123", swrveTextImageView3.accessibilityLabel);
+    XCTAssertTrue(swrveTextImageView3.isAccessibilityElement);
 }
 
 @end

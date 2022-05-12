@@ -76,6 +76,21 @@
                 [resultantConditions addObject:condition];
             }
         }
+    } else if([triggerOperator isEqualToString:@"or"]) {
+        
+        NSDictionary *arguments = [dictionary objectForKey:@"args"];
+        if(!arguments){
+            _isValidTrigger = NO;
+            return nil;
+        }
+        
+        for(NSDictionary *triggerCondition in arguments) {
+            
+            SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:triggerCondition andOperator:triggerOperator];
+            if (condition) {
+                [resultantConditions addObject:condition];
+            }
+        }
     } else {
         _isValidTrigger = NO;
         return nil;
@@ -86,6 +101,11 @@
         switch (condition.triggerOperator) {
             case SwrveTriggerOperatorAND:
                 if([resultantConditions count] <= 1){
+                    _isValidTrigger = NO;
+                }
+                break;
+            case SwrveTriggerOperatorOR:
+                if([resultantConditions count] < 1){
                     _isValidTrigger = NO;
                 }
                 break;
@@ -120,10 +140,19 @@
     if([_conditions count] > 0) {
         
         for (SwrveTriggerCondition *condition in _conditions) {
+            
             canTrigger = [condition hasFulfilledCondition:payload];
             
-            if(!canTrigger){
-                return NO;
+            if (condition.triggerOperator == SwrveTriggerOperatorOR) {
+                if (canTrigger) {
+                    return true;
+                }
+            } else if (condition.triggerOperator == SwrveTriggerOperatorAND)  {
+                if(!canTrigger) {
+                    return NO;
+                }
+            } else {
+                return canTrigger;
             }
         }
     }

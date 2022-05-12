@@ -8,12 +8,7 @@
 @class SwrveConversation;
 @class SwrveButton;
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
-
 @interface SwrveMessageController : NSObject <SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
-#else
-@interface SwrveMessageController : NSObject<SwrveCampaignsSDK, SwrveMessageDelegate, SwrveMessageEventHandler>
-#endif
 
 /*! Find a base message which could an in-app or embedded for the given trigger event
  * that also satisfies the rules set up in the dashboard.
@@ -35,13 +30,13 @@
  *
  * \param button Button pressed by the user.
  */
-- (void)buttonWasPressedByUser:(SwrveButton *)button;
+- (void)buttonWasPressedByUser:(SwrveButton *)button __deprecated_msg("Use embedded campaigns instead.");
 
 /*! Notify that a message was shown to the user.
  *
  * \param message Message that was shown to the user.
  */
-- (void)messageWasShownToUser:(SwrveMessage *)message;
+- (void)messageWasShownToUser:(SwrveMessage *)message __deprecated_msg("Use embedded campaigns instead.");
 
 /*! Inform that am embedded message has been served and processed. This function should be called
  * by your implementation to update the campaign information and send the appropriate data to
@@ -75,13 +70,6 @@
  * \return The data string with personalization properties applied. Null is returned if personalization fails with the custom properties passed in.
  */
 - (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties;
-
-/*! Obtain the app store URL configured for the given app.
- *
- * \param appID App ID of the target app.
- * \returns App store url for the given app.
- */
-- (NSString *)appStoreURLForAppId:(long)appID;
 
 /*! Creates a new fullscreen UIWindow, adds messageViewController to it and makes
  * it visible. If a message window is already displayed, nothing is done.

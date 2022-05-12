@@ -8,16 +8,16 @@
 
 #import <sys/time.h>
 #import "Swrve.h"
-#import "SwrveCampaign.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+
 #import <SwrveSDKCommon/SwrveRESTClient.h>
 #import <SwrveSDKCommon/SwrveQA.h>
 #import <SwrveSDKCommon/SwrveUser.h>
 #import <SwrveSDKCommon/SwrveNotificationManager.h>
 #import <SwrveSDKCommon/SwrvePermissions.h>
-#import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #import <SwrveSDKCommon/SwrveSEConfig.h>
+
 #else
 #import "SwrveQA.h"
 #import "SwrveRESTClient.h"
@@ -486,9 +486,9 @@ enum {
 
         [self initAppInstallTime];
 
-        if(profileManager.trackingState == STOPPED) {
+        if (profileManager.trackingState == STOPPED) {
             [SwrveLogger warning:@"SwrveSDK is currently in stopped state and will not start until an api is called.", nil];
-        } else if([self shouldAutoStart]) {
+        } else if ([self shouldAutoStart]) {
             self.sdkStarted = true;
             [profileManager persistUser];
             [self registerLifecycleCallbacks];
@@ -512,12 +512,12 @@ enum {
     if (config.abTestDetailsEnabled) {
         [self initABTestDetails];
     }
-    
+
     [self initRealTimeUserProperties];
     [self initResources];
     [self initResourcesDiff];
     [self invokeResourcesRTUPCallback];
-    
+
     NSString *eventCacheFile = [SwrveLocalStorage eventsFilePathForUserId:swrveUserId];
     [self setEventFilename:[NSURL fileURLWithPath:eventCacheFile]];
     [self setEventStream:[self createEventfile:SWRVE_TRUNCATE_IF_TOO_LARGE]];
@@ -981,7 +981,7 @@ enum {
                         self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
                         [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
                     }
-                    
+
                     NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
                     if (resourceJson != nil) {
                         [self updateResources:resourceJson writeToCache:YES];
@@ -1014,7 +1014,7 @@ enum {
                             }
                         }
                     }
-                    
+
                     if (resourceJson != nil || realTimeUserPropertiesJson != nil) {
                         if (self.campaignsAndResourcesInitialized) {
                             [self invokeResourcesRTUPCallback];
@@ -1345,7 +1345,7 @@ enum {
 
 - (void)appDidBecomeActive:(NSNotification *)notification {
 #pragma unused(notification)
-    
+
     if (![self sdkReady]) {
         return;
     }
@@ -1565,7 +1565,7 @@ enum {
 
 - (void)deeplinkReceived:(NSURL *)url NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (@available(iOS 10.0, *)) {
-        id<SwrveDeeplinkDelegate> del = self.config.deeplinkDelegate;
+        id <SwrveDeeplinkDelegate> del = self.config.deeplinkDelegate;
         if (del != nil && [del respondsToSelector:@selector(handleDeeplink:)]) {
             [del handleDeeplink:url];
             [SwrveLogger debug:@"Passing url to deeplink delegate for processing [%@]", url];
@@ -1738,7 +1738,7 @@ enum {
 
 
 #endif
-    
+
     swrveDeviceProperties.autoCollectIDFV = config.autoCollectIDFV;
     swrveDeviceProperties.idfa = self.idfa;
 
@@ -2295,7 +2295,7 @@ enum HttpStatus {
 - (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener {
     if (![self sdkReady]) {
         NSString *errorMsgSdkReady = @"SwrveSDK: Could not call userResourcesDiffWithListener. Perhaps sdk is stopped or not started.";
-        NSError *errorSdkReady = [NSError errorWithDomain:@"com.swrve" code:-1 userInfo: @{NSLocalizedDescriptionKey:errorMsgSdkReady}];
+        NSError *errorSdkReady = [NSError errorWithDomain:@"com.swrve" code:-1 userInfo:@{NSLocalizedDescriptionKey: errorMsgSdkReady}];
         listener(nil, nil, nil, false, errorSdkReady);
         return;
     }
@@ -2345,7 +2345,7 @@ enum HttpStatus {
         @catch (NSException *exception) {
             [SwrveLogger error:@"Exception in userResourcesDiffWithListener. %@", exception];
             NSString *errorDescription = @"SwrveSDK: Could not convert userResourcesDiff to Dictionary.";
-            NSMutableDictionary * userInfo = [NSMutableDictionary dictionary];
+            NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
             [userInfo setValue:exception.name forKey:@"ExceptionName"];
             [userInfo setValue:exception.reason forKey:@"ExceptionReason"];
             [userInfo setValue:errorDescription forKey:@"ExceptionDescription"];
@@ -2755,10 +2755,10 @@ enum HttpStatus {
     NSDictionary *deviceInfo = [self deviceInfo];
     [self mergeWithCurrentDeviceInfo:deviceInfo];
     [self logDeviceInfo:deviceInfo];
-    
+
     // This call isn't blocked when Stopped and is not publicly exposed.
     [self sendQueuedEventsWithCallback:nil eventFileCallback:nil forceFlush:true];
-    
+
     [self stopCampaignsAndResourcesTimer];
 
 #if TARGET_OS_IOS
@@ -2800,7 +2800,7 @@ enum HttpStatus {
     [messaging embeddedButtonWasPressed:message buttonName:button];
 }
 
-- (NSString *) personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
+- (NSString *)personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
     if (![self sdkReady]) {
         return nil;
     }
@@ -2876,7 +2876,7 @@ enum HttpStatus {
 
 - (void)idfa:(NSString *)idfa {
     if (![SwrveUtils isValidIDFA:idfa]) {
-        [SwrveLogger error:[NSString stringWithFormat:@"attempt to set invalid IDFA: %@",idfa]];
+        [SwrveLogger error:[NSString stringWithFormat:@"attempt to set invalid IDFA: %@", idfa]];
     } else {
         self.idfa = idfa;
         [SwrveLocalStorage saveIDFA:idfa];

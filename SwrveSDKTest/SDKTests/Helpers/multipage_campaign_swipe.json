@@ -1,0 +1,278 @@
+{
+  "cdn_root": "http://www.someurl.com/",
+  "campaigns": [
+    {
+      "id": 102,
+      "end_date": 2364568900000,
+      "triggers": [
+      ],
+      "message_center": true,
+      "start_date": 1362671700000,
+      "in_app_version": 7,
+      "message": {
+        "template": {
+          "template_id": "20",
+          "formats": [
+            {
+              "name": "my multipage campaign",
+              "orientation": "landscape",
+              "language": "en-US",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 320
+                },
+                "h": {
+                  "type": "number",
+                  "value": 240
+                }
+              },
+              "pages": [
+                {
+                  "page_id": 123,
+                  "page_name": "page1",
+                  "template_id": 987,
+                  "swipe_forward": 456,
+                  "swipe_backward": -1,
+                  "images": [
+                    {
+                      "name": "Background",
+                      "color": {
+                        "type": "color",
+                        "value": "FFFFFF"
+                      },
+                      "image": {
+                        "type": "asset",
+                        "value": "asset1"
+                      },
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 900
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 600
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "button next",
+                      "button_id": 111,
+                      "x": {
+                        "type": "number",
+                        "value": -200
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 80
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 229
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 114
+                      },
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset2"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "456"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": "2"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      }
+                    },
+                    {
+                      "name": "close",
+                      "button_id": 999,
+                      "x": {
+                        "type": "number",
+                        "value": 932
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 32
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 50
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 50
+                      },
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset5"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "page_id": 456,
+                  "page_name": "page2",
+                  "template_id": 987,
+                  "swipe_forward": -1,
+                  "swipe_backward": 123,
+                  "images": [
+                    {
+                      "name": "Background",
+                      "color": {
+                        "type": "color",
+                        "value": "FFFFFF"
+                      },
+                      "image": {
+                        "type": "asset",
+                        "value": "asset3"
+                      },
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 900
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 600
+                      }
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "name": "button previous",
+                      "button_id": 222,
+                      "x": {
+                        "type": "number",
+                        "value": -200
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 80
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 229
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 114
+                      },
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset4"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": "123"
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": "2"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "PAGE_LINK"
+                      }
+                    },
+                    {
+                      "name": "close",
+                      "button_id": 999,
+                      "x": {
+                        "type": "number",
+                        "value": 932
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 32
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 50
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 50
+                      },
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset5"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "id": 165,
+        "name": "campaign name",
+        "rules": {}
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 5,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    }
+  ],
+  "game_data": {
+    "150": {
+      "app_store_url": "https://www.someurl.com"
+    }
+  },
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 9999,
+    "delay_first_message": 0
+  },
+  "version": 2
+}

@@ -1,19 +1,31 @@
+#import <UIKit/UIKit.h>
+
 #import "SwrveMessage.h"
-#import "SwrveInAppMessageConfig.h"
+#import "UISwrveButton.h"
 
-@class SwrveMessage;
+NS_ASSUME_NONNULL_BEGIN
 
-/*! Manage an in-app message on screen */
+#if TARGET_OS_TV
 @interface SwrveMessageViewController : UIViewController
+#else
+@interface SwrveMessageViewController : UIPageViewController
+#endif
 
-@property (nonatomic, weak) SwrveMessageController* messageController;   /*!< Message controller. */
-@property (nonatomic, retain) SwrveMessage*      message;   /*!< Message to render. */
-@property (nonatomic, copy)   SwrveMessageResult messageResultBlock;     /*!< Custom code to execute when a button is tapped or a message is dismissed by a user. */
-@property (nonatomic)         BOOL               prefersIAMStatusBarHidden; /*!< Allows the view controler to decide if the status bar is visible. */
-@property (nonatomic, retain) NSDictionary*      personalizationDict; /*!< NSDictionary of key value pairs used for personalization. */
-@property (nonatomic, retain) SwrveInAppMessageConfig *inAppConfig; /*!< Configuration for personalized text, colors and styling */
+@property(nonatomic, weak) SwrveMessageController *messageController;
+@property(nonatomic, retain) SwrveMessage *message;
+@property(nonatomic, copy) SwrveMessageResult messageResultBlock __deprecated_msg("Use embedded campaigns instead.");        /*!< Custom code to execute when a button is tapped or a message is dismissed by a user. */
+@property(nonatomic, retain) NSDictionary *personalization;
+@property(nonatomic, retain) NSNumber *currentPageId;
+@property(nonatomic, retain) SwrveMessageFormat *currentMessageFormat; // dependent on orientation or screen size
 
-/*! Called by the view when a button is pressed */
--(IBAction)onButtonPressed:(id)sender;
+- (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
+                        message:(SwrveMessage *)swrveMessage
+                personalization:(NSDictionary *)personalization;
+
+- (void)showPage:(NSNumber *)number;
+- (void)onButtonPressed:(UISwrveButton*)button pageId:(NSNumber *)pageId;
+- (void)queuePageViewEvent:(NSNumber *)pageId;
 
 @end
+
+NS_ASSUME_NONNULL_END

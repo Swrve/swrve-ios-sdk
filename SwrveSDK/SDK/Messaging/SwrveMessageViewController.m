@@ -1,39 +1,143 @@
-#import "Swrve.h"
 #import "SwrveMessageViewController.h"
-#import "SwrveButton.h"
+#import "SwrveMessagePage.h"
+#import "SwrveMessagePageViewController.h"
 #import "SwrveMessageController.h"
+#import "SwrveButton.h"
+#import "SwrveMessageFocus.h"
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrveLogger.h>
+#else
+#import "SwrveCommon.h"
+#import "SwrveLogger.h"
+#endif
 
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+@interface SwrveMessageController ()
 
-@interface SwrveMessageViewController ()
+@property(nonatomic, retain) UIWindow *inAppMessageWindow;
+@property(nonatomic) SwrveActionType inAppMessageActionType;
+@property(nonatomic, retain) NSString *inAppMessageAction;
+@property(nonatomic, retain) NSString *inAppButtonPressedName;
 
-@property (nonatomic, retain) SwrveMessageFormat* current_format;
-@property (nonatomic) BOOL wasShownToUserNotified;
-@property (nonatomic) CGFloat viewportWidth;
-@property (nonatomic) CGFloat viewportHeight;
+- (void)queueMessageClickEvent:(SwrveButton *)button page:(SwrveMessagePage *)page;
 
-@property (nonatomic, retain) UIFocusGuide *focusGuide1 __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0);
-@property (nonatomic, retain) UIFocusGuide *focusGuide2 __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0);
-@property (nonatomic, retain) UIButton *tvOSFocusForSelection;
+@end
 
+@interface SwrveMessageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+
+@property(nonatomic) CGSize iamWindowSize; // the current window size which is dependent on orientation
+@property(nonatomic) BOOL wasShownToUserNotified;
+@property(nonatomic, retain) NSMutableArray *pageViewEventsSent;
+@property(nonatomic, retain) NSMutableArray *navigationEventsSent;
+@property(nonatomic, retain) SwrveMessageFocus *messageFocus;
 @end
 
 @implementation SwrveMessageViewController
 
 @synthesize messageResultBlock;
-@synthesize message;
-@synthesize current_format;
-@synthesize wasShownToUserNotified;
-@synthesize viewportWidth;
-@synthesize viewportHeight;
-@synthesize prefersIAMStatusBarHidden;
-@synthesize personalizationDict;
-@synthesize inAppConfig;
 @synthesize messageController;
+@synthesize message;
+@synthesize personalization;
+@synthesize currentMessageFormat;
+@synthesize currentPageId;
+@synthesize iamWindowSize;
+@synthesize wasShownToUserNotified;
+@synthesize pageViewEventsSent;
+@synthesize navigationEventsSent;
+@synthesize messageFocus;
 
-@synthesize focusGuide1, focusGuide2, tvOSFocusForSelection;
+- (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
+                        message:(SwrveMessage *)swrveMessage
+                personalization:(NSDictionary *)personalizationDict {
 
-- (UIWindow*)keyWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
+#if TARGET_OS_TV
+    self = [super init];
+#else
+    self = [super initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+                    navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
+                                  options:nil];
+#endif
+
+    if (self) {
+        self.messageController = swrveMessageController;
+        self.message = swrveMessage;
+        self.personalization = personalizationDict;
+        self.pageViewEventsSent = [NSMutableArray array];
+        self.navigationEventsSent = [NSMutableArray array];
+#if TARGET_OS_IOS
+        self.dataSource = self; // this is required for swiping capability
+#endif
+    }
+    return self;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.iamWindowSize = [self windowSize];
+    [self updateCurrentMessageFormat];
+    NSNumber *firstPageId = [NSNumber numberWithLong:self.currentMessageFormat.firstPageId];
+    [self showPage:firstPageId];
+
+    self.view.frame = self.view.bounds;
+    self.messageFocus = [[SwrveMessageFocus alloc] initWithView:self.view];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.wasShownToUserNotified == NO) {
+        [self.message wasShownToUser];
+        self.wasShownToUserNotified = YES;
+    }
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator API_AVAILABLE(ios(8.0)) {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    self.iamWindowSize = size;
+    [self updateCurrentMessageFormat];
+
+    [self showPage:self.currentPageId];
+}
+
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(SwrveMessagePageViewController *)viewController {
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:viewController.pageId];
+    if (page.swipeBackward == -1 || self.currentMessageFormat.pages.count == 1) {
+        return nil;
+    }
+    NSNumber *pageIdToShow = [NSNumber numberWithLong:page.swipeBackward];
+    return [self messagePageViewController:pageIdToShow];
+}
+
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(SwrveMessagePageViewController *)viewController {
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:viewController.pageId];
+    if (page.swipeForward == -1 || self.currentMessageFormat.pages.count == 1) {
+        return nil;
+    }
+    NSNumber *pageIdToShow = [NSNumber numberWithLong:page.swipeForward];
+    return [self messagePageViewController:pageIdToShow];
+}
+
+- (void)updateCurrentMessageFormat {
+    float viewportRatio = (float) (self.iamWindowSize.width / self.iamWindowSize.height);
+    float closestRatio = -1;
+    SwrveMessageFormat *closestFormat = nil;
+    for (SwrveMessageFormat *format in self.message.formats) {
+        float formatRatio = (float) (format.size.width / format.size.height);
+        float diffRatio = fabsf(formatRatio - viewportRatio);
+        if (closestFormat == nil || (diffRatio < closestRatio)) {
+            closestFormat = format;
+            closestRatio = diffRatio;
+        }
+    }
+    [SwrveLogger debug:@"Selected message format: %@", closestFormat.name];
+    self.currentMessageFormat = closestFormat;
+
+    [self setControllerBackgroundColor]; // A Format can contain a background color so set it after getting the Format
+}
+
+- (CGSize)windowSize NS_EXTENSION_UNAVAILABLE_IOS("") {
     UIWindow *keyWindow = nil;
     if (@available(iOS 13, *)) {
         NSArray *windows = [[UIApplication sharedApplication] windows];
@@ -44,224 +148,210 @@
             }
         }
     } else {
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         keyWindow = [[UIApplication sharedApplication] keyWindow];
-        #pragma clang diagnostic pop
+#pragma clang diagnostic pop
     }
-    return keyWindow;
+    CGRect screenRect = [keyWindow bounds];
+    CGSize size = CGSizeMake(screenRect.size.width, screenRect.size.height);
+    return size;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-
-    [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
-    // Default viewport size to whole screen
-    CGRect screenRect = [[self keyWindow] bounds];
-    self.viewportWidth = screenRect.size.width;
-    self.viewportHeight = screenRect.size.height;
-#if TARGET_OS_TV
-    UITapGestureRecognizer *playPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(buttonSelected)];
-    playPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypePlayPause]];
-    [self.view addGestureRecognizer:playPress];
-#endif
+- (SwrveMessagePageViewController *)messagePageViewController:(NSNumber *)pageIdToShow {
+    SwrveMessagePageViewController *messageViewController = [[SwrveMessagePageViewController alloc]
+            initWithMessageController:self.messageController
+                               format:self.currentMessageFormat
+                      personalization:self.personalization
+                               pageId:pageIdToShow
+                                 size:self.iamWindowSize];
+    return messageViewController;
 }
 
-- (void)buttonSelected {
-    [self onButtonPressed:self.tvOSFocusForSelection];
-}
+- (void)onButtonPressed:(UISwrveButton *)button pageId:(NSNumber *)pageIdPressed {
 
-- (void)viewDidAppear:(BOOL)animated {
-
-    [super viewDidAppear:animated];
-    [self updateBounds];
-    [self removeAllViews];
-    [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
-    [self refreshViewForPlatform];
-
-    if (self.wasShownToUserNotified == NO) {
-        [self.message wasShownToUser];
-        self.wasShownToUserNotified = YES;
-    }
-}
-
--(void)updateBounds
-{
-    // Update the bounds to the new screen size
-    [self.view setFrame:[[UIScreen mainScreen] bounds]];
-    [self refreshViewForPlatform];
-}
-
--(void)removeAllViews
-{
-    for (UIView *view in self.view.subviews) {
-        [view removeFromSuperview];
-    }
-}
-
--(void)refreshViewForPlatform {
-    // pre-iOS 9 setNeedsFocusUpdate and updateFocusIfNeeded are not supported
-#if TARGET_OS_TV
-    [self.view setNeedsFocusUpdate];
-    [self.view updateFocusIfNeeded];
-#endif
-}
-
--(IBAction)onButtonPressed:(id)sender
-{
-    UISwrveButton* button = sender;
-    
-    NSString *action = button.actionString;
-    
-    SwrveButton* pressed = [current_format.buttons objectAtIndex:(NSUInteger)button.tag];
-    SwrveMessageController* controller = self.messageController;
-    if (controller != nil) {
-        [controller buttonWasPressedByUser:pressed];
-    }
-    
-    if(action == nil || [action isEqualToString:@""]) {
-        action = pressed.actionString;
-    }
-
-    self.messageResultBlock(pressed.actionType, action, pressed.appID);
-}
-
-#if TARGET_OS_IOS
--(BOOL)prefersStatusBarHidden
-{
-    if (prefersIAMStatusBarHidden) {
-        return YES;
-    } else {
-        return [super prefersStatusBarHidden];
-    }
-}
-#endif
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator API_AVAILABLE(ios(8.0)) {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-    self.viewportWidth = size.width;
-    self.viewportHeight = size.height;
-    [self removeAllViews];
-    [self displayForViewportOfSize:CGSizeMake(self.viewportWidth, self.viewportHeight)];
-}
-
-- (void) displayForViewportOfSize:(CGSize)size
-{
-    float viewportRatio = (float)(size.width/size.height);
-    float closestRatio = -1;
-    SwrveMessageFormat* closestFormat = nil;
-    for (SwrveMessageFormat* format in self.message.formats) {
-        float formatRatio = (float)(format.size.width/format.size.height);
-        float diffRatio = fabsf(formatRatio - viewportRatio);
-        if (closestFormat == nil || (diffRatio < closestRatio)) {
-            closestFormat = format;
-            closestRatio = diffRatio;
-        }
-    }
-
-    current_format = closestFormat;
-    current_format.inAppConfig = self.inAppConfig;
-    [SwrveLogger debug:@"Selected message format: %@", current_format.name];
-    UIView *currentView = [current_format createViewToFit:self.view
-                   thatDelegatesTo:self
-                          withSize:size
-                   personalization:personalizationDict];
-
-    [self setupFocusGuide:currentView];
-
-    [currentView setHidden:NO];
-    [currentView setUserInteractionEnabled:YES];
-    [currentView setAlpha:1.0];
-
-    // Update background color
-    if (current_format.backgroundColor != nil) {
-        self.view.backgroundColor = current_format.backgroundColor;
-    }
-}
-
-#pragma mark - Focus
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
-#pragma unused(coordinator)
-
-    UIView *previouslyFocusedView = context.previouslyFocusedView;
-
-    if (previouslyFocusedView != nil && [previouslyFocusedView isDescendantOfView:self.view]) {
-        [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-            previouslyFocusedView.transform = CGAffineTransformMakeScale(1.0, 1.0);
-        } completion:^(BOOL finished) {
-#pragma unused(finished)
-        }];
-    }
-
-    UIView *nextFocusedView = context.nextFocusedView;
-
-    if (nextFocusedView != nil && [nextFocusedView isDescendantOfView:self.view]) {
-        [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-
-            CGFloat increase = (float)1.2;
-
-            nextFocusedView.transform = CGAffineTransformMakeScale(increase, increase);
-        } completion:^(BOOL finished) {
-#pragma unused(finished)
-        }];
-
-        self.tvOSFocusForSelection = (UIButton *)nextFocusedView;
-    }
-}
-
-- (void)setupFocusGuide:(UIView *)currentView {
-    if (@available(iOS 9.0, *)) {
-        self.focusGuide1 = nil;
-        self.focusGuide2 = nil;
-    }
-    NSArray<UIButton *> *buttons = [SwrveMessageViewController buttonsInView:currentView];
-    if (buttons.count != 2) { // we only want to help focus engine if there are two buttons
+    SwrveMessagePage *page = [[self.currentMessageFormat pages] objectForKey:pageIdPressed];
+    SwrveButton *swrveButton = [page.buttons objectAtIndex:(NSUInteger) button.tag];
+    SwrveMessageController *messageControllerStrong = self.messageController;
+    if (!messageControllerStrong || !swrveButton) {
         return;
     }
 
-    CGRect frame0 = buttons[0].frame;
-    CGRect frame1 = buttons[1].frame;
-    // only add focus guides if the buttons are strictly diagonal. otherwise the focus engine will figure it out by itself
-    if ((CGRectGetMinY(frame1) > CGRectGetMaxY(frame0) || CGRectGetMaxY(frame1) < CGRectGetMinY(frame0))
-         &&
-         (CGRectGetMinX(frame1) > CGRectGetMaxX(frame0) || CGRectGetMaxX(frame1) < CGRectGetMinX(frame0))) {
+    if (swrveButton.actionType != kSwrveActionPageLink) {
+        [messageControllerStrong queueMessageClickEvent:swrveButton page:page];
+        messageControllerStrong.inAppButtonPressedName = swrveButton.name; // Save button name for processing later
+    }
 
-        if (@available(iOS 10.0, *)) {
-            self.focusGuide1 = [UIFocusGuide new];
-            [currentView addLayoutGuide:self.focusGuide1];
-            [self.focusGuide1.leftAnchor constraintEqualToAnchor:buttons[0].leftAnchor].active = YES;
-            [self.focusGuide1.rightAnchor constraintEqualToAnchor:buttons[0].rightAnchor].active = YES;
-            [self.focusGuide1.topAnchor constraintEqualToAnchor:buttons[1].topAnchor].active = YES;
-            [self.focusGuide1.bottomAnchor constraintEqualToAnchor:buttons[1].bottomAnchor].active = YES;
+    NSString *action = button.actionString; // this may have been personalized so use button.actionString instead of swrveButton.actionString
+    if (action == nil || [action isEqualToString:@""]) {
+        action = swrveButton.actionString;
+    }
 
-            self.focusGuide2 = [UIFocusGuide new];
-            [currentView addLayoutGuide:self.focusGuide2];
-            [self.focusGuide2.leftAnchor constraintEqualToAnchor:buttons[1].leftAnchor].active = YES;
-            [self.focusGuide2.rightAnchor constraintEqualToAnchor:buttons[1].rightAnchor].active = YES;
-            [self.focusGuide2.topAnchor constraintEqualToAnchor:buttons[0].topAnchor].active = YES;
-            [self.focusGuide2.bottomAnchor constraintEqualToAnchor:buttons[0].bottomAnchor].active = YES;
+    if (swrveButton.actionType == kSwrveActionPageLink) {
+        NSNumber *pageIdToShow = @([action intValue]);
+        [self queuePageNavEvent:self.currentPageId buttonId:button.buttonId pageIdToShow:pageIdToShow];
+        [self showPage:pageIdToShow];
+    } else {
+        if (swrveButton.actionType == kSwrveActionDismiss) {
+            [self queueDismissEvent:self.currentPageId buttonId:button.buttonId buttonName:button.buttonName];
+        }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        BOOL messageResultBlockNotNull = self.messageResultBlock != NULL;
+        if (messageResultBlockNotNull) {
+            self.messageResultBlock(swrveButton.actionType, action, swrveButton.appID);
         } else {
-            [SwrveLogger error:@"Top and bottom guide not supported, should not reach this code", nil];
+            // Save button type and action for processing later in the messageController
+            messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
+            messageControllerStrong.inAppMessageAction = action;
+            id <SwrveMessageDelegate> strongMessageDelegate = messageControllerStrong.showMessageDelegate;
+            if ([strongMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
+                [strongMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController *) messageControllerStrong.inAppMessageWindow.rootViewController];
+            } else {
+                [messageControllerStrong beginHideMessageAnimation:(SwrveMessageViewController *) messageControllerStrong.inAppMessageWindow.rootViewController];
+            }
+        }
+#pragma clang diagnostic pop
+    }
+}
+
+- (void)showPage:(NSNumber *)pageIdToShow {
+    SwrveMessagePageViewController *messagePageViewController = [self messagePageViewController:pageIdToShow];
+#if TARGET_OS_TV
+    [SwrveMessageViewController showTvOSController:messagePageViewController inParentController:self];
+#else
+    [SwrveMessageViewController showIOSController:messagePageViewController inPageController:self pageId:pageIdToShow];
+#endif
+}
+
++ (void)showIOSController:(SwrveMessagePageViewController *)messagePageViewController inPageController:(UIPageViewController *)pageViewController pageId:(NSNumber *)pageId {
+    [pageViewController setViewControllers:@[messagePageViewController]
+                                 direction:UIPageViewControllerNavigationDirectionForward
+                                  animated:NO
+                                completion:nil];
+    SwrveMessagePage *page = [messagePageViewController.messageFormat.pages objectForKey:pageId];
+    if (messagePageViewController.messageFormat.pages.count == 1 || (page.swipeBackward == -1 && page.swipeForward == -1)) {
+        [SwrveMessageViewController disableSwipe:pageViewController.view];
+    }
+}
+
++ (void)showTvOSController:(SwrveMessagePageViewController *)messagePageViewController inParentController:(UIViewController *)parentViewController {
+    // remove subviews
+    for (UIView *view in parentViewController.view.subviews) {
+        [view removeFromSuperview];
+    }
+    // remove child controller
+    for (UIViewController *controller in parentViewController.childViewControllers) {
+        [controller removeFromParentViewController];
+    }
+
+    [parentViewController addChildViewController:messagePageViewController];
+    [parentViewController.view addSubview:messagePageViewController.view];
+    [messagePageViewController didMoveToParentViewController:parentViewController];
+}
+
+- (void)setControllerBackgroundColor {
+    if (self.currentMessageFormat.backgroundColor != nil) {
+        self.view.backgroundColor = self.currentMessageFormat.backgroundColor;
+    } else {
+        self.view.backgroundColor = self.messageController.inAppMessageConfig.backgroundColor;
+    }
+}
+
++ (void)disableSwipe:(UIView *)controllerRootView {
+    for (UIView *view in controllerRootView.subviews) {
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *scrollView = (UIScrollView *) view;
+            scrollView.bounces = NO;
+            scrollView.scrollEnabled = NO;
+            break;
         }
     }
 }
 
-+ (NSArray<UIButton *> *)buttonsInView:(UIView *)view {
-    NSMutableArray *result = [NSMutableArray array];
-    for (UIView *subview in view.subviews) {
-        [result addObjectsFromArray:[self buttonsInView:subview]];
-        if ([subview isKindOfClass:[UIButton class]]) {
-            [result addObject:subview];
-        }
+- (void)queuePageViewEvent:(NSNumber *)pageId {
+    if ([self.pageViewEventsSent containsObject:pageId]) {
+        [SwrveLogger debug:@"Page view event for page_id %@ already sent", pageId];
+        return;
     }
-    return result;
+
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"page_view" forKey:@"actionType"];
+    [eventData setValue:self.message.messageID forKey:@"id"];
+    [eventData setValue:pageId forKey:@"contextId"];
+
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
+    if(page.pageName && page.pageName.length > 0) {
+        [eventPayload setValue:page.pageName forKey:@"pageName"];
+    }
+    [eventData setValue:eventPayload forKey:@"payload"];
+
+    [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
+    [self.pageViewEventsSent addObject:pageId];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
+- (void)queuePageNavEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId pageIdToShow:(NSNumber *)pageIdToShow {
+    if ([self.navigationEventsSent containsObject:buttonId]) {
+        [SwrveLogger debug:@"Navigation event for button_id %@ already sent", buttonId];
+        return;
+    }
+
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"navigation" forKey:@"actionType"];
+    [eventData setValue:self.message.messageID forKey:@"id"];
+    [eventData setValue:pageId forKey:@"contextId"];
+
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
+    if(page.pageName && page.pageName.length > 0) {
+        [eventPayload setValue:page.pageName forKey:@"pageName"];
+    }
+    if(pageIdToShow && [pageIdToShow integerValue] > 0) {
+        [eventPayload setValue:pageIdToShow forKey:@"to"];
+    }
+    if(buttonId && [buttonId integerValue] > 0) {
+        [eventPayload setValue:buttonId forKey:@"buttonId"];
+    }
+    [eventData setValue:eventPayload forKey:@"payload"];
+
+    [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
+    [self.navigationEventsSent addObject:buttonId];
 }
+
+- (void)queueDismissEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId buttonName:(NSString *)buttonName {
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:@"dismiss" forKey:@"actionType"];
+    [eventData setValue:self.message.messageID forKey:@"id"];
+    [eventData setValue:pageId forKey:@"contextId"];
+
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
+    if(page.pageName && page.pageName.length > 0) {
+        [eventPayload setValue:page.pageName forKey:@"pageName"];
+    }
+    if(buttonName && [buttonName length] > 0) {
+        [eventPayload setValue:buttonName forKey:@"buttonName"];
+    }
+    if(buttonId && [buttonId integerValue] > 0) {
+        [eventPayload setValue:buttonId forKey:@"buttonId"];
+    }
+    [eventData setValue:eventPayload forKey:@"payload"];
+
+    [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
+}
+
+#if TARGET_OS_TV
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
+    [self.messageFocus didUpdateFocusInContext:context];
+}
+#endif
 
 @end

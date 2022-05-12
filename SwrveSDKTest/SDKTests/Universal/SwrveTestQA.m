@@ -290,11 +290,11 @@
     
     SwrveQAImagePersonalizationInfo *testQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:123
                                                                                  variantID:1
-                                                                                 assetName:@"asset1"
                                                                                hasFallback:NO
-                                                                             unresolvedUrl:@"https://fake_url.com/${test_id}.jpg"
-                                                                               resolvedUrl:@"https://fake_url.com/asset1.jpg"
-                                                                                    reason:@"test reason"];
+                                                                             unresolvedUrl:@"https://fake_url.com/${test_id}.jpg"];
+    testQAInfo.assetName = @"asset1";
+    testQAInfo.resolvedUrl = @"https://fake_url.com/asset1.jpg";
+    testQAInfo.reason = @"test reason";
 
     [SwrveQA assetFailedToDisplay:testQAInfo];
 

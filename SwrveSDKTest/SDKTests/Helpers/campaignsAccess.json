@@ -1,0 +1,353 @@
+{
+    "template": {
+        "formats": [{
+            "accessibility_text": "This message is an example of various elements with alt text",
+            "name": "all - portrait",
+            "orientation": "portrait",
+            "language": "*",
+            "size": {
+                "w": {
+                    "type": "number",
+                    "value": 1772
+                },
+                "h": {
+                    "type": "number",
+                    "value": 3150
+                }
+            },
+            "scale_to": [
+                0.1523809523809524,
+                0.20316027088036118,
+                0.24379232505643342,
+                0.25395033860045146,
+                0.25396825396825395,
+                0.2708803611738149,
+                0.28442437923250563,
+                0.3047404063205418,
+                0.3047619047619048,
+                0.3115124153498871,
+                0.32505643340857787,
+                0.3250793650793651,
+                0.36063492063492064,
+                0.3656884875846501,
+                0.37587301587301586,
+                0.3796825396825397,
+                0.38095238095238093,
+                0.40632054176072235,
+                0.40634920634920635,
+                0.42325056433408575,
+                0.43340857787810383,
+                0.45711060948081267,
+                0.45714285714285713,
+                0.4672686230248307,
+                0.48758465011286684,
+                0.5079006772009029,
+                0.518058690744921,
+                0.5333333333333333,
+                0.5638095238095238,
+                0.5695238095238095,
+                0.5806997742663657,
+                0.6094808126410836,
+                0.6095238095238096,
+                0.6348758465011287,
+                0.6501128668171557,
+                0.6501587301587302,
+                0.6602708803611738,
+                0.6857142857142857,
+                0.7009029345372461,
+                0.706031746031746,
+                0.7313769751693002,
+                0.7404063205417607,
+                0.7492063492063492,
+                0.758095238095238,
+                0.8126410835214447,
+                0.8126984126984127,
+                0.8673015873015874,
+                0.9142212189616253
+            ],
+            "calibration": {
+                "width": 5000,
+                "height": 500,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+            },
+            "images": [{
+                    "name": "Background",
+                    "accessibility_text": "Decorative Purple Background ${background|fallback=\"personalized\"}",
+                    "x": {
+                        "type": "number",
+                        "value": 0
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": 0
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 2364
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 3840
+                    },
+                    "image_width": 2365,
+                    "image_height": 3840,
+                    "image_filename": "2364X3840.png",
+                    "image": {
+                        "type": "asset",
+                        "value": "1111111111111111111111111"
+                    },
+                    "color": {
+                        "type": "color",
+                        "value": "FFFFFF"
+                    }
+                },
+                {
+                    "name": "Button 4",
+                    "accessibility_text": "",
+                    "x": {
+                        "type": "number",
+                        "value": -178
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": 463
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 1000
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 1000
+                    },
+                    "multiline_text": {
+                        "value": "This is a longer piece of text over several lines that will scroll up and down.",
+                        "h_align": "LEFT",
+                        "font_size": 30,
+                        "scrollable": true,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 2,
+                        "padding": {
+                            "top": 0,
+                            "right": 0,
+                            "bottom": 0,
+                            "left": 0
+                        },
+                        "font_color": "#ff000000",
+                        "bg_color": "#ffffffff"
+                    }
+                },
+                {
+                    "name": "Button 5",
+                    "x": {
+                        "type": "number",
+                        "value": -169
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": 1275
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 1000
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 178
+                    },
+                    "multiline_text": {
+                        "value": "Text that auto fits",
+                        "h_align": "CENTER",
+                        "font_size": 40,
+                        "scrollable": false,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                            "top": 6,
+                            "right": 6,
+                            "bottom": 6,
+                            "left": 6
+                        },
+                        "font_color": "#ffd0d0d0",
+                        "bg_color": "#7f7e7a7a"
+                    }
+                }
+            ],
+            "buttons": [{
+                    "name": "Button 1",
+                    "accessibility_text": "Copy code to clipboard 01234566789",
+                    "x": {
+                        "type": "number",
+                        "value": 1
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": -606
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 222
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 178
+                    },
+                    "image_width": 1500,
+                    "image_height": 200,
+                    "image_filename": "1500x200.png",
+                    "image_up": {
+                        "type": "asset",
+                        "value": "1111111111111111111111111"
+                    },
+                    "type": {
+                        "type": "text",
+                        "value": "COPY_TO_CLIPBOARD"
+                    },
+                    "action": {
+                        "type": "text",
+                        "value": "01234566789"
+                    },
+                    "game_id": {
+                        "type": "number",
+                        "value": ""
+                    },
+                    "text": {
+                        "type": "text",
+                        "value": "Click here to copy your code"
+                    }
+                },
+                {
+                    "name": "Button 2",
+                    "accessibility_text": "Dismiss Message ${user|fallback=\"John\"}",
+                    "x": {
+                        "type": "number",
+                        "value": -85
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": -1117
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 222
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 178
+                    },
+                    "image_width": 500,
+                    "image_height": 346,
+                    "image_filename": "close-button.jpeg",
+                    "image_up": {
+                        "type": "asset",
+                        "value": "1111111111111111111111111"
+                    },
+                    "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                    },
+                    "action": {
+                        "type": "text",
+                        "value": ""
+                    },
+                    "game_id": {
+                        "type": "number",
+                        "value": ""
+                    }
+                },
+                {
+                    "name": "Button 3",
+                    "accessibility_text": "Launch google",
+                    "x": {
+                        "type": "number",
+                        "value": -176
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": -304
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 222
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 178
+                    },
+                    "image_width": 1000,
+                    "image_height": 178,
+                    "image_filename": "1000x178.png",
+                    "image_up": {
+                        "type": "asset",
+                        "value": "1111111111111111111111111"
+                    },
+                    "type": {
+                        "type": "text",
+                        "value": "CUSTOM"
+                    },
+                    "action": {
+                        "type": "text",
+                        "value": "http://google.com"
+                    },
+                    "game_id": {
+                        "type": "number",
+                        "value": ""
+                    },
+                    "text": {
+                        "type": "text",
+                        "value": "Load website"
+                    }
+                },
+                {
+                    "name": "Button 4",
+                    "accessibility_text": "Text ${test_1|fallback=\"hello\"}",
+                    "x": {
+                        "type": "number",
+                        "value": 0
+                    },
+                    "y": {
+                        "type": "number",
+                        "value": 80
+                    },
+                    "w": {
+                        "type": "number",
+                        "value": 229
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 114
+                    },
+                    "image_up": {
+                        "type": "asset",
+                        "value": "1111111111111111111111111"
+                    },
+                    "text": {
+                        "type": "text",
+                        "value": "Text ${test_1|fallback=\"hello\"}"
+                    },
+                    "action": {
+                        "type": "text",
+                        "value": "${test_1|fallback=\"hello\"}"
+                    },
+                    "game_id": {
+                        "type": "number",
+                        "value": ""
+                    },
+                    "type": {
+                        "type": "text",
+                        "value": "COPY_TO_CLIPBOARD"
+                    }
+                }
+            ],
+            "scale": 1
+        }]
+    },
+    "name": "Kev Access",
+    "rules": {
+        "orientations": "portrait"
+    },
+    "priority": 9999
+}
