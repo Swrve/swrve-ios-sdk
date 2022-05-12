@@ -1,36 +1,19 @@
-# Specify the config version - version 2 is latest.
-version: 2
+version: 2.1
 
-# Define the jobs for the current project.
 jobs:
   build:
-    # Specify the Xcode version to use.
     macos:
-      xcode: "12.4.0"
+      xcode: 13.3.0
 
-    # Remove fastlant warning.
-    environment:
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-    # Define the steps required to build the project
     steps:
-
-      # Get the code from the VCS provider
       - checkout
-
-      # Download CocoaPods specs via HTTPS (faster than Git)
-      # and install CocoaPods
       - run:
-          name: Install CocoaPods
+          name: pod install
           command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
             cd SwrveSDKTest
             pod install
-
-      # Run tests
       - run: fastlane unitTestsiOS scheme:"SwrveSDKiOS"
       - run: fastlane unitTeststvOS scheme:"SwrveSDKtvOS"
-
       - store_test_results:
           path: output/scan
 
