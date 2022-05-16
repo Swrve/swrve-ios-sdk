@@ -115,6 +115,10 @@
 -(BOOL)assetsReady:(NSSet*)assets withPersonalization:(NSDictionary *)personalization;
 @end
 
+@interface SwrveMessageUIView()
+- (void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view;
+@end
+
 @implementation TestShowMessageDelegateNoCustomFind
 
 - (id) init {
@@ -3856,6 +3860,35 @@
     UIView *swrveTextImageView3 = view.subviews[6];
     XCTAssertEqualObjects(@"Text TEST123", swrveTextImageView3.accessibilityLabel);
     XCTAssertTrue(swrveTextImageView3.isAccessibilityElement);
+}
+
+- (void)testAddAccessibilityTextTraits {
+    SwrveMessageUIView *view = [SwrveMessageUIView new];
+    UIImageView *imageView = [UIImageView new];
+    [view addAccessibilityText:nil backupText:nil withPersonalization:nil toView:imageView];
+    XCTAssertFalse(imageView.isAccessibilityElement);
+    XCTAssertNil(imageView.accessibilityLabel);
+    XCTAssertEqualObjects(@"Image", imageView.accessibilityHint);
+    XCTAssertEqual(UIAccessibilityTraitNone, imageView.accessibilityTraits);
+
+    [view addAccessibilityText:@"some text" backupText:nil withPersonalization:nil toView:imageView];
+    XCTAssertTrue(imageView.isAccessibilityElement);
+    XCTAssertEqualObjects(@"some text", imageView.accessibilityLabel);
+    XCTAssertEqualObjects(@"Image", imageView.accessibilityHint);
+    XCTAssertEqual(UIAccessibilityTraitNone, imageView.accessibilityTraits);
+
+    UISwrveButton *buttonView = [UISwrveButton new];
+    [view addAccessibilityText:nil backupText:nil withPersonalization:nil toView:buttonView];
+    XCTAssertTrue(buttonView.isAccessibilityElement);
+    XCTAssertNil(buttonView.accessibilityLabel);
+    XCTAssertEqualObjects(@"Button", buttonView.accessibilityHint);
+    XCTAssertEqual(UIAccessibilityTraitNone, buttonView.accessibilityTraits);
+    
+    [view addAccessibilityText:@"some text" backupText:nil withPersonalization:nil toView:buttonView];
+    XCTAssertTrue(buttonView.isAccessibilityElement);
+    XCTAssertEqualObjects(@"some text", buttonView.accessibilityLabel);
+    XCTAssertEqualObjects(@"Button", buttonView.accessibilityHint);
+    XCTAssertEqual(UIAccessibilityTraitNone, buttonView.accessibilityTraits);
 }
 
 @end

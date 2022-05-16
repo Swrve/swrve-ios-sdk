@@ -235,21 +235,33 @@
 }
 
 -(void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view {
-    view.isAccessibilityElement = true;
+    // for images dont make them accessible, unless alt text is provided below.
+    view.isAccessibilityElement = [view isKindOfClass:[UIImageView class]] ? false : true;
     if (accessibilityText != nil && ![accessibilityText isEqualToString:@""]) {
         NSError *error;
         NSString *personalizedAccessibilityText = [TextTemplating templatedTextFromString:accessibilityText withProperties:personalizationDict andError:&error];
         if (error == nil) {
+            view.isAccessibilityElement = true;
             view.accessibilityLabel = personalizedAccessibilityText;
         } else {
             [SwrveLogger error:@"Adding accessibility text error: %@", error];
         }
     } else {
         if (backupText != nil && ![backupText  isEqualToString:@""]) {
+            view.isAccessibilityElement = true;
             view.accessibilityLabel = backupText;
         } else {
             [SwrveLogger error:@"No text available for accesibility"];
         }
+    }
+    
+    // disable traits as we dont want additional information read out from VO image / speech recognition
+    // instead just assign simple hints as the role type: image or button
+   view.accessibilityTraits = UIAccessibilityTraitNone;
+    if ([view isKindOfClass:[UISwrveButton class]]) {
+        view.accessibilityHint = @"Button";
+    } else if ([view isKindOfClass:[UIImageView class]]) {
+        view.accessibilityHint = @"Image";
     }
 }
 @end
