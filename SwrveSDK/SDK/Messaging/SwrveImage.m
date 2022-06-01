@@ -1,7 +1,11 @@
 #import "SwrveImage.h"
 #import "SwrveTextImageView.h"
 #import "SwrveDynamicUrlImage.h"
+#if __has_include(<SwrveSDKCommon/SwrveLogger.h>)
+#import <SwrveSDKCommon/SwrveLogger.h>
+#else
 #import "SwrveLogger.h"
+#endif
 
 @implementation SwrveImage
 
