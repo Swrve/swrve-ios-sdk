@@ -289,14 +289,7 @@
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             SwrveConversation *conversation = ((SwrveConversationCampaign *)campaign).conversation;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            if( [self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                [self.sdk.messaging.showMessageDelegate showConversation:conversation];
-            } else {
-                [self.sdk.messaging showConversation:conversation queue:true];
-            }
-#pragma clang diagnostic pop
+            [self.sdk.messaging showConversation:conversation queue:true];
         });
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *)campaign;
@@ -307,18 +300,8 @@
             NSDictionary *personalization = [[self.sdk messaging] retrievePersonalizationProperties:nil];
             if ([message canResolvePersonalization:personalization]) {
                 dispatch_block_t showMessageBlock = ^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                    if ([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:withPersonalization:)]) {
-                        [self.sdk.messaging.showMessageDelegate showMessage:message withPersonalization:personalization];
-                    } else if([self.sdk.messaging.showMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                        [self.sdk.messaging.showMessageDelegate showMessage:message];
-                    } else {
-                        [self.sdk.messaging showMessage:message queue:true withPersonalization:personalization];
-                    }
-#pragma clang diagnostic pop
+                    [self.sdk.messaging showMessage:message queue:true withPersonalization:personalization];
                 };
-
                 if ([NSThread isMainThread]) {
                     showMessageBlock();
                 } else {

@@ -1,4 +1,8 @@
-#import "SwrveMessageDelegate.h"
+#import "SwrveBaseMessage.h"
+#import "SwrveMessage.h"
+#import "SwrveEmbeddedMessage.h"
+#import "SwrveConversation.h"
+#import "SwrveMessageViewController.h"
 #import "SwrveEmbeddedMessageConfig.h"
 
 @class SwrveCampaign;
@@ -8,7 +12,7 @@
 @class SwrveConversation;
 @class SwrveButton;
 
-@interface SwrveMessageController : NSObject <SwrveMessageDelegate, SwrveMessageEventHandler, CAAnimationDelegate>
+@interface SwrveMessageController : NSObject <SwrveMessageEventHandler, CAAnimationDelegate>
 
 /*! Find a base message which could an in-app or embedded for the given trigger event
  * that also satisfies the rules set up in the dashboard.
@@ -17,26 +21,6 @@
  * \returns SwrveBaseMessage for the given trigger.
  */
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event;
-
-/*! Find an in-app conversation for the given trigger event that also satisfies the rules
- * set up in the dashboard.
- *
- * \param event Trigger event name.
- * \returns In-app conversation for the given tirgger.
- */
-- (SwrveConversation *)conversationForEvent:(NSString *)event;
-
-/*! Notify that the user pressed an in-app message button.
- *
- * \param button Button pressed by the user.
- */
-- (void)buttonWasPressedByUser:(SwrveButton *)button __deprecated_msg("Use embedded campaigns instead.");
-
-/*! Notify that a message was shown to the user.
- *
- * \param message Message that was shown to the user.
- */
-- (void)messageWasShownToUser:(SwrveMessage *)message __deprecated_msg("Use embedded campaigns instead.");
 
 /*! Inform that am embedded message has been served and processed. This function should be called
  * by your implementation to update the campaign information and send the appropriate data to
@@ -160,7 +144,6 @@
 
 @property(nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;                /*!< Configuration for the InApp Messaging*/
 @property(nonatomic, retain) SwrveEmbeddedMessageConfig *embeddedMessageConfig;          /*!< Configuration for the Embedded Messaging*/
-@property(nonatomic, weak) id <SwrveMessageDelegate> showMessageDelegate;                /*!< Implement this delegate to intercept in-app messages. */
 @property(nonatomic, copy) SwrveCustomButtonPressedCallback customButtonCallback;        /*!< Implement this delegate to process custom button actions. */
 @property(nonatomic, copy) SwrveDismissButtonPressedCallback dismissButtonCallback;      /*!< Implement this delegate to process dismiss button action. */
 @property(nonatomic, copy) SwrveClipboardButtonPressedCallback clipboardButtonCallback;  /*!< Implement this delegate to intercept clipboard button actions. */

@@ -65,7 +65,7 @@ static NSString *const LOG_DETAILS_KEY = @"log_details";
             [SwrveLogger debug:@"HTTP Send to QA Log %ld", status];
             if (status != 200) {
 #pragma unused(responseBody)
-                [SwrveLogger error:@"HTTP Error %ld while doing Talk QA", status];
+                [SwrveLogger error:@"HTTP Error %ld sending QA events", status];
                 [SwrveLogger error:@"  %@", responseBody];
             }
         }

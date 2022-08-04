@@ -7,18 +7,15 @@
 @synthesize personalizationForegroundColor;
 @synthesize personalizationBackgroundColor;
 @synthesize personalizationFont;
-@synthesize showMessageDelegate;
 @synthesize customButtonCallback;
 @synthesize dismissButtonCallback;
 @synthesize clipboardButtonCallback;
 @synthesize personalizationCallback;
 @synthesize inAppCapabilitiesDelegate;
 
--(id) init
-{
-    if ( self = [super init] ) {
+- (id)init {
+    if (self = [super init]) {
         prefersStatusBarHidden = YES;
-        
         self.personalizationForegroundColor = [UIColor blackColor];
         self.personalizationBackgroundColor = [UIColor clearColor];
         self.personalizationFont = [UIFont systemFontOfSize:0];

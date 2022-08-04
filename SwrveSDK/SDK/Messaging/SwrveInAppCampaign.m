@@ -32,6 +32,8 @@
     if ([json objectForKey:@"subject"] != [NSNull null] && [json objectForKey:@"subject"] != nil) {
         self.subject = [json objectForKey:@"subject"];
     }
+    
+    self.name = self.message.name;
 
     self.campaignType = SWRVE_CAMPAIGN_IAM;
 

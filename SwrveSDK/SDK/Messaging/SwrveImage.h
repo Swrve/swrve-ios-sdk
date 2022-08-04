@@ -2,14 +2,6 @@
 #include "SwrveInAppMessageConfig.h"
 #import "SwrveMessage.h"
 
-#if __has_include(<SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>)
-
-#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
-
-#else
-#import "SwrveQAImagePersonalizationInfo.h"
-#endif
-
 /*! In-app message background image. */
 @interface SwrveImage : NSObject
 
@@ -26,11 +18,5 @@
 - (id)initWithDictionary:(NSDictionary *)imageData
               campaignId:(long)swrveCampaignId
                messageId:(long)swrveMessageId;
-
-- (UIImage *)createImage:(NSString *)cacheFolder
-         personalization:(NSString *)personalizedTextStr
-personalizedUrlAssetSha1:(NSString *)personalizedUrlAssetSha1
-             inAppConfig:(SwrveInAppMessageConfig *)inAppConfig
-                  qaInfo:(SwrveQAImagePersonalizationInfo *)qaInfo;
 
 @end

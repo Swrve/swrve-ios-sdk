@@ -15,24 +15,17 @@
 #import "SwrveUtils.h"
 #endif
 
-@interface SwrveMessage ()
-
-@property(nonatomic, weak) SwrveMessageController *controller;
-
-@end
-
 @interface SwrveMessageController ()
 @property(nonatomic, retain) NSMutableDictionary *appStoreURLs;
 @end
 
 @implementation SwrveMessage
 
-@synthesize controller, campaign, name, formats;
+@synthesize campaign, formats;
 
-- (id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController *)_controller {
+- (id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController *)controller {
     if (self = [super init]) {
         self.campaign = (SwrveCampaign *) _campaign;
-        self.controller = _controller;
         self.messageID = [json objectForKey:@"id"];
         self.name = [json objectForKey:@"name"];
         if ([json objectForKey:@"priority"]) {
@@ -107,7 +100,7 @@ static bool in_cache(NSString *file, NSSet *set) {
                     NSString *font_file = [image.multilineText objectForKey:@"font_file"];
                     if (font_file && ![font_file isEqualToString:@"_system_font_"]) {
                         if (!in_cache(font_file, assets)) {
-                            [SwrveLogger debug:@"Font Asset not yet downloaded: %@", name];
+                            [SwrveLogger debug:@"Font Asset not yet downloaded: %@", font_file];
                             return NO;
                         }
                     }
@@ -137,8 +130,8 @@ static bool in_cache(NSString *file, NSSet *set) {
         [SwrveLogger debug:@"Could not resolve personalization: %@", assetUrl];
     } else {
         NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-        NSString *canditateAsset = [SwrveUtils sha1:data];
-        if (in_cache(canditateAsset, assets)) {
+        NSString *assetSha1 = [SwrveUtils sha1:data];
+        if (in_cache(assetSha1, assets)) {
             return YES;
         }
     }
@@ -185,16 +178,6 @@ static bool in_cache(NSString *file, NSSet *set) {
         }
     }
     return true;
-}
-
-- (void)wasShownToUser {
-    SwrveMessageController *c = self.controller;
-    if (c != nil) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [c messageWasShownToUser:self];
-#pragma clang diagnostic pop
-    }
 }
 
 @end

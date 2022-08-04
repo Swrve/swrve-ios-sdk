@@ -11,17 +11,12 @@ typedef enum {
     kSwrveActionPageLink    /*!< Link to another page in the message */
 } SwrveActionType;
 
-/*! A block that will be called when a button is pressed inside an in-app message.
- */
-typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInteger appId);
-
 @class SwrveMessageController;
 @class SwrveInAppCampaign;
 
 /*! In-app message. */
 @interface SwrveMessage : SwrveBaseMessage
 
-@property(nonatomic, retain) NSString *name;         /*!< Name of the message */
 @property(nonatomic, retain) NSArray *formats;       /*!< Array of multiple formats for this message */
 
 /*! Create an in-app message from the JSON content.
@@ -62,9 +57,5 @@ typedef void (^SwrveMessageResult)(SwrveActionType type, NSString *action, NSInt
 * \returns TRUE if all personalized text parts have either fallbacks or values available to them
 */
 - (BOOL)canResolvePersonalization:(NSDictionary *)personalization;
-
-/*! Notify that this message was shown to the user.
- */
-- (void)wasShownToUser;
 
 @end

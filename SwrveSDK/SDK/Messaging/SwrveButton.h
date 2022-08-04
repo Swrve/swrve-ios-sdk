@@ -1,14 +1,6 @@
 #import "UISwrveButton.h"
 #import "SwrveMessage.h"
 
-#if __has_include(<SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>)
-
-#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
-
-#else
-#import "SwrveQAImagePersonalizationInfo.h"
-#endif
-
 /*! In-app message button. */
 @interface SwrveButton : NSObject
 
@@ -30,25 +22,5 @@
               campaignId:(long)swrveCampaignId
                messageId:(long)swrveMessageId
             appStoreURLs:(NSMutableDictionary *)appStoreURLs;
-
-/*! Create a button with the given orientation and position.
- *
- * \param delegate Event action delegate.
- * \param selector Button click selector.
- * \param scale Parent message scale.
- * \param cx Position in the x-axis.
- * \param cy Position in the y-axis.
- * \returns New button instance.
- */
-- (UISwrveButton *)createButtonWithDelegate:(id)delegate
-                                andSelector:(SEL)selector
-                                   andScale:(float)scale
-                                 andCenterX:(float)cx
-                                 andCenterY:(float)cy
-                      andPersonalizedAction:(NSString *)personalizedActionStr
-                         andPersonalization:(NSString *)personalizedTextStr
-                andPersonalizedUrlAssetSha1:(NSString *)personalizedUrlAssetSha1
-                                 withConfig:(SwrveInAppMessageConfig *)inAppConfig
-                                     qaInfo:(SwrveQAImagePersonalizationInfo *)qaInfo;
 
 @end

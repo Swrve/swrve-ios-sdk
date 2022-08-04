@@ -2,6 +2,6 @@
 
 @implementation SwrveBaseMessage
 
-@synthesize messageID, priority, campaign;
+@synthesize messageID, priority, campaign, name;
 
 @end

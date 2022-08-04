@@ -15,6 +15,9 @@ let package = Package(
             name: "SwrveSDK",
             targets: ["SwrveSDK"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/SDWebImage/SDWebImage.git", .upToNextMajor(from: "5.13.0"))
+    ],
     targets: [
         .target(
             name: "SwrveSDKCommon",
@@ -36,7 +39,11 @@ let package = Package(
             publicHeadersPath: "include"),
         .target(
             name: "SwrveSDK",
-            dependencies: ["SwrveSDKCommon", "SwrveConversationSDK"],
+            dependencies: [
+                    .product(name: "SDWebImage", package: "SDWebImage"),
+                    "SwrveSDKCommon", 
+                    "SwrveConversationSDK"
+                ],
             path: "SwrveSDK",
             resources: [
                    .process("LICENSE"),

@@ -157,7 +157,6 @@ const static int DEFAULT_MIN_DELAY = 55;
 @synthesize autoShowMessagesEnabled;
 @synthesize analyticsSDK;
 @synthesize minDelayBetweenMessage;
-@synthesize showMessageDelegate;
 @synthesize customButtonCallback;
 @synthesize dismissButtonCallback;
 @synthesize clipboardButtonCallback;
@@ -218,7 +217,6 @@ const static int DEFAULT_MIN_DELAY = 55;
     self.embeddedMessageConfig = sdk.config.embeddedMessageConfig;
 
     // Link previously public properties from the new inAppMessage
-    self.showMessageDelegate = self.inAppMessageConfig.showMessageDelegate;
     self.customButtonCallback = self.inAppMessageConfig.customButtonCallback;
     self.dismissButtonCallback = self.inAppMessageConfig.dismissButtonCallback;
     self.clipboardButtonCallback = self.inAppMessageConfig.clipboardButtonCallback;
@@ -1013,10 +1011,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return result;
 }
 
-- (SwrveConversation *)conversationForEvent:(NSString *)event {
-    return [self conversationForEvent:event withPayload:nil];
-}
-
 - (void)noMessagesWereShownForEventName:(NSString *)eventName
                             withPayload:(NSDictionary *)eventPayload
                              withReason:(NSString *)reason {
@@ -1093,11 +1087,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         [c conversationWasShownToUser:conversation at:now];
     }
     [self saveCampaignsState];
-}
-
-- (void)buttonWasPressedByUser:(SwrveButton *)button {
-    [self queueMessageClickEvent:button page:nil];
-    self.inAppButtonPressedName = button.name; // Save button name for processing later
 }
 
 - (void)queueMessageClickEvent:(SwrveButton *)button page:(SwrveMessagePage *)page {
@@ -1192,8 +1181,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return eventName;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)showMessage:(SwrveMessage *)message {
     [self showMessage:message queue:false withPersonalization:nil];
 }
@@ -1201,7 +1188,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization {
     [self showMessage:message queue:false withPersonalization:personalization];
 }
-#pragma clang diagnostic pop
 
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization {
     if (message == nil) {
@@ -1233,13 +1219,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return [[UIWindow alloc] init];
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (void)showConversation:(SwrveConversation *)conversation {
-    [self showConversation:conversation queue:false];
-}
-#pragma clang diagnostic pop
-
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued {
     @synchronized (self) {
         if (conversation && self.inAppMessageWindow == nil && self.conversationWindow == nil) {
@@ -1251,7 +1230,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                                                               withItemController:self.swrveConversationItemViewController
                                                                 withEventHandler:(id <SwrveMessageEventHandler>) self
                                                                         inWindow:self.conversationWindow
-                                                             withMessageDelegate:self.showMessageDelegate
                                                              withStatusBarHidden:self.analyticsSDK.config.prefersConversationsStatusBarHidden];
             if (!success) {
                 self.conversationWindow = nil;
@@ -1270,13 +1248,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (void)conversationClosed {
     if (self.conversationWindow != nil) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
-        if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
-            [strongMessageDelegate messageWillBeHidden:self.conversationWindow.rootViewController];
-        }
-#pragma clang diagnostic pop
         self.conversationWindow.hidden = YES;
         self.conversationWindow = nil;
     }
@@ -1306,14 +1277,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         return;
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
-    if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeShown:)]) {
-        [strongMessageDelegate messageWillBeShown:messageViewController];
-    }
-#pragma clang diagnostic pop
-
     self.inAppMessageWindow = [self createUIWindow];
     self.inAppMessageWindow.backgroundColor = [UIColor clearColor];
     self.inAppMessageWindow.frame = [[UIScreen mainScreen] bounds];
@@ -1321,15 +1284,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     self.inAppMessageWindow.rootViewController = messageViewController;
     self.inAppMessageWindow.windowLevel = UIWindowLevelAlert + 1;
     [self.inAppMessageWindow makeKeyAndVisible];
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if ([strongMessageDelegate respondsToSelector:@selector(beginShowMessageAnimation:)]) {
-        [strongMessageDelegate beginShowMessageAnimation:messageViewController];
-    } else {
-        [self beginShowMessageAnimation:messageViewController];
-    }
-#pragma clang diagnostic pop
+    [self beginShowMessageAnimation:messageViewController];
 
     if (@available(iOS 13.0, *)) {
         if (!self.addedNotificiationsForMenuWindow) {
@@ -1391,14 +1346,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     SwrveInAppCampaign *dismissedCampaign = (SwrveInAppCampaign *) message.campaign;
     [dismissedCampaign messageDismissed:now];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
-    if ([strongMessageDelegate respondsToSelector:@selector(messageWillBeHidden:)]) {
-        [strongMessageDelegate messageWillBeHidden:self.inAppMessageWindow.rootViewController];
-    }
-#pragma clang diagnostic pop
-
     NSString *action = self.inAppMessageAction;
     NSString *nonProcessedAction = nil;
     NSString *actionTypeString = @"dismiss";
@@ -1407,7 +1354,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             break;
         case kSwrveActionDismiss:
             if (self.dismissButtonCallback != nil) {
-                self.dismissButtonCallback(dismissedCampaign.subject, inAppButtonPressedName);
+                self.dismissButtonCallback(dismissedCampaign.subject, inAppButtonPressedName, message.name);
             }
             actionTypeString = @"dismiss";
             break;
@@ -1419,7 +1366,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         case kSwrveActionCustom: {
 
             if (self.customButtonCallback != nil) {
-                self.customButtonCallback(action);
+                self.customButtonCallback(action, message.name);
             } else {
                 nonProcessedAction = action;
             }
@@ -1500,8 +1447,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         [self handleNextConversation:self.conversationsMessageQueue];
     }
 }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)beginShowMessageAnimation:(SwrveMessageViewController *)viewController {
     viewController.view.alpha = 0.0f;
     [UIView animateWithDuration:0.25
@@ -1512,21 +1457,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                      }
                      completion:nil];
 }
-
-- (void)beginHideMessageAnimation:(SwrveMessageViewController *)viewController {
-#pragma unused(viewController)
-    [UIView animateWithDuration:0.25
-                          delay:0
-                        options:UIViewAnimationOptionCurveEaseOut
-                     animations:^{
-                         self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
-                     }
-                     completion:^(BOOL finished) {
-#pragma unused(finished)
-                         [self dismissMessageWindow];
-                     }];
-}
-#pragma clang diagnostic pop
 
 - (BOOL)eventRaised:(NSDictionary *)event {
 
@@ -1543,7 +1473,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
     // Find a message that should be displayed
     SwrveBaseMessage *message = [self baseMessageForEvent:eventName withPayload:payload];
-    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
 
     // Show if the returned message is of type SwrveMessage
     if (message != nil && [message isKindOfClass:[SwrveMessage class]]) {
@@ -1561,18 +1490,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         }
 
         dispatch_block_t showMessageBlock = ^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            if ([strongMessageDelegate respondsToSelector:@selector(showMessage:withPersonalization:)]) {
-                [strongMessageDelegate showMessage:messageToBeDisplayed withPersonalization:personalizationProperties];
-            } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                [strongMessageDelegate showMessage:messageToBeDisplayed];
-            } else {
-                [self showMessage:messageToBeDisplayed withPersonalization:personalizationProperties];
-            }
-#pragma clang diagnostic pop
+            [self showMessage:messageToBeDisplayed withPersonalization:personalizationProperties];
         };
-
         if ([NSThread isMainThread]) {
             showMessageBlock();
         } else {
@@ -1610,14 +1529,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     SwrveConversation *conversation = [self conversationForEvent:eventName withPayload:payload];
     if (conversation != nil && campaignShown == NO) {
         dispatch_async(dispatch_get_main_queue(), ^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                [self.showMessageDelegate showConversation:conversation];
-            } else {
-                [self showConversation:conversation];
-            }
-#pragma clang diagnostic pop
+            [self showConversation:conversation queue:false];
         });
     }
 
@@ -1753,19 +1665,11 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         return NO;
     }
 
-    id <SwrveMessageDelegate> strongMessageDelegate = self.showMessageDelegate;
     if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             SwrveConversation *conversation = ((SwrveConversationCampaign *) campaign).conversation;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            if ([strongMessageDelegate respondsToSelector:@selector(showConversation:)]) {
-                [strongMessageDelegate showConversation:conversation];
-            } else {
-                [self showConversation:conversation];
-            }
+            [self showConversation:conversation queue:false];
         });
-#pragma clang diagnostic pop
         return YES;
     } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
@@ -1778,18 +1682,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         // Show the message if it exists
         if (message != nil) {
             dispatch_block_t showMessageBlock = ^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                if ([strongMessageDelegate respondsToSelector:@selector(showMessage:withPersonalization:)]) {
-                    [strongMessageDelegate showMessage:message withPersonalization:personalizationProperties];
-                } else if ([strongMessageDelegate respondsToSelector:@selector(showMessage:)]) {
-                    [self.showMessageDelegate showMessage:message];
-                } else {
-                    [self showMessage:message withPersonalization:personalizationProperties];
-                }
-#pragma clang diagnostic pop
+                [self showMessage:message withPersonalization:personalizationProperties];
             };
-
             if ([NSThread isMainThread]) {
                 showMessageBlock();
             } else {
@@ -1807,7 +1701,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             } else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
                 self.embeddedMessageConfig.embeddedMessageCallback(message);
             }
-
         }
 
         return YES;

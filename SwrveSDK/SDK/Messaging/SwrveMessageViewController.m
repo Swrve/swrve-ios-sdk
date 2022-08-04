@@ -20,6 +20,7 @@
 @property(nonatomic, retain) NSString *inAppButtonPressedName;
 
 - (void)queueMessageClickEvent:(SwrveButton *)button page:(SwrveMessagePage *)page;
+- (void)messageWasShownToUser:(SwrveMessage *)message;
 
 @end
 
@@ -34,7 +35,6 @@
 
 @implementation SwrveMessageViewController
 
-@synthesize messageResultBlock;
 @synthesize messageController;
 @synthesize message;
 @synthesize personalization;
@@ -86,7 +86,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.wasShownToUserNotified == NO) {
-        [self.message wasShownToUser];
+        [self.messageController messageWasShownToUser:self.message];
         self.wasShownToUserNotified = YES;
     }
 }
@@ -195,25 +195,24 @@
         if (swrveButton.actionType == kSwrveActionDismiss) {
             [self queueDismissEvent:self.currentPageId buttonId:button.buttonId buttonName:button.buttonName];
         }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        BOOL messageResultBlockNotNull = self.messageResultBlock != NULL;
-        if (messageResultBlockNotNull) {
-            self.messageResultBlock(swrveButton.actionType, action, swrveButton.appID);
-        } else {
-            // Save button type and action for processing later in the messageController
-            messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
-            messageControllerStrong.inAppMessageAction = action;
-            id <SwrveMessageDelegate> strongMessageDelegate = messageControllerStrong.showMessageDelegate;
-            if ([strongMessageDelegate respondsToSelector:@selector(beginHideMessageAnimation:)]) {
-                [strongMessageDelegate beginHideMessageAnimation:(SwrveMessageViewController *) messageControllerStrong.inAppMessageWindow.rootViewController];
-            } else {
-                [messageControllerStrong beginHideMessageAnimation:(SwrveMessageViewController *) messageControllerStrong.inAppMessageWindow.rootViewController];
-            }
-        }
-#pragma clang diagnostic pop
+        // Save button type and action for processing later in the messageController
+        messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
+        messageControllerStrong.inAppMessageAction = action;
+        [self beginHideMessageAnimation];
     }
+}
+
+- (void)beginHideMessageAnimation {
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.messageController.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
+                     }
+                     completion:^(BOOL finished) {
+                         [SwrveLogger debug:@"Message hide animation completed:%@", @(finished)];
+                         [self.messageController dismissMessageWindow];
+                     }];
 }
 
 - (void)showPage:(NSNumber *)pageIdToShow {

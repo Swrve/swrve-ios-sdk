@@ -52,26 +52,6 @@
 
 @end
 
-@interface TestShowMessageDelegate2 : NSObject<SwrveMessageDelegate>
-- (void)showMessage:(SwrveMessage*)message;
-- (void)showConversation:(SwrveConversation *)conversation;
-@end
-
-@implementation TestShowMessageDelegate2
-
-- (id) init {
-    if (self = [super init]) {
-    }
-    return self;
-}
-
-- (void)showMessage:(SwrveMessage*)message {
-}
-
-- (void)showConversation:(SwrveConversation *)conversation {
-}
-@end
-
 @implementation SwrveTestUserIdentity
 
 - (NSDictionary *)dicFromCachedContent:(NSString*)content containingValue:(NSString *)value {
@@ -1418,10 +1398,7 @@
     Swrve *swrve = [SwrveSDK sharedInstance];
     swrve.batchURL = [NSURL URLWithString:@"200"];
     swrve.profileManager.identityURL = [NSURL URLWithString:@"IdentifyBody"];
-    
-    TestShowMessageDelegate2* testDelegate = [[TestShowMessageDelegate2 alloc] init];
-    swrve.messaging.showMessageDelegate = testDelegate;
-    
+
     XCTestExpectation *bodyExpectation = [self expectationWithDescription:@"IdentifyBody"];
     [swrve identify:@"ExternalID" onSuccess:^(NSString *status, NSString *swrveUserId) {
         [bodyExpectation fulfill];
@@ -1433,8 +1410,6 @@
             NSLog(@"Expectation Error occured: %@", error);
         }
     }];
-    
-    XCTAssertEqual(swrve.messaging.showMessageDelegate, testDelegate);
 }
 
 @end

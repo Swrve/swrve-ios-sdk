@@ -176,27 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)userResources:(SwrveUserResourcesCallback)callbackBlock;
 
-/*! Gets a list of resource differences that should be applied to items for the
- * given user based on the A/B test the user is involved in.  Please refer to
- * our online documentation for more details:
- *
- * https://docs.swrve.com/swrves-apis/api-guides/swrve-ab-test-api-guide/#Get_user_resources_diff
- *
- * This function issues an asynchronous HTTP request to the Swrve content server
- * specified in #swrve_init. This function will return immediately, and the
- * callback will be fired at some unspecified time in the future. The callback
- * will be fired after the Swrve server has sent some AB-Test modifications to
- * the SDK, or if the HTTP request fails (when the iOS device is offline or has
- * limited connectivity.
- *
- * The resulting AB-Test data is cached in the userResourcesDiffCacheFile specified in
- * SwrveConfig. This file is initially seeded with "[]", the empty JSON array.
- *
- * \param callbackBlock A callback block that will be called asynchronously when
- *                      A/B test data is available.
- */
-+ (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock __deprecated_msg("Please use userResourcesDiffWithListener API instead");
-
 /*! Gets the user resource differences that should be applied to items for the
  * given user based on the A/B test the user is involved in.  Please refer to
  * our online documentation for more details:

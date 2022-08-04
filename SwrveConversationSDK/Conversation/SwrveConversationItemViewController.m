@@ -81,15 +81,14 @@
         withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
                 inWindow:(UIWindow *)conversationWindow
      withMessageDelegate:(id)messageDelegate {
-    return [SwrveConversationItemViewController showConversation:conversation withItemController:conversationItemViewController withEventHandler:eventHandler inWindow:conversationWindow withMessageDelegate:messageDelegate withStatusBarHidden:NO];
+    return [SwrveConversationItemViewController showConversation:conversation withItemController:conversationItemViewController withEventHandler:eventHandler inWindow:conversationWindow withStatusBarHidden:NO];
 }
 
 + (bool)showConversation:(SwrveBaseConversation *)conversation
     withItemController:(SwrveConversationItemViewController *)conversationItemViewController
         withEventHandler:(id<SwrveMessageEventHandler>) eventHandler
                 inWindow:(UIWindow *)conversationWindow
-     withMessageDelegate:(id)messageDelegate
-     withStatusBarHidden:(BOOL)prefeerStatusBarHidden {
+     withStatusBarHidden:(BOOL)preferStatusBarHidden {
     
 #if TARGET_OS_IOS /** exclude tvOS **/
 
@@ -117,15 +116,7 @@
     conversationItemViewController.navigationItem.leftBarButtonItem = cancelButton;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc withStatusBarHidden:prefeerStatusBarHidden];
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-        if( [messageDelegate respondsToSelector:@selector(messageWillBeShown:)]) {
-            [messageDelegate performSelector:@selector(messageWillBeShown:) withObject:rootController];
-        }
-#pragma clang diagnostic pop
-
+        SwrveConversationContainerViewController* rootController = [[SwrveConversationContainerViewController alloc] initWithChildViewController:svnc withStatusBarHidden:preferStatusBarHidden];
         conversationWindow.rootViewController = rootController;
         conversationWindow.windowLevel = UIWindowLevelAlert + 1;
         [conversationWindow makeKeyAndVisible];

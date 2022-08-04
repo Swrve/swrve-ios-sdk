@@ -2,7 +2,6 @@
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
 #import "SwrveConversationStyler.h"
-#import "TestShowMessageDelegateWithViewController.h"
 #import "SwrveAssetsManager.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveCampaign.h"

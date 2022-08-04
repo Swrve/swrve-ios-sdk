@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -190,10 +190,6 @@
 		525E1EB42406E51F00A4FAAA /* UISwrveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 525E1EB12406E51F00A4FAAA /* UISwrveButton.m */; };
 		525E1EB52406E51F00A4FAAA /* UISwrveButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 525E1EB22406E51F00A4FAAA /* UISwrveButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		525E1EB62406E51F00A4FAAA /* UISwrveButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 525E1EB22406E51F00A4FAAA /* UISwrveButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		527934F725F93A220097B3E1 /* SwrveDynamicUrlImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 527934F525F93A220097B3E1 /* SwrveDynamicUrlImage.m */; };
-		527934F825F93A220097B3E1 /* SwrveDynamicUrlImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 527934F525F93A220097B3E1 /* SwrveDynamicUrlImage.m */; };
-		527934F925F93A220097B3E1 /* SwrveDynamicUrlImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 527934F625F93A220097B3E1 /* SwrveDynamicUrlImage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		527934FA25F93A220097B3E1 /* SwrveDynamicUrlImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 527934F625F93A220097B3E1 /* SwrveDynamicUrlImage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5527201B9B29007AB0A8 /* SwrveConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CD01F74083F003B0EA4 /* SwrveConfig.m */; };
 		528F5529201B9B29007AB0A8 /* SwrveTrigger.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CC91F74083F003B0EA4 /* SwrveTrigger.m */; };
 		528F552A201B9B29007AB0A8 /* SwrveResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CE31F74083F003B0EA4 /* SwrveResourceManager.m */; };
@@ -223,7 +219,6 @@
 		528F5548201B9B29007AB0A8 /* SwrveResourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CE21F74083F003B0EA4 /* SwrveResourceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F5549201B9B29007AB0A8 /* SwrveMigrationsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CDB1F74083F003B0EA4 /* SwrveMigrationsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F554A201B9B29007AB0A8 /* SwrveMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CBC1F74083F003B0EA4 /* SwrveMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		528F554B201B9B29007AB0A8 /* SwrveMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC11F74083F003B0EA4 /* SwrveMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F554C201B9B29007AB0A8 /* SwrveTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC81F74083F003B0EA4 /* SwrveTrigger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F554D201B9B29007AB0A8 /* SwrveEmpty.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CD31F74083F003B0EA4 /* SwrveEmpty.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		528F554E201B9B29007AB0A8 /* Swrve+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CCC1F74083F003B0EA4 /* Swrve+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -375,7 +370,6 @@
 		F6D54CF21F740A21003B0EA4 /* SwrveMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CBC1F74083F003B0EA4 /* SwrveMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D54CF31F740A21003B0EA4 /* SwrveMessageController+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CBE1F74083F003B0EA4 /* SwrveMessageController+Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		F6D54CF41F740A21003B0EA4 /* SwrveMessageController.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CBF1F74083F003B0EA4 /* SwrveMessageController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F6D54CF51F740A21003B0EA4 /* SwrveMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC11F74083F003B0EA4 /* SwrveMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D54CF61F740A21003B0EA4 /* SwrveMessageFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC21F74083F003B0EA4 /* SwrveMessageFormat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D54CF71F740A21003B0EA4 /* SwrveMessageViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC41F74083F003B0EA4 /* SwrveMessageViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6D54CF91F740A21003B0EA4 /* SwrveTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D54CC81F74083F003B0EA4 /* SwrveTrigger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -395,6 +389,8 @@
 		F6E14FC02153BB9A00264672 /* SwrveProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2D1206E3BA2007F2E7F /* SwrveProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6E14FC12153BC0B00264672 /* SwrveDeeplinkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F65373C62017D6A700EB079F /* SwrveDeeplinkManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6E14FC22153BC1B00264672 /* SwrveProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B2E2D2206E3BA3007F2E7F /* SwrveProfileManager.m */; };
+		F6F4865B288E8A3E00A9E998 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6F4865A288E8A3E00A9E998 /* SDWebImage.xcframework */; };
+		F6F4865E288E8A4700A9E998 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6F4865A288E8A3E00A9E998 /* SDWebImage.xcframework */; };
 		F6F6F2451F823ECF003EC29A /* SwrveLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F6F2431F823ECE003EC29A /* SwrveLocalStorage.m */; };
 		F6F6F2461F823F7B003EC29A /* SwrveLocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F6F2441F823ECE003EC29A /* SwrveLocalStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -458,8 +454,6 @@
 		525E1E9D240146C400A4FAAA /* SwrveInAppMessageConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppMessageConfig.h; sourceTree = "<group>"; };
 		525E1EB12406E51F00A4FAAA /* UISwrveButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISwrveButton.m; sourceTree = "<group>"; };
 		525E1EB22406E51F00A4FAAA /* UISwrveButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwrveButton.h; sourceTree = "<group>"; };
-		527934F525F93A220097B3E1 /* SwrveDynamicUrlImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveDynamicUrlImage.m; sourceTree = "<group>"; };
-		527934F625F93A220097B3E1 /* SwrveDynamicUrlImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveDynamicUrlImage.h; sourceTree = "<group>"; };
 		528F5568201B9B29007AB0A8 /* SwrveSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwrveSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		528F559F201B9C4F007AB0A8 /* SwrveSDKCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwrveSDKCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52A14464260E0F2E001673ED /* SwrveQAImagePersonalizationInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveQAImagePersonalizationInfo.h; sourceTree = "<group>"; };
@@ -588,7 +582,6 @@
 		F6D54CBE1F74083F003B0EA4 /* SwrveMessageController+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwrveMessageController+Private.h"; sourceTree = "<group>"; };
 		F6D54CBF1F74083F003B0EA4 /* SwrveMessageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMessageController.h; sourceTree = "<group>"; };
 		F6D54CC01F74083F003B0EA4 /* SwrveMessageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageController.m; sourceTree = "<group>"; };
-		F6D54CC11F74083F003B0EA4 /* SwrveMessageDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMessageDelegate.h; sourceTree = "<group>"; };
 		F6D54CC21F74083F003B0EA4 /* SwrveMessageFormat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMessageFormat.h; sourceTree = "<group>"; };
 		F6D54CC31F74083F003B0EA4 /* SwrveMessageFormat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageFormat.m; sourceTree = "<group>"; };
 		F6D54CC41F74083F003B0EA4 /* SwrveMessageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveMessageViewController.h; sourceTree = "<group>"; };
@@ -619,6 +612,7 @@
 		F6D54CE31F74083F003B0EA4 /* SwrveResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveResourceManager.m; sourceTree = "<group>"; };
 		F6D54CE41F74083F003B0EA4 /* SwrveSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveSDK.h; sourceTree = "<group>"; };
 		F6D54CE51F74083F003B0EA4 /* SwrveSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveSDK.m; sourceTree = "<group>"; };
+		F6F4865A288E8A3E00A9E998 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = SDWebImage.xcframework; sourceTree = "<group>"; };
 		F6F6F2431F823ECE003EC29A /* SwrveLocalStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveLocalStorage.m; sourceTree = "<group>"; };
 		F6F6F2441F823ECE003EC29A /* SwrveLocalStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwrveLocalStorage.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -629,6 +623,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6D3B3A726932DCB0031DA4A /* SwrveSDKCommon.framework in Frameworks */,
+				F6F4865E288E8A4700A9E998 /* SDWebImage.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,6 +639,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6D3B3A226932DBF0031DA4A /* SwrveSDKCommon.framework in Frameworks */,
+				F6F4865B288E8A3E00A9E998 /* SDWebImage.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,6 +656,7 @@
 		528F55E5201B9D08007AB0A8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6F4865A288E8A3E00A9E998 /* SDWebImage.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -963,8 +960,6 @@
 				F62505E326D43CBA0065C836 /* SwrveTextViewStyle.m */,
 				525B5C2E2566C4A00093D353 /* SwrveBaseMessage.h */,
 				525B5C332566C4A10093D353 /* SwrveBaseMessage.m */,
-				527934F625F93A220097B3E1 /* SwrveDynamicUrlImage.h */,
-				527934F525F93A220097B3E1 /* SwrveDynamicUrlImage.m */,
 				525B5C352566C4A10093D353 /* SwrveEmbeddedCampaign.h */,
 				525B5C302566C4A00093D353 /* SwrveEmbeddedCampaign.m */,
 				525B5C2F2566C4A00093D353 /* SwrveEmbeddedMessage.h */,
@@ -993,7 +988,6 @@
 				F6D54CC01F74083F003B0EA4 /* SwrveMessageController.m */,
 				3A690C8427D27C320030E55A /* SwrveMessagePageViewController.h */,
 				3A690C8327D27C320030E55A /* SwrveMessagePageViewController.m */,
-				F6D54CC11F74083F003B0EA4 /* SwrveMessageDelegate.h */,
 				F6D54CC21F74083F003B0EA4 /* SwrveMessageFormat.h */,
 				F6D54CC31F74083F003B0EA4 /* SwrveMessageFormat.m */,
 				F6D54CC41F74083F003B0EA4 /* SwrveMessageViewController.h */,
@@ -1035,7 +1029,6 @@
 				528F5549201B9B29007AB0A8 /* SwrveMigrationsManager.h in Headers */,
 				528F554A201B9B29007AB0A8 /* SwrveMessage.h in Headers */,
 				1B5AA44E265B9BF9002D1C98 /* SwrveConversationButton.h in Headers */,
-				528F554B201B9B29007AB0A8 /* SwrveMessageDelegate.h in Headers */,
 				F6E14FC02153BB9A00264672 /* SwrveProfileManager.h in Headers */,
 				528F554C201B9B29007AB0A8 /* SwrveTrigger.h in Headers */,
 				528F554D201B9B29007AB0A8 /* SwrveEmpty.h in Headers */,
@@ -1064,7 +1057,6 @@
 				528F555E201B9B29007AB0A8 /* SwrveInterfaceOrientation.h in Headers */,
 				1B5AA477265B9BF9002D1C98 /* SwrveConversationResource.h in Headers */,
 				528F555F201B9B29007AB0A8 /* SwrveReceiptProvider.h in Headers */,
-				527934FA25F93A220097B3E1 /* SwrveDynamicUrlImage.h in Headers */,
 				525B5C522566C4DE0093D353 /* SwrveEmbeddedMessage.h in Headers */,
 				1B5AA454265B9BF9002D1C98 /* SwrveInputItem.h in Headers */,
 				528F5560201B9B29007AB0A8 /* SwrveSDK.h in Headers */,
@@ -1153,7 +1145,6 @@
 				F6D54D031F740A21003B0EA4 /* SwrveMigrationsManager.h in Headers */,
 				F6D54CF21F740A21003B0EA4 /* SwrveMessage.h in Headers */,
 				1B5AA41D265B9BF8002D1C98 /* SwrveConversationButton.h in Headers */,
-				F6D54CF51F740A21003B0EA4 /* SwrveMessageDelegate.h in Headers */,
 				F6B2E2D3206E3BA3007F2E7F /* SwrveProfileManager.h in Headers */,
 				F6D54CF91F740A21003B0EA4 /* SwrveTrigger.h in Headers */,
 				F6D54CFF1F740A21003B0EA4 /* SwrveEmpty.h in Headers */,
@@ -1182,7 +1173,6 @@
 				F6D54CEA1F740A21003B0EA4 /* SwrveConversationCampaign.h in Headers */,
 				1B5AA446265B9BF8002D1C98 /* SwrveConversationResource.h in Headers */,
 				F6D54CF11F740A21003B0EA4 /* SwrveInterfaceOrientation.h in Headers */,
-				527934F925F93A220097B3E1 /* SwrveDynamicUrlImage.h in Headers */,
 				525B5C372566C4A10093D353 /* SwrveEmbeddedMessage.h in Headers */,
 				1B5AA423265B9BF8002D1C98 /* SwrveInputItem.h in Headers */,
 				F6D54D061F740A21003B0EA4 /* SwrveReceiptProvider.h in Headers */,
@@ -1263,6 +1253,8 @@
 				F6D3B3AA26932DCB0031DA4A /* PBXTargetDependency */,
 			);
 			name = SwrveSDKtvOS;
+			packageProductDependencies = (
+			);
 			productName = SwrveSDK;
 			productReference = 528F5568201B9B29007AB0A8 /* SwrveSDK.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1300,6 +1292,8 @@
 				F6D3B3A526932DBF0031DA4A /* PBXTargetDependency */,
 			);
 			name = SwrveSDK;
+			packageProductDependencies = (
+			);
 			productName = SwrveSDK;
 			productReference = F6D10B751F6958FD0094B34E /* SwrveSDK.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1356,6 +1350,8 @@
 				Base,
 			);
 			mainGroup = F6D10B6B1F6958FD0094B34E;
+			packageReferences = (
+			);
 			productRefGroup = F6D10B761F6958FD0094B34E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1454,7 +1450,6 @@
 				528F5534201B9B29007AB0A8 /* SwrveMessageController.m in Sources */,
 				528F5535201B9B29007AB0A8 /* SwrveSDK.m in Sources */,
 				528F5537201B9B29007AB0A8 /* SwrveEventsManager.m in Sources */,
-				527934F825F93A220097B3E1 /* SwrveDynamicUrlImage.m in Sources */,
 				1B5AA461265B9BF9002D1C98 /* SwrveContentStarRating.m in Sources */,
 				1B5AA46F265B9BF9002D1C98 /* SwrveContentStarRatingView.m in Sources */,
 				1B5AA45F265B9BF9002D1C98 /* SwrveUITableViewCell.m in Sources */,
@@ -1555,7 +1550,6 @@
 				F63EC37C1FBB2E3A00AC6BA2 /* SwrveSDK.m in Sources */,
 				F63EC3761FBB2E3A00AC6BA2 /* SwrveEventsManager.m in Sources */,
 				525B5C382566C4A10093D353 /* SwrveEmbeddedCampaign.m in Sources */,
-				527934F725F93A220097B3E1 /* SwrveDynamicUrlImage.m in Sources */,
 				1B5AA430265B9BF8002D1C98 /* SwrveContentStarRating.m in Sources */,
 				1B5AA43E265B9BF8002D1C98 /* SwrveContentStarRatingView.m in Sources */,
 				1B5AA42E265B9BF8002D1C98 /* SwrveUITableViewCell.m in Sources */,
@@ -1640,7 +1634,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MODULEMAP_FILE = "$(SRCROOT)/SwrveSDK/SwrveSDK.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDK;
 				PRODUCT_NAME = SwrveSDK;
@@ -1668,7 +1666,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MODULEMAP_FILE = "$(SRCROOT)/SwrveSDK/SwrveSDK.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDK;
 				PRODUCT_NAME = SwrveSDK;
@@ -1697,7 +1699,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDKCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKCommon;
 				PRODUCT_NAME = SwrveSDKCommon;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1725,7 +1731,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDKCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKCommon;
 				PRODUCT_NAME = SwrveSDKCommon;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1790,7 +1800,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1867,8 +1877,13 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MODULEMAP_FILE = "$(SRCROOT)/SwrveSDK/SwrveSDK.modulemap";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1890,8 +1905,13 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MODULEMAP_FILE = "$(SRCROOT)/SwrveSDK/SwrveSDK.modulemap";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1914,7 +1934,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDKCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKCommon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1937,7 +1961,11 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = SwrveSDKCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swrve.SwrveSDKCommon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

@@ -141,6 +141,29 @@
     }
 }
 
+// Makes a copy of the logo.gif image for each asset in the array
++ (void)createDummyGifAssets:(NSArray *)assets {
+    NSString *dummyGifFilePath = [[NSBundle mainBundle] pathForResource:@"logo" ofType:@"gif"];
+    NSURL *fileURL = [NSURL fileURLWithPath:dummyGifFilePath];
+    NSData *dummyGifData = [NSData dataWithContentsOfURL:fileURL];
+    for (NSString *asset in assets) {
+        NSString *assetNameGif = [asset stringByAppendingString:@".gif"];
+        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:assetNameGif];
+        [dummyGifData writeToFile:path atomically:YES];
+    }
+}
+
+// Makes a copy of the swrve_logo.png image for each asset in the array
++ (void)createDummyPngAssets:(NSArray*)assets {
+    NSString *dummyImageFilePath = [[NSBundle mainBundle] pathForResource:@"swrve_logo" ofType:@"png"];
+    NSURL *fileURL = [NSURL fileURLWithPath:dummyImageFilePath];
+    NSData *dummyImageData = [NSData dataWithContentsOfURL:fileURL];
+    for (NSString *asset in assets) {
+        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:asset]; // png assets have no file extension
+        [dummyImageData writeToFile:path atomically:YES];
+    }
+}
+
 + (NSDictionary*)makeDictionaryFromEventBufferEntry:(NSString*)entry
 {
     return [NSJSONSerialization JSONObjectWithData:[entry dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];

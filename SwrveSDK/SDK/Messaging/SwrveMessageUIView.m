@@ -4,6 +4,7 @@
 #import "SwrveTextViewStyle.h"
 #import "SwrveTextView.h"
 #import "SwrveButton.h"
+#import "SwrveTextImageView.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 
@@ -14,6 +15,7 @@
 #import <SwrveSDKCommon/SwrveLogger.h>
 
 #else
+
 #import "SwrveLocalStorage.h"
 #import "SwrveUtils.h"
 #import "SwrveQA.h"
@@ -22,6 +24,34 @@
 #import "SwrveLogger.h"
 
 #endif
+
+#if __has_include(<SDWebImage/SDAnimatedImageView.h>)
+#import <SDWebImage/SDAnimatedImageView.h>
+#import <SDWebImage/UIButton+WebCache.h>
+#else
+#import "SDAnimatedImageView.h"
+#import "UIButton+WebCache.h"
+#endif
+
+#define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))
+#define DEFAULT_WIDTH 100
+#define DEFAULT_HEIGHT 20
+
+#define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))
+
+@interface SwrveMessageImageInfo : NSObject
+@property(atomic, retain) UIImage *image;
+@property(atomic, retain) NSURL *fileImageURL;
+@property(atomic) BOOL isGif;
+@property(atomic) BOOL isFallback;
+@end
+
+@implementation SwrveMessageImageInfo
+@synthesize image;
+@synthesize fileImageURL;
+@synthesize isGif;
+@synthesize isFallback;
+@end
 
 @interface SwrveMessageUIView ()
 
@@ -44,6 +74,10 @@
 @synthesize centerX;
 @synthesize centerY;
 @synthesize renderScale;
+
+static CGPoint scaled(CGPoint point, float scale) {
+    return CGPointMake(point.x * scale, point.y * scale);
+}
 
 - (id)initWithMessageFormat:(SwrveMessageFormat *)format
                      pageId:(NSNumber *) pageId
@@ -117,121 +151,242 @@
     [self addSubview:textView];
 }
 
-- (void)addImageView:(SwrveImage *)image {
-    NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
-    NSString *personalizedTextStr = nil;
-    NSString *personalizedUrlAssetSha1 = nil;
-    SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
-
-    if (image.text) {
+- (void)addImageView:(SwrveImage *)swrveImage {
+    NSString *textStr = nil;
+    NSString *urlAssetSha1 = nil;
+    if (swrveImage.text) {
         NSError *error;
-        personalizedTextStr = [TextTemplating templatedTextFromString:image.text withProperties:self.personalization andError:&error];
+        textStr = [TextTemplating templatedTextFromString:swrveImage.text withProperties:self.personalization andError:&error];
         if (error != nil) {
             [SwrveLogger error:@"%@", error];
         }
-    } else if (image.dynamicImageUrl) {
-        imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:(NSUInteger) image.campaignId
-                                                                                     variantID:(NSUInteger) image.messageId
-                                                                                   hasFallback:(image.file != nil)
-                                                                                 unresolvedUrl:image.dynamicImageUrl];
-        personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:image.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
+    } else if (swrveImage.dynamicImageUrl) {
+        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc]
+                initWithCampaign:(NSUInteger) swrveImage.campaignId
+                       variantID:(NSUInteger) swrveImage.messageId
+                     hasFallback:(swrveImage.file != nil)
+                   unresolvedUrl:swrveImage.dynamicImageUrl];
+        urlAssetSha1 = [self resolveUrlImageAssetToSha1:swrveImage.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
     }
 
-    UIImage *background = [image createImage:cacheFolder
-                             personalization:personalizedTextStr
-                    personalizedUrlAssetSha1:personalizedUrlAssetSha1
-                                 inAppConfig:self.inAppConfig
-                                      qaInfo:imagePersonalizationQAInfo];
-    CGRect frame = CGRectMake(0, 0, background.size.width * self.renderScale, background.size.height * self.renderScale);
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:frame];
+    UIImage *background = nil;
+    SwrveMessageImageInfo *imageInfo = nil;
+    CGFloat dynamicScale = 1.0;
+    if (textStr != nil) {
+        background = [self createTextUIImage:swrveImage.file text:textStr];
+    } else if (urlAssetSha1 != nil) {
+        imageInfo = [self createDynamicUrlUIImage:urlAssetSha1 fallback:swrveImage.file];
+        background = imageInfo.image;
+        dynamicScale = [self scaleForDynamicImage:background width:swrveImage.size.width height:swrveImage.size.height];
+    } else {
+        imageInfo = [self createUIImage:swrveImage.file];
+        background = imageInfo.image;
+    }
+
+    CGRect frame = CGRectMake(0, 0, background.size.width * self.renderScale * dynamicScale, background.size.height * self.renderScale * dynamicScale);
+    UIImageView *imageView = nil;
+    if(imageInfo && imageInfo.isGif) {
+        imageView = [[SDAnimatedImageView alloc] initWithFrame:frame];
+    } else {
+        imageView = [[UIImageView alloc] initWithFrame:frame];
+    }
     imageView.image = background;
-    
-    [self addAccessibilityText:image.accessibilityText backupText:personalizedTextStr withPersonalization:self.personalization toView:imageView];
+    [imageView setCenter:CGPointMake(self.centerX + (swrveImage.center.x * self.renderScale), self.centerY + (swrveImage.center.y * self.renderScale))];
 
-    //shows focus on tvOS
-#if TARGET_OS_TV
-    imageView.adjustsImageWhenAncestorFocused = YES;
-#endif
+    [self addAccessibilityText:swrveImage.accessibilityText backupText:textStr withPersonalization:self.personalization toView:imageView];
 
-    [imageView setCenter:CGPointMake(self.centerX + (image.center.x * self.renderScale), self.centerY + (image.center.y * self.renderScale))];
     [self addSubview:imageView];
 }
 
+- (UIImage *)createTextUIImage:(NSString *)guideAssetName text:(NSString *)textStr {
+    NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
+    NSURL *guideImageUrl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, guideAssetName, nil]];
+    UIImage *guideImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:guideImageUrl]];
+    UIImage *image = [SwrveTextImageView imageFromString:textStr
+                                     withBackgroundColor:self.inAppConfig.personalizationBackgroundColor
+                                     withForegroundColor:self.inAppConfig.personalizationForegroundColor
+                                                withFont:self.inAppConfig.personalizationFont
+                                                    size:guideImage.size];
+    return image;
+}
+
+- (SwrveMessageImageInfo *)createDynamicUrlUIImage:(NSString *)assetSha1 fallback:(NSString *)fallback {
+    SwrveMessageImageInfo *imageInfo = [self createUIImage:assetSha1];
+    if (imageInfo.image == nil) {
+        imageInfo = [self createUIImage:fallback]; // use fallback
+        imageInfo.isFallback = YES;
+    }
+    return imageInfo;
+}
+
+- (SwrveMessageImageInfo *)createUIImage:(NSString *)assetName {
+    SwrveMessageImageInfo *imageInfo = [SwrveMessageImageInfo new];
+    NSURL *fileImageURL = [self fileImageURL:assetName];
+    NSData *fileImageData = [NSData dataWithContentsOfURL:fileImageURL];
+    if ([[fileImageURL path] hasSuffix:@".gif"]) {
+        imageInfo.image = [SDAnimatedImage imageWithData:fileImageData]; // create SDAnimatedImage for gif's
+        imageInfo.isGif = YES;
+    } else {
+        imageInfo.image = [UIImage imageWithData:fileImageData];
+        imageInfo.isGif = NO;
+    }
+    imageInfo.fileImageURL = fileImageURL;
+    return imageInfo;
+}
+
+- (NSURL *)fileImageURL:(NSString *)assetName {
+    NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
+    NSString *assetNameGif = [assetName stringByAppendingString:@".gif"];
+    NSString *target = [cacheFolder stringByAppendingPathComponent:assetNameGif];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:target]) {
+        // the file type is not gif so use just the assetName without any extension
+        target = [cacheFolder stringByAppendingPathComponent:assetName];
+    }
+    return [NSURL fileURLWithPath:target];
+}
+
+- (CGFloat)scaleForDynamicImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height {
+    CGFloat scale = 1.0;
+    if (image != nil) {
+        CGFloat widthRatio = width / image.size.width;
+        CGFloat heightRatio = height / image.size.height;
+        scale = SWRVEMIN(widthRatio, heightRatio);
+    }
+    return scale;
+}
+
 - (void)addButtons:(SwrveMessagePage *)page {
-    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
     int buttonTag = 0;
-    for (SwrveButton *button in page.buttons) {
+    for (SwrveButton *swrveButton in page.buttons) {
 
-        NSString *personalizedTextStr = nil;
-        NSString *personalizedActionStr = nil;
-        NSString *personalizedUrlAssetSha1 = nil;
-        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = nil;
-
-        if (button.text) {
+        NSString *textStr = nil;
+        NSString *actionStr = nil;
+        NSString *urlAssetSha1 = nil;
+        if (swrveButton.text) {
             NSError *error;
-            personalizedTextStr = [TextTemplating templatedTextFromString:button.text withProperties:self.personalization andError:&error];
+            textStr = [TextTemplating templatedTextFromString:swrveButton.text withProperties:self.personalization andError:&error];
             if (error != nil) {
                 [SwrveLogger error:@"%@", error];
             }
         }
 
-        if (button.dynamicImageUrl) {
+        if (swrveButton.dynamicImageUrl) {
             // set up QA Info in case it doesn't work
-            imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:(NSUInteger) button.campaignId
-                                                                                         variantID:(NSUInteger) button.messageId
-                                                                                       hasFallback:(button.image != nil)
-                                                                                     unresolvedUrl:button.dynamicImageUrl];
-
-            personalizedUrlAssetSha1 = [self resolvePersonalizedImageAsset:button.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
+            SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:(NSUInteger) swrveButton.campaignId
+                                                                                         variantID:(NSUInteger) swrveButton.messageId
+                                                                                       hasFallback:(swrveButton.image != nil)
+                                                                                     unresolvedUrl:swrveButton.dynamicImageUrl];
+            urlAssetSha1 = [self resolveUrlImageAssetToSha1:swrveButton.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
         }
 
-        if (button.actionType == kSwrveActionClipboard || button.actionType == kSwrveActionCustom) {
+        if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
             NSError *error;
-            personalizedActionStr = [TextTemplating templatedTextFromString:button.actionString withProperties:self.personalization andError:&error];
+            actionStr = [TextTemplating templatedTextFromString:swrveButton.actionString withProperties:self.personalization andError:&error];
             if (error != nil) {
                 [SwrveLogger error:@"%@", error];
             }
         }
 
-        UISwrveButton *buttonView = [button createButtonWithDelegate:self.controller
-                                                         andSelector:buttonPressedSelector
-                                                            andScale:(float) self.renderScale
-                                                          andCenterX:(float) self.centerX
-                                                          andCenterY:(float) self.centerY
-                                               andPersonalizedAction:personalizedActionStr
-                                                  andPersonalization:personalizedTextStr
-                                         andPersonalizedUrlAssetSha1:personalizedUrlAssetSha1
-                                                          withConfig:self.inAppConfig
-                                                              qaInfo:imagePersonalizationQAInfo];
+        UISwrveButton *buttonView = [self createUISwrveButtonWithButton:swrveButton andAction:actionStr andText:textStr andUrlAssetSha1:urlAssetSha1];
 
-        [self addAccessibilityText: button.accessibilityText backupText:personalizedTextStr withPersonalization:self.personalization toView:buttonView];
+        [self addAccessibilityText:swrveButton.accessibilityText backupText:textStr withPersonalization:self.personalization toView:buttonView];
 
-        //Used by sdk systemtests
-        buttonView.accessibilityIdentifier = button.name;
+        buttonView.accessibilityIdentifier = swrveButton.name;
         buttonView.tag = buttonTag;
         [self addSubview:buttonView];
         buttonTag++;
     }
 }
 
-- (NSString *)resolvePersonalizedImageAsset:(NSString *)assetUrl andQAInfo:(SwrveQAImagePersonalizationInfo *)qaInfo {
-    if (assetUrl != nil) {
-        NSError *error;
-        NSString *resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:self.personalization andError:&error];
-        if (error != nil || resolvedUrl == nil) {
-            [SwrveLogger debug:@"Could not resolve personalization: %@", assetUrl];
-            [qaInfo setReason:@"Could not resolve url personalization"];
-            [SwrveQA assetFailedToDisplay:qaInfo];
-        } else {
-            NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-            NSString *canditateAsset = [SwrveUtils sha1:data];
-            // set QAInfo in case there is a cache failure later
-            [qaInfo setResolvedUrl:resolvedUrl];
-            [qaInfo setAssetName:canditateAsset];
-            return canditateAsset;
-        }
+- (UISwrveButton *)createUISwrveButtonWithButton:(SwrveButton *)swrveButton
+                                       andAction:(NSString *)actionStr
+                                         andText:(NSString *)textStr
+                                 andUrlAssetSha1:(NSString *)urlAssetSha1 {
+    UIImage *up = nil;
+    CGFloat dynamicScale = 1.0;
+    SwrveMessageImageInfo *imageInfo = nil;
+    if (textStr != nil) {
+        up = [self createTextUIImage:swrveButton.image text:textStr];
+    } else if (urlAssetSha1 != nil) {
+        imageInfo = [self createDynamicUrlUIImage:urlAssetSha1 fallback:swrveButton.image];
+        up = imageInfo.image;
+        dynamicScale = [self scaleForDynamicImage:up width:swrveButton.size.width height:swrveButton.size.height];
+    } else {
+        imageInfo = [self createUIImage:swrveButton.image];
+        up = imageInfo.image;
     }
-    return nil;
+
+    UISwrveButton *uiSwrveButton;
+    if (up) {
+        uiSwrveButton = [UISwrveButton buttonWithType:UIButtonTypeCustom];
+#if TARGET_OS_TV
+        uiSwrveButton.imageView.adjustsImageWhenAncestorFocused = YES;
+#endif
+        if (imageInfo.isGif) {
+            [uiSwrveButton sd_setBackgroundImageWithURL:imageInfo.fileImageURL forState:UIControlStateNormal];
+        } else {
+            [uiSwrveButton setBackgroundImage:up forState:UIControlStateNormal];
+        }
+    } else {
+        uiSwrveButton = [UISwrveButton buttonWithType:UIButtonTypeRoundedRect];
+    }
+
+    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
+#if TARGET_OS_IOS /** TouchUpInside is iOS only **/
+    [uiSwrveButton addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
+#elif TARGET_OS_TV
+    // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
+    [uiSwrveButton  addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
+#endif
+
+    CGFloat width = DEFAULT_WIDTH;
+    CGFloat height = DEFAULT_HEIGHT;
+    if (up) {
+        width = [up size].width;
+        height = [up size].height;
+    }
+
+    CGPoint position = scaled(swrveButton.center, (float) self.renderScale);
+    CGRect frame = CGRectMake(0, 0, width * self.renderScale * dynamicScale, height * self.renderScale * dynamicScale);
+    [uiSwrveButton setFrame:frame];
+    [uiSwrveButton setCenter:CGPointMake(position.x + (float)self.centerX, position.y + (float)self.centerY)];
+
+    if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
+        uiSwrveButton.actionString = actionStr;
+    } else if (swrveButton.actionType == kSwrveActionPageLink) {
+        uiSwrveButton.actionString = swrveButton.actionString; // set the pageId
+    }
+
+    if (textStr) {
+        uiSwrveButton.displayString = textStr; // store the text that was displayed for testing
+    }
+    uiSwrveButton.buttonId = swrveButton.buttonId;
+    uiSwrveButton.buttonName = swrveButton.name;
+
+    return uiSwrveButton;
+}
+
+- (NSString *)resolveUrlImageAssetToSha1:(NSString *)assetUrl andQAInfo:(SwrveQAImagePersonalizationInfo *)qaInfo {
+    NSString *urlAssetSha1 = nil;
+    if (assetUrl == nil) {
+        return urlAssetSha1;
+    }
+
+    NSError *error;
+    NSString *resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:self.personalization andError:&error];
+    if (error != nil || resolvedUrl == nil) {
+        [SwrveLogger debug:@"Could not resolve url with personalization: %@", assetUrl];
+        [qaInfo setReason:@"Could not resolve url personalization"];
+        [SwrveQA assetFailedToDisplay:qaInfo];
+    } else {
+        NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        urlAssetSha1 = [SwrveUtils sha1:data];
+        // set QAInfo in case there is a cache failure later
+        [qaInfo setResolvedUrl:resolvedUrl];
+        [qaInfo setAssetName:urlAssetSha1];
+    }
+
+    return urlAssetSha1;
 }
 
 -(void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view {

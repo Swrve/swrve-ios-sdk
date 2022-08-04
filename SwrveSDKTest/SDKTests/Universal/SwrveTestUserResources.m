@@ -208,9 +208,9 @@
 
     XCTestExpectation *callback = [self expectationWithDescription:@"callback"];
     // Getting resources diff from API will fail, so resources diff initialised by cache
-    [swrveMock userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {
+    [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
         XCTAssertEqualObjects(resourcesAsJSON, testCacheFileContents);
-        
+
         XCTAssertEqual(2, [newResourcesValues count]);
         XCTAssertNotNil([newResourcesValues objectForKey:@"animal.ant"]);
         NSDictionary *newValue1 = [newResourcesValues objectForKey:@"animal.ant"];

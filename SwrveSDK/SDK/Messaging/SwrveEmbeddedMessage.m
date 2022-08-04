@@ -33,6 +33,10 @@
         if ([json objectForKey:@"data"]) {
             self.data = [json objectForKey:@"data"];
         }
+        
+        if ([json objectForKey:@"name"]) {
+            self.name = [json objectForKey:@"name"];
+        }
     }
     return self;
 }

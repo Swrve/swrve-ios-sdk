@@ -4,7 +4,9 @@
 #import <SwrveMessagePageViewController.h>
 #import "SwrveTestHelper.h"
 
-#import "TestShowMessageDelegateWithViewController.h"
+#import "SwrveMessage.h"
+#import "SwrveMessageController.h"
+#import "SwrveMessageViewController.h"
 #import "SwrveAssetsManager.h"
 #import "UISwrveButton.h"
 #import "SwrveUtils.h"
@@ -25,7 +27,7 @@
 - (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (NSDate *)getNow;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
-
+@property (nonatomic, retain) UIWindow *inAppMessageWindow;
 @property (nonatomic, retain) NSDate *initialisedTime;
 @end
 
@@ -124,10 +126,6 @@
 
     SwrveMessageController* controller = [swrveMock messaging];
 
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
 
@@ -147,10 +145,11 @@
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(campaign.subject,@"IAM subject");
+    XCTAssertEqualObjects(campaign.name,@"Kindle");
 
     // Display in-app message
     [controller showMessageCenterCampaign:campaign];
-    SwrveMessageViewController* viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    SwrveMessageViewController* viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 
     // Press dismiss button
@@ -234,10 +233,6 @@
 
     SwrveMessageController *controller = [swrveMock messaging];
 
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
 
@@ -264,7 +259,7 @@
 
     // Should be invalid due to missing personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:nil];
-    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    SwrveMessageViewController* messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = nil;
 #if TARGET_OS_TV
     viewController = [messageViewController.childViewControllers firstObject];
@@ -289,7 +284,7 @@
 
     // Should be invalid due to invalid personalization dictionary
     [controller showMessageCenterCampaign:campaign withPersonalization:invalidPersonalization];
-    viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 
     // No Impression should be registered nor state change
@@ -311,7 +306,7 @@
 
     // Display in-app message
     [controller showMessageCenterCampaign:campaign withPersonalization:validPersonalization];
-    messageViewController = (SwrveMessageViewController *)[testDelegate viewControllerUsed];
+    messageViewController = [self messageViewControllerFrom:controller];
     [messageViewController viewDidAppear:NO];
 #if TARGET_OS_TV
     viewController = [messageViewController.childViewControllers firstObject];
@@ -376,6 +371,7 @@
     // Press the saved clipboard button
     XCTAssertNotNil(clipboardButton, @"clipboard Button should not be nil at this point");
     [viewController onButtonPressed:clipboardButton];
+    [self waitForWindowDismissed:controller];
 
     XCTAssertEqual(campaign.state.impressions, 1);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
@@ -436,10 +432,6 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
@@ -460,15 +452,16 @@
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaigns];
     SwrveEmbeddedCampaign *embeddedCampaign = nil;
     
-    for (SwrveCampaign *canditate in campaigns) {
-        if([canditate isKindOfClass:[SwrveEmbeddedCampaign class]]) {
-            embeddedCampaign = (SwrveEmbeddedCampaign *) canditate;
+    for (SwrveCampaign *candidate in campaigns) {
+        if([candidate isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+            embeddedCampaign = (SwrveEmbeddedCampaign *) candidate;
         }
     }
     
     XCTAssertNotNil(embeddedCampaign);
     XCTAssertEqual(embeddedCampaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(embeddedCampaign.subject,@"Embedded subject");
+    XCTAssertEqualObjects(embeddedCampaign.name,@"Embedded name");
     
     [controller showMessageCenterCampaign:embeddedCampaign];
     
@@ -517,10 +510,6 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
 
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
@@ -534,9 +523,9 @@
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaigns];
     SwrveEmbeddedCampaign *embeddedCampaign = nil;
     
-    for (SwrveCampaign *canditate in campaigns) {
-        if([canditate isKindOfClass:[SwrveEmbeddedCampaign class]]) {
-            embeddedCampaign = (SwrveEmbeddedCampaign *) canditate;
+    for (SwrveCampaign *candidate in campaigns) {
+        if([candidate isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+            embeddedCampaign = (SwrveEmbeddedCampaign *) candidate;
         }
     }
     
@@ -599,10 +588,6 @@
     
     SwrveMessageController *controller = [swrveMock messaging];
     
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-
     // No Message Center campaigns as they have both finished
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 0);
 
@@ -620,9 +605,9 @@
     
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:testPersonalization];
     SwrveCampaign *campaign = nil;
-    for (SwrveCampaign *canditate in campaigns) {
-        if([canditate.subject isEqual:@"Personalized Image subject"]){
-            campaign = canditate;
+    for (SwrveCampaign *candidate in campaigns) {
+        if([candidate.subject isEqual:@"Personalized Image subject"]){
+            campaign = candidate;
         }
     }
     
@@ -636,7 +621,7 @@
 
     // Display in-app message with the correct personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:testPersonalization];
-    SwrveMessageViewController* viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    SwrveMessageViewController* viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
@@ -687,11 +672,7 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-    
+
 #if TARGET_OS_IOS
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 5);
 #elif TARGET_OS_TV
@@ -700,9 +681,9 @@
     
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:testPersonalization];
     SwrveCampaign *campaign = nil;
-    for (SwrveCampaign *canditate in campaigns) {
-        if([canditate.subject isEqual:@"Personalized RTUP Image subject"]){
-            campaign = canditate;
+    for (SwrveCampaign *candidate in campaigns) {
+        if([candidate.subject isEqual:@"Personalized RTUP Image subject"]){
+            campaign = candidate;
         }
     }
     
@@ -716,7 +697,7 @@
 
     // Display in-app message with the correct personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:testPersonalization];
-    SwrveMessageViewController* viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    SwrveMessageViewController* viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
@@ -759,11 +740,7 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-    
+
 #if TARGET_OS_IOS
     //  include no personalization dictionary and we should still get 4
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
@@ -774,9 +751,9 @@
     
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:nil];
     SwrveCampaign *campaign = nil;
-    for (SwrveCampaign *canditate in campaigns) {
-        if([canditate.subject isEqual:@"RTUP Only IAM"]){
-            campaign = canditate;
+    for (SwrveCampaign *candidate in campaigns) {
+        if([candidate.subject isEqual:@"RTUP Only IAM"]){
+            campaign = candidate;
         }
     }
     
@@ -785,7 +762,7 @@
 
     // Display in-app message with no personalization, should be resolved by injected RTUPs
     [controller showMessageCenterCampaign:campaign withPersonalization:nil];
-    SwrveMessageViewController* viewController = (SwrveMessageViewController*)[testDelegate viewControllerUsed];
+    SwrveMessageViewController* viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
@@ -831,10 +808,6 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
-    
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] init];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
 
     // mock date
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
@@ -851,6 +824,17 @@
     
 }
 
+- (void)waitForWindowDismissed:(SwrveMessageController *)controller {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"WindowDismissed"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL() {
+        return controller.inAppMessageWindow == nil;
+    }                 expectation:expectation];
+    [self waitForExpectationsWithTimeout:2.0 handler:nil];
+}
 
+- (SwrveMessageViewController *)messageViewControllerFrom:(SwrveMessageController *)controller {
+    SwrveMessageViewController *viewController = (SwrveMessageViewController *) [[controller inAppMessageWindow] rootViewController];
+    return viewController;
+}
 
 @end

@@ -11,6 +11,11 @@
 #import <OCMock/OCMock.h>
 
 #if TARGET_OS_IOS /** exclude tvOS **/
+
+@interface SwrveMessageController ()
+- (SwrveConversation*)conversationForEvent:(NSString *) eventName withPayload:(NSDictionary *)payload;
+@end
+
 @interface SwrveTestConversationEvents : XCTestCase
 @end
 
@@ -47,7 +52,7 @@
 - (void)testConversationStartEventBehaviour {
     [SwrveTestHelper destroySharedInstance];
     TestableSwrve* testableSwrve = [self helpSetupConversation:@"conversationAnnounce"];
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
 
     XCTAssertNotNil(testableSwrve);
     XCTAssertNotNil(swrveConversation);
@@ -80,7 +85,7 @@
 -(void)testConversationChoice_No_CheckMarks_Initially_Showing {
     [SwrveTestHelper destroySharedInstance];
     TestableSwrve* testableSwrve = [self helpSetupConversation:@"conversationAnnounce"];
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
 
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -100,7 +105,7 @@
 -(void)testConversationChoice_Select_Dismiss_Reopen_No_CheckMarks_Showing {
     [SwrveTestHelper destroySharedInstance];
     TestableSwrve* testableSwrve = [self helpSetupConversation:@"conversationAnnounce"];
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
 
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -140,7 +145,7 @@
 -(void)testConversationChoiceEventBehaviour {
     [SwrveTestHelper destroySharedInstance];
     TestableSwrve* testableSwrve = [self helpSetupConversation:@"conversationAnnounce"];
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
 
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -183,7 +188,7 @@
 -(void)testConversationStarRatingEventBehaviour {
     [SwrveTestHelper destroySharedInstance];
     TestableSwrve* testableSwrve = [self helpSetupConversation:@"conversationAnnounce"];
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
 
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -226,7 +231,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.contacts"], @"unknown");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -268,7 +273,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.contacts"], @"denied");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
 }
 
@@ -287,7 +292,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.location.when_in_use"], @"unknown");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -329,7 +334,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.location.when_in_use"], @"denied");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
 }
 
@@ -348,7 +353,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.location.always"], @"unknown");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -390,7 +395,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.location.always"], @"denied");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
 }
 
@@ -409,7 +414,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.photos"], @"unknown");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -451,7 +456,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.photos"], @"denied");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
 }
 
@@ -470,7 +475,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.camera"], @"unknown");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     
     // This will start the conversation, placing a start and impression event in the buffer
     SwrveConversationItemViewController *scivc = [[SwrveConversationItemViewController alloc] init];
@@ -512,7 +517,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.camera"], @"denied");
     
-    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation *swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
 }
 
@@ -528,7 +533,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.push_notifications"], @"unknown");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNotNil(swrveConversation);
     
     [classMock stopMocking];
@@ -546,7 +551,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.push_notifications"], @"denied");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
     
     [classMock stopMocking];
@@ -564,7 +569,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.push_notifications"], @"authorized");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNil(swrveConversation);
     
     [classMock stopMocking];
@@ -582,7 +587,7 @@
     XCTAssertNotNil(deviceInfo);
     XCTAssertEqualObjects(deviceInfo[@"Swrve.permission.ios.push_notifications"], @"provisional");
     
-    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [testableSwrve.messaging conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNotNil(swrveConversation);
     
     [classMock stopMocking];

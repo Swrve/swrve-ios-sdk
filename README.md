@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_5_2.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-7_5_2)
+[![CircleCI](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-8_0_0.svg?style=shield)](https://circleci.com/gh/Swrve/swrve-ios-sdk/tree/release-8_0_0)
 
 What is Swrve
 -------------
@@ -17,10 +17,13 @@ pod ‘SwrveSDK’
 ```
 Installing using Carthage (iOS 8+)
 --------------------------
-You can use [Carthage](https://github.com/Carthage/Carthage) to install `Swrve` by adding it to your `Cartfile`:
+You can use [Carthage](https://github.com/Carthage/Carthage) to install `Swrve` by adding it to your `Cartfile`
+Note SwrveSDK version > 8.0 depends on SDWebImage. SDWebImage.xcframework is included in the root of our SwrveFramework project.
+Use this or add SDWebImage to your cartflie as shown below.
 
 ```
 github "Swrve/swrve-ios-sdk"
+github "SDWebImage" "~> 5.0"
 ```
 Installing using Swift Package Manager (Xcode 12+)
 --------------------------

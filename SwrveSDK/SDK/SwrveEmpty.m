@@ -121,10 +121,6 @@
 #pragma unused(callbackBlock)
 }
 
-- (void)userResourcesDiff:(SwrveUserResourcesDiffCallback)callbackBlock {
-#pragma unused(callbackBlock)
-}
-
 - (void)userResourcesDiffWithListener:(SwrveUserResourcesDiffListener)listener {
 #pragma unused(listener)
 }

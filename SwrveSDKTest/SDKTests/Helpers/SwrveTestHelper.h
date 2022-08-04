@@ -32,6 +32,9 @@
 + (void)deleteUserDefaults;
 
 + (void)createDummyAssets:(NSArray*)asset;
++ (void)createDummyGifAssets:(NSArray*)assets;
++ (void)createDummyPngAssets:(NSArray*)assets;
+
 + (void)removeAssets:(NSArray*)assets;
 + (void)removeAllAssets;
 

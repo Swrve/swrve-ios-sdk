@@ -135,7 +135,8 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
                              [SwrveQA assetFailedToDownload:assetItemName resolvedUrl:assetDigest reason:error.localizedDescription];
                              
                          } else {
-                             NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, assetItemName, nil]];
+                             NSString *fileAssetName = [self fileAssetName:assetItemName mimeType:response];
+                             NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, fileAssetName, nil]];
                              [data writeToURL:dst atomically:YES];
 
                              // Add the asset to the set of assets that we know are downloaded.
@@ -157,14 +158,11 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     }
 }
 
-
 - (NSSet *)filterExistingFiles:(NSSet *)assetSet {
     NSMutableSet *assetItemsToDownload = [[NSMutableSet alloc] initWithCapacity:[assetSet count]];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSDictionary *assetItem in assetSet) {
         NSString *assetItemName = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_NAME];
-        NSString *target = [self.cacheFolder stringByAppendingPathComponent:assetItemName];
-        if (![fileManager fileExistsAtPath:target]) {
+        if (![self isDownloaded:assetItemName]) {
             [assetItemsToDownload addObject:assetItem]; // add the item, not the name
         } else {
             @synchronized (self->assetsOnDiskSet) {
@@ -174,6 +172,23 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     }
 
     return [assetItemsToDownload copy];
+}
+
+// Check if asset is already downloaded. Some assets will have additional file extension type appended to the asset name
+- (BOOL)isDownloaded:(NSString *)assetItemName {
+    BOOL isDownloaded = NO;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *target = [self.cacheFolder stringByAppendingPathComponent:assetItemName];
+    if ([fileManager fileExistsAtPath:target]) {
+        isDownloaded = YES;
+    } else {
+        NSString *assetNameGif = [assetItemName stringByAppendingString:@".gif"];
+        NSString *gifTarget = [self.cacheFolder stringByAppendingPathComponent:assetNameGif];
+        if ([fileManager fileExistsAtPath:gifTarget]) {
+            isDownloaded = YES;
+        }
+    }
+    return isDownloaded;
 }
 
 - (bool)verifySHA:(NSData *)data against:(NSString *)expectedDigest {
@@ -210,6 +225,19 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 
 - (NSSet*) assetsOnDisk {
     return [self->assetsOnDiskSet copy];
+}
+
+// Some mimeTypes are saved with file extension, but default is to just use the assetName
+- (NSString *)fileAssetName:(NSString *)assetName mimeType:(NSURLResponse *)response {
+    NSString *fileAssetName = assetName;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        NSString *mimeType = [httpResponse MIMEType];
+        if (mimeType && [mimeType containsString:@"image/gif"]) {
+            fileAssetName = [assetName stringByAppendingString:@".gif"];
+        }
+    }
+    return fileAssetName;
 }
 
 @end

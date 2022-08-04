@@ -89,7 +89,6 @@ const static int DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
         // Load from JSON
         self.ID = [[json objectForKey:@"id"] unsignedIntegerValue];
-        self.name = [json objectForKey:@"name"];
         self.messageCenter = [[json objectForKey:@"message_center"] boolValue];
         NSString *subjectString = [json objectForKey:@"subject"];
         self.subject = (subjectString == (id) [NSNull null]) ? @"" : subjectString;

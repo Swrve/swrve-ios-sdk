@@ -219,8 +219,6 @@
     XCTAssertNotNil([swrveMock resourceManager]);
     [swrveMock userResources:^(NSDictionary *resources, NSString *resourcesAsJSON) {
     }];
-    [swrveMock userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {
-    }];
     [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
     }];
     [swrveMock realTimeUserProperties:^(NSDictionary *properties) {
@@ -247,12 +245,12 @@
     int expectedNumberOfCalls;
     
 #if TARGET_OS_IOS
-    expectedNumberOfCalls = 34;
+    expectedNumberOfCalls = 33;
     [swrveMock setDeviceToken:nil];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0 withPersonalization:@{}];
 #else
-    expectedNumberOfCalls = 31;
+    expectedNumberOfCalls = 30;
 #endif
     XCTAssertEqual(loggerCount, expectedNumberOfCalls);
 }

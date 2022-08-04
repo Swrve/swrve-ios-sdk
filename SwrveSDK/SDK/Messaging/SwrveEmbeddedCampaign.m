@@ -19,6 +19,8 @@
     
     self.campaignType = SWRVE_CAMPAIGN_EMBEDDED;
     
+    self.name = self.message.name;
+    
     return instance;
 }
 

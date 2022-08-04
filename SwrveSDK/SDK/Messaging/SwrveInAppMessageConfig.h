@@ -7,17 +7,15 @@
 #import "SwrveInAppCapabilitiesDelegate.h"
 #endif
 
-@protocol SwrveMessageDelegate;
-
 /*! A block that will be called when a custom button in an in-app message
  * is pressed.
  */
-typedef void (^SwrveCustomButtonPressedCallback)(NSString *action);
+typedef void (^SwrveCustomButtonPressedCallback)(NSString *action, NSString *campaignName);
 
 /*! A block that will be called when a dismiss button in an in-app message
  * is pressed.
  */
-typedef void (^SwrveDismissButtonPressedCallback)(NSString *campaignSubject, NSString *buttonName);
+typedef void (^SwrveDismissButtonPressedCallback)(NSString *campaignSubject, NSString *buttonName, NSString *campaignName);
 
 /*! A block that will be called when a clipboard button in an in-app message
  * is pressed.
@@ -50,9 +48,6 @@ typedef NSDictionary *(^SwrveMessagePersonalizationCallback)(NSDictionary *event
 
 /*! in-app text font used for all personalized text, can be overridden by server value */
 @property (nonatomic, retain) UIFont *personalizationFont;
-
-/*!< Implement this delegate to intercept in-app messages. */
-@property(nonatomic, weak) id <SwrveMessageDelegate> showMessageDelegate;
 
 /*!< Implement this delegate to process custom button actions. */
 @property(nonatomic, copy) SwrveCustomButtonPressedCallback customButtonCallback;

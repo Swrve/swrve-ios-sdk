@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, weak) SwrveMessageController *messageController;
 @property(nonatomic, retain) SwrveMessage *message;
-@property(nonatomic, copy) SwrveMessageResult messageResultBlock __deprecated_msg("Use embedded campaigns instead.");        /*!< Custom code to execute when a button is tapped or a message is dismissed by a user. */
 @property(nonatomic, retain) NSDictionary *personalization;
 @property(nonatomic, retain) NSNumber *currentPageId;
 @property(nonatomic, retain) SwrveMessageFormat *currentMessageFormat; // dependent on orientation or screen size

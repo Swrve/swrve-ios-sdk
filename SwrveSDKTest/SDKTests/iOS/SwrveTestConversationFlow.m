@@ -12,13 +12,17 @@
 #import "SwrveConversationStyler.h"
 #import "SwrveAssetsManager.h"
 #import "SwrveMessageController+Private.h"
-#import "TestShowMessageDelegateWithViewController.h"
 #import "SwrvePermissions.h"
 
 #import <OCMock/OCMock.h>
 
 @interface SwrveConversationItemViewController (InternalAccess)
 + (bool)hasUnknownContentAtoms:(SwrveBaseConversation *)conversation;
+@end
+
+@interface SwrveMessageController ()
+- (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
+- (SwrveConversation*)conversationForEvent:(NSString *) eventName withPayload:(NSDictionary *)payload;
 @end
 
 @interface SwrveTestConversationFlow : XCTestCase {
@@ -44,14 +48,14 @@
     SwrveMessageController* swrveMessageController = testableSwrve.messaging;
     [testableSwrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[testableSwrve getNow]]];
     
-    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNotNil(swrveConversation);
     
     SwrveConversationPane *swrveConversationPane = [swrveConversation pageAtIndex:0];
     SwrveConversationButton *swrveConversationButton = swrveConversationPane.controls[1];
     XCTAssertEqualObjects(swrveConversationButton.actions[@"call"], @"0831012430");
 
-    [swrveMessageController showConversation:swrveConversation];
+    [swrveMessageController showConversation:swrveConversation queue:false];
     XCTAssertNotNil(swrveMessageController.swrveConversationItemViewController);
 
     XCTAssertNil([swrveMessageController showMessagesAfterDelay]);
@@ -75,46 +79,12 @@
     [swrveMessageController cleanupConversationUI];
 }
 
--(void)testConversationMessageDelegate {
-    TestableSwrve *swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversationAnnounce" andConfig:nil];
-    [swrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[swrve getNow]]];
-    
-    SwrveMessageController* controller = swrve.messaging;
-    XCTestExpectation* messageShownExpectation = [self expectationWithDescription:@"Message shown"];
-    TestShowMessageDelegateWithViewController* testDelegate = [[TestShowMessageDelegateWithViewController alloc] initWithExpectations:messageShownExpectation messageHiddenExpectation:nil];
-    [testDelegate setController:controller];
-    [controller setShowMessageDelegate:testDelegate];
-    
-    [swrve event:@"conversation_test_event"];
-    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
-        if (error) {
-            XCTFail(@"No message shown");
-        }
-    }];
-    
-    UIViewController* viewController = [testDelegate viewControllerUsed];
-    [viewController viewDidAppear:NO];
-    XCTAssertNotNil(viewController);
-    
-    // Dismiss view controller
-    XCTestExpectation* messageHiddenExpectation = [self expectationWithDescription:@"Message hidden"];
-    testDelegate.messageHiddenExpectation = messageHiddenExpectation;
-    [controller cleanupConversationUI];
-    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
-        if (error) {
-            XCTFail(@"No message hidden");
-        }
-    }];
-    viewController = [testDelegate viewControllerDismissed];
-    XCTAssertNotNil(viewController);
-}
-
 -(void)testShowConversationWithUnknownAtom {
     TestableSwrve *testableSwrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversationAnnounce" andConfig:nil];
     SwrveMessageController* swrveMessageController = testableSwrve.messaging;
     [testableSwrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[testableSwrve getNow]]];
 
-    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNotNil(swrveConversation);
 
     bool success = ![SwrveConversationItemViewController hasUnknownContentAtoms:swrveConversation];
@@ -147,7 +117,7 @@
     SwrveMessageController* swrveMessageController = testableSwrve.messaging;
     [testableSwrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[testableSwrve getNow]]];
     
-    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event" withPayload:nil];
     XCTAssertNotNil(swrveConversation);
     
     SwrveConversationPane *swrveConversationPane = [swrveConversation pageAtIndex:0];
@@ -216,7 +186,7 @@
     TestableSwrve *testableSwrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversationAnnounce" andConfig:nil];
     SwrveMessageController* swrveMessageController = testableSwrve.messaging;
     [testableSwrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[testableSwrve getNow]]];
-    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event"];
+    SwrveConversation* swrveConversation = [swrveMessageController conversationForEvent:@"conversation_test_event" withPayload:nil];
     SwrveConversationPane *swrveConversationPane = [swrveConversation pageAtIndex:0];
     
     // swap in appropriate content to test
@@ -410,7 +380,7 @@
     TestableSwrve *swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:nil andDate:[NSDate date]];
     SwrveMessageController* swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    SwrveConversation *conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    SwrveConversation *conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // contains all assets
@@ -419,7 +389,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsAll andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNotNil(conversation);
 
     // missing fontButton2 asset
@@ -428,7 +398,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontButton2 andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontButton1 asset
@@ -437,7 +407,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontButton1 andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontStarRating asset
@@ -446,7 +416,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontStarRating andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontHtmlFrag asset
@@ -455,7 +425,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontHtmlFrag andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontMVIOption2 asset
@@ -464,7 +434,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontMVIOption2 andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontMVIOption1 asset
@@ -473,7 +443,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontMVIOption1 andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // missing fontMVITitle asset
@@ -482,7 +452,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsMissingFontMVITitle andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNil(conversation);
 
     // contains all assets
@@ -491,7 +461,7 @@
     swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversation_campaign_with_diff_fonts" andConfig:config andAssets:assetsAll andDate:[NSDate date]];
     swrveMessageController = swrve.messaging;
     XCTAssertEqual([[swrveMessageController campaigns] count], 1);
-    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart"];
+    conversation = [swrveMessageController conversationForEvent:@"swrve.messages.showatsessionstart" withPayload:nil];
     XCTAssertNotNil(conversation);
 }
 
@@ -668,15 +638,6 @@
     XCTAssertEqualObjects(html, htmlToCompare);
 }
 
--(void)testConversationMessageDelegateNotRetained {
-    TestableSwrve *swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"conversationAnnounce" andConfig:nil];
-    [swrve setCustomNowDate:[NSDate dateWithTimeInterval:280 sinceDate:[swrve getNow]]];
-    TestShowMessageDelegateWithViewController *testDelegate = [[TestShowMessageDelegateWithViewController alloc] initWithExpectations:nil messageHiddenExpectation:nil];
-    swrve.messaging.showMessageDelegate = testDelegate;
-    // reallocate should dealloc the pervious one
-    testDelegate = [[TestShowMessageDelegateWithViewController alloc] initWithExpectations:nil messageHiddenExpectation:nil];
-    XCTAssertNil(swrve.messaging.showMessageDelegate);
-}
 @end
 #endif // TARGET_OS_TV
 

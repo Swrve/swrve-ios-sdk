@@ -1,9 +1,7 @@
 #import <UIKit/UIKit.h>
-#import "SwrveMessageDelegate.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, SwrveMessageDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
+@property(strong, nonatomic) UIWindow *window;
 
 @end
-

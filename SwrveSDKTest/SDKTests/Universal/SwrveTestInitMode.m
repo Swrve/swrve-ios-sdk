@@ -269,19 +269,6 @@
     OCMVerifyAll(swrveMockAuto);
 }
 
-- (void)testUserResourcesDiff {
-
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
-    OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
-    [SwrveSDK userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {}];
-    OCMVerifyAll(swrveMockManaged);
-    
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
-    OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
-    [SwrveSDK userResourcesDiff:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON) {}];
-    OCMVerifyAll(swrveMockAuto);
-}
-
 - (void)testUserResourcesDiffWithListener {
 
     id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
