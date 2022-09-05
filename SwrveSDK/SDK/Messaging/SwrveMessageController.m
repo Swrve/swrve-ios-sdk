@@ -514,6 +514,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     [self.notifications removeAllObjects];
 
     NSArray *jsonCampaigns = [campaignDic objectForKey:@"campaigns"];
+    bool saveNewCampaignState = false;
     for (NSDictionary *dict in jsonCampaigns) {
         BOOL conversationCampaign = ([dict objectForKey:@"conversation"] != nil);
         SwrveCampaign *campaign = nil;
@@ -553,11 +554,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             @synchronized (self.campaignsState) {
                 NSString *campaignIDStr = [NSString stringWithFormat:@"%lu", (unsigned long) campaign.ID];
                 [SwrveLogger debug:@"Got campaign with id %@", campaignIDStr];
-                if (isLoadingPreviousCampaignState) {
-                    SwrveCampaignState *campaignState = [self.campaignsState objectForKey:campaignIDStr];
-                    if (campaignState) {
-                        [campaign setState:campaignState];
-                    }
+                SwrveCampaignState *campaignState = [self.campaignsState objectForKey:campaignIDStr];
+                if (!campaignState) {
+                    // A campaign with no state means it hasn't ever been triggered and is potentially new. Save the campaign state to record the download time.
+                    saveNewCampaignState = true;
+                }
+                if (isLoadingPreviousCampaignState && campaignState) {
+                    [campaign setState:campaignState];
                 }
                 [self.campaignsState setValue:campaign.state forKey:campaignIDStr];
             }
@@ -568,6 +571,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 [campaignsDownloaded setValue:@"" forKey:[NSString stringWithFormat:@"%ld", (long) campaign.ID]];
             }
         }
+    }
+    
+    if (saveNewCampaignState) {
+        [self saveCampaignsState];
     }
 
     // QA logging
@@ -1354,7 +1361,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             break;
         case kSwrveActionDismiss:
             if (self.dismissButtonCallback != nil) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 self.dismissButtonCallback(dismissedCampaign.subject, inAppButtonPressedName, message.name);
+#pragma clang diagnostic pop
             }
             actionTypeString = @"dismiss";
             break;
@@ -1573,6 +1583,66 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                                       CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemVersion, encodedDeviceName, CONVERSATION_VERSION, systemName, deviceType, EMBEDDED_CAMPAIGN_VERSION, IN_APP_CAMPAIGN_VERSION];
 }
 
+- (UIImage *)imageFromCache:(NSString *)sha {
+    NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
+    NSURL *localImageFileUrl = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:cacheFolder, sha, nil]];
+    return [UIImage imageWithData:[NSData dataWithContentsOfURL:localImageFileUrl]];
+}
+
+- (SwrveMessageCenterDetails *)personalizeMessageCenterDetails:(SwrveMessageCenterDetails *)rawMessageCenterDetails withPersonalization:(NSDictionary *)personalization {
+    if (rawMessageCenterDetails == nil) return nil;
+
+    NSString *subject = rawMessageCenterDetails.subject;
+    if (subject != nil) {
+        subject = [self personalizeText:subject withPersonalization:personalization];
+    }
+
+    NSString *description = rawMessageCenterDetails.description;
+    if (description != nil) {
+        description = [self personalizeText:description withPersonalization:personalization];
+    }
+
+    NSString *imageAccessibilityText = rawMessageCenterDetails.imageAccessibilityText;
+    if (imageAccessibilityText != nil) {
+        imageAccessibilityText = [self personalizeText:imageAccessibilityText withPersonalization:personalization];
+    }
+
+    NSString *imageUrl = rawMessageCenterDetails.imageUrl;
+    if (imageUrl != nil) {
+        imageUrl = [self personalizeText:imageUrl withPersonalization:personalization];
+    }
+
+    NSString *imageSha = rawMessageCenterDetails.imageSha; // imageSha is not personalized
+    UIImage *image = [self loadMessageCenterAssetsFromCache:imageUrl imageSha:imageSha];
+
+    return [[SwrveMessageCenterDetails alloc] initWith:subject
+                                           description:description
+                                     accessibilityText:imageAccessibilityText
+                                              imageUrl:imageUrl
+                                              imageSha:imageSha
+                                                 image:image];
+}
+
+- (UIImage *)loadMessageCenterAssetsFromCache:(NSString *)imageUrl imageSha:(NSString *)imageSha {
+    UIImage *image = nil;
+    if (imageUrl != nil) {
+        NSData *data = [imageUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        image = [self imageFromCache:[SwrveUtils sha1:data]];
+    }
+    if (image == nil && imageSha != nil) {
+        // try load the cdn image asset, this is also used as a fallback, when the imageUrl above failed to download and wasn't in cache.
+        image = [self imageFromCache:imageSha];
+    }
+    return image;
+}
+
+- (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {
+    NSArray *result = [self messageCenterCampaignsWithPersonalization:personalization andPredicate:^BOOL(SwrveCampaign *campaign) {
+        return campaign.ID == campaignID;
+    }];
+    return [result count] == 1 ? [result objectAtIndex:0] : nil;
+}
+
 - (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization andPredicate:(BOOL (^)(SwrveCampaign *))predicate {
     NSMutableArray *result = [NSMutableArray new];
     if (analyticsSDK == nil) {
@@ -1581,24 +1651,40 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
     NSDate *now = [self.analyticsSDK getNow];
     for (SwrveCampaign *campaign in self.campaigns) {
+        
+        if (predicate != nil && !predicate(campaign)) {
+            continue;
+        }
+        
 #if TARGET_OS_TV /** filter conversations for TV**/
         if (![campaign isKindOfClass:[SwrveInAppCampaign class]] && ![campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) continue;
 #endif
 
         if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
             // Filter out campaign if it has buttons requesting capabilities and canRequestCapability delegate returns false;
-            SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
-            SwrveMessage *message = swrveCampaign.message;
+            SwrveInAppCampaign *swrveInAppCampaign = (SwrveInAppCampaign *) campaign;
+            SwrveMessage *message = swrveInAppCampaign.message;
             id <SwrveInAppCapabilitiesDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppCapabilitiesDelegate;
-            bool filterMessage = [self filterMessage:(SwrveMessage *) message withCapabilityDelegate:delegate];
-            if (filterMessage) continue;
+            bool filterMessage = [self filterMessage:message withCapabilityDelegate:delegate];
+            if (filterMessage) {
+                continue;
+            } else if (![message canResolvePersonalization:personalization]) {
+                continue;
+            } else {
+                campaign.priority = message.priority;
+                campaign.messageCenterDetails = [self personalizeMessageCenterDetails:message.messageCenterDetails withPersonalization:personalization];
+            }
+        } else if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
+            SwrveConversationCampaign *swrveConversationCampaign = (SwrveConversationCampaign *) campaign;
+            campaign.priority = swrveConversationCampaign.conversation.priority;
+        } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
+            SwrveEmbeddedCampaign *swrveEmbeddedCampaign = (SwrveEmbeddedCampaign *) campaign;
+            campaign.priority = swrveEmbeddedCampaign.message.priority;
         }
 
         NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
         if (campaign.messageCenter && campaign.state.status != SWRVE_CAMPAIGN_STATUS_DELETED && [campaign isActive:now withReasons:nil] && [campaign assetsReady:assetsOnDisk withPersonalization:personalization]) {
-            if (predicate == nil || predicate(campaign)) {
-                [result addObject:campaign];
-            }
+            [result addObject:campaign];
         }
     }
     return result;
@@ -1620,14 +1706,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
     return [self messageCenterCampaignsWithPersonalization:personalizationProperties andPredicate:^BOOL(SwrveCampaign *campaign) {
         BOOL supportsOrientation = [campaign supportsOrientation:messageOrientation];
-        if (!supportsOrientation) return NO;
-
-        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
-            SwrveMessage *message = swrveCampaign.message;
-            if ([message supportsOrientation:messageOrientation] && ![message canResolvePersonalization:personalizationProperties]) {
-                return NO;
-            }
+        if (!supportsOrientation) {
+            return NO;
         }
         return YES;
     }];
@@ -1637,17 +1717,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
     NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
-    return [self messageCenterCampaignsWithPersonalization:personalizationProperties andPredicate:^BOOL(SwrveCampaign *campaign) {
-        if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
-            SwrveMessage *message = swrveCampaign.message;
-            if (![message canResolvePersonalization:personalizationProperties]) {
-                return NO;
-            }
-        }
-
-        return YES;
-    }];
+    return [self messageCenterCampaignsWithPersonalization:personalizationProperties andPredicate:nil];
 }
 
 - (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {

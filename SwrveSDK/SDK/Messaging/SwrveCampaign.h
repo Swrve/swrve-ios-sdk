@@ -1,4 +1,5 @@
-#import "SwrveCampaignStatus.h"
+#import "SwrveCampaignState.h"
+#import "SwrveMessageCenterDetails.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveQACampaignInfo.h>)
 
@@ -10,25 +11,6 @@
 
 @class SwrveMessageController;
 
-/*! Base campaign state. */
-@interface SwrveCampaignState : NSObject
-
-@property(atomic) NSUInteger campaignID;                    /*!< Unique identifier. */
-@property(atomic) NSUInteger impressions;                   /*!< Amount of times this campaign has been shown for a user. */
-@property(nonatomic) SwrveCampaignStatus status;            /*!< The status of the Message Center campaign. */
-@property(nonatomic, retain) NSDate *showMsgsAfterDelay;    /*!< Timestamp to block messages from appearing too frequently . */
-
-/*! Initialize a fresh campaign status. */
-- (id)initWithID:(NSUInteger)ID;
-
-/*! Initialize the campaign status. */
-- (id)initWithJSON:(NSDictionary *)data;
-
-/*! Serialized state */
-- (NSDictionary *)asDictionary;
-
-@end
-
 /*! Base campaign. */
 @interface SwrveCampaign : NSObject
 
@@ -39,9 +21,12 @@
 @property(atomic) NSTimeInterval minDelayBetweenMsgs;       /*!< Minimum interval between different campaigns being shown. */
 @property(nonatomic, retain) NSDate *showMsgsAfterLaunch;   /*!< Timestamp to block messages after launch. */
 @property(atomic) bool messageCenter;                       /*!< Flag indicating if it is a Message Center campaign. */
-@property(nonatomic, retain) NSString *subject;             /*!< Message Center subject of the campaign. */
+@property(nonatomic, retain) NSString *subject __deprecated_msg ("This is populated by the Campaign description field from your Dashboard. Migrate to using the SwrveMessageCenterDetails subject"); /*!<Message Center Campaign subject */
 @property(nonatomic, retain) NSDate *dateStart;             /*!< Timestamp representing the start date of Message Center campaign. */
 @property(atomic) SwrveCampaignType campaignType;           /*!< Enum representing the campaign type for QA Logging. */
+@property(retain, nonatomic) NSDate *dateEnd;               /*!< Timestamp representing the ed date of Message Center campaign. */
+@property(retain, nonatomic) NSNumber *priority;            /*!< Priority of the campain */
+@property(retain, atomic) SwrveMessageCenterDetails *messageCenterDetails;  /*!< Message Center campaign details, subject , decsription and icon*/
 
 /*! Initialize the campaign.
  *
@@ -66,5 +51,11 @@
  * \returns TRUE if all assets have been downloaded.
  */
 - (BOOL)assetsReady:(NSSet *)assets withPersonalization:(NSDictionary *)personalization;
+
+/*! Get the date the campaign was downloaded.
+ *
+ * \returns date the campaign was downloaded.
+ */
+- (NSDate *)downloadDate;
 
 @end

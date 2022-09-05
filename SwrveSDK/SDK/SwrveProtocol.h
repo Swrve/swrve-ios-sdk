@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "8.0.0"
+#define SWRVE_SDK_VERSION "8.1.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -525,6 +525,16 @@ NSString * eventsPayloadAsJSON);
  * \returns List of active Message Center campaigns.
  */
 - (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
+
+/*! Get Message Center campaign targeted for this user and might have personalization that can be resolved.
+ * It will exclude campaigns that have been deleted with the removeCampaign method and those that do not support
+ * the current orientation.
+ *
+ * \param personalization Personalization properties for in-app messages.
+ * \param campaignID  ID of campaign
+ * \returns The active MessageCenter campaign is returned if campaign id is valid. Returns null if the campaign id is invalid or campaign is not active.
+ */
+- (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 

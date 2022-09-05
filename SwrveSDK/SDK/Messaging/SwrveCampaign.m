@@ -7,52 +7,7 @@ const static int DEFAULT_MAX_IMPRESSIONS = 99999;
 const static int DEFAULT_DELAY_FIRST_MSG = 180;
 const static int DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 
-@implementation SwrveCampaignState
-
-@synthesize campaignID;
-@synthesize impressions;
-@synthesize status;
-@synthesize showMsgsAfterDelay;
-
-- (id)initWithID:(NSUInteger)ID {
-    if (self = [super init]) {
-        self.campaignID = ID;
-        self.status = SWRVE_CAMPAIGN_STATUS_UNSEEN;
-    }
-    return self;
-}
-
-- (id)initWithJSON:(NSDictionary *)data {
-    if (self = [super init]) {
-        NSNumber *idJson = [data objectForKey:@"ID"];
-        if (idJson != nil) {
-            self.campaignID = idJson.unsignedIntegerValue;
-        }
-        NSNumber *impressionsJson = [data objectForKey:@"impressions"];
-        if (impressionsJson != nil) {
-            self.impressions = impressionsJson.unsignedIntegerValue;
-        }
-        NSNumber *statusJson = [data objectForKey:@"status"];
-        if (statusJson != nil) {
-            self.status = (SwrveCampaignStatus) statusJson.unsignedIntegerValue;
-        }
-    }
-
-    return self;
-}
-
-- (NSDictionary *)asDictionary {
-    NSMutableDictionary *state = [NSMutableDictionary new];
-    [state setValue:[NSNumber numberWithUnsignedInteger:self.campaignID] forKey:@"ID"];
-    [state setValue:[NSNumber numberWithUnsignedInteger:self.impressions] forKey:@"impressions"];
-    [state setValue:[NSNumber numberWithUnsignedInteger:self.status] forKey:@"status"];
-    return state;
-}
-
-@end
-
 @interface SwrveCampaign ()
-@property(retain, nonatomic) NSDate *dateEnd;
 @property(retain, nonatomic) NSMutableSet *triggers;
 @property(retain, nonatomic) NSDate *initialisedTime;
 @end
@@ -72,6 +27,8 @@ const static int DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
 @synthesize messageCenter;
 @synthesize subject;
 @synthesize campaignType;
+@synthesize messageCenterDetails;
+@synthesize priority;
 
 - (id)initAtTime:(NSDate *)time fromDictionary:(NSDictionary *)json {
     if (self = [super init]) {
@@ -91,8 +48,11 @@ const static int DEFAULT_MIN_DELAY_BETWEEN_MSGS = 60;
         self.ID = [[json objectForKey:@"id"] unsignedIntegerValue];
         self.messageCenter = [[json objectForKey:@"message_center"] boolValue];
         NSString *subjectString = [json objectForKey:@"subject"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         self.subject = (subjectString == (id) [NSNull null]) ? @"" : subjectString;
-        self.state = [[SwrveCampaignState alloc] initWithID:self.ID];
+#pragma clang diagnostic pop
+        self.state = [[SwrveCampaignState alloc] initWithID:self.ID date:time];
 
         [self loadTriggersFrom:json];
         [self loadRulesFrom:json];
@@ -242,6 +202,10 @@ static NSDate *read_date(id d, NSDate *default_date) {
 
 - (NSDictionary *)stateDictionary {
     return [self.state asDictionary];
+}
+
+- (NSDate *)downloadDate {
+    return [state downloadDate];
 }
 
 @end

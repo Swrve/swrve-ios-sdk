@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "SwrveMessageCenterDetails.h"
 
 @class SwrveCampaign;
 
@@ -8,6 +9,7 @@
 @property (nonatomic, retain)            NSNumber *messageID;     /*!< Identifies the message in a campaign */
 @property (nonatomic, retain)            NSNumber *priority;      /*!< Priority of the message */
 @property (nonatomic, strong)            NSString *name;          /*!< Name of the message */
+@property (nonatomic, retain)            SwrveMessageCenterDetails *messageCenterDetails;
 
 @end
 

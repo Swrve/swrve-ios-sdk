@@ -25,6 +25,9 @@
 
 - (id)initWithDictionary:(NSDictionary *)json forCampaign:(SwrveInAppCampaign *)_campaign forController:(SwrveMessageController *)controller {
     if (self = [super init]) {
+        if ([json objectForKey:@"message_center_details"]) {
+            self.messageCenterDetails = [[SwrveMessageCenterDetails alloc] initWithJSON:[json objectForKey:@"message_center_details"]];
+        }
         self.campaign = (SwrveCampaign *) _campaign;
         self.messageID = [json objectForKey:@"id"];
         self.name = [json objectForKey:@"name"];
@@ -139,6 +142,33 @@ static bool in_cache(NSString *file, NSSet *set) {
 }
 
 - (BOOL)canResolvePersonalization:(NSDictionary *)personalization {
+    if (self.messageCenterDetails) {
+        NSMutableArray *props = [NSMutableArray new];
+        if (self.messageCenterDetails.subject) {
+            [props addObject:self.messageCenterDetails.subject];
+        }
+        if (self.messageCenterDetails.description) {
+            [props addObject:self.messageCenterDetails.description];
+        }
+        if (self.messageCenterDetails.imageUrl) {
+            [props addObject:self.messageCenterDetails.imageUrl];
+        }
+        
+        if (self.messageCenterDetails.imageAccessibilityText) {
+            [props addObject:self.messageCenterDetails.imageAccessibilityText];
+        }
+        for (NSString *textToPersonalize in props) {
+            if (textToPersonalize) {
+                NSError *error;
+                NSString *text = [TextTemplating templatedTextFromString:textToPersonalize withProperties:personalization andError:&error];
+                if (error != nil || text == nil) {
+                    [SwrveLogger warning:@"Message Center Details has no personalization for text: %@", textToPersonalize];
+                    return false;
+                }
+            }
+        }
+    }
+    
     for (SwrveMessageFormat *format in self.formats) {
 
         NSDictionary *pages = [format pages];

@@ -37,6 +37,10 @@
         if ([json objectForKey:@"name"]) {
             self.name = [json objectForKey:@"name"];
         }
+        
+        if ([json objectForKey:@"message_center_details"]) {
+            self.messageCenterDetails = [[SwrveMessageCenterDetails alloc] initWithJSON:[json objectForKey:@"message_center_details"]];
+        }
     }
     return self;
 }

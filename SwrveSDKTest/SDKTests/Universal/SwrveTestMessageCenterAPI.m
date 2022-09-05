@@ -11,6 +11,9 @@
 #import "UISwrveButton.h"
 #import "SwrveUtils.h"
 #import "SwrveButton.h"
+#import "SwrveCampaign.h"
+#import "SwrveSDK.h"
+#import "SwrvePrivateAccess.h"
 
 @interface Swrve()
 @property (atomic) SwrveRESTClient *restClient;
@@ -145,6 +148,7 @@
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(campaign.subject,@"IAM subject");
+    XCTAssertEqual([campaign.priority intValue], 5);
     XCTAssertEqualObjects(campaign.name,@"Kindle");
 
     // Display in-app message
@@ -202,7 +206,7 @@
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
     
-    // Mark message as seen programatically
+    // Mark message as seen programmatically
     [swrveMock markMessageCenterCampaignAsSeen:campaign];
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
     
@@ -217,9 +221,11 @@
 #endif
 
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+            @"test_custom":@"urlprocessed",
+            @"test_display": @"display"};
 
     id swrveMock = [self swrveMock];
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
@@ -228,7 +234,6 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsPersonalization" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
     SwrveMessageController *controller = [swrveMock messaging];
@@ -240,20 +245,19 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
 
-    // Should be only 1 message centerCampaign
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 0);
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0); // Should be 0 message centerCampaign because they all require personalization
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 2); // Should be 2 message centerCampaign with correct personalization passed in
 
     // IAM and Conversation support these orientations
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 1);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 1);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:validPersonalization] count], 2);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:validPersonalization] count], 2);
 
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:nil] count], 0);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:nil] count], 0);
 #endif
 
-    SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    SwrveCampaign *campaign = [[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(campaign.subject,@"Personalized Campaign");
 
@@ -291,17 +295,11 @@
     XCTAssertEqual(campaign.state.impressions, 0);
     XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
 
-    // Now use valid, Expected by campaign personalization Dictionary
-    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
-                                           @"test_custom":@"urlprocessed",
-                                           @"test_display": @"display"};
-
-
     // Should appear now in the message center APIs
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 1);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 2);
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:validPersonalization] count], 1);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:validPersonalization] count], 1);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:validPersonalization] count], 2);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:validPersonalization] count], 2);
 #endif
 
     // Display in-app message
@@ -387,7 +385,7 @@
 #endif /**TARGET_OS_IOS **/
 
     // We can still get the IAM, even though the rules specify a limit of 1 impression
-    SwrveCampaign *firstCampaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    SwrveCampaign *firstCampaign = [[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
 
     XCTAssertEqual(firstCampaign.ID, campaign.ID);
 
@@ -518,9 +516,13 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
     
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+                                           @"test_custom":@"urlprocessed",
+                                           @"test_display": @"display"};
+      
     // IAM, Embedded and Conversation support these orientations
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
-    NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaigns];
+    NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaignsWithPersonalization:validPersonalization];
     SwrveEmbeddedCampaign *embeddedCampaign = nil;
     
     for (SwrveCampaign *candidate in campaigns) {
@@ -532,7 +534,7 @@
     XCTAssertNotNil(embeddedCampaign);
     XCTAssertEqual(embeddedCampaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(embeddedCampaign.subject,@"Embedded Personalization");
-    
+
     [controller showMessageCenterCampaign:embeddedCampaign withPersonalization:@{@"test_key": @"WORKING"}];
     XCTAssertEqualObjects(resolvedMessageData, @"PERSONALIZATION: WORKING");
     XCTAssertEqual(embeddedCampaign.state.status,SWRVE_CAMPAIGN_STATUS_SEEN);
@@ -822,6 +824,123 @@
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 0);
 #endif
     
+}
+
+- (void)testIAMMessageCenterDetails {
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    id swrveMock = [self swrveMock];
+    // mock date that lies within the start and end time of the campaign in the test json file campaigns
+    // we do this to pass: checkGlobalRules
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsPersonalization" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+    // Now use valid, Expected by campaign personalization Dictionary
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+            @"test_custom": @"urlprocessed",
+            @"test_display": @"display"};
+    //confirm message center details
+    SwrveCampaign *campaign = [swrveMock messageCenterCampaignWithID:102 andPersonalization:validPersonalization];
+    XCTAssertEqualObjects(campaign.messageCenterDetails.subject, @"some subject personalized test_value");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.description, @"some description personalized test_value");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageUrl, @"some url personalized urlprocessed");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageAccessibilityText, @"some alt text personalized test_value");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageSha, @"f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb");
+
+    //confirm campaign and message center details ok if some nil properties
+    campaign = [swrveMock messageCenterCampaignWithID:103 andPersonalization:validPersonalization];
+    XCTAssertEqualObjects(campaign.messageCenterDetails.subject, @"some subject personalized test_value");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.description, nil);
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageUrl, nil);
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageAccessibilityText, nil);
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageSha, nil);
+
+    campaign = [swrveMock messageCenterCampaignWithID:104 andPersonalization:validPersonalization];
+    XCTAssertNil(campaign);
+    NSMutableDictionary* validPersonalizationDetails = [NSMutableDictionary dictionaryWithDictionary:validPersonalization];
+    [validPersonalizationDetails setObject:@"message_center_details_test" forKey:@"message_center_details_test"];
+    campaign = [swrveMock messageCenterCampaignWithID:104 andPersonalization:validPersonalizationDetails]; // using the message center details personalization
+    XCTAssertNotNil(campaign);
+
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+}
+
+- (void)testDownloadDate {
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    NSDate *today = [NSDate date];
+    NSDate *yesterday = [today dateByAddingTimeInterval:-86400.0];
+
+    // Mock the sdk so that the current date is yesterday.
+    id swrveMock = [self swrveMock];
+    OCMStub([swrveMock getNow]).andReturn(yesterday);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    // load up campaign json which contains only one campaign
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignDownloadDate1" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
+
+    // verify there's only 1 campaign and the download date is yesterday
+    NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaigns];
+    XCTAssertEqual([campaigns count], 1);
+    SwrveCampaign *campaign = [swrveMock messageCenterCampaignWithID:102 andPersonalization:nil];
+    NSDate *downloadDate = [campaign downloadDate];
+    XCTAssertNotNil(downloadDate);
+    XCTAssertEqual(downloadDate, yesterday);
+
+    // Shutdown sdk and mock a new sdk instance so that the current date is today.
+    [SwrveSDK resetSwrveSharedInstance];
+    swrveMock = [self swrveMock];
+    OCMStub([swrveMock getNow]).andReturn(today);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    // load up new campaign json which contains same campaign previously plus one new one
+    filePath = [[NSBundle mainBundle] pathForResource:@"campaignDownloadDate2" ofType:@"json"];
+    mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
+
+    // verify there's 2 campaigns now
+    campaigns = [swrveMock messageCenterCampaigns];
+    XCTAssertEqual([campaigns count], 2);
+
+    // verify the download date for first one is yesterday
+    campaign = [swrveMock messageCenterCampaignWithID:102 andPersonalization:nil];
+    downloadDate = [campaign downloadDate];
+    XCTAssertNotNil(downloadDate);
+    XCTAssertEqualWithAccuracy([downloadDate timeIntervalSinceReferenceDate], [yesterday timeIntervalSinceReferenceDate], 1.0);
+
+    // verify the download date for second one is today
+    campaign = [swrveMock messageCenterCampaignWithID:103 andPersonalization:nil];
+    downloadDate = [campaign downloadDate];
+    XCTAssertNotNil(downloadDate);
+    XCTAssertEqualWithAccuracy([downloadDate timeIntervalSinceReferenceDate], [today timeIntervalSinceReferenceDate], 1.0);
+
 }
 
 - (void)waitForWindowDismissed:(SwrveMessageController *)controller {

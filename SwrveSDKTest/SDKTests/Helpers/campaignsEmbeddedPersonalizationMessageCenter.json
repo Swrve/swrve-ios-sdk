@@ -9,6 +9,13 @@
       "subject": "Embedded Personalization",
       "start_date": 1362671700000,
       "embedded_message": {
+        "message_center_details": {
+            "subject": "some subject personalized ${test_cp}",
+            "description": "some description personalized ${test_cp}",
+            "image_asset": "f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb",
+            "dynamic_image_url": "some url personalized ${test_custom}",
+            "accessibility_text": "some alt text personalized ${test_cp}"
+        },
         "id": 20,
         "buttons": [
           "Button 1",

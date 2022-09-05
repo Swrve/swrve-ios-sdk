@@ -19,6 +19,10 @@
 		3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
 		3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
 		3A5BBFD3266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
+		3A6947E028B674C0009ACD26 /* campaignDownloadDate2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */; };
+		3A6947E128B674C0009ACD26 /* campaignDownloadDate2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */; };
+		3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
+		3A6947E328B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
 		3AB1C04E27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7225BEF30A00950E98 /* swrve_logo.png */; };
@@ -254,6 +258,8 @@
 		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
 		3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage_orientations.json; sourceTree = "<group>"; };
 		3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestStopTracking.m; sourceTree = "<group>"; };
+		3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate2.json; sourceTree = "<group>"; };
+		3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate1.json; sourceTree = "<group>"; };
 		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
 		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
 		3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitIOS.m; sourceTree = "<group>"; };
@@ -639,6 +645,8 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */,
+				3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */,
 				3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */,
 				3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */,
 				3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */,
@@ -862,6 +870,7 @@
 				52FC409823FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F6023C4E55E000B1687 /* campaignsFuture.json in Resources */,
 				5B2B6F6123C4E55E000B1687 /* campaignsImpressions.json in Resources */,
+				3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */,
 				3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
 				5B2B6F5523C4E55E000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				5264BF922609135100264777 /* ad_journey_campaign_message_image_personalization.json in Resources */,
@@ -884,6 +893,7 @@
 				521F4344256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */,
 				5B2B6F5623C4E55E000B1687 /* ad_journey_campaign_message.json in Resources */,
 				F66989A225BEE36F00950E98 /* conversation_campaign_with_diff_fonts.json in Resources */,
+				3A6947E028B674C0009ACD26 /* campaignDownloadDate2.json in Resources */,
 				5B2B6F5B23C4E55E000B1687 /* campaignsAARRGGBB.json in Resources */,
 				5B2B6F5723C4E55E000B1687 /* campaignsNone.json in Resources */,
 				F685B50425F0CD88008F5BAA /* iamCapabilites.json in Resources */,
@@ -930,6 +940,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */,
+				3A6947E328B674C0009ACD26 /* campaignDownloadDate1.json in Resources */,
 				5B2B6F7E23C4E55F000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				52FC409923FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F7A23C4E55F000B1687 /* campaignsFuture.json in Resources */,
@@ -940,6 +951,7 @@
 				5B2B6F8123C4E55F000B1687 /* campaignsQAReset.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				F685B59D25F10E51008F5BAA /* iamCapabilites.json in Resources */,
+				3A6947E128B674C0009ACD26 /* campaignDownloadDate2.json in Resources */,
 				52051B432670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				5B2B6F6D23C4E55F000B1687 /* campaigns.json in Resources */,

@@ -14,7 +14,10 @@
     self.message = embeddedMessage;
     
     if ([json objectForKey:@"subject"] != [NSNull null] && [json objectForKey:@"subject"] != nil) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         self.subject = [json objectForKey:@"subject"];
+#pragma clang diagnostic pop
     }
     
     self.campaignType = SWRVE_CAMPAIGN_EMBEDDED;

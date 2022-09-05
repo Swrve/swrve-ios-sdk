@@ -27,10 +27,12 @@
     id instance = [super initAtTime:time fromDictionary:json];
     NSDictionary *messageDict = [json objectForKey:@"message"];
     self.message = [[SwrveMessage alloc] initWithDictionary:messageDict forCampaign:self forController:controller];
-
     [self addAssetsToQueue:assetsQueue withPersonalization:personalization];
     if ([json objectForKey:@"subject"] != [NSNull null] && [json objectForKey:@"subject"] != nil) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         self.subject = [json objectForKey:@"subject"];
+#pragma clang diagnostic pop
     }
     
     self.name = self.message.name;
@@ -40,25 +42,39 @@
     return instance;
 }
 
+- (void)addAssetToQueue:(NSMutableSet *)assetsQueue withUrl:(NSString *)url withPersonalization:(NSDictionary *)personalization {
+    if (url == nil) return;
+    NSError *error;
+    NSString *resolvedUrl = [TextTemplating templatedTextFromString:url withProperties:personalization andError:&error];
+    if (error != nil || resolvedUrl == nil) {
+        [SwrveLogger debug:@"Could not resolve personalization: %@", url];
+    } else {
+        NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        NSString *sha1Url = [SwrveUtils sha1:data];
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:sha1Url andDigest:resolvedUrl andIsExternal:YES andIsImage:YES];
+        [assetsQueue addObject:assetQueueItem];
+    }
+}
+
 - (void)addAssetsToQueue:(NSMutableSet *)assetsQueue withPersonalization:(NSDictionary *)personalization {
+    NSString *imageUrl = self.message.messageCenterDetails.imageUrl;
+    if (imageUrl != nil) {
+        [self addAssetToQueue:assetsQueue withUrl:imageUrl withPersonalization:personalization];
+    }
+    
+    NSString *imageSha = self.message.messageCenterDetails.imageSha;
+    if (imageSha != nil) {
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:imageSha andDigest:imageSha andIsExternal:NO andIsImage:YES];
+        [assetsQueue addObject:assetQueueItem];
+    }
+    
     for (SwrveMessageFormat *format in message.formats) {
         NSDictionary *pages = [format pages];
         for (id key in pages) {
             SwrveMessagePage *page = [pages objectForKey:key];
 
             for (SwrveButton *button in page.buttons) {
-                if (button.dynamicImageUrl) {
-                    NSError *error;
-                    NSString *resolvedUrl = [TextTemplating templatedTextFromString:button.dynamicImageUrl withProperties:personalization andError:&error];
-                    if (error != nil || resolvedUrl == nil) {
-                        [SwrveLogger debug:@"Could not resolve personalization: %@", button.dynamicImageUrl];
-                    } else {
-                        NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-                        NSString *sha1Url = [SwrveUtils sha1:data];
-                        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:sha1Url andDigest:resolvedUrl andIsExternal:YES andIsImage:YES];
-                        [assetsQueue addObject:assetQueueItem];
-                    }
-                }
+                [self addAssetToQueue:assetsQueue withUrl:button.dynamicImageUrl withPersonalization:personalization];
 
                 if (button.image) {
                     NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:button.image andDigest:button.image andIsExternal:NO andIsImage:YES];
@@ -67,19 +83,8 @@
             }
 
             for (SwrveImage *image in page.images) {
-                if (image.dynamicImageUrl) {
-                    NSError *error;
-                    NSString *resolvedUrl = [TextTemplating templatedTextFromString:image.dynamicImageUrl withProperties:personalization andError:&error];
-                    if (error != nil || resolvedUrl == nil) {
-                        [SwrveLogger debug:@"Could not resolve personalization: %@", image.dynamicImageUrl];
-                    } else {
-                        NSData *data = [resolvedUrl dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-                        NSString *sha1Url = [SwrveUtils sha1:data];
-                        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:sha1Url andDigest:resolvedUrl andIsExternal:YES andIsImage:YES];
-                        [assetsQueue addObject:assetQueueItem];
-                    }
-                }
-
+                [self addAssetToQueue:assetsQueue withUrl:image.dynamicImageUrl withPersonalization:personalization];
+                
                 if (image.file) {
                     NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:image.file andDigest:image.file andIsExternal:NO andIsImage:YES];
                     [assetsQueue addObject:assetQueueItem];

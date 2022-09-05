@@ -295,6 +295,11 @@ static dispatch_once_t sharedInstanceToken = 0;
     return [[SwrveSDK sharedInstance] messageCenterCampaignsWithPersonalization:personalization];
 }
 
++ (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] messageCenterCampaignWithID:campaignID andPersonalization:personalization];
+}
+
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 + (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {

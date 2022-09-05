@@ -255,6 +255,7 @@
                    },
                    "id":165,
                    "name":"Kindle",
+                   "priority": 5,
                    "rules":{
 
                    }
@@ -282,6 +283,7 @@
            "conversation": {
                "id": 82,
                "name": "Choose one",
+               "priority": 5,
                "pages": [{
                    "tag": "1427124319447-2Button",
                    "title": "Page 1 of x",

@@ -621,13 +621,12 @@
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
-    
-    SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
-    
-    [controller showMessageCenterCampaign:campaign withPersonalization: @{@"test_cp": @"test_value",
-                                                                          @"test_custom":@"urlprocessed",
-                                                                          @"test_display": @"display"}];
 
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+            @"test_custom":@"urlprocessed",
+            @"test_display": @"display"};
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign withPersonalization: validPersonalization];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     XCTAssertNotNil(messageViewController);
     XCTAssertNotNil(messageViewController.message);
@@ -641,12 +640,12 @@
     // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
-    
-    SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
-    
-    [controller showMessageCenterCampaign:campaign withPersonalization: @{@"test_cp": @"test_value",
-                                                                          @"test_custom":@"urlprocessed",
-                                                                          @"test_display": @"display"}];
+
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+            @"test_custom":@"urlprocessed",
+            @"test_display": @"display"};
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign withPersonalization:validPersonalization];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     XCTAssertNotNil(messageViewController);
@@ -655,20 +654,19 @@
 }
 
 - (void)testShowMessagePersonalizationFromTrigger {
-    
+
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalization"];
     SwrveMessageController *controller = [swrveMock messaging];
-
-    SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary* eventPayload) {
-        return @{@"test_cp": @"test_value", @"test_custom":@"urlprocessed", @"test_display": @"display"};
+    SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary *eventPayload) {
+        return @{@"test_cp": @"test_value", @"test_custom": @"urlprocessed", @"test_display": @"display"};
     };
-    
     [controller setPersonalizationCallback:personalizationCallback];
-    
-    NSDictionary* event =  @{@"type": @"event",
-                             @"seqnum": @1111,
-                             @"name": @"trigger_name",
-                             @"payload": @{}};
+
+    NSDictionary *event = @{@"type": @"event",
+            @"seqnum": @1111,
+            @"name": @"trigger_name",
+            @"payload": @{}
+    };
     [controller eventRaised:event];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -809,7 +807,6 @@
     XCTAssertEqualObjects(buttons[1], @"Button 2");
     XCTAssertEqualObjects(buttons[2], @"Button 3");
     
-    
     // Raise a different event for a JSON type embedded Campaign
     
     event =  @{@"type": @"event",
@@ -827,6 +824,13 @@
     XCTAssertEqualObjects(buttons[0], @"Button 1");
     XCTAssertEqualObjects(buttons[1], @"Button 2");
     XCTAssertEqualObjects(buttons[2], @"Button 3");
+}
+
+- (void)testEmbeddedPriority {
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsEmbedded"];
+    SwrveCampaign *campaign = [swrveMock messageCenterCampaignWithID:11111 andPersonalization:nil];
+    XCTAssertNotNil(campaign);
+    XCTAssertEqual([campaign.priority intValue], 600);
 }
 
 - (void)testEmbeddedMessageWithPersonalizationCallback {
@@ -2899,12 +2903,11 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
 
-    SwrveCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:0];
-
-    [controller showMessageCenterCampaign:campaign withPersonalization: @{@"test_cp": @"test_value",
-                                                                          @"test_custom":@"urlprocessed",
-                                                                          @"test_display": @"display"}];
-
+    NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
+            @"test_custom":@"urlprocessed",
+            @"test_display": @"display"};
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
+    [controller showMessageCenterCampaign:campaign withPersonalization: validPersonalization];
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];
 

@@ -125,9 +125,10 @@
 
     XCTAssertEqual([[controller messageCenterCampaigns] count], 3);
 
-    SwrveConversationCampaign *campaign = [[controller messageCenterCampaigns] objectAtIndex:1];
+    SwrveConversationCampaign *campaign = [controller messageCenterCampaignWithID:15679 andPersonalization:nil];
     XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
     XCTAssertEqualObjects(campaign.subject,@"Conversation subject");
+    XCTAssertEqual([campaign.priority intValue], 5);
 
     // Display in-app message
     [controller showMessageCenterCampaign:campaign];

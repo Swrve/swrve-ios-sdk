@@ -310,6 +310,11 @@
     return @[];
 }
 
+- (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {
+#pragma unused(campaignID, personalization)
+    return nil;
+}
+
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 - (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
