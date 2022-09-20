@@ -52,7 +52,7 @@
         return nil;
     }
     
-    if([triggerOperator isEqualToString:@"eq"]) {
+    if([triggerOperator isEqualToString:@"eq"] || [triggerOperator isEqualToString:@"contains"]) {
 
         SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:dictionary andOperator:nil];
         if(condition) {
@@ -120,6 +120,8 @@
         
         switch (condition.conditionOperator) {
             case SwrveTriggerOperatorEQUALS:
+                break;
+            case SwrveTriggerOperatorCONTAINS:
                 break;
             case SwrveTriggerOperatorOTHER:
                 _isValidTrigger = NO;

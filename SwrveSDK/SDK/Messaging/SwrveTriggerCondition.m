@@ -29,6 +29,8 @@
         return SwrveTriggerOperatorEQUALS;
     }else if([op isEqualToString:@"or"]){
         return SwrveTriggerOperatorOR;
+    } else if([op isEqualToString:@"contains"]){
+        return SwrveTriggerOperatorCONTAINS;
     } else{
         return SwrveTriggerOperatorOTHER;
     }
@@ -54,7 +56,14 @@
                     return NO;
                 }
             }
-            return (payloadValue && [payloadValue caseInsensitiveCompare:_value] == NSOrderedSame);
+
+            if(_conditionOperator == SwrveTriggerOperatorCONTAINS) {
+                return (payloadValue && [payloadValue localizedCaseInsensitiveContainsString:_value]);
+            } else if (_conditionOperator == SwrveTriggerOperatorEQUALS) {
+                return (payloadValue && [payloadValue caseInsensitiveCompare:_value] == NSOrderedSame);
+            } else {
+                return NO;
+            }
         } else {
             return NO;
         }

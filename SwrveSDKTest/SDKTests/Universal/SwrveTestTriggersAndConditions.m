@@ -146,6 +146,117 @@
 
 }
 
+- (void) testCanTriggerWithPayloadCONTAINS {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"music.condition1",
+                                  @"conditions":@{@"key" : @"artist", @"value" : @"david", @"op" : @"contains"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"artist" : @"david bowie"};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"artist" : @"Gray David"};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"artist" : @"Dave Ghrol"};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadCONTAINSwithOR {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"test.eventName",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"artist", @"value" : @"david", @"op" : @"contains"},
+                                              @{@"key" : @"artist", @"value" : @"Bob", @"op" : @"contains"},
+                                              @{@"key" : @"artist", @"value" : @"Paul", @"op" : @"contains"}],
+                                        @"op" : @"or"
+                                        }
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"artist" : @"David.Bowie"};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+
+    payloadJSON =  @{@"artist" : @"Bobby.Brown"};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+
+    payloadJSON =  @{@"artist" : @"Paul.mcCartney"};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    triggerJSON = @{@"event_name": @"test.eventName",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"genre", @"value" : @"rock", @"op" : @"contains"},
+                                              @{@"key" : @"genre", @"value" : @"metal", @"op" : @"contains"},
+                                              @{@"key" : @"artist", @"value" : @"ac/dc", @"op" : @"contains"}],
+                                        @"op" : @"or"
+                                        }
+                                  };
+    
+    trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    payloadJSON =  @{@"artist" : @"Axl.Rose",
+                                   @"genre" : @"RocknRoll"
+                                   };
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+
+    payloadJSON =  @{@"artist" : @"AC/DC"};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+
+}
+
+- (void) testCanTriggerWithPayloadCONTAINSwithAND {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"test.eventName",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"genre", @"value" : @"rock", @"op" : @"contains"},
+                                              @{@"key" : @"artist", @"value" : @"ac/dc", @"op" : @"contains"}],
+                                        @"op" : @"and"
+                                        }
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"artist" : @"AC/DC",
+                                   @"genre" : @"Rock"
+                                   };
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+
+    payloadJSON =  @{@"artist" : @"AC/DC"};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+    
+    triggerJSON = @{@"event_name": @"test.eventName",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"genre", @"value" : @"pop", @"op" : @"eq"},
+                                              @{@"key" : @"artist", @"value" : @"beatle", @"op" : @"contains"}],
+                                        @"op" : @"and"
+                                        }
+                                  };
+    
+    trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    payloadJSON =  @{@"artist" : @"Taylor Swift",
+                                   @"genre" : @"pop"
+                                   };
+    
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+
+    payloadJSON =  @{@"artist" : @"Beatles",
+                                   @"genre" : @"pop"
+                                   };
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+}
+
 - (void) testSwrveInvalidTrigger {
     
     NSDictionary *triggerJSON = @{@"event_name": @"test.eventName",
@@ -167,7 +278,7 @@
                                   @"conditions" :
                                       @{@"args":
                                             @[@{@"key" : @"key1", @"value" : @"value1", @"op" : @"eq"},
-                                              @{@"key" : @"key2", @"value" : @"value2", @"op" : @"eq"}]
+                                              @{@"key" : @"key2", @"value" : @"value2", @"op" : @"contains"}]
                                         }
                                   };
     
