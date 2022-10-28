@@ -560,9 +560,12 @@ NSString *mockCacheDir;
     __block SwrveEmbeddedMessage *embmessage = nil;
     SwrveConfig *config = [SwrveConfig new];
     SwrveEmbeddedMessageConfig *embConfig = [SwrveEmbeddedMessageConfig new];
-    [embConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+    [embConfig setEmbeddedMessageCallbackWithPersonalization:^(SwrveEmbeddedMessage *message, NSDictionary *personalizationProperties) {
+        XCTAssertEqualObjects([personalizationProperties objectForKey:@"user.updated_test_key"], @"updated_test_value");
         embmessage = message;
     }];
+    
+    config.embeddedMessageConfig = embConfig;
     
     id swrveMock = OCMPartialMock(swrve);
 #pragma clang diagnostic push
@@ -588,7 +591,7 @@ NSString *mockCacheDir;
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Callback"];
     [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
-        return !(embmessage = nil);
+        return (embmessage != nil);
     } expectation:expectation];
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
 }

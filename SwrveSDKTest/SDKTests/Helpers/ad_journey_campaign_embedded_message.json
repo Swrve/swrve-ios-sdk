@@ -20,6 +20,9 @@
             "message_images": "https://content-cdn.swrve.com/messaging/message_image/",
             "message_fonts": "https://content-cdn.swrve.com/messaging/fonts/"
         }
+    },
+    "real_time_user_properties": {
+        "updated_test_key": "updated_test_value"
     }
 }
 

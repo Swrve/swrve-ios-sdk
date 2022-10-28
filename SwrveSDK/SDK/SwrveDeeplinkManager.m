@@ -24,6 +24,7 @@
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (NSString *)signatureKey;
 - (NSString *)userID;
+- (void)updateRealTimeUserProperties:(NSDictionary *)realTimeUserPropertiesJson writeToCache:(BOOL)writeToCache;
 @property(atomic) SwrveRESTClient *restClient;
 @end
 
@@ -223,7 +224,8 @@
     //Top level dictionaries
     NSDictionary *campaignDic = [campaignJson objectForKey:@"campaign"];
     NSDictionary *additionalInfoDic = [campaignJson objectForKey:@"additional_info"];
-
+    NSDictionary *realTimeUserPropertiesJson = [campaignJson objectForKey:@"real_time_user_properties"];
+    
     //Update CDN paths
     NSDictionary *cdnPaths = [additionalInfoDic objectForKey:@"cdn_paths"];
     if (cdnPaths) {
@@ -243,6 +245,10 @@
     if ([version integerValue] != CAMPAIGN_RESPONSE_VERSION){
         [SwrveLogger error:@"Campaign JSON has the wrong version. No campaigns loaded.", nil];
         return;
+    }
+    
+    if (realTimeUserPropertiesJson != nil) {
+        [self.sdk updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
     }
     
     NSMutableSet *assetsQueue = [[NSMutableSet alloc] init];
