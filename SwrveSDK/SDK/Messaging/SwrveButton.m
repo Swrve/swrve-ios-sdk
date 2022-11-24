@@ -19,6 +19,8 @@
 @synthesize appID;
 @synthesize actionType;
 @synthesize accessibilityText;
+@synthesize events;
+@synthesize userUpdates;
 
 - (id)initWithDictionary:(NSDictionary *)buttonData campaignId:(long)swrveCampaignId messageId:(long)swrveMessageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
     if (self = [super init]) {
@@ -84,6 +86,13 @@
         
         if ([buttonData objectForKey:@"accessibility_text"]) {
             self.accessibilityText = [buttonData objectForKey:@"accessibility_text"];
+        }
+        
+        if ([buttonData objectForKey:@"events"]) {
+            self.events = [buttonData objectForKey:@"events"];
+        }
+        if ([buttonData objectForKey:@"user_updates"]) {
+            self.userUpdates = [buttonData objectForKey:@"user_updates"];
         }
 
     }

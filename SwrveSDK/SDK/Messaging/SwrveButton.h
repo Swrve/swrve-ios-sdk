@@ -17,6 +17,9 @@
 @property(atomic) long messageId;                                   /*!< Message identifier associated with this button. */
 @property(atomic) long appID;                                       /*!< ID of the target installation app. */
 @property(nonatomic, retain) NSString *accessibilityText;           /*!< Alternative text for use with accessibility voice over */
+@property(nonatomic, retain) NSArray *events;                       /*!< Array of events to send on button click */
+@property(nonatomic, retain) NSArray *userUpdates;                  /*!< Array of user properties to send on button click  */
+
 
 - (id)initWithDictionary:(NSDictionary *)buttonData
               campaignId:(long)swrveCampaignId

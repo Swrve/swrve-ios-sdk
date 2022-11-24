@@ -198,11 +198,19 @@
         // Save button type and action for processing later in the messageController
         messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
         messageControllerStrong.inAppMessageAction = action;
-        [self beginHideMessageAnimation];
+        [self beginHideMessageAnimationWithCompletionHandler:^{
+            if (swrveButton.events != nil) {
+                [self queueButtonEvents:swrveButton.events personalization:self.personalization];
+            }
+            
+            if (swrveButton.userUpdates != nil) {
+                [self queueButtonUserUpdates:swrveButton.userUpdates personalization:self.personalization];
+            }
+        }];
     }
 }
 
-- (void)beginHideMessageAnimation {
+- (void)beginHideMessageAnimationWithCompletionHandler:(void (^)(void))completionHandler {
     [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -212,6 +220,7 @@
                      completion:^(BOOL finished) {
                          [SwrveLogger debug:@"Message hide animation completed:%@", @(finished)];
                          [self.messageController dismissMessageWindow];
+                         completionHandler();
                      }];
 }
 
@@ -352,5 +361,50 @@
     [self.messageFocus didUpdateFocusInContext:context];
 }
 #endif
+
+- (void)addPayload:(NSMutableDictionary *)newPayload fromPayloadValues:(NSDictionary *)payload personalization:(NSDictionary *)personalizationDic {
+    NSString *key = [payload objectForKey:@"key"];
+    NSString *value = [payload objectForKey:@"value"];
+    NSString *personlizedValue = [self.messageController personalizeText:value withPersonalization:personalizationDic];
+    if (key != nil && personlizedValue != nil) {
+        [newPayload setObject:personlizedValue forKey:key];
+    }
+}
+
+- (void)queueButtonEvents:(NSArray *)events personalization:(NSDictionary *)personalizationDic {
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    for (NSDictionary *event in events) {
+        NSString *name = [event objectForKey:@"name"];
+        NSArray *payloadArray = [event objectForKey:@"payload"];
+        if (payloadArray != nil && [payloadArray count] > 0) {
+            NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+            for (NSDictionary *payload in payloadArray) {
+                [self addPayload:eventPayload fromPayloadValues:payload personalization:personalizationDic];
+            }
+            if ([eventPayload count] > 0) {
+                NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+                [data setValue:NullableNSString(name) forKey:@"name"];
+                [data setValue:eventPayload forKey:@"payload"];
+                [swrveCommon queueEvent:@"event" data:data triggerCallback:true];
+            }
+        } else {
+            NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+            [data setValue:NullableNSString(name) forKey:@"name"];
+            [data setValue:@{} forKey:@"payload"];
+            [swrveCommon queueEvent:@"event" data:data triggerCallback:true];
+        }
+    }
+}
+
+- (void)queueButtonUserUpdates:(NSArray *)userUpdates personalization:(NSDictionary *)personalizationDic {
+    NSMutableDictionary *userPayload = [NSMutableDictionary new];
+    for (NSDictionary *payload in userUpdates) {
+        [self addPayload:userPayload fromPayloadValues:payload personalization:personalizationDic];
+    }
+    if ([userPayload count] > 0) {
+        id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+        [swrveCommon userUpdate:userPayload];
+    }
+}
 
 @end

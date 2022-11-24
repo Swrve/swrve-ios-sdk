@@ -357,6 +357,43 @@
     XCTAssertEqual((int)[button1 messageId], 165);
     XCTAssertEqual((int)[button1 appID], 150);
     XCTAssertEqual([button1 actionType], kSwrveActionInstall);
+    
+    NSArray *expectedEvents = @[
+    @{
+        @"name": @"Test Event 1",
+        @"payload": @[
+            @{
+                @"key": @"key1",
+                @"value": @"some value personalized:${test_1}"
+            },
+            @{
+                @"key": @"key2",
+                @"value": @"some value personalized:${test_2}"
+            }
+        ]
+
+    },
+    @{
+        @"name": @"Test Event 2",
+        @"payload": @[
+        @{
+            @"key": @"key1",
+            @"value": @"some value personalized:${test_1}"
+        }]
+    }
+    ];
+    
+    XCTAssertEqualObjects(expectedEvents, [button1 events]);
+    
+    NSArray *expectedUserUpdates = @[
+        @{
+          @"key": @"key1",
+          @"value": @"some value personalized:${test_1}"
+                
+        }
+    ];
+    
+    XCTAssertEqualObjects(expectedUserUpdates, [button1 userUpdates]);
 
     SwrveButton* button2 = [[page buttons] objectAtIndex:1];
     XCTAssertNotNil(button2);
@@ -506,6 +543,43 @@
     XCTAssertEqual((int) [button123_1 messageId], 165);
     XCTAssertEqual((int) [button123_1 appID], 2);
     XCTAssertEqual([button123_1 actionType], kSwrveActionPageLink);
+    
+    NSArray *expectedEvents = @[
+    @{
+        @"name": @"Test Event 1",
+        @"payload": @[
+            @{
+                @"key": @"key1",
+                @"value": @"some value personalized:${test_1}"
+            },
+            @{
+                @"key": @"key2",
+                @"value": @"some value personalized:${test_2}"
+            }
+        ]
+
+    },
+    @{
+        @"name": @"Test Event 2",
+        @"payload": @[
+        @{
+            @"key": @"key1",
+            @"value": @"some value personalized: ${test_1}"
+        }]
+    }
+    ];
+    
+    XCTAssertEqualObjects(expectedEvents, [button123_1 events]);
+    
+    NSArray *expectedUserUpdates = @[
+        @{
+          @"key": @"key1",
+          @"value": @"some value personalized:${test_1}"
+                
+        }
+    ];
+    
+    XCTAssertEqualObjects(expectedUserUpdates, [button123_1 userUpdates]);
 
     SwrveButton *button123_2 = [[page123 buttons] objectAtIndex:1];
     XCTAssertNotNil(button123_2);
@@ -1266,8 +1340,8 @@
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message];
-
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
 
@@ -1298,6 +1372,7 @@
 
     XCTAssertEqual([uiButtons count], 5);
 
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
 
@@ -1328,6 +1403,7 @@
         }
     }
     XCTAssertEqual(clickEventCount, 1);
+    OCMVerifyAll(swrveMock);
 }
 
 - (void)testDismissButtonPressedWithPages {
@@ -1338,12 +1414,12 @@
 
     SwrveMessageController *controller = [swrveMock messaging];
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    [controller showMessageCenterCampaign:campaign];
+    [controller showMessageCenterCampaign:campaign withPersonalization:@{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     [messageViewController viewDidAppear:NO];
     SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
     XCTAssertEqual([[messageViewController currentPageId] integerValue], 1);
-
+    
     // go straight to last page which has a dismiss button
     SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
     XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Page5"]);
@@ -1364,9 +1440,10 @@
 
     // press the dismiss button
     messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     XCTAssertTrue([self pressUISwrveButton:messageUiView name:@"Dismiss"]);
 
-    OCMVerifyAll(swrveMock);
+    OCMVerifyAllWithDelay(swrveMock, 1);
 }
 
 - (void)testCustomButtonPressedWithPages {
@@ -1377,7 +1454,7 @@
 
     SwrveMessageController *controller = [swrveMock messaging];
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    [controller showMessageCenterCampaign:campaign];
+    [controller showMessageCenterCampaign:campaign withPersonalization:@{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     [messageViewController viewDidAppear:NO];
     SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
@@ -1386,9 +1463,10 @@
     NSMutableDictionary *payload = [self messageClickPayloadEvent:1 pageName:@"page 1" buttonId:102];
     OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-89355.click" payload:payload triggerCallback:false]);
     SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     [self pressUISwrveButton:messageUiView name:@"custom"];
 
-    OCMVerifyAll(swrveMock);
+    OCMVerifyAllWithDelay(swrveMock, 1);
 }
 
 - (NSMutableDictionary *)messageClickPayloadEvent:(long)pageId pageName:(NSString *)pageName buttonId:(long)buttonId {
@@ -1412,7 +1490,7 @@
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
@@ -1426,6 +1504,8 @@
     OCMExpect([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
     OCMStub([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 
+    [self verifyDataCapturedFromButtonClick:swrveMock];
+    
     // Pretend to press install buttons
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton* swrveButton = [buttons objectAtIndex:i];
@@ -1451,6 +1531,7 @@
     OCMVerifyAllWithDelay(mockUIApplication, 5);
 
     [mockUIApplication stopMocking];
+    OCMVerifyAll(swrveMock);
 }
 
 /**
@@ -1462,45 +1543,47 @@
 - (void)testDismissButtonPressed {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-
+    
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
-
+    
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message];
-
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
     [viewController viewDidAppear:NO];
     __block NSString *campaignSubject = @"";
     __block NSString *campaignName = @"";
     __block NSString *buttonName = @"";
-
+    
     __block int customActionCount = 0;
     __block int clipboardActionCount = 0;
     __block int dismissActionCount = 0;
-
+    
     // Set custom callbacks
     [controller setCustomButtonCallback:^(NSString *action, NSString *name) {
         customActionCount++;
     }];
-
+    
     [controller setDismissButtonCallback:^(NSString *campaignS, NSString *buttonN, NSString *campaignN) {
         dismissActionCount++;
         campaignSubject = campaignS;
         campaignName = campaignN;
         buttonName = buttonN;
     }];
-
+    
     [controller setClipboardButtonCallback:^(NSString *processedText) {
         clipboardActionCount++;
     }];
-
+    
     SwrveMessageFormat *format =[viewController messageFormat];
     SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
     NSArray *buttons = [page buttons];
     XCTAssertEqual([buttons count],5);
-
+    
+    [self verifyDataCapturedFromButtonClick:swrveMock];
+    
     // Pretend to press all buttons
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
@@ -1511,7 +1594,7 @@
             [self waitForWindowDismissed:controller];
         }
     }
-
+    
     // Ensure custom and install callbacks weren't invoked
     XCTAssertEqual(customActionCount, 0);
     XCTAssertEqual(dismissActionCount, 1);
@@ -1519,7 +1602,7 @@
     XCTAssertEqualObjects(buttonName, @"close");
     XCTAssertEqualObjects(campaignSubject, @"IAM subject");
     XCTAssertEqualObjects(campaignName, @"Kindle");
-
+    
     // Check no click events were sent
     int clickEventCount = 0;
     for (NSString *event in [swrveMock eventBuffer]) {
@@ -1528,6 +1611,8 @@
         }
     }
     XCTAssertEqual(clickEventCount, 0);
+    
+    OCMVerifyAll((swrveMock));
 }
 
 - (void)testPagingViaButtons {
@@ -1546,7 +1631,8 @@
 
     SwrveMessageController *controller = [swrveMock messaging];
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    [controller showMessageCenterCampaign:campaign];
+    [controller showMessageCenterCampaign:campaign withPersonalization:@{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+  
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     [messageViewController viewDidAppear:NO];
     SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
@@ -1594,6 +1680,7 @@
     XCTAssertEqual([[messageViewController currentPageId] integerValue], 5);
     XCTAssertFalse(dismissed);
     messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     [self pressUISwrveButton:messageUiView name:@"Dismiss"];
     [self loadMessagePageViewController:messageViewController];
 
@@ -1936,7 +2023,7 @@
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
@@ -1969,6 +2056,7 @@
 
     XCTAssertEqual([uiButtons count], 5);
 
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
 
@@ -2005,6 +2093,7 @@
         }
     }
     XCTAssertEqual(clickEventCount, 1);
+    OCMVerifyAll(swrveMock);
 }
 
 /**
@@ -2020,7 +2109,7 @@
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
-    [controller showMessage:message];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
@@ -2044,6 +2133,7 @@
 
     XCTAssertEqual([uiButtons count], 5);
 
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
         // verify that a UISwrveButton matching the accessibility id
@@ -2068,6 +2158,7 @@
         }
     }
     XCTAssertEqual(clickEventCount, 1);
+    OCMVerifyAll(swrveMock);
 }
 
 /**
@@ -2089,7 +2180,7 @@
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush"];
-    [controller showMessage:message];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = [messageViewController.viewControllers firstObject];
@@ -2120,6 +2211,7 @@
     OCMReject([testCapabilitiesDelegateMock requestCapability:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
     OCMExpect([swrvePushMock registerForPushNotifications:FALSE]).andDo(nil);
 
+    [self verifyDataCapturedFromButtonClick:swrveMock];
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
         // verify that a UISwrveButton matching the accessibility id
@@ -2135,6 +2227,7 @@
     }
 
     OCMVerifyAll(swrvePushMock);
+    OCMVerifyAll(swrveMock);
 
     int clickEventCount = 0;
     for (NSString* event in [swrveMock eventBuffer]) {
@@ -3708,6 +3801,31 @@
 - (SwrveMessageViewController *)messageViewControllerFrom:(SwrveMessageController *)controller {
     SwrveMessageViewController *viewController = (SwrveMessageViewController *) [[controller inAppMessageWindow] rootViewController];
     return viewController;
+}
+
+- (void)verifyDataCapturedFromButtonClick:(id)swrveMock {
+    id dic1 = [OCMArg checkWithBlock:^BOOL(NSDictionary *dic)  {
+        XCTAssertEqualObjects([dic objectForKey:@"name"], @"Test Event 1");
+        NSDictionary *payload = [dic objectForKey:@"payload"];
+        XCTAssertEqualObjects([payload objectForKey:@"key1"], @"some value personalized:some personalized value1");
+        XCTAssertEqualObjects([payload objectForKey:@"key2"], @"some value personalized:some personalized value2");
+        return true;
+    }];
+    OCMExpect([swrveMock queueEvent:@"event" data:dic1 triggerCallback:true]);
+
+    id dic2 = [OCMArg checkWithBlock:^BOOL(NSDictionary *dic)  {
+        XCTAssertEqualObjects([dic objectForKey:@"name"], @"Test Event 2");
+        NSDictionary *payload = [dic objectForKey:@"payload"];
+        XCTAssertEqualObjects([payload objectForKey:@"key1"], @"some value personalized:some personalized value1");
+        return true;
+    }];
+    OCMExpect([swrveMock queueEvent:@"event" data:dic2 triggerCallback:true]);
+
+    id dic3 = [OCMArg checkWithBlock:^BOOL(NSDictionary *dic)  {
+        XCTAssertEqualObjects([dic objectForKey:@"key1"], @"some value personalized:some personalized value1");
+        return true;
+    }];
+    OCMExpect([swrveMock userUpdate:dic3]);
 }
 
 @end

@@ -89,7 +89,34 @@
                             "type": {
                                 "type": "text",
                                 "value": "INSTALL"
-                            }
+                            },
+                            "events": [{
+
+                                    "name": "Test Event 1",
+                                    "payload": [{
+                                            "key": "key1",
+                                            "value": "some value personalized:${test_1}"
+                                        },
+                                        {
+                                            "key": "key2",
+                                            "value": "some value personalized:${test_2}"
+                                        }
+                                    ]
+
+                                },
+                                {
+
+                                    "name": "Test Event 2",
+                                    "payload": [{
+                                        "key": "key1",
+                                        "value": "some value personalized:${test_1}"
+                                    }]
+                                }
+                            ],
+                            "user_updates": [{
+                                "key": "key1",
+                                "value": "some value personalized:${test_1}"
+                            }]
                         },
                         {
                             "name": "custom",
@@ -124,7 +151,34 @@
                             "type": {
                                 "type": "text",
                                 "value": "CUSTOM"
-                            }
+                            },
+                            "events": [{
+
+                                    "name": "Test Event 1",
+                                    "payload": [{
+                                            "key": "key1",
+                                            "value": "some value personalized:${test_1}"
+                                        },
+                                        {
+                                            "key": "key2",
+                                            "value": "some value personalized:${test_2}"
+                                        }
+                                    ]
+
+                                },
+                                {
+
+                                    "name": "Test Event 2",
+                                    "payload": [{
+                                        "key": "key1",
+                                        "value": "some value personalized:${test_1}"
+                                    }]
+                                }
+                            ],
+                            "user_updates": [{
+                                "key": "key1",
+                                "value": "some value personalized:${test_1}"
+                            }]
                         },
                         {
                             "name": "close",
@@ -159,7 +213,34 @@
                             "type": {
                                 "type": "text",
                                 "value": "DISMISS"
-                            }
+                            },
+                            "events": [{
+
+                                    "name": "Test Event 1",
+                                    "payload": [{
+                                            "key": "key1",
+                                            "value": "some value personalized:${test_1}"
+                                        },
+                                        {
+                                            "key": "key2",
+                                            "value": "some value personalized:${test_2}"
+                                        }
+                                    ]
+
+                                },
+                                {
+
+                                    "name": "Test Event 2",
+                                    "payload": [{
+                                        "key": "key1",
+                                        "value": "some value personalized:${test_1}"
+                                    }]
+                                }
+                            ],
+                            "user_updates": [{
+                                "key": "key1",
+                                "value": "some value personalized:${test_1}"
+                            }]
                         },
                         {
                             "name": "clipboard_action",
@@ -198,7 +279,34 @@
                             "game_id": {
                                 "type": "number",
                                 "value": ""
-                            }
+                            },
+                            "events": [{
+
+                                    "name": "Test Event 1",
+                                    "payload": [{
+                                            "key": "key1",
+                                            "value": "some value personalized:${test_1}"
+                                        },
+                                        {
+                                            "key": "key2",
+                                            "value": "some value personalized:${test_2}"
+                                        }
+                                    ]
+
+                                },
+                                {
+
+                                    "name": "Test Event 2",
+                                    "payload": [{
+                                        "key": "key1",
+                                        "value": "some value personalized:${test_1}"
+                                    }]
+                                }
+                            ],
+                            "user_updates": [{
+                                "key": "key1",
+                                "value": "some value personalized:${test_1}"
+                            }]
                         },
                         {
                             "name": "accept",
@@ -233,7 +341,34 @@
                             "type": {
                                 "type": "text",
                                 "value": "REQUEST_CAPABILITY"
-                            }
+                            },
+                            "events": [{
+
+                                    "name": "Test Event 1",
+                                    "payload": [{
+                                            "key": "key1",
+                                            "value": "some value personalized:${test_1}"
+                                        },
+                                        {
+                                            "key": "key2",
+                                            "value": "some value personalized:${test_2}"
+                                        }
+                                    ]
+
+                                },
+                                {
+
+                                    "name": "Test Event 2",
+                                    "payload": [{
+                                        "key": "key1",
+                                        "value": "some value personalized:${test_1}"
+                                    }]
+                                }
+                            ],
+                            "user_updates": [{
+                                "key": "key1",
+                                "value": "some value personalized:${test_1}"
+                            }]
                         }
                     ],
                     "name": "Kindle (English (US))",

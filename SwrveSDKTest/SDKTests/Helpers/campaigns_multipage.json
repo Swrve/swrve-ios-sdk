@@ -213,7 +213,34 @@
                       "text": {
                         "type": "text",
                         "value": "custom"
-                      }
+                      },
+                      "events": [{
+
+                              "name": "Test Event 1",
+                              "payload": [{
+                                      "key": "key1",
+                                      "value": "some value personalized:${test_1}"
+                                  },
+                                  {
+                                      "key": "key2",
+                                      "value": "some value personalized:${test_2}"
+                                  }
+                              ]
+
+                          },
+                          {
+
+                              "name": "Test Event 2",
+                              "payload": [{
+                                  "key": "key1",
+                                  "value": "some value personalized:${test_1}"
+                              }]
+                          }
+                      ],
+                      "user_updates": [{
+                          "key": "key1",
+                          "value": "some value personalized:${test_1}"
+                      }]
                     }
                   ]
                 },
@@ -781,7 +808,34 @@
                       "text": {
                         "type": "text",
                         "value": "Dismiss"
-                      }
+                      },
+                      "events": [{
+
+                              "name": "Test Event 1",
+                              "payload": [{
+                                      "key": "key1",
+                                      "value": "some value personalized:${test_1}"
+                                  },
+                                  {
+                                      "key": "key2",
+                                      "value": "some value personalized:${test_2}"
+                                  }
+                              ]
+
+                          },
+                          {
+
+                              "name": "Test Event 2",
+                              "payload": [{
+                                  "key": "key1",
+                                  "value": "some value personalized:${test_1}"
+                              }]
+                          }
+                      ],
+                      "user_updates": [{
+                          "key": "key1",
+                          "value": "some value personalized:${test_1}"
+                      }]
                     }
                   ]
                 }
