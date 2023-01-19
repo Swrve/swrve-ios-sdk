@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "8.4.0"
+#define SWRVE_SDK_VERSION "8.5.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -469,6 +469,13 @@ NSString * eventsPayloadAsJSON);
 - (void)stopTracking;
 
 #pragma mark Messaging
+
+/*! Send an impresison event for the control campaign. This function should be called
+ * by your implementation to update the Swrve reporting for control campaigns.
+ *
+ * \param message embedded message that has been processed
+ */
+- (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message;
 
 /*! Inform that am embedded message has been served and processed. This function should be called
  * by your implementation to update the campaign information and send the appropriate data to

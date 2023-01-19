@@ -22,6 +22,12 @@
  */
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event;
 
+/*! Send impression event for an embedded control campaign
+ *
+ * \param message embedded message that has been processed
+ */
+- (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message;
+
 /*! Inform that am embedded message has been served and processed. This function should be called
  * by your implementation to update the campaign information and send the appropriate data to
  * Swrve.

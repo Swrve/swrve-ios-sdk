@@ -436,6 +436,74 @@
                         }
                     }],
                     "buttons": [{
+                        "name": "open settings",
+                        "x": {
+                            "type": "number",
+                            "value": -200
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 80
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 229
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 114
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "game_id": {
+                            "type": "number",
+                            "value": "150"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "OPEN_APP_SETTINGS"
+                        }
+                    },{
+                        "name": "open notificaiton settings",
+                        "x": {
+                            "type": "number",
+                            "value": -200
+                        },
+                        "y": {
+                            "type": "number",
+                            "value": 80
+                        },
+                        "w": {
+                            "type": "number",
+                            "value": 229
+                        },
+                        "h": {
+                            "type": "number",
+                            "value": 114
+                        },
+                        "image_up": {
+                            "type": "asset",
+                            "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                        },
+                        "action": {
+                            "type": "text",
+                            "value": ""
+                        },
+                        "game_id": {
+                            "type": "number",
+                            "value": "150"
+                        },
+                        "type": {
+                            "type": "text",
+                            "value": "OPEN_NOTIFICATION_SETTINGS"
+                        }
+                    },{
                             "name": "accept",
                             "x": {
                                 "type": "number",

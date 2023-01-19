@@ -41,6 +41,8 @@
         if ([json objectForKey:@"message_center_details"]) {
             self.messageCenterDetails = [[SwrveMessageCenterDetails alloc] initWithJSON:[json objectForKey:@"message_center_details"]];
         }
+        
+        self.control = [[json objectForKey:@"control"] boolValue];
     }
     return self;
 }

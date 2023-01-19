@@ -116,7 +116,10 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, retain) NSSet *provisionalPushNotificationEvents;
 
 /*! The set of Swrve events that will trigger a push notifications request. By default it is set to request the permission at the start of the app. */
-@property (nonatomic, retain) NSSet *pushNotificationEvents;
+@property (nonatomic, retain) NSSet *pushNotificationEvents __deprecated_msg("Please use pushNotificationPermissionEvents API instead and provide it with Swrve.session.start if you wish to trigger at the start of the app");
+
+/*! The set of Swrve events that will trigger a push notifications request. By default it will not request the permission. */
+@property (nonatomic, retain) NSSet *pushNotificationPermissionEvents;
 
 /*! Controls if the SDK automatically collects the push device token. To
  * manually set the device token yourself set to NO.
@@ -230,6 +233,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) BOOL pushEnabled;
 @property (nonatomic, readonly) NSSet *provisionalPushNotificationEvents;
 @property (nonatomic, readonly) NSSet *pushNotificationEvents;
+@property (nonatomic, retain) NSSet *pushNotificationPermissionEvents;
 @property (nonatomic, readonly) BOOL autoCollectDeviceToken;
 @property (nonatomic, readonly) NSSet *notificationCategories;
 @property (nonatomic, weak, readonly) id<SwrvePushResponseDelegate> pushResponseDelegate;

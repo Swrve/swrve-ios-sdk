@@ -31,6 +31,16 @@
         return SwrveTriggerOperatorOR;
     } else if([op isEqualToString:@"contains"]){
         return SwrveTriggerOperatorCONTAINS;
+    } else if([op isEqualToString:@"number_eq"]){
+        return SwrveTriggerOperatorNUMBER_EQUALS;
+    } else if([op isEqualToString:@"number_gt"]){
+        return SwrveTriggerOperatorNUMBER_GT;
+    } else if([op isEqualToString:@"number_lt"]){
+        return SwrveTriggerOperatorNUMBER_LT;
+    } else if([op isEqualToString:@"number_not_between"]){
+        return SwrveTriggerOperatorNUMBER_NOT_BETWEEN;
+    } else if([op isEqualToString:@"number_between"]){
+        return SwrveTriggerOperatorNUMBER_BETWEEN;
     } else{
         return SwrveTriggerOperatorOTHER;
     }
@@ -56,11 +66,48 @@
                     return NO;
                 }
             }
+            
+            NSDictionary *valueDictionary = nil;
+            NSString *valueString = nil;
+            NSNumber *valueInteger = nil;
+            if([_value isKindOfClass:[NSString class]]) {
+                valueString = (NSString*)_value;
+            } else if([_value isKindOfClass:[NSDictionary class]]) {
+                valueDictionary = (NSDictionary*)_value;
+            } else if([_value isKindOfClass:[NSNumber class]]) {
+                valueInteger = (NSNumber*)_value;
+            }
 
             if(_conditionOperator == SwrveTriggerOperatorCONTAINS) {
-                return (payloadValue && [payloadValue localizedCaseInsensitiveContainsString:_value]);
+                return (payloadValue && [payloadValue localizedCaseInsensitiveContainsString:valueString]);
             } else if (_conditionOperator == SwrveTriggerOperatorEQUALS) {
-                return (payloadValue && [payloadValue caseInsensitiveCompare:_value] == NSOrderedSame);
+                return (payloadValue && [payloadValue caseInsensitiveCompare:valueString] == NSOrderedSame);
+            } else if (_conditionOperator == SwrveTriggerOperatorNUMBER_GT) {
+                return (payloadValue && payloadValue.integerValue > valueInteger.integerValue);
+            } else if (_conditionOperator == SwrveTriggerOperatorNUMBER_LT) {
+                return (payloadValue && payloadValue.integerValue < valueInteger.integerValue);
+            } else if (_conditionOperator == SwrveTriggerOperatorNUMBER_EQUALS) {
+                return (payloadValue && payloadValue.integerValue == valueInteger.integerValue);
+            } else if (_conditionOperator == SwrveTriggerOperatorNUMBER_BETWEEN) {
+                NSNumber *lower = nil;
+                NSNumber *upper = nil;
+                if([valueDictionary objectForKey:@"lower"] != [NSNull null]) {
+                    lower = [valueDictionary objectForKey:@"lower"];
+                }
+                if([valueDictionary objectForKey:@"upper"] != [NSNull null]) {
+                    upper = [valueDictionary objectForKey:@"upper"];
+                }
+                return (valueDictionary && payloadValue.integerValue > lower.integerValue && payloadValue.integerValue < upper.integerValue);
+            } else if (_conditionOperator == SwrveTriggerOperatorNUMBER_NOT_BETWEEN) {
+                NSNumber *lower = nil;
+                NSNumber *upper = nil;
+                if([valueDictionary objectForKey:@"lower"] != [NSNull null]) {
+                    lower = [valueDictionary objectForKey:@"lower"];
+                }
+                if([valueDictionary objectForKey:@"upper"] != [NSNull null]) {
+                    upper = [valueDictionary objectForKey:@"upper"];
+                }
+                return (valueDictionary && (payloadValue.integerValue < lower.integerValue || payloadValue.integerValue > upper.integerValue));
             } else {
                 return NO;
             }

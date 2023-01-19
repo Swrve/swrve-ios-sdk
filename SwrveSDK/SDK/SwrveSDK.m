@@ -265,6 +265,11 @@ static dispatch_once_t sharedInstanceToken = 0;
 
 #pragma mark Messaging
 
++ (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] embeddedControlMessageImpressionEvent:message];
+}
+
 + (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
     [SwrveSDK checkInstance];
     [[SwrveSDK sharedInstance] embeddedMessageWasShownToUser:message];

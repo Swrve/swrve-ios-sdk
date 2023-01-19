@@ -97,7 +97,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 #if TARGET_OS_IOS
 @property(nonatomic) bool pushEnabled; // Decide if push notification is enabled
 @property(nonatomic, retain) NSSet *provisionalPushNotificationEvents; // Events that trigger the provisional push permission request
-@property(nonatomic, retain) NSSet *pushNotificationEvents; // Events that trigger the push notification dialog
+@property(nonatomic, retain) NSSet *pushNotificationPermissionEvents; // Events that trigger the push notification dialog
 #endif //TARGET_OS_IOS
 @property(nonatomic) bool autoShowMessagesEnabled;
 @property(nonatomic, retain) UIWindow *inAppMessageWindow;
@@ -144,7 +144,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 #if TARGET_OS_IOS
 @synthesize pushEnabled;
 @synthesize provisionalPushNotificationEvents;
-@synthesize pushNotificationEvents;
+@synthesize pushNotificationPermissionEvents;
 #endif //TARGET_OS_IOS
 @synthesize inAppMessageWindow;
 @synthesize conversationWindow;
@@ -204,7 +204,11 @@ const static int DEFAULT_MIN_DELAY = 55;
 #if TARGET_OS_IOS
     self.pushEnabled = sdk.config.pushEnabled;
     self.provisionalPushNotificationEvents = sdk.config.provisionalPushNotificationEvents;
-    self.pushNotificationEvents = sdk.config.pushNotificationEvents;
+    if (sdk.config.pushNotificationPermissionEvents) {
+        self.pushNotificationPermissionEvents = sdk.config.pushNotificationPermissionEvents;
+    } else {
+        self.pushNotificationPermissionEvents = sdk.config.pushNotificationEvents;
+    }
 #endif //TARGET_OS_IOS
     self.appStoreURLs = [NSMutableDictionary new];
 
@@ -841,11 +845,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         }
 
         if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            // Filter out campaign if it has buttons requesting capabilities and canRequestCapability delegate returns false + qa log
-            id <SwrveInAppCapabilitiesDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppCapabilitiesDelegate;
-            bool filterMessage = [self filterMessage:(SwrveMessage *) result withCapabilityDelegate:delegate];
-            result = (filterMessage) ? nil : result;
-            if (isQALogging && filterMessage) {
+            bool filterRedundantCampaign = [self filterRedundantCampaign:(SwrveMessage *) result];
+            result = (filterRedundantCampaign) ? nil : result;
+            if (isQALogging && filterRedundantCampaign) {
                 NSString *reason = [NSString stringWithFormat:@"Campaign %ld was selected for display but canRequestCapability delegate returned false", (long) campaign.ID];
                 [qaCampaignInfoArray addObject:[[SwrveQACampaignInfo alloc] initWithCampaignID:campaign.ID variantID:[result.messageID unsignedLongValue] type:campaign.campaignType displayed:NO reason:reason]];
             }
@@ -873,49 +875,45 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return result;
 }
 
-- (BOOL)filterMessage:(SwrveMessage *)message withCapabilityDelegate:(id <SwrveInAppCapabilitiesDelegate>)delegate {
-    NSDictionary *capabilites = [self capabilities:message withCapabilityDelegate:delegate];
-    return [capabilites count] != 0 && ![self checkCanRequestAllCapabilties:capabilites];
-}
+- (BOOL)filterRedundantCampaign:(SwrveMessage *)message {
+    // Check all buttons to see if any are requesting a capability or action that's already granted or not relevant, thus making the campaign redundant
 
-- (BOOL)checkCanRequestAllCapabilties:(NSDictionary *)capabilities {
-    // if any can't be requested we will filter message.
-    for (NSString *key in [capabilities allKeys]) {
-        if ([capabilities objectForKey:key] == [NSNumber numberWithBool:false]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-- (NSMutableDictionary *)capabilities:(SwrveMessage *)swrveMessage withCapabilityDelegate:(id <SwrveInAppCapabilitiesDelegate>)delegate {
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    for (SwrveMessageFormat *format in swrveMessage.formats) {
+    id <SwrveInAppCapabilitiesDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppCapabilitiesDelegate;
+    for (SwrveMessageFormat *format in message.formats) {
         NSDictionary *pages = [format pages];
         for (id key in pages) {
             SwrveMessagePage *page = [pages objectForKey:key];
             for (SwrveButton *button in page.buttons) {
+                bool canRequest = true;
                 if (button.actionType == kSwrveActionCapability && [button.actionString isEqualToString:@"swrve.push"]) {
-                    bool requestable = false;
 #if TARGET_OS_IOS
                     if (self.pushEnabled) {
-                        requestable = ![SwrvePermissions didWeAskForPushPermissionsAlready];
+                        canRequest = ![SwrvePermissions didWeAskForPushPermissionsAlready];
                     } else {
+                        canRequest = false;
                         [SwrveLogger error:@"Push is not enabled"];
                     }
+#else
+                    canRequest = false; // TARGET_OS_TV cannot request push capability
 #endif
-                    [result setObject:[NSNumber numberWithBool:requestable] forKey:button.actionString];
                 } else if (button.actionType == kSwrveActionCapability && button.actionString != nil) {
-                    bool requestable = false;
                     if (delegate != nil && [delegate respondsToSelector:@selector(canRequestCapability:)]) {
-                        requestable = [delegate canRequestCapability:button.actionString];
+                        canRequest = [delegate canRequestCapability:button.actionString];
+                    } else {
+                        canRequest = false;
                     }
-                    [result setObject:[NSNumber numberWithBool:requestable] forKey:button.actionString];
+                } else if (button.actionType == kSwrveActionStartGeo) {
+                    canRequest = [self shouldStartSwrveGeoSDK];
+                }
+
+                if (!canRequest) {
+                    return true; // no need to check any other buttons so exit fast
                 }
             }
         }
     }
-    return result;
+
+    return false;
 }
 
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event {
@@ -1077,6 +1075,14 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
     [self saveCampaignsState];
 
+    [self sendImpressionEvent:message embedded:embedded];
+}
+
+- (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message {
+    [self sendImpressionEvent:message embedded:@"true"];
+}
+
+- (void)sendImpressionEvent:(SwrveBaseMessage *)message embedded:(NSString *)embedded {
     NSString *viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
     NSDictionary *payload = @{@"embedded": embedded};
     [SwrveLogger debug:@"Queuing message impression event: %@", viewEvent];
@@ -1396,6 +1402,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             }
 
             actionTypeString = @"clipboard";
+            break;
         }
         case kSwrveActionCapability: {
             actionTypeString = @"request_capability";
@@ -1419,6 +1426,34 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                     }];
                 }
             }
+        }
+            break;
+        case kSwrveActionOpenSettings: {
+#if TARGET_OS_IOS
+            actionTypeString = @"open_app_settings";
+            NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            [[SwrveCommon sharedUIApplication] openURL:url options:@{} completionHandler:nil];
+#endif //TARGET_OS_IOS
+        }
+            break;
+        case kSwrveActionOpenNotificationSettings: {
+#if TARGET_OS_IOS
+            if (@available(iOS 15.4, *)) {
+                actionTypeString = @"open_notification_settings";
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
+                [[SwrveCommon sharedUIApplication] openURL:url options:@{} completionHandler:nil];
+            } else {
+                actionTypeString = @"open_app_settings";
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [[SwrveCommon sharedUIApplication] openURL:url options:@{} completionHandler:nil];
+            }
+#endif //TARGET_OS_IOS
+        }
+            break;
+        case kSwrveActionStartGeo: {
+#if TARGET_OS_IOS
+            [self startSwrveGeoSDK];
+#endif //TARGET_OS_IOS
         }
             break;
     }
@@ -1457,6 +1492,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         [self handleNextConversation:self.conversationsMessageQueue];
     }
 }
+
 - (void)beginShowMessageAnimation:(SwrveMessageViewController *)viewController {
     viewController.view.alpha = 0.0f;
     [UIView animateWithDuration:0.25
@@ -1487,6 +1523,14 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     // Show if the returned message is of type SwrveMessage
     if (message != nil && [message isKindOfClass:[SwrveMessage class]]) {
         SwrveMessage *messageToBeDisplayed = (SwrveMessage *) message;
+        
+        if (messageToBeDisplayed.control) {
+            [SwrveLogger warning:@"This message is a control message and will not be displayed.", nil];
+            // skip setting campaign state, these campaigns should never been shown to user.
+            // we send an impression event for backend reporting.
+            [self sendImpressionEvent:messageToBeDisplayed embedded:@"false"];
+            return campaignShown;
+        }
 
         if (![messageToBeDisplayed canResolvePersonalization:personalizationProperties]) {
             [SwrveLogger warning:@"Personalization options are not available for this message.", nil];
@@ -1514,13 +1558,23 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     // Embedded callback if it is an embedded message
     if (message != nil && [message isKindOfClass:[SwrveEmbeddedMessage class]]) {
         SwrveEmbeddedMessage *messageToBeDisplayed = (SwrveEmbeddedMessage *) message;
-
-        if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
-            self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(messageToBeDisplayed, personalizationProperties);
-        } else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
-            self.embeddedMessageConfig.embeddedMessageCallback(messageToBeDisplayed);
+        if (messageToBeDisplayed.control) {
+            [SwrveLogger warning:@"This message is a control message and should not be displayed.", nil];
         }
 
+        if (self.embeddedMessageConfig.embeddedCallback != nil) {
+            self.embeddedMessageConfig.embeddedCallback(messageToBeDisplayed, personalizationProperties, messageToBeDisplayed.control);
+        } else {
+            if (messageToBeDisplayed.control) {
+                [self sendImpressionEvent:messageToBeDisplayed embedded:@"true"];
+                return campaignShown;
+            }
+            else if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+                self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(messageToBeDisplayed, personalizationProperties);
+            } else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
+                self.embeddedMessageConfig.embeddedMessageCallback(messageToBeDisplayed);
+            }
+        }
         campaignShown = YES;
     }
 
@@ -1549,7 +1603,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 - (void)registerForPushNotificationsWithEvent:(NSString *)eventName {
 #if TARGET_OS_IOS
     if (self.pushEnabled) {
-        if (self.pushNotificationEvents != nil && [self.pushNotificationEvents containsObject:eventName]) {
+        if (self.pushNotificationPermissionEvents != nil && [self.pushNotificationPermissionEvents containsObject:eventName]) {
             // Ask for push notification permission (can display a dialog to the user)
             [analyticsSDK.push registerForPushNotifications:NO];
         } else if (self.provisionalPushNotificationEvents != nil && [self.provisionalPushNotificationEvents containsObject:eventName]) {
@@ -1661,12 +1715,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 #endif
 
         if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
-            // Filter out campaign if it has buttons requesting capabilities and canRequestCapability delegate returns false;
             SwrveInAppCampaign *swrveInAppCampaign = (SwrveInAppCampaign *) campaign;
             SwrveMessage *message = swrveInAppCampaign.message;
-            id <SwrveInAppCapabilitiesDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppCapabilitiesDelegate;
-            bool filterMessage = [self filterMessage:message withCapabilityDelegate:delegate];
-            if (filterMessage) {
+            bool filterRedundantCampaign = [self filterRedundantCampaign:message];
+            if (filterRedundantCampaign) {
                 continue;
             } else if (![message canResolvePersonalization:personalization]) {
                 continue;
@@ -1766,7 +1818,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
         SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *) campaign).message;
         if (message != nil) {
-            if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+            if (self.embeddedMessageConfig.embeddedCallback != nil) {
+                self.embeddedMessageConfig.embeddedCallback(message, personalizationProperties, message.control);
+            }
+            else if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
                 self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(message, personalizationProperties);
             } else if (self.embeddedMessageConfig.embeddedMessageCallback != nil) {
                 self.embeddedMessageConfig.embeddedMessageCallback(message);
@@ -1775,7 +1830,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
         return YES;
     }
-
+    
     return NO;
 }
 
@@ -1833,6 +1888,34 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 - (NSDictionary *)includeRealTimeUserProperties:(NSDictionary *)personalization {
     NSDictionary *realTimeUserProperties = [self processRealTimeUserProperties:[[self analyticsSDK] internalRealTimeUserProperties]];
     return [SwrveUtils combineDictionary:realTimeUserProperties withDictionary:personalization];
+}
+
+- (void)startSwrveGeoSDK {
+    Class geoSDK = NSClassFromString(@"SwrveGeoSDK");
+    SEL selector = NSSelectorFromString(@"start");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    if ([geoSDK respondsToSelector:selector]) {
+        [geoSDK performSelector:selector];
+    }
+#pragma clang diagnostic pop
+}
+
+- (bool)shouldStartSwrveGeoSDK {
+    bool shouldStart = false; // default to false as the SwrveGeoSDK might not be integrated
+    Class geoSDK = NSClassFromString(@"SwrveGeoSDK");
+    SEL selector = NSSelectorFromString(@"isStarted");
+    if ([geoSDK respondsToSelector:selector]) {
+        NSMethodSignature *methodSignature = [geoSDK methodSignatureForSelector:selector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+        [invocation setSelector:selector];
+        [invocation setTarget:geoSDK];
+        [invocation invoke];
+        bool isStarted = false;
+        [invocation getReturnValue:&isStarted];
+        shouldStart = !isStarted; // if its started (true) then shouldStart must be false
+    }
+    return shouldStart;
 }
 
 @end

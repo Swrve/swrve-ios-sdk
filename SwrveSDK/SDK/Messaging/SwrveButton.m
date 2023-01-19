@@ -79,6 +79,15 @@
             self.actionType = kSwrveActionPageLink;
             self.appID = [[(NSDictionary *) [buttonData objectForKey:@"game_id"] objectForKey:@"value"] integerValue];
             self.actionString = [(NSDictionary *) [buttonData objectForKey:@"action"] objectForKey:@"value"];
+        } else if ([buttonType isEqualToString:@"OPEN_APP_SETTINGS"]) {
+            self.actionType = kSwrveActionOpenSettings;
+            self.actionString = [(NSDictionary *) [buttonData objectForKey:@"action"] objectForKey:@"value"];
+        } else if ([buttonType isEqualToString:@"OPEN_NOTIFICATION_SETTINGS"]) {
+            self.actionType = kSwrveActionOpenNotificationSettings;
+            self.actionString = [(NSDictionary *) [buttonData objectForKey:@"action"] objectForKey:@"value"];
+        } else if ([buttonType isEqualToString:@"START_GEO"]) {
+            self.actionType = kSwrveActionStartGeo;
+            self.actionString = [(NSDictionary *) [buttonData objectForKey:@"action"] objectForKey:@"value"];
         } else {
             self.actionType = kSwrveActionDismiss;
             self.actionString = @"";

@@ -47,6 +47,7 @@
             [loadedFormats addObject:format];
         }
         self.formats = [[NSArray alloc] initWithArray:loadedFormats];
+        self.control = [[json objectForKey:@"control"] boolValue];
     }
     return self;
 }

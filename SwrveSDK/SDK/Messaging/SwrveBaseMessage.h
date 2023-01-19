@@ -10,6 +10,8 @@
 @property (nonatomic, retain)            NSNumber *priority;      /*!< Priority of the message */
 @property (nonatomic, strong)            NSString *name;          /*!< Name of the message */
 @property (nonatomic, retain)            SwrveMessageCenterDetails *messageCenterDetails;
+@property (atomic)                       bool control;            /*!< Flag indicating if this campaign is part of a control or treatment group. */
+
 
 @end
 

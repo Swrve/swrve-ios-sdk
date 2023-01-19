@@ -49,7 +49,7 @@
     config.autoStartLastUser = false;
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
-    config.pushNotificationEvents = nil;
+    config.pushNotificationPermissionEvents = nil;
 
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
@@ -76,7 +76,7 @@
     config.initMode = SWRVE_INIT_MODE_MANAGED;
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
-    config.pushNotificationEvents = nil;
+    config.pushNotificationPermissionEvents = nil;
 
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
@@ -106,7 +106,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
-    config.pushNotificationEvents = nil;
+    config.pushNotificationPermissionEvents = nil;
 
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
@@ -365,7 +365,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
-    config.pushNotificationEvents = nil;
+    config.pushNotificationPermissionEvents = nil;
 
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);

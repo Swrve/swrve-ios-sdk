@@ -2726,6 +2726,13 @@ enum HttpStatus {
 
 #pragma mark Messaging
 
+- (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message {
+    if (![self sdkReady]) {
+        return;
+    }
+    [messaging embeddedControlMessageImpressionEvent:message];
+}
+
 - (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
     if (![self sdkReady]) {
         return;

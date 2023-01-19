@@ -65,7 +65,6 @@
 @end
 
 @interface SwrveMessageController ()
-- (NSMutableDictionary *)capabilities:(SwrveMessage *)swrveMessage withCapabilityDelegate:(id<SwrveInAppCapabilitiesDelegate>)delegate;
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 - (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
@@ -75,6 +74,8 @@
 - (void)showMessage:(SwrveMessage *)message;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
 - (SwrveConversation*)conversationForEvent:(NSString *) eventName withPayload:(NSDictionary *)payload;
+- (void)startSwrveGeoSDK;
+- (bool)shouldStartSwrveGeoSDK;
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
 @property (nonatomic, retain) NSMutableDictionary *appStoreURLs;
 @property (nonatomic, retain) NSArray *campaigns;
@@ -1534,6 +1535,160 @@
     OCMVerifyAll(swrveMock);
 }
 
+#if TARGET_OS_IOS /** exclude tvOS **/
+/**
+ * Test open app settings  button pressed
+ */
+- (void)testOpenAppSettingsPressed {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    [controller showMessage:message];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    SwrveMessageFormat *format =[pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
+    XCTAssertEqual([buttons count], 5);
+
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    OCMExpect([mockUIApplication openURL:url options:@{} completionHandler:nil]);
+    OCMStub([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+
+    // Pretend to press open app settings buttons
+    for (NSInteger i = 0; i < [buttons count]; i++) {
+        SwrveButton* swrveButton = [buttons objectAtIndex:i];
+        if ([swrveButton actionType] == kSwrveActionOpenSettings) {
+            UISwrveButton* button = [UISwrveButton new];
+            [button setTag:i];
+            [pageViewController onButtonPressed:button];
+        }
+    }
+
+    XCTAssertNotNil(message);
+
+    // Check if correct event was sent to Swrve for this button
+    int clickEventCount = 0;
+    for (NSString* event in [swrveMock eventBuffer]) {
+        if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
+            clickEventCount++;
+        }
+    }
+    XCTAssertEqual(clickEventCount, 1);
+
+    OCMVerifyAllWithDelay(mockUIApplication, 5);
+
+    [mockUIApplication stopMocking];
+    OCMVerifyAll(swrveMock);
+}
+
+/**
+ * Test open notification settings button pressed
+ */
+- (void)testOpenNotificationSettingsPressed {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    [controller showMessage:message];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    SwrveMessageFormat *format =[pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
+    XCTAssertEqual([buttons count], 5);
+
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    if (@available(iOS 15.4, *)) {
+        NSURL *url = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
+        OCMExpect([mockUIApplication openURL:url options:@{} completionHandler:nil]);
+    } else {
+        NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+        OCMExpect([mockUIApplication openURL:url options:@{} completionHandler:nil]);
+    }
+    OCMStub([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+
+    // Pretend to press open app settings buttons
+    for (NSInteger i = 0; i < [buttons count]; i++) {
+        SwrveButton* swrveButton = [buttons objectAtIndex:i];
+        if ([swrveButton actionType] == kSwrveActionOpenNotificationSettings) {
+            UISwrveButton* button = [UISwrveButton new];
+            [button setTag:i];
+            [pageViewController onButtonPressed:button];
+        }
+    }
+
+    XCTAssertNotNil(message);
+
+    // Check if correct event was sent to Swrve for this button
+    int clickEventCount = 0;
+    for (NSString* event in [swrveMock eventBuffer]) {
+        if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
+            clickEventCount++;
+        }
+    }
+    XCTAssertEqual(clickEventCount, 1);
+
+    OCMVerifyAllWithDelay(mockUIApplication, 5);
+
+    [mockUIApplication stopMocking];
+    OCMVerifyAll(swrveMock);
+}
+
+- (void)testStartGeoPressed {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_start_geo"];
+    SwrveMessageController *controllerMock = (SwrveMessageController *) OCMPartialMock([swrveMock messaging]);
+    OCMStub([controllerMock shouldStartSwrveGeoSDK]).andReturn(true);
+
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controllerMock.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controllerMock baseMessageForEvent:@"test1"];
+    [controllerMock showMessage:message];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controllerMock];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    SwrveMessageFormat *format =[pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
+    XCTAssertEqual([buttons count], 1);
+
+    // Pretend to press start geo button
+    SwrveButton* swrveButton = [buttons objectAtIndex:0];
+    XCTAssertEqual([swrveButton actionType], kSwrveActionStartGeo);
+    UISwrveButton* button = [UISwrveButton new];
+    [button setTag:0];
+    [pageViewController onButtonPressed:button];
+
+    XCTAssertNotNil(message);
+
+    // Check if correct event was sent to Swrve for this button
+    int clickEventCount = 0;
+    for (NSString* event in [swrveMock eventBuffer]) {
+        if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
+            clickEventCount++;
+        }
+    }
+    XCTAssertEqual(clickEventCount, 1);
+
+    [controllerMock dismissMessageWindow];
+    OCMVerify([controllerMock startSwrveGeoSDK]);
+}
+#endif /**TARGET_OS_IOS **/
+
 /**
  * Test dismiss button presses
  * - custom button callback called with correct action
@@ -2207,7 +2362,7 @@
     id swrvePermissions = OCMClassMock([SwrvePermissions class]);
     OCMStub([swrvePermissions requestPushNotifications:OCMOCK_ANY provisional:OCMOCK_ANY]).andDo(nil);
 
-    // check capablity delegate not called
+    // check capability delegate not called
     OCMReject([testCapabilitiesDelegateMock requestCapability:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
     OCMExpect([swrvePushMock registerForPushNotifications:FALSE]).andDo(nil);
 
@@ -3376,8 +3531,8 @@
     XCTAssertNil(window);
 }
 
-- (void)testMutliLineFormatTextview {
-    // No scrolling so no accesability and normal system font applied
+- (void)testMultiLineFormatTextview {
+    // No scrolling so no accessibility and normal system font applied
     SwrveMessageViewController *messageViewController = [[SwrveMessageViewController alloc] init];
     NSDictionary *format = @{
         @"images" : @[
@@ -3594,7 +3749,7 @@
     XCTAssertEqualObjects(expectedBackgroundColor, backgroundColor);
 }
 
-- (void)testMutliLineCalibration {
+- (void)testMultiLineCalibration {
     float sample_scaled_by = 0.467005076142132;
     float sample_calibratedHeight = 5000 * sample_scaled_by;
     float sample_calibratedWidth = 500 * sample_scaled_by;

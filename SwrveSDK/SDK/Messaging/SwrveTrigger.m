@@ -52,7 +52,7 @@
         return nil;
     }
     
-    if([triggerOperator isEqualToString:@"eq"] || [triggerOperator isEqualToString:@"contains"]) {
+    if([triggerOperator isEqualToString:@"eq"] || [triggerOperator isEqualToString:@"contains"] || [triggerOperator isEqualToString:@"number_gt"] || [triggerOperator isEqualToString:@"number_eq"] || [triggerOperator isEqualToString:@"number_lt"] || [triggerOperator isEqualToString:@"number_between"]|| [triggerOperator isEqualToString:@"number_not_between"]) {
 
         SwrveTriggerCondition *condition = [[SwrveTriggerCondition alloc] initWithDictionary:dictionary andOperator:nil];
         if(condition) {
@@ -122,6 +122,16 @@
             case SwrveTriggerOperatorEQUALS:
                 break;
             case SwrveTriggerOperatorCONTAINS:
+                break;
+            case SwrveTriggerOperatorNUMBER_EQUALS:
+                break;
+            case SwrveTriggerOperatorNUMBER_LT:
+                break;
+            case SwrveTriggerOperatorNUMBER_GT:
+                break;
+            case SwrveTriggerOperatorNUMBER_BETWEEN:
+                break;
+            case SwrveTriggerOperatorNUMBER_NOT_BETWEEN:
                 break;
             case SwrveTriggerOperatorOTHER:
                 _isValidTrigger = NO;

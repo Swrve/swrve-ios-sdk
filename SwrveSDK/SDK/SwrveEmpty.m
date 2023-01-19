@@ -351,6 +351,10 @@
 #pragma unused(idfa)
 }
 
+- (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message {
+#pragma unused(message)
+}
+
 #pragma mark -
 
 @end

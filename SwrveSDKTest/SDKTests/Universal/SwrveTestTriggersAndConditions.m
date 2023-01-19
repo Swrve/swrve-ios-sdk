@@ -334,4 +334,142 @@
     XCTAssert([trigger isValidTrigger], @"This should be a valid Trigger");
 }
 
+- (void) testCanTriggerWithPayloadNUMERICEqual {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search1",
+                                  @"conditions":@{@"key" : @"passengers", @"value" : @17, @"op" : @"number_eq"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @17};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @16};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+    
+    payloadJSON = @{@"passengers" : @18};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICLesser {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search2",
+                                  @"conditions":@{@"key" : @"passengers", @"value" : @10, @"op" : @"number_lt"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @5};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @11};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICGreater {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search3",
+                                  @"conditions":@{@"key" : @"passengers", @"value" : @10, @"op" : @"number_gt"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @11};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @5};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICBetween {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search4",
+                                  @"conditions":@{@"key" : @"passengers",@"value" : @{@"lower" : @10,@"upper" : @20}, @"op" : @"number_between"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @15};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @4};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+    
+    payloadJSON = @{@"passengers" : @23};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICNotBetween {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search4",
+                                  @"conditions":@{@"key" : @"passengers",@"value" : @{@"lower" : @10,@"upper" : @20}, @"op" : @"number_not_between"}
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @15};
+    
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+    
+    payloadJSON = @{@"passengers" : @4};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @23};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICOr {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search5",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"passengers",@"value" : @{@"lower" : @5,@"upper" : @8}, @"op" : @"number_between"},
+                                              @{@"key" : @"passengers", @"value" : @10, @"op" : @"number_gt"}],
+                                        @"op" : @"or"
+                                        }
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers" : @12};
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @7};
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    payloadJSON = @{@"passengers" : @9};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
+- (void) testCanTriggerWithPayloadNUMERICAnd {
+    
+    NSDictionary *triggerJSON = @{@"event_name": @"flight.search6",
+                                  @"conditions" :
+                                      @{@"args":
+                                            @[@{@"key" : @"passengers1", @"value" : @10, @"op" : @"number_eq"},
+                                              @{@"key" : @"passengers2", @"value" : @5, @"op" : @"number_lt"}],
+                                        @"op" : @"and"
+                                        }
+                                  };
+    
+    SwrveTrigger *trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    NSDictionary *payloadJSON =  @{@"passengers1" : @10,
+                                       @"passengers2" : @4
+                                       };
+    
+    XCTAssertTrue([trigger canTriggerWithPayload:payloadJSON], @"This payload should pass");
+    
+    trigger = [[SwrveTrigger alloc] initWithDictionary:triggerJSON];
+    
+    payloadJSON = @{@"passengers1" : @10};
+    XCTAssertFalse([trigger canTriggerWithPayload:payloadJSON], @"This payload should not pass");
+}
+
 @end

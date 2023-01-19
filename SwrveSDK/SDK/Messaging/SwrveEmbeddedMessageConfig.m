@@ -2,6 +2,7 @@
 
 @implementation SwrveEmbeddedMessageConfig
 
+@synthesize embeddedCallback;
 @synthesize embeddedMessageCallback;
 @synthesize embeddedMessageCallbackWithPersonalization;
 

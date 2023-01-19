@@ -11,8 +11,8 @@
 - (void)testVersionStrings {
     XCTAssertEqual(CAMPAIGN_VERSION, 9);
     XCTAssertEqual(CAMPAIGN_RESPONSE_VERSION, 2);
-    XCTAssertEqual(EMBEDDED_CAMPAIGN_VERSION, 2);
-    XCTAssertEqual(IN_APP_CAMPAIGN_VERSION, 10);
+    XCTAssertEqual(EMBEDDED_CAMPAIGN_VERSION, 3);
+    XCTAssertEqual(IN_APP_CAMPAIGN_VERSION, 12);
     XCTAssertEqual(CONVERSATION_VERSION, 4);
     XCTAssertEqual(SWRVE_VERSION, 3);
 }
