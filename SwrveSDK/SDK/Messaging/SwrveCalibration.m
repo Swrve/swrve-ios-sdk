@@ -2,7 +2,6 @@
 
 @implementation SwrveCalibration
 
-@synthesize renderScale;
 @synthesize calibrationWidth;
 @synthesize calibrationHeight;
 @synthesize calibrationFontSize;

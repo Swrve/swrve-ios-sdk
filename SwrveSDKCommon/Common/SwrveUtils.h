@@ -105,4 +105,6 @@
 
 + (void)stopBackgroundTaskCommon:(UIBackgroundTaskIdentifier)bgTask withName:(NSString *)name;
 
++ (UIColor *)processHexColorValue:(NSString *)color;
+
 @end

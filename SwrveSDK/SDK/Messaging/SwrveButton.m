@@ -1,4 +1,5 @@
 #import "SwrveButton.h"
+#import "SwrveButtonTheme.h"
 
 @interface SwrveButton ()
 
@@ -21,6 +22,7 @@
 @synthesize accessibilityText;
 @synthesize events;
 @synthesize userUpdates;
+@synthesize theme;
 
 - (id)initWithDictionary:(NSDictionary *)buttonData campaignId:(long)swrveCampaignId messageId:(long)swrveMessageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
     if (self = [super init]) {
@@ -103,7 +105,9 @@
         if ([buttonData objectForKey:@"user_updates"]) {
             self.userUpdates = [buttonData objectForKey:@"user_updates"];
         }
-
+        if ([buttonData objectForKey:@"theme"]) {
+            self.theme = [[SwrveButtonTheme alloc] initWithDictionary:[buttonData objectForKey:@"theme"]];
+        }
     }
     return self;
 }

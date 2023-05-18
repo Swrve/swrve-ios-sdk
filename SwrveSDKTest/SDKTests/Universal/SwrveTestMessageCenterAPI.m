@@ -2,18 +2,21 @@
 #import <OCMock/OCMock.h>
 #import <SwrveMessagePage.h>
 #import <SwrveMessagePageViewController.h>
+#import <SwrveThemedUIButton.h>
+#import <SwrveTextUtils.h>
 #import "SwrveTestHelper.h"
 
 #import "SwrveMessage.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessageViewController.h"
 #import "SwrveAssetsManager.h"
-#import "UISwrveButton.h"
+#import "SwrveUIButton.h"
 #import "SwrveUtils.h"
 #import "SwrveButton.h"
 #import "SwrveCampaign.h"
 #import "SwrveSDK.h"
 #import "SwrvePrivateAccess.h"
+#import "SwrveMessageFocus.h"
 
 @interface Swrve()
 @property (atomic) SwrveRESTClient *restClient;
@@ -32,6 +35,17 @@
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
 @property (nonatomic, retain) NSDate *initialisedTime;
+@end
+
+@interface SwrveThemedUIButton ()
+@property(atomic) CGFloat renderScale;
+@property(atomic, retain) SwrveCalibration *calibration;
+@end
+
+@interface SwrveMessageFocus ()
+
+- (void)applyFocusOnThemedUIButton:(UIView *)view gainFocus:(bool)gainFocus;
+
 @end
 
 @interface SwrveTestMessageCenterAPI : XCTestCase
@@ -59,6 +73,15 @@
                    @"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e",
                    ];
     }
+    return assets;
+}
+
++ (NSMutableArray *)testJSONButtonThemeAssets {
+    NSMutableArray *assets = [NSMutableArray array];
+    [assets addObject:@"1111111111111111111111111"];
+    [assets addObject:@"535.1030.b60343e5f678c56d52e80b00e604104a73d256f2.ttf"];
+    [assets addObject:@"9973b5003e299dab6394258c459e82b58a7a7633"];
+    [assets addObject:@"73efb349f6e6ab7753bdfc1073d2035d607bbd40"];
     return assets;
 }
 
@@ -157,7 +180,7 @@
     [viewController viewDidAppear:NO];
 
     // Press dismiss button
-    UISwrveButton* dismissButton = [UISwrveButton new];
+    SwrveUIButton* dismissButton = [SwrveUIButton new];
     [viewController onButtonPressed:dismissButton pageId:[NSNumber numberWithInt:0]];
 
     XCTAssertEqual(campaign.state.impressions, 1);
@@ -333,20 +356,20 @@
 
     // get all the buttons
     for (UIView *item in vcSubviews){
-        if ([item isKindOfClass:[UISwrveButton class]]) {
+        if ([item isKindOfClass:[SwrveUIButton class]]) {
             [uiButtons addObject:item];
         }
     }
 
     XCTAssertEqual([uiButtons count], 2);
-    UISwrveButton *clipboardButton = nil;
+    SwrveUIButton *clipboardButton = nil;
 
     for (NSInteger i = 0; i < [buttons count]; i++) {
         SwrveButton *swrveButton = [buttons objectAtIndex:i];
 
-        // verify that a UISwrveButton matching the tag has custom action
+        // verify that a SwrveUIButton matching the tag has custom action
         if ([swrveButton actionType] == kSwrveActionCustom) {
-            for (UISwrveButton *button in uiButtons){
+            for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     XCTAssertEqualObjects(button.displayString, @"custom: display");
                     XCTAssertEqualObjects(button.actionString, @"urltest.com/urlprocessed");
@@ -354,9 +377,9 @@
             }
         }
 
-        // verify that a UISwrveButton matching the tag has clipboard action
+        // verify that a SwrveUIButton matching the tag has clipboard action
         if ([swrveButton actionType] == kSwrveActionClipboard) {
-            for (UISwrveButton *button in uiButtons){
+            for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     XCTAssertEqualObjects(button.displayString, @"clipboard: display");
                     XCTAssertEqualObjects(button.actionString, @"test_value");
@@ -941,6 +964,151 @@
     XCTAssertNotNil(downloadDate);
     XCTAssertEqualWithAccuracy([downloadDate timeIntervalSinceReferenceDate], [today timeIntervalSinceReferenceDate], 1.0);
 
+}
+
+- (void)testThemedButton {
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONButtonThemeAssets]];
+    [SwrveTestHelper createDummyPngAssets:@[@"9973b5003e299dab6394258c459e82b58a7a7633", @"73efb349f6e6ab7753bdfc1073d2035d607bbd40"]];
+
+    id swrveMock = [self swrveMock];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaign_native_button_basics" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [controller messageCenterCampaignWithID:625386 andPersonalization:nil];
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    XCTAssertNotNil(messageViewController.message);
+    XCTAssertEqualObjects(messageViewController.message.name, @"native buttons t1");
+
+    SwrveMessagePageViewController *viewController = nil;
+#if TARGET_OS_TV
+    viewController = [messageViewController.childViewControllers firstObject];
+#else
+    viewController = [messageViewController.viewControllers firstObject];
+#endif
+
+    // access the UIViews in the subview of the SwrveMessageViewController
+    NSArray *vcSubviews = [[[[viewController view] subviews] firstObject] subviews];
+    XCTAssertEqual([vcSubviews count], 5);
+
+    UIView *backgroundImage = [vcSubviews objectAtIndex:0];
+    XCTAssertTrue([backgroundImage isKindOfClass:[UIImageView class]]);
+
+    // 1st button
+    [self assertThemedButton:vcSubviews index:1 text:@"Text Button" accessibilityLabel:@"Text Button"
+                cornerRadius:0 font:@".SFUI-Regular" fontSize:21
+                   textColor:@"#FF000000" textColorPressed:@"#FFFF0000"
+                     bgColor:@"#FFFF0000" bgColorPressed:@"#ffffd700" bgColorFocused:nil
+                 borderWidth:0 borderColor:nil borderColorPressed:nil borderColorFocused:nil
+                  paddingTop:10 paddingLeft:20 paddingBottom:30 paddingRight:40
+                   alignment:UIControlContentHorizontalAlignmentLeft];
+
+    // 2nd button with custom accessibility text
+    [self assertThemedButton:vcSubviews index:2 text:@"Text Button longer  text" accessibilityLabel:@"Custom accessibility text"
+                cornerRadius:40 font:@".SFUI-Regular" fontSize:10
+                   textColor:@"#FF000000" textColorPressed:@"#FFFF0000"
+                     bgColor:@"#FFFF0000" bgColorPressed:@"#ffffd700" bgColorFocused:@"ffffff00"
+                 borderWidth:4 borderColor:@"FF000000" borderColorPressed:@"FFFF0000" borderColorFocused:@"FF0040DD"
+                  paddingTop:0 paddingLeft:0 paddingBottom:0 paddingRight:0
+                   alignment:UIControlContentHorizontalAlignmentCenter];
+
+    // 3rd button
+    [self assertThemedButton:vcSubviews index:3 text:@"system 12" accessibilityLabel:@"system 12"
+                cornerRadius:0 font:@".SFUI-Regular" fontSize:12
+                   textColor:@"#FF000000" textColorPressed:@"#FFFF0000"
+                     bgColor:nil bgColorPressed:nil bgColorFocused:nil
+                 borderWidth:0 borderColor:nil borderColorPressed:nil borderColorFocused:nil
+                  paddingTop:0 paddingLeft:0 paddingBottom:0 paddingRight:0
+                   alignment:UIControlContentHorizontalAlignmentRight];
+
+    // 4th button
+    [self assertThemedButton:vcSubviews index:4 text:@"Comic 16" accessibilityLabel:@"Comic 16"
+                cornerRadius:0 font:@".SFUI-Regular" fontSize:16
+                   textColor:@"#FF000000" textColorPressed:@"#FFFF0000"
+                     bgColor:@"#667fd8ff" bgColorPressed:@"#ffffd700" bgColorFocused:nil
+                 borderWidth:0 borderColor:nil borderColorPressed:nil borderColorFocused:nil
+                  paddingTop:0 paddingLeft:0 paddingBottom:0 paddingRight:0
+                   alignment:UIControlContentHorizontalAlignmentCenter];
+}
+
+- (void)assertThemedButton:(NSArray *)vcSubviews index:(int)index text:(NSString *)text accessibilityLabel:(NSString *)accessibilityLabel
+              cornerRadius:(int)cornerRadius font:(NSString *)fontName fontSize:(CGFloat)fontSize
+                 textColor:(NSString *)textColor textColorPressed:(NSString *)textColorPressed
+                   bgColor:(NSString *)bgColor bgColorPressed:(NSString *)bgColorPressed bgColorFocused:(NSString *)bgColorFocused
+               borderWidth:(CGFloat)borderWidth borderColor:(NSString *)borderColor borderColorPressed:(NSString *)borderColorPressed borderColorFocused:(NSString *)borderColorFocused
+                paddingTop:(CGFloat)top paddingLeft:(CGFloat)left paddingBottom:(CGFloat)bottom paddingRight:(CGFloat)right
+                 alignment:(UIControlContentHorizontalAlignment)alignment {
+    UIView *view1 = [vcSubviews objectAtIndex:index];
+    XCTAssertTrue([view1 isKindOfClass:[SwrveThemedUIButton class]]);
+    SwrveThemedUIButton *button = (SwrveThemedUIButton *) view1;
+    XCTAssertEqualObjects(button.titleLabel.text, text);
+    XCTAssertEqualObjects([button accessibilityLabel], accessibilityLabel);
+    XCTAssertEqual(button.layer.cornerRadius, cornerRadius * button.renderScale);
+    XCTAssertEqualObjects(button.titleLabel.font.fontName, fontName);
+    UIFont *systemFont = [UIFont systemFontOfSize:fontSize];
+    CGFloat scaledFontSize = [SwrveTextUtils scaleFont:systemFont
+                                           calibration:button.calibration
+                                         swrveFontSize:fontSize
+                                           renderScale:button.renderScale];
+    XCTAssertEqual(button.titleLabel.font.pointSize, scaledFontSize);
+    UIColor *titleUIColor = [SwrveUtils processHexColorValue:textColor];
+    XCTAssertEqualObjects(button.titleLabel.textColor, titleUIColor);
+    if (bgColor) {
+        UIColor *bgUIColor = [SwrveUtils processHexColorValue:bgColor];
+        XCTAssertEqualObjects(button.backgroundColor, bgUIColor);
+    } else {
+        XCTAssertNotNil([button backgroundImageForState:UIControlStateNormal]);
+        XCTAssertNotNil([button backgroundImageForState:UIControlStateHighlighted]);
+        XCTAssertNotNil([button backgroundImageForState:UIControlStateFocused]);
+    }
+    XCTAssertEqual(button.layer.borderWidth, borderWidth * button.renderScale);
+    if (borderWidth > 0) {
+        UIColor *borderUIColor = [SwrveUtils processHexColorValue:borderColor];
+        XCTAssert(CGColorEqualToColor(button.layer.borderColor, [borderUIColor CGColor]));
+    }
+    XCTAssertEqual(button.contentEdgeInsets.top, (top + borderWidth) * button.renderScale);
+    XCTAssertEqual(button.contentEdgeInsets.left, (left + borderWidth) * button.renderScale);
+    XCTAssertEqual(button.contentEdgeInsets.bottom, (bottom + borderWidth) * button.renderScale);
+    XCTAssertEqual(button.contentEdgeInsets.right, (right + borderWidth) * button.renderScale);
+
+    // test focused state
+    SwrveMessageFocus *messageFocus = [[SwrveMessageFocus alloc] initWithView:button]; // should be init with root view, but doens't matter here for test
+    [messageFocus applyFocusOnThemedUIButton:button gainFocus:true];
+    if (bgColorFocused) {
+        UIColor *focusedBgUIColor = [SwrveUtils processHexColorValue:bgColorFocused];
+        XCTAssertEqualObjects(button.backgroundColor, focusedBgUIColor);
+    }
+    if (borderWidth > 0 && borderColorFocused) {
+        UIColor *borderUIColor = [SwrveUtils processHexColorValue:borderColorFocused];
+        XCTAssert(CGColorEqualToColor(button.layer.borderColor, [borderUIColor CGColor]));
+    }
+
+    // test pressed/highlighted state
+    [button setHighlighted:true];
+
+    UIColor *pressedTitleUIColor = [SwrveUtils processHexColorValue:textColorPressed];
+    XCTAssertEqualObjects(button.titleLabel.textColor, pressedTitleUIColor);
+    if (bgColorPressed) {
+        UIColor *pressedBgUIColor = [SwrveUtils processHexColorValue:bgColorPressed];
+        XCTAssertEqualObjects(button.backgroundColor, pressedBgUIColor);
+    } else {
+        XCTAssertEqualObjects(button.backgroundColor, UIColor.clearColor);
+    }
+    if (borderWidth > 0) {
+        UIColor *borderUIColor = [SwrveUtils processHexColorValue:borderColorPressed];
+        XCTAssert(CGColorEqualToColor(button.layer.borderColor, [borderUIColor CGColor]));
+    }
+
+    XCTAssertEqual(button.contentHorizontalAlignment, alignment);
 }
 
 - (void)waitForWindowDismissed:(SwrveMessageController *)controller {

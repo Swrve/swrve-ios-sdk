@@ -133,17 +133,22 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
                          if (error) {
                              [SwrveLogger debug:@"Could not download external asset: %@", error];
                              [SwrveQA assetFailedToDownload:assetItemName resolvedUrl:assetDigest reason:error.localizedDescription];
-                             
                          } else {
-                             NSString *fileAssetName = [self fileAssetName:assetItemName mimeType:response];
-                             NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, fileAssetName, nil]];
-                             [data writeToURL:dst atomically:YES];
+                             NSString *mimeType = [self mimeTypeFromResponse:response];
+                             if ([self isSupportedMimeType:mimeType]) {
+                                 NSString *fileAssetName = [self fileAssetName:assetItemName mimeType:mimeType];
+                                 NSURL *dst = [NSURL fileURLWithPathComponents:[NSArray arrayWithObjects:self.cacheFolder, fileAssetName, nil]];
+                                 [data writeToURL:dst atomically:YES];
 
-                             // Add the asset to the set of assets that we know are downloaded.
-                             @synchronized (self->assetsOnDiskSet) {
-                                 [self->assetsOnDiskSet addObject:assetItemName];
+                                 // Add the asset to the set of assets that we know are downloaded.
+                                 @synchronized (self->assetsOnDiskSet) {
+                                     [self->assetsOnDiskSet addObject:assetItemName];
+                                 }
+                                 [SwrveLogger debug:@" External asset downloaded: %@", assetItemName];
+                             } else {
+                                 [SwrveLogger debug:@"Asset cannot be downloaded. External url content type is not supported:%@", url.absoluteString];
+                                 [SwrveQA assetFailedToDownload:assetItemName resolvedUrl:assetDigest reason:@"External url content type is not supported."];
                              }
-                             [SwrveLogger debug:@" External asset downloaded: %@", assetItemName];
                          }
 
                          // This asset has finished downloading
@@ -227,15 +232,33 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     return [self->assetsOnDiskSet copy];
 }
 
-// Some mimeTypes are saved with file extension, but default is to just use the assetName
-- (NSString *)fileAssetName:(NSString *)assetName mimeType:(NSURLResponse *)response {
-    NSString *fileAssetName = assetName;
+- (NSString *)mimeTypeFromResponse:(NSURLResponse *)response {
+    NSString *mimeType = nil;
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-        NSString *mimeType = [httpResponse MIMEType];
-        if (mimeType && [mimeType containsString:@"image/gif"]) {
-            fileAssetName = [assetName stringByAppendingString:@".gif"];
-        }
+        mimeType = [httpResponse MIMEType];
+    }
+    return mimeType;
+}
+
+- (BOOL)isSupportedMimeType:(NSString *)mimeType {
+    BOOL isSupportedMimeType = NO;
+    if (mimeType && (
+            [mimeType isEqualToString:@"image/jpeg"] ||
+                    [mimeType isEqualToString:@"image/png"] ||
+                    [mimeType isEqualToString:@"image/gif"] ||
+                    [mimeType isEqualToString:@"image/bmp"])
+            ) {
+        isSupportedMimeType = YES;
+    }
+    return isSupportedMimeType;
+}
+
+// Some mimeTypes are saved with file extension, but default is to just use the assetName
+- (NSString *)fileAssetName:(NSString *)assetName mimeType:(NSString *)mimeType {
+    NSString *fileAssetName = assetName;
+    if (mimeType && [mimeType containsString:@"image/gif"]) {
+        fileAssetName = [assetName stringByAppendingString:@".gif"];
     }
     return fileAssetName;
 }

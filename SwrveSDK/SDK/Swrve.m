@@ -959,6 +959,11 @@ enum {
                                          sessionToken:self.sessionToken
                                            appVersion:self.appVersion
                                              isQAUser:[[SwrveQA sharedInstance] isQALogging]];
+                        // The qauser push token is stored separately to regular users and requires an update for newly identified users who happen to be a qauser also.
+                        NSDictionary *deviceInfo = [self deviceInfo];
+                        [self mergeWithCurrentDeviceInfo:deviceInfo];
+                        [self queueDeviceInfo];
+                        [self sendQueuedEvents];
                     } else {
                         [SwrveQA updateQAUser:@{@"logging": @NO, @"reset_device_state": @NO} andSessionToken:self.sessionToken];
                         [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier

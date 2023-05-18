@@ -1,5 +1,6 @@
-#import "UISwrveButton.h"
+#import "SwrveUIButton.h"
 #import "SwrveMessage.h"
+#import "SwrveButtonTheme.h"
 
 /*! In-app message button. */
 @interface SwrveButton : NSObject
@@ -19,7 +20,7 @@
 @property(nonatomic, retain) NSString *accessibilityText;           /*!< Alternative text for use with accessibility voice over */
 @property(nonatomic, retain) NSArray *events;                       /*!< Array of events to send on button click */
 @property(nonatomic, retain) NSArray *userUpdates;                  /*!< Array of user properties to send on button click  */
-
+@property(nonatomic, retain) SwrveButtonTheme *theme;               /*!< Native button properties  */
 
 - (id)initWithDictionary:(NSDictionary *)buttonData
               campaignId:(long)swrveCampaignId

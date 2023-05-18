@@ -4,6 +4,7 @@
 #import "SwrveImage.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessagePage.h"
+#import "SwrveTextUtils.h"
 
 #if __has_include(<SwrveSDKCommon/TextTemplating.h>)
 
@@ -87,22 +88,31 @@ static bool in_cache(NSString *file, NSSet *set) {
             SwrveMessagePage *page = [pages objectForKey:key];
 
             for (SwrveButton *button in page.buttons) {
-                BOOL hasButtonImage = in_cache(button.image, assets);
-                if (button.dynamicImageUrl) {
-                    if ([self canResolvePersonalizedImageAsset:button.dynamicImageUrl withPersonalization:personalization withAssets:assets]) {
-                        hasButtonImage = YES;
+                if (button.theme) { // if there's a theme then no need to check "image_up"
+                    if (![self buttonThemeAssetsReady:button.theme assets:assets]) {
+                        return NO;
                     }
-                }
-                if (!hasButtonImage) {
-                    [SwrveLogger debug:@"Button Asset not yet downloaded: %@ / %@", button.image, button.dynamicImageUrl];
-                    return NO;
+                } else {
+                    BOOL hasButtonImage = YES;
+                    if (button.image) {
+                        hasButtonImage = in_cache(button.image, assets);
+                    }
+                    if (button.dynamicImageUrl) {
+                        if ([self canResolvePersonalizedImageAsset:button.dynamicImageUrl withPersonalization:personalization withAssets:assets]) {
+                            hasButtonImage = YES;
+                        }
+                    }
+                    if (!hasButtonImage) {
+                        [SwrveLogger debug:@"Button Asset not yet downloaded: %@ / %@", button.image, button.dynamicImageUrl];
+                        return NO;
+                    }
                 }
             }
 
             for (SwrveImage* image in page.images) {
                 if(image.multilineText) {
                     NSString *font_file = [image.multilineText objectForKey:@"font_file"];
-                    if (font_file && ![font_file isEqualToString:@"_system_font_"]) {
+                    if (font_file && ![SwrveTextUtils isSystemFont:font_file]) {
                         if (!in_cache(font_file, assets)) {
                             [SwrveLogger debug:@"Font Asset not yet downloaded: %@", font_file];
                             return NO;
@@ -120,6 +130,45 @@ static bool in_cache(NSString *file, NSSet *set) {
                         return NO;
                     }
                 }
+            }
+        }
+    }
+
+    return YES;
+}
+
+- (BOOL)buttonThemeAssetsReady:(SwrveButtonTheme *)theme assets:(NSSet *)assets {
+    if (theme.bgImage) {
+        if (!in_cache(theme.bgImage, assets)) {
+            [SwrveLogger debug:@"Button theme bgImage asset not yet downloaded: %@", theme.bgImage];
+            return NO;
+        }
+    }
+
+    NSString *fontFile = theme.fontFile;
+    if (fontFile && ![SwrveTextUtils isSystemFont:fontFile]) {
+        if (!in_cache(fontFile, assets)) {
+            [SwrveLogger debug:@"Button theme font asset not yet downloaded: %@", fontFile];
+            return NO;
+        }
+    }
+
+    if (theme.pressedState) {
+        SwrveButtonThemeState *pressedThemeState = theme.pressedState;
+        if (pressedThemeState.bgImage) {
+            if (!in_cache(pressedThemeState.bgImage, assets)) {
+                [SwrveLogger debug:@"Button pressed theme bgImage asset not yet downloaded: %@", pressedThemeState.bgImage];
+                return NO;
+            }
+        }
+    }
+
+    if (theme.focusedState) {
+        SwrveButtonThemeState *focusedThemeState = theme.focusedState;
+        if (focusedThemeState.bgImage) {
+            if (!in_cache(focusedThemeState.bgImage, assets)) {
+                [SwrveLogger debug:@"Button focused theme bgImage asset not yet downloaded: %@", focusedThemeState.bgImage];
+                return NO;
             }
         }
     }

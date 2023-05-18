@@ -1,5 +1,5 @@
-#import "SwrveTextView.h"
-#import "SwrveTextImageView.h"
+#import "SwrveUITextView.h"
+#import "SwrveTextUtils.h"
 
 #if __has_include(<SwrveSDKCommon/TextTemplating.h>)
 #import <SwrveSDKCommon/TextTemplating.h>
@@ -9,9 +9,12 @@
 #import "SwrveLogger.h"
 #endif
 
-@implementation SwrveTextView
+@implementation SwrveUITextView
 
-- (id)initWithStyle:(SwrveTextViewStyle *)style calbration:(SwrveCalibration *)calibration frame:(CGRect)frame {
+- (id)initWithStyle:(SwrveTextViewStyle *)style
+         calbration:(SwrveCalibration *)calibration
+              frame:(CGRect)frame
+        renderScale:(CGFloat)renderScale {
     if (self = [super init]) {
         self.frame = frame;
         self.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
@@ -22,10 +25,10 @@
         self.editable = false;
         self.dataDetectorTypes = UIDataDetectorTypeLink;
 #endif
-        self.textContainerInset = UIEdgeInsetsMake(style.topPadding * calibration.renderScale,
-                                                   style.leftPadding * calibration.renderScale,
-                                                   style.bottomPadding * calibration.renderScale,
-                                                   style.rightPadding * calibration.renderScale);
+        self.textContainerInset = UIEdgeInsetsMake(style.topPadding * renderScale,
+                                                   style.leftPadding * renderScale,
+                                                   style.bottomPadding * renderScale,
+                                                   style.rightPadding * renderScale);
 
         self.textContainer.lineFragmentPadding = 0;
         self.textAlignment = style.textAlignment;
@@ -38,8 +41,11 @@
             calibration.calibrationWidth != 0.0f ||
             calibration.calibrationHeight != 0.0f ||
             (calibration.calibrationText != nil && ![calibration.calibrationText isEqualToString:@""])) {
-            
-            scaledPointSize = [self scaleFont:calibration style:style];
+
+            scaledPointSize = [SwrveTextUtils scaleFont:style.font
+                                        calibration:calibration
+                                      swrveFontSize:style.fontsize
+                                        renderScale:renderScale];
         }
         
         if (style.scrollable && TARGET_OS_IOS) {
@@ -55,9 +61,9 @@
             [self styleAttributedText:style];
         } else {
             self.font = [style.font fontWithSize:scaledPointSize];
-            [SwrveLogger debug:@"SwrveTextview scaled size: %f", self.font.pointSize];
-            [self scaleDownFontSize:style calibration:calibration];
-            [SwrveLogger debug:@"SwrveTextview fitted size: %f", self.font.pointSize];
+            [SwrveLogger debug:@"SwrveUITextView scaled size: %f", self.font.pointSize];
+            [self scaleDownFontSize:style renderScale:renderScale];
+            [SwrveLogger debug:@"SwrveUITextView fitted size: %f", self.font.pointSize];
             [self styleAttributedText:style];
         }
     }
@@ -87,11 +93,11 @@
     self.attributedText = attributedText;
 }
 
-- (void)scaleDownFontSize:(SwrveTextViewStyle *)style calibration:(SwrveCalibration *)calibration {
+- (void)scaleDownFontSize:(SwrveTextViewStyle *)style renderScale:(CGFloat)renderScale {
     if (style.text.length == 0 || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) return;
-    
-    CGFloat widthPaddingOfset = (style.leftPadding + style.rightPadding) * calibration.renderScale;
-    CGFloat heightPaddingOfset = (style.topPadding + style.bottomPadding) * calibration.renderScale;
+
+    CGFloat widthPaddingOffset = (style.leftPadding + style.rightPadding) * renderScale;
+    CGFloat heightPaddingOffset = (style.topPadding + style.bottomPadding) * renderScale;
     
     // use boundingRectWithSize to take line spacing into account while scaling.
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -99,8 +105,8 @@
     paragraphStyle.lineBreakStrategy = NSLineBreakStrategyPushOut;
     paragraphStyle.alignment = style.textAlignment;
  
-    CGFloat width = self.frame.size.width - widthPaddingOfset;
-    CGFloat height = self.frame.size.height - heightPaddingOfset;
+    CGFloat width = self.frame.size.width - widthPaddingOffset;
+    CGFloat height = self.frame.size.height - heightPaddingOffset;
 
     CGFloat fontSize = self.font.pointSize;
     CGSize constraintSize = CGSizeMake(width, CGFLOAT_MAX);
@@ -130,24 +136,6 @@
 
     } while (fontSize > 1);
     
-}
-
-- (CGFloat)scaleFont:(SwrveCalibration *)calibration style:(SwrveTextViewStyle *)style {
-    CGFloat calibrationWidth = calibration.calibrationWidth * calibration.renderScale;
-    CGFloat calibrationHeight = calibration.calibrationHeight * calibration.renderScale;
-    
-    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByClipping;
-    paragraphStyle.alignment = NSTextAlignmentLeft;
-    CGFloat maxFontSize = 200.0f;
-    NSDictionary *baseAttributes = @{ NSFontAttributeName: [style.font fontWithSize:maxFontSize],
-                                      NSParagraphStyleAttributeName:paragraphStyle};
-
-    CGFloat osSizeForTemplate = [SwrveTextImageView fitTextSize:calibration.calibrationText withAttributes:baseAttributes maxWidth:calibrationWidth maxHeight:calibrationHeight maxFontSize:maxFontSize];
-    
-    CGFloat scaledFont = (style.fontsize / calibration.calibrationFontSize) * osSizeForTemplate;
-
-    return scaledFont;
 }
 
 @end

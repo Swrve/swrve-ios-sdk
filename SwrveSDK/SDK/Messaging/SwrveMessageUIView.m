@@ -2,9 +2,10 @@
 #import "SwrveImage.h"
 #import "SwrveMessagePage.h"
 #import "SwrveTextViewStyle.h"
-#import "SwrveTextView.h"
+#import "SwrveUITextView.h"
 #import "SwrveButton.h"
 #import "SwrveTextImageView.h"
+#import "SwrveThemedUIButton.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 
@@ -36,7 +37,6 @@
 #define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))
 #define DEFAULT_WIDTH 100
 #define DEFAULT_HEIGHT 20
-
 #define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))
 
 @interface SwrveMessageImageInfo : NSObject
@@ -142,12 +142,13 @@ static CGPoint scaled(CGPoint point, float scale) {
         return;
     }
 
-    CGRect frame = CGRectMake(0, 0, image.size.width * self.renderScale, image.size.height * self.renderScale);
-    self.messageFormat.calibration.renderScale = self.renderScale; // TODO pass the renderScale into wherever its needed instead of setting here.
-    SwrveTextView *textView = [[SwrveTextView alloc] initWithStyle:style calbration:self.messageFormat.calibration frame:frame];
+    CGRect frame = [self frameWithDynamicScale:1.0f width:image.size.width height:image.size.height];
+    SwrveUITextView *textView = [[SwrveUITextView alloc] initWithStyle:style
+                                                            calbration:self.messageFormat.calibration
+                                                                 frame:frame
+                                                           renderScale:self.renderScale];
     textView.isAccessibilityElement = true;
-    CGPoint centerPoint = CGPointMake(self.centerX + (image.center.x * self.renderScale), self.centerY + (image.center.y * self.renderScale)); // TODO repeated code??
-    [textView setCenter:centerPoint];
+    [self setPosition:textView center:image.center];
     [self addSubview:textView];
 }
 
@@ -183,7 +184,7 @@ static CGPoint scaled(CGPoint point, float scale) {
         background = imageInfo.image;
     }
 
-    CGRect frame = CGRectMake(0, 0, background.size.width * self.renderScale * dynamicScale, background.size.height * self.renderScale * dynamicScale);
+    CGRect frame = [self frameWithDynamicScale:dynamicScale width:background.size.width height:background.size.height];
     UIImageView *imageView = nil;
     if(imageInfo && imageInfo.isGif) {
         imageView = [[SDAnimatedImageView alloc] initWithFrame:frame];
@@ -191,7 +192,7 @@ static CGPoint scaled(CGPoint point, float scale) {
         imageView = [[UIImageView alloc] initWithFrame:frame];
     }
     imageView.image = background;
-    [imageView setCenter:CGPointMake(self.centerX + (swrveImage.center.x * self.renderScale), self.centerY + (swrveImage.center.y * self.renderScale))];
+    [self setPosition:imageView center:swrveImage.center];
 
     [self addAccessibilityText:swrveImage.accessibilityText backupText:textStr withPersonalization:self.personalization toView:imageView];
 
@@ -287,8 +288,29 @@ static CGPoint scaled(CGPoint point, float scale) {
             }
         }
 
-        UISwrveButton *buttonView = [self createUISwrveButtonWithButton:swrveButton andAction:actionStr andText:textStr andUrlAssetSha1:urlAssetSha1];
+        SwrveUIButton *buttonView = nil;
+        if (swrveButton.theme) {
+            CGRect frame = [self frameWithDynamicScale:1.0 width:swrveButton.size.width height:swrveButton.size.height];
+            buttonView = [[SwrveThemedUIButton alloc] initWithTheme:swrveButton.theme
+                                                               text:textStr
+                                                              frame:frame
+                                                        calabration:self.messageFormat.calibration
+                                                        renderScale:self.renderScale];
 
+            // set position
+            [self setPosition:buttonView center:swrveButton.center];
+        } else {
+            buttonView = [self createSwrveUIButtonWithButton:swrveButton andText:textStr andUrlAssetSha1:urlAssetSha1];
+        }
+
+        if (textStr) {
+            buttonView.displayString = textStr; // store the text that was displayed for testing
+        }
+        buttonView.buttonId = swrveButton.buttonId;
+        buttonView.buttonName = swrveButton.name;
+
+        [self addButtonTarget:buttonView];
+        [self addButtonAction:buttonView button:swrveButton action:actionStr];
         [self addAccessibilityText:swrveButton.accessibilityText backupText:textStr withPersonalization:self.personalization toView:buttonView];
 
         buttonView.accessibilityIdentifier = swrveButton.name;
@@ -298,8 +320,34 @@ static CGPoint scaled(CGPoint point, float scale) {
     }
 }
 
-- (UISwrveButton *)createUISwrveButtonWithButton:(SwrveButton *)swrveButton
-                                       andAction:(NSString *)actionStr
+- (CGRect)frameWithDynamicScale:(CGFloat)dynamicScale width:(CGFloat)width height:(CGFloat)height {
+    return CGRectMake(0, 0, width * self.renderScale * dynamicScale, height * self.renderScale * dynamicScale);
+}
+
+- (void)setPosition:(UIView *)view center:(CGPoint)center {
+    CGPoint position = scaled(center, (float) self.renderScale);
+    [view setCenter:CGPointMake(position.x + (float) self.centerX, position.y + (float) self.centerY)];
+}
+
+- (void)addButtonTarget:(SwrveUIButton *)buttonView {
+    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
+#if TARGET_OS_IOS /** TouchUpInside is iOS only **/
+    [buttonView addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
+#elif TARGET_OS_TV
+    // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
+    [buttonView  addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
+#endif
+}
+
+- (void)addButtonAction:(SwrveUIButton *)buttonView button:(SwrveButton *)swrveButton action:(NSString *)actionStr {
+    if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
+        buttonView.actionString = actionStr;
+    } else if (swrveButton.actionType == kSwrveActionPageLink) {
+        buttonView.actionString = swrveButton.actionString; // set the pageId
+    }
+}
+
+- (SwrveUIButton *)createSwrveUIButtonWithButton:(SwrveButton *)swrveButton
                                          andText:(NSString *)textStr
                                  andUrlAssetSha1:(NSString *)urlAssetSha1 {
     UIImage *up = nil;
@@ -316,54 +364,33 @@ static CGPoint scaled(CGPoint point, float scale) {
         up = imageInfo.image;
     }
 
-    UISwrveButton *uiSwrveButton;
+    SwrveUIButton *swrveUIButton;
     if (up) {
-        uiSwrveButton = [UISwrveButton buttonWithType:UIButtonTypeCustom];
+        swrveUIButton = [SwrveUIButton buttonWithType:UIButtonTypeCustom];
 #if TARGET_OS_TV
-        uiSwrveButton.imageView.adjustsImageWhenAncestorFocused = YES;
+        swrveUIButton.imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
         if (imageInfo.isGif) {
-            [uiSwrveButton sd_setBackgroundImageWithURL:imageInfo.fileImageURL forState:UIControlStateNormal];
+            [swrveUIButton sd_setBackgroundImageWithURL:imageInfo.fileImageURL forState:UIControlStateNormal];
         } else {
-            [uiSwrveButton setBackgroundImage:up forState:UIControlStateNormal];
+            [swrveUIButton setBackgroundImage:up forState:UIControlStateNormal];
         }
     } else {
-        uiSwrveButton = [UISwrveButton buttonWithType:UIButtonTypeRoundedRect];
+        swrveUIButton = [SwrveUIButton buttonWithType:UIButtonTypeRoundedRect];
     }
 
-    SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
-#if TARGET_OS_IOS /** TouchUpInside is iOS only **/
-    [uiSwrveButton addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
-#elif TARGET_OS_TV
-    // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
-    [uiSwrveButton  addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
-#endif
-
+    // set size and position
     CGFloat width = DEFAULT_WIDTH;
     CGFloat height = DEFAULT_HEIGHT;
     if (up) {
         width = [up size].width;
         height = [up size].height;
     }
+    CGRect frame = [self frameWithDynamicScale:dynamicScale width:width height:height];
+    [swrveUIButton setFrame:frame];
+    [self setPosition:swrveUIButton center:swrveButton.center];
 
-    CGPoint position = scaled(swrveButton.center, (float) self.renderScale);
-    CGRect frame = CGRectMake(0, 0, width * self.renderScale * dynamicScale, height * self.renderScale * dynamicScale);
-    [uiSwrveButton setFrame:frame];
-    [uiSwrveButton setCenter:CGPointMake(position.x + (float)self.centerX, position.y + (float)self.centerY)];
-
-    if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
-        uiSwrveButton.actionString = actionStr;
-    } else if (swrveButton.actionType == kSwrveActionPageLink) {
-        uiSwrveButton.actionString = swrveButton.actionString; // set the pageId
-    }
-
-    if (textStr) {
-        uiSwrveButton.displayString = textStr; // store the text that was displayed for testing
-    }
-    uiSwrveButton.buttonId = swrveButton.buttonId;
-    uiSwrveButton.buttonName = swrveButton.name;
-
-    return uiSwrveButton;
+    return swrveUIButton;
 }
 
 - (NSString *)resolveUrlImageAssetToSha1:(NSString *)assetUrl andQAInfo:(SwrveQAImagePersonalizationInfo *)qaInfo {
@@ -406,14 +433,14 @@ static CGPoint scaled(CGPoint point, float scale) {
             view.isAccessibilityElement = true;
             view.accessibilityLabel = backupText;
         } else {
-            [SwrveLogger error:@"No text available for accesibility"];
+            [SwrveLogger error:@"No text available for accessibility"];
         }
     }
     
     // disable traits as we dont want additional information read out from VO image / speech recognition
     // instead just assign simple hints as the role type: image or button
    view.accessibilityTraits = UIAccessibilityTraitNone;
-    if ([view isKindOfClass:[UISwrveButton class]]) {
+    if ([view isKindOfClass:[SwrveUIButton class]]) {
         view.accessibilityHint = @"Button";
     } else if ([view isKindOfClass:[UIImageView class]]) {
         view.accessibilityHint = @"Image";

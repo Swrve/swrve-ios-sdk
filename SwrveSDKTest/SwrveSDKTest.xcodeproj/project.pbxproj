@@ -15,6 +15,8 @@
 		239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
 		3A0DB9CD287827A5008EC1D7 /* campaignsGif.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */; };
 		3A0DB9CE287827A5008EC1D7 /* campaignsGif.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */; };
+		3A36ECA929F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */; };
+		3A36ECAA29F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */; };
 		3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
 		3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
 		3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
@@ -23,8 +25,12 @@
 		3A6947E128B674C0009ACD26 /* campaignDownloadDate2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */; };
 		3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
 		3A6947E328B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
+		3A80F77629BB6017000FA64C /* campaign_native_button_basics.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */; };
+		3A80F77729BB6017000FA64C /* campaign_native_button_basics.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */; };
 		3A8E4740296730A000D5CB6C /* campaigns_start_geo.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */; };
 		3A8E4741296730A000D5CB6C /* campaigns_start_geo.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */; };
+		3A982FC729B247BA00114F3B /* campaign_native_button_everything.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */; };
+		3A982FC829B247BA00114F3B /* campaign_native_button_everything.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */; };
 		3AB1C04E27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7225BEF30A00950E98 /* swrve_logo.png */; };
@@ -260,6 +266,7 @@
 		204C9FEC8C4AAF6C5174CEBB /* Pods-SwrveSDK-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = multipage_campaign_swipe.json; sourceTree = "<group>"; };
 		3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsGif.json; sourceTree = "<group>"; };
+		3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestThemedUIButton.m; sourceTree = "<group>"; };
 		3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitMode.m; sourceTree = "<group>"; };
 		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
 		3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage_orientations.json; sourceTree = "<group>"; };
@@ -267,7 +274,9 @@
 		3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate2.json; sourceTree = "<group>"; };
 		3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate1.json; sourceTree = "<group>"; };
 		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
+		3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaign_native_button_basics.json; sourceTree = "<group>"; };
 		3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_start_geo.json; sourceTree = "<group>"; };
+		3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaign_native_button_everything.json; sourceTree = "<group>"; };
 		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
 		3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitIOS.m; sourceTree = "<group>"; };
 		3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestQA.m; sourceTree = "<group>"; };
@@ -616,6 +625,7 @@
 		F66626CD22649E7D001AF2EB /* Universal */ = {
 			isa = PBXGroup;
 			children = (
+				3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */,
 				F66988CE25BE0C7800950E98 /* SwrveTestUserIdentity.m */,
 				F669875125BDABE300950E98 /* SwrveTestEvents.m */,
 				F6A79AB32551C8C300E66E47 /* SwrveTestSwizzleHelper.m */,
@@ -655,6 +665,8 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */,
+				3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */,
 				3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */,
 				3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */,
 				3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */,
@@ -918,6 +930,7 @@
 				5B2B6F5F23C4E55E000B1687 /* campaignSessionStart.json in Resources */,
 				F669893625BEC4B800950E98 /* conversationAnnounce.json in Resources */,
 				F669891A25BEC17600950E98 /* conversationLocationWhenInUsePermission.json in Resources */,
+				3A982FC729B247BA00114F3B /* campaign_native_button_everything.json in Resources */,
 				5B2B6F5D23C4E55E000B1687 /* campaignsBothOrientations.json in Resources */,
 				F6698A5925BEF15000950E98 /* campaignsConversationVersion.json in Resources */,
 				5B2B6F6823C4E55E000B1687 /* campaignsQAUser.json in Resources */,
@@ -935,6 +948,7 @@
 				52F1C9262567F180003B68AF /* campaignsEmbedded.json in Resources */,
 				52843EBE256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				5B2B6F6B23C4E55E000B1687 /* campaignsPortraitOnly.json in Resources */,
+				3A80F77629BB6017000FA64C /* campaign_native_button_basics.json in Resources */,
 				5B2B6F5423C4E55E000B1687 /* abTestDetails.json in Resources */,
 				239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */,
 				3A8E4740296730A000D5CB6C /* campaigns_start_geo.json in Resources */,
@@ -959,10 +973,12 @@
 				5B2B6F7E23C4E55F000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				52FC409923FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F7A23C4E55F000B1687 /* campaignsFuture.json in Resources */,
+				3A982FC829B247BA00114F3B /* campaign_native_button_everything.json in Resources */,
 				5B2B6F7B23C4E55F000B1687 /* campaignsImpressions.json in Resources */,
 				5B2B6F6F23C4E55F000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				1B5CAC1624641253003AE19C /* ad_journey_campaign_message_personalization.json in Resources */,
 				52AF58B72614C94C00697B09 /* realTimeUserProperties.json in Resources */,
+				3A80F77729BB6017000FA64C /* campaign_native_button_basics.json in Resources */,
 				5B2B6F8123C4E55F000B1687 /* campaignsQAReset.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				F685B59D25F10E51008F5BAA /* iamCapabilites.json in Resources */,
@@ -1207,6 +1223,7 @@
 				F61993DD2541C3210014F72D /* SwrveTestSessionManagement.m in Sources */,
 				F61993202540715D0014F72D /* SwrveTestUtils.m in Sources */,
 				5B2B6E6F23C4A05B000B1687 /* TestPermissionsDelegate.m in Sources */,
+				3A36ECA929F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */,
 				5B2B6E2923C4935F000B1687 /* SwrveTestInitIOS.m in Sources */,
 				F66986D825BDA93F00950E98 /* SwrveTestSwrvePushSDK.m in Sources */,
 				5B2B6E2323C49346000B1687 /* SwrveTestLocalStorage.m in Sources */,
@@ -1300,6 +1317,7 @@
 				5B2B6F9E23C4E6AF000B1687 /* SwrveTestProfileManager.m in Sources */,
 				5B2B6F8723C4E67A000B1687 /* SwrveTestInitTV.m in Sources */,
 				F619931F2540715D0014F72D /* SwrveTestUtils.m in Sources */,
+				3A36ECAA29F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */,
 				3AF36E86287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */,
 				3A5BBFD3266FA43200092799 /* SwrveTestStopTracking.m in Sources */,
 				F685B55B25F0E580008F5BAA /* SwrveTestMessageController.m in Sources */,

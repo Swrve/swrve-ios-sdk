@@ -1,10 +1,7 @@
 #import <XCTest/XCTest.h>
-#import "SwrveTextView.h"
+#import <SwrveUtils.h>
+#import "SwrveUITextView.h"
 #import "SwrveConversationStyler.h"
-
-@interface SwrveConversationStyler ()
-+ (UIColor *)processHexColorValue:(NSString *)color;
-@end
 
 @interface SwrveTestTextViewIOS : XCTestCase
 
@@ -33,7 +30,7 @@
                                                         defaultBackgroundColor:[UIColor clearColor]];
     CGRect rect = CGRectMake(0, 0, 1000, 300);
     //ignore calibration
-    SwrveTextView *tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect];
+    SwrveUITextView *tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect renderScale:1.0];
     XCTAssertEqual(tv.font.pointSize, 86);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
     
@@ -57,7 +54,7 @@
                                                         defaultBackgroundColor:[UIColor clearColor]];
     rect = CGRectMake(0, 0, 1000, 300);
     //ignore calibration
-    tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect];
+    tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect renderScale:1.0];
     XCTAssertEqual(tv.font.pointSize, 58);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
     
@@ -82,7 +79,7 @@
                                                         defaultBackgroundColor:[UIColor clearColor]];
     rect = CGRectMake(0, 0, 1000, 300);
     //ignore calibration
-    tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect];
+    tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect renderScale:0.0];
     XCTAssertEqual(tv.font.pointSize, 72);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
     
@@ -98,7 +95,7 @@
                                       defaultForegroundColor:[UIColor blackColor]
                                       defaultBackgroundColor:[UIColor clearColor]];
     
-    tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:CGRectMake(0, 0, 1000, 300)];
+    tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:CGRectMake(0, 0, 1000, 300) renderScale:1.0];
     XCTAssertEqual(tv.font.pointSize, 10);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
 
@@ -115,7 +112,7 @@
                                       defaultForegroundColor:[UIColor blackColor]
                                       defaultBackgroundColor:[UIColor clearColor]];
     
-    tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:CGRectMake(0, 0, 1000, 300)];
+    tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:CGRectMake(0, 0, 1000, 300) renderScale:1.0];
     XCTAssertEqual(tv.font.pointSize, 100);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
     XCTAssertTrue(tv.scrollEnabled);
@@ -160,8 +157,8 @@
     XCTAssertEqual(tvStyle.rightPadding, 6);
     XCTAssertEqual(tvStyle.bottomPadding, 7);
     XCTAssertEqual(tvStyle.leftPadding, 8);
-    XCTAssertEqualObjects(tvStyle.foregroundColor, [SwrveConversationStyler processHexColorValue:@"#224466"]);
-    XCTAssertEqualObjects(tvStyle.backgroundColor, [SwrveConversationStyler processHexColorValue:@"#00334455"]);
+    XCTAssertEqualObjects(tvStyle.foregroundColor, [SwrveUtils processHexColorValue:@"#224466"]);
+    XCTAssertEqualObjects(tvStyle.backgroundColor, [SwrveUtils processHexColorValue:@"#00334455"]);
     XCTAssertEqualObjects(tvStyle.font, [UIFont fontWithName:@"Arial" size:10]);
 }
 

@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
                     withFont:(UIFont *)font
                         size:(CGSize)size;
 
-+ (CGFloat)fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight maxFontSize:(CGFloat)maxFontSize;
-
 @end
 
 NS_ASSUME_NONNULL_END

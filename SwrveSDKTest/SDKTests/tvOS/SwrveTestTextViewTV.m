@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
-#import "SwrveTextView.h"
+#import "SwrveUITextView.h"
 
 @interface SwrveTestTextViewTV : XCTestCase
 
@@ -21,7 +21,7 @@
                                                         defaultBackgroundColor:[UIColor clearColor]];
     CGRect rect = CGRectMake(0, 0, 1000, 300);
     //ignore calibration
-    SwrveTextView *tv = [[SwrveTextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect];
+    SwrveUITextView *tv = [[SwrveUITextView alloc] initWithStyle:tvStyle calbration:[SwrveCalibration new] frame:rect renderScale:1.0];
     XCTAssertEqual(tv.font.pointSize, 86);
     XCTAssertTrue(CGRectEqualToRect(tv.frame, rect));
     XCTAssertFalse(tv.scrollEnabled);

@@ -5,7 +5,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SwrveCalibration : NSObject
 
-@property (nonatomic) CGFloat renderScale;
 @property (nonatomic) CGFloat calibrationWidth;
 @property (nonatomic) CGFloat calibrationHeight;
 @property (nonatomic) CGFloat calibrationFontSize;

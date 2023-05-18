@@ -1,9 +1,6 @@
 #import "SwrveTextViewStyle.h"
-#import "SwrveConversationStyler.h"
-
-@interface SwrveConversationStyler ()
-+ (UIColor *)processHexColorValue:(NSString *)color;
-@end
+#import "SwrveUtils.h"
+#import "SwrveTextUtils.h"
 
 @implementation SwrveTextViewStyle
 
@@ -45,17 +42,18 @@
         self.rightPadding = [self padding:@"right" fromStyle:style];
         self.bottomPadding = [self padding:@"bottom" fromStyle:style];
         self.leftPadding = [self padding:@"left" fromStyle:style];
-        
-        //Conversation styler uses a different key for font size, so just at it
-        NSMutableDictionary *mutableDictionary = [style mutableCopy];
-        mutableDictionary[@"text_size"] = [NSNumber numberWithFloat:(float)self.fontsize];
-        self.font = [SwrveConversationStyler fontFromStyle:mutableDictionary withFallback:defaultFont];
-        
+
+        self.font = [SwrveTextUtils fontFromFile:self.font_file
+                                  postscriptName:self.font_postscript_name
+                                            size:self.fontsize
+                                           style:self.font_native_style
+                                    withFallback:defaultFont];
+
         NSString *foregroundColorString = [self colorString:@"font_color" fromStyle:style];
-        self.foregroundColor = (foregroundColorString == nil) ? defaultForegroundColor : [SwrveConversationStyler processHexColorValue:foregroundColorString];
+        self.foregroundColor = (foregroundColorString == nil) ? defaultForegroundColor : [SwrveUtils processHexColorValue:foregroundColorString];
   
         NSString *backgroundColorString = [self colorString:@"bg_color" fromStyle:style];
-        self.backgroundColor = (backgroundColorString == nil) ? defaultBackgroundColor : [SwrveConversationStyler processHexColorValue:backgroundColorString];
+        self.backgroundColor = (backgroundColorString == nil) ? defaultBackgroundColor : [SwrveUtils processHexColorValue:backgroundColorString];
     }
     return self;
 }

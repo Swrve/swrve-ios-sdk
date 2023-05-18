@@ -168,7 +168,7 @@
     return messageViewController;
 }
 
-- (void)onButtonPressed:(UISwrveButton *)button pageId:(NSNumber *)pageIdPressed {
+- (void)onButtonPressed:(SwrveUIButton *)button pageId:(NSNumber *)pageIdPressed {
 
     SwrveMessagePage *page = [[self.currentMessageFormat pages] objectForKey:pageIdPressed];
     SwrveButton *swrveButton = [page.buttons objectAtIndex:(NSUInteger) button.tag];
@@ -189,8 +189,9 @@
 
     if (swrveButton.actionType == kSwrveActionPageLink) {
         NSNumber *pageIdToShow = @([action intValue]);
-        [self queuePageNavEvent:self.currentPageId buttonId:button.buttonId pageIdToShow:pageIdToShow];
+        [self queuePageNavEvent:self.currentPageId buttonId:button.buttonId pageIdToShow:pageIdToShow buttonName:button.buttonName];
         [self showPage:pageIdToShow];
+        [self queueDataCatpureEventsForButton:swrveButton personalization:self.personalization];
     } else {
         if (swrveButton.actionType == kSwrveActionDismiss) {
             [self queueDismissEvent:self.currentPageId buttonId:button.buttonId buttonName:button.buttonName];
@@ -199,14 +200,18 @@
         messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
         messageControllerStrong.inAppMessageAction = action;
         [self beginHideMessageAnimationWithCompletionHandler:^{
-            if (swrveButton.events != nil) {
-                [self queueButtonEvents:swrveButton.events personalization:self.personalization];
-            }
-            
-            if (swrveButton.userUpdates != nil) {
-                [self queueButtonUserUpdates:swrveButton.userUpdates personalization:self.personalization];
-            }
+            [self queueDataCatpureEventsForButton:swrveButton personalization:self.personalization];
         }];
+    }
+}
+
+- (void)queueDataCatpureEventsForButton:(SwrveButton *)swrveButton personalization:(NSDictionary *)personalizationDic {
+    if (swrveButton.events != nil) {
+        [self queueButtonEvents:swrveButton.events personalization:self.personalization];
+    }
+    
+    if (swrveButton.userUpdates != nil) {
+        [self queueButtonUserUpdates:swrveButton.userUpdates personalization:self.personalization];
     }
 }
 
@@ -302,7 +307,7 @@
     [self.pageViewEventsSent addObject:pageId];
 }
 
-- (void)queuePageNavEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId pageIdToShow:(NSNumber *)pageIdToShow {
+- (void)queuePageNavEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId pageIdToShow:(NSNumber *)pageIdToShow buttonName:(NSString *)buttonName {
     if ([self.navigationEventsSent containsObject:buttonId]) {
         [SwrveLogger debug:@"Navigation event for button_id %@ already sent", buttonId];
         return;
@@ -325,6 +330,9 @@
     }
     if(buttonId && [buttonId integerValue] > 0) {
         [eventPayload setValue:buttonId forKey:@"buttonId"];
+    }
+    if(buttonName && [buttonName length] > 0) {
+        [eventPayload setValue:buttonName forKey:@"buttonName"];
     }
     [eventData setValue:eventPayload forKey:@"payload"];
 

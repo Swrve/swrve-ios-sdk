@@ -3,9 +3,11 @@
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
+#import "SwrveUtils.h"
 #endif
 #import "SwrveBaseConversation.h"
 #import <CoreText/CoreText.h>
@@ -68,37 +70,9 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
     if ([color isEqualToString:kSwrveColorTypeTransparent]) {
         uiColor = [UIColor clearColor];
     } else {
-        uiColor = [self processHexColorValue:color];
+        uiColor = [SwrveUtils processHexColorValue:color];
     }
     return uiColor;
-}
-
-+ (UIColor *) processHexColorValue:(NSString *)color {
-    NSString *colorString = [[color stringByReplacingOccurrencesOfString: @"#" withString: @""] uppercaseString];
-    UIColor *returnColor;
-
-    if([colorString length] == 6) {
-        unsigned int hexInt = 0;
-        NSScanner *scanner = [NSScanner scannerWithString:colorString];
-        [scanner scanHexInt:&hexInt];
-        returnColor = Swrve_UIColorFromRGB(hexInt, 1.0f);
-
-    }else if([colorString length] == 8) {
-
-        NSString *alphaSub = [colorString substringWithRange: NSMakeRange(0, 2)];
-        NSString *colorSub = [colorString substringWithRange: NSMakeRange(2, 6)];
-
-        unsigned hexComponent;
-        unsigned int hexInt = 0;
-        [[NSScanner scannerWithString: alphaSub] scanHexInt: &hexComponent];
-        float alpha = hexComponent / 255.0f;
-
-        NSScanner *scanner = [NSScanner scannerWithString:colorSub];
-        [scanner scanHexInt:&hexInt];
-        returnColor = Swrve_UIColorFromRGB(hexInt, alpha);
-    }
-
-    return returnColor;
 }
 
 + (NSString *) convertContentToHtml:(NSString*)content withPageCSS:(NSString*)pageCSS withStyle:(NSDictionary*)style {
@@ -189,6 +163,7 @@ static NSString *const kSwrveDefaultColorLb = @"B3000000"; // 70% alpha black
     [button setContentVerticalAlignment:UIControlContentVerticalAlignmentFill];
 }
 
+// Similar method in SwrveTextUtils
 + (UIFont *)fontFromStyle:(NSDictionary *)style withFallback:(UIFont *)fallbackUIFont API_AVAILABLE(ios(7.0)) {
 
     NSString *fontFile = [style objectForKey:kSwrveKeyFontFile];

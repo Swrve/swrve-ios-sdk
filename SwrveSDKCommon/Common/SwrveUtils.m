@@ -3,6 +3,8 @@
 #import "SwrveNotificationConstants.h"
 #import <CommonCrypto/CommonHMAC.h>
 
+#define Swrve_UIColorFromRGB(rgbValue, alphaValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0f green:((float)((rgbValue & 0xFF00) >> 8))/255.0f blue:((float)(rgbValue & 0xFF))/255.0f alpha:alphaValue]
+
 @implementation SwrveUtils
 
 + (CGRect)deviceScreenBounds {
@@ -190,6 +192,34 @@
         [app endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
     }
+}
+
++ (UIColor *)processHexColorValue:(NSString *)color {
+    NSString *colorString = [[color stringByReplacingOccurrencesOfString:@"#" withString:@""] uppercaseString];
+    UIColor *returnColor = UIColor.clearColor;
+
+    if ([colorString length] == 6) {
+        unsigned int hexInt = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:colorString];
+        [scanner scanHexInt:&hexInt];
+        returnColor = Swrve_UIColorFromRGB(hexInt, 1.0f);
+
+    } else if ([colorString length] == 8) {
+
+        NSString *alphaSub = [colorString substringWithRange:NSMakeRange(0, 2)];
+        NSString *colorSub = [colorString substringWithRange:NSMakeRange(2, 6)];
+
+        unsigned hexComponent;
+        unsigned int hexInt = 0;
+        [[NSScanner scannerWithString:alphaSub] scanHexInt:&hexComponent];
+        float alpha = hexComponent / 255.0f;
+
+        NSScanner *scanner = [NSScanner scannerWithString:colorSub];
+        [scanner scanHexInt:&hexInt];
+        returnColor = Swrve_UIColorFromRGB(hexInt, alpha);
+    }
+
+    return returnColor;
 }
 
 @end

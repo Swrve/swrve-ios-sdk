@@ -298,6 +298,7 @@
     id mockRestClient = OCMPartialMock(restClient);
     id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
     OCMStub([mockResponse statusCode]).andReturn(500);
+    OCMStub([mockResponse MIMEType]).andReturn(@"image/png");
     NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);

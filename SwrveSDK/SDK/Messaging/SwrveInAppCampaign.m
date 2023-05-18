@@ -18,6 +18,7 @@
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveMessagePage.h"
+#import "SwrveTextUtils.h"
 
 @implementation SwrveInAppCampaign
 
@@ -80,6 +81,10 @@
                     NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:button.image andDigest:button.image andIsExternal:NO andIsImage:YES];
                     [assetsQueue addObject:assetQueueItem];
                 }
+
+                if (button.theme) {
+                    [self addButtonThemeAssets:button.theme assetsQueue:assetsQueue];
+                }
             }
 
             for (SwrveImage *image in page.images) {
@@ -94,6 +99,31 @@
                     [self addFontToQ:assetsQueue withAsset:image.multilineText];
                 }
             }
+        }
+    }
+}
+
+- (void)addButtonThemeAssets:(SwrveButtonTheme *)theme assetsQueue:(NSMutableSet *)assetsQueue {
+    if (theme.bgImage) {
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:theme.bgImage andDigest:theme.bgImage andIsExternal:NO andIsImage:YES];
+        [assetsQueue addObject:assetQueueItem];
+    }
+    if (theme.fontFile && ![SwrveTextUtils isSystemFont:theme.fontFile]) {
+        NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:theme.fontFile andDigest:theme.fontDigest andIsExternal:NO andIsImage:NO];
+        [assetsQueue addObject:assetQueueItem];
+    }
+    if (theme.pressedState) {
+        SwrveButtonThemeState *themeState = theme.pressedState;
+        if (themeState.bgImage) {
+            NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:themeState.bgImage andDigest:themeState.bgImage andIsExternal:NO andIsImage:YES];
+            [assetsQueue addObject:assetQueueItem];
+        }
+    }
+    if (theme.focusedState) {
+        SwrveButtonThemeState *themeState = theme.focusedState;
+        if (themeState.bgImage) {
+            NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:themeState.bgImage andDigest:themeState.bgImage andIsExternal:NO andIsImage:YES];
+            [assetsQueue addObject:assetQueueItem];
         }
     }
 }

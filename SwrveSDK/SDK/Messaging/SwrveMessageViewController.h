@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 #import "SwrveMessage.h"
-#import "UISwrveButton.h"
+#import "SwrveUIButton.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                 personalization:(NSDictionary *)personalization;
 
 - (void)showPage:(NSNumber *)number;
-- (void)onButtonPressed:(UISwrveButton*)button pageId:(NSNumber *)pageId;
+- (void)onButtonPressed:(SwrveUIButton*)button pageId:(NSNumber *)pageId;
 - (void)queuePageViewEvent:(NSNumber *)pageId;
 
 @end

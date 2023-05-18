@@ -5,7 +5,7 @@
 #import "SwrveAssetsManager.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveCampaign.h"
-#import "UISwrveButton.h"
+#import "SwrveUIButton.h"
 #import "SwrveButton.h"
 #import "SwrveConversationCampaign.h"
 

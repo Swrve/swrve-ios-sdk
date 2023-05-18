@@ -1,5 +1,6 @@
 #define SWRVE_MIN(a,b)    ((a) < (b) ? (a) : (b))
 #import "SwrveTextImageView.h"
+#import "SwrveTextUtils.h"
 
 @implementation SwrveTextImageView
 
@@ -33,8 +34,12 @@ CGFloat const TEST_FONT_SIZE = 200.0f;
     [attributes setObject:background forKey:NSBackgroundColorAttributeName];
     [attributes setObject:foreground forKey:NSForegroundColorAttributeName];
     [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    
-    CGFloat scaledFontSize = [SwrveTextImageView fitTextSize:string withAttributes:attributes maxWidth:size.width maxHeight:size.height maxFontSize:TEST_FONT_SIZE];
+
+    CGFloat scaledFontSize = [SwrveTextUtils fitTextSize:string
+                                          withAttributes:attributes
+                                                maxWidth:size.width
+                                               maxHeight:size.height
+                                             maxFontSize:TEST_FONT_SIZE];
     
     // set the font size to the correct scaled value
     [attributes setObject:[currentFont fontWithSize:scaledFontSize] forKey:NSFontAttributeName];
@@ -64,17 +69,6 @@ CGFloat const TEST_FONT_SIZE = 200.0f;
     UIGraphicsEndImageContext();
 
     return resultImage;
-}
-
-+ (CGFloat)fitTextSize:(NSString *)text withAttributes:(NSDictionary *)attributes maxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight maxFontSize:(CGFloat)maxFontSize {
-    if (text == nil || maxWidth <= 0 || maxHeight <= 0) return 0;
-
-    CGSize maxSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    CGRect bound = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesDeviceMetrics attributes:attributes context:nil];
-    double scalex = maxFontSize / (bound.size.width + fabs(bound.origin.x));
-    double scaley = maxFontSize / (bound.size.height + fabs(bound.origin.y));
-    CGFloat fontSize = (CGFloat)floor(SWRVE_MIN(scalex * maxWidth, scaley * maxHeight));
-    return fontSize;
 }
 
 @end

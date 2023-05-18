@@ -59,7 +59,7 @@
 }
 
 - (IBAction)onButtonPressed:(id)sender {
-    UISwrveButton *button = sender;
+    SwrveUIButton *button = sender;
     SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) self.parentViewController;
     [messageViewController onButtonPressed:button pageId:self.pageId];
 }

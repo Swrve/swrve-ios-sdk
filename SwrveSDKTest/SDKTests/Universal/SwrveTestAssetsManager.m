@@ -111,6 +111,7 @@
     id mockRestClient = OCMPartialMock(restClient);
     id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
     OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"image/png");
     NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
     OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
@@ -136,6 +137,134 @@
         XCTAssertTrue([assetsDownloaded containsObject:asset1]);
         XCTAssertTrue([assetsDownloaded containsObject:asset2]);
         XCTAssertTrue([assetsDownloaded containsObject:externalAsset]);
+    }];
+}
+
+- (void)testExternalUrlAssetJpeg {
+    NSString *externalJpegAsset = [SwrveUtils sha1:[@"https://external.swrve.asset/hello.jpeg" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing and return 200 and content type
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"image/jpeg");
+    NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalJpegAsset andDigest:@"https://external.swrve.asset/hello.jpeg" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalJpegAsset]);
+    }];
+}
+
+- (void)testExternalUrlAssetPng {
+    NSString *externalPngAsset = [SwrveUtils sha1:[@"https://external.swrve.asset/hello.png" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing and return 200 and content type
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"image/png");
+    NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalPngAsset andDigest:@"https://external.swrve.asset/hello.png" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalPngAsset]);
+    }];
+}
+
+- (void)testExternalUrlAssetGif {
+    NSString *externalGifAsset = [SwrveUtils sha1:[@"https://external.swrve.asset/hello.gif" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing and return 200 and content type
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"image/gif");
+    NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalGifAsset andDigest:@"https://external.swrve.asset/hello.gif" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalGifAsset]);
+    }];
+}
+
+- (void)testExternalUrlAssetBmp{
+    NSString *externalBmpAsset = [SwrveUtils sha1:[@"https://external.swrve.asset/hello.bmp" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing and return 200 and content type
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"image/bmp");
+    NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalBmpAsset andDigest:@"https://external.swrve.asset/hello.bmp" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalBmpAsset]);
+    }];
+}
+
+- (void)testExternalUrlAssetNoMimeType {
+    NSString *externalNoMimeTypeAsset = [SwrveUtils sha1:[@"https://external.swrve.asset/hello.png" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing and return 200 and NO content type
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]); // Do not set the mime type
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    NSData *mockData = [@"image" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalNoMimeTypeAsset andDigest:@"https://external.swrve.asset/hello.png" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 0);
     }];
 }
 

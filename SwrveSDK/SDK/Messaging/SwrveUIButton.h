@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "SwrveMessage.h"
 
-@interface UISwrveButton : UIButton
+@interface SwrveUIButton : UIButton
 
 @property (nonatomic, retain) NSString *displayString;
 @property (nonatomic, retain) NSString *actionString;

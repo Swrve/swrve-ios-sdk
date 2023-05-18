@@ -1,6 +1,6 @@
-#import "UISwrveButton.h"
+#import "SwrveUIButton.h"
 
-@implementation UISwrveButton
+@implementation SwrveUIButton
 
 @synthesize displayString;
 @synthesize actionString;
