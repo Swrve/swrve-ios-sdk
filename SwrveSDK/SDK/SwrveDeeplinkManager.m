@@ -322,7 +322,10 @@
         NSDictionary *personalization = [[self.sdk messaging] retrievePersonalizationProperties:nil];
         SwrveEmbeddedMessage *message = ((SwrveEmbeddedCampaign *)campaign).message;
         if(message != nil) {
-            if(self.sdk.config.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
+            if(self.sdk.config.embeddedMessageConfig.embeddedCallback != nil) {
+                self.sdk.config.embeddedMessageConfig.embeddedCallback(message, personalization, message.control);
+            }
+            else if(self.sdk.config.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {
                 self.sdk.config.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization(message, personalization);
             } else if (self.sdk.config.embeddedMessageConfig.embeddedMessageCallback != nil) {
                 self.sdk.config.embeddedMessageConfig.embeddedMessageCallback(message);

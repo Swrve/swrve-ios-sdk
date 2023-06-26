@@ -241,6 +241,8 @@
 		F6ED51FC2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
 		F6ED51FD2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
 		F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */; };
+		F6F9E9432A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */; };
+		F6F9E9442A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -439,6 +441,7 @@
 		F6DF565229476F6600ECAC5C /* SwrveTestCampaginHoldouts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCampaginHoldouts.m; sourceTree = "<group>"; };
 		F6DF5655294777AD00ECAC5C /* campaignsHoldout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsHoldout.json; sourceTree = "<group>"; };
 		F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNSURLSessionDelegate.m; sourceTree = "<group>"; };
+		F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsEmbeddedNulls.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -731,6 +734,7 @@
 				F6698A7025BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb */,
 				F6698A7225BEF30A00950E98 /* swrve_logo.png */,
 				52F1C9252567F180003B68AF /* campaignsEmbedded.json */,
+				F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */,
 				F6DF5655294777AD00ECAC5C /* campaignsHoldout.json */,
 				F66988E325BE29CC00950E98 /* conversationContactsPermission.json */,
 				F66988EB25BE29CD00950E98 /* conversationLocationAlwaysPermission.json */,
@@ -922,6 +926,7 @@
 				5B2B6F5723C4E55E000B1687 /* campaignsNone.json in Resources */,
 				F685B50425F0CD88008F5BAA /* iamCapabilites.json in Resources */,
 				F66989AB25BEE37200950E98 /* conversation_campaign_v3.json in Resources */,
+				F6F9E9432A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */,
 				F669899D25BEE36000950E98 /* conversationCampaignsPriority.json in Resources */,
 				5B2B6F6A23C4E55E000B1687 /* campaignsRRGGBB.json in Resources */,
 				F6698A5F25BEF19200950E98 /* campaignsConversationFilters.json in Resources */,
@@ -973,6 +978,7 @@
 				5B2B6F7E23C4E55F000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				52FC409923FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
 				5B2B6F7A23C4E55F000B1687 /* campaignsFuture.json in Resources */,
+				F6F9E9442A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */,
 				3A982FC829B247BA00114F3B /* campaign_native_button_everything.json in Resources */,
 				5B2B6F7B23C4E55F000B1687 /* campaignsImpressions.json in Resources */,
 				5B2B6F6F23C4E55F000B1687 /* ad_journey_campaign_conversation.json in Resources */,

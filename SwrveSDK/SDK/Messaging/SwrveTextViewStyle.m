@@ -1,6 +1,11 @@
 #import "SwrveTextViewStyle.h"
-#import "SwrveUtils.h"
 #import "SwrveTextUtils.h"
+
+#if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
+#import <SwrveSDKCommon/SwrveUtils.h>
+#else
+#import "SwrveUtils.h"
+#endif
 
 @implementation SwrveTextViewStyle
 

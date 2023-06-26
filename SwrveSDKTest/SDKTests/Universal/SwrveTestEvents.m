@@ -837,7 +837,7 @@ id classMockSwrvePermissions;
     }
 }
 
-// SWRVE-6594 /SWRVE-14748 bug test
+// MOBILE-6594 /MOBILE-14748 bug test
 - (void)testEventsPutBackInTheQueueAndSavedToDisk {
     [self setupSwrveMigrated:true];
     // Clear event cache file

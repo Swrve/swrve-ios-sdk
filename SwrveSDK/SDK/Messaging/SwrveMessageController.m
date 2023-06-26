@@ -105,6 +105,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 @property(nonatomic) SwrveActionType inAppMessageActionType;
 @property(nonatomic, retain) NSString *inAppMessageAction;
 @property(nonatomic, retain) NSString *inAppButtonPressedName;
+@property(nonatomic, retain) NSString *inAppButtonPressedText;
 @property(nonatomic) bool prefersConversationsStatusBarHidden;
 
 // Current Device Properties
@@ -151,6 +152,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 @synthesize inAppMessageActionType;
 @synthesize inAppMessageAction;
 @synthesize inAppButtonPressedName;
+@synthesize inAppButtonPressedText;
 @synthesize device_width;
 @synthesize device_height;
 @synthesize orientation;
@@ -221,9 +223,12 @@ const static int DEFAULT_MIN_DELAY = 55;
     self.embeddedMessageConfig = sdk.config.embeddedMessageConfig;
 
     // Link previously public properties from the new inAppMessage
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.customButtonCallback = self.inAppMessageConfig.customButtonCallback;
     self.dismissButtonCallback = self.inAppMessageConfig.dismissButtonCallback;
     self.clipboardButtonCallback = self.inAppMessageConfig.clipboardButtonCallback;
+#pragma clang diagnostic pop
     self.personalizationCallback = self.inAppMessageConfig.personalizationCallback;
 
     self.manager = [NSFileManager defaultManager];
@@ -1057,6 +1062,11 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (void)messageWasShownToUser:(SwrveMessage *)message {
     [self baseMessageWasShownToUser:message embedded:@"false"];
+    id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
+    if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
+        SwrveMessageDetails *md = [self messageDetails:message];
+        [delegate onAction:SwrveImpression messageDetails:md selectedButton:nil];
+    }
 }
 
 - (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
@@ -1348,6 +1358,46 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return nil;
 }
 
+- (SwrveMessageDetails *)messageDetails:(SwrveMessage *)message {
+    id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
+    if (delegate == nil || ![delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
+        return nil;
+    }
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) message.campaign;
+    NSString *subject = nil;
+    if (campaign.messageCenterDetails != nil) {
+        subject = campaign.messageCenterDetails.subject;
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        subject = campaign.subject;
+#pragma clang diagnostic pop
+    }
+    
+    NSMutableArray *allButtons = [NSMutableArray new];
+    for (SwrveMessageFormat *format in message.formats) {
+        NSDictionary *pages = [format pages];
+        for (id key in pages) {
+            SwrveMessagePage *page = [pages objectForKey:key];
+            for (SwrveButton *button in page.buttons) {
+                
+                NSDictionary *personlisationProps = ((SwrveMessageViewController *) self.inAppMessageWindow.rootViewController).personalization;
+                NSString *personlizedText = [self personalizeText:button.text withPersonalization:personlisationProps];
+                NSString *personlizedActionString = [self personalizeText:button.actionString withPersonalization:personlisationProps];
+                SwrveMessageButtonDetails *messageButtonDetails = [[SwrveMessageButtonDetails alloc] initWith:button.name
+                                                                                                   buttonText:personlizedText
+                                                                                                   actionType:button.actionType
+                                                                                                 actionString:personlizedActionString];
+                [allButtons addObject:messageButtonDetails];
+            }
+        }
+    }
+    
+    SwrveMessageDetails *messageDetails = [[SwrveMessageDetails alloc] initWith:subject campaignId:campaign.ID variantId:[message.messageID unsignedLongValue] messageName:message.name buttons:allButtons];
+    
+    return messageDetails;
+}
+
 - (void)dismissMessageWindow NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (self.inAppMessageWindow == nil) {
         [SwrveLogger error:@"No message to dismiss.", nil];
@@ -1365,14 +1415,24 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     switch (self.inAppMessageActionType) {
         case kSwrveActionPageLink:
             break;
-        case kSwrveActionDismiss:
-            if (self.dismissButtonCallback != nil) {
+        case kSwrveActionDismiss: {
+            id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
+            if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
+                SwrveMessageDetails *md = [self messageDetails:message];
+                SwrveMessageButtonDetails *selectedButton = [[SwrveMessageButtonDetails alloc]initWith:self.inAppButtonPressedName
+                                                                                            buttonText:self.inAppButtonPressedText
+                                                                                            actionType:kSwrveActionDismiss
+                                                                                          actionString:self.inAppMessageAction];
+                [delegate onAction:SwrveActionDismiss messageDetails:md selectedButton:selectedButton];
+            }
+            else if (self.dismissButtonCallback != nil) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 self.dismissButtonCallback(dismissedCampaign.subject, inAppButtonPressedName, message.name);
 #pragma clang diagnostic pop
             }
             actionTypeString = @"dismiss";
+        }
             break;
         case kSwrveActionInstall: {
             nonProcessedAction = action;
@@ -1380,8 +1440,16 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         }
             break;
         case kSwrveActionCustom: {
-
-            if (self.customButtonCallback != nil) {
+            id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
+            if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
+                SwrveMessageDetails *md = [self messageDetails:message];
+                SwrveMessageButtonDetails *selectedButton = [[SwrveMessageButtonDetails alloc]initWith:self.inAppButtonPressedName
+                                                                                            buttonText:self.inAppButtonPressedText
+                                                                                            actionType:kSwrveActionCustom
+                                                                                          actionString:self.inAppMessageAction];
+                [delegate onAction:SwrveActionCustom messageDetails:md selectedButton:selectedButton];
+            }
+            else if (self.customButtonCallback != nil) {
                 self.customButtonCallback(action, message.name);
             } else {
                 nonProcessedAction = action;
@@ -1396,9 +1464,18 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 [pb setString:action];
             }
 #endif /*TARGET_OS_IOS*/
-
-            if (self.clipboardButtonCallback != nil) {
-                self.clipboardButtonCallback(action);
+            
+            id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
+            if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
+                SwrveMessageDetails *md = [self messageDetails:message];
+                SwrveMessageButtonDetails *selectedButton = [[SwrveMessageButtonDetails alloc]initWith:self.inAppButtonPressedName
+                                                                                            buttonText:self.inAppButtonPressedText
+                                                                                            actionType:kSwrveActionClipboard
+                                                                                          actionString:self.inAppMessageAction];
+                [delegate onAction:SwrveActionClipboard messageDetails:md selectedButton:selectedButton];
+            }
+            else if (self.clipboardButtonCallback != nil) {
+               self.clipboardButtonCallback(action);
             }
 
             actionTypeString = @"clipboard";
@@ -1487,6 +1564,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     self.inAppMessageWindow = nil;
     self.inAppMessageAction = nil;
     self.inAppButtonPressedName = nil;
+    self.inAppButtonPressedText = nil;
 
     if ([SwrveLocalStorage trackingState] != STOPPED) {
         [self handleNextConversation:self.conversationsMessageQueue];

@@ -12,6 +12,7 @@
 @synthesize clipboardButtonCallback;
 @synthesize personalizationCallback;
 @synthesize inAppCapabilitiesDelegate;
+@synthesize inAppMessageDelegate;
 
 - (id)init {
     if (self = [super init]) {

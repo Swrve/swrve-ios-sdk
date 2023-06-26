@@ -130,7 +130,7 @@
 
 @end
 
-@interface SwrveTestMessageController : XCTestCase
+@interface SwrveTestMessageController : XCTestCase <SwrveInAppMessageDelegate>
 
 @property NSDate *swrveNowDate;
 + (NSArray*)testJSONAssets;
@@ -218,6 +218,11 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
     
     return swrveMock;
+}
+
+- (void)testCampaignsEmbeddedNulls {
+    // testing if any crashes when null values present for some data.
+   [self swrveMockWithTestJson:@"campaignsEmbeddedNulls"];
 }
 
 - (void)testMultipleConversationsAreNotQueued {
@@ -432,7 +437,7 @@
     SwrveButton* button4 = [[page buttons] objectAtIndex:3];
     XCTAssertNotNil(button4);
     XCTAssertEqualObjects([button4 image], @"97c5df26c8e8fcff8dbda7e662d4272a6a94af7e");
-    XCTAssertEqualObjects([button4 actionString], @"${test_cp|fallback=\"test\"}");
+    XCTAssertEqualObjects([button4 actionString], @"${test_cp_action|fallback=\"test\"}");
     XCTAssertEqual([button4 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button4 center].x,999);
     XCTAssertEqual([button4 center].y, 23);
@@ -1777,6 +1782,7 @@
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
     [viewController viewDidAppear:NO];
+    
     __block NSString *campaignSubject = @"";
     __block NSString *campaignName = @"";
     __block NSString *buttonName = @"";
@@ -1839,8 +1845,249 @@
     OCMVerifyAll((swrveMock));
 }
 
-- (void)testPagingViaButtons {
+- (void)testMessageCallbackImpressionAndClipboard {
+    SwrveConfig *config = [[SwrveConfig alloc]init];
+    SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
+    inAppMessageConfig.customButtonCallback = ^(NSString *action, NSString *name) {
+        XCTFail("customButtonCallback should not be called");
+    };
+    inAppMessageConfig.dismissButtonCallback = ^(NSString *campaignSubject, NSString *buttonName, NSString * campaignName) {
+        XCTFail("dismissButtonCallback should not be called");
+    };
+    inAppMessageConfig.clipboardButtonCallback = ^(NSString *processedText) {
+        XCTFail("clipboardButtonCallback should not be called");
+    };
 
+    id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
+    OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
+    config.inAppMessageConfig = inAppMessageConfig;
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveImpression messageDetails:OCMOCK_ANY selectedButton:nil]) andDo:^(NSInvocation *invocation) {
+  
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertNil(button);
+    }];
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveActionClipboard messageDetails:OCMOCK_ANY selectedButton:OCMOCK_ANY]) andDo:^(NSInvocation *invocation) {
+        
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertEqualObjects(button.buttonName, @"clipboard_action");
+        XCTAssertEqualObjects(button.buttonText, @"hello"); // fallback text
+        XCTAssertEqual(button.actionType, kSwrveActionClipboard);
+        XCTAssertEqualObjects(button.actionString, @"some personalized value1");
+    
+    }];
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+    
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message withPersonalization: @{@"test_cp_action":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
+    [viewController viewDidAppear:NO];
+    
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    for (UIView *subview in messageUiView.subviews) {
+        if ([subview isKindOfClass:[SwrveUIButton class]]) {
+            SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
+            if ([swrveUIButton.buttonName isEqualToString:@"clipboard_action"]) {
+                [viewController onButtonPressed:swrveUIButton];
+                [self waitForWindowDismissed:controller];
+                break;
+            }
+        }
+    };
+    
+    OCMVerifyAll(mockMessageDelegate);
+}
+
+- (void)testMessageCallbackImpressionAndCustom {
+    SwrveConfig *config = [[SwrveConfig alloc]init];
+    SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
+    inAppMessageConfig.customButtonCallback = ^(NSString *action, NSString *name) {
+        XCTFail("customButtonCallback should not be called");
+    };
+    inAppMessageConfig.dismissButtonCallback = ^(NSString *campaignSubject, NSString *buttonName, NSString * campaignName) {
+        XCTFail("dismissButtonCallback should not be called");
+    };
+    inAppMessageConfig.clipboardButtonCallback = ^(NSString *processedText) {
+        XCTFail("clipboardButtonCallback should not be called");
+    };
+
+    id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
+    OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
+    config.inAppMessageConfig = inAppMessageConfig;
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveImpression messageDetails:OCMOCK_ANY selectedButton:nil]) andDo:^(NSInvocation *invocation) {
+  
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertNil(button);
+    }];
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveActionCustom messageDetails:OCMOCK_ANY selectedButton:OCMOCK_ANY]) andDo:^(NSInvocation *invocation) {
+        
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertEqualObjects(button.buttonName, @"custom");
+        XCTAssertNil(button.buttonText);
+        XCTAssertEqual(button.actionType, kSwrveActionCustom);
+        XCTAssertEqualObjects(button.actionString, @"custom_action");
+    }];
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+    
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
+    [viewController viewDidAppear:NO];
+    
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    for (UIView *subview in messageUiView.subviews) {
+        if ([subview isKindOfClass:[SwrveUIButton class]]) {
+            SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
+            if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
+                [viewController onButtonPressed:swrveUIButton];
+                [self waitForWindowDismissed:controller];
+                break;
+            }
+        }
+    };
+    OCMVerifyAll(mockMessageDelegate);
+}
+
+- (void)testMessageCallbackImpressionAndDismiss {
+    SwrveConfig *config = [[SwrveConfig alloc]init];
+    SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
+    inAppMessageConfig.customButtonCallback = ^(NSString *action, NSString *name) {
+        XCTFail("customButtonCallback should not be called");
+    };
+    inAppMessageConfig.dismissButtonCallback = ^(NSString *campaignSubject, NSString *buttonName, NSString * campaignName) {
+        XCTFail("dismissButtonCallback should not be called");
+    };
+    inAppMessageConfig.clipboardButtonCallback = ^(NSString *processedText) {
+        XCTFail("clipboardButtonCallback should not be called");
+    };
+
+    id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
+    OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
+    config.inAppMessageConfig = inAppMessageConfig;
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveImpression messageDetails:OCMOCK_ANY selectedButton:nil]) andDo:^(NSInvocation *invocation) {
+  
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertNil(button);
+    }];
+    
+    [OCMExpect([mockMessageDelegate onAction:SwrveActionDismiss messageDetails:OCMOCK_ANY selectedButton:OCMOCK_ANY]) andDo:^(NSInvocation *invocation) {
+        
+        __unsafe_unretained SwrveMessageDetails *messageDetails;
+        [invocation getArgument:&messageDetails atIndex:3];
+        
+        XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+        XCTAssertEqual(messageDetails.campaignId, 102);
+        XCTAssertEqual(messageDetails.variantId, 165);
+        XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+        XCTAssertEqual([messageDetails.buttons count], 5);
+        
+        __unsafe_unretained SwrveMessageButtonDetails *button;
+        [invocation getArgument:&button atIndex:4];
+        XCTAssertEqualObjects(button.buttonName, @"close");
+        XCTAssertNil(button.buttonText);
+        XCTAssertEqual(button.actionType, kSwrveActionDismiss);
+        XCTAssertEqualObjects(button.actionString, @"");
+    }];
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+    
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
+    [viewController viewDidAppear:NO];
+    
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    for (UIView *subview in messageUiView.subviews) {
+        if ([subview isKindOfClass:[SwrveUIButton class]]) {
+            SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
+            if ([swrveUIButton.buttonName isEqualToString:@"close"]) {
+                [viewController onButtonPressed:swrveUIButton];
+                [self waitForWindowDismissed:controller];
+                break;
+            }
+        }
+    };
+    OCMVerifyAll(mockMessageDelegate);
+}
+
+- (void)testPagingViaButtons {
     __block BOOL *dismissed = NO;
     SwrveDismissButtonPressedCallback dismissCallback = ^(NSString *campaignS, NSString *buttonN, NSString *campaignN) {
         dismissed = YES;
@@ -2633,7 +2880,7 @@
 }
 
 - (void)testMessagePriorityReverse {
-    // https://swrvedev.jira.com/browse/SWRVE-10432
+    // https://emailabove.jira.com/browse/MOBILE-10432
     // We were not clearing the bucket of candidate messages, ever...
     id swrveMock = [self swrveMockWithTestJson:@"campaignsMessagePriorityReverse"];
     SwrveMessageController *controller = [swrveMock messaging];
@@ -2709,7 +2956,7 @@
 }
 
 - (void)testConversationPriorityReverse {
-    // https://swrvedev.jira.com/browse/SWRVE-10432
+    // https://emailabove.jira.com/browse/MOBILE-10432
     // We were not clearing the bucket of candidate messages, ever...
     // Check that this does not happen with conversations either.
     id swrveMock = [self swrveMockWithTestJson:@"conversationCampaignsPriorityReverse"];
@@ -4112,6 +4359,35 @@
         return true;
     }];
     OCMExpect([swrveMock userUpdate:dic3]);
+}
+
+- (void)onAction:(SwrveMessageAction)messageAction messageDetails:(SwrveMessageDetails *)messageDetails selectedButton:(SwrveMessageButtonDetails *)selectedButton {
+    XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
+    XCTAssertEqual(messageDetails.campaignId, 102);
+    XCTAssertEqual(messageDetails.variantId, 165);
+    XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
+    XCTAssertEqual([messageDetails.buttons count], 3);
+    
+    if (messageAction == SwrveImpression) {
+        XCTAssertNil(selectedButton);
+    } else if (messageAction == SwrveActionClipboard) {
+        XCTAssertEqualObjects(selectedButton.buttonName, @"clipboard_action");
+        XCTAssertEqualObjects(selectedButton.buttonText, @"hello"); // fallback text
+        XCTAssertEqual(selectedButton.actionType, kSwrveActionClipboard);
+        XCTAssertEqualObjects(selectedButton.actionString, @"some personalized value1");
+    } else if (messageAction == SwrveActionCustom) {
+        XCTAssertEqualObjects(selectedButton.buttonName, @"custom");
+        XCTAssertNil(selectedButton.buttonText);
+        XCTAssertEqual(selectedButton.actionType, kSwrveActionCustom);
+        XCTAssertEqualObjects(selectedButton.actionString, @"custom_action");
+    } else if (messageAction == SwrveActionClipboard) {
+        XCTAssertEqualObjects(selectedButton.buttonName, @"clipboard_action");
+        XCTAssertEqualObjects(selectedButton.buttonText, @"hello"); // fallback text
+        XCTAssertEqual(selectedButton.actionType, kSwrveActionClipboard);
+        XCTAssertEqualObjects(selectedButton.actionString, @"some personalized value1");
+    } else {
+        XCTFail(@"Should only get callback for Impression and Clipboard");
+    }
 }
 
 @end

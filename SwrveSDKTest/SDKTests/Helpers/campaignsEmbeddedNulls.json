@@ -1,0 +1,33 @@
+{
+    "cdn_root": "http://localhost:8083/cdn/",
+    "campaigns": [{
+            "id": 1,
+            "end_date": 1364568900000,
+            "triggers": null,
+            "start_date": 1362671700000,
+            "embedded_message": {
+                "id": 1,
+                "buttons": null
+                "data": null,
+                "type": null,
+                "priority": 9999,
+                "version": 1,
+                "control": true,
+                "message_center_details": null
+            },
+            "rules": null
+            "message_center": true
+        }
+    ],
+    "game_data": {
+        "150": {
+            "app_store_url": "https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
+        }
+    },
+    "rules": {
+        "min_delay_between_messages": 0,
+        "max_messages_per_session": 99999,
+        "delay_first_message": 0
+    },
+    "version": 2
+}

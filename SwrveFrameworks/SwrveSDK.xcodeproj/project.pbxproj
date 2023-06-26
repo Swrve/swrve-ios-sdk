@@ -351,6 +351,18 @@
 		F6535E041FC4690200B72A19 /* SwrveQA.h in Headers */ = {isa = PBXBuildFile; fileRef = F6535E021FC4690200B72A19 /* SwrveQA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F65373C82017D6A700EB079F /* SwrveDeeplinkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F65373C62017D6A700EB079F /* SwrveDeeplinkManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F65373C92017D6A700EB079F /* SwrveDeeplinkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F65373C72017D6A700EB079F /* SwrveDeeplinkManager.m */; };
+		F65645DD2A3A66A4009B1661 /* SwrveMessageDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645D82A3A66A4009B1661 /* SwrveMessageDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645DE2A3A66A4009B1661 /* SwrveMessageDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645D82A3A66A4009B1661 /* SwrveMessageDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645DF2A3A66A4009B1661 /* SwrveButtonActions.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645D92A3A66A4009B1661 /* SwrveButtonActions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645E02A3A66A4009B1661 /* SwrveButtonActions.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645D92A3A66A4009B1661 /* SwrveButtonActions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645E12A3A66A4009B1661 /* SwrveMessageButtonDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = F65645DA2A3A66A4009B1661 /* SwrveMessageButtonDetails.m */; };
+		F65645E22A3A66A4009B1661 /* SwrveMessageButtonDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = F65645DA2A3A66A4009B1661 /* SwrveMessageButtonDetails.m */; };
+		F65645E32A3A66A4009B1661 /* SwrveMessageDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = F65645DB2A3A66A4009B1661 /* SwrveMessageDetails.m */; };
+		F65645E42A3A66A4009B1661 /* SwrveMessageDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = F65645DB2A3A66A4009B1661 /* SwrveMessageDetails.m */; };
+		F65645E52A3A66A4009B1661 /* SwrveMessageButtonDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645DC2A3A66A4009B1661 /* SwrveMessageButtonDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645E62A3A66A4009B1661 /* SwrveMessageButtonDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645DC2A3A66A4009B1661 /* SwrveMessageButtonDetails.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645F82A40556F009B1661 /* SwrveInAppMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645F72A40556F009B1661 /* SwrveInAppMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F65645F92A40556F009B1661 /* SwrveInAppMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F65645F72A40556F009B1661 /* SwrveInAppMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6618FF327137847008B0D91 /* SwrveCalibration.h in Headers */ = {isa = PBXBuildFile; fileRef = F6618FF127137846008B0D91 /* SwrveCalibration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6618FF427137847008B0D91 /* SwrveCalibration.h in Headers */ = {isa = PBXBuildFile; fileRef = F6618FF127137846008B0D91 /* SwrveCalibration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6618FF527137847008B0D91 /* SwrveCalibration.m in Sources */ = {isa = PBXBuildFile; fileRef = F6618FF227137846008B0D91 /* SwrveCalibration.m */; };
@@ -517,6 +529,12 @@
 		F6535E021FC4690200B72A19 /* SwrveQA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveQA.h; sourceTree = "<group>"; };
 		F65373C62017D6A700EB079F /* SwrveDeeplinkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveDeeplinkManager.h; sourceTree = "<group>"; };
 		F65373C72017D6A700EB079F /* SwrveDeeplinkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveDeeplinkManager.m; sourceTree = "<group>"; };
+		F65645D82A3A66A4009B1661 /* SwrveMessageDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageDetails.h; sourceTree = "<group>"; };
+		F65645D92A3A66A4009B1661 /* SwrveButtonActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveButtonActions.h; sourceTree = "<group>"; };
+		F65645DA2A3A66A4009B1661 /* SwrveMessageButtonDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageButtonDetails.m; sourceTree = "<group>"; };
+		F65645DB2A3A66A4009B1661 /* SwrveMessageDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageDetails.m; sourceTree = "<group>"; };
+		F65645DC2A3A66A4009B1661 /* SwrveMessageButtonDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageButtonDetails.h; sourceTree = "<group>"; };
+		F65645F72A40556F009B1661 /* SwrveInAppMessageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppMessageDelegate.h; sourceTree = "<group>"; };
 		F6618FF127137846008B0D91 /* SwrveCalibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCalibration.h; sourceTree = "<group>"; };
 		F6618FF227137846008B0D91 /* SwrveCalibration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveCalibration.m; sourceTree = "<group>"; };
 		F672280C25ED1E3800FA1C77 /* SwrveInAppCapabilitiesDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppCapabilitiesDelegate.h; sourceTree = "<group>"; };
@@ -982,6 +1000,12 @@
 		F6D54CB01F74083F003B0EA4 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
+				F65645F72A40556F009B1661 /* SwrveInAppMessageDelegate.h */,
+				F65645D92A3A66A4009B1661 /* SwrveButtonActions.h */,
+				F65645DC2A3A66A4009B1661 /* SwrveMessageButtonDetails.h */,
+				F65645DA2A3A66A4009B1661 /* SwrveMessageButtonDetails.m */,
+				F65645D82A3A66A4009B1661 /* SwrveMessageDetails.h */,
+				F65645DB2A3A66A4009B1661 /* SwrveMessageDetails.m */,
 				3A21DCDA29C8A980000657AD /* SwrveUITextView.h */,
 				3A21DCD929C8A980000657AD /* SwrveUITextView.m */,
 				3A21DCCE29C88844000657AD /* SwrveUIButton.h */,
@@ -1067,6 +1091,7 @@
 				1B5AA451265B9BF9002D1C98 /* SwrveContentVideo.h in Headers */,
 				F646AAFC28508191009415B9 /* SwrveCampaignState.h in Headers */,
 				528F5544201B9B29007AB0A8 /* SwrveMessageFormat.h in Headers */,
+				F65645E02A3A66A4009B1661 /* SwrveButtonActions.h in Headers */,
 				528F5545201B9B29007AB0A8 /* SwrveConfig.h in Headers */,
 				1B5AA452265B9BF9002D1C98 /* SwrveConversationUIButton.h in Headers */,
 				3AF34F6A2822981900B142D4 /* SwrveMessageFocus.h in Headers */,
@@ -1100,7 +1125,9 @@
 				1B5AA475265B9BF9002D1C98 /* SwrveConversationKit-Prefix.pch in Headers */,
 				1B5AA44F265B9BF9002D1C98 /* SwrveContentStarRatingView.h in Headers */,
 				528F5558201B9B29007AB0A8 /* SwrveCampaignStatus.h in Headers */,
+				F65645DE2A3A66A4009B1661 /* SwrveMessageDetails.h in Headers */,
 				1B5AA476265B9BF9002D1C98 /* SwrveConversationsNavigationController.h in Headers */,
+				F65645E62A3A66A4009B1661 /* SwrveMessageButtonDetails.h in Headers */,
 				528F5559201B9B29007AB0A8 /* SwrveDeviceProperties.h in Headers */,
 				1B5AA467265B9BF9002D1C98 /* SwrveConversationPane.h in Headers */,
 				528F555B201B9B29007AB0A8 /* SwrveMessageViewController.h in Headers */,
@@ -1112,6 +1139,7 @@
 				1B5AA477265B9BF9002D1C98 /* SwrveConversationResource.h in Headers */,
 				528F555F201B9B29007AB0A8 /* SwrveReceiptProvider.h in Headers */,
 				525B5C522566C4DE0093D353 /* SwrveEmbeddedMessage.h in Headers */,
+				F65645F92A40556F009B1661 /* SwrveInAppMessageDelegate.h in Headers */,
 				1B5AA454265B9BF9002D1C98 /* SwrveInputItem.h in Headers */,
 				528F5560201B9B29007AB0A8 /* SwrveSDK.h in Headers */,
 				525B5C442566C4D50093D353 /* SwrveBaseMessage.h in Headers */,
@@ -1189,6 +1217,7 @@
 				1B5AA420265B9BF8002D1C98 /* SwrveContentVideo.h in Headers */,
 				F646AAFA28508187009415B9 /* SwrveCampaignState.h in Headers */,
 				F6D54CF61F740A21003B0EA4 /* SwrveMessageFormat.h in Headers */,
+				F65645DF2A3A66A4009B1661 /* SwrveButtonActions.h in Headers */,
 				F6D54CFD1F740A21003B0EA4 /* SwrveConfig.h in Headers */,
 				1B5AA421265B9BF8002D1C98 /* SwrveConversationUIButton.h in Headers */,
 				3AF34F682822980E00B142D4 /* SwrveMessageFocus.h in Headers */,
@@ -1222,7 +1251,9 @@
 				F6D54D001F740A21003B0EA4 /* SwrveEventsManager.h in Headers */,
 				1B5AA444265B9BF8002D1C98 /* SwrveConversationKit-Prefix.pch in Headers */,
 				1B5AA41E265B9BF8002D1C98 /* SwrveContentStarRatingView.h in Headers */,
+				F65645DD2A3A66A4009B1661 /* SwrveMessageDetails.h in Headers */,
 				F6D54CEE1F740A21003B0EA4 /* SwrveCampaignStatus.h in Headers */,
+				F65645E52A3A66A4009B1661 /* SwrveMessageButtonDetails.h in Headers */,
 				1B5AA445265B9BF8002D1C98 /* SwrveConversationsNavigationController.h in Headers */,
 				F6D54CFE1F740A21003B0EA4 /* SwrveDeviceProperties.h in Headers */,
 				1B5AA436265B9BF8002D1C98 /* SwrveConversationPane.h in Headers */,
@@ -1234,6 +1265,7 @@
 				1B5AA446265B9BF8002D1C98 /* SwrveConversationResource.h in Headers */,
 				F6D54CF11F740A21003B0EA4 /* SwrveInterfaceOrientation.h in Headers */,
 				525B5C372566C4A10093D353 /* SwrveEmbeddedMessage.h in Headers */,
+				F65645F82A40556F009B1661 /* SwrveInAppMessageDelegate.h in Headers */,
 				1B5AA423265B9BF8002D1C98 /* SwrveInputItem.h in Headers */,
 				F6D54D061F740A21003B0EA4 /* SwrveReceiptProvider.h in Headers */,
 				F6D54D081F740A21003B0EA4 /* SwrveSDK.h in Headers */,
@@ -1492,6 +1524,7 @@
 				528F552E201B9B29007AB0A8 /* SwrveConversationCampaign.m in Sources */,
 				1B5AA46A265B9BF9002D1C98 /* SwrveContentItem.m in Sources */,
 				3A21DCDE29C8A998000657AD /* SwrveUITextView.m in Sources */,
+				F65645E42A3A66A4009B1661 /* SwrveMessageDetails.m in Sources */,
 				528F552F201B9B29007AB0A8 /* SwrveMigrationsManager.m in Sources */,
 				528F5530201B9B29007AB0A8 /* SwrveCampaign.m in Sources */,
 				528F5531201B9B29007AB0A8 /* SwrveDeviceProperties.m in Sources */,
@@ -1516,6 +1549,7 @@
 				1B5AA46F265B9BF9002D1C98 /* SwrveContentStarRatingView.m in Sources */,
 				1B5AA45F265B9BF9002D1C98 /* SwrveUITableViewCell.m in Sources */,
 				F62505F226D43CBA0065C836 /* SwrveTextImageView.m in Sources */,
+				F65645E22A3A66A4009B1661 /* SwrveMessageButtonDetails.m in Sources */,
 				528F5538201B9B29007AB0A8 /* SwrveMessageFormat.m in Sources */,
 				528F5539201B9B29007AB0A8 /* SwrveMessage.m in Sources */,
 				F62505EA26D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,
@@ -1598,6 +1632,7 @@
 				F63EC3661FBB2E3A00AC6BA2 /* SwrveConversationCampaign.m in Sources */,
 				1B5AA439265B9BF8002D1C98 /* SwrveContentItem.m in Sources */,
 				3A21DCDB29C8A980000657AD /* SwrveUITextView.m in Sources */,
+				F65645E32A3A66A4009B1661 /* SwrveMessageDetails.m in Sources */,
 				F63EC3781FBB2E3A00AC6BA2 /* SwrveMigrationsManager.m in Sources */,
 				F63EC3681FBB2E3A00AC6BA2 /* SwrveCampaign.m in Sources */,
 				F63EC3741FBB2E3A00AC6BA2 /* SwrveDeviceProperties.m in Sources */,
@@ -1622,6 +1657,7 @@
 				1B5AA43E265B9BF8002D1C98 /* SwrveContentStarRatingView.m in Sources */,
 				1B5AA42E265B9BF8002D1C98 /* SwrveUITableViewCell.m in Sources */,
 				F62505F126D43CBA0065C836 /* SwrveTextImageView.m in Sources */,
+				F65645E12A3A66A4009B1661 /* SwrveMessageButtonDetails.m in Sources */,
 				F63EC36D1FBB2E3A00AC6BA2 /* SwrveMessageFormat.m in Sources */,
 				F63EC36B1FBB2E3A00AC6BA2 /* SwrveMessage.m in Sources */,
 				F62505E926D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,

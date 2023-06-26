@@ -164,7 +164,6 @@
 @property(nonatomic, copy) SwrveDismissButtonPressedCallback dismissButtonCallback;      /*!< Implement this delegate to process dismiss button action. */
 @property(nonatomic, copy) SwrveClipboardButtonPressedCallback clipboardButtonCallback;  /*!< Implement this delegate to intercept clipboard button actions. */
 @property(nonatomic, copy) SwrveMessagePersonalizationCallback personalizationCallback;  /*!< Implement this delegate to intercept IAM calls with personalization . */
-
 #pragma mark -
 
 @end

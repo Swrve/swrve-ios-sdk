@@ -270,7 +270,7 @@
                             },
                             "action": {
                                 "type": "text",
-                                "value": "${test_cp|fallback=\"test\"}"
+                                "value": "${test_cp_action|fallback=\"test\"}"
                             },
                             "type": {
                                 "type": "text",

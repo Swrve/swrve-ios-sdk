@@ -554,7 +554,7 @@ NSString *mockCacheDir;
     OCMVerifyAllWithDelay(swrveMock, 5);
 }
 
-- (void)testHandleDeeplink_Embedded_CallbackFired {
+- (void)testHandleDeeplink_EmbeddedMessageWithPersonlisation_CallbackFired {
     Swrve *swrve = [Swrve alloc];
     
     __block SwrveEmbeddedMessage *embmessage = nil;
@@ -563,6 +563,58 @@ NSString *mockCacheDir;
     [embConfig setEmbeddedMessageCallbackWithPersonalization:^(SwrveEmbeddedMessage *message, NSDictionary *personalizationProperties) {
         XCTAssertEqualObjects([personalizationProperties objectForKey:@"user.updated_test_key"], @"updated_test_value");
         embmessage = message;
+    }];
+    
+    config.embeddedMessageConfig = embConfig;
+    
+    id swrveMock = OCMPartialMock(swrve);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+#pragma clang diagnostic pop
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_embedded_message" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+    
+    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
+    [swrveDeeplinkManger handleDeeplink:url];
+
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Callback"];
+    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
+        return (embmessage != nil);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+}
+
+- (void)testHandleDeeplink_EmbeddedMessage_CallbackFired {
+    Swrve *swrve = [Swrve alloc];
+    
+    __block SwrveEmbeddedMessage *embmessage = nil;
+    SwrveConfig *config = [SwrveConfig new];
+    SwrveEmbeddedMessageConfig *embConfig = [SwrveEmbeddedMessageConfig new];
+    
+    [embConfig setEmbeddedCallback:^(SwrveEmbeddedMessage *message, NSDictionary *personalizationProperties, bool isControl) {
+        XCTAssertEqualObjects([personalizationProperties objectForKey:@"user.updated_test_key"], @"updated_test_value");
+        embmessage = message;
+        XCTAssertFalse(isControl);
+    }];
+    
+    [embConfig setEmbeddedMessageCallbackWithPersonalization:^(SwrveEmbeddedMessage *message, NSDictionary *personalizationProperties) {
+        XCTFail("setEmbeddedMessageCallbackWithPersonalization should not be called");
+    }];
+    
+    [embConfig setEmbeddedMessageCallback:^(SwrveEmbeddedMessage *message) {
+        XCTFail("setEmbeddedMessageCallback should not be called");
     }];
     
     config.embeddedMessageConfig = embConfig;

@@ -18,6 +18,7 @@
 @property(nonatomic) SwrveActionType inAppMessageActionType;
 @property(nonatomic, retain) NSString *inAppMessageAction;
 @property(nonatomic, retain) NSString *inAppButtonPressedName;
+@property(nonatomic, retain) NSString *inAppButtonPressedText;
 
 - (void)queueMessageClickEvent:(SwrveButton *)button page:(SwrveMessagePage *)page;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
@@ -180,6 +181,7 @@
     if (swrveButton.actionType != kSwrveActionPageLink) {
         [messageControllerStrong queueMessageClickEvent:swrveButton page:page];
         messageControllerStrong.inAppButtonPressedName = swrveButton.name; // Save button name for processing later
+        messageControllerStrong.inAppButtonPressedText = button.displayString;
     }
 
     NSString *action = button.actionString; // this may have been personalized so use button.actionString instead of swrveButton.actionString
