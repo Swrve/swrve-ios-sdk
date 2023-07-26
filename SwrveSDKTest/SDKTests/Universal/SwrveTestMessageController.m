@@ -18,7 +18,6 @@
 #import "SwrveUITextView.h"
 #import "SwrveMessagePageViewController.h"
 #import "SwrveCommon.h"
-#import "SwrveMessageFocus.h"
 
 #if TARGET_OS_IOS
 #import "SwrvePermissions.h"
@@ -105,7 +104,6 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(SwrveMessagePageViewController *)viewController;
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(SwrveMessagePageViewController *)viewController;
 - (CGSize)windowSize;
-@property(nonatomic, retain) SwrveMessageFocus *messageFocus;
 @end
 
 @interface SwrveMessage()
@@ -130,7 +128,7 @@
 
 @end
 
-@interface SwrveTestMessageController : XCTestCase <SwrveInAppMessageDelegate>
+@interface SwrveTestMessageController : XCTestCase
 
 @property NSDate *swrveNowDate;
 + (NSArray*)testJSONAssets;
@@ -4359,35 +4357,6 @@
         return true;
     }];
     OCMExpect([swrveMock userUpdate:dic3]);
-}
-
-- (void)onAction:(SwrveMessageAction)messageAction messageDetails:(SwrveMessageDetails *)messageDetails selectedButton:(SwrveMessageButtonDetails *)selectedButton {
-    XCTAssertEqualObjects(messageDetails.campaignSubject, @"IAM subject");
-    XCTAssertEqual(messageDetails.campaignId, 102);
-    XCTAssertEqual(messageDetails.variantId, 165);
-    XCTAssertEqualObjects(messageDetails.messageName, @"Kindle");
-    XCTAssertEqual([messageDetails.buttons count], 3);
-    
-    if (messageAction == SwrveImpression) {
-        XCTAssertNil(selectedButton);
-    } else if (messageAction == SwrveActionClipboard) {
-        XCTAssertEqualObjects(selectedButton.buttonName, @"clipboard_action");
-        XCTAssertEqualObjects(selectedButton.buttonText, @"hello"); // fallback text
-        XCTAssertEqual(selectedButton.actionType, kSwrveActionClipboard);
-        XCTAssertEqualObjects(selectedButton.actionString, @"some personalized value1");
-    } else if (messageAction == SwrveActionCustom) {
-        XCTAssertEqualObjects(selectedButton.buttonName, @"custom");
-        XCTAssertNil(selectedButton.buttonText);
-        XCTAssertEqual(selectedButton.actionType, kSwrveActionCustom);
-        XCTAssertEqualObjects(selectedButton.actionString, @"custom_action");
-    } else if (messageAction == SwrveActionClipboard) {
-        XCTAssertEqualObjects(selectedButton.buttonName, @"clipboard_action");
-        XCTAssertEqualObjects(selectedButton.buttonText, @"hello"); // fallback text
-        XCTAssertEqual(selectedButton.actionType, kSwrveActionClipboard);
-        XCTAssertEqualObjects(selectedButton.actionString, @"some personalized value1");
-    } else {
-        XCTFail(@"Should only get callback for Impression and Clipboard");
-    }
 }
 
 @end

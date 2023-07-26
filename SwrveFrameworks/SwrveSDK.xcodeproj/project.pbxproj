@@ -308,6 +308,8 @@
 		5BEA12372292C45E006A9484 /* SwrveUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BEA12342292C45E006A9484 /* SwrveUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5BEA12382292C45E006A9484 /* SwrveUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEA12352292C45E006A9484 /* SwrveUtils.m */; };
 		5BEA12392292C45E006A9484 /* SwrveUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEA12352292C45E006A9484 /* SwrveUtils.m */; };
+		B5D3762B2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B5D3762A2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B5D3762C2A69710500B9303B /* SwrveInAppMessageFocusDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B5D3762A2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F62505E926D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F62505E326D43CBA0065C836 /* SwrveTextViewStyle.m */; };
 		F62505EA26D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F62505E326D43CBA0065C836 /* SwrveTextViewStyle.m */; };
 		F62505EF26D43CBA0065C836 /* SwrveTextImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = F62505E626D43CBA0065C836 /* SwrveTextImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -516,6 +518,7 @@
 		5BD415C823D0AC9F00532C44 /* SwrveEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveEvents.m; sourceTree = "<group>"; };
 		5BEA12342292C45E006A9484 /* SwrveUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveUtils.h; sourceTree = "<group>"; };
 		5BEA12352292C45E006A9484 /* SwrveUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveUtils.m; sourceTree = "<group>"; };
+		B5D3762A2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppMessageFocusDelegate.h; sourceTree = "<group>"; };
 		F62505E326D43CBA0065C836 /* SwrveTextViewStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTextViewStyle.m; sourceTree = "<group>"; };
 		F62505E626D43CBA0065C836 /* SwrveTextImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTextImageView.h; sourceTree = "<group>"; };
 		F62505E726D43CBA0065C836 /* SwrveTextImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTextImageView.m; sourceTree = "<group>"; };
@@ -1000,6 +1003,7 @@
 		F6D54CB01F74083F003B0EA4 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
+				B5D3762A2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h */,
 				F65645F72A40556F009B1661 /* SwrveInAppMessageDelegate.h */,
 				F65645D92A3A66A4009B1661 /* SwrveButtonActions.h */,
 				F65645DC2A3A66A4009B1661 /* SwrveMessageButtonDetails.h */,
@@ -1089,6 +1093,7 @@
 				1B5AA44A265B9BF9002D1C98 /* SwrveMessageEventHandler.h in Headers */,
 				1B5AA453265B9BF9002D1C98 /* SwrveConversationResourceManagement.h in Headers */,
 				1B5AA451265B9BF9002D1C98 /* SwrveContentVideo.h in Headers */,
+				B5D3762C2A69710500B9303B /* SwrveInAppMessageFocusDelegate.h in Headers */,
 				F646AAFC28508191009415B9 /* SwrveCampaignState.h in Headers */,
 				528F5544201B9B29007AB0A8 /* SwrveMessageFormat.h in Headers */,
 				F65645E02A3A66A4009B1661 /* SwrveButtonActions.h in Headers */,
@@ -1215,6 +1220,7 @@
 				1B5AA419265B9BF8002D1C98 /* SwrveMessageEventHandler.h in Headers */,
 				1B5AA422265B9BF8002D1C98 /* SwrveConversationResourceManagement.h in Headers */,
 				1B5AA420265B9BF8002D1C98 /* SwrveContentVideo.h in Headers */,
+				B5D3762B2A6970E500B9303B /* SwrveInAppMessageFocusDelegate.h in Headers */,
 				F646AAFA28508187009415B9 /* SwrveCampaignState.h in Headers */,
 				F6D54CF61F740A21003B0EA4 /* SwrveMessageFormat.h in Headers */,
 				F65645DF2A3A66A4009B1661 /* SwrveButtonActions.h in Headers */,

@@ -13,6 +13,9 @@
 @synthesize personalizationCallback;
 @synthesize inAppCapabilitiesDelegate;
 @synthesize inAppMessageDelegate;
+#if TARGET_OS_TV
+@synthesize inAppMessageFocusDelegate;
+#endif
 
 - (id)init {
     if (self = [super init]) {

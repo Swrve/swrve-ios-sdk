@@ -1,6 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "SwrveInAppMessageDelegate.h"
+#if TARGET_OS_TV
+#import "SwrveInAppMessageFocusDelegate.h"
+#endif
 
 #if __has_include(<SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>)
 #import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>
@@ -70,5 +73,10 @@ typedef NSDictionary *(^SwrveMessagePersonalizationCallback)(NSDictionary *event
 
 /*! in-app message delegate to process certain message actions.*/
 @property (nonatomic, weak) id <SwrveInAppMessageDelegate> inAppMessageDelegate;
+
+#if TARGET_OS_TV
+/*! in-app message focus delegate to process focus view changes.*/
+@property (nonatomic, weak) id <SwrveInAppMessageFocusDelegate> inAppMessageFocusDelegate;
+#endif
 
 @end

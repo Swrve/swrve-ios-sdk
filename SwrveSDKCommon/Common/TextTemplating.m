@@ -5,6 +5,11 @@
 
 + (NSString *)templatedTextFromString:(NSString *)text withProperties:(NSDictionary *)properties andError:(NSError **)error {
 
+    if (text == nil) {
+        *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        return nil;
+    }
+    
     NSRange searchedRange = NSMakeRange(0, [text length]);
     NSString *pattern = @"\\$\\{([^\\}]*)\\}";
     NSError *regExError = nil;
@@ -62,7 +67,12 @@
 }
 
 + (NSString *)templatedTextFromJSONString:(NSString *)json withProperties:(NSDictionary *)properties andError:(NSError **)error {
-
+    
+    if (json == nil) {
+        *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        return nil;
+    }
+    
     NSRange searchedRange = NSMakeRange(0, [json length]);
     NSString *pattern = @"\\$\\{([^\\}]*)\\}";
     NSError *regExError = nil;

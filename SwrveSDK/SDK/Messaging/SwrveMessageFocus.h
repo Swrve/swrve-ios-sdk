@@ -7,7 +7,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithView:(UIView *)rootView;
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context;
+- (void)applyDefaultFocusInContext:(UIFocusUpdateContext *)context;
+
+- (void)applyFocusOnThemedUIButton:(UIFocusUpdateContext *)context;
 
 @end
 

@@ -32,19 +32,28 @@
     return self;
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context {
+- (void)applyFocusOnThemedUIButton:(UIFocusUpdateContext *)context {
 
     UIView *previouslyFocusedView = context.previouslyFocusedView;
     if (previouslyFocusedView != nil && [previouslyFocusedView isDescendantOfView:self.rootView]) {
-        [self scaleView:previouslyFocusedView scale:(float) 1.0];
         [self applyFocusOnThemedUIButton:previouslyFocusedView gainFocus:false];
     }
 
+    UIView *nextFocusedView = context.nextFocusedView;
+    if (nextFocusedView != nil && [nextFocusedView isDescendantOfView:self.rootView]) {
+        [self applyFocusOnThemedUIButton:nextFocusedView gainFocus:true];
+    }
+}
+
+- (void)applyDefaultFocusInContext:(UIFocusUpdateContext *)context {
+    UIView *previouslyFocusedView = context.previouslyFocusedView;
+    if (previouslyFocusedView != nil && [previouslyFocusedView isDescendantOfView:self.rootView]) {
+        [self scaleView:previouslyFocusedView scale:(float) 1.0];
+    }
 
     UIView *nextFocusedView = context.nextFocusedView;
     if (nextFocusedView != nil && [nextFocusedView isDescendantOfView:self.rootView]) {
         [self scaleView:nextFocusedView scale:(float) 1.2];
-        [self applyFocusOnThemedUIButton:nextFocusedView gainFocus:true];
     }
 }
 

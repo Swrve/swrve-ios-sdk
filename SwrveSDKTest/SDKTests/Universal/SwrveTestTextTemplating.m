@@ -18,6 +18,31 @@
     XCTAssertNotNil(error, "Should be an error because property was missing and there is no fallback.");
 }
 
+
+- (void)testTemplatingWithMissingPersonaliseMessage {
+    NSError *error = nil;
+    NSDictionary *properties = @{
+            @"itemLabel": @"swrve"
+    };
+    NSString *string = nil;
+    NSString *templatedText = [TextTemplating templatedTextFromString:string withProperties:properties andError:&error];
+    XCTAssertNil(templatedText, "Should be nil because message was missing and there is no fallback.");
+    XCTAssertNotNil(error, "Should be an error because message was missing and there is no fallback.");
+}
+
+
+- (void)testTemplatingWithMissingPersonaliseJson {
+    NSError *error = nil;
+    NSDictionary *properties = @{
+            @"itemLabel": @"swrve"
+    };
+    NSString *json = nil;
+    NSString *templatedText = [TextTemplating templatedTextFromJSONString:json withProperties:properties andError:&error];
+    XCTAssertNil(templatedText, "Should be nil because message was missing and there is no fallback.");
+    XCTAssertNotNil(error, "Should be an error because message was missing and there is no fallback.");
+}
+
+
 - (void)testTemplatingWithValidProperties {
     NSError *error = nil;
     NSDictionary *properties = @{

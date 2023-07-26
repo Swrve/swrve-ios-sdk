@@ -27,6 +27,7 @@
 		3A6947E328B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
 		3A80F77629BB6017000FA64C /* campaign_native_button_basics.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */; };
 		3A80F77729BB6017000FA64C /* campaign_native_button_basics.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */; };
+		3A8DB3612A6A8BF4008E5B32 /* SwrveTVTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8DB3602A6A8BF4008E5B32 /* SwrveTVTestMessageController.m */; };
 		3A8E4740296730A000D5CB6C /* campaigns_start_geo.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */; };
 		3A8E4741296730A000D5CB6C /* campaigns_start_geo.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */; };
 		3A982FC729B247BA00114F3B /* campaign_native_button_everything.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */; };
@@ -277,6 +278,7 @@
 		3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate1.json; sourceTree = "<group>"; };
 		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
 		3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaign_native_button_basics.json; sourceTree = "<group>"; };
+		3A8DB3602A6A8BF4008E5B32 /* SwrveTVTestMessageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTVTestMessageController.m; sourceTree = "<group>"; };
 		3A8E473F296730A000D5CB6C /* campaigns_start_geo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_start_geo.json; sourceTree = "<group>"; };
 		3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaign_native_button_everything.json; sourceTree = "<group>"; };
 		3AA08416226A251600ECA032 /* SwrveTestInitTV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitTV.m; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 				F65F6C42225F94A0001DAA99 /* SwrveTVTestMigrationManager.m */,
 				52B3D377251A466C005606D7 /* SwrveTestUtilsTV.m */,
 				F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */,
+				3A8DB3602A6A8BF4008E5B32 /* SwrveTVTestMessageController.m */,
 			);
 			path = tvOS;
 			sourceTree = "<group>";
@@ -1328,6 +1331,7 @@
 				3A5BBFD3266FA43200092799 /* SwrveTestStopTracking.m in Sources */,
 				F685B55B25F0E580008F5BAA /* SwrveTestMessageController.m in Sources */,
 				5B2B6F9C23C4E6AF000B1687 /* SwrveTestEventQueueCallback.m in Sources */,
+				3A8DB3612A6A8BF4008E5B32 /* SwrveTVTestMessageController.m in Sources */,
 				52C0A63525F140E400BE4549 /* SwrveTestAssetsManager.m in Sources */,
 				F6ED51FD2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */,
 				5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */,

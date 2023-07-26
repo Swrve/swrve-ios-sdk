@@ -21,7 +21,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "8.7.0"
+#define SWRVE_SDK_VERSION "8.8.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.

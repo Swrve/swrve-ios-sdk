@@ -367,8 +367,17 @@
 }
 
 #if TARGET_OS_TV
+
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
-    [self.messageFocus didUpdateFocusInContext:context];
+
+    [self.messageFocus applyFocusOnThemedUIButton:context];
+
+    id <SwrveInAppMessageFocusDelegate> delegate = self.messageController.inAppMessageConfig.inAppMessageFocusDelegate;
+    if (delegate != nil && [delegate respondsToSelector:@selector(didUpdateFocusInContext:withAnimationCoordinator:parentView:)]) {
+        [delegate didUpdateFocusInContext:context withAnimationCoordinator:coordinator parentView:self.view];
+    } else {
+        [self.messageFocus applyDefaultFocusInContext:context];
+    }
 }
 #endif
 
