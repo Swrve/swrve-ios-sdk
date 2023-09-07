@@ -413,7 +413,7 @@
     SwrveButton* button2 = [[page buttons] objectAtIndex:1];
     XCTAssertNotNil(button2);
     XCTAssertEqualObjects([button2 image], @"8721fd4e657980a5e12d498e73aed6e6a565dfca");
-    XCTAssertEqualObjects([button2 actionString], @"custom_action");
+    XCTAssertEqualObjects([button2 actionString], @"https://google.com");
     XCTAssertEqual([button2 messageId], [message.messageID integerValue]);
     XCTAssertEqual([button2 center].x, 0);
     XCTAssertEqual([button2 center].y, 80);
@@ -1464,8 +1464,8 @@
     // Check custom callback was called with correct parameters
     XCTAssertEqual(customActionCount, 1);
     XCTAssertNotNil(message);
-    XCTAssertEqualObjects(customAction, @"custom_action");
-
+    XCTAssertEqualObjects(customAction, @"https://google.com");
+    
     // Check if correct event was sent to Swrve for this button
     int clickEventCount = 0;
     for (NSString *event in [swrveMock eventBuffer]) {
@@ -1925,8 +1925,105 @@
     OCMVerifyAll(mockMessageDelegate);
 }
 
+- (void)testMessageCallbackCustomOpenUrlCalled {
+    
+    SwrveConfig *config = OCMPartialMock([SwrveConfig new]);
+    SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
+
+    //set SwrveInAppMessageDelegate
+    id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
+    OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
+    config.inAppMessageConfig = inAppMessageConfig;
+    
+    //Dont set SwrveDeeplinkDelegate
+
+    //Confirm open url is called internally even when we set SwrveInAppMessageDelegate
+    NSURL *url = [NSURL URLWithString:@"https://google.com"];
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMExpect([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
+    [viewController viewDidAppear:NO];
+    
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    for (UIView *subview in messageUiView.subviews) {
+        if ([subview isKindOfClass:[SwrveUIButton class]]) {
+            SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
+            if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
+                [viewController onButtonPressed:swrveUIButton];
+                [self waitForWindowDismissed:controller];
+                break;
+            }
+        }
+    };
+    
+    OCMVerifyAll(mockUIApplication);
+}
+
+- (void)testMessageCallbackCustomOpenUrlNotCalled {
+    
+    SwrveConfig *config = OCMPartialMock([SwrveConfig new]);
+    SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
+
+    //set SwrveInAppMessageDelegate
+    id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
+    OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
+    config.inAppMessageConfig = inAppMessageConfig;
+    
+    //set SwrveDeeplinkDelegate
+    id mockDeeplinkDelegate = OCMProtocolMock(@protocol(SwrveDeeplinkDelegate));
+    OCMStub([config deeplinkDelegate]).andReturn(mockDeeplinkDelegate);
+    
+    //Confirm open url not called as we have set SwrveDeeplinkDelegate
+    NSURL *url = [NSURL URLWithString:@"https://google.com"];
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMReject([mockUIApplication openURL:url options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+    
+    //Confirm we call handleDeeplink SwrveDeeplinkDelegate, from there its up to dev to implement openurl
+    OCMExpect([mockDeeplinkDelegate handleDeeplink:url]);
+       
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];
+    
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
+    [viewController viewDidAppear:NO];
+    
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+    for (UIView *subview in messageUiView.subviews) {
+        if ([subview isKindOfClass:[SwrveUIButton class]]) {
+            SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
+            if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
+                [viewController onButtonPressed:swrveUIButton];
+                [self waitForWindowDismissed:controller];
+                break;
+            }
+        }
+    };
+    OCMVerifyAll(mockUIApplication);
+    OCMVerifyAll(mockDeeplinkDelegate);
+}
+
 - (void)testMessageCallbackImpressionAndCustom {
-    SwrveConfig *config = [[SwrveConfig alloc]init];
+    SwrveConfig *config = OCMPartialMock([SwrveConfig new]);
     SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
     inAppMessageConfig.customButtonCallback = ^(NSString *action, NSString *name) {
         XCTFail("customButtonCallback should not be called");
@@ -1974,7 +2071,7 @@
         XCTAssertEqualObjects(button.buttonName, @"custom");
         XCTAssertNil(button.buttonText);
         XCTAssertEqual(button.actionType, kSwrveActionCustom);
-        XCTAssertEqualObjects(button.actionString, @"custom_action");
+        XCTAssertEqualObjects(button.actionString, @"https://google.com");
     }];
 
     id swrveMock = [self swrveMockWithTestJson:@"campaigns" withConfig:config];

@@ -210,6 +210,25 @@
     XCTAssertEqualObjects(expectedArray,mArray);
 }
 
+- (void)testFileErrorLogging {
+    
+    id swrveLoggerMock = OCMClassMock([SwrveLogger class]);
+    NSString *swrveAppSupportDir = [SwrveLocalStorage swrveAppSupportDir];
+    NSString *nonExistentFile = [swrveAppSupportDir stringByAppendingPathComponent:@"non-existent-file.txt"];
+    NSString *existingFile = [swrveAppSupportDir stringByAppendingPathComponent:@"existing-file.txt"];
+    [[NSFileManager defaultManager] createFileAtPath:existingFile contents:nil attributes:nil];
+    
+    OCMExpect([swrveLoggerMock warning:[OCMArg isNotNil]]);
+    [SwrveLocalStorage setFileProtectionNone:nonExistentFile];
+
+    OCMExpect([swrveLoggerMock debug:[OCMArg isNotNil]]);
+    [SwrveLocalStorage setFileProtectionNone:existingFile];
+    
+    OCMVerifyAll(swrveLoggerMock);
+    
+    [[NSFileManager defaultManager] removeItemAtPath:existingFile error:nil];
+}
+
 /* HELPER METHODS */
 
 - (void)resetDefaults {

@@ -154,9 +154,12 @@
         keyWindow = [[UIApplication sharedApplication] keyWindow];
 #pragma clang diagnostic pop
     }
-    CGRect screenRect = [keyWindow bounds];
-    CGSize size = CGSizeMake(screenRect.size.width, screenRect.size.height);
-    return size;
+    CGSize screenSize = [keyWindow bounds].size;
+    // if campaign is launched before window is visible, there is strong possibility of screenSize to be zero
+    if (screenSize.width == 0.0 || screenSize.height == 0) {
+        screenSize = [UIScreen mainScreen].bounds.size;
+    }
+    return screenSize;
 }
 
 - (SwrveMessagePageViewController *)messagePageViewController:(NSNumber *)pageIdToShow {

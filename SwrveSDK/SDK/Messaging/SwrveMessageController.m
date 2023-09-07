@@ -1304,9 +1304,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     self.inAppMessageWindow.backgroundColor = [UIColor clearColor];
     self.inAppMessageWindow.frame = [[UIScreen mainScreen] bounds];
     self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
-    self.inAppMessageWindow.rootViewController = messageViewController;
     self.inAppMessageWindow.windowLevel = UIWindowLevelAlert + 1;
     [self.inAppMessageWindow makeKeyAndVisible];
+    self.inAppMessageWindow.rootViewController = messageViewController;
     [self beginShowMessageAnimation:messageViewController];
 
     if (@available(iOS 13.0, *)) {
@@ -1448,6 +1448,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                                                                                             actionType:kSwrveActionCustom
                                                                                           actionString:self.inAppMessageAction];
                 [delegate onAction:SwrveActionCustom messageDetails:md selectedButton:selectedButton];
+                
+                // if this new callback is implemented we still want to process deeplinks internally. Customer can overide this by implementing the SwrveDeeplinkDelegate. Note: This is different behaviour to the deprecated customButtonCallback below.
+                nonProcessedAction = action;
             }
             else if (self.customButtonCallback != nil) {
                 self.customButtonCallback(action, message.name);

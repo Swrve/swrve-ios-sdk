@@ -615,12 +615,17 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 }
 
 + (void)setFileProtectionNone:(NSString *)filePath {
-    NSError *error = nil;
-    BOOL success = [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone} ofItemAtPath:filePath error:&error];
-    if (success == YES) {
-        [SwrveLogger debug:@"Successfully set NSFileProtectionNone on file: %@", [filePath lastPathComponent]];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+    if (fileExists == NO) {
+        [SwrveLogger warning:@"Attempted to set NSFileProtectionNone on non-existent file: %@", [filePath lastPathComponent]];
     } else {
-        [SwrveLogger error:@"Error setting NSFileProtectionNone on file: %@ error: %@", [filePath lastPathComponent], [error localizedDescription]];
+        NSError *error = nil;
+        BOOL success = [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone} ofItemAtPath:filePath error:&error];
+        if (success == YES) {
+            [SwrveLogger debug:@"Successfully set NSFileProtectionNone on file: %@", [filePath lastPathComponent]];
+        } else {
+            [SwrveLogger error:@"Error setting NSFileProtectionNone on file: %@ error: %@", [filePath lastPathComponent], [error localizedDescription]];
+        }
     }
 }
 

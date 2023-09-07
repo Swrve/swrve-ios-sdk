@@ -142,7 +142,7 @@
                             },
                             "action": {
                                 "type": "text",
-                                "value": "custom_action"
+                                "value": "https://google.com"
                             },
                             "game_id": {
                                 "type": "number",
