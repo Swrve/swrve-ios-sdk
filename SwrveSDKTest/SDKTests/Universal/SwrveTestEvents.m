@@ -13,6 +13,9 @@ NSString const *iso8601regex = @"\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\\d|3[0
 
 @interface Swrve()
 @property(atomic) SwrveProfileManager *profileManager;
+- (void)sendQueuedEventsWithCallback:(void(^)(NSURLResponse* response, NSData* data, NSError* error))eventBufferCallback
+                   eventFileCallback:(void(^)(NSURLResponse* response, NSData* data, NSError* error))eventFileCallback;
+
 @end
 
 
@@ -868,6 +871,113 @@ id classMockSwrvePermissions;
     NSArray *eventsInFile = [SwrveTestHelper makeArrayFromEventFileContents:eventFileContents];
     XCTAssertEqual(eventsInFile.count, 5);
 }
+
+- (void)testEventsClientErrorsNotPutBackInTheQueue {
+    SwrveConfig * config = [[SwrveConfig alloc]init];
+    [self setSwrve:[[TestableSwrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]];
+    [self.swrve appDidBecomeActive:nil];
+    [self.swrve resetEventCache];
+    NSURL *eventsFile = [NSURL fileURLWithPath:[SwrveLocalStorage eventsFilePathForUserId:[self.swrve userID]]];
+    
+    [self.swrve event:@"event1"];
+    //Confirm memory buffer has one event, but (so far) events cache file has 0
+    XCTAssertEqual([[self.swrve eventBuffer] count], 1);
+    NSMutableArray *cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    XCTAssertTrue(cachedContentArray != nil);
+    XCTAssertEqual(cachedContentArray.count, 0);
+    
+    //Generare a 404 response error, and ensure the event does not get written to cache file
+    self.swrve.batchURL = [NSURL URLWithString:@"SwrveError"];
+    
+    //Use sendQueuedEventsWithCallback to ensure writing to events cache file would be completed
+    XCTestExpectation *event404Error = [self expectationWithDescription:@"Event404Error"];
+    XCTestExpectation *event404ErrorFileCallback = [self expectationWithDescription:@"Event404ErrorFileCallback"];
+    [self.swrve sendQueuedEventsWithCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event404Error fulfill];
+
+    } eventFileCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event404ErrorFileCallback fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError *error) {}];
+    
+    //Test event has been purged and not cache in the events file
+    cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    NSArray *filtered = [cachedContentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"(name == %@)", @"event1"]];
+    XCTAssertEqual([filtered count], 0);
+    
+    [self.swrve resetEventCache];
+}
+
+- (void)testEvents429ErrorsPutBackInTheQueue {
+    SwrveConfig * config = [[SwrveConfig alloc]init];
+    [self setSwrve:[[TestableSwrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]];
+    [self.swrve appDidBecomeActive:nil];
+    [self.swrve resetEventCache];
+    NSURL *eventsFile = [NSURL fileURLWithPath:[SwrveLocalStorage eventsFilePathForUserId:[self.swrve userID]]];
+    
+    [self.swrve event:@"event1"];
+    //Confirm memory buffer has one event, but (so far) events cache file has 0
+    XCTAssertEqual([[self.swrve eventBuffer] count], 1);
+    NSMutableArray *cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    XCTAssertTrue(cachedContentArray != nil);
+    XCTAssertEqual(cachedContentArray.count, 0);
+    
+    //Generate a 429 (Too Many Requests) error response, to ensure event is written to cache file
+    self.swrve.batchURL = [NSURL URLWithString:@"429"];
+    
+    [self.swrve resetEventCache];
+    XCTestExpectation *event429Error = [self expectationWithDescription:@"Event429Error"];
+    XCTestExpectation *event429ErrorFileCallback = [self expectationWithDescription:@"Event429ErrorFileCallback"];
+    [self.swrve sendQueuedEventsWithCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event429Error fulfill];
+    } eventFileCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event429ErrorFileCallback fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError *error) {}];
+    
+    // Ensure the event is written to the event cache file (i.e. for later re-send)
+    cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    NSArray *filtered = [cachedContentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"(name == %@)", @"event1"]];
+    XCTAssertEqual([filtered count], 1);
+    
+    [self.swrve resetEventCache];
+}
+
+- (void)testEventsServerErrorsPutBackInTheQueue {
+    SwrveConfig * config = [[SwrveConfig alloc]init];
+    [self setSwrve:[[TestableSwrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]];
+    [self.swrve appDidBecomeActive:nil];
+    [self.swrve resetEventCache];
+    NSURL *eventsFile = [NSURL fileURLWithPath:[SwrveLocalStorage eventsFilePathForUserId:[self.swrve userID]]];
+    
+    [self.swrve event:@"event1"];
+    //Confirm memory buffer has one event, but (so far) events cache file has 0
+    XCTAssertEqual([[self.swrve eventBuffer] count], 1);
+    NSMutableArray *cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    XCTAssertTrue(cachedContentArray != nil);
+    XCTAssertEqual(cachedContentArray.count, 0);
+    
+    //Errors on the 500s range should also be cached and re-sent
+    self.swrve.batchURL = [NSURL URLWithString:@"500"];
+    
+    XCTestExpectation *event500Error = [self expectationWithDescription:@"Event500Error"];
+    XCTestExpectation *event500ErrorFileCallback = [self expectationWithDescription:@"Event500ErrorFileCallback"];
+    [self.swrve sendQueuedEventsWithCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event500Error fulfill];
+    } eventFileCallback:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [event500ErrorFileCallback fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError *error) {}];
+    
+    // Ensure the 500 response event is written to the event cache file
+    cachedContentArray = [SwrveTestHelper dicArrayFromCachedFile:eventsFile];
+    NSArray *filtered = [cachedContentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"(name == %@)", @"event1"]];
+    XCTAssertEqual([filtered count], 1);
+}
+
 
 - (void)testEventsAreSentOnAppPause {
     [self setupSwrveMigrated:true];

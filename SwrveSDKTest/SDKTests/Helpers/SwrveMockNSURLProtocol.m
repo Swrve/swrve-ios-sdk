@@ -153,6 +153,16 @@
         fakeResponse = [[NSHTTPURLResponse alloc]initWithURL:self.request.URL statusCode:404 HTTPVersion:@"HTTP/1.1" headerFields:headers];
     }
     
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc]init];
+    NSNumber *code = [numberFormatter numberFromString:self.request.URL.absoluteString];
+    if(code != nil) {
+        NSInteger errorCode = [code intValue];
+        if(errorCode >= 400 && errorCode < 500) {
+            [self mockClientErrorResponse:errorCode];
+            return;
+        }
+    }
+    
     if ([self.request.URL.absoluteString containsString:@"Email"]) {
         emptyJson = @"{ \"code\" : 403, \"message\" : \"Attempted to use PII (eg email) as external ID\"}";
         fakeData = [emptyJson dataUsingEncoding:NSUTF8StringEncoding];
@@ -206,6 +216,23 @@
             NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Have you tried turning it off and on again?", nil)
     };
     NSError *error = [NSError errorWithDomain:@"Swrve" code:500 userInfo:userInfo];
+
+    [self.client URLProtocol:self didReceiveResponse:fakeResponse cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+    [self.client URLProtocol:self didLoadData:fakeData];
+    [self.client URLProtocol:self didFailWithError:error];
+    [self.client URLProtocolDidFinishLoading:self];
+}
+
+- (void)mockClientErrorResponse:(NSInteger)errorCode {
+    NSString *emptyJson = @"{}";
+    NSData *fakeData  = [emptyJson dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary * headers = @{@"Content-Type" : @"application/json; charset=utf-8"};
+    NSHTTPURLResponse* fakeResponse = [[NSHTTPURLResponse alloc] initWithURL:self.request.URL statusCode:errorCode HTTPVersion:@"HTTP/1.1" headerFields:headers];
+
+    NSDictionary *userInfo = @{
+            NSLocalizedDescriptionKey: NSLocalizedString(@"Operation was unsuccessful.", nil)
+    };
+    NSError *error = [NSError errorWithDomain:@"Swrve" code:errorCode userInfo:userInfo];
 
     [self.client URLProtocol:self didReceiveResponse:fakeResponse cacheStoragePolicy:NSURLCacheStorageNotAllowed];
     [self.client URLProtocol:self didLoadData:fakeData];

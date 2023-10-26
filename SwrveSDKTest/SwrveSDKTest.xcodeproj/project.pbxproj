@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00DB4FCDECDE4BB668F89C0B /* libPods-SwrveSDK-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73C1F94A39C01F20014B5FCE /* libPods-SwrveSDK-tvOSTests.a */; };
 		1B5CAC152464124B003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
 		1B5CAC1624641253003AE19C /* ad_journey_campaign_message_personalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */; };
-		2341DABAEE33BE73A4D692FE /* libPods-SwrveSDK-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */; };
 		239EBD5387C83C973971A8A6 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
 		239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
 		3A0DB9CD287827A5008EC1D7 /* campaignsGif.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */; };
@@ -62,7 +60,6 @@
 		52F4B3A5268C8A2300C40B1E /* campaignsEmbeddedPersonalizationMessageCenter.json in Resources */ = {isa = PBXBuildFile; fileRef = 52F4B3A3268C8A2300C40B1E /* campaignsEmbeddedPersonalizationMessageCenter.json */; };
 		52FC409823FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 52FC409523FEB5CE0097E9BA /* campaignsPersonalization.json */; };
 		52FC409923FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */ = {isa = PBXBuildFile; fileRef = 52FC409523FEB5CE0097E9BA /* campaignsPersonalization.json */; };
-		57A3FE3E1737DF38635C1CC6 /* libPods-SwrveSDK-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */; };
 		5B2B6E1B23C49346000B1687 /* SwrveTestUserResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */; };
 		5B2B6E1C23C49346000B1687 /* SwrveTestABTestDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */; };
 		5B2B6E1D23C49346000B1687 /* SwrveTestQA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0841B2270BFB800ECA032 /* SwrveTestQA.m */; };
@@ -165,7 +162,13 @@
 		5BB9AD2B23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB9AD2A23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m */; };
 		5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
 		5BC8F011249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */; };
-		960AA6CED41D6401FBEB237F /* libPods-SwrveSDK-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */; };
+		600493028FA7C611FDD3B5D1 /* Pods_SwrveSDK_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85647AF292D415E169F2FF3F /* Pods_SwrveSDK_tvOS.framework */; };
+		C59307692AE9239800E3B26D /* campaignWithMultilineText.json in Resources */ = {isa = PBXBuildFile; fileRef = C59307682AE9239800E3B26D /* campaignWithMultilineText.json */; };
+		C593076A2AE9239800E3B26D /* campaignWithMultilineText.json in Resources */ = {isa = PBXBuildFile; fileRef = C59307682AE9239800E3B26D /* campaignWithMultilineText.json */; };
+		C5DCC60D2AC15C9F0056686A /* SwrveLiveStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DCC60C2AC15C9F0056686A /* SwrveLiveStorageTests.swift */; };
+		C86EF2527E421A374BBF9D84 /* Pods_SwrveSDK_iOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A007CEA1BDDA58160683C958 /* Pods_SwrveSDK_iOSTests.framework */; };
+		DC20863CC49350CC3B73A693 /* Pods_SwrveSDK_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12F449CDBC86B0ABCBF9F10A /* Pods_SwrveSDK_tvOSTests.framework */; };
+		DE5B5CC6361088349D575976 /* Pods_SwrveSDK_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED31316C071680B01BF1440 /* Pods_SwrveSDK_iOS.framework */; };
 		F119406027F1F64C00098913 /* campaignsAccess.json in Resources */ = {isa = PBXBuildFile; fileRef = F119405F27F1F64C00098913 /* campaignsAccess.json */; };
 		F119406127F1F64C00098913 /* campaignsAccess.json in Resources */ = {isa = PBXBuildFile; fileRef = F119405F27F1F64C00098913 /* campaignsAccess.json */; };
 		F6028D0A270504A300E0BB79 /* SwrveTestTextViewTV.m in Sources */ = {isa = PBXBuildFile; fileRef = F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */; };
@@ -263,8 +266,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C5DCC5E22ABDBC450056686A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		043A12E4A74FB54440435483 /* Pods-SwrveSDKSwiftTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKSwiftTest.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDKSwiftTest/Pods-SwrveSDKSwiftTest.debug.xcconfig"; sourceTree = "<group>"; };
 		07E802CEBAA79A4641AAFB62 /* Pods-SwrveSDK-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOS.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		12F449CDBC86B0ABCBF9F10A /* Pods_SwrveSDK_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDK_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A85140B9B65866F2EF6B465 /* Pods-SwrveSDKSwiftTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKSwiftTest.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDKSwiftTest/Pods-SwrveSDKSwiftTest.release.xcconfig"; sourceTree = "<group>"; };
 		1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_message_personalization.json; sourceTree = "<group>"; };
 		204C9FEC8C4AAF6C5174CEBB /* Pods-SwrveSDK-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = multipage_campaign_swipe.json; sourceTree = "<group>"; };
@@ -290,7 +309,7 @@
 		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
 		3AF36E84287D7828002B2279 /* SwrveTestIAMCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestIAMCampaign.m; sourceTree = "<group>"; };
 		3AF4634E24AA1731002A854B /* SwrveSDK-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwrveSDK-iOS.entitlements"; sourceTree = "<group>"; };
-		4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43C11890F851D220A19A7F40 /* Pods_SwrveSDKSwiftTestTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDKSwiftTestTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52051B412670CD7900CADC00 /* campaignsMessageCenterInvalid.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsMessageCenterInvalid.json; sourceTree = "<group>"; };
 		521F4343256D7FC400D9623B /* ad_journey_campaign_embedded_message.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ad_journey_campaign_embedded_message.json; sourceTree = "<group>"; };
 		5228725B25F67BB00014FD1B /* campaignsImagePersonalizationTriggered.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = campaignsImagePersonalizationTriggered.json; sourceTree = "<group>"; };
@@ -319,15 +338,21 @@
 		5BB9AD2723E3452E006125DD /* SwrveTestSwrveSEConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwrveSEConfig.m; sourceTree = "<group>"; };
 		5BB9AD2A23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwrveCampaignDeliveryIOS.m; sourceTree = "<group>"; };
 		5BC8F00F249A4EEE0077E43B /* SwrveTestQAEventsQueueManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestQAEventsQueueManager.m; sourceTree = "<group>"; };
-		73C1F94A39C01F20014B5FCE /* libPods-SwrveSDK-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ED31316C071680B01BF1440 /* Pods_SwrveSDK_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDK_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AAFAAFEECD9386DB4E2364E /* Pods_SwrveSDKSwiftTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDKSwiftTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E013AF1368B5E0A4487D1DD /* Pods-SwrveSDK-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOS.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		85647AF292D415E169F2FF3F /* Pods_SwrveSDK_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDK_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		885FF09B9FD8E1FDC5E4AB52 /* Pods-SwrveSDK-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOS.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		91A0AC4E619CBC20196BD052 /* Pods-SwrveSDK-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOSTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		A007CEA1BDDA58160683C958 /* Pods_SwrveSDK_iOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDK_iOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A113DA9CEC2E079E092052F1 /* Pods-SwrveSDKSwiftTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKSwiftTestTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDKSwiftTestTests/Pods-SwrveSDKSwiftTestTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B92E05E2CB20DF4A5EA80E01 /* Pods-SwrveSDK-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOS.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		BA862BC72F94BAE4B426A7BA /* Pods-SwrveSDK-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB8D0A7DABC671EA0E06C8A /* Pods-SwrveSDK-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwrveSDK-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C59307682AE9239800E3B26D /* campaignWithMultilineText.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignWithMultilineText.json; sourceTree = "<group>"; };
+		C5DCC60C2AC15C9F0056686A /* SwrveLiveStorageTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveLiveStorageTests.swift; sourceTree = "<group>"; };
+		C5DCC60E2AC15D2A0056686A /* SwrveSDK-iOSTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwrveSDK-iOSTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		CE86487A05DF9E1AD4C9A7F1 /* Pods-SwrveSDKSwiftTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDKSwiftTestTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDKSwiftTestTests/Pods-SwrveSDKSwiftTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		F119405F27F1F64C00098913 /* campaignsAccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsAccess.json; sourceTree = "<group>"; };
 		F6028D09270504A300E0BB79 /* SwrveTestTextViewTV.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewTV.m; sourceTree = "<group>"; };
 		F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextViewIOS.m; sourceTree = "<group>"; };
@@ -451,7 +476,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57A3FE3E1737DF38635C1CC6 /* libPods-SwrveSDK-iOS.a in Frameworks */,
+				DE5B5CC6361088349D575976 /* Pods_SwrveSDK_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,7 +484,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2341DABAEE33BE73A4D692FE /* libPods-SwrveSDK-iOSTests.a in Frameworks */,
+				C86EF2527E421A374BBF9D84 /* Pods_SwrveSDK_iOSTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,7 +492,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				960AA6CED41D6401FBEB237F /* libPods-SwrveSDK-tvOS.a in Frameworks */,
+				600493028FA7C611FDD3B5D1 /* Pods_SwrveSDK_tvOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,7 +500,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00DB4FCDECDE4BB668F89C0B /* libPods-SwrveSDK-tvOSTests.a in Frameworks */,
+				DC20863CC49350CC3B73A693 /* Pods_SwrveSDK_tvOSTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,6 +574,10 @@
 				885FF09B9FD8E1FDC5E4AB52 /* Pods-SwrveSDK-tvOS.release.xcconfig */,
 				BDB8D0A7DABC671EA0E06C8A /* Pods-SwrveSDK-tvOSTests.debug.xcconfig */,
 				91A0AC4E619CBC20196BD052 /* Pods-SwrveSDK-tvOSTests.release.xcconfig */,
+				A113DA9CEC2E079E092052F1 /* Pods-SwrveSDKSwiftTestTests.debug.xcconfig */,
+				CE86487A05DF9E1AD4C9A7F1 /* Pods-SwrveSDKSwiftTestTests.release.xcconfig */,
+				043A12E4A74FB54440435483 /* Pods-SwrveSDKSwiftTest.debug.xcconfig */,
+				1A85140B9B65866F2EF6B465 /* Pods-SwrveSDKSwiftTest.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -556,12 +585,23 @@
 		A12628CF4F75578C563573F2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4DFEEF1A1E4C4ACEFB729F15 /* libPods-SwrveSDK-iOS.a */,
-				74B7FF9C9A05933D4EE05523 /* libPods-SwrveSDK-iOSTests.a */,
-				D8149D08A130049516D7C068 /* libPods-SwrveSDK-tvOS.a */,
-				73C1F94A39C01F20014B5FCE /* libPods-SwrveSDK-tvOSTests.a */,
+				6ED31316C071680B01BF1440 /* Pods_SwrveSDK_iOS.framework */,
+				A007CEA1BDDA58160683C958 /* Pods_SwrveSDK_iOSTests.framework */,
+				85647AF292D415E169F2FF3F /* Pods_SwrveSDK_tvOS.framework */,
+				12F449CDBC86B0ABCBF9F10A /* Pods_SwrveSDK_tvOSTests.framework */,
+				43C11890F851D220A19A7F40 /* Pods_SwrveSDKSwiftTestTests.framework */,
+				7AAFAAFEECD9386DB4E2364E /* Pods_SwrveSDKSwiftTest.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C5DCC60B2AC15C590056686A /* Swift */ = {
+			isa = PBXGroup;
+			children = (
+				C5DCC60C2AC15C9F0056686A /* SwrveLiveStorageTests.swift */,
+				C5DCC60E2AC15D2A0056686A /* SwrveSDK-iOSTests-Bridging-Header.h */,
+			);
+			path = Swift;
 			sourceTree = "<group>";
 		};
 		F60B7F41225F3BA1009AFCCC /* tvOS */ = {
@@ -594,6 +634,7 @@
 		F666261222608ABD001AF2EB /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				C5DCC60B2AC15C590056686A /* Swift */,
 				F66986E625BDA96800950E98 /* SwrveTestNotificationToCampaign.m */,
 				F66986D725BDA93F00950E98 /* SwrveTestSwrvePushSDK.m */,
 				F66986D525BDA93F00950E98 /* SwrveTestRichPushHelpers.m */,
@@ -732,6 +773,7 @@
 				F6698A5825BEF15000950E98 /* campaignsConversationVersion.json */,
 				F6698A5E25BEF19200950E98 /* campaignsConversationFilters.json */,
 				52FC409523FEB5CE0097E9BA /* campaignsPersonalization.json */,
+				C59307682AE9239800E3B26D /* campaignWithMultilineText.json */,
 				F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */,
 				F6698A7125BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf */,
 				F6698A7025BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb */,
@@ -767,7 +809,8 @@
 				5B2B6DF023C49326000B1687 /* Sources */,
 				5B2B6DF123C49326000B1687 /* Frameworks */,
 				5B2B6DF223C49326000B1687 /* Resources */,
-				C45063F9C172AA2991BFAEE4 /* [CP] Copy Pods Resources */,
+				935E4D57D8701F42B87F625D /* [CP] Embed Pods Frameworks */,
+				C5DCC5E22ABDBC450056686A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -786,7 +829,7 @@
 				5B2B6E0A23C49328000B1687 /* Sources */,
 				5B2B6E0B23C49328000B1687 /* Frameworks */,
 				5B2B6E0C23C49328000B1687 /* Resources */,
-				7B15E81A4FE7AA9430B1D4B1 /* [CP] Copy Pods Resources */,
+				E17933B65A4319C767927569 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -806,7 +849,7 @@
 				5B2B6E7223C4CB32000B1687 /* Sources */,
 				5B2B6E7323C4CB32000B1687 /* Frameworks */,
 				5B2B6E7423C4CB32000B1687 /* Resources */,
-				41D12DF1F441347DF99C9ED4 /* [CP] Copy Pods Resources */,
+				D8AF15BC4320F36BE5982668 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -825,7 +868,7 @@
 				5B2B6E8923C4CB39000B1687 /* Sources */,
 				5B2B6E8A23C4CB39000B1687 /* Frameworks */,
 				5B2B6E8B23C4CB39000B1687 /* Resources */,
-				E078568FD684582E8D39BEF2 /* [CP] Copy Pods Resources */,
+				A7FB7F5FABB866A6DCAA704E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -843,6 +886,7 @@
 		52740A661CF70D5E00151035 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = Swrve;
 				TargetAttributes = {
@@ -854,6 +898,7 @@
 					5B2B6E0D23C49328000B1687 = {
 						CreatedOnToolsVersion = 11.2.1;
 						DevelopmentTeam = 38YP67HQGE;
+						LastSwiftMigration = 1430;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5B2B6DF323C49326000B1687;
 					};
@@ -960,6 +1005,7 @@
 				5B2B6F5423C4E55E000B1687 /* abTestDetails.json in Resources */,
 				239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */,
 				3A8E4740296730A000D5CB6C /* campaigns_start_geo.json in Resources */,
+				C59307692AE9239800E3B26D /* campaignWithMultilineText.json in Resources */,
 				F6DF565929477D0A00ECAC5C /* campaignsHoldout.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1017,6 +1063,7 @@
 				3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */,
 				5228726F25F697470014FD1B /* campaignsImagePersonalizationTriggered.json in Resources */,
 				F6698A8025BEF49E00950E98 /* campaignsIdentity.json in Resources */,
+				C593076A2AE9239800E3B26D /* campaignWithMultilineText.json in Resources */,
 				52843EBF256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				52F1C9272567F180003B68AF /* campaignsEmbedded.json in Resources */,
 				F119406127F1F64C00098913 /* campaignsAccess.json in Resources */,
@@ -1081,24 +1128,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		41D12DF1F441347DF99C9ED4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveSDK-library-tvOS/SwrveConversationSDK.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		632C415CDF53573EE7C2DC0C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1121,58 +1150,100 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7B15E81A4FE7AA9430B1D4B1 /* [CP] Copy Pods Resources */ = {
+		935E4D57D8701F42B87F625D /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveSDK-library-iOS/SwrveConversationSDK.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C45063F9C172AA2991BFAEE4 /* [CP] Copy Pods Resources */ = {
+		A7FB7F5FABB866A6DCAA704E /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveSDK-library-iOS/SwrveConversationSDK.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-tvOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-tvOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-tvOS/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/TrustKit-tvOS/TrustKit.framework",
+				"${BUILT_PRODUCTS_DIR}/OCMock-tvOS/OCMock.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TrustKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OCMock.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E078568FD684582E8D39BEF2 /* [CP] Copy Pods Resources */ = {
+		D8AF15BC4320F36BE5982668 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SwrveSDK-library-tvOS/SwrveConversationSDK.bundle",
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-tvOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-tvOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-tvOS/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/TrustKit-tvOS/TrustKit.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SwrveConversationSDK.bundle",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TrustKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-tvOS/Pods-SwrveSDK-tvOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E17933B65A4319C767927569 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/OCMock-iOS/OCMock.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OCMock.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FDE378F99500CB688BDF644F /* [CP] Check Pods Manifest.lock */ = {
@@ -1246,6 +1317,7 @@
 				52C0A63425F140E400BE4549 /* SwrveTestAssetsManager.m in Sources */,
 				5B2B6E3023C4935F000B1687 /* SwrveTestSignatureProtectedFile.m in Sources */,
 				5B2B6E2A23C4935F000B1687 /* SwrveTestCampaignMultipleConditions.m in Sources */,
+				C5DCC60D2AC15C9F0056686A /* SwrveLiveStorageTests.swift in Sources */,
 				3AF36E85287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */,
 				F6A79A242551BD9500E66E47 /* SwrveTestConversationStyler.m in Sources */,
 				F669875225BDABE300950E98 /* SwrveTestEvents.m in Sources */,
@@ -1525,6 +1597,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -1532,12 +1605,15 @@
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "swrve.SwrveSDK-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SDKTests/iOS/Swift/SwrveSDK-iOSTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-iOS.app/SwrveSDK-iOS";
 			};
@@ -1550,6 +1626,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -1557,11 +1634,13 @@
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "swrve.SwrveSDK-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SDKTests/iOS/Swift/SwrveSDK-iOSTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-iOS.app/SwrveSDK-iOS";
 			};
@@ -1636,7 +1715,7 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-tvOS.app/SwrveSDK-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Debug;
 		};
@@ -1661,7 +1740,7 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-tvOS.app/SwrveSDK-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Release;
 		};

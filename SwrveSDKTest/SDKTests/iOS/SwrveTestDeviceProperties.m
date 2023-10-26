@@ -7,9 +7,11 @@
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
+#import <SwrveSDK/SwrveSDK-Swift.h>
 
 @interface SwrveDeviceProperties ()
 - (NSString *)installDate:(UInt64)appInstallTimeSeconds;
+@property (nonatomic) id<ActivityAuthorizationInfoProtocol> liveActivityProvider;
 @end
 
 @interface DummyCTCarrier : CTCarrier
@@ -47,7 +49,13 @@
 }
 
 - (int)devicePropertyCount {
-    return 15;
+    if (@available(iOS 16.2, *)) {
+        return 17;
+    } else if (@available(iOS 16.1, *)) {
+        return 16;
+    } else {
+        return 15;
+    }
 }
 
 - (void)testDevicePropertiesNil {
@@ -292,4 +300,31 @@
     NSString *installDate = [swrveDeviceProperties installDate:[swrveDeviceProperties appInstallTimeSeconds]];
     XCTAssertEqualObjects(installDate,@"19700101");
 }
+
+- (void)testDeviceProperties_liveActivitesPermission_authorized {
+    id swrveDeviceProperties = OCMPartialMock([SwrveDeviceProperties new]);
+    id mock = OCMProtocolMock(@protocol(ActivityAuthorizationInfoProtocol));
+    
+    OCMStub([swrveDeviceProperties liveActivityProvider]).andReturn(mock);
+    OCMStub([mock areActivitiesEnabled]).andReturn(true);
+    OCMStub([mock frequentPushesEnabled]).andReturn(true);
+    
+    NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.permission.ios.live_activities"], @"authorized");
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.permission.ios.live_activities_frequent_updates"], @"authorized");
+}
+
+- (void)testDeviceProperties_liveActivitesPermission_denied {
+    id swrveDeviceProperties = OCMPartialMock([SwrveDeviceProperties new]);
+    id mock = OCMProtocolMock(@protocol(ActivityAuthorizationInfoProtocol));
+  
+    OCMStub([swrveDeviceProperties liveActivityProvider]).andReturn(mock);
+    OCMStub([mock areActivitiesEnabled]).andReturn(false);
+    OCMStub([mock frequentPushesEnabled]).andReturn(false);
+        
+    NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.permission.ios.live_activities"], @"denied");
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.permission.ios.live_activities_frequent_updates"], @"denied");
+}
+
 @end

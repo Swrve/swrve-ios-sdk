@@ -9,6 +9,7 @@ def shared_pods
 end
 
 target 'MinimalIntegrationSample-ObjC' do
+  use_frameworks!
   shared_pods
 end
 

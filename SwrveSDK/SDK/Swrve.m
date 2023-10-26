@@ -1908,6 +1908,7 @@ enum HttpStatus {
     HTTP_SUCCESS,
     HTTP_REDIRECTION,
     HTTP_CLIENT_ERROR,
+    HTTP_CLIENT_ERROR_RETRY,
     HTTP_SERVER_ERROR
 };
 
@@ -1922,12 +1923,42 @@ enum HttpStatus {
         return HTTP_REDIRECTION;
     }
 
+    if (code == 429) {
+        return HTTP_CLIENT_ERROR_RETRY;
+    }
+    
     if (code < 500) {
         return HTTP_CLIENT_ERROR;
     }
 
     // 500+
     return HTTP_SERVER_ERROR;
+}
+
+- (NSString *)httpStatusToString:(enum HttpStatus)httpStatus
+{
+    if(httpStatus == HTTP_SUCCESS)
+    {
+        return @"HTTP_SUCCESS";
+    }
+    else if(httpStatus == HTTP_REDIRECTION)
+    {
+        return @"HTTP_REDIRECTION";
+    }
+    else if(httpStatus == HTTP_CLIENT_ERROR)
+    {
+        return @"HTTP_CLIENT_ERROR";
+    }
+    else if(httpStatus == HTTP_CLIENT_ERROR_RETRY)
+    {
+        return @"HTTP_CLIENT_ERROR_RETRY";
+    }
+    else if(httpStatus == HTTP_SERVER_ERROR)
+    {
+        return @"HTTP_SERVER_ERROR";
+    }
+
+    return @"HttpStatus";
 }
 
 - (NSOutputStream *)createEventfile:(int)mode {
@@ -1985,7 +2016,9 @@ enum HttpStatus {
                 [SwrveLogger error:@"HTTP Error - not adding events back into the queue: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
                 break;
             case HTTP_SERVER_ERROR:
-                [SwrveLogger error:@"Error sending event data to Swrve (%@) Adding data back onto unsent message buffer", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+            case HTTP_CLIENT_ERROR_RETRY:
+                [SwrveLogger error:@"Error (%@) sending event data to Swrve (%@) Adding data back onto unsent message buffer", [self httpStatusToString:status],
+                    [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
 
                 // Edge case check, in case user id changed in identity call before this callback completed
                 NSString *currentSwrveUserId = [swrve userID];
@@ -2083,6 +2116,7 @@ enum HttpStatus {
                 [SwrveLogger debug:@"Received a valid HTTP POST response. Truncating event log file", nil];
                 break;
             case HTTP_SERVER_ERROR:
+            case HTTP_CLIENT_ERROR_RETRY:
                 [SwrveLogger error:@"Error sending log file - reopening in append mode: status", nil];
                 mode = SWRVE_APPEND_TO_FILE;
                 break;

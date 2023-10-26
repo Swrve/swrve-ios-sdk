@@ -800,6 +800,56 @@
     XCTAssertEqualObjects(messageViewController.message.name, @"Kindle");
 }
 
+- (void)testMessageIsShownWhenPersonalizationExistForMultilineText {
+    NSArray *assets = @[@"f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb", @"733397a5860fcd32f07f8e0850d44642b62f64ef"];
+    [SwrveTestHelper createDummyAssets:assets];
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaignWithMultilineText"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+    NSDictionary *validPersonalization = @{
+        @"test_cp": @"test_value",
+        @"test_custom":@"urlprocessed",
+        @"test_display":@"display",
+        @"user.favorite_team":@"my team"
+    };
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
+    XCTAssertNotNil(campaign);
+
+    [controller showMessageCenterCampaign:campaign withPersonalization:validPersonalization];
+    
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    XCTAssertNotNil(messageViewController.message);
+}
+
+
+- (void)testNoCampainCreatedWhenPersonalizationMissingForMultilineText {
+    NSArray *assets = @[@"f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb", @"733397a5860fcd32f07f8e0850d44642b62f64ef"];
+    [SwrveTestHelper createDummyAssets:assets];
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaignWithMultilineText"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    // mock date that lies within the start and end time of the campaign in the test json file campaignsMessageCenter
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+    NSDictionary *validPersonalization = @{
+        @"test_cp": @"test_value",
+        @"test_custom":@"urlprocessed",
+        @"test_display":@"display"
+    };
+    
+    NSArray *array = [controller messageCenterCampaignsWithPersonalization:validPersonalization];
+    XCTAssertEqual(0, array.count);
+
+}
+
 - (void)testShowMessagePersonalizationFromTrigger {
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalization"];

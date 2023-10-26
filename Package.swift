@@ -13,7 +13,7 @@ let package = Package(
             targets: ["SwrveConversationSDK"]),
         .library(
             name: "SwrveSDK",
-            targets: ["SwrveSDK"]),
+            targets: ["SwrveSDK", "SwrveSDKSwift"]),
     ],
     dependencies: [
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", .upToNextMajor(from: "5.13.0"))
@@ -48,7 +48,11 @@ let package = Package(
             resources: [
                    .process("LICENSE"),
                  ],
-            publicHeadersPath: "include")
+            publicHeadersPath: "include"),
+        .target(
+            name: "SwrveSDKSwift",
+            dependencies: ["SwrveSDK"],
+            path: "SwrveSDKSwift")
     ],
     swiftLanguageVersions: [.v5]
 )

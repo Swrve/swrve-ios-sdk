@@ -1,0 +1,233 @@
+{
+  "cdn_root": "https://fake_cdn_root",
+  "campaigns": [
+      {
+              "id": 648642,
+              "start_date": 1362671700000,
+              "end_date": 1364568900000,
+              "rules": {
+                "delay_first_message": 0,
+                "dismiss_after_views": 99999,
+                "display_order": "random",
+                "min_delay_between_messages": 0
+              },
+              "triggers": [
+                {
+                  "event_name": "Swrve.Messages.showAtSessionStart",
+                  "conditions": {}
+                },
+                {
+                  "event_name": "hello",
+                  "conditions": {}
+                }
+              ],
+              "message_center": true,
+              "message_center_details": {
+                "subject": "some subject personalized ${test_cp}",
+                "description": "some description personalized ${test_cp}",
+                "image_asset": "f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb",
+                "dynamic_image_url": "some url personalized ${test_custom}",
+                "accessibility_text": "some alt text personalized ${test_cp}"
+              },
+              "message": {
+                "id": 650879,
+                "name": "MOBILE-33586",
+                "rules": {
+                  "orientations": "portrait"
+                },
+                "message_center_details": {
+                  "subject": "some subject personalized ${test_cp}"
+                },
+                "priority": 9999,
+                "template": {
+                  "formats": [
+                    {
+                      "name": "[0.649746192893401]Mobile - portrait",
+                      "orientation": "portrait",
+                      "language": "*",
+                      "size": {
+                        "w": {
+                          "type": "number",
+                          "value": 1152
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 2048
+                        }
+                      },
+                      "calibration": {
+                        "width": 3249,
+                        "height": 325,
+                        "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                        "base_font_size": 20
+                      },
+                      "pages": [
+                        {
+                          "page_id": 138006,
+                          "page_name": "Page 1",
+                          "swipe_backward": -1,
+                          "swipe_forward": -1,
+                          "template_id": 49785,
+                          "images": [
+                            {
+                              "name": "Background",
+                              "ui_order": 0,
+                              "x": {
+                                "type": "number",
+                                "value": 0
+                              },
+                              "y": {
+                                "type": "number",
+                                "value": 0
+                              },
+                              "w": {
+                                "type": "number",
+                                "value": 1537
+                              },
+                              "h": {
+                                "type": "number",
+                                "value": 2495
+                              },
+                              "image_width": 1536,
+                              "image_height": 2599,
+                              "image_filename": "1.png",
+                              "image": {
+                                "type": "asset",
+                                "value": "733397a5860fcd32f07f8e0850d44642b62f64ef"
+                              },
+                              "color": {
+                                "type": "color",
+                                "value": "FFFFFF"
+                              },
+                              "media_format": "image"
+                            },
+                            {
+                              "name": "Button 1",
+                              "ui_order": 1,
+                              "x": {
+                                "type": "number",
+                                "value": -4
+                              },
+                              "y": {
+                                "type": "number",
+                                "value": 415
+                              },
+                              "w": {
+                                "type": "number",
+                                "value": 1105
+                              },
+                              "h": {
+                                "type": "number",
+                                "value": 910
+                              },
+                              "multiline_text": {
+                                "value": "This text block will dissappear when the user doesn't have the \nfollowing realtime property populated as there is no fallback set: ${user.favorite_team}",
+                                "h_align": "LEFT",
+                                "font_size": 16,
+                                "scrollable": true,
+                                "font_native_style": "Normal",
+                                "font_file": "_system_font_",
+                                "line_height": 1.2,
+                                "padding": {
+                                  "top": 0,
+                                  "right": 0,
+                                  "bottom": 0,
+                                  "left": 0
+                                },
+                                "font_color": "#ff000000",
+                                "bg_color": "#fff90606"
+                              }
+                            }
+                          ],
+                          "buttons": [
+                            {
+                              "button_id": 930929,
+                              "name": "Button 2",
+                              "ui_order": 2,
+                              "x": {
+                                "type": "number",
+                                "value": 27
+                              },
+                              "y": {
+                                "type": "number",
+                                "value": 958
+                              },
+                              "w": {
+                                "type": "number",
+                                "value": 585
+                              },
+                              "h": {
+                                "type": "number",
+                                "value": 130
+                              },
+                              "type": {
+                                "type": "text",
+                                "value": "DISMISS"
+                              },
+                              "action": {
+                                "type": "text",
+                                "value": ""
+                              },
+                              "game_id": {
+                                "type": "number",
+                                "value": ""
+                              },
+                              "text": {
+                                "type": "text",
+                                "value": "Dismiss"
+                              },
+                              "theme": {
+                                "font_size": 10,
+                                "truncate": true,
+                                "font_native_style": "Bold",
+                                "font_file": "_system_font_",
+                                "padding": {
+                                  "top": 0,
+                                  "bottom": 0,
+                                  "left": 0,
+                                  "right": 0
+                                },
+                                "font_color": "#FFFFFFFF",
+                                "bg_color": "#FFFFC500",
+                                "corner_radius": 65,
+                                "button_style_preset": {
+                                  "id": "15",
+                                  "version": 2
+                                },
+                                "pressed_state": {
+                                  "font_color": "#FFE64C15",
+                                  "bg_color": "#FFC4C4C4"
+                                },
+                                "focused_state": {
+                                  "font_color": "#FFFFFFFF",
+                                  "bg_color": "#FF002787"
+                                },
+                                "h_align": "CENTER"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "scaled_by": 0.649746192893401,
+                      "scaled_from": "Mobile - portrait",
+                      "scale": 1
+                    }
+                  ]
+                }
+              },
+              "subject": "",
+              "in_app_version": 13
+            }
+  ],
+  "game_data": {
+    "150": {
+      "app_store_url": "https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
+    }
+  },
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 999,
+    "delay_first_message": 0
+  },
+  "version": 2
+}

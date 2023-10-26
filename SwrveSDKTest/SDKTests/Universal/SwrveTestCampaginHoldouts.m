@@ -153,4 +153,38 @@
     OCMVerifyAll(swrveMock);
 }
 
+- (void)testEmbeddedMessageWithControlNotShownButCampaignStateIsSaved{
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsHoldout" withConfig:[SwrveConfig new]];
+    SwrveMessageController *controller = [swrveMock messaging];
+    id mockController = OCMPartialMock(controller);
+
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_embedded",
+                             @"payload": @{}};
+    
+    bool shown = [mockController eventRaised:event];
+    XCTAssertFalse(shown);
+    OCMVerify([mockController saveCampaignsState]);
+}
+
+
+- (void)testMessageWithControlNotShownButCampaignStateIsSaved{
+
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsHoldout" withConfig:[SwrveConfig new]];
+    SwrveMessageController *controller = [swrveMock messaging];
+    id mockController = OCMPartialMock(controller);
+
+    NSDictionary* event =  @{@"type": @"event",
+                             @"seqnum": @1111,
+                             @"name": @"trigger_iam",
+                             @"payload": @{}};
+    
+    bool shown = [mockController eventRaised:event];
+    XCTAssertFalse(shown);
+    OCMVerify([mockController saveCampaignsState]);
+}
+
+
 @end

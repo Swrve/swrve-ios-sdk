@@ -1,8 +1,20 @@
 #import "SwrveDeviceProperties.h"
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
+#import <SwrveSDKCommon/SwrvePermissions.h>
 #else
 #import "SwrveLocalStorage.h"
+#import "SwrvePermissions.h"
+#endif
+
+#if TARGET_OS_IOS
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+// if we cant find SwrveSDK-Swift.h then it could be direct source which is
+// not supported.
+#define SWRVE_MODULE 1
+#endif
+
 #endif
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -35,8 +47,16 @@ static NSString* SWRVE_CAN_RECEIVE_AUTH_PUSH =          @"swrve.can_receive_auth
 static NSString* SWRVE_SDK_INIT_MODE =                  @"swrve.sdk_init_mode";
 static NSString* SWRVE_DEVICE_TYPE =                    @"swrve.device_type";
 static NSString* SWRVE_TRACKING_STATE =                 @"swrve.tracking_state";
+static NSString* SWRVE_LIVE_ACTIVITIES =                @"swrve.permission.ios.live_activities";
+static NSString* SWRVE_LIVE_ACTIVITIES_FREQUENT_UPDATES = @"swrve.permission.ios.live_activities_frequent_updates";
 
 static NSString* PLATFORM =                             @"iOS "; // with trailing space
+
+#if SWRVE_MODULE && TARGET_OS_IOS
+@interface SwrveDeviceProperties ()
+@property (nonatomic) id<ActivityAuthorizationInfoProtocol> liveActivityProvider;
+@end
+#endif
 
 @implementation SwrveDeviceProperties
 
@@ -54,6 +74,10 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
 @synthesize conversationVersion = _conversationVersion;
 @synthesize deviceToken = _deviceToken;
 @synthesize carrierInfo = _carrierInfo;
+
+#if SWRVE_MODULE
+@synthesize liveActivityProvider;
+#endif
 
 #pragma mark - init
 
@@ -76,6 +100,9 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
         self.sdk_language = sdk_language;
         self.carrierInfo = carrierInfo;
         self.swrveInitMode = initMode;
+#if SWRVE_MODULE
+        self.liveActivityProvider = [[SwrveLiveActivity alloc] init];
+#endif
     }
     return self;
 }
@@ -156,6 +183,18 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
     [deviceProperties setValue:trackingState forKey:SWRVE_TRACKING_STATE];
 
 #if TARGET_OS_IOS /** retrieve the properties only supported by iOS **/
+#if SWRVE_MODULE
+    // ios Live Activities
+    if (@available(iOS 16.1, *)) {
+        NSString *value = [self.liveActivityProvider areActivitiesEnabled] ? swrve_permission_status_authorized : swrve_permission_status_denied ;
+        [deviceProperties setValue:value forKey:SWRVE_LIVE_ACTIVITIES];
+    }
+    
+    if (@available(iOS 16.2, *)) {
+        NSString *value = [self.liveActivityProvider frequentPushesEnabled] ? swrve_permission_status_authorized : swrve_permission_status_denied;
+        [deviceProperties setValue:value forKey:SWRVE_LIVE_ACTIVITIES_FREQUENT_UPDATES];
+    }
+#endif
     [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
     
     // Carrier info

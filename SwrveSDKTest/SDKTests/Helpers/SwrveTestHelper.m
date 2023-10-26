@@ -364,6 +364,10 @@
 
 + (void)overwriteCampaignFile:(SwrveSignatureProtectedFile *)signatureFile withFile:(NSString *)filename {
     NSURL *path = [[NSBundle bundleForClass:[Swrve class]] URLForResource:filename withExtension:@"json"];
+    if (path == nil) {
+        // if use frameworks may need to get path from main bundle
+        path = [[NSBundle mainBundle] URLForResource:filename withExtension:@"json"];
+    }
     NSString *campaignData = [NSString stringWithContentsOfURL:path encoding:NSUTF8StringEncoding error:nil];
     if (campaignData == nil) {
         [NSException raise:@"No content in JSON test file" format:@"File %@ has no content", filename];

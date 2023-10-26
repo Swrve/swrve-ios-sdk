@@ -4,8 +4,6 @@
 #import <OCMArg.h>
 #import <OCMMacroState.h>
 #import <OCMockObject.h>
-#import <OCMStubRecorder.h>
-#import <OCMLocation.h>
 
 #import "SwrveMessageViewController.h"
 #import "Swrve.h"

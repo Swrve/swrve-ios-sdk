@@ -169,7 +169,13 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.push_bg_refresh"]);
     
     // IDFA & Device Info count
-    XCTAssertEqual([deviceInfo count], 22);
+    if (@available(iOS 16.2, *)) {
+        XCTAssertEqual([deviceInfo count], 24);
+    } else if (@available(iOS 16.1, *)) {
+        XCTAssertEqual([deviceInfo count], 23);
+    } else {
+        XCTAssertEqual([deviceInfo count], 22);
+    }
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 
     // Extra identifiers
@@ -197,8 +203,14 @@
     NSDictionary * deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
     
     XCTAssertNotNil(deviceInfo);
-
-    XCTAssertEqual([deviceInfo count], 28);
+    
+    if (@available(iOS 16.2, *)) {
+        XCTAssertEqual([deviceInfo count], 30);
+    } else if (@available(iOS 16.1, *)) {
+        XCTAssertEqual([deviceInfo count], 29);
+    } else {
+        XCTAssertEqual([deviceInfo count], 28);
+    }
 
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.when_in_use"]);

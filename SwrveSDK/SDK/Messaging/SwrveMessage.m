@@ -246,11 +246,16 @@ static bool in_cache(NSString *file, NSSet *set) {
             }
 
             for (SwrveImage *image in page.images) {
-                if (image.text) {
+                
+                NSString *currentImageText = image.text;
+                if (!currentImageText) {
+                    currentImageText = [image.multilineText objectForKey:@"value"];
+                }
+                if (currentImageText) {
                     NSError *error;
-                    NSString *text = [TextTemplating templatedTextFromString:image.text withProperties:personalization andError:&error];
-                    if (error != nil || text == nil) {
-                        [SwrveLogger warning:@"Button Asset has no personalization for text: %@", image.text];
+                    NSString *personalizedText = [TextTemplating templatedTextFromString: currentImageText withProperties:personalization andError:&error];
+                    if (error != nil || personalizedText == nil) {
+                        [SwrveLogger warning:@"Button Asset has no personalization for text: %@", currentImageText];
                         return false;
                     }
                 }

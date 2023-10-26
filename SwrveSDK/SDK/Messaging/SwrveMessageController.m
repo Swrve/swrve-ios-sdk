@@ -1061,7 +1061,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 }
 
 - (void)messageWasShownToUser:(SwrveMessage *)message {
-    [self baseMessageWasShownToUser:message embedded:@"false"];
+    [self baseMessageWasHandledOrShownToUser:message embedded:@"false"];
     id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
     if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
         SwrveMessageDetails *md = [self messageDetails:message];
@@ -1070,10 +1070,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 }
 
 - (void)embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message {
-    [self baseMessageWasShownToUser:message embedded:@"true"];
+    [self baseMessageWasHandledOrShownToUser:message embedded:@"true"];
 }
 
-- (void)baseMessageWasShownToUser:(SwrveBaseMessage *)message embedded:(NSString *)embedded {
+- (void)baseMessageWasHandledOrShownToUser:(SwrveBaseMessage *)message embedded:(NSString *)embedded {
     // The message was shown. Take the current time so that we can throttle messages from being shown too quickly.
     [self setMessageMinDelayThrottle];
     [self setMessagesLeftToShow:self.messagesLeftToShow - 1];
@@ -1607,9 +1607,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         
         if (messageToBeDisplayed.control) {
             [SwrveLogger warning:@"This message is a control message and will not be displayed.", nil];
-            // skip setting campaign state, these campaigns should never been shown to user.
-            // we send an impression event for backend reporting.
-            [self sendImpressionEvent:messageToBeDisplayed embedded:@"false"];
+            [self baseMessageWasHandledOrShownToUser:message embedded:@"false"];
             return campaignShown;
         }
 
@@ -1647,7 +1645,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             self.embeddedMessageConfig.embeddedCallback(messageToBeDisplayed, personalizationProperties, messageToBeDisplayed.control);
         } else {
             if (messageToBeDisplayed.control) {
-                [self sendImpressionEvent:messageToBeDisplayed embedded:@"true"];
+                [self baseMessageWasHandledOrShownToUser:message embedded:@"true"];
                 return campaignShown;
             }
             else if (self.embeddedMessageConfig.embeddedMessageCallbackWithPersonalization != nil) {

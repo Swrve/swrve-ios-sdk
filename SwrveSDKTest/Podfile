@@ -1,13 +1,15 @@
 platform :ios, '10.0'
+use_frameworks!
 
 target 'SwrveSDK-iOS' do
   pod 'SwrveSDK', :path => '../'
   pod 'SwrveSDKCommon', :path => '../'
 
   target 'SwrveSDK-iOSTests' do
-    pod 'OCMock', '~> 3.8.1'
+    pod 'OCMock', '~> 3.9.1'
     inherit! :search_paths
   end
+
 end
 
 target 'SwrveSDK-tvOS' do
@@ -17,7 +19,7 @@ target 'SwrveSDK-tvOS' do
 
   target 'SwrveSDK-tvOSTests' do
     platform :tvos, '10.0'
-    pod 'OCMock', '~> 3.8.1'
+    pod 'OCMock', '~> 3.9.1'
     inherit! :search_paths
   end
 end
