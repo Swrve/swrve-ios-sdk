@@ -13,7 +13,7 @@ jobs:
             cd SwrveSDKTest
             pod install
       - run: fastlane unitTestsiOS scheme:"SwrveSDKiOS" device:"iPhone 14"
-      - run: fastlane unitTeststvOS scheme:"SwrveSDKtvOS" device:"iPhone 14"
+      - run: fastlane unitTeststvOS scheme:"SwrveSDKtvOS"
       - store_test_results:
           path: output/scan
 
