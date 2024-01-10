@@ -207,8 +207,8 @@
     return nil;
 }
 
-- (void)sendPushNotificationEngagedEvent:(NSString *)pushId {
-#pragma unused(pushId)
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSMutableDictionary *)payload {
+#pragma unused(pushId, payload)
 }
 
 - (void)handleNotificationToCampaign:(NSString *)campaignId {

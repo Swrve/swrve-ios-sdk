@@ -120,6 +120,15 @@
             }
         }
     }
+    
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setObject:[NSNumber numberWithBool:displayed] forKey:@"displayed"];
+    [payload setObject:reason forKey:@"reason"];
+    [payload setObject: [NSNumber numberWithBool:isSilentPush] forKey:@"silent"];
+    NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
+    if (trackingPayload != nil) {
+        [payload addEntriesFromDictionary:trackingPayload];
+    }
 
     return @{
             @"type": @"generic_campaign_event",
@@ -127,11 +136,7 @@
             @"seqnum": [NSString stringWithFormat:@"%ld", (long) seqnum],
             @"actionType": @"delivered",
             @"campaignType": @"push",
-            @"payload": @{
-                    @"displayed": [NSNumber numberWithBool:displayed],
-                    @"reason": reason,
-                    @"silent": [NSNumber numberWithBool:isSilentPush]
-            },
+            @"payload": payload,
             @"id": pushId
     };
 }

@@ -109,6 +109,11 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic) BOOL autoSaveEventsOnResign;
 
 #if TARGET_OS_IOS
+
+/*! Controls if UNAuthorizationOptionProvidesAppNotificationSettings is added to push options when requesting push permissions. Default is false, if set to true the SwrvePushResponseDeleage will include callback
+ to openSettingsForNotification: */
+@property (nonatomic) BOOL providesAppNotificationSettings;
+
 /*! Controls if push notifications are enabled. */
 @property (nonatomic) BOOL pushEnabled;
 
@@ -230,6 +235,7 @@ typedef void (^SwrveResourcesUpdatedListener) (void);
 @property (nonatomic, readonly) BOOL autoSendEventsOnResume;
 @property (nonatomic, readonly) BOOL autoSaveEventsOnResign;
 #if TARGET_OS_IOS
+@property (nonatomic, readonly) BOOL providesAppNotificationSettings;
 @property (nonatomic, readonly) BOOL pushEnabled;
 @property (nonatomic, readonly) NSSet *provisionalPushNotificationEvents;
 @property (nonatomic, readonly) NSSet *pushNotificationEvents;

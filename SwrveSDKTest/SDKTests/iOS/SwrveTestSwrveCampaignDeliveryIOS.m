@@ -8,7 +8,7 @@
 @interface SwrveTestSwrveCampaignDeliveryIOS : XCTestCase
 
 @property id classNSFileManagerMock;
-
+@property (nonatomic) NSString *trackingData;
 @end
 
 @interface SwrveCampaignDelivery (Private)
@@ -28,6 +28,7 @@ NSString *appGroupId = @"app.groupid";
 
 - (void)setUp {
     [super setUp];
+    self.trackingData = @"5ea0fb1b8a24b8f9f76f675b7350200f314312fa";
     // Partial mock of NSFileManager to Force a valid return when check for the valid GroupId.
     self.classNSFileManagerMock = OCMPartialMock([NSFileManager defaultManager]);
     OCMStub([self.classNSFileManagerMock containerURLForSecurityApplicationGroupIdentifier:OCMOCK_ANY]).andReturn([NSURL new]);
@@ -41,6 +42,8 @@ NSString *appGroupId = @"app.groupid";
 - (void)testPushDeliveryEvent {
     NSDictionary *userInfo = @{
             @"_p": @123456,
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"sw": @{@"media":
                     @{      @"title": @"title",
                             @"body": @"body",
@@ -54,6 +57,8 @@ NSString *appGroupId = @"app.groupid";
 
 - (void)testPushDeliveryEventAuthSameUser {
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_aui" : @"some_user",
             @"_p": @123456,
             @"sw": @{@"media":
@@ -71,6 +76,8 @@ NSString *appGroupId = @"app.groupid";
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:appGroupId];
     [userDefaults setObject:@YES forKey:SwrveSEConfigIsTrackingStateStopped];
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_aui" : @"some_user",
             @"_p": @123456,
             @"sw": @{@"media":
@@ -88,6 +95,8 @@ NSString *appGroupId = @"app.groupid";
 
 - (void)testPushDeliveryEventAuthDifferentUser {
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_aui" : @"some_other_user",
             @"_p": @123456,
             @"sw": @{@"media":
@@ -103,6 +112,8 @@ NSString *appGroupId = @"app.groupid";
 
 - (void)testPushDeliveryEventSilent {
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_sp": @123456,
             @"_s.SilentPayload": @{
                     @"k1": @"v1"}
@@ -126,9 +137,12 @@ NSString *appGroupId = @"app.groupid";
     XCTAssertEqualObjects([event objectForKey:@"actionType"], @"delivered");
     XCTAssertEqualObjects([event objectForKey:@"campaignType"], @"push");
     NSDictionary *expectedPayload =
-                    @{      @"displayed": [NSNumber numberWithInt:isDisplayed],
-                            @"reason": reason,
-                            @"silent": [NSNumber numberWithBool:isSilent]
+                    @{
+                        @"platform": @"iOS",
+                        @"trackingData": self.trackingData,
+                        @"displayed": [NSNumber numberWithInt:isDisplayed],
+                        @"reason": reason,
+                        @"silent": [NSNumber numberWithBool:isSilent]
                     };
     XCTAssertEqualObjects([event objectForKey:@"payload"], expectedPayload);
     XCTAssertEqualObjects([event objectForKey:@"id"], @123456);
@@ -160,6 +174,8 @@ NSString *appGroupId = @"app.groupid";
 - (void)testSendPushDelivery {
     [self saveDummyUserDefaultsWithQaUser:NO];
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_p": @123456,
             @"sw": @{@"media":
                     @{@"title": @"tile",
@@ -175,6 +191,8 @@ NSString *appGroupId = @"app.groupid";
 - (void)testSendPushDeliverySilent {
     [self saveDummyUserDefaultsWithQaUser:NO];
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_sp": @123456,
             @"_s.SilentPayload": @{
                     @"k1": @"v1"}
@@ -204,11 +222,13 @@ NSString *appGroupId = @"app.groupid";
             @"payload": @{
                     @"displayed": [NSNumber numberWithBool:YES],
                     @"reason": @"",
-                    @"silent": [NSNumber numberWithBool:NO]
+                    @"silent": [NSNumber numberWithBool:NO],
+                    @"trackingData": self.trackingData,
+                    @"platform": @"iOS",
             },
             @"type": @"generic_campaign_event"
     };
-
+    
     // note that the payload in qalog events gets turned into a string
     NSDictionary *expectedPushDeliveryWrappedEvent = @{
             @"log_details": @{
@@ -219,7 +239,7 @@ NSString *appGroupId = @"app.groupid";
                             @"id": @123456,
                     },
                     @"seqnum": @"1",
-                    @"payload": @"{\"silent\":false,\"displayed\":true,\"reason\":\"\"}",
+                    @"payload":[NSString stringWithFormat:@"{\"trackingData\":\"%@\",\"platform\":\"iOS\",\"reason\":\"\",\"silent\":false,\"displayed\":true}",self.trackingData],
                     @"type": @"generic_campaign_event"
             },
             @"log_source": @"sdk",
@@ -236,7 +256,7 @@ NSString *appGroupId = @"app.groupid";
             @"session_token": sessionToken,
             @"user": userId,
     }                                                              options:0 error:&jsonError];
-
+    
     NSString *batchImpressionEvent = [[NSString alloc] initWithData:jsonEventBatchNSData encoding:NSUTF8StringEncoding];
     NSData *expectedEventBatchNSData = [batchImpressionEvent dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -245,6 +265,8 @@ NSString *appGroupId = @"app.groupid";
     OCMExpect([restClientClassMock sendHttpPOSTRequest:expectedURL jsonData:expectedEventBatchNSData completionHandler:OCMOCK_ANY]);
 
     NSDictionary *userInfo = @{
+            @"_td": self.trackingData,
+            @"_smp": @"iOS",
             @"_p": @123456,
             @"sw": @{@"media":
                     @{@"title": @"tile",
@@ -310,7 +332,9 @@ NSString *appGroupId = @"app.groupid";
                             @"payload": @{
                                     @"displayed": [NSNumber numberWithBool:isDisplayed],
                                     @"reason": @"",
-                                    @"silent": [NSNumber numberWithBool:isSilent]
+                                    @"silent": [NSNumber numberWithBool:isSilent],
+                                    @"trackingData": self.trackingData,
+                                    @"platform": @"iOS"
                             },
                             @"type": @"generic_campaign_event"
                     }

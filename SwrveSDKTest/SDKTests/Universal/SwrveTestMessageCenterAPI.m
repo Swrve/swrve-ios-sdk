@@ -391,7 +391,7 @@
 
     // Press the saved clipboard button
     XCTAssertNotNil(clipboardButton, @"clipboard Button should not be nil at this point");
-    [viewController onButtonPressed:clipboardButton];
+    [messageViewController onButtonPressed:clipboardButton pageId:[NSNumber numberWithInt:0]];
     [self waitForWindowDismissed:controller];
 
     XCTAssertEqual(campaign.state.impressions, 1);

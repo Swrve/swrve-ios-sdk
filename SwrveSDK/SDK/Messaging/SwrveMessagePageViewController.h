@@ -10,9 +10,6 @@
 @property(nonatomic, retain) NSNumber *pageId;
 @property(nonatomic) CGSize size;
 
-/*! Called by the view when a button is pressed */
-- (IBAction)onButtonPressed:(id)sender;
-
 - (id)initWithMessageController:(SwrveMessageController *)messageController
                          format:(SwrveMessageFormat *)swrveMessageFormat
                 personalization:(NSDictionary *)personalization

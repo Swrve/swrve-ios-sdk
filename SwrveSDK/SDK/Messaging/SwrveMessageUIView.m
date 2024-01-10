@@ -6,6 +6,8 @@
 #import "SwrveButton.h"
 #import "SwrveTextImageView.h"
 #import "SwrveThemedUIButton.h"
+#import "SwrveMessagePageViewController.h"
+#import "SwrveMessageViewController.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 
@@ -55,10 +57,11 @@
 
 @interface SwrveMessageUIView ()
 
-@property(nonatomic, retain) SwrveMessageFormat *messageFormat;
-@property(nonatomic, retain) UIViewController *controller;
-@property(nonatomic, retain) NSDictionary *personalization;
-@property(nonatomic, retain) SwrveInAppMessageConfig *inAppConfig;
+@property(nonatomic) SwrveMessageFormat *messageFormat;
+@property(nonatomic) NSNumber *pageId;
+@property(nonatomic) UIViewController *controller;
+@property(nonatomic) NSDictionary *personalization;
+@property(nonatomic) SwrveInAppMessageConfig *inAppConfig;
 @property(nonatomic) CGFloat centerX;
 @property(nonatomic) CGFloat centerY;
 @property(nonatomic) CGFloat renderScale;
@@ -68,6 +71,7 @@
 @implementation SwrveMessageUIView
 
 @synthesize messageFormat;
+@synthesize pageId;
 @synthesize controller;
 @synthesize personalization;
 @synthesize inAppConfig;
@@ -80,7 +84,7 @@ static CGPoint scaled(CGPoint point, float scale) {
 }
 
 - (id)initWithMessageFormat:(SwrveMessageFormat *)format
-                     pageId:(NSNumber *) pageId
+                     pageId:(NSNumber *) pageIdToShow
                  parentSize:(CGSize)sizeParent
                  controller:(UIViewController *)delegate
             personalization:(NSDictionary *)personalizationDict
@@ -89,6 +93,7 @@ static CGPoint scaled(CGPoint point, float scale) {
     if (self = [super initWithFrame:containerViewSize]) {
 
         self.messageFormat = format;
+        self.pageId = pageIdToShow;
         self.controller = delegate;
         self.personalization = personalizationDict;
         self.inAppConfig = config;
@@ -100,7 +105,7 @@ static CGPoint scaled(CGPoint point, float scale) {
         [self setAlpha:1];
 
         // Add page images and buttons
-        SwrveMessagePage *page = [format.pages objectForKey:pageId];
+        SwrveMessagePage *page = [format.pages objectForKey:self.pageId];
         [self addImages:page];
         [self addButtons:page];
     }
@@ -332,11 +337,20 @@ static CGPoint scaled(CGPoint point, float scale) {
 - (void)addButtonTarget:(SwrveUIButton *)buttonView {
     SEL buttonPressedSelector = NSSelectorFromString(@"onButtonPressed:");
 #if TARGET_OS_IOS /** TouchUpInside is iOS only **/
-    [buttonView addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
+    [buttonView addTarget:self action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
 #elif TARGET_OS_TV
     // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
-    [buttonView  addTarget:self.controller action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
+    [buttonView  addTarget:self action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
 #endif
+}
+
+- (IBAction)onButtonPressed:(id)buttonView {
+    if ([self.controller isKindOfClass:[SwrveMessageViewController class]]) {
+        SwrveUIButton *button = buttonView;
+        SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) self.controller;
+        [messageViewController onButtonPressed:button pageId:self.pageId];
+    }
+    self.controller = nil;
 }
 
 - (void)addButtonAction:(SwrveUIButton *)buttonView button:(SwrveButton *)swrveButton action:(NSString *)actionStr {
@@ -432,8 +446,6 @@ static CGPoint scaled(CGPoint point, float scale) {
         if (backupText != nil && ![backupText  isEqualToString:@""]) {
             view.isAccessibilityElement = true;
             view.accessibilityLabel = backupText;
-        } else {
-            [SwrveLogger error:@"No text available for accessibility"];
         }
     }
     

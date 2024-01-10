@@ -99,7 +99,9 @@
 
 
 - (void)testPushNotificationReceivedEvent {
-
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
     id mockApplication = [self mockApplicationStateWith:UIApplicationStateBackground];
 
     [SwrveSDK resetSwrveSharedInstance];

@@ -39,6 +39,8 @@ static NSString *SWRVE_DEVICE_UUID = @"swrve_device_uuid";
 static NSString *SWRVE_BACKUP_DEFAULTS = @"swrve_backup_defaults";
 static NSString *SWRVE_USERS = @"swrve_users";
 static NSString *SWRVE_IDFA = @"swrve_ifda";
+static NSString *SWRVE_USER_IDENTIFY_DATES = @"swrve_users_identify_dates";
+static NSString *SWRVE_USERS_IDENTIFY_REFRESH_PERIOD = @"swrve_identify_refresh_period";
 
 static dispatch_once_t applicationSupportPathOnceToken = 0;
 static dispatch_once_t swrveAppSupportDirOnceToken = 0;
@@ -289,6 +291,44 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
         }
     }
     return data;
+}
+
+//// SWRVE USER REFRESH PERIOD ////
+
++ (void)saveIdentifyRefreshPeriod:(NSInteger)period {
+    [[self defaults] setInteger:period forKey:SWRVE_USERS_IDENTIFY_REFRESH_PERIOD];
+}
+
++ (NSInteger)identifyRefreshPeriod {
+    if (![[[[self defaults] dictionaryRepresentation] allKeys] containsObject:SWRVE_USERS_IDENTIFY_REFRESH_PERIOD]) {
+        return -1;
+    } else {
+        return [[self defaults] integerForKey:SWRVE_USERS_IDENTIFY_REFRESH_PERIOD];
+    }
+}
+
+//// SWRVE USERS IDENTIFICATION DATE ////
+
++ (void)saveIdentifyDate: (nonnull NSDate *)date forUserId:(nonnull NSString *)userId {
+    if (date == nil || userId == nil) {
+        return;
+    }
+    NSMutableDictionary *dict = [[self defaults] objectForKey: SWRVE_USER_IDENTIFY_DATES];
+    if (dict == nil) {
+        dict = [NSMutableDictionary new];
+    }
+    
+    dict = [dict mutableCopy];
+    [dict setObject:date forKey:userId];
+    [[self defaults] setObject:dict forKey:SWRVE_USER_IDENTIFY_DATES];
+}
+
++ (NSDate *)identifyDate:(NSString *)userId {
+    NSDictionary *dict = [[self defaults] objectForKey: SWRVE_USER_IDENTIFY_DATES];
+    if (dict && [dict objectForKey: userId]) {
+        return [dict objectForKey: userId];
+    }
+    return nil;
 }
 
 #pragma mark - Application data management

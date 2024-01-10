@@ -45,7 +45,7 @@ const static int DEFAULT_MIN_DELAY = 55;
 #if TARGET_OS_IOS
 
 @interface SwrvePush (SwrvePushInternalAccess)
-- (void)registerForPushNotifications:(BOOL)provisional;
+- (void)registerForPushNotifications:(BOOL)provisional providesAppNotificationSettings:(BOOL)providesAppNotificationSettings;
 @end
 
 #endif //TARGET_OS_IOS
@@ -1491,7 +1491,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             if ([action isEqualToString:@"swrve.push"]) {
 #if TARGET_OS_IOS
                 if (self.pushEnabled) {
-                    [self.analyticsSDK.push registerForPushNotifications:NO];
+                    [self.analyticsSDK.push registerForPushNotifications:NO providesAppNotificationSettings:self.analyticsSDK.config.providesAppNotificationSettings];
                 } else {
                     [SwrveLogger error:@"Push is not enabled"];
                 }
@@ -1684,10 +1684,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if (self.pushEnabled) {
         if (self.pushNotificationPermissionEvents != nil && [self.pushNotificationPermissionEvents containsObject:eventName]) {
             // Ask for push notification permission (can display a dialog to the user)
-            [analyticsSDK.push registerForPushNotifications:NO];
+            [analyticsSDK.push registerForPushNotifications:NO providesAppNotificationSettings:analyticsSDK.config.providesAppNotificationSettings];
         } else if (self.provisionalPushNotificationEvents != nil && [self.provisionalPushNotificationEvents containsObject:eventName]) {
             // Ask for provisioanl push notification permission
-            [analyticsSDK.push registerForPushNotifications:YES];
+            [analyticsSDK.push registerForPushNotifications:YES providesAppNotificationSettings:analyticsSDK.config.providesAppNotificationSettings];
         }
     }
 #endif //TARGET_OS_IOS

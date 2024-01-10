@@ -541,6 +541,71 @@ static NSInteger currentPushStatus;
     [mockUIApplication stopMocking];
 }
 
+- (void)testPushProvidesAppNotificationSettings {
+    if (@available(iOS 12.0, *)) {
+        id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+        OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+        
+        OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
+        currentPushStatus = UNAuthorizationStatusNotDetermined;
+        [self mockNotificationCenterNotificationSettings:currentMockCenter];
+
+        // Should request UNAuthorizationOptionProvidesAppNotificationSettings push permission (and we mock a success)
+        [self mockExpectRequestAuthorization:currentMockCenter withOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge + UNAuthorizationOptionProvidesAppNotificationSettings) andReturn:true withError:nil andPushStatus:UNAuthorizationStatusProvisional];
+
+        Swrve *swrve = [Swrve alloc];
+        id swrveMock = OCMPartialMock(swrve);
+        id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+        OCMExpect([mockUIApplication registerForRemoteNotifications]).andDo(^(NSInvocation *invocation) {
+        });
+
+        // Start the SDK
+        SwrveConfig *config = [[SwrveConfig alloc] init];
+        config.providesAppNotificationSettings = YES;
+        config.pushEnabled = YES;
+        config.pushNotificationPermissionEvents = [[NSSet alloc] initWithArray:@[@"Swrve.session.start"]];
+        config.autoCollectDeviceToken = NO; // Disable swizzling
+        swrve = [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+        // Mimic app being started
+        [swrve appDidBecomeActive:nil];
+
+        OCMVerifyAll(currentMockCenter);
+        OCMVerifyAll(swrveMock);
+    }
+}
+
+- (void)testPushProvidesAppNotificationSettingsNotSet {
+    if (@available(iOS 12.0, *)) {
+        id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+        OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+        
+        OCMExpect([currentMockCenter setDelegate:OCMOCK_ANY]);
+        currentPushStatus = UNAuthorizationStatusNotDetermined;
+        [self mockNotificationCenterNotificationSettings:currentMockCenter];
+
+        //UNAuthorizationOptionProvidesAppNotificationSettings should not be present
+        [self mockExpectRequestAuthorization:currentMockCenter withOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge) andReturn:true withError:nil andPushStatus:UNAuthorizationStatusProvisional];
+
+        Swrve *swrve = [Swrve alloc];
+        id swrveMock = OCMPartialMock(swrve);
+        id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+        OCMExpect([mockUIApplication registerForRemoteNotifications]).andDo(^(NSInvocation *invocation) {
+        });
+
+        // Start the SDK
+        SwrveConfig *config = [[SwrveConfig alloc] init];
+        config.pushEnabled = YES;
+        config.pushNotificationPermissionEvents = [[NSSet alloc] initWithArray:@[@"Swrve.session.start"]];
+        config.autoCollectDeviceToken = NO; // Disable swizzling
+        swrve = [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+        // Mimic app being started
+        [swrve appDidBecomeActive:nil];
+
+        OCMVerifyAll(currentMockCenter);
+        OCMVerifyAll(swrveMock);
+    }
+}
+
 /* HELPER METHODS */
 
 // Whenever the permission is asked, the 'currentPushStatus' value is returned

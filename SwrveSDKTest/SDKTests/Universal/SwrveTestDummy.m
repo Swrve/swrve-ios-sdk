@@ -120,7 +120,7 @@
     [swrve shutdown];
 
 #if TARGET_OS_IOS
-    [swrve sendPushNotificationEngagedEvent:@"test"];
+    [swrve sendPushNotificationEngagedEvent:@"test" withPayload:nil];
 #endif
 
     XCTAssertNotNil(swrve.config);

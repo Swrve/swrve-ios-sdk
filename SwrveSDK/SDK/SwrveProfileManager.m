@@ -210,7 +210,7 @@
     NSArray *swrveUsers = nil;
     if (@available(ios 11.0,tvos 11.0, *)) {
         NSError *error = nil;
-        NSSet *classes = [NSSet setWithArray:@[[NSArray class],[SwrveUser class]]];
+        NSSet *classes = [NSSet setWithArray:@[[NSArray class], [SwrveUser class], [NSString class]]];
         swrveUsers = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:encodedObject error:&error];
         if (error) {
             [SwrveLogger error:@"Failed to un archive swrve user: %@", [error localizedDescription]];

@@ -22,7 +22,6 @@
 - (NSString *)appGroupIdentifier;
 - (NSString *)userID;
 - (NSDictionary *)deviceInfo;
-- (void)sendPushNotificationEngagedEvent:(NSString *)pushId;
 - (id <SwrvePermissionsDelegate>)permissionsDelegate;
 - (double)flushRefreshDelay;
 - (NSInteger)nextEventSequenceNumber;
@@ -31,6 +30,7 @@
 
 @optional
 - (id <NSURLSessionDelegate>)urlSessionDelegate;
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSMutableDictionary*)payload;
 
 @property(atomic, readonly) long appID;
 @property(atomic, readonly) NSString* deviceToken;

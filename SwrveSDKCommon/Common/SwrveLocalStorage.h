@@ -71,5 +71,9 @@ enum SwrveTrackingState {
 + (NSData *)swrveUsers;
 + (void)saveIDFA:(NSString *)idfa;
 + (NSString *)idfa;
++ (void)saveIdentifyRefreshPeriod:(NSInteger)period;
++ (NSInteger)identifyRefreshPeriod;
++ (void)saveIdentifyDate:(NSDate *)date forUserId:(NSString *)swrveUserId;
++ (NSDate *)identifyDate:(NSString *)userId;
 
 @end

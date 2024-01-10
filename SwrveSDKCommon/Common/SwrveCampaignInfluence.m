@@ -1,6 +1,7 @@
 #import "SwrveCampaignInfluence.h"
 #import "SwrveCommon.h"
 #import "SwrveNotificationConstants.h"
+#import "SwrveUtils.h"
 
 NSString *const SwrveInfluencedWindowMinsKey = @"_siw";
 NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
@@ -39,12 +40,22 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
         if ([userInfo objectForKey:SwrveNotificationSilentPushIdentifierKey]) {
             isSilentPush = YES;
         }
+        
+        NSMutableDictionary *influencedDic = [NSMutableDictionary new];
+        [influencedDic setValue:campaignId forKey:@"trackingId"];
+        [influencedDic setValue:[NSNumber numberWithBool: isSilentPush] forKey:@"silent"];
+        [influencedDic setValue:[NSNumber numberWithLong:maxWindowTimeSeconds] forKey:@"maxInfluencedMillis"];
+        
+        // add tracking payload info
+        if ([userInfo objectForKey:SwrveNotificationTrackingDataKey]) {
+            [influencedDic setValue:[userInfo objectForKey:SwrveNotificationTrackingDataKey] forKey:SwrveNotificationTrackingDataKey];
+        }
+        if ([userInfo objectForKey:SwrveNotificationPlatformKey]) {
+            [influencedDic setValue:[userInfo objectForKey:SwrveNotificationPlatformKey] forKey:SwrveNotificationPlatformKey];
+        }
+        
         // Add the new influence into cache!
-        [influencedData setValue:@{
-            @"trackingId": campaignId,
-            @"silent": [NSNumber numberWithBool: isSilentPush],
-            @"maxInfluencedMillis": [NSNumber numberWithLong:maxWindowTimeSeconds]
-        } forKey:campaignId];
+        [influencedData setValue:influencedDic forKey:campaignId];
 
         // set influenced data to either the appGroup or the NSUserDefaults of the main app
         [defaults setObject:influencedData forKey:SwrveInfluenceDataKey];
@@ -116,6 +127,10 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
                         NSMutableDictionary *eventPayload = [NSMutableDictionary new];
                         [eventPayload setValue:[NSString stringWithFormat:@"%i", (int) ((maxWindowTimeSeconds - nowSeconds) / 60)] forKey:@"delta"];
                         [eventPayload setValue:[NSNumber numberWithBool:isSilentPush] forKey:@"silent"];
+                        NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:influenceItem];
+                        if (trackingPayload != nil) {
+                            [eventPayload addEntriesFromDictionary:trackingPayload];
+                        }
                         [influencedEvent setValue:eventPayload forKey:@"payload"];
 
                         [swrveCommon queueEvent:@"generic_campaign_event" data:influencedEvent triggerCallback:false];

@@ -39,39 +39,6 @@
                ReferencedContainer = "container:SwrveSDKTest.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C5DCC5B52ABC187E0056686A"
-               BuildableName = "SwrveSDKSwift-iOSTests.xctest"
-               BlueprintName = "SwrveSDKSwift-iOSTests"
-               ReferencedContainer = "container:SwrveSDKTest.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C5DCC5D02ABDBC450056686A"
-               BuildableName = "SwrveSDKSwiftTestTests.xctest"
-               BlueprintName = "SwrveSDKSwiftTestTests"
-               ReferencedContainer = "container:SwrveSDKTest.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C5DCC5FC2ABE2EDD0056686A"
-               BuildableName = "SwrveSDKSwiftTest.xctest"
-               BlueprintName = "SwrveSDKSwiftTest"
-               ReferencedContainer = "container:SwrveSDKTest.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

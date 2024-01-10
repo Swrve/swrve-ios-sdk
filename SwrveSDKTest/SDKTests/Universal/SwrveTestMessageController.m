@@ -49,12 +49,12 @@
 @property(atomic, readonly) SwrvePush *push;
 #endif //TARGET_OS_IOS
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
-
+- (void)reIdentifyUser;
 @end
 
 #if TARGET_OS_IOS
 @interface SwrvePush (SwrvePushInternalAccess)
-- (void)registerForPushNotifications:(BOOL)provisional;
+- (void)registerForPushNotifications:(BOOL)provisional providesAppNotificationSettings:(BOOL)providesAppNotificationSettings;
 @end
 #endif //TARGET_OS_IOS
 
@@ -112,6 +112,7 @@
 
 @interface SwrveMessageUIView()
 - (void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view;
+- (IBAction)onButtonPressed:(id)buttonView;
 @end
 
 @interface TestingSwrveMessage : SwrveMessage
@@ -1504,7 +1505,8 @@
             for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     // pretend to press it
-                    [pageViewController onButtonPressed:button];
+                    SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [button superview];
+                    [swrveMessageUIView onButtonPressed:button];
                     [self waitForWindowDismissed:controller];
                 }
             }
@@ -1635,7 +1637,7 @@
         if ([swrveButton actionType] == kSwrveActionInstall) {
             SwrveUIButton* button = [SwrveUIButton new];
             [button setTag:i];
-            [pageViewController onButtonPressed:button];
+            [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
         }
     }
 
@@ -1690,7 +1692,7 @@
         if ([swrveButton actionType] == kSwrveActionOpenSettings) {
             SwrveUIButton* button = [SwrveUIButton new];
             [button setTag:i];
-            [pageViewController onButtonPressed:button];
+            [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
         }
     }
 
@@ -1748,7 +1750,7 @@
         if ([swrveButton actionType] == kSwrveActionOpenNotificationSettings) {
             SwrveUIButton* button = [SwrveUIButton new];
             [button setTag:i];
-            [pageViewController onButtonPressed:button];
+            [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
         }
     }
 
@@ -1793,7 +1795,7 @@
     XCTAssertEqual([swrveButton actionType], kSwrveActionStartGeo);
     SwrveUIButton* button = [SwrveUIButton new];
     [button setTag:0];
-    [pageViewController onButtonPressed:button];
+    [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
 
     XCTAssertNotNil(message);
 
@@ -1868,7 +1870,7 @@
         if ([swrveButton actionType] == kSwrveActionDismiss) {
             SwrveUIButton *button = [SwrveUIButton new];
             [button setTag:i];
-            [viewController onButtonPressed:button];
+            [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
             [self waitForWindowDismissed:controller];
         }
     }
@@ -1965,7 +1967,8 @@
         if ([subview isKindOfClass:[SwrveUIButton class]]) {
             SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
             if ([swrveUIButton.buttonName isEqualToString:@"clipboard_action"]) {
-                [viewController onButtonPressed:swrveUIButton];
+                SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [swrveUIButton superview];
+                [swrveMessageUIView onButtonPressed:swrveUIButton];
                 [self waitForWindowDismissed:controller];
                 break;
             }
@@ -2011,7 +2014,8 @@
         if ([subview isKindOfClass:[SwrveUIButton class]]) {
             SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
             if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
-                [viewController onButtonPressed:swrveUIButton];
+                SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [swrveUIButton superview];
+                [swrveMessageUIView onButtonPressed:swrveUIButton];
                 [self waitForWindowDismissed:controller];
                 break;
             }
@@ -2062,7 +2066,8 @@
         if ([subview isKindOfClass:[SwrveUIButton class]]) {
             SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
             if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
-                [viewController onButtonPressed:swrveUIButton];
+                SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [swrveUIButton superview];
+                [swrveMessageUIView onButtonPressed:swrveUIButton];
                 [self waitForWindowDismissed:controller];
                 break;
             }
@@ -2143,7 +2148,8 @@
         if ([subview isKindOfClass:[SwrveUIButton class]]) {
             SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
             if ([swrveUIButton.buttonName isEqualToString:@"custom"]) {
-                [viewController onButtonPressed:swrveUIButton];
+                SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [swrveUIButton superview];
+                [swrveMessageUIView onButtonPressed:swrveUIButton];
                 [self waitForWindowDismissed:controller];
                 break;
             }
@@ -2223,7 +2229,8 @@
         if ([subview isKindOfClass:[SwrveUIButton class]]) {
             SwrveUIButton *swrveUIButton = (SwrveUIButton *) subview;
             if ([swrveUIButton.buttonName isEqualToString:@"close"]) {
-                [viewController onButtonPressed:swrveUIButton];
+                SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [swrveUIButton superview];
+                [swrveMessageUIView onButtonPressed:swrveUIButton];
                 [self waitForWindowDismissed:controller];
                 break;
             }
@@ -2692,7 +2699,8 @@
             for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     // pretend to press it
-                    [viewController onButtonPressed:button];
+                    SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [button superview];
+                    [swrveMessageUIView onButtonPressed:button];
                     [self waitForWindowDismissed:controller];
                 }
             }
@@ -2768,7 +2776,8 @@
             for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     // pretend to press it
-                    [viewController onButtonPressed:button];
+                    SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [button superview];
+                    [swrveMessageUIView onButtonPressed:button];
                     [self waitForWindowDismissed:controller];
                 }
             }
@@ -2832,11 +2841,11 @@
     XCTAssertEqual([uiButtons count], 1);
 
     id swrvePermissions = OCMClassMock([SwrvePermissions class]);
-    OCMStub([swrvePermissions requestPushNotifications:OCMOCK_ANY provisional:OCMOCK_ANY]).andDo(nil);
+    OCMStub([swrvePermissions requestPushNotifications:OCMOCK_ANY provisional:OCMOCK_ANY providesAppNotificationSettings:OCMOCK_ANY]).andDo(nil);
 
     // check capability delegate not called
     OCMReject([testCapabilitiesDelegateMock requestCapability:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
-    OCMExpect([swrvePushMock registerForPushNotifications:FALSE]).andDo(nil);
+    OCMExpect([swrvePushMock registerForPushNotifications:FALSE providesAppNotificationSettings:FALSE]).andDo(nil);
 
     [self verifyDataCapturedFromButtonClick:swrveMock];
     for (NSInteger i = 0; i < [buttons count]; i++) {
@@ -2846,7 +2855,8 @@
             for (SwrveUIButton *button in uiButtons){
                 if ([button.accessibilityIdentifier isEqualToString:swrveButton.name]) {
                     // pretend to press it
-                    [viewController onButtonPressed:button];
+                    SwrveMessageUIView *swrveMessageUIView = (SwrveMessageUIView*) [button superview];
+                    [swrveMessageUIView onButtonPressed:button];
                     [self waitForWindowDismissed:controller];
                 }
             }
@@ -3224,7 +3234,7 @@
     // Press dismiss button
     SwrveUIButton *dismissButton = [SwrveUIButton new];
     [dismissButton setTag:0];
-    [viewController onButtonPressed:dismissButton];
+    [messageViewController onButtonPressed:dismissButton pageId:[NSNumber numberWithLong:0]];
     [self waitForWindowDismissed:controller];
 
     // Rotate device
@@ -4504,6 +4514,80 @@
         return true;
     }];
     OCMExpect([swrveMock userUpdate:dic3]);
+}
+
+- (void)testSavesReIdentifyPeriodFromMockedJSON {
+    [SwrveMigrationsManager markAsMigrated];
+    
+    Swrve *swrve = [Swrve alloc];
+    Swrve *swrveMock = OCMPartialMock(swrve);
+    
+    // mock rest calls with success and empty data
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource: @"campaigns_with_reidentify_period" ofType:@"json"];
+    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockJsonData, [NSNull null], nil])]);
+    
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
+        swrve.restClient = mockRestClient;
+    });
+    
+    [swrveMock initWithAppID:123 apiKey:@"someAPIKey"];
+    [swrveMock refreshCampaignsAndResources];
+    
+    NSDate *delay = [[NSDate date] dateByAddingTimeInterval: 1];
+    XCTestExpectation *expectation = [self expectationWithDescription: @"campaigns_with_reidentify_period"];
+    [SwrveTestHelper waitForBlock:0.01 conditionBlock:^BOOL(){
+        return ([[NSDate date] compare: delay] == NSOrderedDescending);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+    
+    NSInteger refreshPeriod = [SwrveLocalStorage identifyRefreshPeriod];
+    XCTAssertEqual(refreshPeriod, 21);
+
+    OCMVerify(times(1), [swrveMock reIdentifyUser]);
+}
+
+- (void)testDoesNotSaveReIdentifyPeriodFromMockedJSON {
+    [SwrveMigrationsManager markAsMigrated];
+    
+    Swrve *swrve = [Swrve alloc];
+    Swrve *swrveMock = OCMPartialMock(swrve);
+    
+    // mock rest calls with success and empty data
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource: @"campaigns_without_reidentify_period" ofType:@"json"];
+    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockJsonData, [NSNull null], nil])]);
+    
+    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
+        swrve.restClient = mockRestClient;
+    });
+    
+    [swrveMock initWithAppID:123 apiKey:@"someAPIKey"];
+    [swrveMock refreshCampaignsAndResources];
+    
+    NSDate *delay = [[NSDate date] dateByAddingTimeInterval: 1];
+    XCTestExpectation *expectation = [self expectationWithDescription: @"campaigns_without_reidentify_period"];
+    [SwrveTestHelper waitForBlock:0.01 conditionBlock:^BOOL(){
+        return ([[NSDate date] compare: delay] == NSOrderedDescending);
+    } expectation:expectation];
+    [self waitForExpectationsWithTimeout:10.0 handler:nil];
+    
+    NSInteger refreshPeriod = [SwrveLocalStorage identifyRefreshPeriod];
+    XCTAssertEqual(refreshPeriod, -1);
+    
+    OCMVerify(times(0), [swrveMock reIdentifyUser]);
 }
 
 @end

@@ -246,6 +246,7 @@ enum {
 // Flush values and timer for campaigns and resources update request
 @property(atomic) double campaignsAndResourcesFlushFrequency;
 @property(atomic) double campaignsAndResourcesFlushRefreshDelay;
+@property(atomic) NSInteger identifyRefreshPeriod;
 @property(atomic) NSTimer *campaignsAndResourcesTimer;
 @property(atomic) int campaignsAndResourcesTimerSeconds;
 @property(atomic) NSDate *campaignsAndResourcesLastRefreshed;
@@ -367,6 +368,7 @@ enum {
 @synthesize httpPerformanceMetrics;
 @synthesize campaignsAndResourcesFlushFrequency;
 @synthesize campaignsAndResourcesFlushRefreshDelay;
+@synthesize identifyRefreshPeriod;
 @synthesize campaignsAndResourcesTimer;
 @synthesize campaignsAndResourcesTimerSeconds;
 @synthesize campaignsAndResourcesLastRefreshed;
@@ -412,6 +414,8 @@ enum {
         appID = swrveAppID;
 
         NSCAssert(swrveAPIKey.length > 1, @"API Key is invalid (too short): %@", swrveAPIKey);
+        NSCAssert(![swrveAPIKey.lowercaseString hasPrefix:@"secret-"], @"API Key %@ is invalid. It should not start with `secret-`", swrveAPIKey);
+
         apiKey = swrveAPIKey;
 
         NSCAssert(swrveConfig, @"Null config object given to Swrve", nil);
@@ -477,12 +481,14 @@ enum {
         }
 #endif
 
+        
         self.campaignsAndResourcesFlushFrequency = [SwrveLocalStorage flushFrequency];
         if (self.campaignsAndResourcesFlushFrequency <= 0) {
             self.campaignsAndResourcesFlushFrequency = SWRVE_DEFAULT_CAMPAIGN_RESOURCES_FLUSH_FREQUENCY / 1000;
         }
 
         self.campaignsAndResourcesFlushRefreshDelay = [self flushRefreshDelay];
+        self.identifyRefreshPeriod = [SwrveLocalStorage identifyRefreshPeriod];
 
         [self initAppInstallTime];
 
@@ -633,6 +639,7 @@ enum {
 #endif
 
     [self executeSessionStartedDelegate];
+    [self reIdentifyUser];
 }
 
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate {
@@ -985,6 +992,15 @@ enum {
                     if (flushDelay != nil) {
                         self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
                         [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
+                    }
+
+                    NSNumber *identifyRefreshPeriodNew = [responseDict objectForKey:@"identify_refresh_period"];
+                    if (identifyRefreshPeriodNew != nil) {
+                        if (self.identifyRefreshPeriod != [identifyRefreshPeriodNew intValue]) {
+                            self.identifyRefreshPeriod = [identifyRefreshPeriodNew intValue];
+                            [SwrveLocalStorage saveIdentifyRefreshPeriod:self.identifyRefreshPeriod];
+                            [self reIdentifyUser];
+                        }
                     }
 
                     NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
@@ -1713,9 +1729,9 @@ enum {
     return self.config.appGroupIdentifier;
 }
 
-- (void)sendPushNotificationEngagedEvent:(NSString *)pushId {
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSMutableDictionary *)payload {
     NSString *eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
-    [self eventInternal:eventName payload:nil triggerCallback:false];
+    [self eventInternal:eventName payload:payload triggerCallback:false];
     [self sendQueuedEventsWithCallback:nil eventFileCallback:nil];
 }
 
@@ -2477,8 +2493,17 @@ enum HttpStatus {
     [self beginSession];
 }
 
-- (void)identify:(NSString *)externalUserId onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
+- (void)identify:(NSString *)externalUserId
+       onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError {
+
+    [self identify:externalUserId onSuccess:onSuccess onError:onError checkCache:YES];
+}
+
+- (void)identify:(NSString *)externalUserId
+       onSuccess:(void (^)(NSString *status, NSString *swrveUserId))onSuccess
+         onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError
+      checkCache:(BOOL)checkCache {
 
     if (self.config.initMode == SWRVE_INIT_MODE_MANAGED) {
         [self throwIllegalOperationException:@"Cannot call identify api in MANAGED initMode."];
@@ -2492,34 +2517,81 @@ enum HttpStatus {
         return;
     }
 
-    //queue these, so they will be flushed below
-    [self queueUserUpdates];
-    [self queueDeviceInfo];
+    @synchronized (self) {
+        //queue these, so they will be flushed below
+        [self queueUserUpdates];
+        [self queueDeviceInfo];
 
-    [SwrveLogger debug:@"Swrve identify: Pausing event queuing and sending prior to Identity API call...", nil];
-    [self pauseEventSending];
+        [SwrveLogger debug:@"Swrve identify: Pausing event queuing and sending prior to Identity API call...", nil];
+        [self pauseEventSending];
 
-    dispatch_group_t sendEventsCallback = dispatch_group_create();
+        dispatch_group_t sendEventsCallback = dispatch_group_create();
 
-    [SwrveLogger debug:@"Swrve identify: Flushing event buffer and cache prior to Identity API call...", nil];
-    // this will force flush events even though event sending and queuing has been paused above
-    [self forceFlushAllEvents:sendEventsCallback];
+        [SwrveLogger debug:@"Swrve identify: Flushing event buffer and cache prior to Identity API call...", nil];
+        // this will force flush events even though event sending and queuing has been paused above
+        [self forceFlushAllEvents:sendEventsCallback];
 
-    // this code should only execute after the 2 callbacks in flushAllEventsBeforeIdentify complete
-    dispatch_group_notify(sendEventsCallback, dispatch_get_main_queue(), ^{
+        // this code should only execute after the 2 callbacks in flushAllEventsBeforeIdentify complete
+        dispatch_group_notify(sendEventsCallback, dispatch_get_main_queue(), ^{
 
-        SwrveUser *cachedSwrveUser = [self.profileManager swrveUserWithId:externalUserId];
+            SwrveUser *cachedSwrveUser = [self.profileManager swrveUserWithId:externalUserId];
 
-        if ([self identifyCachedUser:cachedSwrveUser withCallback:onSuccess]) {
-            return;
+            if (checkCache && [self identifyCachedUser:cachedSwrveUser withCallback:onSuccess]) {
+                return;
+            }
+
+            [self identifyUnknownUserWithExternalId:externalUserId
+                                      andCachedUser:cachedSwrveUser
+                                          onSuccess:onSuccess
+                                            onError:onError];
+        });
+    }
+}
+
+- (void)reIdentifyUser {
+
+    if (![self shouldReIdentify]) {
+        return;
+    }
+
+    NSString *externalUserId = [self externalUserId];
+    if (externalUserId != nil && [externalUserId length] > 0) {
+        [self identify:externalUserId
+             onSuccess:^(NSString *status, NSString *swrveUserId) {
+                 [SwrveLogger debug:@"Re-identify successful. Status:%@ userId:%@", status, swrveUserId];
+             } onError:^(NSInteger httpCode, NSString *errorMessage) {
+                    [SwrveLogger error:@"Re-identify failed. ResponseCode:%@ errorMessage:%d", httpCode, errorMessage];
+                }
+            checkCache:NO]; // note checkCache is NO will should force identify network call
+    }
+}
+
+- (BOOL)shouldReIdentify {
+    BOOL shouldReIdentify = NO;
+    if (self.config.initMode == SWRVE_INIT_MODE_MANAGED || self.identifyRefreshPeriod == -1) {
+        return shouldReIdentify; // not applicable for managed mode or default period
+    }
+
+    NSString *userId = self.profileManager.userId;
+    SwrveUser *currentSwrveUser = [self.profileManager swrveUserWithId:userId];
+    if (currentSwrveUser == nil || currentSwrveUser.externalId == nil || currentSwrveUser.verified == NO) {
+        return shouldReIdentify; // not applicable for unverified users
+    }
+
+    NSDate *identifyDate = [SwrveLocalStorage identifyDate:userId];
+    if (identifyDate == nil) {
+        [SwrveLogger debug:@"Identify date does not exist. Will re-identify now.", nil];
+        shouldReIdentify = YES;
+    } else {
+        NSDate *currentDate = [self getNow];
+        NSTimeInterval identifyRefreshPeriodSeconds = self.identifyRefreshPeriod * 24 * 60 * 60;
+        NSDate *expirationDate = [identifyDate dateByAddingTimeInterval:identifyRefreshPeriodSeconds];
+        if ([currentDate compare:expirationDate] == NSOrderedSame || [currentDate compare:expirationDate] == NSOrderedDescending) {
+            [SwrveLogger debug:@"Identify date expired. Will re-identify now.", nil];
+            shouldReIdentify = YES;
         }
-
-        [self identifyUnknownUserWithExternalId:externalUserId
-                                  andCachedUser:cachedSwrveUser
-                                      onSuccess:onSuccess
-                                        onError:onError];
-
-    });
+    }
+    return shouldReIdentify;
 }
 
 - (void)forceFlushAllEvents:(dispatch_group_t)sendEventsCallbackGroup {
@@ -2561,11 +2633,12 @@ enum HttpStatus {
     [[self eventBuffer] removeAllObjects];
 
     [self.profileManager identify:externalUserId swrveUserId:unidentifiedSwrveId onSuccess:^(NSString *status, NSString *swrveUserId) {
-#pragma unused(status)
         [SwrveLogger debug:@"Swrve identify: Identity service success: %@", status];
 
         //update the swrve user in cache
         [self.profileManager updateSwrveUserWithId:swrveUserId externalUserId:externalUserId];
+
+        [SwrveLocalStorage saveIdentifyDate:[self getNow] forUserId:swrveUserId];
 
         bool isFirstSession = [unidentifiedSwrveId isEqualToString:swrveUserId];
 
@@ -2576,7 +2649,6 @@ enum HttpStatus {
         }
 
     }                     onError:^(NSInteger httpCode, NSString *errorMessage) {
-#pragma unused(errorMessage)
         [SwrveLogger error:@"Swrve identify: Identity service returned %li error message: %@", (long) httpCode, errorMessage];
 
         [self switchUser:unidentifiedSwrveId isFirstSession:true];

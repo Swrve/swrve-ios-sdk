@@ -19,6 +19,7 @@
 @synthesize autoSaveEventsOnResign;
 #if TARGET_OS_IOS
 @synthesize pushEnabled;
+@synthesize providesAppNotificationSettings;
 @synthesize provisionalPushNotificationEvents;
 @synthesize pushNotificationEvents;
 @synthesize pushNotificationPermissionEvents;
@@ -52,6 +53,7 @@
         self.autoSaveEventsOnResign = YES;
 #if TARGET_OS_IOS
         self.pushEnabled = NO;
+        self.providesAppNotificationSettings = NO;
         self.provisionalPushNotificationEvents = nil;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -94,6 +96,7 @@
 @synthesize autoSaveEventsOnResign;
 #if TARGET_OS_IOS
 @synthesize pushEnabled;
+@synthesize providesAppNotificationSettings;
 @synthesize provisionalPushNotificationEvents;
 @synthesize pushNotificationEvents;
 @synthesize pushNotificationPermissionEvents;
@@ -131,6 +134,7 @@
         autoSendEventsOnResume = config.autoSendEventsOnResume;
         autoSaveEventsOnResign = config.autoSaveEventsOnResign;
 #if TARGET_OS_IOS
+        providesAppNotificationSettings = config.providesAppNotificationSettings;
         pushEnabled = config.pushEnabled;
         provisionalPushNotificationEvents = config.provisionalPushNotificationEvents;
 #pragma clang diagnostic push

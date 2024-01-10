@@ -222,4 +222,17 @@
     return returnColor;
 }
 
++ (nullable NSMutableDictionary *)pushTrackingPayload:(NSDictionary *)userInfo {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    NSString *trackingData = [userInfo objectForKey:SwrveNotificationTrackingDataKey];
+    if (trackingData) {
+        [payload setObject:trackingData forKey:@"trackingData"];
+    }
+    NSString *platform = [userInfo objectForKey:SwrveNotificationPlatformKey];
+    if (platform) {
+        [payload setObject:platform forKey:@"platform"];
+    }
+    return ([payload count] > 0) ? payload : nil;
+}
+
 @end

@@ -20,6 +20,7 @@
 @property (atomic) SwrveSignatureProtectedFile* resourcesFile;
 @property (atomic) SwrveSignatureProtectedFile* resourcesDiffFile;
 @property(atomic) NSMutableArray *pausedEventsArray;
+@property(atomic) NSInteger identifyRefreshPeriod;
 - (NSString *)signatureKey;
 - (void)sendQueuedEventsWithCallback:(void(^)(NSURLResponse* response, NSData* data, NSError* error))eventBufferCallback
                    eventFileCallback:(void(^)(NSURLResponse* response, NSData* data, NSError* error))eventFileCallback;
@@ -27,7 +28,7 @@
 - (void)queuePausedEventsArray;
 - (void)maybeFlushToDisk;
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback notifyMessageController:(bool)notifyMessageController;
-
+- (BOOL)shouldReIdentify;
 @end
 
 @interface SwrveMessageController()
@@ -38,6 +39,7 @@
 - (void)saveSwrveUser:(SwrveUser *)swrveUser;
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId;
 - (NSArray *)swrveUsers;
+- (void)removeSwrveUserWithId:(NSString *)aUserId;
 @property (strong, nonatomic) SwrveRESTClient *restClient;
 @property (strong, nonatomic) NSURL *identityURL;
 @end
@@ -107,7 +109,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -147,7 +149,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -181,7 +183,6 @@
     }
 }
 
-//TODO review this test when moving to public
 - (void)testSendEventsAndLogFile_PrivateCallbacks_500 {
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
@@ -208,7 +209,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -227,7 +228,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -258,7 +259,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -277,7 +278,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -304,7 +305,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -472,7 +473,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -539,7 +540,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -588,7 +589,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -623,7 +624,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -658,7 +659,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -700,7 +701,7 @@
 
     [self waitForExpectationsWithTimeout:20 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -733,7 +734,7 @@
 
     [self waitForExpectationsWithTimeout:20.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -788,7 +789,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -828,7 +829,7 @@
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -864,7 +865,7 @@
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -894,7 +895,7 @@
 
     [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -940,7 +941,7 @@
 
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -974,7 +975,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -1004,7 +1005,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -1032,7 +1033,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -1051,7 +1052,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -1071,7 +1072,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -1165,7 +1166,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -1180,7 +1181,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 
@@ -1196,7 +1197,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
 }
@@ -1407,9 +1408,139 @@
     }];
     [self waitForExpectationsWithTimeout:2.0 handler:^(NSError *error) {
         if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
+            NSLog(@"Expectation Error occurred: %@", error);
         }
     }];
+}
+
+// MARK: - Re-identify tests
+
+- (void)testShouldReIdentify {
+
+    NSString *externalId = @"User1";
+    NSString *swrveId = @"SwrveUser1";
+    [SwrveTestHelper setAlreadyInstalledUserId:swrveId];
+    NSInteger identifyRefreshPeriod2Days = 2;
+    [SwrveLocalStorage saveIdentifyRefreshPeriod:identifyRefreshPeriod2Days];
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [config setAutoDownloadCampaignsAndResources:NO];
+    [config setInitMode:SWRVE_INIT_MODE_AUTO];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    swrveMock = [swrveMock initWithAppID:1 apiKey:@"SomeAPIKey" config:config];
+    SwrveUser *swrveUser = [[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:true];
+    [swrveMock.profileManager saveSwrveUser:swrveUser];
+
+    XCTAssertTrue([swrveMock shouldReIdentify]);
+
+    // change initmode to managed and assert false, change back to auto and assert true
+    [config setInitMode:SWRVE_INIT_MODE_MANAGED];
+    OCMStub([swrveMock config]).andReturn(config);
+    XCTAssertFalse([swrveMock shouldReIdentify]);
+    [config setInitMode:SWRVE_INIT_MODE_AUTO];
+    OCMStub([swrveMock config]).andReturn(config);
+    XCTAssertTrue([swrveMock shouldReIdentify]);
+
+    // change identifyRefreshPeriod to -1 and assert false, change back and assert true
+    swrveMock.identifyRefreshPeriod = -1;
+    XCTAssertFalse([swrveMock shouldReIdentify]);
+    swrveMock.identifyRefreshPeriod = 2;
+    XCTAssertTrue([swrveMock shouldReIdentify]);
+
+    // change verified user to false and assert false, change back and assert true
+    [swrveMock.profileManager removeSwrveUserWithId:swrveId];
+    [swrveMock.profileManager saveSwrveUser:[[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:false]];
+    XCTAssertFalse([swrveMock shouldReIdentify]);
+    [swrveMock.profileManager removeSwrveUserWithId:swrveId];
+    [swrveMock.profileManager saveSwrveUser:[[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:true]];
+    XCTAssertTrue([swrveMock shouldReIdentify]);
+
+    // add identify date as now and assert false, add date 1 day ago and assert false, add date 2 day ago and assert true
+    NSTimeInterval dayInterval = 24 * 60 * 60;
+    NSDate *dateNow = [NSDate date];
+    [SwrveLocalStorage saveIdentifyDate:dateNow forUserId:swrveId];
+    XCTAssertFalse([swrveMock shouldReIdentify]);
+    NSDate *date1DaysInPast = [dateNow dateByAddingTimeInterval:-dayInterval]; // note the minus interval which takes away days
+    [SwrveLocalStorage saveIdentifyDate:date1DaysInPast forUserId:swrveId];
+    XCTAssertFalse([swrveMock shouldReIdentify]);
+    NSDate *date2DaysInPast = [dateNow dateByAddingTimeInterval:-(dayInterval * 2)]; // note the minus interval which takes away days
+    [SwrveLocalStorage saveIdentifyDate:date2DaysInPast forUserId:swrveId];
+    XCTAssertTrue([swrveMock shouldReIdentify]);
+}
+
+- (void)testIdentifyDateSaved {
+    // setup
+    NSString *externalId = @"User1";
+    NSString *swrveId = @"SwrveUser1";
+    [SwrveTestHelper setAlreadyInstalledUserId:swrveId];
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [config setAutoDownloadCampaignsAndResources:NO];
+    [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
+    Swrve *swrve = [SwrveSDK sharedInstance];
+    swrve.batchURL = [NSURL URLWithString:@"200"];
+    swrve.profileManager.identityURL = [NSURL URLWithString:@"User1"]; //will return SwrveUser1
+
+    // verify initial identify date is nil
+    XCTAssertNil([SwrveLocalStorage identifyDate:swrveId]);
+
+    // Execute regular identify API and wait
+    XCTestExpectation *bodyExpectation = [self expectationWithDescription:@"testIdentifyDateSaved"];
+    [swrve identify:externalId onSuccess:^(NSString *status, NSString *swrveUserId) {
+        [bodyExpectation fulfill];
+    }       onError:^(NSInteger httpCode, NSString *errorMessage) {
+    }];
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError *error) {
+        if (error) {
+            NSLog(@"Expectation Error occurred: %@", error);
+        }
+    }];
+
+    // verify identify date is not nil
+    XCTAssertNotNil([SwrveLocalStorage identifyDate:swrveId]);
+}
+
+- (void)testReIdentify {
+    //Given
+    NSString *externalId = @"User1";
+    NSString *swrveId = @"SwrveUser1";
+    NSDate *currentDate = [NSDate date];
+
+    // set current swrve user as SwrveUser1
+    [SwrveTestHelper setAlreadyInstalledUserId:swrveId];
+
+    // init config
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [config setAutoDownloadCampaignsAndResources:NO];
+
+    [SwrveSDK sharedInstanceWithAppID:1 apiKey:@"Key" config:config];
+    Swrve *swrveMock = OCMPartialMock([SwrveSDK sharedInstance]);
+    swrveMock.batchURL = [NSURL URLWithString:@"200"];
+    swrveMock.profileManager.identityURL = [NSURL URLWithString:@"User1"]; //will return SwrveUser1
+
+    // Stub shouldReIdentify and getNow
+    OCMStub([swrveMock shouldReIdentify]).andReturn(YES);
+    OCMStub([swrveMock getNow]).andDo(^(NSInvocation *invocation) {
+        [invocation setReturnValue:&currentDate];
+    });
+
+    // Save cached user
+    SwrveUser *verifiedUser = [[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:true];
+    [swrveMock.profileManager saveSwrveUser:verifiedUser];
+
+    // When
+    // Mock app launch event which will trigger `begin session` which in turn will trigger `reIdentifyUser`
+    [swrveMock appDidBecomeActive:nil];
+
+    // Then
+    NSDate *delay = [[NSDate date] dateByAddingTimeInterval:0.1];
+    XCTestExpectation *expectation = [self expectationWithDescription:externalId];
+    [SwrveTestHelper waitForBlock:0.01 conditionBlock:^BOOL() {
+        return ([[NSDate date] compare:delay] == NSOrderedDescending);
+    }                 expectation:expectation];
+    [self waitForExpectationsWithTimeout:5.0 handler:nil];
+
+    NSDate *identifiedDate = [SwrveLocalStorage identifyDate:swrveId];
+    XCTAssertEqual(currentDate, identifiedDate);
 }
 
 @end

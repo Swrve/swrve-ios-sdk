@@ -53,8 +53,11 @@
 + (id)mockPushRequest;
 
 + (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation;
+
 + (id)swrveMockWithMockedRestClient;
++ (id)swrveMockWithFailureMockedRestClient;
 + (id)swrveMockWithMockedRestClientResponseCode:(int)httpCode mockData:(NSData *)mockData;
+
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 + (Swrve *)initializeSwrveWithRealTimeUserPropertiesFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 

@@ -107,4 +107,6 @@
 
 + (UIColor *)processHexColorValue:(NSString *)color;
 
++ (NSMutableDictionary *)pushTrackingPayload:(NSDictionary *)userInfo;
+
 @end

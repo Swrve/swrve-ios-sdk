@@ -58,12 +58,6 @@
     }
 }
 
-- (IBAction)onButtonPressed:(id)sender {
-    SwrveUIButton *button = sender;
-    SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) self.parentViewController;
-    [messageViewController onButtonPressed:button pageId:self.pageId];
-}
-
 #if TARGET_OS_IOS
 - (BOOL)prefersStatusBarHidden {
     if (self.messageController.inAppMessageConfig.prefersStatusBarHidden) {
@@ -81,7 +75,7 @@
     SwrveMessageUIView *swrveMessageUIView = [[SwrveMessageUIView alloc] initWithMessageFormat:self.messageFormat
                                                                                         pageId:self.pageId
                                                                                     parentSize:self.size
-                                                                                    controller:self
+                                                                                    controller:self.parentViewController
                                                                                personalization:self.personalization
                                                                                    inAppConfig:self.messageController.inAppMessageConfig];
     [self.view addSubview:swrveMessageUIView];

@@ -443,6 +443,11 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                     eventPayload = [geoPayload mutableCopy];
                 }
             }
+            NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
+            if (trackingPayload != nil) {
+                [eventPayload addEntriesFromDictionary:trackingPayload];
+            }
+
             [self sendButtonClickEventForNotificationId:notificationId
                                         andCampaignType:campaignType
                                            andContextId:identifier
@@ -549,7 +554,6 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 }
 
 + (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo {
-
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
     if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
@@ -567,9 +571,12 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
 
         [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
         [swrveCommon sendQueuedEvents];
-
     } else {
-        [swrveCommon sendPushNotificationEngagedEvent:notificationId]; // default to regular push
+        NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
+        if (trackingPayload != nil) {
+            [trackingPayload addEntriesFromDictionary:trackingPayload];
+        }
+        [swrveCommon sendPushNotificationEngagedEvent:notificationId withPayload:trackingPayload];
     }
 }
 

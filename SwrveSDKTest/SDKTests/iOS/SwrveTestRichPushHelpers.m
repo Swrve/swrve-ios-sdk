@@ -57,6 +57,8 @@
     XCTAssertEqualObjects(SwrveNotificationDeprecatedDeeplinkKey, @"_d");
     XCTAssertEqualObjects(SwrveNotificationDeeplinkKey, @"_sd");
     XCTAssertEqualObjects(SwrveNotificationIdentifierKey, @"_p");
+    XCTAssertEqualObjects(SwrveNotificationPlatformKey, @"_smp");
+    XCTAssertEqualObjects(SwrveNotificationTrackingDataKey, @"_td");
     
     // notification keys
     XCTAssertEqualObjects(SwrveNotificationContentIdentifierKey, @"_sw");

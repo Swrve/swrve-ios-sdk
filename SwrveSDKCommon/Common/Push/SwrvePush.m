@@ -91,8 +91,8 @@ NSString *appGroupIdentifier;
 
 #pragma mark - Registration and Startup Functions
 
-- (void)registerForPushNotifications:(BOOL)provisional {
-    [SwrvePermissions requestPushNotifications:_commonDelegate provisional:provisional];
+- (void)registerForPushNotifications:(BOOL)provisional providesAppNotificationSettings:(BOOL)providesAppNotificationSettings {
+    [SwrvePermissions requestPushNotifications:_commonDelegate provisional:provisional providesAppNotificationSettings:providesAppNotificationSettings];
 }
 
 - (void)setPushNotificationsDeviceToken:(NSData *)newDeviceToken {
@@ -384,6 +384,14 @@ NSString *appGroupIdentifier;
     } else {
         if (completionHandler) {
             completionHandler();
+        }
+    }
+}
+   
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification API_AVAILABLE(macos(10.14), ios(12.0)) API_UNAVAILABLE(watchos, tvos) {
+    if (_responseDelegate) {
+        if ([_responseDelegate respondsToSelector:@selector(openSettingsForNotification:)]) {
+            [_responseDelegate openSettingsForNotification:notification];
         }
     }
 }

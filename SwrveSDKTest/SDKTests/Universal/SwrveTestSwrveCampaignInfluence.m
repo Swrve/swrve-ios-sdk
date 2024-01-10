@@ -1,12 +1,21 @@
 #import <XCTest/XCTest.h>
+#import "OCMock/OCMock.h"
+#import "SwrveCommon.h"
 #import "SwrveCampaignInfluence.h"
 #import "SwrveNotificationConstants.h"
 
 @interface SwrveTestSwrveCampaignInfluence : XCTestCase
 
+@property (nonatomic) NSString *trackingData;
+
 @end
 
 @implementation SwrveTestSwrveCampaignInfluence
+
+- (void)setUp {
+    [super setUp];
+    self.trackingData = @"5ea0fb1b8a24b8f9f76f675b7350200f314312fa";
+}
 
 - (void)testInfluenceDataClearedWithPushId {
     NSDictionary *influenceData = @{@"12": @"493243", @"13": @"8373434", @"14": @"9858555"};
@@ -48,7 +57,6 @@
 
     NSDictionary *influencedItem = pushInfluencedCached[@"1"];
 
-
     XCTAssertNotNil([influencedItem objectForKey:@"maxInfluencedMillis"]);
     XCTAssertFalse([[influencedItem objectForKey:@"silent"] boolValue]);
 }
@@ -63,6 +71,8 @@
 
     // Test again normal SilentPush
     NSDictionary *userInfo = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
         SwrveNotificationSilentPushIdentifierKey : @"2",
         SwrveInfluencedWindowMinsKey: @"5"
     };
@@ -113,4 +123,37 @@
     XCTAssertNotNil([influencedItem2 objectForKey:@"maxInfluencedMillis"]);
     XCTAssertTrue([[influencedItem2 objectForKey:@"silent"] boolValue]);
 }
+
+- (void)testProcessPushInfluence {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+    
+    OCMStub([mockSwrveCommon appGroupIdentifier]).andReturn(@"app.groupid");
+    
+    NSDictionary *userInfo = @{
+        @"_td": self.trackingData,
+        @"_smp": @"iOS",
+        SwrveNotificationIdentifierKey : @"2",
+        SwrveInfluencedWindowMinsKey: @"5"
+    };
+
+    [SwrveCampaignInfluence saveInfluencedData:userInfo withId:@"2" withAppGroupID:@"app.groupid" atDate:[NSDate date]];
+     
+    [SwrveCampaignInfluence processInfluenceDataWithDate:[NSDate new]];
+                                  
+    NSDictionary *expectedPayload = @{
+        @"actionType": @"influenced",
+            @"campaignType": @"push",
+            @"id": @2,
+            @"payload":   @{
+                @"delta": @"4",
+                @"platform": @"iOS",
+                @"silent": [NSNumber numberWithBool:0],
+                @"trackingData": self.trackingData
+            }
+    };
+     
+    OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedPayload mutableCopy] triggerCallback:false]);
+}
+
 @end

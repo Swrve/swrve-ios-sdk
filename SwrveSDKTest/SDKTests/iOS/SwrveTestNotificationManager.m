@@ -4,78 +4,96 @@
 #import "SwrvePush.h"
 #import "SwrveNotificationManager.h"
 #import "SwrveLocalStorage.h"
+#import "SwrveTestHelper.h"
 
 @interface SwrveNotificationManager ()
 + (NSURL *)cachedUrlFor:(NSURL *)externalUrl withPathExtension:(NSString *)pathExtension inCacheDir:(NSString *)cacheDir;
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback __IOS_AVAILABLE(10.0) __TVOS_AVAILABLE(10.0);
++ (void)updateLastProcessedPushId:(NSString *)pushId;
 @end
 
 @interface SwrveTestNotificationManager : XCTestCase
-
+@property (nonatomic) NSString *trackingData;
 @end
 
 @implementation SwrveTestNotificationManager
 
-- (void)testNotificationResponseReceivedWithCampaignType {
 
+- (void)setUp {
+    [super setUp];
+    self.trackingData = @"5ea0fb1b8a24b8f9f76f675b7350200f314312fa";
+    [SwrveTestHelper setUp];
+}
+
+- (void)tearDown {
+    [SwrveNotificationManager updateLastProcessedPushId:@""];
+    [SwrveTestHelper tearDown];
+    [super tearDown];
+}
+
+- (void)testNotificationResponseReceived {
     id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
     [SwrveCommon addSharedInstance:mockSwrveCommon];
-
-    NSDictionary *engagedExpectedData = @{
-            @"id": @"123",
-            @"campaignType": @"geo",
-            @"actionType": @"engaged",
-            @"payload": @{
-                    @"geoplace_id": @"2345",
-                    @"geofence_id": @"6789"
-            }
+    
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
     };
-    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[engagedExpectedData mutableCopy] triggerCallback:false]);
 
-    NSDictionary *buttonClickExpectedData = @{
-            @"id": @"123",
-            @"campaignType": @"geo",
-            @"actionType": @"button_click",
-            @"contextId": @"identifier",
-            @"payload": @{
-                    @"geoplace_id": @"2345",
-                    @"geofence_id": @"6789",
-                    @"buttonText": @"my button"
-            }
+    NSDictionary *expectedButtonPayload = @{
+        @"actionType": @"button_click",
+        @"campaignType": @"iam",
+        @"contextId": @"identifier",
+        @"id": @"123",
+        @"payload": @{
+            @"buttonText": @"my button",
+            @"platform": @"iOS",
+            @"trackingData": self.trackingData
+        }
     };
-    OCMExpect([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[buttonClickExpectedData mutableCopy] triggerCallback:false]);
 
-    NSDictionary *userInfo = @{
-            @"_p": @"123",
-            @"_siw": @"100",
-            @"_sw": @{
-                    @"subtitle": @"my subtitle",
-                    @"title": @"my title",
-                    @"media": @{
-                            @"title": @"my title",
-                            @"body": @"my body",
-                            @"subtitle": @"my subtitle"
-                    },
-                    @"buttons": @[@{
-                            @"title": @"my button",
-                            @"action_type": @"open_campaign",
-                            @"action": @"298233"
-                    }],
-                    @"version": @1
-            },
-            @"campaign_type": @"geo",
-            @"event_payload": @{
-                    @"geoplace_id": @"2345",
-                    @"geofence_id": @"6789"
-            }
-    };
+    NSDictionary *userInfo = [self userInfoForCampaignType:@"iam"];
     [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
+    
+    OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedButtonPayload mutableCopy] triggerCallback:false]);
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
 
-    OCMVerifyAll(mockSwrveCommon);
+}
+
+- (void)testNotificationResponseReceivedGeo {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+    
+    NSDictionary *expectedEngagedPayload = @{
+        @"actionType": @"engaged",
+        @"campaignType": @"geo",
+        @"id": @"123",
+        @"payload": @{
+            @"geofence_id": @"6789",
+            @"geoplace_id": @"2345"
+        }
+    };
+    
+    NSDictionary *expectedButtonPayload = @{
+        @"actionType": @"button_click",
+        @"campaignType": @"geo",
+        @"contextId": @"identifier",
+        @"id": @"123",
+        @"payload": @{
+            @"buttonText": @"my button",
+            @"geofence_id": @"6789",
+            @"geoplace_id": @"2345"
+        }
+    };
+
+    NSDictionary *userInfo = [self userInfoForCampaignType:@"geo"];
+    [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
+    
+    OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedEngagedPayload mutableCopy] triggerCallback:false]);
+    OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedButtonPayload mutableCopy] triggerCallback:false]);
 }
 
 - (void)testImageLoadFromCache {
-    
     NSString *mockCacheDir = [[NSBundle bundleForClass:[self class]] resourcePath];
     
     // Create test image files in cache
@@ -90,11 +108,11 @@
     OCMStub([localStorage swrveCacheFolder]).andReturn(mockCacheDir);
     
     NSDictionary *userInfo = @{@"_sw":@{
-                                       @"media":@{
-                                                    @"url":@"http://sample/url/testImage.jpg"
-                                                }
-                                        }
-                              };
+        @"media":@{
+            @"url":@"http://sample/url/testImage.jpg"
+        }
+    }
+    };
     
     UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
     testContent.userInfo = userInfo;
@@ -110,17 +128,17 @@
 
 - (void)testPushCategories {
     NSDictionary *userInfo = @{@"_sw":@{
-                                       @"media":@{
-                                                    @"title":@"Sample Title",
-                                                },
-                                       @"buttons": @[
-                                          @{
-                                            @"title": @"Custom button open app",
-                                            @"action_type": @"open_app",
-                                            @"action": @""
-                                          }]
-                                        },
-                              };
+        @"media":@{
+            @"title":@"Sample Title",
+        },
+        @"buttons": @[
+            @{
+                @"title": @"Custom button open app",
+                @"action_type": @"open_app",
+                @"action": @""
+            }]
+    },
+    };
     
     UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
     testContent.userInfo = userInfo;
@@ -135,7 +153,7 @@
     XCTestExpectation *checkContent = [self expectationWithDescription:@"checkContent"];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *_Nonnull categories) {
-
+        
         UNNotificationCategory *cat =  [[categories allObjects] firstObject];
         UNNotificationAction *action = [[cat actions] firstObject];
         XCTAssertEqualObjects(@"Custom button open app", action.title);
@@ -146,6 +164,77 @@
     [self waitForExpectationsWithTimeout:10 handler:nil];
     
     [center setNotificationCategories:[NSSet new]];
+}
+
+- (NSDictionary *)userInfoForCampaignType:(NSString *)campaignType {
+    NSDictionary *standardInfo = @{
+        @"_p": @"123",
+        @"_siw": @"100",
+        @"_sw": @{
+            @"subtitle": @"my subtitle",
+            @"title": @"my title",
+            @"media": @{
+                @"title": @"my title",
+                @"body": @"my body",
+                @"subtitle": @"my subtitle"
+            },
+            @"buttons": @[@{
+                @"title": @"my button",
+                @"action_type": @"open_campaign",
+                @"action": @"298233"
+            }],
+            @"version": @1
+        },
+        @"campaign_type": campaignType,
+    };
+    
+    NSMutableDictionary *allInfo = [standardInfo mutableCopy];
+    if ([campaignType isEqualToString:@"geo"]) {
+        NSDictionary *event_payload = @{
+            @"geoplace_id": @"2345",
+            @"geofence_id": @"6789"
+        };
+        [allInfo setObject:event_payload forKey:@"event_payload" ];
+    } else if ([campaignType isEqualToString:@"iam"]) {
+        [allInfo setObject:@"iOS" forKey:@"_smp"];
+        [allInfo setObject:self.trackingData forKey:@"_td"];
+    }
+    return allInfo;
+}
+
+-(NSDictionary *)addtionalPayload:(NSString *)campaignType actionType:(NSString *)actionType{
+    NSMutableDictionary *addtionalPayload = [[NSMutableDictionary alloc] init];
+    if ([campaignType isEqualToString:@"geo"]) {
+        [addtionalPayload setObject:@"2345" forKey:@"geoplace_id"];
+        [addtionalPayload setObject:@"6789" forKey:@"geofence_id"];
+    } else if ([campaignType isEqualToString:@"iam"]) {
+        [addtionalPayload setObject:self.trackingData forKey:@"trackingData"];
+        [addtionalPayload setObject:@"iOS" forKey:@"platform"];
+    }
+
+    if ([actionType isEqualToString:@"button_click"]) {
+        [addtionalPayload setObject:@"my button" forKey:@"buttonText"];
+    }
+    return addtionalPayload;
+}
+
+- (NSDictionary *)engagedData:(NSString *)campaignType {
+    return @{
+        @"id": @"123",
+        @"campaignType": campaignType,
+        @"actionType": @"engaged",
+        @"payload" : [self addtionalPayload:campaignType actionType:@"engaged"]
+    };
+}
+
+- (NSDictionary *)buttonClickData:(NSString *)campaignType {
+    return  @{
+        @"id": @"123",
+        @"campaignType": campaignType,
+        @"actionType": @"button_click",
+        @"contextId": @"identifier",
+        @"payload": [self addtionalPayload:campaignType actionType:@"button_click"]
+    };
 }
 
 @end

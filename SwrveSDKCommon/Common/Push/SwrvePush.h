@@ -22,6 +22,7 @@ extern NSString *const SwrveContentVersionKey;
 - (void)willPresentNotification:(UNNotification *)notification
           withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler __IOS_AVAILABLE(10.0);
 
+- (void)openSettingsForNotification:(nullable UNNotification *)notification API_AVAILABLE(macos(10.14), ios(12.0)) API_UNAVAILABLE(watchos, tvos);
 #endif
 @end
 

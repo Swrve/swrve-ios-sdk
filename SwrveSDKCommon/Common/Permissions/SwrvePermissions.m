@@ -27,7 +27,7 @@
 +(BOOL) processPermissionRequest:(NSString*)action withSDK:(id<SwrveCommonDelegate>)sdk {
 #if TARGET_OS_IOS
     if([action caseInsensitiveCompare:@"swrve.request_permission.ios.push_notifications"] == NSOrderedSame) {
-        [SwrvePermissions requestPushNotifications:sdk provisional:NO];
+        [SwrvePermissions requestPushNotifications:sdk provisional:NO providesAppNotificationSettings:NO];
         return YES;
     }
 #else
@@ -346,9 +346,14 @@
 }
 
 #if TARGET_OS_IOS
-+(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional {
++(void)requestPushNotifications:(id<SwrveCommonDelegate>)sdk provisional:(BOOL)provisional providesAppNotificationSettings:(BOOL)providesAppNotificationSettings {
     if (@available(iOS 10.0, *)) {
         UNAuthorizationOptions notificationAuthOptions = (UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge);
+        if (providesAppNotificationSettings) {
+            if (@available(iOS 12.0, *)) {
+                notificationAuthOptions = notificationAuthOptions + UNAuthorizationOptionProvidesAppNotificationSettings;
+            }
+        }
         if (provisional) {
             if (@available(iOS 12.0, *)) {
                 notificationAuthOptions = notificationAuthOptions + UNAuthorizationOptionProvisional;

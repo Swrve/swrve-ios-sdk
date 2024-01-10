@@ -1,0 +1,430 @@
+{
+  "campaigns": {
+    "game_data": {
+      "3728": {},
+      "30896": {}
+    },
+    "campaigns": [
+      {
+        "id": 102,
+        "end_date": 1364568900000,
+        "triggers": [
+          {
+            "event_name": "Swrve.currency_given",
+            "conditions": {}
+          },
+          {
+            "event_name": "Swrve.buy_in",
+            "conditions": {}
+          }
+        ],
+        "start_date": 1362671700000,
+        "subject": "IAM subject",
+        "message": {
+          "template": {
+            "template_id": "20",
+            "formats": [
+              {
+                "orientation": "portrait",
+                "size": {
+                  "w": {
+                    "type": "number",
+                    "value": 320
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 240
+                  }
+                },
+                "images": [
+                  {
+                    "name": "Background",
+                    "color": {
+                      "type": "color",
+                      "value": "FFFFFF"
+                    },
+                    "image": {
+                      "type": "asset",
+                      "value": "8f984a803374d7c03c97dd122bce3ccf565bbdb5"
+                    },
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 900
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 600
+                    }
+                  }
+                ],
+                "buttons": [
+                  {
+                    "name": "request",
+                    "x": {
+                      "type": "number",
+                      "value": -200
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 80
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 229
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 114
+                    },
+                    "image_up": {
+                      "type": "asset",
+                      "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                    },
+                    "action": {
+                      "type": "text",
+                      "value": ""
+                    },
+                    "game_id": {
+                      "type": "number",
+                      "value": "150"
+                    },
+                    "type": {
+                      "type": "text",
+                      "value": "INSTALL"
+                    },
+                    "events": [
+                      {
+                        "name": "Test Event 1",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          },
+                          {
+                            "key": "key2",
+                            "value": "some value personalized:${test_2}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Test Event 2",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          }
+                        ]
+                      }
+                    ],
+                    "user_updates": [
+                      {
+                        "key": "key1",
+                        "value": "some value personalized:${test_1}"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "custom",
+                    "x": {
+                      "type": "number",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 80
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 229
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 114
+                    },
+                    "image_up": {
+                      "type": "asset",
+                      "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                    },
+                    "action": {
+                      "type": "text",
+                      "value": "https://google.com"
+                    },
+                    "game_id": {
+                      "type": "number",
+                      "value": ""
+                    },
+                    "type": {
+                      "type": "text",
+                      "value": "CUSTOM"
+                    },
+                    "events": [
+                      {
+                        "name": "Test Event 1",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          },
+                          {
+                            "key": "key2",
+                            "value": "some value personalized:${test_2}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Test Event 2",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          }
+                        ]
+                      }
+                    ],
+                    "user_updates": [
+                      {
+                        "key": "key1",
+                        "value": "some value personalized:${test_1}"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "close",
+                    "x": {
+                      "type": "number",
+                      "value": 932
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 32
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 50
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 50
+                    },
+                    "image_up": {
+                      "type": "asset",
+                      "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                    },
+                    "action": {
+                      "type": "text",
+                      "value": ""
+                    },
+                    "game_id": {
+                      "type": "number",
+                      "value": ""
+                    },
+                    "type": {
+                      "type": "text",
+                      "value": "DISMISS"
+                    },
+                    "events": [
+                      {
+                        "name": "Test Event 1",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          },
+                          {
+                            "key": "key2",
+                            "value": "some value personalized:${test_2}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Test Event 2",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          }
+                        ]
+                      }
+                    ],
+                    "user_updates": [
+                      {
+                        "key": "key1",
+                        "value": "some value personalized:${test_1}"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "clipboard_action",
+                    "x": {
+                      "type": "number",
+                      "value": 999
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 23
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 50
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 50
+                    },
+                    "image_up": {
+                      "type": "asset",
+                      "value": "97c5df26c8e8fcff8dbda7e662d4272a6a94af7e"
+                    },
+                    "text": {
+                      "type": "text",
+                      "value": "${test_cp|fallback=\"hello\"}"
+                    },
+                    "action": {
+                      "type": "text",
+                      "value": "${test_cp_action|fallback=\"test\"}"
+                    },
+                    "type": {
+                      "type": "text",
+                      "value": "COPY_TO_CLIPBOARD"
+                    },
+                    "game_id": {
+                      "type": "number",
+                      "value": ""
+                    },
+                    "events": [
+                      {
+                        "name": "Test Event 1",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          },
+                          {
+                            "key": "key2",
+                            "value": "some value personalized:${test_2}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Test Event 2",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          }
+                        ]
+                      }
+                    ],
+                    "user_updates": [
+                      {
+                        "key": "key1",
+                        "value": "some value personalized:${test_1}"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "accept",
+                    "x": {
+                      "type": "number",
+                      "value": -200
+                    },
+                    "y": {
+                      "type": "number",
+                      "value": 80
+                    },
+                    "w": {
+                      "type": "number",
+                      "value": 229
+                    },
+                    "h": {
+                      "type": "number",
+                      "value": 114
+                    },
+                    "image_up": {
+                      "type": "asset",
+                      "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                    },
+                    "action": {
+                      "type": "text",
+                      "value": "swrve.contacts"
+                    },
+                    "game_id": {
+                      "type": "number",
+                      "value": "150"
+                    },
+                    "type": {
+                      "type": "text",
+                      "value": "REQUEST_CAPABILITY"
+                    },
+                    "events": [
+                      {
+                        "name": "Test Event 1",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          },
+                          {
+                            "key": "key2",
+                            "value": "some value personalized:${test_2}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Test Event 2",
+                        "payload": [
+                          {
+                            "key": "key1",
+                            "value": "some value personalized:${test_1}"
+                          }
+                        ]
+                      }
+                    ],
+                    "user_updates": [
+                      {
+                        "key": "key1",
+                        "value": "some value personalized:${test_1}"
+                      }
+                    ]
+                  }
+                ],
+                "name": "Kindle (English (US))",
+                "language": "en-US"
+              }
+            ]
+          },
+          "id": 165,
+          "name": "Kindle",
+          "rules": {}
+        },
+        "rules": {
+          "display_order": "random",
+          "dismiss_after_views": 20,
+          "delay_first_message": 0,
+          "min_delay_between_messages": 30
+        }
+      }
+    ],
+    "rules": {
+      "delay_first_message": 0,
+      "max_messages_per_session": 99999,
+      "min_delay_between_messages": 0
+    },
+    "cdn_paths": {
+      "message_images": "https://content-cdn.swrve.com/messaging/message_image/",
+      "message_fonts": "https://content-cdn.swrve.com/messaging/fonts/"
+    },
+    "version": 2
+  },
+  "flush_frequency": 60000,
+  "flush_refresh_delay": 1000,
+  "identify_refresh_period": 21
+}

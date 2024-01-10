@@ -6,6 +6,8 @@ NSString *const SwrveNotificationDeeplinkKey = @"_sd";
 NSString *const SwrveNotificationIdentifierKey = @"_p";
 NSString *const SwrveNotificationSilentPushIdentifierKey = @"_sp";
 NSString *const SwrveNotificationSilentPushPayloadKey = @"_s.SilentPayload";
+NSString *const SwrveNotificationTrackingDataKey = @"_td";
+NSString *const SwrveNotificationPlatformKey = @"_smp";
 
 #pragma mark - notification keys
 NSString *const SwrveNotificationContentIdentifierKey = @"_sw";
