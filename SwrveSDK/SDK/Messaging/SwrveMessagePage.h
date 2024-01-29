@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(atomic) long pageId;
 @property(atomic) long swipeForward;
 @property(atomic) long swipeBackward;
+@property(atomic) NSNumber *pageDuration;
 
 - (id)initFromJson:(NSDictionary *)json
         campaignId:(long)swrveCampaignId

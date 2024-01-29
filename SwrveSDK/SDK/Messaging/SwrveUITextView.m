@@ -1,5 +1,5 @@
 #import "SwrveUITextView.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 #if __has_include(<SwrveSDKCommon/TextTemplating.h>)
 #import <SwrveSDKCommon/TextTemplating.h>
@@ -42,7 +42,7 @@
             calibration.calibrationHeight != 0.0f ||
             (calibration.calibrationText != nil && ![calibration.calibrationText isEqualToString:@""])) {
 
-            scaledPointSize = [SwrveTextUtils scaleFont:style.font
+            scaledPointSize = [SwrveSDKUtils scaleFont:style.font
                                         calibration:calibration
                                       swrveFontSize:style.fontsize
                                         renderScale:renderScale];

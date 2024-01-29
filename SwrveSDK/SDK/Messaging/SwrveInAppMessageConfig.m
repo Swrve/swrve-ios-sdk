@@ -16,6 +16,8 @@
 #if TARGET_OS_TV
 @synthesize inAppMessageFocusDelegate;
 #endif
+@synthesize storyDismissButton;
+@synthesize storyDismissButtonHighlighted;
 
 - (id)init {
     if (self = [super init]) {

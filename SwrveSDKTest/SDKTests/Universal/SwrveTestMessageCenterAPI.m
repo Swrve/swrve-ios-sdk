@@ -3,7 +3,7 @@
 #import <SwrveMessagePage.h>
 #import <SwrveMessagePageViewController.h>
 #import <SwrveThemedUIButton.h>
-#import <SwrveTextUtils.h>
+#import <SwrveSDKUtils.h>
 #import "SwrveTestHelper.h"
 
 #import "SwrveMessage.h"
@@ -44,7 +44,7 @@
 
 @interface SwrveMessageFocus ()
 
-- (void)applyFocusOnThemedUIButton:(UIView *)view gainFocus:(bool)gainFocus;
+- (void)applyFocusOnSwrveButton:(UIView *)view gainFocus:(bool)gainFocus;
 
 @end
 
@@ -1055,7 +1055,7 @@
     XCTAssertEqual(button.layer.cornerRadius, cornerRadius * button.renderScale);
     XCTAssertEqualObjects(button.titleLabel.font.fontName, fontName);
     UIFont *systemFont = [UIFont systemFontOfSize:fontSize];
-    CGFloat scaledFontSize = [SwrveTextUtils scaleFont:systemFont
+    CGFloat scaledFontSize = [SwrveSDKUtils scaleFont:systemFont
                                            calibration:button.calibration
                                          swrveFontSize:fontSize
                                            renderScale:button.renderScale];
@@ -1082,7 +1082,7 @@
 
     // test focused state
     SwrveMessageFocus *messageFocus = [[SwrveMessageFocus alloc] initWithView:button]; // should be init with root view, but doens't matter here for test
-    [messageFocus applyFocusOnThemedUIButton:button gainFocus:true];
+    [messageFocus applyFocusOnSwrveButton:button gainFocus:true];
     if (bgColorFocused) {
         UIColor *focusedBgUIColor = [SwrveUtils processHexColorValue:bgColorFocused];
         XCTAssertEqualObjects(button.backgroundColor, focusedBgUIColor);

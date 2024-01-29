@@ -10,6 +10,7 @@
 @synthesize pageId;
 @synthesize swipeForward;
 @synthesize swipeBackward;
+@synthesize pageDuration;
 
 - (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
     self = [super init];
@@ -47,6 +48,10 @@
 
     if ([json objectForKey:@"swipe_backward"]) {
         self.swipeBackward = [[json objectForKey:@"swipe_backward"] integerValue];
+    }
+
+    if ([json objectForKey:@"page_duration"]) { // future proofing ability to have different durations per page
+        self.pageDuration = [json objectForKey:@"page_duration"];
     }
 
     return self;

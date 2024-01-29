@@ -1,6 +1,6 @@
 #define SWRVE_MIN(a,b)    ((a) < (b) ? (a) : (b))
 #import "SwrveTextImageView.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 @implementation SwrveTextImageView
 
@@ -35,7 +35,7 @@ CGFloat const TEST_FONT_SIZE = 200.0f;
     [attributes setObject:foreground forKey:NSForegroundColorAttributeName];
     [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
-    CGFloat scaledFontSize = [SwrveTextUtils fitTextSize:string
+    CGFloat scaledFontSize = [SwrveSDKUtils fitTextSize:string
                                           withAttributes:attributes
                                                 maxWidth:size.width
                                                maxHeight:size.height

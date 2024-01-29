@@ -47,6 +47,7 @@ let package = Package(
             path: "SwrveSDK",
             resources: [
                    .process("LICENSE"),
+                   .process("SDK/Resources/SwrveSDK.xcassets"),
                  ],
             publicHeadersPath: "include"),
         .target(

@@ -140,9 +140,9 @@
                                        withAnimationCoordinator:mockFocusAnimationCoordinator
                                                      parentView:parentUIView]);
 
-    // Expect the applyFocusOnThemedUIButton to always be called
+    // Expect the applyFocusOnSwrveButton to always be called
     id messageFocusMock = OCMPartialMock(messageViewController.messageFocus);
-    OCMExpect([messageFocusMock applyFocusOnThemedUIButton:mockFocusUpdateContext]);
+    OCMExpect([messageFocusMock applyFocusOnSwrveButton:mockFocusUpdateContext]);
 
     // Fail if applyDefaultFocusInContext is called
     OCMReject([messageFocusMock applyDefaultFocusInContext:mockFocusUpdateContext]);
@@ -170,9 +170,9 @@
     id mockFocusUpdateContext = OCMClassMock([UIFocusUpdateContext class]);
     id mockFocusAnimationCoordinator = OCMClassMock([UIFocusAnimationCoordinator class]);
 
-    // With no delegate, expect the applyFocusOnThemedUIButton and applyDefaultFocusInContext methods to be called
+    // With no delegate, expect the applyFocusOnSwrveButton and applyDefaultFocusInContext methods to be called
     id messageFocusMock = OCMPartialMock(messageViewController.messageFocus);
-    OCMExpect([messageFocusMock applyFocusOnThemedUIButton:mockFocusUpdateContext]);
+    OCMExpect([messageFocusMock applyFocusOnSwrveButton:mockFocusUpdateContext]);
     OCMExpect([messageFocusMock applyDefaultFocusInContext:mockFocusUpdateContext]);
 
     // simulate a focus change

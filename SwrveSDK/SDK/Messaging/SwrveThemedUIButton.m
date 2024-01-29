@@ -1,5 +1,5 @@
 #import "SwrveThemedUIButton.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
 #import <SwrveSDKCommon/SwrveUtils.h>
@@ -88,7 +88,7 @@
 
 - (void)applyFont {
     UIFont *defaultFont = [UIFont systemFontOfSize:theme.fontSize.floatValue];
-    UIFont *titleFont = [SwrveTextUtils fontFromFile:theme.fontFile
+    UIFont *titleFont = [SwrveSDKUtils fontFromFile:theme.fontFile
                                       postscriptName:theme.fontPostscriptName
                                                 size:theme.fontSize.floatValue
                                                style:theme.fontNativeStyle
@@ -96,7 +96,7 @@
 
     CGFloat scaledPointSize = theme.fontSize.floatValue;
     if (self.calibration) {
-        scaledPointSize = [SwrveTextUtils scaleFont:titleFont
+        scaledPointSize = [SwrveSDKUtils scaleFont:titleFont
                                         calibration:self.calibration
                                       swrveFontSize:theme.fontSize.floatValue
                                         renderScale:self.renderScale];

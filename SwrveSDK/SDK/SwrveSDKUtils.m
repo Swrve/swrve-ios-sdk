@@ -1,5 +1,5 @@
 #import <CoreText/CoreText.h>
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
@@ -11,7 +11,7 @@
 
 #define SWRVE_MIN(a, b)    ((a) < (b) ? (a) : (b))
 
-@implementation SwrveTextUtils
+@implementation SwrveSDKUtils
 
 + (CGFloat)scaleFont:(UIFont *)font calibration:(SwrveCalibration *)calibration swrveFontSize:(CGFloat)fontSize renderScale:(CGFloat)renderScale {
     CGFloat calibrationWidth = calibration.calibrationWidth * renderScale;
@@ -26,7 +26,7 @@
             NSParagraphStyleAttributeName: paragraphStyle
     };
 
-    CGFloat osSizeForTemplate = [SwrveTextUtils fitTextSize:calibration.calibrationText
+    CGFloat osSizeForTemplate = [SwrveSDKUtils fitTextSize:calibration.calibrationText
                                          withAttributes:baseAttributes
                                                maxWidth:calibrationWidth
                                               maxHeight:calibrationHeight
@@ -62,7 +62,7 @@
             withFallback:(UIFont *)fallbackFont {
 
     UIFont *uiFont;
-    if ([SwrveTextUtils isSystemFont:fontFile]) {
+    if ([SwrveSDKUtils isSystemFont:fontFile]) {
         if(fontNativeStyle && [fontNativeStyle isEqualToString:@"Normal"]) {
             uiFont = [UIFont systemFontOfSize:fontSizePoints];
         } else if(fontNativeStyle && [fontNativeStyle isEqualToString:@"Bold"]) {
@@ -127,6 +127,44 @@
         isSystemFont = YES;
     }
     return isSystemFont;
+}
+
++ (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent {
+    // Calculate the scale needed to fit the format in the current viewport
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    float wscale = (float) ((sizeParent.width * screenScale) / format.size.width);
+    float hscale = (float) ((sizeParent.height * screenScale) / format.size.height);
+    float viewportScale = (wscale < hscale) ? wscale : hscale;
+    return (format.scale / screenScale) * viewportScale; // Adjust scale, accounting for retina devices
+}
+
+// Note:
+// - in app story dismiss image is rendered using a svg graphic shipped in the SwrveSDK bundle
+// - svg graphics are not completely backwards compatible and may render slightly differently below iOS 13
+// - when adding svg to xcassets make sure to preserve vector data, render as template and use single scale
++ (UIImage *)iamStoryDismissImage {
+    NSBundle *swrveSDKBundle = [SwrveSDKUtils swrveSDKBundle];
+    NSString *dismissImageSVGName = @"swrve_x.svg";
+    UIImage *dismissImage = [UIImage imageNamed:dismissImageSVGName inBundle:swrveSDKBundle compatibleWithTraitCollection:nil];
+    if (!dismissImage) {
+        [SwrveLogger error:@"Dismiss asset image missing from in-app story", nil];
+    }
+    return dismissImage;
+}
+
++ (NSBundle *)swrveSDKBundle {
+#ifdef SWIFTPM_MODULE_BUNDLE
+    return SWIFTPM_MODULE_BUNDLE;
+#else
+    NSBundle *mainBundle = [NSBundle bundleForClass:[SwrveSDKUtils class]];
+    NSURL *bundleURL = [[mainBundle resourceURL] URLByAppendingPathComponent:@"SwrveSDK.bundle"];
+    NSBundle *frameworkBundle = [NSBundle bundleWithURL:bundleURL];
+    // if its nil, try standard bundle location for class
+    if (frameworkBundle != nil) {
+        return frameworkBundle;
+    }
+    return mainBundle;
+#endif
 }
 
 @end

@@ -4,7 +4,7 @@
 #import "SwrveImage.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessagePage.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 #if __has_include(<SwrveSDKCommon/TextTemplating.h>)
 
@@ -112,7 +112,7 @@ static bool in_cache(NSString *file, NSSet *set) {
             for (SwrveImage* image in page.images) {
                 if(image.multilineText) {
                     NSString *font_file = [image.multilineText objectForKey:@"font_file"];
-                    if (font_file && ![SwrveTextUtils isSystemFont:font_file]) {
+                    if (font_file && ![SwrveSDKUtils isSystemFont:font_file]) {
                         if (!in_cache(font_file, assets)) {
                             [SwrveLogger debug:@"Font Asset not yet downloaded: %@", font_file];
                             return NO;
@@ -146,7 +146,7 @@ static bool in_cache(NSString *file, NSSet *set) {
     }
 
     NSString *fontFile = theme.fontFile;
-    if (fontFile && ![SwrveTextUtils isSystemFont:fontFile]) {
+    if (fontFile && ![SwrveSDKUtils isSystemFont:fontFile]) {
         if (!in_cache(fontFile, assets)) {
             [SwrveLogger debug:@"Button theme font asset not yet downloaded: %@", fontFile];
             return NO;

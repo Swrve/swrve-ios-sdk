@@ -13,6 +13,10 @@
 		239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */ = {isa = PBXBuildFile; fileRef = 239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */; };
 		3A0DB9CD287827A5008EC1D7 /* campaignsGif.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */; };
 		3A0DB9CE287827A5008EC1D7 /* campaignsGif.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */; };
+		3A1443542AF3E660007B5B2D /* in_app_story_campaign.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A1443532AF3E65F007B5B2D /* in_app_story_campaign.json */; };
+		3A1443552AF3E660007B5B2D /* in_app_story_campaign.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A1443532AF3E65F007B5B2D /* in_app_story_campaign.json */; };
+		3A2E93342AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */; };
+		3A2E93352AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */; };
 		3A36ECA929F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */; };
 		3A36ECAA29F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */; };
 		3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
@@ -292,6 +296,8 @@
 		204C9FEC8C4AAF6C5174CEBB /* Pods-SwrveSDK-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		239EBA3E55425E2E095E9299 /* multipage_campaign_swipe.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = multipage_campaign_swipe.json; sourceTree = "<group>"; };
 		3A0DB9CC287827A5008EC1D7 /* campaignsGif.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsGif.json; sourceTree = "<group>"; };
+		3A1443532AF3E65F007B5B2D /* in_app_story_campaign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = in_app_story_campaign.json; sourceTree = "<group>"; };
+		3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_in_app_story.json; sourceTree = "<group>"; };
 		3A36ECA829F14F2900931B7C /* SwrveTestThemedUIButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestThemedUIButton.m; sourceTree = "<group>"; };
 		3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitMode.m; sourceTree = "<group>"; };
 		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
@@ -718,6 +724,8 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */,
+				3A1443532AF3E65F007B5B2D /* in_app_story_campaign.json */,
 				3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */,
 				C530E8EF2B15D2B9005D3354 /* campaigns_with_reidentify_period.json */,
 				C530E8F22B16E70A005D3354 /* campaigns_without_reidentify_period.json */,
@@ -952,10 +960,12 @@
 				F669891F25BEC17800950E98 /* conversationPhotoPermission.json in Resources */,
 				5B2B6F6423C4E55E000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				52FC409823FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
+				3A1443542AF3E660007B5B2D /* in_app_story_campaign.json in Resources */,
 				5B2B6F6023C4E55E000B1687 /* campaignsFuture.json in Resources */,
 				5B2B6F6123C4E55E000B1687 /* campaignsImpressions.json in Resources */,
 				3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */,
 				3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
+				3A2E93342AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */,
 				5B2B6F5523C4E55E000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				5264BF922609135100264777 /* ad_journey_campaign_message_image_personalization.json in Resources */,
 				F669891025BEC16F00950E98 /* conversationContactsPermission.json in Resources */,
@@ -1070,6 +1080,7 @@
 				5B2B6F7223C4E55F000B1687 /* external_campaigns.json in Resources */,
 				5B2B6F8023C4E55F000B1687 /* conversationCampaignsPriorityReverse.json in Resources */,
 				5B2B6F8523C4E55F000B1687 /* campaignsPortraitOnly.json in Resources */,
+				3A1443552AF3E660007B5B2D /* in_app_story_campaign.json in Resources */,
 				3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */,
 				5228726F25F697470014FD1B /* campaignsImagePersonalizationTriggered.json in Resources */,
 				F6698A8025BEF49E00950E98 /* campaignsIdentity.json in Resources */,
@@ -1080,6 +1091,7 @@
 				C530E8F42B16E70A005D3354 /* campaigns_without_reidentify_period.json in Resources */,
 				F119406127F1F64C00098913 /* campaignsAccess.json in Resources */,
 				F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */,
+				3A2E93352AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */,
 				5B2B6F6E23C4E55F000B1687 /* abTestDetails.json in Resources */,
 				3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
 				239EBD5387C83C973971A8A6 /* multipage_campaign_swipe.json in Resources */,
@@ -1727,7 +1739,7 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-tvOS.app/SwrveSDK-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 11.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Debug;
 		};
@@ -1752,7 +1764,7 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwrveSDK-tvOS.app/SwrveSDK-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 11.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Release;
 		};

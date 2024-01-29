@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyDefaultFocusInContext:(UIFocusUpdateContext *)context;
 
-- (void)applyFocusOnThemedUIButton:(UIFocusUpdateContext *)context;
+- (void)applyFocusOnSwrveButton:(UIFocusUpdateContext *)context;
 
 @end
 

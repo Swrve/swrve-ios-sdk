@@ -6,7 +6,7 @@
 #import "SwrveButton.h"
 #import "SwrveTextImageView.h"
 #import "SwrveThemedUIButton.h"
-#import "SwrveMessagePageViewController.h"
+#import "SwrveSDKUtils.h"
 #import "SwrveMessageViewController.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
@@ -59,7 +59,7 @@
 
 @property(nonatomic) SwrveMessageFormat *messageFormat;
 @property(nonatomic) NSNumber *pageId;
-@property(nonatomic) UIViewController *controller;
+@property(nonatomic, weak) UIViewController *controller;
 @property(nonatomic) NSDictionary *personalization;
 @property(nonatomic) SwrveInAppMessageConfig *inAppConfig;
 @property(nonatomic) CGFloat centerX;
@@ -100,7 +100,7 @@ static CGPoint scaled(CGPoint point, float scale) {
 
         self.centerX = sizeParent.width / 2;
         self.centerY = sizeParent.height / 2;
-        self.renderScale = [self renderScaleFor:format withParentSize:sizeParent];
+        self.renderScale = [SwrveSDKUtils renderScaleFor:format withParentSize:sizeParent];
         [self setCenter:CGPointMake(self.centerX, self.centerY)];
         [self setAlpha:1];
 
@@ -110,17 +110,6 @@ static CGPoint scaled(CGPoint point, float scale) {
         [self addButtons:page];
     }
     return self;
-}
-
-- (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent {
-    // Calculate the scale needed to fit the format in the current viewport
-    CGFloat screenScale = [[UIScreen mainScreen] scale];
-    [SwrveLogger debug:@"SwrveMessageUIView: MessageFormat scale :%g", format.scale];
-    [SwrveLogger debug:@"SwrveMessageUIView: UI scale :%g", screenScale];
-    float wscale = (float) ((sizeParent.width * screenScale) / format.size.width);
-    float hscale = (float) ((sizeParent.height * screenScale) / format.size.height);
-    float viewportScale = (wscale < hscale) ? wscale : hscale;
-    return (format.scale / screenScale) * viewportScale; // Adjust scale, accounting for retina devices
 }
 
 - (void)addImages:(SwrveMessagePage *)page {
@@ -431,31 +420,30 @@ static CGPoint scaled(CGPoint point, float scale) {
 }
 
 -(void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view {
-    // for images dont make them accessible, unless alt text is provided below.
-    view.isAccessibilityElement = [view isKindOfClass:[UIImageView class]] ? false : true;
+    view.isAccessibilityElement = true;
     if (accessibilityText != nil && ![accessibilityText isEqualToString:@""]) {
         NSError *error;
         NSString *personalizedAccessibilityText = [TextTemplating templatedTextFromString:accessibilityText withProperties:personalizationDict andError:&error];
         if (error == nil) {
-            view.isAccessibilityElement = true;
             view.accessibilityLabel = personalizedAccessibilityText;
         } else {
             [SwrveLogger error:@"Adding accessibility text error: %@", error];
         }
     } else {
-        if (backupText != nil && ![backupText  isEqualToString:@""]) {
-            view.isAccessibilityElement = true;
+        if (backupText != nil && ![backupText isEqualToString:@""]) {
             view.accessibilityLabel = backupText;
         }
     }
-    
+
     // disable traits as we dont want additional information read out from VO image / speech recognition
     // instead just assign simple hints as the role type: image or button
-   view.accessibilityTraits = UIAccessibilityTraitNone;
-    if ([view isKindOfClass:[SwrveUIButton class]]) {
-        view.accessibilityHint = @"Button";
-    } else if ([view isKindOfClass:[UIImageView class]]) {
-        view.accessibilityHint = @"Image";
+    view.accessibilityTraits = UIAccessibilityTraitNone;
+    if (view.accessibilityLabel != nil && ![view.accessibilityLabel isEqualToString:@""]) {
+        if ([view isKindOfClass:[SwrveUIButton class]]) {
+            view.accessibilityHint = @"Button";
+        } else if ([view isKindOfClass:[UIImageView class]]) {
+            view.accessibilityHint = @"Image";
+        }
     }
 }
 @end

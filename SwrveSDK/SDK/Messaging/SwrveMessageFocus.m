@@ -1,5 +1,6 @@
 #import "SwrveMessageFocus.h"
 #import "SwrveThemedUIButton.h"
+#import "SwrveInAppStoryUIButton.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLogger.h>)
 #import <SwrveSDKCommon/SwrveLogger.h>
@@ -32,16 +33,16 @@
     return self;
 }
 
-- (void)applyFocusOnThemedUIButton:(UIFocusUpdateContext *)context {
+- (void)applyFocusOnSwrveButton:(UIFocusUpdateContext *)context {
 
     UIView *previouslyFocusedView = context.previouslyFocusedView;
     if (previouslyFocusedView != nil && [previouslyFocusedView isDescendantOfView:self.rootView]) {
-        [self applyFocusOnThemedUIButton:previouslyFocusedView gainFocus:false];
+        [self applyFocusOnSwrveButton:previouslyFocusedView gainFocus:false];
     }
 
     UIView *nextFocusedView = context.nextFocusedView;
     if (nextFocusedView != nil && [nextFocusedView isDescendantOfView:self.rootView]) {
-        [self applyFocusOnThemedUIButton:nextFocusedView gainFocus:true];
+        [self applyFocusOnSwrveButton:nextFocusedView gainFocus:true];
     }
 }
 
@@ -70,27 +71,36 @@
                      }];
 }
 
-- (void)applyFocusOnThemedUIButton:(UIView *)view gainFocus:(bool)gainFocus {
+- (void)applyFocusOnSwrveButton:(UIView *)view gainFocus:(bool)gainFocus {
 
-    if (![view isKindOfClass:[SwrveThemedUIButton class]]) {
+    if ([view isKindOfClass:[SwrveInAppStoryUIButton class]]) {
+        SwrveInAppStoryUIButton *inAppStoryUIButton = (SwrveInAppStoryUIButton *) view;
+        if (gainFocus) {
+            inAppStoryUIButton.tintColor = [SwrveUtils processHexColorValue:inAppStoryUIButton.storyDismissButton.focusedColor];
+        } else {
+            inAppStoryUIButton.tintColor = [SwrveUtils processHexColorValue:inAppStoryUIButton.storyDismissButton.color];
+        }
         return;
     }
-    SwrveThemedUIButton *themedUIButton = (SwrveThemedUIButton *) view;
-    if (gainFocus) {
-        if (themedUIButton.theme.focusedState.bgColor) {
-            themedUIButton.backgroundColor = [SwrveUtils processHexColorValue:themedUIButton.theme.focusedState.bgColor];
-        }
-        if (themedUIButton.theme.focusedState.borderColor) {
-            UIColor *borderColor = [SwrveUtils processHexColorValue:themedUIButton.theme.focusedState.borderColor];
-            themedUIButton.layer.borderColor = [borderColor CGColor];
-        }
-    } else {
-        if (themedUIButton.theme.bgColor) {
-            themedUIButton.backgroundColor = [SwrveUtils processHexColorValue:themedUIButton.theme.bgColor];
-        }
-        if (themedUIButton.theme.borderColor) {
-            UIColor *borderColor = [SwrveUtils processHexColorValue:themedUIButton.theme.borderColor];
-            themedUIButton.layer.borderColor = [borderColor CGColor];
+
+    if ([view isKindOfClass:[SwrveThemedUIButton class]]) {
+        SwrveThemedUIButton *themedUIButton = (SwrveThemedUIButton *) view;
+        if (gainFocus) {
+            if (themedUIButton.theme.focusedState.bgColor) {
+                themedUIButton.backgroundColor = [SwrveUtils processHexColorValue:themedUIButton.theme.focusedState.bgColor];
+            }
+            if (themedUIButton.theme.focusedState.borderColor) {
+                UIColor *borderColor = [SwrveUtils processHexColorValue:themedUIButton.theme.focusedState.borderColor];
+                themedUIButton.layer.borderColor = [borderColor CGColor];
+            }
+        } else {
+            if (themedUIButton.theme.bgColor) {
+                themedUIButton.backgroundColor = [SwrveUtils processHexColorValue:themedUIButton.theme.bgColor];
+            }
+            if (themedUIButton.theme.borderColor) {
+                UIColor *borderColor = [SwrveUtils processHexColorValue:themedUIButton.theme.borderColor];
+                themedUIButton.layer.borderColor = [borderColor CGColor];
+            }
         }
     }
 }

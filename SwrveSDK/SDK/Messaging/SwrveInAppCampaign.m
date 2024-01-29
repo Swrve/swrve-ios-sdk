@@ -18,7 +18,7 @@
 #import "SwrveCampaign+Private.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveMessagePage.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 @implementation SwrveInAppCampaign
 
@@ -108,7 +108,7 @@
         NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:theme.bgImage andDigest:theme.bgImage andIsExternal:NO andIsImage:YES];
         [assetsQueue addObject:assetQueueItem];
     }
-    if (theme.fontFile && ![SwrveTextUtils isSystemFont:theme.fontFile]) {
+    if (theme.fontFile && ![SwrveSDKUtils isSystemFont:theme.fontFile]) {
         NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:theme.fontFile andDigest:theme.fontDigest andIsExternal:NO andIsImage:NO];
         [assetsQueue addObject:assetQueueItem];
     }

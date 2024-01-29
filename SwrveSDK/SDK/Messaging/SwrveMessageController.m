@@ -1419,10 +1419,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             id <SwrveInAppMessageDelegate> delegate = self.analyticsSDK.config.inAppMessageConfig.inAppMessageDelegate;
             if (delegate != nil && [delegate respondsToSelector:@selector(onAction:messageDetails:selectedButton:)]) {
                 SwrveMessageDetails *md = [self messageDetails:message];
-                SwrveMessageButtonDetails *selectedButton = [[SwrveMessageButtonDetails alloc]initWith:self.inAppButtonPressedName
-                                                                                            buttonText:self.inAppButtonPressedText
-                                                                                            actionType:kSwrveActionDismiss
-                                                                                          actionString:self.inAppMessageAction];
+                SwrveMessageButtonDetails *selectedButton = nil;
+                if (self.inAppButtonPressedName) { // In App Story with last page progression of dismiss won't have a selected button, therefore no pressed name
+                    selectedButton = [[SwrveMessageButtonDetails alloc] initWith:self.inAppButtonPressedName
+                                                                      buttonText:self.inAppButtonPressedText
+                                                                      actionType:kSwrveActionDismiss
+                                                                    actionString:self.inAppMessageAction];
+                }
                 [delegate onAction:SwrveActionDismiss messageDetails:md selectedButton:selectedButton];
             }
             else if (self.dismissButtonCallback != nil) {
@@ -1449,7 +1452,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                                                                                           actionString:self.inAppMessageAction];
                 [delegate onAction:SwrveActionCustom messageDetails:md selectedButton:selectedButton];
                 
-                // if this new callback is implemented we still want to process deeplinks internally. Customer can overide this by implementing the SwrveDeeplinkDelegate. Note: This is different behaviour to the deprecated customButtonCallback below.
+                // if this callback is implemented we still process deeplinks internally. Customer can override this by implementing SwrveDeeplinkDelegate. Note: This is different behaviour to the deprecated customButtonCallback below.
                 nonProcessedAction = action;
             }
             else if (self.customButtonCallback != nil) {

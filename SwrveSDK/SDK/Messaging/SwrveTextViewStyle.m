@@ -1,5 +1,5 @@
 #import "SwrveTextViewStyle.h"
-#import "SwrveTextUtils.h"
+#import "SwrveSDKUtils.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
 #import <SwrveSDKCommon/SwrveUtils.h>
@@ -48,7 +48,7 @@
         self.bottomPadding = [self padding:@"bottom" fromStyle:style];
         self.leftPadding = [self padding:@"left" fromStyle:style];
 
-        self.font = [SwrveTextUtils fontFromFile:self.font_file
+        self.font = [SwrveSDKUtils fontFromFile:self.font_file
                                   postscriptName:self.font_postscript_name
                                             size:self.fontsize
                                            style:self.font_native_style

@@ -4,12 +4,18 @@
 #import "SwrveMessageController.h"
 #import "SwrveButton.h"
 #import "SwrveMessageFocus.h"
+#import "SwrveInAppStoryView.h"
+#import "SwrveSDKUtils.h"
+#import "SwrveInAppStoryUIButton.h"
+
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
 #import <SwrveSDKCommon/SwrveLogger.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "SwrveCommon.h"
 #import "SwrveLogger.h"
+#import "SwrveUtils.h"
 #endif
 
 @interface SwrveMessageController ()
@@ -25,13 +31,15 @@
 
 @end
 
-@interface SwrveMessageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface SwrveMessageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, SwrveInAppStorySegmentDelegate>
 
 @property(nonatomic) CGSize iamWindowSize; // the current window size which is dependent on orientation
 @property(nonatomic) BOOL wasShownToUserNotified;
 @property(nonatomic, retain) NSMutableArray *pageViewEventsSent;
 @property(nonatomic, retain) NSMutableArray *navigationEventsSent;
 @property(nonatomic, retain) SwrveMessageFocus *messageFocus;
+@property(nonatomic) SwrveInAppStoryView *storyView;
+@property(nonatomic) SwrveInAppStoryUIButton *storyDismissButton;
 @end
 
 @implementation SwrveMessageViewController
@@ -46,6 +54,8 @@
 @synthesize pageViewEventsSent;
 @synthesize navigationEventsSent;
 @synthesize messageFocus;
+@synthesize storyView;
+@synthesize storyDismissButton;
 
 - (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
                         message:(SwrveMessage *)swrveMessage
@@ -77,8 +87,9 @@
 
     self.iamWindowSize = [self windowSize];
     [self updateCurrentMessageFormat];
-    NSNumber *firstPageId = [NSNumber numberWithLong:self.currentMessageFormat.firstPageId];
+    NSNumber *firstPageId = self.currentMessageFormat.pagesOrdered[0];
     [self showPage:firstPageId];
+    [self startStoryViewSegment:firstPageId];
 
     self.view.frame = self.view.bounds;
     self.messageFocus = [[SwrveMessageFocus alloc] initWithView:self.view];
@@ -98,8 +109,8 @@
 
     self.iamWindowSize = size;
     [self updateCurrentMessageFormat];
-
     [self showPage:self.currentPageId];
+    [self redrawStoryView];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(SwrveMessagePageViewController *)viewController {
@@ -196,21 +207,25 @@
         NSNumber *pageIdToShow = @([action intValue]);
         [self queuePageNavEvent:self.currentPageId buttonId:button.buttonId pageIdToShow:pageIdToShow buttonName:button.buttonName];
         [self showPage:pageIdToShow];
-        [self queueDataCatpureEventsForButton:swrveButton personalization:self.personalization];
+        [self startStoryViewSegment:pageIdToShow];
+        [self queueDataCaptureEventsForButton:swrveButton personalization:self.personalization];
     } else {
         if (swrveButton.actionType == kSwrveActionDismiss) {
             [self queueDismissEvent:self.currentPageId buttonId:button.buttonId buttonName:button.buttonName];
+        }
+        if (self.storyView != nil) {
+            [self.storyView stop];
         }
         // Save button type and action for processing later in the messageController
         messageControllerStrong.inAppMessageActionType = swrveButton.actionType;
         messageControllerStrong.inAppMessageAction = action;
         [self beginHideMessageAnimationWithCompletionHandler:^{
-            [self queueDataCatpureEventsForButton:swrveButton personalization:self.personalization];
+            [self queueDataCaptureEventsForButton:swrveButton personalization:self.personalization];
         }];
     }
 }
 
-- (void)queueDataCatpureEventsForButton:(SwrveButton *)swrveButton personalization:(NSDictionary *)personalizationDic {
+- (void)queueDataCaptureEventsForButton:(SwrveButton *)swrveButton personalization:(NSDictionary *)personalizationDic {
     if (swrveButton.events != nil) {
         [self queueButtonEvents:swrveButton.events personalization:self.personalization];
     }
@@ -230,7 +245,9 @@
                      completion:^(BOOL finished) {
                          [SwrveLogger debug:@"Message hide animation completed:%@", @(finished)];
                          [self.messageController dismissMessageWindow];
-                         completionHandler();
+                         if (completionHandler) {
+                             completionHandler();
+                         }
                      }];
 }
 
@@ -256,8 +273,16 @@
 
 + (void)showTvOSController:(SwrveMessagePageViewController *)messagePageViewController inParentController:(UIViewController *)parentViewController {
     // remove subviews
+    UIView *storyView;
+    UIView *storyButton;
     for (UIView *view in parentViewController.view.subviews) {
-        [view removeFromSuperview];
+        if ([view isKindOfClass:[SwrveInAppStoryView class]]) {
+            storyView = view;
+        } else if ([view isKindOfClass:[SwrveInAppStoryUIButton class]]) {
+            storyButton = view;
+        } else {
+            [view removeFromSuperview];
+        }
     }
     // remove child controller
     for (UIViewController *controller in parentViewController.childViewControllers) {
@@ -266,7 +291,231 @@
 
     [parentViewController addChildViewController:messagePageViewController];
     [parentViewController.view addSubview:messagePageViewController.view];
+    [parentViewController.view addSubview:storyView];
+    [parentViewController.view addSubview:storyButton];
     [messagePageViewController didMoveToParentViewController:parentViewController];
+}
+
+- (void)redrawStoryView {
+    if (!self.storyView) {
+        return;
+    }
+    [self.storyView stop];
+    [self.storyView removeFromSuperview];
+    self.storyView = nil;
+    if (self.storyDismissButton) {
+        [self.storyDismissButton removeFromSuperview];
+        self.storyDismissButton = nil;
+    }
+    [self startStoryViewSegment:self.currentPageId];
+}
+
+- (void)startStoryViewSegment:(NSNumber *)pageIdToShow {
+    if (self.currentMessageFormat.storySettings == nil) {
+        return; // No story settings so do nothing
+    }
+    if (self.storyView == nil) {
+        [self initStoryView];
+    }
+    int segmentIndex = (int) [self.currentMessageFormat.pagesOrdered indexOfObject:pageIdToShow];
+    [self.storyView startSegmentAtIndex:segmentIndex];
+}
+
+- (void)initStoryView {
+    NSUInteger numberOfPages = [self.currentMessageFormat pages].count;
+    CGFloat renderScale = [SwrveSDKUtils renderScaleFor:self.currentMessageFormat withParentSize:self.iamWindowSize];
+    CGRect storyViewFrame = [self storyViewFrame:renderScale];
+    NSArray *pageDurations = [self pageDurations];
+    self.storyView = [[SwrveInAppStoryView alloc] initWithFrame:storyViewFrame
+                                                       delegate:self
+                                                  storySettings:self.currentMessageFormat.storySettings
+                                               numberOfSegments:(int) numberOfPages
+                                                    renderScale:renderScale
+                                                  pageDurations:pageDurations];
+    [self.view addSubview:self.storyView];
+    [self storyViewPosition:renderScale];
+    [self addDismissButton:renderScale];
+
+#if TARGET_OS_IOS
+    if (self.currentMessageFormat.storySettings.gesturesEnabled) {
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        tapGestureRecognizer.numberOfTapsRequired = 1;
+        [self.view addGestureRecognizer:tapGestureRecognizer];
+    }
+#endif
+}
+
+- (CGRect)storyViewFrame:(CGFloat)renderScale {
+    SwrveStorySettings *storySettings = self.currentMessageFormat.storySettings;
+    CGFloat leftPadding = storySettings.leftPadding.floatValue * renderScale;
+    CGFloat rightPadding = storySettings.rightPadding.floatValue * renderScale;
+    CGFloat width = self.iamWindowSize.width - leftPadding - rightPadding;
+    CGFloat height = storySettings.barHeight.floatValue * renderScale;
+    return CGRectMake(0, 0, width, height);
+}
+
+- (NSArray *)pageDurations {
+    NSMutableArray *pageDurations = [NSMutableArray new];
+    for (NSNumber *pageId in self.currentMessageFormat.pagesOrdered) {
+        SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
+        if(page.pageDuration) {
+            [pageDurations addObject:page.pageDuration];
+        }
+    }
+    return [NSArray arrayWithArray:pageDurations];
+}
+
+- (void)storyViewPosition:(CGFloat)renderScale {
+    SwrveStorySettings *storySettings = self.currentMessageFormat.storySettings;
+    CGFloat topPadding = storySettings.topPadding.floatValue * renderScale;
+    CGFloat leftPadding = storySettings.leftPadding.floatValue * renderScale;
+    CGFloat rightPadding = storySettings.rightPadding.floatValue * renderScale;
+    self.storyView.translatesAutoresizingMaskIntoConstraints = NO;
+    if (@available(iOS 11.0, tvOS 11.0, *)) {
+        [NSLayoutConstraint activateConstraints:@[
+                [self.storyView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:topPadding],
+                [self.storyView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:leftPadding],
+                [self.storyView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-rightPadding]
+        ]];
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [NSLayoutConstraint activateConstraints:@[
+                [self.storyView.topAnchor constraintEqualToAnchor:self.topLayoutGuide.bottomAnchor constant:topPadding],
+                [self.storyView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor constant:leftPadding],
+                [self.storyView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor constant:-rightPadding]
+        ]];
+#pragma clang diagnostic pop
+    }
+}
+
+- (void)addDismissButton:(CGFloat)renderScale {
+    SwrveStorySettings *storySettings = self.currentMessageFormat.storySettings;
+    if (storySettings.dismissButton == nil) {
+        return;
+    }
+
+    UIImage *dismissImage = nil;
+    UIImage *dismissImageHighlighted = nil;
+    SwrveMessageController *messageControllerStrong = self.messageController;
+    if (messageControllerStrong) {
+        dismissImage = messageControllerStrong.inAppMessageConfig.storyDismissButton;
+        dismissImageHighlighted = messageControllerStrong.inAppMessageConfig.storyDismissButtonHighlighted;
+    }
+    if (dismissImage == nil) {
+        dismissImage = [SwrveSDKUtils iamStoryDismissImage]; // use custom image if available and fallback to default
+    }
+    if (dismissImage == nil) {
+        return;
+    }
+
+    self.storyDismissButton = [[SwrveInAppStoryUIButton alloc] initWithButton:storySettings.dismissButton
+                                                                 dismissImage:dismissImage
+                                                      dismissImageHighlighted:dismissImageHighlighted];
+    [self.view addSubview:self.storyDismissButton];
+
+    CGFloat topPadding = storySettings.topPadding.floatValue * renderScale;
+    CGFloat height = storySettings.barHeight.floatValue * renderScale;
+    CGFloat marginTop = storySettings.dismissButton.marginTop.floatValue * renderScale;
+    CGFloat topAnchorConstant = topPadding + height + marginTop;
+    CGFloat size = storySettings.dismissButton.size.floatValue * renderScale;
+    if (@available(iOS 11.0, tvOS 11.0, *)) {
+        [NSLayoutConstraint activateConstraints:@[
+                [self.storyDismissButton.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:topAnchorConstant],
+                [self.storyDismissButton.rightAnchor constraintEqualToAnchor:self.storyView.rightAnchor],
+                [self.storyDismissButton.widthAnchor constraintEqualToConstant:size],
+                [self.storyDismissButton.heightAnchor constraintEqualToConstant:size]
+        ]];
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [NSLayoutConstraint activateConstraints:@[
+                [self.storyDismissButton.topAnchor constraintEqualToAnchor:self.topLayoutGuide.bottomAnchor constant:topAnchorConstant],
+                [self.storyDismissButton.rightAnchor constraintEqualToAnchor:self.storyView.rightAnchor],
+                [self.storyDismissButton.widthAnchor constraintEqualToConstant:size],
+                [self.storyDismissButton.heightAnchor constraintEqualToConstant:size]
+        ]];
+#pragma clang diagnostic pop
+    }
+
+    SEL buttonPressedSelector = NSSelectorFromString(@"onDismissButtonPressed:");
+#if TARGET_OS_IOS /** TouchUpInside is iOS only **/
+    [self.storyDismissButton  addTarget:self action:buttonPressedSelector forControlEvents:UIControlEventTouchUpInside];
+#elif TARGET_OS_TV
+    // There are no touch actions in tvOS, so Primary Action Triggered is the event to run it
+    [self.storyDismissButton  addTarget:self action:buttonPressedSelector forControlEvents:UIControlEventPrimaryActionTriggered];
+#endif
+}
+
+- (IBAction)onDismissButtonPressed:(id)sender {
+    NSNumber *buttonId = self.currentMessageFormat.storySettings.dismissButton.buttonId;
+    NSString *buttonName = self.currentMessageFormat.storySettings.dismissButton.name;
+    [self queueDismissEvent:self.currentPageId buttonId:buttonId buttonName:buttonName];
+    SwrveMessageController *messageControllerStrong = self.messageController;
+    if (messageControllerStrong) {
+        // Save info for processing later in the messageController
+        messageControllerStrong.inAppMessageActionType = kSwrveActionDismiss;
+        messageControllerStrong.inAppMessageAction = @"";
+        messageControllerStrong.inAppButtonPressedName = buttonName;
+        messageControllerStrong.inAppButtonPressedText = @"";
+        [self beginHideMessageAnimationWithCompletionHandler:nil];
+    }
+    
+    if (self.storyView != nil) {
+        [self.storyView stop];
+    }
+}
+
+// Not used in tvOS
+- (void)handleTap:(UITapGestureRecognizer *)tap {
+    CGPoint tapLocation = [tap locationInView:self.view];
+    CGFloat halfScreenWidth = CGRectGetWidth(self.view.bounds) / 2.0;
+    NSUInteger indexToShow;
+    if (tapLocation.x < halfScreenWidth) {
+        indexToShow = ((NSUInteger) self.storyView.currentIndex) - 1;
+    } else {
+        indexToShow = ((NSUInteger) self.storyView.currentIndex) + 1;
+    }
+    if (indexToShow >= 0 && indexToShow < self.currentMessageFormat.pagesOrdered.count) {
+        NSNumber *pageIdToShow = self.currentMessageFormat.pagesOrdered[indexToShow];
+        [self showPage:pageIdToShow];
+        [self startStoryViewSegment:pageIdToShow];
+    }
+}
+
+// SwrveInAppStorySegmentDelegate
+- (void)segmentFinishedAtIndex:(NSUInteger)segmentIndex {
+    if (segmentIndex < self.currentMessageFormat.pagesOrdered.count - 1) {
+        NSNumber *pageIdToShow = self.currentMessageFormat.pagesOrdered[segmentIndex + 1];
+        [self showPage:pageIdToShow];
+    } else {
+        [self handleLastPageProgression:self.currentMessageFormat.storySettings.lastPageProgression];
+    }
+}
+
+- (void)handleLastPageProgression:(LastPageProgression)lastPageProgression {
+    if (lastPageProgression == kSwrveStoryLastPageProgressionDismiss) {
+        [SwrveLogger debug:@"Last page progression is dismiss, so dismissing", nil];
+
+        NSNumber *buttonId = self.currentMessageFormat.storySettings.lastPageDismissId;
+        NSString *buttonName = self.currentMessageFormat.storySettings.lastPageDismissName;
+        [self queueDismissEvent:self.currentPageId buttonId:buttonId buttonName:buttonName];
+
+        SwrveMessageController *messageControllerStrong = self.messageController;
+        if (messageControllerStrong) {
+            // Save info for processing later in the messageController, but without inAppButtonPressedName/inAppButtonPressedText
+            messageControllerStrong.inAppMessageActionType = kSwrveActionDismiss;
+            messageControllerStrong.inAppMessageAction = @"";
+            [self beginHideMessageAnimationWithCompletionHandler:nil];
+        }
+    } else if (lastPageProgression == kSwrveStoryLastPageProgressionLoop) {
+        [SwrveLogger debug:@"Last page progression is loop, so restarting the story", nil];
+        NSNumber *firstPageId = self.currentMessageFormat.pagesOrdered[0];
+        [self showPage:firstPageId];
+        [self.storyView startSegmentAtIndex:0];
+    } else if (lastPageProgression == kSwrveStoryLastPageProgressionStop) {
+        [SwrveLogger debug:@"Last page progression is stop, so remain on last page", nil];
+    }
 }
 
 - (void)setControllerBackgroundColor {
@@ -373,7 +622,7 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator __IOS_AVAILABLE(9.0) __TVOS_AVAILABLE(9.0) {
 
-    [self.messageFocus applyFocusOnThemedUIButton:context];
+    [self.messageFocus applyFocusOnSwrveButton:context];
 
     id <SwrveInAppMessageFocusDelegate> delegate = self.messageController.inAppMessageConfig.inAppMessageFocusDelegate;
     if (delegate != nil && [delegate respondsToSelector:@selector(didUpdateFocusInContext:withAnimationCoordinator:parentView:)]) {

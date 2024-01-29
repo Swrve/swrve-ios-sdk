@@ -1,8 +1,9 @@
 #import "SwrveCalibration.h"
+#import "SwrveMessageFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SwrveTextUtils : NSObject
+@interface SwrveSDKUtils : NSObject
 
 + (CGFloat)scaleFont:(UIFont *)font
          calibration:(SwrveCalibration *)calibration
@@ -22,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
             withFallback:(UIFont *)fallbackUIFont;
 
 + (BOOL)isSystemFont:(NSString *)fontFile;
+
++ (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent;
+
++ (UIImage *)iamStoryDismissImage;
 
 @end
 

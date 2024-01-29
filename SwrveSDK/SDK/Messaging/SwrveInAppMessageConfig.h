@@ -79,4 +79,10 @@ typedef NSDictionary *(^SwrveMessagePersonalizationCallback)(NSDictionary *event
 @property (nonatomic, weak) id <SwrveInAppMessageFocusDelegate> inAppMessageFocusDelegate;
 #endif
 
+/*! Custom dismiss button image to use in in-app story campaigns */
+@property (nonatomic, retain) UIImage *storyDismissButton;
+
+/*! Custom dismiss button image for highlighted state to use in in-app story campaigns */
+@property (nonatomic, retain) UIImage *storyDismissButtonHighlighted;
+
 @end

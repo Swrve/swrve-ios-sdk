@@ -6,13 +6,14 @@
 
 @synthesize size;
 @synthesize pages;
-@synthesize firstPageId;
+@synthesize pagesOrdered;
 @synthesize name;
 @synthesize scale;
 @synthesize language;
 @synthesize orientation;
 @synthesize backgroundColor;
 @synthesize calibration;
+@synthesize storySettings;
 
 static CGFloat extractHex(NSString *color, NSUInteger index) {
     NSString *componentString = [color substringWithRange:NSMakeRange(index, 2)];
@@ -71,24 +72,30 @@ static CGFloat extractHex(NSString *color, NSUInteger index) {
     if ([json objectForKey:@"pages"]) {
         NSArray *pagesArray = [json objectForKey:@"pages"];
         NSMutableDictionary *loadedPages = [NSMutableDictionary new];
+        NSMutableArray *loadedPagesOrdered = [NSMutableArray new];
         for (NSDictionary *pageData in pagesArray) {
             SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:pageData campaignId:campaignId messageId:messageId appStoreURLs:appStoreURLs];
             [loadedPages setObject:page forKey:[NSNumber numberWithLong:page.pageId]];
-            if(firstPageId == 0) {
-                self.firstPageId = page.pageId;
-            }
+            [loadedPagesOrdered addObject:[NSNumber numberWithLong:page.pageId]];
         }
         self.pages = [NSDictionary dictionaryWithDictionary:loadedPages];
+        self.pagesOrdered = [NSArray arrayWithArray:loadedPagesOrdered];
     } else {
         // for backward compatibility, convert old IAM's into a single page Dictionary
         NSMutableDictionary *loadedPages = [NSMutableDictionary new];
+        NSMutableArray *loadedPagesOrdered = [NSMutableArray new];
         SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:json campaignId:campaignId messageId:messageId appStoreURLs:appStoreURLs];
-        self.firstPageId = page.pageId;
-        [loadedPages setObject:page forKey:[NSNumber numberWithLong:firstPageId]];
+        [loadedPages setObject:page forKey:[NSNumber numberWithLong:page.pageId]];
+        [loadedPagesOrdered addObject:[NSNumber numberWithLong:page.pageId]];
         self.pages = [NSDictionary dictionaryWithDictionary:loadedPages];
+        self.pagesOrdered = [NSArray arrayWithArray:loadedPagesOrdered];
     }
 
     self.calibration = [[SwrveCalibration alloc] initWithDictionary:[json objectForKey:@"calibration"]];
+
+    if ([json objectForKey:@"story_settings"]) {
+        self.storySettings = [[SwrveStorySettings alloc] initWithDictionary:[json objectForKey:@"story_settings"]];
+    }
 
     return self;
 }
