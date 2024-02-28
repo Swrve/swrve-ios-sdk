@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SwrveSDKCommon"
-  s.version          = "8.11.0"
+  s.version          = "8.12.0"
   s.summary          = "iOS Common library for Swrve."
   s.homepage         = "http://www.swrve.com"
   s.license          = { "type" => "Apache License, Version 2.0", "file" => s.name.to_s + "/LICENSE" }
@@ -14,6 +14,8 @@ Pod::Spec.new do |s|
 
   s.source_files = s.name.to_s + '/Common/**/*.{m,h}'
   s.public_header_files = s.name.to_s + '/Common/**/*.h'
+  s.resource_bundles = { 'SwrveSDKCommon' => ['SwrveSDKCommon/Common/Resources/**/*.*'] }
+
 
   s.compiler_flags = '-DSWRVE_SDK_COMMON'
 end

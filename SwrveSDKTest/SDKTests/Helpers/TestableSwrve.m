@@ -6,9 +6,6 @@
 @synthesize customNowDate;
 @synthesize customTimeSeconds;
 @synthesize resourceUpdaterEnabled;
-#if TARGET_OS_IOS /** exclude tvOS **/
-@synthesize carrier;
-#endif //TARGET_OS_IOS
 
 
 + (TestableSwrve*) sharedInstanceWithAppID:(int)swrveAppID apiKey:(NSString*)swrveAPIKey

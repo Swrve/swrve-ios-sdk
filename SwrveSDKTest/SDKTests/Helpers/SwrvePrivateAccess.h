@@ -1,9 +1,6 @@
 #ifndef EmptyProject_SwrvePrivateAccess_h
 #define EmptyProject_SwrvePrivateAccess_h
 
-#if TARGET_OS_IOS /* exclude tvOS */
-#import <CoreTelephony/CTCarrier.h>
-#endif //TARGET_OS_IOS
 
 #import "Swrve.h"
 #import "SwrveSDK.h"

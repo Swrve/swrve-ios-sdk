@@ -42,27 +42,6 @@
     return platform;
 }
 
-#if TARGET_OS_IOS /** exclude tvOS **/
-+ (CTCarrier*) carrierInfo {
-    // Obtain carrier info from the device
-    static CTTelephonyNetworkInfo *netinfo;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        netinfo = [CTTelephonyNetworkInfo new];
-    });
-    
-    if (@available(iOS 12.0, *)) {
-        return [[netinfo serviceSubscriberCellularProviders] allValues].firstObject;
-    } else {
-        // Fallback on earlier versions
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        return [netinfo subscriberCellularProvider];
-        #pragma clang diagnostic pop
-    }
-}
-#endif
-
 + (NSDictionary *)parseURLQueryParams:(NSString *)queryString API_AVAILABLE(ios(7.0)) {
     NSMutableDictionary *queryParams = [NSMutableDictionary new];
     NSArray *queryElements = [queryString componentsSeparatedByString:@"&"];

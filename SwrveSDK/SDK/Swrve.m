@@ -1332,6 +1332,11 @@ enum {
     [self maybeFlushToDisk];
     NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
     [json setValue:NullableNSString(eventName) forKey:@"name"];
+    
+    if (eventName != nil && [eventName isEqualToString:@"Swrve.live_activity_update"]) {
+        [json setValue:@"false" forKey: @"user_initiated"];
+    }
+    
     [json setValue:eventPayload forKey:@"payload"];
     return [self queueEvent:@"event" data:json triggerCallback:triggerCallback notifyMessageController:notifyMessageController];
 }
@@ -1740,14 +1745,12 @@ enum {
     SwrveDeviceProperties *swrveDeviceProperties = nil;
 
 #if TARGET_OS_IOS /** tvOS has no support for telephony or push **/
-    CTCarrier *carrierInfo = [SwrveUtils carrierInfo];
     swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
                                                      appInstallTimeSeconds:appInstallTimeSeconds
                                                        conversationVersion:CONVERSATION_VERSION
                                                                deviceToken:self.deviceToken
                                                           permissionStatus:permissionStatus
                                                               sdk_language:self.config.language
-                                                               carrierInfo:carrierInfo
                                                              swrveInitMode:[self swrveInitModeString]];
 
 #elif TARGET_OS_TV

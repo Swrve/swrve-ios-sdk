@@ -24,6 +24,7 @@ let package = Package(
             path: "SwrveSDKCommon",
             resources: [
                    .process("LICENSE"),
+                   .process("Common/Resources/PrivacyInfo.xcprivacy"),
                  ],
             publicHeadersPath: "include"),
         .target(

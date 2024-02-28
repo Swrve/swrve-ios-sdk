@@ -1,7 +1,3 @@
-#if TARGET_OS_IOS /** exclude tvOS **/
-#import <CoreTelephony/CTCarrier.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#endif //TARGET_OS_IOS
 
 #import "SwrveSDK.h"
 #import "Swrve+Private.h"
@@ -12,9 +8,6 @@
 @property (atomic) NSDate* customNowDate;
 @property (atomic) UInt64 customTimeSeconds;
 @property (atomic) BOOL resourceUpdaterEnabled;
-#if TARGET_OS_IOS /** exclude tvOS **/
-@property (atomic) CTCarrier* carrier;
-#endif //TARGET_OS_IOS
 
 /**
  * Method overrides

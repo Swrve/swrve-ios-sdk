@@ -113,7 +113,7 @@ NSString *appGroupIdentifier;
 #pragma mark - Swizzling Handlers
 
 - (BOOL)observeSwizzling NS_EXTENSION_UNAVAILABLE_IOS("") {
-
+#if !defined(SWRVE_NO_PUSH) //this is only relevant for unity
     if (!didSwizzle) {
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
         SEL didRegisterSelector = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -128,12 +128,12 @@ NSString *appGroupIdentifier;
         didRegisterForRemoteNotificationsWithDeviceTokenImpl = NULL;
         didFailToRegisterForRemoteNotificationsWithErrorImpl = NULL;
     }
-
+#endif //!SWRVE_NO_PUSH
     return didSwizzle;
 }
 
 - (void)deswizzlePushMethods NS_EXTENSION_UNAVAILABLE_IOS("") {
-
+#if !defined(SWRVE_NO_PUSH)//this is only relevant for unity
     if (didSwizzle) {
         Class appDelegateClass = [[SwrveCommon sharedUIApplication].delegate class];
         SEL didRegister = @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:);
@@ -146,12 +146,18 @@ NSString *appGroupIdentifier;
 
         didSwizzle = false;
     }
+#endif //!SWRVE_NO_PUSH
 }
 
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(7.0)) {
+#if !defined(SWRVE_NO_PUSH)//this is only relevant for unity
     return [self didReceiveRemoteNotification:userInfo withBackgroundCompletionHandler:completionHandler withLocalUserId:[SwrveLocalStorage swrveUserId]];
+#endif //!SWRVE_NO_PUSH
+    return false;
 }
 
+
+#if !defined(SWRVE_NO_PUSH)//this is only relevant for unity
 - (BOOL)didReceiveRemoteNotification:(NSDictionary *)userInfo withBackgroundCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler withLocalUserId:(NSString *) localUserId API_AVAILABLE(ios(7.0)) {
     if (_commonDelegate != NULL) {
         appGroupIdentifier = _commonDelegate.appGroupIdentifier;
@@ -172,6 +178,7 @@ NSString *appGroupIdentifier;
     }
     return NO;
 }
+#endif //!SWRVE_NO_PUSH
 
 - (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo
                             withLocalUserId:(NSString *)localUserId
@@ -461,6 +468,7 @@ NSString *appGroupIdentifier;
 
 #pragma mark - UIApplication Functions
 
+#if !defined(SWRVE_NO_PUSH)
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken NS_EXTENSION_UNAVAILABLE_IOS("") {
     if (_commonDelegate == NULL) {
         [SwrveLogger error:@"Error: Auto device token collection only works if you are using the Swrve instance singleton.", nil];
@@ -488,6 +496,6 @@ NSString *appGroupIdentifier;
         }
     }
 }
-
+#endif //!SWRVE_NO_PUSH
 #endif //!TARGET_OS_TV
 @end

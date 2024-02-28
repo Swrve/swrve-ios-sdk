@@ -14,24 +14,6 @@
 @property (nonatomic) id<ActivityAuthorizationInfoProtocol> liveActivityProvider;
 @end
 
-@interface DummyCTCarrier : CTCarrier
-
-@property (nonatomic) NSString *carrierName;
-@property (nonatomic) NSString *mobileCountryCode;
-@property (nonatomic) NSString *mobileNetworkCode;
-@property (nonatomic) NSString *isoCountryCode;
-
-@end
-
-@implementation DummyCTCarrier
-
-@synthesize carrierName;
-@synthesize mobileCountryCode;
-@synthesize mobileNetworkCode;
-@synthesize isoCountryCode;
-
-@end
-
 @interface SwrveTestDeviceProperties : XCTestCase
 
 @end
@@ -66,7 +48,6 @@
                                                                                       deviceToken:nil
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
-                                                                                      carrierInfo:nil
                                                                                     swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
@@ -112,7 +93,6 @@
                                                                                      deviceToken:nil
                                                                                 permissionStatus:nil
                                                                                     sdk_language:nil
-                                                                                     carrierInfo:nil
                                                                                    swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
@@ -131,7 +111,6 @@
                                                                                       deviceToken:nil
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
-                                                                                      carrierInfo:nil
                                                                                     swrveInitMode:nil];
     
     
@@ -154,7 +133,6 @@
                                                                                       deviceToken:nil
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
-                                                                                      carrierInfo:nil
                                                                                     swrveInitMode:nil];
     
     
@@ -171,7 +149,6 @@
                                                                                      deviceToken:@"TestDeviceToken"
                                                                                 permissionStatus:nil
                                                                                     sdk_language:nil
-                                                                                     carrierInfo:nil
                                                                                    swrveInitMode:nil];
     
     
@@ -200,7 +177,6 @@
                                                                                      deviceToken:nil
                                                                                 permissionStatus:permissionStatus
                                                                                     sdk_language:nil
-                                                                                     carrierInfo:nil
                                                                                    swrveInitMode:nil];
     
     NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
@@ -230,7 +206,6 @@
                                                                                      deviceToken:nil
                                                                                 permissionStatus:nil
                                                                                     sdk_language:config.language
-                                                                                     carrierInfo:nil
                                                                                    swrveInitMode:nil];
     
     
@@ -238,36 +213,6 @@
     
     XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 1);
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.language"] , config.language);
-}
-
-- (void)testDevicePropertiesNil_WithDummyCarrierInfo {
-    
-    DummyCTCarrier *dummyCTCarrier = [DummyCTCarrier new];
-    
-    dummyCTCarrier.carrierName = @"vodafone IE";
-    dummyCTCarrier.mobileCountryCode = @"272";
-    dummyCTCarrier.mobileNetworkCode = @"01";
-    dummyCTCarrier.isoCountryCode = @"ie";
-    
-    SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
-                                                                            appInstallTimeSeconds:0
-                                                                              conversationVersion:0
-                                                                                      deviceToken:nil
-                                                                                 permissionStatus:nil
-                                                                                     sdk_language:nil
-                                                                                      carrierInfo:dummyCTCarrier
-                                                                                    swrveInitMode:nil];
-    
-    
-    NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
-    
-    XCTAssertEqual([deviceInfo count], [self devicePropertyCount] + 3);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sim_operator.name"], @"vodafone IE");
-    
-    NSString *code = [deviceInfo valueForKey:@"swrve.sim_operator.code"];
-    
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sim_operator.code"], code);
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.sim_operator.iso_country_code"], @"ie");
 }
 
 - (void)testDevicePropertiesNil_WithInitMode {
@@ -281,7 +226,6 @@
                                                                                             deviceToken:nil
                                                                                        permissionStatus:nil
                                                                                            sdk_language:nil
-                                                                                            carrierInfo:nil
                                                                                           swrveInitMode:@"auto"];
     NSDictionary *deviceInfoManagedAutostartFalse = [swrveDevicePropertiesManagedAutostartFalse deviceProperties];
     XCTAssertEqual([deviceInfoManagedAutostartFalse count], [self devicePropertyCount] + 1);

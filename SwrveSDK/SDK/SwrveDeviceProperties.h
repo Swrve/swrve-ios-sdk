@@ -19,8 +19,6 @@
 @property (nonatomic) NSString *idfa;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
-@property (nonatomic) CTCarrier* carrierInfo;
-
 
 /**
  Initializes an `SwrveDeviceProperties` object for the iOS platform
@@ -31,7 +29,6 @@
  @param deviceToken         The device token
  @param permissionStatus    Permission status dictionary
  @param sdk_language        The SDK langauge string
- @param carrierInfo         The carrier info
  @param swrveInitMode       The SDK initMode string from SwrveConfig
  
  @return The initialized SwrveDeviceProperties
@@ -42,7 +39,6 @@
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
-                     carrierInfo:(CTCarrier * )carrierInfo
                    swrveInitMode:(NSString *)swrveInitMode;
 
 #elif TARGET_OS_TV
@@ -74,9 +70,6 @@
  swrve.device_dpi
  swrve.install_date
  swrve.conversation_version
- swrve.sim_operator.code
- swrve.sim_operator.name
- swrve.sim_operator.iso_country_code
  swrve.ios_min_version
  swrve.language
  swrve.device_height

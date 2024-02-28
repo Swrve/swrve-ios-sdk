@@ -25,9 +25,6 @@ static NSString* SWRVE_OS_VERSION =                     @"swrve.os_version";
 static NSString* SWRVE_DEVICE_DPI =                     @"swrve.device_dpi";
 static NSString* SWRVE_INSTALL_DATE =                   @"swrve.install_date";
 static NSString* SWRVE_CONVERSION_VERSION =             @"swrve.conversation_version";
-static NSString* SWRVE_SIM_OPERATOR_CODE =              @"swrve.sim_operator.code";
-static NSString* SWRVE_SIM_OPERATOR_NAME =              @"swrve.sim_operator.name";
-static NSString* SWRVE_SIM_OPERATOR_ISO_COUNTRY_CODE =  @"swrve.sim_operator.iso_country_code";
 static NSString* SWRVE_IOS_MIN_VERSION =                @"swrve.ios_min_version";
 static NSString* SWRVE_LANGUAGE =                       @"swrve.language";
 static NSString* SWRVE_DEVICE_HEIGHT =                  @"swrve.device_height";
@@ -73,7 +70,6 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
 #if TARGET_OS_IOS /** exclude tvOS **/
 @synthesize conversationVersion = _conversationVersion;
 @synthesize deviceToken = _deviceToken;
-@synthesize carrierInfo = _carrierInfo;
 
 #if SWRVE_MODULE
 @synthesize liveActivityProvider;
@@ -87,7 +83,6 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
-                     carrierInfo:(CTCarrier * )carrierInfo
                         swrveInitMode:(NSString *)initMode {
     
     if ((self = [super init])) {
@@ -98,7 +93,6 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
         self.deviceToken = deviceToken;
         self.permissionStatus = permissionStatus;
         self.sdk_language = sdk_language;
-        self.carrierInfo = carrierInfo;
         self.swrveInitMode = initMode;
 #if SWRVE_MODULE
         self.liveActivityProvider = [[SwrveLiveActivity alloc] init];
@@ -196,19 +190,6 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
     }
 #endif
     [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
-    
-    // Carrier info
-    if (self.carrierInfo != nil) {
-        NSString* mobileCountryCode = [self.carrierInfo mobileCountryCode];
-        NSString* mobileNetworkCode = [self.carrierInfo mobileNetworkCode];
-        if (mobileCountryCode != nil && mobileNetworkCode != nil) {
-            NSMutableString* carrierCode = [[NSMutableString alloc] initWithString:mobileCountryCode];
-            [carrierCode appendString:mobileNetworkCode];
-            [deviceProperties setValue:carrierCode forKey:SWRVE_SIM_OPERATOR_CODE];
-        }
-        [deviceProperties setValue:[self.carrierInfo carrierName]     forKey:SWRVE_SIM_OPERATOR_NAME];
-        [deviceProperties setValue:[self.carrierInfo isoCountryCode]  forKey:SWRVE_SIM_OPERATOR_ISO_COUNTRY_CODE];
-    }
     
     // Push properties
     if (self.deviceToken) {

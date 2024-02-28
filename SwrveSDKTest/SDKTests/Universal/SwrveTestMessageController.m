@@ -27,6 +27,9 @@
 
 #endif //TARGET_OS_IOS
 
+#define XCTAssertEqualWithTolerance(actual, expected, tolerance) \
+XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@ with tolerance %f", @((actual)), @((expected)), (tolerance))
+
 @interface TestDeeplinkDelegate2 :NSObject<SwrveDeeplinkDelegate>
 @end
 
@@ -4807,16 +4810,27 @@
     [controller showMessageCenterCampaign:campaign];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForInterval:1];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
-    [self waitForInterval:2];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
-    [self waitForInterval:4];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 2);
-    [self waitForInterval:6];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 3);
-    [self waitForInterval:8];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
+
+    // time progression to page 2
+    NSDate *start = [NSDate date];
+    [self waitForStoryProgression:messageViewController toPageId:2];
+    NSDate *end = [NSDate date];
+    NSTimeInterval timeBetween1And2 = [end timeIntervalSinceDate:start];
+    XCTAssertEqualWithTolerance(timeBetween1And2, 2.0, 1.0); // Duration should about 2 seconds, tolerance 1 second
+
+    // time progression to page 3
+    start = [NSDate date];
+    [self waitForStoryProgression:messageViewController toPageId:3];
+    end = [NSDate date];
+    NSTimeInterval timeBetween2And3 = [end timeIntervalSinceDate:start];
+    XCTAssertEqualWithTolerance(timeBetween2And3, 4.0, 1.0); // Duration should about 4 seconds, tolerance 1 second
+    
+    // time progression to page 4
+    start = [NSDate date];
+    [self waitForStoryProgression:messageViewController toPageId:4];
+    end = [NSDate date];
+    NSTimeInterval timeBetween3And4 = [end timeIntervalSinceDate:start];
+    XCTAssertEqualWithTolerance(timeBetween3And4, 6.0, 1.0); // // Duration should about 6 seconds, tolerance 1 second
 }
 
 - (void)testInAppStoryGesturesEnabled {
