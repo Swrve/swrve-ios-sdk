@@ -1,0 +1,494 @@
+{
+  "cdn_root": "http://www.somecdn.com/",
+  "campaigns": [
+    {
+      "id": 1,
+      "start_date": 1362873500000,
+      "end_date": 2145920400000,
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "message": {
+        "id": 1,
+        "name": "Use the iam_z_index field to control the z-index of elements in the message",
+        "rules": {
+          "orientations": "portrait"
+        },
+        "priority": 9999,
+        "template": {
+          "formats": [
+            {
+              "name": "[0.467005076142132]all - portrait",
+              "orientation": "portrait",
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 828
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1472
+                }
+              },
+              "calibration": {
+                "width": 2335,
+                "height": 234,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+              },
+              "pages": [
+                {
+                  "page_id": 817719,
+                  "page_name": "Page 1",
+                  "swipe_backward": -1,
+                  "swipe_forward": -1,
+                  "template_id": 49713,
+                  "images": [
+                    {
+                      "name": "multline text",
+                      "iam_z_index": 2,
+                      "x": {
+                        "type": "number",
+                        "value": 10
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -198
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 701
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 374
+                      },
+                      "multiline_text": {
+                        "value": "this is some multline text",
+                        "h_align": "LEFT",
+                        "font_size": 30,
+                        "scrollable": true,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 2,
+                          "right": 2,
+                          "bottom": 2,
+                          "left": 2
+                        },
+                        "font_color": "#ffc30000",
+                        "bg_color": "#ffcbcbcb",
+                        "text_style_preset": {
+                          "id": "16",
+                          "version": 16
+                        }
+                      }
+                    },
+                    {
+                      "name": "image",
+                      "iam_z_index": 3,
+                      "x": {
+                        "type": "number",
+                        "value": 15
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 191
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 140
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 93
+                      },
+                      "image_width": 239,
+                      "image_height": 239,
+                      "image_filename": "asset1.png",
+                      "image": {
+                        "type": "asset",
+                        "value": "asset1"
+                      },
+                      "color": {
+                        "type": "color",
+                        "value": "FFFFFF"
+                      },
+                      "media_format": "image"
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "button_id": 741659,
+                      "name": "Background image with action",
+                      "iam_z_index": 0,
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 1104
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 1793
+                      },
+                      "image_width": 1104,
+                      "image_height": 1793,
+                      "image_filename": "asset1.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset1"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "media_format": "image"
+                    },
+                    {
+                      "button_id": 739435,
+                      "name": "Themed button",
+                      "iam_z_index": 1,
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 589
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 420
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 93
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Dismiss themed button"
+                      },
+                      "theme": {
+                        "font_size": 10,
+                        "truncate": true,
+                        "font_native_style": "Bold",
+                        "font_file": "_system_font_",
+                        "padding": {
+                          "top": 0,
+                          "bottom": 0,
+                          "left": 0,
+                          "right": 0
+                        },
+                        "font_color": "#FFFFFFFF",
+                        "bg_color": "#FFFFC500",
+                        "corner_radius": 47,
+                        "button_style_preset": {
+                          "id": "15",
+                          "version": 2
+                        },
+                        "pressed_state": {
+                          "font_color": "#FFE64C15",
+                          "bg_color": "#FFC4C4C4"
+                        },
+                        "focused_state": {
+                          "font_color": "#FFFFFFFF",
+                          "bg_color": "#FF002787"
+                        },
+                        "h_align": "CENTER"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "scaled_by": 0.467005076142132,
+              "scaled_from": "all - portrait",
+              "scale": 1
+            }
+          ]
+        }
+      },
+      "subject": "Use the iam_z_index field to control the z-index of elements in the message",
+      "in_app_version": 13
+    },
+    {
+      "id": 2,
+      "start_date": 1362873500000,
+      "end_date": 2145920400000,
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "message": {
+        "id": 2,
+        "name": "No iam_z_index field",
+        "rules": {
+          "orientations": "portrait"
+        },
+        "priority": 9999,
+        "template": {
+          "formats": [
+            {
+              "name": "[0.467005076142132]all - portrait",
+              "orientation": "portrait",
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 828
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1472
+                }
+              },
+              "calibration": {
+                "width": 2335,
+                "height": 234,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+              },
+              "pages": [
+                {
+                  "page_id": 817719,
+                  "page_name": "Page 1",
+                  "swipe_backward": -1,
+                  "swipe_forward": -1,
+                  "template_id": 49713,
+                  "images": [
+                    {
+                      "name": "multline text",
+                      "x": {
+                        "type": "number",
+                        "value": 10
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": -198
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 701
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 374
+                      },
+                      "multiline_text": {
+                        "value": "this is some multline text",
+                        "h_align": "LEFT",
+                        "font_size": 30,
+                        "scrollable": true,
+                        "font_native_style": "Normal",
+                        "font_file": "_system_font_",
+                        "line_height": 1.2,
+                        "padding": {
+                          "top": 2,
+                          "right": 2,
+                          "bottom": 2,
+                          "left": 2
+                        },
+                        "font_color": "#ffc30000",
+                        "bg_color": "#ffcbcbcb",
+                        "text_style_preset": {
+                          "id": "16",
+                          "version": 16
+                        }
+                      }
+                    },
+                    {
+                      "name": "image",
+                      "x": {
+                        "type": "number",
+                        "value": 15
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 191
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 140
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 93
+                      },
+                      "image_width": 239,
+                      "image_height": 239,
+                      "image_filename": "asset1.png",
+                      "image": {
+                        "type": "asset",
+                        "value": "asset1"
+                      },
+                      "color": {
+                        "type": "color",
+                        "value": "FFFFFF"
+                      },
+                      "media_format": "image"
+                    }
+                  ],
+                  "buttons": [
+                    {
+                      "button_id": 741659,
+                      "name": "Background image with action",
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 1104
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 1793
+                      },
+                      "image_width": 1104,
+                      "image_height": 1793,
+                      "image_filename": "asset1.png",
+                      "image_up": {
+                        "type": "asset",
+                        "value": "asset1"
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "media_format": "image"
+                    },
+                    {
+                      "button_id": 739435,
+                      "name": "Themed button",
+                      "x": {
+                        "type": "number",
+                        "value": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "value": 589
+                      },
+                      "w": {
+                        "type": "number",
+                        "value": 420
+                      },
+                      "h": {
+                        "type": "number",
+                        "value": 93
+                      },
+                      "type": {
+                        "type": "text",
+                        "value": "DISMISS"
+                      },
+                      "action": {
+                        "type": "text",
+                        "value": ""
+                      },
+                      "game_id": {
+                        "type": "number",
+                        "value": ""
+                      },
+                      "text": {
+                        "type": "text",
+                        "value": "Dismiss themed button"
+                      },
+                      "theme": {
+                        "font_size": 10,
+                        "truncate": true,
+                        "font_native_style": "Bold",
+                        "font_file": "_system_font_",
+                        "padding": {
+                          "top": 0,
+                          "bottom": 0,
+                          "left": 0,
+                          "right": 0
+                        },
+                        "font_color": "#FFFFFFFF",
+                        "bg_color": "#FFFFC500",
+                        "corner_radius": 47,
+                        "button_style_preset": {
+                          "id": "15",
+                          "version": 2
+                        },
+                        "pressed_state": {
+                          "font_color": "#FFE64C15",
+                          "bg_color": "#FFC4C4C4"
+                        },
+                        "focused_state": {
+                          "font_color": "#FFFFFFFF",
+                          "bg_color": "#FF002787"
+                        },
+                        "h_align": "CENTER"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "scaled_by": 0.467005076142132,
+              "scaled_from": "all - portrait",
+              "scale": 1
+            }
+          ]
+        }
+      },
+      "subject": "No iam_z_index field",
+      "in_app_version": 13
+    }
+  ],
+  "game_data": {},
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 9999,
+    "delay_first_message": 0
+  },
+  "version": 2
+}

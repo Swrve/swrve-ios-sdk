@@ -65,7 +65,6 @@
 @property(nonatomic) CGFloat centerX;
 @property(nonatomic) CGFloat centerY;
 @property(nonatomic) CGFloat renderScale;
-
 @end
 
 @implementation SwrveMessageUIView
@@ -84,7 +83,7 @@ static CGPoint scaled(CGPoint point, float scale) {
 }
 
 - (id)initWithMessageFormat:(SwrveMessageFormat *)format
-                     pageId:(NSNumber *) pageIdToShow
+                     pageId:(NSNumber *)pageIdToShow
                  parentSize:(CGSize)sizeParent
                  controller:(UIViewController *)delegate
             personalization:(NSDictionary *)personalizationDict
@@ -104,21 +103,45 @@ static CGPoint scaled(CGPoint point, float scale) {
         [self setCenter:CGPointMake(self.centerX, self.centerY)];
         [self setAlpha:1];
 
-        // Add page images and buttons
-        SwrveMessagePage *page = [format.pages objectForKey:self.pageId];
-        [self addImages:page];
-        [self addButtons:page];
+        NSArray *pageElements = [self pageElements];
+        int buttonTag = 0;
+        for (id obj in pageElements) {
+            if ([obj isKindOfClass:[SwrveButton class]]) {
+                [self addButton:(SwrveButton *) obj buttonTag:buttonTag];
+                buttonTag++;
+            } else if ([obj isKindOfClass:[SwrveImage class]]) {
+                [self addImage:(SwrveImage *) obj];
+            }
+        }
     }
     return self;
 }
 
-- (void)addImages:(SwrveMessagePage *)page {
-    for (SwrveImage *image in page.images) {
-        if (image.multilineText) {
-            [self addTextView:image];
+- (NSArray *)pageElements {
+    // Combine page elements together (images and buttons)
+    // Images must be added before buttons to preserve the order of the elements for backwards compatibility
+    // If iam_z_index is set then it will be sorted by the iam_z_index
+    SwrveMessagePage *page = [self.messageFormat.pages objectForKey:self.pageId];
+    NSArray *pageElements = [page.images arrayByAddingObjectsFromArray:page.buttons];
+    pageElements = [pageElements sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger order1 = [obj1 iamZIndex];
+        NSInteger order2 = [obj2 iamZIndex];
+        if (order1 < order2) {
+            return NSOrderedAscending;
+        } else if (order1 > order2) {
+            return NSOrderedDescending;
         } else {
-            [self addImageView:image];
+            return NSOrderedSame;
         }
+    }];
+    return pageElements;
+}
+
+- (void)addImage:(SwrveImage *)image {
+    if (image.multilineText) {
+        [self addTextView:image];
+    } else {
+        [self addImageView:image];
     }
 }
 
@@ -190,6 +213,8 @@ static CGPoint scaled(CGPoint point, float scale) {
 
     [self addAccessibilityText:swrveImage.accessibilityText backupText:textStr withPersonalization:self.personalization toView:imageView];
 
+    imageView.userInteractionEnabled = YES; // this is required to not allow touches to be passed through to the view beneath it
+
     [self addSubview:imageView];
 }
 
@@ -250,68 +275,63 @@ static CGPoint scaled(CGPoint point, float scale) {
     return scale;
 }
 
-- (void)addButtons:(SwrveMessagePage *)page {
-    int buttonTag = 0;
-    for (SwrveButton *swrveButton in page.buttons) {
-
-        NSString *textStr = nil;
-        NSString *actionStr = nil;
-        NSString *urlAssetSha1 = nil;
-        if (swrveButton.text) {
-            NSError *error;
-            textStr = [TextTemplating templatedTextFromString:swrveButton.text withProperties:self.personalization andError:&error];
-            if (error != nil) {
-                [SwrveLogger error:@"%@", error];
-            }
+- (void)addButton:(SwrveButton *)swrveButton buttonTag:(int)buttonTag {
+    NSString *textStr = nil;
+    NSString *actionStr = nil;
+    NSString *urlAssetSha1 = nil;
+    if (swrveButton.text) {
+        NSError *error;
+        textStr = [TextTemplating templatedTextFromString:swrveButton.text withProperties:self.personalization andError:&error];
+        if (error != nil) {
+            [SwrveLogger error:@"%@", error];
         }
-
-        if (swrveButton.dynamicImageUrl) {
-            // set up QA Info in case it doesn't work
-            SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:(NSUInteger) swrveButton.campaignId
-                                                                                         variantID:(NSUInteger) swrveButton.messageId
-                                                                                       hasFallback:(swrveButton.image != nil)
-                                                                                     unresolvedUrl:swrveButton.dynamicImageUrl];
-            urlAssetSha1 = [self resolveUrlImageAssetToSha1:swrveButton.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
-        }
-
-        if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
-            NSError *error;
-            actionStr = [TextTemplating templatedTextFromString:swrveButton.actionString withProperties:self.personalization andError:&error];
-            if (error != nil) {
-                [SwrveLogger error:@"%@", error];
-            }
-        }
-
-        SwrveUIButton *buttonView = nil;
-        if (swrveButton.theme) {
-            CGRect frame = [self frameWithDynamicScale:1.0 width:swrveButton.size.width height:swrveButton.size.height];
-            buttonView = [[SwrveThemedUIButton alloc] initWithTheme:swrveButton.theme
-                                                               text:textStr
-                                                              frame:frame
-                                                        calabration:self.messageFormat.calibration
-                                                        renderScale:self.renderScale];
-
-            // set position
-            [self setPosition:buttonView center:swrveButton.center];
-        } else {
-            buttonView = [self createSwrveUIButtonWithButton:swrveButton andText:textStr andUrlAssetSha1:urlAssetSha1];
-        }
-
-        if (textStr) {
-            buttonView.displayString = textStr; // store the text that was displayed for testing
-        }
-        buttonView.buttonId = swrveButton.buttonId;
-        buttonView.buttonName = swrveButton.name;
-
-        [self addButtonTarget:buttonView];
-        [self addButtonAction:buttonView button:swrveButton action:actionStr];
-        [self addAccessibilityText:swrveButton.accessibilityText backupText:textStr withPersonalization:self.personalization toView:buttonView];
-
-        buttonView.accessibilityIdentifier = swrveButton.name;
-        buttonView.tag = buttonTag;
-        [self addSubview:buttonView];
-        buttonTag++;
     }
+
+    if (swrveButton.dynamicImageUrl) {
+        // set up QA Info in case it doesn't work
+        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc] initWithCampaign:(NSUInteger) swrveButton.campaignId
+                                                                                     variantID:(NSUInteger) swrveButton.messageId
+                                                                                   hasFallback:(swrveButton.image != nil)
+                                                                                 unresolvedUrl:swrveButton.dynamicImageUrl];
+        urlAssetSha1 = [self resolveUrlImageAssetToSha1:swrveButton.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
+    }
+
+    if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
+        NSError *error;
+        actionStr = [TextTemplating templatedTextFromString:swrveButton.actionString withProperties:self.personalization andError:&error];
+        if (error != nil) {
+            [SwrveLogger error:@"%@", error];
+        }
+    }
+
+    SwrveUIButton *buttonView = nil;
+    if (swrveButton.theme) {
+        CGRect frame = [self frameWithDynamicScale:1.0 width:swrveButton.size.width height:swrveButton.size.height];
+        buttonView = [[SwrveThemedUIButton alloc] initWithTheme:swrveButton.theme
+                                                           text:textStr
+                                                          frame:frame
+                                                    calabration:self.messageFormat.calibration
+                                                    renderScale:self.renderScale];
+
+        // set position
+        [self setPosition:buttonView center:swrveButton.center];
+    } else {
+        buttonView = [self createSwrveUIButtonWithButton:swrveButton andText:textStr andUrlAssetSha1:urlAssetSha1];
+    }
+
+    if (textStr) {
+        buttonView.displayString = textStr; // store the text that was displayed for testing
+    }
+    buttonView.buttonId = swrveButton.buttonId;
+    buttonView.buttonName = swrveButton.name;
+
+    [self addButtonTarget:buttonView];
+    [self addButtonAction:buttonView button:swrveButton action:actionStr];
+    [self addAccessibilityText:swrveButton.accessibilityText backupText:textStr withPersonalization:self.personalization toView:buttonView];
+
+    buttonView.accessibilityIdentifier = swrveButton.name;
+    buttonView.tag = buttonTag;
+    [self addSubview:buttonView];
 }
 
 - (CGRect)frameWithDynamicScale:(CGFloat)dynamicScale width:(CGFloat)width height:(CGFloat)height {

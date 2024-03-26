@@ -17,7 +17,7 @@
 @synthesize messageController;
 
 - (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
-                         format:(SwrveMessageFormat *) swrveMessageFormat
+                         format:(SwrveMessageFormat *)swrveMessageFormat
                 personalization:(NSDictionary *)personalizationDict
                          pageId:(NSNumber *)currentPageId
                            size:(CGSize)sizeParent {

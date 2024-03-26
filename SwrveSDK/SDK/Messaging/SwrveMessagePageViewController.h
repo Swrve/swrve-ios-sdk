@@ -10,6 +10,7 @@
 @property(nonatomic, retain) NSNumber *pageId;
 @property(nonatomic) CGSize size;
 
+
 - (id)initWithMessageController:(SwrveMessageController *)messageController
                          format:(SwrveMessageFormat *)swrveMessageFormat
                 personalization:(NSDictionary *)personalization

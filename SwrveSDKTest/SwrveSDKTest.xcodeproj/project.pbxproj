@@ -23,6 +23,8 @@
 		3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */; };
 		3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
 		3A5BBFD3266FA43200092799 /* SwrveTestStopTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */; };
+		3A63CEFC2BA352EB00484F52 /* campaigns_iam_z_index_tests.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A63CEFB2BA352EB00484F52 /* campaigns_iam_z_index_tests.json */; };
+		3A63CEFD2BA352EB00484F52 /* campaigns_iam_z_index_tests.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A63CEFB2BA352EB00484F52 /* campaigns_iam_z_index_tests.json */; };
 		3A6947E028B674C0009ACD26 /* campaignDownloadDate2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */; };
 		3A6947E128B674C0009ACD26 /* campaignDownloadDate2.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */; };
 		3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */; };
@@ -303,6 +305,7 @@
 		3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInitModeIOS.m; sourceTree = "<group>"; };
 		3A42255A27DB78AE0096D33E /* campaigns_multipage_orientations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage_orientations.json; sourceTree = "<group>"; };
 		3A5BBFD1266FA43200092799 /* SwrveTestStopTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestStopTracking.m; sourceTree = "<group>"; };
+		3A63CEFB2BA352EB00484F52 /* campaigns_iam_z_index_tests.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_iam_z_index_tests.json; sourceTree = "<group>"; };
 		3A6947DE28B674C0009ACD26 /* campaignDownloadDate2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate2.json; sourceTree = "<group>"; };
 		3A6947DF28B674C0009ACD26 /* campaignDownloadDate1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignDownloadDate1.json; sourceTree = "<group>"; };
 		3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestPushNotifications.m; sourceTree = "<group>"; };
@@ -724,6 +727,7 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				3A63CEFB2BA352EB00484F52 /* campaigns_iam_z_index_tests.json */,
 				3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */,
 				3A1443532AF3E65F007B5B2D /* in_app_story_campaign.json */,
 				3A80F77529BB6017000FA64C /* campaign_native_button_basics.json */,
@@ -1010,6 +1014,7 @@
 				5B2B6F5E23C4E55E000B1687 /* campaignsDelay.json in Resources */,
 				5B2B6F6C23C4E55E000B1687 /* logo.gif in Resources */,
 				C530E8F32B16E70A005D3354 /* campaigns_without_reidentify_period.json in Resources */,
+				3A63CEFC2BA352EB00484F52 /* campaigns_iam_z_index_tests.json in Resources */,
 				52AF58B62614C94C00697B09 /* realTimeUserProperties.json in Resources */,
 				5B2B6F6323C4E55E000B1687 /* campaignsMessagePriority.json in Resources */,
 				5B2B6F5823C4E55E000B1687 /* external_campaigns.json in Resources */,
@@ -1086,6 +1091,7 @@
 				F6698A8025BEF49E00950E98 /* campaignsIdentity.json in Resources */,
 				C593076A2AE9239800E3B26D /* campaignWithMultilineText.json in Resources */,
 				C530E8F12B15D2B9005D3354 /* campaigns_with_reidentify_period.json in Resources */,
+				3A63CEFD2BA352EB00484F52 /* campaigns_iam_z_index_tests.json in Resources */,
 				52843EBF256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				52F1C9272567F180003B68AF /* campaignsEmbedded.json in Resources */,
 				C530E8F42B16E70A005D3354 /* campaigns_without_reidentify_period.json in Resources */,

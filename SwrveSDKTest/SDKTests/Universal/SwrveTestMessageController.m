@@ -10,6 +10,7 @@
 #import "SwrveUIButton.h"
 #import "SwrveButton.h"
 #import "SwrveImage.h"
+#import "SwrveThemedUIButton.h"
 #import "SwrveQA.h"
 #import "SwrveTestHelper.h"
 #import "SwrveUtils.h"
@@ -4946,6 +4947,46 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     OCMVerify([mockRightTap locationInView:messageViewController.view]);
 }
 
+- (void)testIAMPageElementOrder_iam_z_index {
+    NSArray *assets = @[@"asset1"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_iam_z_index_tests"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:1 andPersonalization:nil]; // campign id 1
+    XCTAssertNotNil(campaign);
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+
+    // test that the order of page elements is the same as defined by the iam_z_index in the json
+    XCTAssertTrue([messageUiView.subviews[0] isKindOfClass:[SwrveUIButton class]], @"Expected SwrveButtonView");
+    XCTAssertTrue([messageUiView.subviews[1] isKindOfClass:[SwrveThemedUIButton class]], @"Expected SwrveThemedUIButton");
+    XCTAssertTrue([messageUiView.subviews[2] isKindOfClass:[SwrveUITextView class]], @"Expected SwrveUITextView");
+    XCTAssertTrue([messageUiView.subviews[3] isKindOfClass:[UIImageView class]], @"Expected UIImageView");
+}
+
+- (void)testIAMPageElementOrder_json_array {
+    NSArray *assets = @[@"asset1"];
+    [SwrveTestHelper createDummyAssets:assets];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_iam_z_index_tests"];
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:2 andPersonalization:nil]; // campign id 2
+    XCTAssertNotNil(campaign);
+    [controller showMessageCenterCampaign:campaign];
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
+
+    // test that the order of page elements is the same as the order in the json array
+    XCTAssertTrue([messageUiView.subviews[0] isKindOfClass:[SwrveUITextView class]], @"Expected SwrveUITextView");
+    XCTAssertTrue([messageUiView.subviews[1] isKindOfClass:[UIImageView class]], @"Expected UIImageView");
+    XCTAssertTrue([messageUiView.subviews[2] isKindOfClass:[SwrveUIButton class]], @"Expected SwrveUIButton");
+    XCTAssertTrue([messageUiView.subviews[3] isKindOfClass:[SwrveThemedUIButton class]], @"Expected SwrveThemedUIButton");
+    
+}
 
 - (void)waitForStoryProgression:(SwrveMessageViewController *)messageViewController toPageId:(int)pageId {
     NSString *expectationDescription = [NSString stringWithFormat:@"CurrentPageId should be %d", pageId];

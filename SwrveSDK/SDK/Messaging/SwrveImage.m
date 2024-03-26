@@ -16,6 +16,7 @@
 @synthesize campaignId;
 @synthesize multilineText;
 @synthesize accessibilityText;
+@synthesize iamZIndex;
 
 - (id)initWithDictionary:(NSDictionary *)imageData
               campaignId:(long)swrveCampaignId
@@ -56,6 +57,9 @@
             self.accessibilityText = [imageData objectForKey:@"accessibility_text"];
         }
 
+        if ([imageData objectForKey:@"iam_z_index"]) {
+            self.iamZIndex = [[imageData objectForKey:@"iam_z_index"] longValue];
+        }
     }
     return self;
 }

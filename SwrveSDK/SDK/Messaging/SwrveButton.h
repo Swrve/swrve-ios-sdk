@@ -21,6 +21,7 @@
 @property(nonatomic, retain) NSArray *events;                       /*!< Array of events to send on button click */
 @property(nonatomic, retain) NSArray *userUpdates;                  /*!< Array of user properties to send on button click  */
 @property(nonatomic, retain) SwrveButtonTheme *theme;               /*!< Native button properties  */
+@property(atomic) long iamZIndex;
 
 - (id)initWithDictionary:(NSDictionary *)buttonData
               campaignId:(long)swrveCampaignId

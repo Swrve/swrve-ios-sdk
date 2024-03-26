@@ -14,6 +14,7 @@
 @property(atomic) long messageId;                          /*!< Message identifier associated with this button. */
 @property(nonatomic, retain) NSDictionary *multilineText;
 @property(nonatomic, retain) NSString *accessibilityText;  /*!< Alternative text for use with accessibility voice over */
+@property(atomic) long iamZIndex;
 
 - (id)initWithDictionary:(NSDictionary *)imageData
               campaignId:(long)swrveCampaignId

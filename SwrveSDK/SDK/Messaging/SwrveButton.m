@@ -23,6 +23,7 @@
 @synthesize events;
 @synthesize userUpdates;
 @synthesize theme;
+@synthesize iamZIndex;
 
 - (id)initWithDictionary:(NSDictionary *)buttonData campaignId:(long)swrveCampaignId messageId:(long)swrveMessageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
     if (self = [super init]) {
@@ -107,6 +108,9 @@
         }
         if ([buttonData objectForKey:@"theme"]) {
             self.theme = [[SwrveButtonTheme alloc] initWithDictionary:[buttonData objectForKey:@"theme"]];
+        }
+        if ([buttonData objectForKey:@"iam_z_index"]) {
+            self.iamZIndex = [[buttonData objectForKey:@"iam_z_index"] longValue];
         }
     }
     return self;
