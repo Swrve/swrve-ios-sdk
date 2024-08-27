@@ -96,3 +96,7 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKVersionString[];
 #import <SwrveSDK/SwrveMessageCenterDetails.h>
 #import <SwrveSDK/SwrveSDKUtils.h>
 
+//Push Inbox
+#import <SwrveSDK/Swrve+Private.h> 
+#import <SwrveSDK/SwrvePushInboxUpdateDelegate.h>
+

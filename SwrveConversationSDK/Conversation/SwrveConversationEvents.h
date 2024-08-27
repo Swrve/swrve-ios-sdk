@@ -8,7 +8,7 @@
 
 @interface SwrveConversationEvents : NSObject
 
-@property (class,nonatomic,copy) NSMutableDictionary *customPayload;
+@property (class,nonatomic,strong) NSMutableDictionary *customPayload;
 
 + (NSMutableDictionary *)customPayload;
 + (void)setCustomPayload:(NSMutableDictionary *)newCustomPayload;

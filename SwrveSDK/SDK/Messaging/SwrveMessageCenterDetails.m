@@ -27,8 +27,8 @@
     return self;
 }
 
-- (id)initWith:(NSString *)subjectStr description:(NSString *)descriptionStr accessibilityText:(NSString *)accessibilityTextStr
-      imageUrl:(NSString *)imageUrlStr imageSha:(NSString *)imageShaStr image:(UIImage *)imageUI {
+- (id)initWith:(nullable NSString *)subjectStr description:(nullable NSString *)descriptionStr accessibilityText:(nullable NSString *)accessibilityTextStr
+      imageUrl:(nullable NSString *)imageUrlStr imageSha:(NSString *)imageShaStr image:(UIImage *)imageUI {
     if (self = [super init]) {
         self.subject = subjectStr;
         self.description = descriptionStr;

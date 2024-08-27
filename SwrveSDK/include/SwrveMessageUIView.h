@@ -1,1 +1,0 @@
-../SDK/Messaging/SwrveMessageUIView.h

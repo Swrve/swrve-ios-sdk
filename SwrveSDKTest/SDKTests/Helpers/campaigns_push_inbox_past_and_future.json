@@ -1,0 +1,58 @@
+{
+  "cdn_root": "http://www.sonecdn.com/",
+  "game_data": {
+    "150": {
+      "app_store_url": "https://www.someurl.com"
+    }
+  },
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 9999,
+    "delay_first_message": 0
+  },
+  "push_inbox": [
+    {
+      "message_id": 1,
+      "variant_id": 11,
+      "end_date": 32515660796000,
+      "state": "U",
+      "sent_date": 958838396000,
+      "customer_json": {
+        "text": "This should be eligible. sentdate is 20 May 2000. enddate is 19 May 3000."
+      }
+    },
+    {
+      "message_id": 2,
+      "variant_id": 22,
+      "end_date": 958838396000,
+      "state": "R",
+      "sent_date": 958751996000,
+      "customer_json": {
+        "text": "This should be in the past and not eligible. sentdate is 20 May 2000. enddate is 20 May 2000"
+      }
+    },
+    {
+      "message_id": 3,
+      "variant_id": 33,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 958838396000,
+      "customer_json": {
+        "text": "This should be eligible. sentdate is 20 May 2000. enddate is 19 May 3000"
+      }
+    },
+    {
+      "message_id": 4,
+      "variant_id": 44,
+      "end_date": 32515660796000,
+      "state": "U",
+      "sent_date": 958838396000,
+      "customer_json": {
+        "text": "This should be eligible. sentdate is 20 May 2000. enddate is 19 May 3000"
+      }
+    }
+  ],
+  "flush_frequency": 60000,
+  "flush_refresh_delay": 1000,
+  "identify_refresh_period": 21
+}

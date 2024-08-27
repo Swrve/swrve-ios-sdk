@@ -27,6 +27,7 @@
 - (UInt64)secondsSinceEpoch;
 - (UInt64)joinedDateMilliSeconds;
 - (NSURL *)campaignsAndResourcesURL;
+- (NSString *)pushInboxVersion;
 - (NSURL *)userResourcesDiffURL;
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 
@@ -196,6 +197,7 @@
                                 [NSURLQueryItem queryItemWithName:@"api_key" value:@"SomeAPIKey"],
                                 [NSURLQueryItem queryItemWithName:@"app_version" value:@"1.0"],
                                 [NSURLQueryItem queryItemWithName:@"joined" value:[NSString stringWithFormat:@"%ld", 1451610000000]],
+                                [NSURLQueryItem queryItemWithName:@"push_inbox_version" value:swrve.pushInboxVersion],
                                 [NSURLQueryItem queryItemWithName:@"version" value:[NSString stringWithFormat:@"%d", CAMPAIGN_VERSION]],
                                 [NSURLQueryItem queryItemWithName:@"orientation" value:@"both"],
                                 [NSURLQueryItem queryItemWithName:@"language" value:@"en-US"],

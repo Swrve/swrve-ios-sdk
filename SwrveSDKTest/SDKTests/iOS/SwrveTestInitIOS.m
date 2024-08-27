@@ -170,9 +170,9 @@
     
     // IDFA & Device Info count
     if (@available(iOS 16.2, *)) {
-        XCTAssertEqual([deviceInfo count], 24);
+        XCTAssertEqual([deviceInfo count], 25);
     } else {
-        XCTAssertEqual([deviceInfo count], 22);
+        XCTAssertEqual([deviceInfo count], 23);
     }
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 
@@ -203,9 +203,9 @@
     XCTAssertNotNil(deviceInfo);
     
     if (@available(iOS 16.2, *)) {
-        XCTAssertEqual([deviceInfo count], 30);
+        XCTAssertEqual([deviceInfo count], 31);
     } else {
-        XCTAssertEqual([deviceInfo count], 28);
+        XCTAssertEqual([deviceInfo count], 29);
     }
 
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);

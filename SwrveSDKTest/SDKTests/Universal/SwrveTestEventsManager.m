@@ -15,6 +15,24 @@
 - (void)testIsValidEvent_EmptyString {
     SwrveEventsManager *swrveEventsManager = [SwrveEventsManager new];
     bool result = [swrveEventsManager isValidEventName:@""];
+    XCTAssertFalse(result);
+}
+
+- (void)testIsValidEvent_SpaceString {
+    SwrveEventsManager *swrveEventsManager = [SwrveEventsManager new];
+    bool result = [swrveEventsManager isValidEventName:@"   "];
+    XCTAssertFalse(result);
+}
+
+- (void)testIsValidEvent_withLeadingAndTrailingSpaces {
+    SwrveEventsManager *swrveEventsManager = [SwrveEventsManager new];
+    bool result = [swrveEventsManager isValidEventName:@" Test "];
+    XCTAssertTrue(result);
+}
+
+- (void)testIsValidEvent_withLeadingTrailingAndMiddleSpaces {
+    SwrveEventsManager *swrveEventsManager = [SwrveEventsManager new];
+    bool result = [swrveEventsManager isValidEventName:@" Test a b "];
     XCTAssertTrue(result);
 }
 

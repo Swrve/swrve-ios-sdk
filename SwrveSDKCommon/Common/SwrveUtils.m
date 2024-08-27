@@ -214,4 +214,16 @@
     return ([payload count] > 0) ? payload : nil;
 }
 
++ (NSMutableDictionary *)iamCommonEventPayload {
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+#if TARGET_OS_TV
+    [payload setValue:@"tvos" forKey:@"platform"];
+    [payload setValue:@"tv" forKey:@"deviceType"];
+#elif TARGET_OS_IOS
+    [payload setValue:@"ios" forKey:@"platform"];
+    [payload setValue:@"mobile" forKey:@"deviceType"];
+#endif
+    return payload;
+}
+
 @end

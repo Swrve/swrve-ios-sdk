@@ -5,6 +5,9 @@
 #import "SwrveIAPRewards.h"
 #import "SwrveResourceManager.h"
 #import "SwrveDeeplinkManager.h"
+#import "SwrvePushInboxUpdateDelegate.h"
+
+@protocol SwrvePushInboxDelegate;
 
 #if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
@@ -21,7 +24,7 @@
 #endif
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "9.0.2"
+#define SWRVE_SDK_VERSION "9.1.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -601,7 +604,44 @@ NSString * eventsPayloadAsJSON);
  */
 - (void)idfa:(NSString *)idfa;
 
-#pragma mark -
+#pragma mark Push Inbox
+
+/*! Get the list of messages in the current user's Push Inbox
+ *
+ * \returns An array of SwrvePushInboxMessage objects
+ */
+- (NSArray *)pushInboxMessages;
+
+/*!Mark the Push Inbox Message as read. This is an asynchronous operation and the listener will be called when the
+ * operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to update as read
+ * \param listener the listener to trigger after this operation has completed
+ */
+- (void)readPushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!Delete the Push Inbox Message. This is an asynchronous operation and the listener will be called when the
+ * operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to delete
+ * \param listener the listener to trigger after this operation has completed
+ */
+- (void)deletePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!Mark the Push Inbox Message as read and send engagement event. This is an asynchronous operation and the
+ * listener will be called when the operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to update as read and engaged
+ * \param listener the listener to trigger after this operation has completed
+ */
+- (void)engagePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!The pushInboxUpdateListener messagesUpdated() method is invoked when Push Inbox messages
+ * have been initially loaded and each time messages are updated/changed.
+ *
+ * \param listener Called when the push inbox messages are initially loaded and each time messages are updated/changed.
+ */
+- (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
 
 #pragma mark - Properties
 

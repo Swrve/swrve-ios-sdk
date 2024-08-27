@@ -402,4 +402,19 @@
 }
 #endif //TARGET_OS_IOS
 
++ (BOOL)tryBlock:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error {
+    @try {
+        tryBlock();
+        return YES;
+    }
+    @catch (NSException *exception) {
+        if (error) {
+            *error = [NSError errorWithDomain:@"ObjectiveCException"
+                                         code:0
+                                     userInfo:@{NSLocalizedDescriptionKey: exception.reason}];
+        }
+        return NO;
+    }
+}
+
 @end

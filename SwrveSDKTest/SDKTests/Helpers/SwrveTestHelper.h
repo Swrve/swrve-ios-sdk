@@ -65,5 +65,6 @@
 + (void)setScreenOrientation:(enum UIInterfaceOrientation)orientation;
 #endif //TARGET_OS_IOS
 
++ (BOOL)tryBlock:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error;
 
 @end

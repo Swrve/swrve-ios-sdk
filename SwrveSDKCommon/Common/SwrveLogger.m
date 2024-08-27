@@ -55,4 +55,30 @@ static SwrveLogLevel logLevel = WARNING;
 #endif
 }
 
+// Swift compatible logs
+
++ (void)logError:(NSString *)message {
+#ifndef SWRVE_DISABLE_LOGS
+    if (logLevel == VERBOSE || logLevel == WARNING || logLevel == ERROR) {
+        NSLog(@"[SwrveSDK Error] %@", message);
+    }
+#endif
+}
+
++ (void)logWarning:(NSString *)message {
+#ifndef SWRVE_DISABLE_LOGS
+    if (logLevel == VERBOSE || logLevel == WARNING) {
+        NSLog(@"[SwrveSDK Warning] %@", message);
+    }
+#endif
+}
+
++ (void)logDebug:(NSString *)message {
+#ifndef SWRVE_DISABLE_LOGS
+    if (logLevel == VERBOSE) {
+        NSLog(@"[SwrveSDK Debug] %@", message);
+    }
+#endif
+}
+
 @end

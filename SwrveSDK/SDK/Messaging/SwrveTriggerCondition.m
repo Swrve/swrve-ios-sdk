@@ -68,7 +68,8 @@
             }
             
             NSDictionary *valueDictionary = nil;
-            NSString *valueString = nil;
+            
+            NSString *valueString = @"";
             NSNumber *valueInteger = nil;
             if([_value isKindOfClass:[NSString class]]) {
                 valueString = (NSString*)_value;

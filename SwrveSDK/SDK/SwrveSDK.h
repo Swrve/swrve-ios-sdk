@@ -533,6 +533,45 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)idfa:(NSString *)idfa;
 
+#pragma mark Push Inbox
+
+/*! Get the list of messages in the current user's Push Inbox
+ *
+ * \returns An array of SwrvePushInboxMessage objects
+ */
++ (NSArray *)pushInboxMessages;
+
+/*!Mark the Push Inbox Message as read. This is an asynchronous operation and the listener will be called when the
+ * operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to update as read
+ * \param listener the listener to trigger after this operation has completed
+ */
++ (void)readPushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!Delete the Push Inbox Message. This is an asynchronous operation and the listener will be called when the
+ * operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to delete
+ * \param listener the listener to trigger after this operation has completed
+ */
++ (void)deletePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!Mark the Push Inbox Message as read and send engagement event. This is an asynchronous operation and the
+ * listener will be called when the operation is complete. Check the returned result object for success or failure.
+ *
+ * \param messageId the messageId of the SwrvePushInboxMessage to update as read and engaged
+ * \param listener the listener to trigger after this operation has completed
+ */
++ (void)engagePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener;
+
+/*!The pushInboxUpdateListener messagesUpdated() method is invoked when Push Inbox messages
+ * have been initially loaded and each time messages are updated/changed.
+ *
+ * \param listener Called when the push inbox messages are initially loaded and each time messages are updated/changed.
+ */
++ (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
+
 #pragma mark -
 
 @end

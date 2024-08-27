@@ -144,6 +144,26 @@
     return SWRVE_SUCCESS;
 }
 
+- (NSArray *)pushInboxMessages {
+    return @[];
+}
+
+- (void)readPushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener {
+    return;
+}
+
+- (void)engagePushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener {
+    return;
+}
+
+- (void)deletePushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener {
+    return;
+}
+
+- (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener {
+    return;
+}
+
 - (void)shutdown {
 }
 
@@ -362,6 +382,7 @@
 - (void)embeddedControlMessageImpressionEvent:(SwrveEmbeddedMessage *)message {
 #pragma unused(message)
 }
+
 
 #pragma mark -
 

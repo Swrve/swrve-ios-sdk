@@ -202,7 +202,15 @@ NSString *mockCacheDir;
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
 
-    NSDictionary *payload = @{@"embedded": @"false"};
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setValue:@"false" forKey:@"embedded"];
+#if TARGET_OS_TV
+    [payload setValue:@"tvos" forKey:@"platform"];
+    [payload setValue:@"tv" forKey:@"deviceType"];
+#elif TARGET_OS_IOS
+    [payload setValue:@"ios" forKey:@"platform"];
+    [payload setValue:@"mobile" forKey:@"deviceType"];
+#endif
     OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298085.impression" payload:payload triggerCallback:false]);
 
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
@@ -437,7 +445,15 @@ NSString *mockCacheDir;
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
 
-    NSDictionary *payload = @{@"embedded": @"false"};
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setValue:@"false" forKey:@"embedded"];
+#if TARGET_OS_TV
+    [payload setValue:@"tvos" forKey:@"platform"];
+    [payload setValue:@"tv" forKey:@"deviceType"];
+#elif TARGET_OS_IOS
+    [payload setValue:@"ios" forKey:@"platform"];
+    [payload setValue:@"mobile" forKey:@"deviceType"];
+#endif
     OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298085.impression" payload:payload triggerCallback:false]);
 
     SwrveMessageController *vc = swrve.messaging;
@@ -521,7 +537,15 @@ NSString *mockCacheDir;
     [swrve initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
 
-    NSDictionary *payload = @{@"embedded": @"false"};
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setValue:@"false" forKey:@"embedded"];
+#if TARGET_OS_TV
+    [payload setValue:@"tvos" forKey:@"platform"];
+    [payload setValue:@"tv" forKey:@"deviceType"];
+#elif TARGET_OS_IOS
+    [payload setValue:@"ios" forKey:@"platform"];
+    [payload setValue:@"mobile" forKey:@"deviceType"];
+#endif
     OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-298087.impression" payload:payload triggerCallback:false]);
 
     SwrveMessageController *vc = swrve.messaging;

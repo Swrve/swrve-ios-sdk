@@ -769,12 +769,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
         NSMutableArray<SwrveQACampaignInfo *> *qaCampaignInfoArray = nil;
         NSMutableDictionary *campaignReasons = nil;
-        NSMutableDictionary *campaignMessages = nil;
 
         if (isQALogging) {
             qaCampaignInfoArray = [NSMutableArray new];
             campaignReasons = [NSMutableDictionary new];
-            campaignMessages = [NSMutableDictionary new];
         }
 
 
@@ -933,12 +931,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
         NSMutableArray<SwrveQACampaignInfo *> *qaCampaignInfoArray = nil;
         NSMutableDictionary *campaignReasons = nil;
-        NSMutableDictionary *campaignMessages = nil;
 
         if (isQALogging) {
             qaCampaignInfoArray = [NSMutableArray new];
             campaignReasons = [NSMutableDictionary new];
-            campaignMessages = [NSMutableDictionary new];
         }
 
         NSMutableArray *availableConversations = [NSMutableArray new];
@@ -1079,7 +1075,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (void)sendImpressionEvent:(SwrveBaseMessage *)message embedded:(NSString *)embedded {
     NSString *viewEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%d.impression", [message.messageID intValue]];
-    NSDictionary *payload = @{@"embedded": embedded};
+    NSMutableDictionary *payload = [SwrveUtils iamCommonEventPayload];
+    [payload setValue:embedded forKey:@"embedded"];
     [SwrveLogger debug:@"Queuing message impression event: %@", viewEvent];
     [self.analyticsSDK eventInternal:viewEvent payload:payload triggerCallback:false];
 }
@@ -1101,7 +1098,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if (button.actionType != kSwrveActionDismiss) {
         NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageId];
         [SwrveLogger debug:@"Sending click event: %@", clickEvent];
-        NSMutableDictionary *payload = [NSMutableDictionary new];
+        NSMutableDictionary *payload = [SwrveUtils iamCommonEventPayload];
         [payload setValue:button.name forKey:@"name"];
         [payload setValue:@"false" forKey:@"embedded"];
         if (page && page.pageName && page.pageName.length > 0) {
@@ -1189,15 +1186,15 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return eventName;
 }
 
-- (void)showMessage:(SwrveMessage *)message {
+- (void)showMessage:(nullable SwrveMessage *)message {
     [self showMessage:message queue:false withPersonalization:nil];
 }
 
-- (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization {
+- (void)showMessage:(nullable SwrveMessage *)message withPersonalization:(NSDictionary *)personalization {
     [self showMessage:message queue:false withPersonalization:personalization];
 }
 
-- (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization {
+- (void)showMessage:(nullable SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization {
     if (message == nil) {
         return;
     }
@@ -1242,7 +1239,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             if (!success) {
                 self.conversationWindow = nil;
             }
-        } else if (isQueued && ![self.conversationsMessageQueue containsObject:conversation]) {
+        } else if (conversation && isQueued && ![self.conversationsMessageQueue containsObject:conversation]) {
             [self.conversationsMessageQueue addObject:conversation];
         }
     }
@@ -1479,7 +1476,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             break;
         case kSwrveActionOpenSettings: {
 #if TARGET_OS_IOS
-            actionTypeString = @"open_app_settings";
             NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
             [[SwrveCommon sharedUIApplication] openURL:url options:@{} completionHandler:nil];
 #endif //TARGET_OS_IOS

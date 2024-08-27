@@ -16,4 +16,9 @@ typedef enum SwrveLogLevel : NSUInteger {
 + (void)warning:(NSString *)format, ...;
 + (void)debug:(NSString *)format, ...;
 
++ (void)logError:(NSString *)message;
++ (void)logWarning:(NSString *)message;
++ (void)logDebug:(NSString *)message;
+
+
 @end

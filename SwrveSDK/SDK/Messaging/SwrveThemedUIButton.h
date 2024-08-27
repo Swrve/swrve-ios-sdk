@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SwrveThemedUIButton : SwrveUIButton
 
 - (id)initWithTheme:(SwrveButtonTheme *)button
-               text:(NSString *)text
+               text:(nullable NSString *)text
               frame:(CGRect)frame
         calabration:(SwrveCalibration *)calibration
         renderScale:(CGFloat)scale;

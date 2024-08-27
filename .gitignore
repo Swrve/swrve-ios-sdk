@@ -14,3 +14,5 @@ build/
 fastlane/test_output/
 fastlane/report.xml
 .swiftpm
+SwrveFrameworks/Dynamic
+SwrveFrameworks/Static

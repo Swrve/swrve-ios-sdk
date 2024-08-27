@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, retain) SwrveMessage *message;
 @property(nonatomic, retain) NSDictionary *personalization;
 @property(nonatomic, retain) NSNumber *currentPageId;
-@property(nonatomic, retain) SwrveMessageFormat *currentMessageFormat; // dependent on orientation or screen size
+@property(nonatomic, retain, nullable) SwrveMessageFormat *currentMessageFormat; // dependent on orientation or screen size
 
 - (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
                         message:(SwrveMessage *)swrveMessage
-                personalization:(NSDictionary *)personalization;
+                personalization:(nullable NSDictionary *)personalization;
 
 - (void)showPage:(NSNumber *)number;
 - (void)onButtonPressed:(SwrveUIButton*)button pageId:(NSNumber *)pageId;

@@ -1,0 +1,106 @@
+{
+  "cdn_root": "http://www.sonecdn.com/",
+  "game_data": {
+    "150": {
+      "app_store_url": "https://www.someurl.com"
+    }
+  },
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 9999,
+    "delay_first_message": 0
+  },
+  "push_inbox": [
+    {
+      "message_id": 1,
+      "variant_id": 11,
+      "end_date": 32515660796000,
+      "state": "U",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "New Arrivals!",
+        "body": "Check out our latest collection of running shoes and activewear. Stay ahead of the game with FitGear's newest arrivals."
+      }
+    },
+    {
+      "message_id": 2,
+      "variant_id": 22,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Limited Time Offer!",
+        "body": "Don't miss out! Enjoy 20% off on all hoodies and sweatpants this weekend only. Hurry, grab your favorites now!"
+      }
+    },
+    {
+      "message_id": 3,
+      "variant_id": 33,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Simulate delete fail - this should reappear!",
+        "body": "Start your fitness journey today with FitGear's range of performance gear. From breathable t-shirts to supportive sneakers, we've got everything you need to crush your goals."
+      }
+    },
+    {
+      "message_id": 4,
+      "variant_id": 44,
+      "end_date": 32515660796000,
+      "state": "U",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Exclusive Access: Sneaker Drop!",
+        "body": "Be the first to own the latest FitGear Air Max release. Get exclusive access to our limited-edition sneaker drop happening tomorrow at 10 AM. Set your alarms!"
+      }
+    },
+    {
+      "message_id": 5,
+      "variant_id": 55,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Your Order is on the Way!",
+        "body": "Great news! Your recent purchase has been shipped. Track your order now to see when your FitGear gear will arrive."
+      }
+    },
+    {
+      "message_id": 6,
+      "variant_id": 66,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Stay Motivated!",
+        "body": "Need some workout inspiration? Check out our blog for tips on staying motivated and reaching your fitness goals. Plus, shop the looks featured by your favorite athletes."
+      }
+    },
+    {
+      "message_id": 7,
+      "variant_id": 77,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Summer Essentials!",
+        "body": "Get ready for summer with FitGear's must-have essentials. From lightweight shorts to breathable tank tops, we've got everything you need to stay cool and comfortable."
+      }
+    },
+    {
+      "message_id": 8,
+      "variant_id": 88,
+      "end_date": 32515660796000,
+      "state": "R",
+      "sent_date": 1714555770,
+      "customer_json": {
+        "title": "Join the FitGear Community!",
+        "body": "Connect with fellow athletes, share your fitness journey, and get inspired by others in the FitGear community. Join now and be a part of something bigger than yourself."
+      }
+    }
+  ],
+  "flush_frequency": 60000,
+  "flush_refresh_delay": 1000,
+  "identify_refresh_period": 21
+}

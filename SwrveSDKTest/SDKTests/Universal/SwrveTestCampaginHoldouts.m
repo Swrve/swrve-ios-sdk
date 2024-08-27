@@ -142,12 +142,23 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsHoldout"];
     SwrveMessageController *controller = [swrveMock messaging];
     
-    NSDictionary* event =  @{@"type": @"event",
-                             @"seqnum": @1111,
-                             @"name": @"trigger_iam",
-                             @"payload": @{}};
-    
-    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-165.impression" payload: @{@"embedded": @"false"} triggerCallback:false]);
+    NSDictionary *event = @{
+        @"type": @"event",
+        @"seqnum": @1111,
+        @"name": @"trigger_iam",
+        @"payload": @{}};
+
+    NSMutableDictionary *expectedPayload = [NSMutableDictionary dictionary];
+    [expectedPayload setObject:@"false" forKey:@"embedded"];
+#if TARGET_OS_TV
+    [expectedPayload setObject:@"tv" forKey:@"deviceType"];
+    [expectedPayload setObject:@"tvos" forKey:@"platform"];
+#else
+    [expectedPayload setObject:@"mobile" forKey:@"deviceType"];
+    [expectedPayload setObject:@"ios" forKey:@"platform"];
+#endif
+    OCMExpect([swrveMock eventInternal:@"Swrve.Messages.Message-165.impression" payload: expectedPayload triggerCallback:false]);
+
     bool shown = [controller eventRaised:event];
     XCTAssertFalse(shown);
     OCMVerifyAll(swrveMock);

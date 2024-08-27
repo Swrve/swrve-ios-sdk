@@ -38,6 +38,11 @@
 #import "SwrveProfileManager.h"
 #import "SwrveEventQueueItem.h"
 
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
 
 #if SWRVE_TEST_BUILD
 #define SWRVE_STATIC_UNLESS_TEST_BUILD
@@ -188,6 +193,7 @@ enum {
     SwrveEventQueuedCallback event_queued_callback;
     long instanceID; // The unique id associated with this instance of Swrve
     NSMutableArray<SwrveSessionDelegate>* sessionDelegates;
+    
 }
 
 @property(atomic) SwrveDeeplinkManager *swrveDeeplinkManager;
@@ -223,6 +229,14 @@ enum {
 
 - (void)initBuffer;
 
+- (NSArray *) pushInboxMessages;
+
+- (void) readPushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener;
+- (void) engagePushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener;
+- (void) deletePushInboxMessage:(UInt64)messageId listener: (id<SwrvePushInboxDelegate>)listener;
+
+- (void) pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
+
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer;
 
 @property(atomic) BOOL initialised;
@@ -230,6 +244,7 @@ enum {
 
 @property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrveProfileManager *profileManager;
+@property(atomic) SwrvePushInboxController *pushInbox;
 
 // Used to store the merged user updates
 @property(atomic, strong) NSMutableDictionary *userUpdates;
@@ -288,6 +303,8 @@ enum {
 #endif //TARGET_OS_IOS
 
 @property(atomic) NSString *idfa;
+
+@property (atomic, weak) id <SwrvePushInboxUpdateDelegate> pushInboxUpdateDelegate;
 
 @end
 
@@ -354,6 +371,7 @@ enum {
 @synthesize appID;
 @synthesize apiKey;
 @synthesize messaging;
+@synthesize pushInbox;
 @synthesize resourceManager;
 #if TARGET_OS_IOS
 @synthesize push;
@@ -389,6 +407,7 @@ enum {
 @synthesize receiptProvider;
 @synthesize swrveDeeplinkManager;
 @synthesize idfa = _idfa;
+@synthesize pushInboxUpdateDelegate;
 
 // Non shared instance initialization methods
 - (id)initWithAppID:(int)swrveAppID apiKey:(NSString *)swrveAPIKey {
@@ -546,6 +565,16 @@ enum {
     } else {
         messaging = [messaging initWithSwrve:self];
     }
+    
+    if (pushInbox == nil) {
+        pushInbox = [SwrvePushInboxController alloc];
+    } 
+    
+    pushInbox = [pushInbox init:self.userID
+                        baseUrl:config.contentServer
+                        apiKey:self.apiKey
+                        signatureKey: self.signatureKey
+                        restClient: self.restClient];
 }
 
 - (void)initUserJoinedTimeAndIsNewUserForUser:(NSString *)userId {
@@ -1008,6 +1037,23 @@ enum {
                     if (realTimeUserPropertiesJson != nil) {
                         [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
                     }
+                    
+                    NSArray *inboxJson = [responseDict objectForKey:@"push_inbox"];
+                    if (inboxJson != nil) {
+                       [self.pushInbox updatePushInbox:inboxJson writeToCache:YES];
+                    }
+                    
+                    NSString *pushInboxHash = [SwrveLocalStorage pushInboxHashForUserId:self.userID];
+                    
+                    NSString *newPushInboxHash = [responseDict objectForKey:@"push_inbox_hash"];
+                    if (newPushInboxHash != nil) {
+                        if(pushInboxHash == nil || ![newPushInboxHash isEqualToString:pushInboxHash]){
+                            if([self campaignsAndResourcesInitialized]) {
+                                [self invokePushInboxUpdatedDelegate];
+                            }
+                            [SwrveLocalStorage savePushInboxHash:newPushInboxHash forUserId:self.userID];
+                        }
+                    }
 
                     if (self.messaging) {
                         NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
@@ -1060,6 +1106,7 @@ enum {
             // Invoke listeners once to denote that the first attempt at downloading has finished
             // independent of whether the resources or campaigns have changed from cached values
             [self invokeResourcesRTUPCallback];
+            [self invokePushInboxUpdatedDelegate];
         }
     }];
 }
@@ -1070,8 +1117,8 @@ enum {
 
 - (NSURL *)campaignsAndResourcesURL {
     UInt64 joinedDateMilliSeconds = [self joinedDateMilliSeconds];
-    NSMutableString *queryString = [NSMutableString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&joined=%llu",
-                                                                     self.userID, self.apiKey, self.appVersion, joinedDateMilliSeconds];
+    NSMutableString *queryString = [NSMutableString stringWithFormat:@"?user=%@&api_key=%@&app_version=%@&joined=%llu&push_inbox_version=%@",
+                                                                     self.userID, self.apiKey, self.appVersion, joinedDateMilliSeconds, self.pushInboxVersion];
     if (self.messaging) {
         NSString *campaignQueryString = [self.messaging campaignQueryString];
         [queryString appendFormat:@"&%@", campaignQueryString];
@@ -1276,6 +1323,51 @@ enum {
     event_queued_callback = callbackBlock;
 }
 
+- (NSArray *) pushInboxMessages {
+    if([self pushInbox] != nil) {
+        return [[self pushInbox] filteredMessages];
+    }
+    return nil;
+}
+
+- (void)readPushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    if (![self sdkReady] || [self pushInbox] == nil) {
+        if (listener != nil) {
+            [listener onComplete:messageId result:
+             [[SwrvePushInboxResult alloc] init:SwrvePushInboxResultCodeERROR :@"SDK is not ready" :0]];
+        }
+    } else {
+        [[self pushInbox] readMessage:messageId listener: listener];
+    }
+}
+
+- (void)engagePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    if (![self sdkReady] || [self pushInbox] == nil) {
+        if (listener != nil) {
+            [listener onComplete:messageId result:
+             [[SwrvePushInboxResult alloc] init:SwrvePushInboxResultCodeERROR :@"SDK is not ready" :0]];
+        }
+    } else {
+        [[self pushInbox] engageMessage:messageId listener: listener];
+    }
+}
+
+
+- (void)deletePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    if (![self sdkReady] || [self pushInbox] == nil) {
+        if (listener != nil) {
+            [listener onComplete:messageId result:
+             [[SwrvePushInboxResult alloc] init:SwrvePushInboxResultCodeERROR :@"SDK is not ready" :0]];
+        }
+    } else {
+        [[self pushInbox] deleteMessage:messageId listener: listener];
+    }
+}
+
+- (void) pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener {
+    self.pushInboxUpdateDelegate = listener;
+}
+
 - (void)shutdown {
     [SwrveLogger debug:@"shutting down swrveInstance..", nil];
     if ([[SwrveInstanceIDRecorder sharedInstance] hasSwrveInstanceID:instanceID] == NO) {
@@ -1289,6 +1381,8 @@ enum {
     [self.messaging cleanupConversationUI];
     [self.messaging dismissMessageWindow];
     messaging = nil;
+    
+    pushInbox = nil;
 
     resourceManager = nil;
 
@@ -1721,6 +1815,10 @@ enum {
         }
     }
     return appVersion;
+}
+
+- (NSString *)pushInboxVersion {
+    return @"1";
 }
 
 - (NSSet *)notificationCategories {
@@ -2759,6 +2857,13 @@ enum HttpStatus {
                 }
             });
         }
+    }
+}
+
+- (void)invokePushInboxUpdatedDelegate {
+    id <SwrvePushInboxUpdateDelegate> delegate = pushInboxUpdateDelegate;
+    if (delegate != nil && [delegate respondsToSelector:@selector(messagesUpdated)]) {
+        [delegate messagesUpdated];
     }
 }
 

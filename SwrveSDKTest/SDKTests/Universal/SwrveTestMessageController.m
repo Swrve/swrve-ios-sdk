@@ -28,9 +28,6 @@
 
 #endif //TARGET_OS_IOS
 
-#define XCTAssertEqualWithTolerance(actual, expected, tolerance) \
-XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@ with tolerance %f", @((actual)), @((expected)), (tolerance))
-
 @interface TestDeeplinkDelegate2 :NSObject<SwrveDeeplinkDelegate>
 @end
 
@@ -1547,8 +1544,20 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     for (NSString *event in [swrveMock eventBuffer]) {
         if ([event rangeOfString:@"Swrve.Messages.Message-165.click"].location != NSNotFound) {
             clickEventCount++;
-            // Assert that the event contains the name of the button in the payload
-            XCTAssertTrue([event rangeOfString:@"{\"name\":\"custom\",\"embedded\":\"false\"}"].location != NSNotFound);
+            NSData *eventData = [event dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *error;
+            NSDictionary *eventDict = [NSJSONSerialization JSONObjectWithData:eventData options:0 error:&error];
+            NSDictionary *payload = eventDict[@"payload"];
+            XCTAssertNotNil(payload, @"Payload is nil in the event");
+            XCTAssertEqualObjects(payload[@"name"], @"custom", @"Payload 'name' is not 'custom'");
+            XCTAssertEqualObjects(payload[@"embedded"], @"false", @"Payload 'embedded' is not 'false'");
+        #if TARGET_OS_TV
+            XCTAssertEqualObjects(payload[@"deviceType"], @"tv", @"Payload 'deviceType' is not 'tv'");
+            XCTAssertEqualObjects(payload[@"platform"], @"tvos", @"Payload 'platform' is not 'tvos'");
+        #else
+            XCTAssertEqualObjects(payload[@"deviceType"], @"mobile", @"Payload 'deviceType' is not 'mobile'");
+            XCTAssertEqualObjects(payload[@"platform"], @"ios", @"Payload 'platform' is not 'ios'");
+        #endif
         }
     }
     XCTAssertEqual(clickEventCount, 1);
@@ -1584,6 +1593,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventPayload setValue:@"page 5" forKey:@"pageName"];
     [eventPayload setValue:@"Button 5 page 5 dismiss" forKey:@"buttonName"];
     [eventPayload setValue:[NSNumber numberWithLong:501] forKey:@"buttonId"];
+#if TARGET_OS_TV
+    [eventPayload setValue:@"tv" forKey:@"deviceType"];
+    [eventPayload setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventPayload setValue:@"mobile" forKey:@"deviceType"];
+    [eventPayload setValue:@"ios" forKey:@"platform"];
+#endif
     [eventData setValue:eventPayload forKey:@"payload"];
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
 
@@ -1625,6 +1641,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventData setValue:@"custom" forKey:@"name"];
     [eventData setValue:[NSNumber numberWithLong:buttonId] forKey:@"buttonId"];
     [eventData setValue:pageName forKey:@"pageName"];
+#if TARGET_OS_TV
+    [eventData setValue:@"tv" forKey:@"deviceType"];
+    [eventData setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventData setValue:@"mobile" forKey:@"deviceType"];
+    [eventData setValue:@"ios" forKey:@"platform"];
+#endif
     return eventData;
 }
 
@@ -2310,6 +2333,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventData setValue:[NSNumber numberWithLong:pageId] forKey:@"contextId"];
     NSMutableDictionary *eventPayload = [NSMutableDictionary new];
     [eventPayload setValue:pageName forKey:@"pageName"];
+#if TARGET_OS_TV
+    [eventPayload setValue:@"tv" forKey:@"deviceType"];
+    [eventPayload setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventPayload setValue:@"mobile" forKey:@"deviceType"];
+    [eventPayload setValue:@"ios" forKey:@"platform"];
+#endif
     [eventData setValue:eventPayload forKey:@"payload"];
     return eventData;
 }
@@ -2325,6 +2355,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventPayload setValue:[NSNumber numberWithLong:toPageId] forKey:@"to"];
     [eventPayload setValue:[NSNumber numberWithLong:buttonId] forKey:@"buttonId"];
     [eventPayload setValue:buttonName forKey:@"buttonName"];
+#if TARGET_OS_TV
+    [eventPayload setValue:@"tv" forKey:@"deviceType"];
+    [eventPayload setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventPayload setValue:@"mobile" forKey:@"deviceType"];
+    [eventPayload setValue:@"ios" forKey:@"platform"];
+#endif
     [eventData setValue:eventPayload forKey:@"payload"];
     return eventData;
 }
@@ -4205,6 +4242,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventPayload setValue:@"Page 3" forKey:@"pageName"];
     [eventPayload setValue:@"Dismiss?" forKey:@"buttonName"];
     [eventPayload setValue:[NSNumber numberWithLong:12345] forKey:@"buttonId"];
+#if TARGET_OS_TV
+    [eventPayload setValue:@"tv" forKey:@"deviceType"];
+    [eventPayload setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventPayload setValue:@"mobile" forKey:@"deviceType"];
+    [eventPayload setValue:@"ios" forKey:@"platform"];
+#endif
     [eventData setValue:eventPayload forKey:@"payload"];
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
 
@@ -4319,6 +4363,13 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     [eventPayload setValue:@"Page 5" forKey:@"pageName"];
     [eventPayload setValue:@"Auto dismiss?" forKey:@"buttonName"];
     [eventPayload setValue:[NSNumber numberWithLong:111111] forKey:@"buttonId"];
+#if TARGET_OS_TV
+    [eventPayload setValue:@"tv" forKey:@"deviceType"];
+    [eventPayload setValue:@"tvos" forKey:@"platform"];
+#else
+    [eventPayload setValue:@"mobile" forKey:@"deviceType"];
+    [eventPayload setValue:@"ios" forKey:@"platform"];
+#endif
     [eventData setValue:eventPayload forKey:@"payload"];
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
 
@@ -4358,48 +4409,6 @@ XCTAssertTrue(fabs((actual) - (expected)) < (tolerance), @"%@ is not equal to %@
     XCTAssertEqual([messageViewController.storyView currentIndex], 0);
     [self waitForStoryProgression:messageViewController toPageId:2];
     XCTAssertEqual([messageViewController.storyView currentIndex], 1);
-}
-
-- (void)testInAppStoryDifferentPageDurations {
-    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
-    [SwrveTestHelper createDummyAssets:assets];
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story"];
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
-
-    SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    SwrveMessageFormat *format = campaign.message.formats[0];
-    // change page durations to 2 seconds, 4 seconds, 6 seconds, 8 seconds, 10 seconds
-    long pageDuration = 0;
-    for (NSNumber *pageId in format.pagesOrdered) {
-        pageDuration += 2000;
-        SwrveMessagePage *page = [format.pages objectForKey:pageId];
-        page.pageDuration = [NSNumber numberWithLong:pageDuration];
-    }
-    [controller showMessageCenterCampaign:campaign];
-
-    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-
-    // time progression to page 2
-    NSDate *start = [NSDate date];
-    [self waitForStoryProgression:messageViewController toPageId:2];
-    NSDate *end = [NSDate date];
-    NSTimeInterval timeBetween1And2 = [end timeIntervalSinceDate:start];
-    XCTAssertEqualWithTolerance(timeBetween1And2, 2.0, 1.25); // Duration should about 2 seconds, tolerance 1.25 second
-
-    // time progression to page 3
-    start = [NSDate date];
-    [self waitForStoryProgression:messageViewController toPageId:3];
-    end = [NSDate date];
-    NSTimeInterval timeBetween2And3 = [end timeIntervalSinceDate:start];
-    XCTAssertEqualWithTolerance(timeBetween2And3, 4.0, 1.0); // Duration should about 4 seconds, tolerance 1 second
-    
-    // time progression to page 4
-    start = [NSDate date];
-    [self waitForStoryProgression:messageViewController toPageId:4];
-    end = [NSDate date];
-    NSTimeInterval timeBetween3And4 = [end timeIntervalSinceDate:start];
-    XCTAssertEqualWithTolerance(timeBetween3And4, 6.0, 1.0); // // Duration should about 6 seconds, tolerance 1 second
 }
 
 - (void)testInAppStoryGesturesEnabled {

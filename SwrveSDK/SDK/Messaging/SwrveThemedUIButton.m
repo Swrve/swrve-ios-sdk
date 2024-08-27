@@ -26,7 +26,7 @@
 @synthesize renderScale;
 
 - (id)initWithTheme:(SwrveButtonTheme *)buttonTheme
-               text:(NSString *)text
+               text:(nullable NSString *)text
               frame:(CGRect)frameRect
         calabration:(SwrveCalibration *)swrveCalibration
         renderScale:(CGFloat)scale {

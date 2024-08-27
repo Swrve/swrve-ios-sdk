@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent;
 
-+ (UIImage *)iamStoryDismissImage;
++ (nullable UIImage *)iamStoryDismissImage;
 
 @end
 

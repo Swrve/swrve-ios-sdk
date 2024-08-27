@@ -13,7 +13,7 @@
 
 - (id)   initWithButton:(SwrveStoryDismissButton *)dismissButton
            dismissImage:(UIImage *)dismissImage
-dismissImageHighlighted:(UIImage *)dismissImageHighlighted {
+dismissImageHighlighted:(nullable UIImage *)dismissImageHighlighted {
     self = [super initWithFrame:CGRectZero]; // Frame will be set by the layout engine
     if (self) {
         self.storyDismissButton = dismissButton;

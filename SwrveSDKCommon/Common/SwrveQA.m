@@ -182,15 +182,8 @@ static dispatch_once_t onceToken;
 + (void) messageCampaignTriggered:(NSString *)eventName
                      eventPayload:(NSDictionary *)eventPayload
                         displayed:(BOOL)displayed
-                     campaignInfoDict:(NSArray <SwrveQACampaignInfo *> *)qaCampaignInfoArray
-{
-    SwrveQA *swrveQA = [SwrveQA sharedInstance];
-    if (!swrveQA || ![swrveQA isQALogging] || eventName == nil ) {
-        return;
-    }
-    
+                     campaignInfoDict:(NSArray <SwrveQACampaignInfo *> *)qaCampaignInfoArray {
     NSString *noCampaignTriggeredReason = displayed ? @"" : @"The loaded campaigns returned no message";
-    
     [self campaignTriggered:eventName eventPayload:eventPayload displayed:displayed reason:noCampaignTriggeredReason campaignInfo:qaCampaignInfoArray];
 }
 
@@ -198,23 +191,12 @@ static dispatch_once_t onceToken;
                          eventPayload:(NSDictionary *)eventPayload
                             displayed:(BOOL)displayed
                      campaignInfoDict:(NSArray <SwrveQACampaignInfo *> *)qaCampaignInfoArray {
-    SwrveQA *swrveQA = [SwrveQA sharedInstance];
-    if (!swrveQA || ![swrveQA isQALogging] || eventName == nil) {
-        return;
-    }
-
-    NSString *noCampaignTriggeredReason = displayed ? @"" : @"The loaded campaigns returned no conversations";
-
+   NSString *noCampaignTriggeredReason = displayed ? @"" : @"The loaded campaigns returned no conversations";
     [self campaignTriggered:eventName eventPayload:eventPayload displayed:displayed reason:noCampaignTriggeredReason campaignInfo:qaCampaignInfoArray];
 }
 
 + (void)conversationCampaignTriggeredNoDisplay:(NSString *)eventName
                                   eventPayload:(NSDictionary *)eventPayload {
-    SwrveQA *swrveQA = [SwrveQA sharedInstance];
-    if (!swrveQA || ![swrveQA isQALogging] || eventName == nil) {
-        return;
-    }
-
     NSString *noCampaignTriggeredReason = @"No Conversation triggered because In App Message displayed";
     [self campaignTriggered:eventName eventPayload:eventPayload displayed:false reason:noCampaignTriggeredReason campaignInfo:nil];
 }
@@ -224,6 +206,12 @@ static dispatch_once_t onceToken;
                  displayed:(BOOL)displayed
                     reason:(NSString *)reason
               campaignInfo:(NSArray<SwrveQACampaignInfo *> *)qaCampaignInfoArray {
+    
+    SwrveQA *swrveQA = [SwrveQA sharedInstance];
+    if (!swrveQA || ![swrveQA isQALogging] || eventName == nil || [eventName isEqualToString:@""]) {
+        return;
+    }
+    
     NSMutableDictionary *logDetailsJson = [NSMutableDictionary new];
     [logDetailsJson setValue:eventName forKey:@"event_name"];
     [logDetailsJson setValue:eventPayload forKey:@"event_payload"];

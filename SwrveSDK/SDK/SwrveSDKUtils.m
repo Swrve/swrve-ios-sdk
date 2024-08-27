@@ -142,7 +142,7 @@
 // - in app story dismiss image is rendered using a svg graphic shipped in the SwrveSDK bundle
 // - svg graphics are not completely backwards compatible and may render slightly differently below iOS 13
 // - when adding svg to xcassets make sure to preserve vector data, render as template and use single scale
-+ (UIImage *)iamStoryDismissImage {
++ (nullable UIImage * )iamStoryDismissImage {
     NSBundle *swrveSDKBundle = [SwrveSDKUtils swrveSDKBundle];
     NSString *dismissImageSVGName = @"swrve_x.svg";
     UIImage *dismissImage = [UIImage imageNamed:dismissImageSVGName inBundle:swrveSDKBundle compatibleWithTraitCollection:nil];
@@ -153,18 +153,30 @@
 }
 
 + (NSBundle *)swrveSDKBundle {
-#ifdef SWIFTPM_MODULE_BUNDLE
-    return SWIFTPM_MODULE_BUNDLE;
-#else
     NSBundle *mainBundle = [NSBundle bundleForClass:[SwrveSDKUtils class]];
+           
+    // cocoapods uses SwrveSDK.bundle , see resources_bundle in podspec
     NSURL *bundleURL = [[mainBundle resourceURL] URLByAppendingPathComponent:@"SwrveSDK.bundle"];
     NSBundle *frameworkBundle = [NSBundle bundleWithURL:bundleURL];
-    // if its nil, try standard bundle location for class
+           
     if (frameworkBundle != nil) {
         return frameworkBundle;
     }
-    return mainBundle;
+    
+    // SPM references static framework, location is: Frameworks/SwrveSDK.framework.
+    bundleURL = [[mainBundle resourceURL] URLByAppendingPathComponent:@"Frameworks/SwrveSDK.framework"];
+    frameworkBundle = [NSBundle bundleWithURL:bundleURL];
+           
+    if (frameworkBundle != nil) {
+        return frameworkBundle;
+    }
+    
+#ifdef SWIFTPM_MODULE_BUNDLE
+    mainBundle = SWIFTPM_MODULE_BUNDLE;
 #endif
+    
+    // if its nil, try standard bundle location for class
+    return mainBundle;
 }
 
 @end

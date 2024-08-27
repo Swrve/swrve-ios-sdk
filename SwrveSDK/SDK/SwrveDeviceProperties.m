@@ -37,6 +37,7 @@ static NSString* SWRVE_TRACKING_STATE =                 @"swrve.tracking_state";
 static NSString* SWRVE_LIVE_ACTIVITIES =                @"swrve.permission.ios.live_activities";
 static NSString* SWRVE_LIVE_ACTIVITIES_FREQUENT_UPDATES = @"swrve.permission.ios.live_activities_frequent_updates";
 static NSString* SWRVE_LIVE_ACTIVITIES_PUSH_TO_START_TOKEN = @"swrve.push_to_start_token";
+static NSString* SWRVE_SUPPORT_PUSH_INBOX =             @"swrve.support.push_inbox";
 static NSString* PLATFORM =                             @"iOS "; // with trailing space
 
 @implementation SwrveDeviceProperties
@@ -201,6 +202,8 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
         NSString *idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
         [deviceProperties setValue:idfv forKey:SWRVE_IDFV];
     }
+    
+    [deviceProperties setValue:@YES forKey:SWRVE_SUPPORT_PUSH_INBOX];
 
     return deviceProperties;
 }

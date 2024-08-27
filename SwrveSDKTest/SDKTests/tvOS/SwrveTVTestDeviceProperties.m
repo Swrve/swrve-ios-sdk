@@ -27,7 +27,7 @@
 }
 
 - (int)devicePropertyCount {
-    return 14;
+    return 15;
 }
 
 - (void)testDevicePropertiesNil {

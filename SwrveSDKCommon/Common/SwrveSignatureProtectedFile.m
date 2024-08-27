@@ -55,6 +55,11 @@
             filePath = [SwrveLocalStorage realTimeUserPropertiesFilePathForUserId:userID];
             signatureFilePath = [SwrveLocalStorage offlineRealTimeUserPropertiesSignatureFilePathForUserId:userID];
             break;
+            
+        case SWRVE_PUSH_INBOX_FILE:
+            filePath = [SwrveLocalStorage pushInboxFilePathForUserId:userID];
+            signatureFilePath = [SwrveLocalStorage pushInboxSignatureFilePathForUserId:userID];
+            break;
     }
 
     if (filePath != nil) {

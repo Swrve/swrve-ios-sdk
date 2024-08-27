@@ -72,7 +72,7 @@
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.tracking_state"]);
     
     // IDFA & Device Info count
-    XCTAssertEqual([deviceInfo count], 18);
+    XCTAssertEqual([deviceInfo count], 19);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
     
     // Wont collect unless config is set to auto collect.

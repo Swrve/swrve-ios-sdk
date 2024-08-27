@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithJSON:(NSDictionary *)data;
 
-- (id)initWith:(NSString *)subjectStr description:(NSString *)descriptionStr accessibilityText:(NSString *)accessibilityTextStr
-      imageUrl:(NSString *)imageUrlStr imageSha:(NSString *)imageShaStr image:(UIImage *)imageUI;
+- (id)initWith:(nullable NSString *)subjectStr description:(nullable NSString *)descriptionStr accessibilityText:(nullable NSString *)accessibilityTextStr
+      imageUrl:(nullable NSString *)imageUrlStr imageSha:(NSString *)imageShaStr image:(UIImage *)imageUI;
 @end
 
 NS_ASSUME_NONNULL_END

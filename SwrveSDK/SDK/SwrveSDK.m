@@ -354,6 +354,31 @@ static dispatch_once_t sharedInstanceToken = 0;
     [[SwrveSDK sharedInstance] idfa:idfa];
 }
 
++ (NSArray *)pushInboxMessages {
+    [SwrveSDK checkInstance];
+    return [[SwrveSDK sharedInstance] pushInboxMessages];
+}
+
++ (void)readPushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] readPushInboxMessage:messageId listener:listener];
+}
+
++ (void)deletePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] deletePushInboxMessage:messageId listener:listener];
+}
+
++ (void)engagePushInboxMessage:(UInt64)messageId listener:(id<SwrvePushInboxDelegate>)listener {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] engagePushInboxMessage:messageId listener:listener];
+}
+
++ (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener {
+    [SwrveSDK checkInstance];
+    [[SwrveSDK sharedInstance] pushInboxUpdateListener:listener];
+}
+
 #pragma mark -
 
 @end

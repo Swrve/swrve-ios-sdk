@@ -20,6 +20,8 @@ static NSString *SWRVE_OFFLINE_CAMPAIGNS = @"cmcc5.json";
 static NSString *SWRVE_OFFLINE_CAMPAIGNS_SGT = @"cmccsgt5.txt";
 static NSString *SWRVE_REAL_TIME_USER_PROPERTIES = @"cmrp2s.txt";
 static NSString *SWRVE_REAL_TIME_USER_PROPERTIES_SGT = @"cmrp2ssgt2.txt";
+static NSString *SWRVE_PUSH_INBOX = @"cmpim.json";
+static NSString *SWRVE_PUSH_INBOX_SGT = @"cmpimsgt.txt";
 static NSString *SWRVE_ANONYMOUS_EVENTS_PLIST = @"com.swrve.events.anonymous.plist";
 
 //NSUserDefaults Keys
@@ -41,6 +43,7 @@ static NSString *SWRVE_USERS = @"swrve_users";
 static NSString *SWRVE_IDFA = @"swrve_ifda";
 static NSString *SWRVE_USER_IDENTIFY_DATES = @"swrve_users_identify_dates";
 static NSString *SWRVE_USERS_IDENTIFY_REFRESH_PERIOD = @"swrve_identify_refresh_period";
+static NSString *SWRVE_PUSH_INBOX_HASH = @"push_inbox_hash";
 
 static dispatch_once_t applicationSupportPathOnceToken = 0;
 static dispatch_once_t swrveAppSupportDirOnceToken = 0;
@@ -579,6 +582,38 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
 
 + (NSString *)offlineRealTimeUserPropertiesSignatureFilePathForUserId:(NSString *)userId {
     return [self applicationSupportFileForUserId:userId andName:SWRVE_REAL_TIME_USER_PROPERTIES_SGT];
+}
+
++ (NSString *)pushInboxFilePathForUserId:(NSString*) userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_PUSH_INBOX];
+}
+
++ (NSString *)pushInboxSignatureFilePathForUserId:(NSString *)userId {
+    return [self applicationSupportFileForUserId:userId andName:SWRVE_PUSH_INBOX_SGT];
+}
+
++ (void)savePushInboxHash:(NSString *)hash forUserId:(NSString*)userId {
+    if (userId == nil) { return; }
+    NSString *key = [userId stringByAppendingString:SWRVE_PUSH_INBOX_HASH];
+    [[self defaults] setObject:hash forKey:key];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:hash key:key];
+}
+
++ (NSString *)pushInboxHashForUserId:(NSString *)userId {
+    if (userId == nil) { return nil; }
+    NSString *key = [userId stringByAppendingString:SWRVE_PUSH_INBOX_HASH];
+    NSString *hash = [[self defaults] stringForKey:key];
+    if (hash == nil) {
+        hash = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
+    }
+    return hash;
+}
+
++ (void)removePushInboxHashForUserId:(NSString *)userId {
+    if (userId == nil) { return; }
+    NSString *key = [userId stringByAppendingString:SWRVE_PUSH_INBOX_HASH];
+    [[self defaults] removeObjectForKey:key];
+    [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
 }
 
 + (id)readValueFromDictionaryFile:(NSString *)fileName forKey:(NSString *)key {

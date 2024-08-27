@@ -3,10 +3,12 @@
 
 @implementation TextTemplating
 
-+ (NSString *)templatedTextFromString:(NSString *)text withProperties:(NSDictionary *)properties andError:(NSError **)error {
++ (nullable NSString *)templatedTextFromString:(nullable NSString *)text withProperties:(NSDictionary *)properties andError:(NSError **)error {
 
     if (text == nil) {
-        *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        if (error) {
+            *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        }
         return nil;
     }
     
@@ -35,7 +37,9 @@
             } else if (fallback != nil) {
                 [matchedStrings setObject:fallback forKey:templateFullValue];
             } else {
-                *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                if (error) {
+                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                }
                 return nil;
             }
         }
@@ -69,7 +73,9 @@
 + (NSString *)templatedTextFromJSONString:(NSString *)json withProperties:(NSDictionary *)properties andError:(NSError **)error {
     
     if (json == nil) {
-        *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        if (error) {
+            *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing personalization message for text templating"}];
+        }
         return nil;
     }
     
@@ -98,7 +104,9 @@
             } else if (fallback != nil) {
                 [matchedStrings setObject:fallback forKey:templateFullValue];
             } else {
-                *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                if (error) {
+                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                }
                 return nil;
             }
         }

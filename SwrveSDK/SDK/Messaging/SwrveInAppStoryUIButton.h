@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)   initWithButton:(SwrveStoryDismissButton *)button
            dismissImage:(UIImage *)dismissImage
-dismissImageHighlighted:(UIImage *)dismissImageHighlighted;
+dismissImageHighlighted:(nullable UIImage *)dismissImageHighlighted;
 
 @end
 

@@ -38,6 +38,8 @@ enum SwrveTrackingState {
 + (NSString *)offlineCampaignsSignatureFilePathForUserId:(NSString *)userId;
 + (NSString *)realTimeUserPropertiesFilePathForUserId:(NSString *)userId;
 + (NSString *)offlineRealTimeUserPropertiesSignatureFilePathForUserId:(NSString *)userId;
++ (NSString *)pushInboxFilePathForUserId:(NSString *)userId;
++ (NSString *)pushInboxSignatureFilePathForUserId:(NSString *)userId;
 + (void)setFileProtectionNone:(NSString *)filePath;
 
 //NSUserdefaults
@@ -75,5 +77,8 @@ enum SwrveTrackingState {
 + (NSInteger)identifyRefreshPeriod;
 + (void)saveIdentifyDate:(NSDate *)date forUserId:(NSString *)swrveUserId;
 + (NSDate *)identifyDate:(NSString *)userId;
++ (void)savePushInboxHash:(NSString *)hasg forUserId:(NSString *)userId;
++ (NSString *)pushInboxHashForUserId:(NSString *)userId;
++ (void)removePushInboxHashForUserId:(NSString *)userId;
 
 @end

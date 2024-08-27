@@ -60,7 +60,7 @@
 
 - (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
                         message:(SwrveMessage *)swrveMessage
-                personalization:(NSDictionary *)personalizationDict {
+                personalization:(nullable NSDictionary *)personalizationDict {
 
 #if TARGET_OS_TV
     self = [super init];
@@ -292,8 +292,12 @@
 
     [parentViewController addChildViewController:messagePageViewController];
     [parentViewController.view addSubview:messagePageViewController.view];
-    [parentViewController.view addSubview:storyView];
-    [parentViewController.view addSubview:storyButton];
+    if (storyView) {
+        [parentViewController.view addSubview:storyView];
+    }
+    if (storyButton) {
+        [parentViewController.view addSubview:storyButton];
+    }
     [messagePageViewController didMoveToParentViewController:parentViewController];
 }
 
@@ -359,7 +363,7 @@
     NSMutableArray *pageDurations = [NSMutableArray new];
     for (NSNumber *pageId in self.currentMessageFormat.pagesOrdered) {
         SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
-        if(page.pageDuration) {
+        if(page.pageDuration != nil) {
             [pageDurations addObject:page.pageDuration];
         }
     }
@@ -529,7 +533,7 @@
     [eventData setValue:self.message.messageID forKey:@"id"];
     [eventData setValue:pageId forKey:@"contextId"];
 
-    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    NSMutableDictionary *eventPayload = [SwrveUtils iamCommonEventPayload];
     SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
     if(page.pageName && page.pageName.length > 0) {
         [eventPayload setValue:page.pageName forKey:@"pageName"];
@@ -553,7 +557,7 @@
     [eventData setValue:self.message.messageID forKey:@"id"];
     [eventData setValue:pageId forKey:@"contextId"];
 
-    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    NSMutableDictionary *eventPayload = [SwrveUtils iamCommonEventPayload];
     SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
     if(page.pageName && page.pageName.length > 0) {
         [eventPayload setValue:page.pageName forKey:@"pageName"];
@@ -570,7 +574,10 @@
     [eventData setValue:eventPayload forKey:@"payload"];
 
     [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
-    [self.navigationEventsSent addObject:buttonId];
+    
+    if (buttonId != nil) {
+        [self.navigationEventsSent addObject:buttonId];
+    }
 }
 
 - (void)queueDismissEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId buttonName:(NSString *)buttonName {
@@ -581,7 +588,7 @@
     [eventData setValue:self.message.messageID forKey:@"id"];
     [eventData setValue:pageId forKey:@"contextId"];
 
-    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    NSMutableDictionary *eventPayload = [SwrveUtils iamCommonEventPayload];
     SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
     if(page.pageName && page.pageName.length > 0) {
         [eventPayload setValue:page.pageName forKey:@"pageName"];

@@ -7,7 +7,12 @@
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
+
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
 
 @interface SwrveDeviceProperties ()
 - (NSString *)installDate:(UInt64)appInstallTimeSeconds;
@@ -33,9 +38,9 @@
 - (int)devicePropertyCount {
     if (@available(iOS 16.2, *)) {
         // starting 16.2, we add two additional LA property
-        return 17;
+        return 18;
     } else {
-        return 15;
+        return 16;
     }
 }
 
@@ -82,6 +87,8 @@
     
     // Needs to be manually set, if autoCollectIDFV is true in config
     XCTAssertNil([deviceInfo objectForKey:@"swrve.IDFA"]);
+    
+    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.support.push_inbox"], @YES);
 }
 
 - (void)testDevicePropertiesNil_WithSDKVersion {

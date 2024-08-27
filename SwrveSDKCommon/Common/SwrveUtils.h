@@ -96,4 +96,6 @@
 
 + (NSMutableDictionary *)pushTrackingPayload:(NSDictionary *)userInfo;
 
++ (NSMutableDictionary *)iamCommonEventPayload;
+
 @end

@@ -37,7 +37,6 @@
 @synthesize autoCollectIDFV;
 @synthesize urlSessionDelegate;
 
-
 -(id) init
 {
     if ( self = [super init] ) {
