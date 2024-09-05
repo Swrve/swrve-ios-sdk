@@ -8,7 +8,7 @@
 + (void) handleContent:(UNNotificationContent *)notificationContent
 withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completion;
 
-+ (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo;
++ (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
 
 + (void)clearAllAuthenticatedNotifications;
 

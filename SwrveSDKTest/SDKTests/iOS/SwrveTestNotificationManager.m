@@ -53,7 +53,7 @@
     };
 
     NSDictionary *userInfo = [self userInfoForCampaignType:@"iam"];
-    [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
+    [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo notificationRequestId:@"someId"];
     
     OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedButtonPayload mutableCopy] triggerCallback:false]);
     OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
@@ -87,7 +87,7 @@
     };
 
     NSDictionary *userInfo = [self userInfoForCampaignType:@"geo"];
-    [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo];
+    [SwrveNotificationManager notificationResponseReceived:@"identifier" withUserInfo:userInfo notificationRequestId:@"someId"];
     
     OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedEngagedPayload mutableCopy] triggerCallback:false]);
     OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedButtonPayload mutableCopy] triggerCallback:false]);

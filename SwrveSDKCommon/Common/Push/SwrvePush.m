@@ -370,7 +370,7 @@ NSString *appGroupIdentifier;
 #endif
 #pragma unused(center)
 
-    NSURL *deeplinkUrl = [SwrveNotificationManager notificationResponseReceived:response.actionIdentifier withUserInfo:response.notification.request.content.userInfo];
+    NSURL *deeplinkUrl = [SwrveNotificationManager notificationResponseReceived:response.actionIdentifier withUserInfo:response.notification.request.content.userInfo notificationRequestId:response.notification.request.identifier];
     if (deeplinkUrl) {
         [_pushDelegate deeplinkReceived:deeplinkUrl];
     }

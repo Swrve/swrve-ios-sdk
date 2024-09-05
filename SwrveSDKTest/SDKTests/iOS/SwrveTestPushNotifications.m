@@ -8,7 +8,7 @@
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
 - (NSInteger)nextEventSequenceNumber;
-- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
+- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
 - (void)sendQueuedEventsWithCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventBufferCallback
                    eventFileCallback:(void (^)(NSURLResponse *response, NSData *data, NSError *error))eventFileCallback;
 @property(atomic, readonly) SwrvePush *push;
@@ -148,7 +148,7 @@
     [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"2"];
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"2"}];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"2"} notificationRequestId:@"2"];
 
     OCMVerifyAll(eventBufferMock);
     [mockApplication stopMocking];
@@ -165,8 +165,8 @@
     [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"4"];
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"3"}];
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"4"}];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"3"} notificationRequestId:@"3"];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"4"} notificationRequestId:@"4"];
 
     OCMVerifyAll(eventBufferMock);
     [mockApplication stopMocking];
@@ -202,7 +202,7 @@
                     }],
             }
     };
-    [swrveMock processNotificationResponseWithIdentifier:@"0" andUserInfo:userInfo];
+    [swrveMock processNotificationResponseWithIdentifier:@"0" andUserInfo:userInfo notificationRequestId:@"5"];;
 
     OCMVerifyAll(eventBufferMock);
     OCMVerifyAll(mockApplication);
@@ -240,7 +240,7 @@
                     }],
             }
     };
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:userInfo];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:userInfo notificationRequestId:@"6"];
 
     XCTAssertEqual(callCount, 1);
     OCMVerifyAll(eventBufferMock);
@@ -284,7 +284,7 @@
                     ],
             }
     };
-    [swrveMock processNotificationResponseWithIdentifier:@"1" andUserInfo:userInfo];
+    [swrveMock processNotificationResponseWithIdentifier:@"1" andUserInfo:userInfo notificationRequestId:@"7"];
 
     OCMVerifyAll(eventBufferMock);
     OCMVerifyAll(mockApplication);
@@ -327,7 +327,7 @@
                     ],
             }
     };
-    [swrveMock processNotificationResponseWithIdentifier:@"2" andUserInfo:userInfo];
+    [swrveMock processNotificationResponseWithIdentifier:@"2" andUserInfo:userInfo notificationRequestId:@"8"];
 
     OCMVerifyAll(eventBufferMock);
     OCMVerifyAll(mockApplication);
@@ -348,8 +348,8 @@
     });
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"}];
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"}];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"9"];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"9"];
 
     XCTAssertEqual(callCount, 1);
     OCMVerifyAll(eventBufferMock);

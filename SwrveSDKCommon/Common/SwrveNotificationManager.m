@@ -10,6 +10,7 @@
 // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
 // This would result in bad engagement reports etc. The lastProcessedPushId var is used to check that the same push id
 // can't be processed in sequence.
+// There is also public api: processNotificationResponse that could be called multiple times
 static NSString *lastProcessedPushId = nil;
 
 @interface SwrveUser ()
@@ -394,9 +395,9 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return cachedUrl;
 }
 
-+ (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo {
++ (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId {
 
-    if ([self canProcessEngageNotification:userInfo] == NO) {
+    if ([self canProcessEngageNotification:userInfo notificationRequestId:notificationRequestId] == NO) {
         return nil;
     }
     NSURL *deeplinkUrl = nil;
@@ -462,14 +463,17 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return deeplinkUrl;
 }
 
-+ (BOOL)canProcessEngageNotification:(NSDictionary *)userInfo {
++ (BOOL)canProcessEngageNotification:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId {
     BOOL canProcess = NO;
     NSString *notificationIdentifierString = [self notificationIdFromUserInfo:userInfo];
     if (!notificationIdentifierString || [notificationIdentifierString isEqualToString:@"-1"]) {
         [SwrveLogger debug:@"SwrveNotificationManager: Got unidentified notification", nil];
     } else {
         if (lastProcessedPushId == nil || [notificationIdentifierString isEqualToString:@"0"] || ![notificationIdentifierString isEqualToString:lastProcessedPushId]) {
-            lastProcessedPushId = notificationIdentifierString;
+            if (notificationRequestId != nil) {
+                lastProcessedPushId = notificationRequestId;
+            }
+
             canProcess = YES;
         } else {
             [SwrveLogger debug:@"SwrveNotificationManager: Got Swrve notification with id %@, ignoring as we already processed it", notificationIdentifierString];

@@ -18,7 +18,7 @@
 @interface Swrve()
 @property(atomic) SwrveRESTClient *restClient;
 
-- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo;
+- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
 - (NSString *)signatureKey;
 @end
 
@@ -108,7 +108,7 @@
                         }
                 };
 
-    [swrve processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:payload];
+    [swrve processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:payload notificationRequestId:@"someId"];
     
     return swrve;
 }

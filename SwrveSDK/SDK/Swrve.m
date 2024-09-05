@@ -1676,16 +1676,16 @@ enum {
     }
 }
 
-- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo {
+- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId {
     [SwrveLogger debug:@"Processing Push Notification Response: %@", identifier];
-    NSURL *deeplinkUrl = [SwrveNotificationManager notificationResponseReceived:identifier withUserInfo:userInfo];
+    NSURL *deeplinkUrl = [SwrveNotificationManager notificationResponseReceived:identifier withUserInfo:userInfo notificationRequestId:notificationRequestId];
     if (deeplinkUrl) {
         [self deeplinkReceived:deeplinkUrl];
     }
 }
 
 - (void)processNotificationResponse:(UNNotificationResponse *)response {
-    [self processNotificationResponseWithIdentifier:response.actionIdentifier andUserInfo:response.notification.request.content.userInfo];
+    [self processNotificationResponseWithIdentifier:response.actionIdentifier andUserInfo:response.notification.request.content.userInfo notificationRequestId:response.notification.request.identifier];
 }
 
 - (void)deeplinkReceived:(NSURL *)url NS_EXTENSION_UNAVAILABLE_IOS("") {

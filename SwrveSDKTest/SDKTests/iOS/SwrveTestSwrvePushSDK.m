@@ -88,7 +88,7 @@
 
 - (void) testPushEngagementEventIncoming {
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:1], @"_p", @"protocol://custom", @"_sd", @"oldprotocol://custom", @"_d", nil];
-    [SwrveNotificationManager notificationResponseReceived:@"1" withUserInfo:userInfo];
+    [SwrveNotificationManager notificationResponseReceived:@"1" withUserInfo:userInfo notificationRequestId:@"someId"];
     // TODO there are no assertions on this test!?!
 }
 
@@ -343,7 +343,7 @@
                                               SwrveNotificationButtonActionTypeKey:@"open_url", SwrveNotificationButtonActionKey:@"protocol://custom"}];
     NSDictionary* sw = @{SwrveNotificationMediaKey:mediaLayer, SwrveNotificationButtonListKey:buttonlayer, SwrveNotificationContentVersionKey:[NSString stringWithFormat:@"%d", SwrveNotificationContentVersion]};
     NSDictionary* userInfo = @{SwrveNotificationIdentifierKey: @"1", SwrveNotificationContentIdentifierKey: sw};
-    [SwrveNotificationManager notificationResponseReceived:@"0" withUserInfo:userInfo];
+    [SwrveNotificationManager notificationResponseReceived:@"0" withUserInfo:userInfo notificationRequestId:@"someId"];
 
     /** Check if influenced has been cleared **/
     NSDictionary *influnencedData = [[NSUserDefaults standardUserDefaults] objectForKey:SwrveInfluenceDataKey];
