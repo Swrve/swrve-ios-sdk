@@ -1,6 +1,8 @@
 #import "SwrveDeeplinkManager.h"
 #import "Swrve.h"
 #import "Swrve+Private.h"
+#import "SwrveMessageController+Private.h"
+
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
 #import <SwrveSDKCommon/SwrveRESTClient.h>
@@ -14,9 +16,12 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveUtils.h"
 #endif
-#import "SwrveConversationCampaign.h"
-#import "SwrveInAppCampaign.h"
-#import "SwrveMessageController+Private.h"
+
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
 
 @interface Swrve()
 - (NSString *) appVersion;
@@ -32,7 +37,6 @@
 - (NSString *)campaignQueryString;
 - (BOOL)filtersOk:(NSArray *)filters;
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
-- (void)showConversation:(SwrveConversation *)conversation queue:(bool)isQueued;
 @property (nonatomic, retain) NSDate *initialisedTime; // SDK init time
 @end
 
@@ -253,24 +257,14 @@
     
     NSMutableSet *assetsQueue = [[NSMutableSet alloc] init];
     SwrveCampaign *campaign = nil;
-    if ([campaignDic objectForKey:@"conversation"] != nil) {
-        if ([self.sdk.messaging filtersOk:[campaignJson objectForKey:@"filters"]]) {
-            // Conversation version check
-            NSNumber *conversationVersion = [campaignJson objectForKey:@"conversation_version"];
-            if (conversationVersion == nil || [conversationVersion integerValue] <= CONVERSATION_VERSION) {
-                campaign = [[SwrveConversationCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging];
-            } else {
-                [SwrveLogger error:@"Conversation version %@ cannot be loaded with this SDK.", conversationVersion];
-            }
-        }
-    } else if ([campaignDic objectForKey:@"message"] != nil)  {
+    if ([campaignDic objectForKey:@"message"] != nil)  {
         
         // retrieve personalization
         NSDictionary *personalization = [[_sdk messaging] retrievePersonalizationProperties:nil];
         
         campaign = [[SwrveInAppCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic withAssetsQueue:assetsQueue forController:self.sdk.messaging withPersonalization:personalization];
     } else if ([campaignDic objectForKey:@"embedded_message"] != nil) {
-        campaign = [[SwrveEmbeddedCampaign alloc] initAtTime:self.sdk.messaging.initialisedTime fromDictionary:campaignDic forController:self.sdk.messaging];
+        campaign = [[SwrveEmbeddedCampaign alloc] initAt:self.sdk.messaging.initialisedTime from:campaignDic];
     } else {
         [SwrveLogger error:@"Unknown campaign type", nil];
         return;
@@ -292,12 +286,7 @@
 }
 
 - (void)showCampaign:(SwrveCampaign *)campaign {
-    if ([campaign isKindOfClass:[SwrveConversationCampaign class]]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            SwrveConversation *conversation = ((SwrveConversationCampaign *)campaign).conversation;
-            [self.sdk.messaging showConversation:conversation queue:true];
-        });
-    } else if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
+    if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *)campaign;
         SwrveMessage *message = swrveCampaign.message;
 

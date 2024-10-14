@@ -68,8 +68,7 @@
     [self createInstallDateV0FormatWithDate:@"00000"];
     
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:0]; // migrate from 0
     [migrationsManager checkMigrations];
     
@@ -88,8 +87,7 @@
     [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:@"UserId"];
     
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:1]; //migrate from 1
     [migrationsManager checkMigrations];
     

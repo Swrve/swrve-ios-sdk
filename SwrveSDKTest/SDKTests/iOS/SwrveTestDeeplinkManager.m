@@ -1,20 +1,11 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
-#import "SwrveDeeplinkManager.h"
-#import "SwrveCommon.h"
-#import "SwrveRESTClient.h"
 #import "SwrveTestHelper.h"
-#import "SwrveLocalStorage.h"
-#import "SwrveConversationItemViewController.h"
-#import "SwrveCampaign.h"
-#import "SwrveMessageController.h"
 
 @interface SwrveMessageController ()
 - (NSString *)campaignQueryString API_AVAILABLE(ios(12.0));
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
 @property (nonatomic, retain) UIWindow *conversationWindow;
-@property (nonatomic, retain) SwrveConversationItemViewController *swrveConversationItemViewController;
 @end
 
 @interface SwrveDeeplinkManager ()
@@ -29,7 +20,6 @@
 @end
 
 @interface Swrve()
-@property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrveRESTClient *restClient;
 @property NSMutableArray* eventBuffer;
 @property NSURL* eventFilename;
@@ -244,58 +234,6 @@ NSString *mockCacheDir;
     OCMVerifyAllWithDelay(swrveMock, 5);
 }
 
-- (void)testHandleDeeplink_ConversationShown {
-    Swrve *swrve = [Swrve alloc];
-    id swrveMock = OCMPartialMock(swrve);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-value"
-    [swrve initWithAppID:123 apiKey:@"SomeAPIKey"];
-#pragma clang diagnostic pop
-    
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
-    id mockRestClient = OCMPartialMock(restClient);
-    OCMStub([swrveMock restClient]).andReturn(mockRestClient);
-    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
-    OCMExpect([mockResponse statusCode]).andReturn(200);
-    
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_conversation" ofType:@"json"];
-    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
-    
-    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
-                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
-    
-    SwrveDeeplinkManager *swrveDeeplinkManger = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
-    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295412&ad_source=facebook&ad_campaign=BlackFriday"];
-    [swrveDeeplinkManger handleDeeplink:url];
-    
-    SwrveMessageController *vc = swrve.messaging;
-    XCTAssertTrue(vc != nil);
-    
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Event"];
-    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL(){
-        return (vc.conversationWindow != nil);
-    } expectation:expectation];
-    [self waitForExpectationsWithTimeout:10.0 handler:nil];
-    
-    XCTAssertTrue(vc.conversationWindow != nil);
-    
-    SwrveConversationItemViewController *swrveConversationItemViewController = vc.swrveConversationItemViewController;
-    XCTAssertTrue(swrveConversationItemViewController != nil);
-    
-    XCTAssertTrue([swrveConversationItemViewController.conversation.name isEqualToString:@"FB Ad Journey Conversation Test"]);
-    XCTAssertTrue([swrveConversationItemViewController.conversation.conversationID isEqualToNumber:@8587]);
-    
-    //Check events buffer for start and impression event
-    NSArray *eventsBuffer = [swrveMock eventBuffer];
-    NSString *bufferStringStart = (NSString*)(eventsBuffer[0]);
-    NSDictionary *bufferDicStart = [NSJSONSerialization JSONObjectWithData:[bufferStringStart dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    XCTAssertTrue([bufferDicStart[@"name"] isEqualToString:@"Swrve.Conversations.Conversation-8587.start"]);
-    
-    NSString *bufferStringImpression = (NSString*)(eventsBuffer[1]);
-    NSDictionary *bufferDicImpression = [NSJSONSerialization JSONObjectWithData:[bufferStringImpression dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    XCTAssertTrue([bufferDicImpression[@"name"] isEqualToString:@"Swrve.Conversations.Conversation-8587.impression"]);
-}
-
 - (void)testHandleDeeplink_MessageShownOncePerAppLoad {
     //once showCampaign is called, fetchCampaign should no longer be called due to alreadySeenCampaignID check.
     Swrve *swrve = [Swrve alloc];
@@ -317,20 +255,20 @@ NSString *mockCacheDir;
     SwrveDeeplinkManager *swrveDeeplinkManager = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
     id mockSwrveDeeplinkManager = OCMPartialMock(swrveDeeplinkManager);
     
-    SwrveCampaign *campaign = [SwrveCampaign new];
-    campaign.ID = 295412;
+    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0];
+    campaign.ID = 295411;
     
     OCMStub([mockSwrveDeeplinkManager campaignAssets:OCMOCK_ANY withCompletionHandler:([OCMArg invokeBlockWithArgs:campaign, nil])]);
     OCMStub([mockSwrveDeeplinkManager writeCampaignDataToCache:nil fileType:3]);
     
     //confirm handleDeferredDeeplink is only processed once.
-    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295412&ad_source=facebook&ad_campaign=BlackFriday"];
+    NSURL *url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
     [mockSwrveDeeplinkManager handleDeferredDeeplink:url];
     OCMVerify([mockSwrveDeeplinkManager fetchCampaign:OCMOCK_ANY completion:OCMOCK_ANY]);
     
     //confirm further calls with same id aren't processed
     OCMReject([mockSwrveDeeplinkManager fetchCampaign:OCMOCK_ANY completion:OCMOCK_ANY]);
-    url = [NSURL URLWithString:@"swrve://app?ad_content=295412&ad_source=facebook&ad_campaign=BlackFriday"];
+    url = [NSURL URLWithString:@"swrve://app?ad_content=295411&ad_source=facebook&ad_campaign=BlackFriday"];
     [mockSwrveDeeplinkManager handleDeferredDeeplink:url];
 }
 
@@ -417,8 +355,8 @@ NSString *mockCacheDir;
                                };
     NSError *error = [NSError errorWithDomain:@"Swrve" code:500 userInfo:userInfo];
     
-    SwrveCampaign *campaign = [SwrveCampaign new];
-    campaign.ID = 295412;
+    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt:[NSDate date] from:@{} campaignType:0];
+    campaign.ID = 295411;
     
     NSDictionary *cachedCampaign = [json objectForKey:@"1"];
     OCMStub([mockSwrveDeeplinkManager campaignAssets:cachedCampaign withCompletionHandler:([OCMArg invokeBlockWithArgs:campaign, nil])]);
@@ -427,7 +365,7 @@ NSString *mockCacheDir;
     [mockSwrveDeeplinkManager handleNotificationToCampaign:@"1"];
     
     OCMVerify([mockSwrveDeeplinkManager showCampaign:[OCMArg checkWithBlock:^(SwrveCampaign *campaign){
-        XCTAssertEqual(campaign.ID,295412);
+        XCTAssertEqual(campaign.ID, 295411);
         return [campaign isKindOfClass:[SwrveCampaign class]];
     }]]);
 }

@@ -2,7 +2,7 @@
 #import "SwrvePrivateAccess.h"
 #import "SwrvePush.h"
 #import "SwrveLocalStorage.h"
-#import "SwrveSDK.h"
+#import "Swrve.h"
 #import "SwrveMigrationsManager.h"
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrvePermissions.h"
@@ -10,6 +10,11 @@
 #if __has_include(<OCMock/OCMock.h>)
 #import <OCMock/OCMock.h>
 #endif
+
+@interface SwrveSDK (InternalAccess)
++ (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
+@end
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)markAsMigrated;

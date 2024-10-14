@@ -1,14 +1,8 @@
 #import <XCTest/XCTest.h>
-#import "SwrveProtocol.h"
-#import "SwrveConfig.h"
-#import "SwrvePermissions.h"
-#import "SwrveDeviceProperties.h"
-#import "SwrveUtils.h"
 #import <OCMock/OCMock.h>
+#import "SwrveTestHelper.h"
 #import "TestPermissionsDelegate.h"
 #import "SwrveMockNSURLProtocol.h"
-#import "SwrveSDK.h"
-#import "SwrveTestHelper.h"
 
 @interface SwrveTVTestDeviceProperties : XCTestCase
 
@@ -44,7 +38,6 @@
     XCTAssertEqual([deviceInfo count],[self devicePropertyCount]);
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
-    XCTAssertNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_dpi"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_width"]);

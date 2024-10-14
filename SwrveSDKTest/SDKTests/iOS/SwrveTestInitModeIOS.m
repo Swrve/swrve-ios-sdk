@@ -1,6 +1,5 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
 
 @interface SwrveTestInitModeIOS : XCTestCase {
@@ -48,12 +47,12 @@
 
 - (void)testSetDeviceToken {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK setDeviceToken:[NSData new]];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK setDeviceToken:[NSData new]];
     OCMVerifyAll(swrveMockAuto);
@@ -61,11 +60,11 @@
 
 - (void)testDeviceToken {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     NSString *deviceTokenManaged = [SwrveSDK deviceToken];
     XCTAssertNil(deviceTokenManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto];
     NSString *deviceTokenAuto = [SwrveSDK deviceToken];
     XCTAssertNil(deviceTokenAuto);
     

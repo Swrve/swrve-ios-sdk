@@ -143,11 +143,6 @@
       }
     }
   ],
-  "game_data": {
-    "150": {
-      "app_store_url": "https://itunes.apple.com/us/app/ascension-chronicle-godslayer/id441838733?mt=8"
-    }
-  },
   "rules": {
     "min_delay_between_messages": 10,
     "max_messages_per_session": 1,

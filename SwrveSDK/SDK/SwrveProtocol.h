@@ -1,13 +1,15 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-#import "SwrveConfig.h"
-#import "SwrveIAPRewards.h"
-#import "SwrveResourceManager.h"
 #import "SwrveDeeplinkManager.h"
 #import "SwrvePushInboxUpdateDelegate.h"
 
+@class SwrveIAPRewards;
+@class SwrveEmbeddedMessage;
 @protocol SwrvePushInboxDelegate;
+@class SwrvePushInboxMessage;
+@class SwrveCampaign;
+@class SwrveResourceManager;
 
 #if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
 #import <SwrveSDKCommon/SwrveSignatureProtectedFile.h>
@@ -23,8 +25,10 @@
 #endif //TARGET_OS_IOS
 #endif
 
+@class SwrveConfig;
+
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "9.2.0"
+#define SWRVE_SDK_VERSION "10.0.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -66,7 +70,7 @@ typedef void (^SwrveUserResourcesDiffListener)(NSDictionary *oldResourcesValues,
  *
  * \param properties         A dictionary containing the properties.
  */
-typedef void (^SwrveRealTimeUserPropertiesCallback) (NSDictionary* properties);
+typedef void (^SwrveRealTimeUserPropertiesCallback) (NSMutableDictionary* properties);
 
 /*! Defines the block signature for notifications when an event is raised.
  * Typically used internally.
@@ -429,43 +433,24 @@ NSString * eventsPayloadAsJSON);
  */
 - (NSString *)externalUserId;
 
-/*! Add a custom payload for user input events.
- Selecting a star-rating,
- Selecting a choice on a text questionnaire
- Selecting play on a video
-
- @param payload NSMutableDictionary with custom key pair values.
- @note  If key pair values added is greater than 5 or Keys added conflict with existing swrve internal keys then
-        the custom payload will be rejected and not added for the event. A debug log error will be generated.
- @code
- NSMutableDictionary *myPayload =  [[NSMutableDictionary alloc] initWithDictionary:@{
-                                                                                @"key1":@"value2",
-                                                                                @"key2": @"value2",
-                                    }];
-
- [SwrveSDK setCustomPayloadForConversationInput:myPayload];
- @endcode
- */
-- (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload;
-
 /*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
  * Tracking will begin using the last user or an auto generated userId if the first time the sdk is started.
- * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ * Throws NSException if called in SwrveInitMode (Auto) mode.
  */
 - (void)start;
 
-/*! Start the sdk when in SWRVE_INIT_MODE_MANAGED mode.
+/*! Start the sdk when in SwrveInitMode (Managed) mode.
  * Tracking will begin using the userId passed in.
  * Can be called multiple times to switch the current userId to something else. A new session is started if not already
  * started or if is already started with different userId.
  * The sdk will remain started until the createInstance is called again.
- * Throws NSException if called in SWRVE_INIT_MODE_AUTO mode.
+ * Throws NSException if called in SwrveInitMode (Auto) mode.
  * @param userId User id to start sdk with..
  */
 - (void)startWithUserId:(NSString *)userId;
 
 /*! Check if the SDK has been started.
- * @return true when in SWRVE_INIT_MODE_AUTO mode. When in SWRVE_INIT_MODE_MANAGED mode it will return true after one of the 'start' api's has been called.
+ * @return true when in SwrveInitModeAuto mode. When in SwrveInitMode (Managed) mode it will return true after one of the 'start' api's has been called.
  */
 - (BOOL)started;
 
@@ -524,7 +509,7 @@ NSString * eventsPayloadAsJSON);
  *
  * \returns List of active Message Center campaigns.
  */
-- (NSArray *)messageCenterCampaigns;
+- (NSArray <SwrveCampaign *>*)messageCenterCampaigns;
 
 /*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the
@@ -536,7 +521,7 @@ NSString * eventsPayloadAsJSON);
  * \param personalization Personalization properties for in-app messages.
  * \returns List of active Message Center campaigns.
  */
-- (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
 
 /*! Get Message Center campaign targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the removeCampaign method and those that do not support
@@ -557,7 +542,7 @@ NSString * eventsPayloadAsJSON);
  * \param orientation Required orientation.
  * \returns List of active Message Center campaigns that support the given orientation.
  */
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
 
 /*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the
@@ -567,7 +552,7 @@ NSString * eventsPayloadAsJSON);
  * \param personalization Personalization properties for in-app messages.
  * \returns List of active Message Center campaigns that support the given orientation.
 */
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
 
 #endif
 
@@ -610,7 +595,7 @@ NSString * eventsPayloadAsJSON);
  *
  * \returns An array of SwrvePushInboxMessage objects
  */
-- (NSArray *)pushInboxMessages;
+- (NSArray<SwrvePushInboxMessage *> *)pushInboxMessages;
 
 /*!Mark the Push Inbox Message as read. This is an asynchronous operation and the listener will be called when the
  * operation is complete. Check the returned result object for success or failure.
@@ -645,7 +630,7 @@ NSString * eventsPayloadAsJSON);
 
 #pragma mark - Properties
 
-@property (atomic, readonly, strong) ImmutableSwrveConfig * config;           /*!< Configuration for this Swrve object */
+@property (atomic, readonly, strong) SwrveConfig * config;           /*!< Configuration for this Swrve object */
 @property (atomic, readonly)         long appID;                              /*!< App ID used to initialize this Swrve object. */
 @property (atomic, readonly)         NSString * apiKey;                       /*!< Secret token used to initialize this Swrve object. */
 @property (atomic, readonly)         SwrveResourceManager * resourceManager;  /*!< Can be queried for up-to-date resource attribute values. */

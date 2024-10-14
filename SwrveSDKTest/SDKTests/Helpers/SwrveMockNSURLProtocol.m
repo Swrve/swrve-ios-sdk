@@ -1,7 +1,8 @@
 #import "SwrveMockNSURLProtocol.h"
 #import "SwrveCommon.h"
-#import "SwrveSDK.h"
+#import "Swrve.h"
 #import "SwrveEventQueueItem.h"
+#import "SwrveSDK/SwrveSDK-Swift.h"
 
 @interface Swrve()
 - (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession;

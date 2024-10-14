@@ -1,12 +1,7 @@
 #import <XCTest/XCTest.h>
-#import "SwrveRESTClient.h"
-#import "SwrveSDK.h"
 #import "TestableSwrve.h"
 #import "SwrveTestHelper.h"
-#import "SwrveUser.h"
-#import "SwrveProfileManager.h"
 #import "SwrveMockNSURLProtocol.h"
-#import "SwrveMigrationsManager.h"
 
 @interface SwrveMigrationsManager()
 + (void)setCurrentCacheVersion:(int)cacheVersion;
@@ -1132,7 +1127,7 @@
     UInt64 installDate = [SwrveLocalStorage userJoinedTimeSeconds:@""];
     XCTAssertTrue(installDate == 0);
 
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:[ImmutableSwrveConfig new]];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:[SwrveConfig new]];
     [SwrveMigrationsManager setCurrentCacheVersion:0];
     [migrationsManager checkMigrations];
     //migration should of been called and moved the installDate to file 'swrve.install_date'
@@ -1425,7 +1420,7 @@
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
-    [config setInitMode:SWRVE_INIT_MODE_AUTO];
+    [config setInitMode:SwrveInitModeAuto];
     Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     swrveMock = [swrveMock initWithAppID:1 apiKey:@"SomeAPIKey" config:config];
     SwrveUser *swrveUser = [[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:true];
@@ -1434,10 +1429,10 @@
     XCTAssertTrue([swrveMock shouldReIdentify]);
 
     // change initmode to managed and assert false, change back to auto and assert true
-    [config setInitMode:SWRVE_INIT_MODE_MANAGED];
+    [config setInitMode:SwrveInitModeManaged];
     OCMStub([swrveMock config]).andReturn(config);
     XCTAssertFalse([swrveMock shouldReIdentify]);
-    [config setInitMode:SWRVE_INIT_MODE_AUTO];
+    [config setInitMode:SwrveInitModeAuto];
     OCMStub([swrveMock config]).andReturn(config);
     XCTAssertTrue([swrveMock shouldReIdentify]);
 

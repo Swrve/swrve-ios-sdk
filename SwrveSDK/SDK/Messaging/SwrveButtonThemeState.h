@@ -4,10 +4,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SwrveButtonThemeState : NSObject
 
-@property(nonatomic, retain) NSString *fontColor;
-@property(nonatomic, retain) NSString *bgColor;
-@property(nonatomic, retain) NSString *borderColor;
-@property(nonatomic, retain) NSString *bgImage;
+@property(nonatomic, retain, nullable) NSString *fontColor;
+@property(nonatomic, retain, nullable) NSString *bgColor;
+@property(nonatomic, retain, nullable) NSString *borderColor;
+@property(nonatomic, retain, nullable) NSString *bgImage;
 
 - (id)initWithDictionary:(NSDictionary *)themeState;
 

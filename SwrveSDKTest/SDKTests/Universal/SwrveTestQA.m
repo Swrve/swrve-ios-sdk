@@ -173,80 +173,6 @@
     XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
 }
 
-- (void)testConversationCampaignTrigger {
-    [self enableQaLogging];
-
-    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
-    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
-    // Stub flushEvents so it would not try any request at all or clear our queue.
-    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
-
-    // Mock campaign that will be used as part of this test.
-    NSString *expectedReason1 = @"Reason passed";
-    NSString *expectedReason2 = @"Whatever expected passed";
-    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason1];
-    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_CONVERSATION displayed:YES reason:expectedReason2];
-    NSMutableArray<SwrveQACampaignInfo *> *campaignInfoExpected = [@[expectedCampaign1, expectedCampaign2 ] mutableCopy];
-
-    NSDictionary *payloadExpected = @{@"hello": @"test"};
-    NSString *eventNameExpected = @"event";
-
-    // Mock expected Log details for the event that will be generated
-    NSDictionary *expectedLogDetails = @{
-        @"campaigns":@[@{
-                          @"displayed": [NSNumber numberWithBool:expectedCampaign1.displayed],
-                          @"id": [NSNumber numberWithInteger:expectedCampaign1.campaignID],
-                          @"reason": expectedReason1,
-                          @"type": swrveCampaignTypeToString(expectedCampaign1.type),
-                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign1.variantID]},
-                      @{
-                          @"displayed": [NSNumber numberWithBool:expectedCampaign2.displayed],
-                          @"id": [NSNumber numberWithInteger:expectedCampaign2.campaignID],
-                          @"reason": expectedReason2,
-                          @"type": swrveCampaignTypeToString(expectedCampaign2.type),
-                          @"variant_id": [NSNumber numberWithInteger:expectedCampaign2.variantID],
-                      }],
-        @"displayed":@YES,
-        @"event_name":eventNameExpected,
-        @"event_payload": payloadExpected,
-        @"reason":@""
-    };
-    // Test again with displayed:YES
-    [SwrveQA conversationCampaignTriggered:eventNameExpected eventPayload:payloadExpected displayed:YES campaignInfoDict:campaignInfoExpected];
-    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
-    // verify the expected event got queue and check its count.
-    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
-    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
-    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-}
-
-- (void)testConversationCampaignTriggeredNoDisplay {
-    [self enableQaLogging];
-
-    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
-    [[SwrveQA sharedInstance] setQueueManager:swrveQAEventsQueueMock];
-    // Stub flushEvents so it would not try any request at all or clear our queue.
-    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
-
-    NSDictionary *payloadExpected = @{@"hello": @"test"};
-    NSString *eventNameExpected = @"event";
-    NSDictionary *expectedLogDetails = @{
-            @"campaigns":@[],
-            @"displayed":@NO,
-            @"event_name":eventNameExpected,
-            @"event_payload": payloadExpected,
-            @"reason":@"No Conversation triggered because In App Message displayed"
-    };
-
-    [SwrveQA conversationCampaignTriggeredNoDisplay:eventNameExpected eventPayload:payloadExpected];
-
-    NSMutableDictionary *expecectedQAEvent = [self createExpectedEventWithLogDetails:expectedLogDetails withLogType:@"campaign-triggered" withlogSource:@"sdk"];
-    // verify the expected event got queue and check its count.
-    OCMVerify([swrveQAEventsQueueMock queueEvent:expecectedQAEvent]);
-    XCTAssertEqual([[swrveQAEventsQueueMock queue] count], 1);
-    XCTAssertEqualObjects([[swrveQAEventsQueueMock queue] objectAtIndex:0], expecectedQAEvent);
-}
-
 - (void)testAssetFailedToDownload {
     [self enableQaLogging];
 
@@ -342,8 +268,8 @@
     NSString *expectedReason2 = @"Whatever expected passed";
     NSString *expectedNotDisplayReason = @"Whatever expected passed";
 
-    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason1];
-    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_CONVERSATION displayed:NO reason:expectedReason2];
+    SwrveQACampaignInfo *expectedCampaign1 = [[SwrveQACampaignInfo alloc] initWithCampaignID:10 variantID:200 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:expectedReason1];
+    SwrveQACampaignInfo *expectedCampaign2 = [[SwrveQACampaignInfo alloc] initWithCampaignID:11 variantID:102 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:expectedReason2];
     NSMutableArray<SwrveQACampaignInfo *> *campaignInfoExpected = [@[expectedCampaign1, expectedCampaign2 ] mutableCopy];
 
     NSDictionary *payloadExpected = @{@"hello": @"test"};

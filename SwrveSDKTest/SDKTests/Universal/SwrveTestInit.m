@@ -1,9 +1,11 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
-#import "SwrveRESTClient.h"
+
+@interface SwrveSDK (InternalAccess)
++ (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
+@end
 
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
@@ -26,12 +28,6 @@
 
 - (NSString *)swrveInitModeString;
 
-@end
-
-@interface SwrveSDK (InternalAccess)
-+ (void)addSharedInstance:(Swrve *)instance;
-
-+ (void)resetSwrveSharedInstance;
 @end
 
 @interface SwrveTestInit : XCTestCase
@@ -66,7 +62,7 @@
     SwrveConfig *originalConfig = [[SwrveConfig alloc] init];
     [SwrveSDK sharedInstanceWithAppID:572 apiKey:@"SomeAPIKey" config:originalConfig];
     Swrve *swrve = [SwrveSDK sharedInstance];
-    ImmutableSwrveConfig *config = [SwrveSDK config];
+    SwrveConfig *config = [SwrveSDK config];
     XCTAssertNotNil(swrve);
 
     Swrve *swrve2 = [SwrveSDK sharedInstance];
@@ -103,7 +99,7 @@
 
 - (void)testDefaultConfig {
     Swrve *swrve = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
-    ImmutableSwrveConfig *config = swrve.config;
+    SwrveConfig *config = swrve.config;
 
     XCTAssertNotNil(config);
     XCTAssertEqual(config.httpTimeoutSeconds, 60);
@@ -115,7 +111,6 @@
     XCTAssertTrue(config.autoSaveEventsOnResign);
     XCTAssertTrue(config.autoSendEventsOnResume);
     XCTAssertTrue(config.inAppMessageConfig.prefersStatusBarHidden);
-    XCTAssertFalse(config.prefersConversationsStatusBarHidden);
 }
 
 - (void)testStackConfig {
@@ -127,13 +122,13 @@
     XCTAssertEqualObjects(swrve.config.contentServer, @"https://572.content.swrve.com");
 
     config = [[SwrveConfig alloc] init];
-    config.stack = SWRVE_STACK_EU;
+    config.stack = SwrveStackEu;
     swrve = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]; // test EU
     XCTAssertEqualObjects(swrve.config.eventsServer, @"https://572.eu-api.swrve.com");
     XCTAssertEqualObjects(swrve.config.contentServer, @"https://572.eu-content.swrve.com");
 
     config = [[SwrveConfig alloc] init];
-    config.stack = SWRVE_STACK_US;
+    config.stack = SwrveStackUs;
     swrve = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config]; // test US
     XCTAssertEqualObjects(swrve.config.eventsServer, @"https://572.api.swrve.com");
     XCTAssertEqualObjects(swrve.config.contentServer, @"https://572.content.swrve.com");
@@ -221,14 +216,14 @@
 }
 
 - (void)testSdkStartedAutoMode {
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto];
     XCTAssertNotNil(swrveMockAuto);
     XCTAssertTrue([SwrveSDK started]);
 }
 
 - (void)testSdkStartedManagedModeAndAutoStartFalse {
     id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    [self initSwrveMock:swrveMockManaged1 mode:SwrveInitModeManaged autoStart:false];
     XCTAssertFalse([SwrveSDK started]);
     [SwrveSDK start];
     //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
@@ -241,7 +236,7 @@
     XCTAssertTrue([SwrveSDK started]);
 
     id swrveMockManaged2 = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    [self initSwrveMock:swrveMockManaged2 mode:SwrveInitModeManaged autoStart:false];
     XCTAssertFalse([SwrveSDK started]); // Should be false because the sdk should NOT be autostarted
     [SwrveSDK start];
     //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
@@ -256,7 +251,7 @@
 
 - (void)testSdkStartedManagedModeAndAutoStartTrue {
     id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManaged1 mode:SwrveInitModeManaged autoStart:true];
     XCTAssertFalse([SwrveSDK started]);
     [SwrveSDK start];
     //events are flushed on different thread in startWithUserId, once complete back on the main thread, need to delay for a moment.
@@ -269,7 +264,7 @@
     XCTAssertTrue([SwrveSDK started]);
 
     id swrveMockManagedOnce2 = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManagedOnce2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManagedOnce2 mode:SwrveInitModeManaged autoStart:true];
     XCTAssertTrue([SwrveSDK started]); // the second instance is started upon init.
 }
 
@@ -278,7 +273,7 @@
     id swrveMockManaged = OCMPartialMock([Swrve alloc]);
     OCMReject([swrveMockManaged registerLifecycleCallbacks]);
     OCMReject([swrveMockManaged initWithUserId:OCMOCK_ANY]);
-    [self initSwrveMock:swrveMockManaged mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    [self initSwrveMock:swrveMockManaged mode:SwrveInitModeManaged autoStart:false];
     OCMVerifyAll(swrveMockManaged);
 }
 
@@ -288,21 +283,21 @@
     id swrveMockManaged1 = OCMPartialMock([Swrve alloc]);
     OCMReject([swrveMockManaged1 registerLifecycleCallbacks]);
     OCMReject([swrveMockManaged1 initWithUserId:OCMOCK_ANY]);
-    [self initSwrveMock:swrveMockManaged1 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManaged1 mode:SwrveInitModeManaged autoStart:true];
     OCMVerifyAll(swrveMockManaged1);
 
     // second instance created but note that start api still hasn't been called so registerLifecycleCallbacks, etc still not called yet
     id swrveMockManaged2 = OCMPartialMock([Swrve alloc]);
     OCMReject([swrveMockManaged2 registerLifecycleCallbacks]);
     OCMReject([swrveMockManaged2 initWithUserId:OCMOCK_ANY]);
-    [self initSwrveMock:swrveMockManaged2 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManaged2 mode:SwrveInitModeManaged autoStart:true];
     OCMVerifyAll(swrveMockManaged2);
 
     //third instance created and sdk was started previously and userId created, therefore autostarted this time
     id swrveMockManaged3 = OCMPartialMock([Swrve alloc]);
     OCMExpect([swrveMockManaged3 registerLifecycleCallbacks]);
     OCMExpect([swrveMockManaged3 initWithUserId:OCMOCK_ANY]);
-    [self initSwrveMock:swrveMockManaged3 mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManaged3 mode:SwrveInitModeManaged autoStart:true];
 
     // start the sdk
     [SwrveSDK start];
@@ -321,7 +316,7 @@
 
 - (void)testInitModeManagedStart {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     XCTAssertNotNil(swrveMockManaged);
 
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
@@ -358,7 +353,7 @@
 
 - (void)testInitModeManagedStartWithSameUser {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     XCTAssertNotNil(swrveMockManaged);
 
     SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
@@ -398,7 +393,7 @@
 }
 
 - (void)testAutoCantCallStartWithUserMethod {
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto];
     XCTAssertNotNil(swrveMockAuto);
     BOOL pass = false;
     @try {
@@ -410,7 +405,7 @@
 }
 
 - (void)testManagedCantCallIdentityMethod {
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     BOOL pass = false;
     @try {
         [swrveMockManaged identify:@"SomeUser" onSuccess:nil onError:nil];
@@ -422,7 +417,7 @@
 
 - (void)testRegisterLifecycleCallbacks {
     // Test to make sure the lifecycleCallbacksRegistered BOOL gets set when registerLifecycleCallbacks method is called.
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     XCTAssertFalse([swrveMockManaged lifecycleCallbacksRegistered]);
     [swrveMockManaged registerLifecycleCallbacks];
     XCTAssertTrue([swrveMockManaged lifecycleCallbacksRegistered]);
@@ -430,19 +425,19 @@
 
 - (void)testInitModeString {
     id swrveMockAutoAutostartFalse = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockAutoAutostartFalse mode:SWRVE_INIT_MODE_AUTO autoStart:false];
+    [self initSwrveMock:swrveMockAutoAutostartFalse mode:SwrveInitModeAuto autoStart:false];
     XCTAssertEqualObjects([swrveMockAutoAutostartFalse swrveInitModeString], @"auto");
 
     id swrveMockAutoAutostartTrue = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockAutoAutostartTrue mode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    [self initSwrveMock:swrveMockAutoAutostartTrue mode:SwrveInitModeAuto autoStart:true];
     XCTAssertEqualObjects([swrveMockAutoAutostartTrue swrveInitModeString], @"auto_auto");
 
     id swrveMockManagedAutostartFalse = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManagedAutostartFalse mode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    [self initSwrveMock:swrveMockManagedAutostartFalse mode:SwrveInitModeManaged autoStart:false];
     XCTAssertEqualObjects([swrveMockManagedAutostartFalse swrveInitModeString], @"managed");
 
     id swrveMockManagedAutostartTrue = OCMPartialMock([Swrve alloc]);
-    [self initSwrveMock:swrveMockManagedAutostartTrue mode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    [self initSwrveMock:swrveMockManagedAutostartTrue mode:SwrveInitModeManaged autoStart:true];
     XCTAssertEqualObjects([swrveMockManagedAutostartTrue swrveInitModeString], @"managed_auto");
 }
 

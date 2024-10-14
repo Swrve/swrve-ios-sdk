@@ -50,7 +50,7 @@
     
     // make sure it won't crash
     combinedDictionary = [SwrveUtils combineDictionary:nil withDictionary:nil];
-    XCTAssertEqualObjects(combinedDictionary, nil);
+    XCTAssertNotNil(combinedDictionary);
 }
 
 @end

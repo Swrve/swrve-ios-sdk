@@ -1,5 +1,4 @@
 #import "SwrveMessageViewController.h"
-#import "SwrveInAppCampaign.h"
 #import "SwrveMessagePage.h"
 #import "SwrveMessagePageViewController.h"
 #import "SwrveMessageController.h"

@@ -14,12 +14,11 @@ static NSString* SWRVE_OS =                             @"swrve.os";
 static NSString* SWRVE_OS_VERSION =                     @"swrve.os_version";
 static NSString* SWRVE_DEVICE_DPI =                     @"swrve.device_dpi";
 static NSString* SWRVE_INSTALL_DATE =                   @"swrve.install_date";
-static NSString* SWRVE_CONVERSION_VERSION =             @"swrve.conversation_version";
 static NSString* SWRVE_IOS_MIN_VERSION =                @"swrve.ios_min_version";
 static NSString* SWRVE_LANGUAGE =                       @"swrve.language";
 static NSString* SWRVE_DEVICE_HEIGHT =                  @"swrve.device_height";
 static NSString* SWRVE_DEVICE_WIDTH =                   @"swrve.device_width";
-static NSString* SWRVE_SDK_VERSION =                    @"swrve.sdk_version";
+static NSString* SWRVE_SDK_VERSION_KEY =                @"swrve.sdk_version";
 static NSString* SWRVE_APP_STORE =                      @"swrve.app_store";
 static NSString* SWRVE_UTC_OFFSET_SECONDS =             @"swrve.utc_offset_seconds";
 static NSString* SWRVE_TIMEZONE_NAME =                  @"swrve.timezone_name";
@@ -53,14 +52,12 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
 @synthesize idfa = _idfa;
 
 #if TARGET_OS_IOS /** exclude tvOS **/
-@synthesize conversationVersion = _conversationVersion;
 @synthesize deviceToken = _deviceToken;
 
 #pragma mark - init
 
 - (instancetype) initWithVersion:(NSString *)sdk_version
            appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
-             conversationVersion:(int)conversationVersion
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
@@ -70,7 +67,6 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
         
         self.sdk_version = sdk_version;
         self.appInstallTimeSeconds = appInstallTimeSeconds;
-        self.conversationVersion = conversationVersion;
         self.deviceToken = deviceToken;
         self.permissionStatus = permissionStatus;
         self.sdk_language = sdk_language;
@@ -142,7 +138,7 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
     [deviceProperties setValue:device_width         forKey:SWRVE_DEVICE_WIDTH];
     if(self.sdk_version) {
         NSString *sdkVersionString = [PLATFORM stringByAppendingString:self.sdk_version];
-        [deviceProperties setValue:sdkVersionString     forKey:SWRVE_SDK_VERSION];
+        [deviceProperties setValue:sdkVersionString     forKey:SWRVE_SDK_VERSION_KEY];
     }
     [deviceProperties setValue:@"apple"             forKey:SWRVE_APP_STORE];
     [deviceProperties setValue:secondsFromGMT       forKey:SWRVE_UTC_OFFSET_SECONDS ];
@@ -174,9 +170,7 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
             [deviceProperties setValue:pushToStartToken forKey:SWRVE_LIVE_ACTIVITIES_PUSH_TO_START_TOKEN];
         }
     }
-    
-    [deviceProperties setValue:[NSNumber numberWithInteger:self.conversationVersion] forKey:SWRVE_CONVERSION_VERSION];
-    
+        
     // Push properties
     if (self.deviceToken) {
         [deviceProperties setValue:self.deviceToken forKey:SWRVE_IOS_TOKEN];

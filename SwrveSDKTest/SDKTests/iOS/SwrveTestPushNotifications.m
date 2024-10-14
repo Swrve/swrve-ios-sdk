@@ -1,9 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
-#import "SwrveUtils.h"
 #import "SwrveTestHelper.h"
-#import "SwrveNotificationConstants.h"
 
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
@@ -21,9 +18,8 @@
 @end
 
 @interface SwrveSDK (InternalAccess)
-+ (void)addSharedInstance:(Swrve *)instance;
-
 + (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
 @end
 
 @interface Swrve (InternalAccess)
@@ -45,7 +41,7 @@
 - (void)testPushEngagedEventManagedModeAutoStartFalse {
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
-    config.initMode = SWRVE_INIT_MODE_MANAGED;
+    config.initMode = SwrveInitModeManaged;
     config.autoStartLastUser = false;
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
@@ -73,7 +69,7 @@
 - (void)testPushEngagedEventManagedModeInManagedMode {
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
-    config.initMode = SWRVE_INIT_MODE_MANAGED;
+    config.initMode = SwrveInitModeManaged;
     config.pushEnabled = YES;
     config.autoSendEventsOnResume = false;
     config.pushNotificationPermissionEvents = nil;

@@ -54,7 +54,6 @@
     return fontSize;
 }
 
-// Similar method in SwrveConversationStyler
 + (UIFont *)fontFromFile:(NSString *)fontFile
           postscriptName:(NSString *)fontPostscriptName
                     size:(CGFloat)fontSizePoints

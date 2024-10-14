@@ -1,19 +1,10 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import <SwrveMessageUIView.h>
-#import "SwrveInAppCampaign.h"
-#import "SwrveConversation.h"
-#import "SwrveQA.h"
 #import "SwrveTestHelper.h"
-#import "SwrveUtils.h"
-#import "SwrveMessageController+Private.h"
-#import "SwrveMigrationsManager.h"
-#import "SwrveMessagePageViewController.h"
 #import "SDAnimatedImageView.h"
 #import "UIButton+WebCache.h"
 
 @interface Swrve ()
-@property(atomic) SwrveMessageController *messaging;
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 @property(atomic) SwrveRESTClient *restClient;
 

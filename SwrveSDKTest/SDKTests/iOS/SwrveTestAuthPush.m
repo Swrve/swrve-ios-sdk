@@ -1,8 +1,6 @@
 #import <XCTest/XCTest.h>
-#import "SwrveSDK.h"
-#import "SwrveNotificationManager.h"
-#import "SwrveSEConfig.h"
 #import <OCMock/OCMock.h>
+#import "SwrveTestHelper.h"
 
 @interface SwrveNotificationManager()
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback;

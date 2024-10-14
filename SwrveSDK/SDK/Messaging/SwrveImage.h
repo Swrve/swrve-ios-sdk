@@ -1,6 +1,10 @@
 #include <UIKit/UIKit.h>
-#include "SwrveInAppMessageConfig.h"
-#import "SwrveMessage.h"
+
+#if __has_include(<SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>)
+#import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>
+#else
+#import "SwrveInAppCapabilitiesDelegate.h"
+#endif
 
 /*! In-app message background image. */
 @interface SwrveImage : NSObject

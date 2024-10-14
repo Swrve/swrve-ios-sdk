@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-#import "SwrveSDK.h"
+@import SwrveSDK;
 
 @interface AppDelegate ()
 

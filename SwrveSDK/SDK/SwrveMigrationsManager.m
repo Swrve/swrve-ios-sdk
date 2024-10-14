@@ -7,7 +7,7 @@
 
 @interface SwrveMigrationsManager ()
 
-@property(nonatomic) ImmutableSwrveConfig *config;
+@property(nonatomic) SwrveConfig *config;
 @property(nonatomic) NSString *cacheVersionFilePath;
 
 @end
@@ -23,7 +23,7 @@ const static int SWRVE_SDK_CACHE_VERSION = 3;
 @synthesize cacheVersionFilePath;
 @synthesize config;
 
-- (id)initWithConfig:(ImmutableSwrveConfig*)swrveConfig{
+- (id)initWithConfig:(SwrveConfig*)swrveConfig{
     self = [super init];
     if (self) {
         self.config = swrveConfig;

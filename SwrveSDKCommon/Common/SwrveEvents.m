@@ -45,15 +45,10 @@ static NSString *const SEQNUM_KEY = @"seqnum";
     for (NSDictionary *campaign in array) {
         NSMutableDictionary *campaignDic = [NSMutableDictionary new];
         [campaignDic setValue:[campaign objectForKey:@"id"] forKey:@"id"];
-        NSDictionary *conversation = campaign[@"conversation"];
         NSDictionary *message = campaign[@"message"];
         NSDictionary *embedded = campaign[@"embedded_message"];
 
-        if (conversation != nil && conversation[@"id"] != nil) {
-            NSInteger variantID = [conversation[@"id"] integerValue];
-            [campaignDic setValue:@"conversation" forKey:@"type"];
-            [campaignDic setValue:[NSNumber numberWithInteger:variantID] forKey:@"variant_id"];
-        } else if (message != nil && message[@"id"] != nil) {
+        if (message != nil && message[@"id"] != nil) {
             NSInteger variantID = [message[@"id"] integerValue];
             [campaignDic setValue:@"iam" forKey:@"type"];
             [campaignDic setValue:[NSNumber numberWithInteger:variantID] forKey:@"variant_id"];

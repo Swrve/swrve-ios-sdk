@@ -1,6 +1,5 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
 #import <AppTrackingTransparency/ATTrackingManager.h>
 

@@ -266,7 +266,7 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:deviceUUID key:SWRVE_DEVICE_UUID];
 }
 
-+ (NSString *)deviceUUID {
++ (nullable NSString *)deviceUUID {
     NSString *deviceUUID = [[self defaults] stringForKey:SWRVE_DEVICE_UUID];
     if (deviceUUID == nil) {
         deviceUUID = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_DEVICE_UUID];

@@ -76,14 +76,6 @@
     return (((UInt64) time.tv_sec) * 1000) + (((UInt64) time.tv_usec) / 1000);
 }
 
-+ (BOOL)supportsConversations {
-#if TARGET_OS_IOS /** conversations are only supported in iOS **/
-    return YES;
-#endif
-    return NO;
-}
-
-
 + (NSString *)platformDeviceType {
 #if TARGET_OS_TV
     return @"tv";
@@ -113,7 +105,7 @@
     return result;
 }
 
-+ (NSDictionary *)combineDictionary:(NSDictionary*)rootDictionary withDictionary:(NSDictionary *)overiddingDictionary {
++ (NSDictionary *)combineDictionary:(NSDictionary*)rootDictionary withDictionary:(nullable NSDictionary *)overiddingDictionary {
     NSMutableDictionary *combinedDictionary = nil;
     if (rootDictionary != nil) {
         NSArray *overiddingkeys = [overiddingDictionary allKeys];
@@ -123,7 +115,12 @@
             [combinedDictionary setValue:value forKey:key];
         }
     } else {
-        combinedDictionary = [overiddingDictionary mutableCopy];
+        
+        if (overiddingDictionary != nil) {
+            combinedDictionary = [overiddingDictionary mutableCopy];
+        } else {
+            combinedDictionary = [NSMutableDictionary new];
+        }
     }
     
     return combinedDictionary;

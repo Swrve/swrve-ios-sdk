@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
-#import "SwrveMessageController.h"
+#import "SwrveTestHelper.h"
 
 @interface Swrve(privateAccess)
 @property(atomic) SwrveMessageController *messaging;

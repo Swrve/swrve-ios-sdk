@@ -1,7 +1,13 @@
 #import <UIKit/UIKit.h>
-
-#import "SwrveMessage.h"
 #import "SwrveUIButton.h"
+#import "Swrve.h"
+#import "SwrveButton.h"
+#import "SwrveImage.h"
+#import "SwrveMessageController.h"
+#import "SwrveMessagePage.h"
+#import "SwrveSDKUtils.h"
+
+@class SwrveEmbeddedMessage;
 
 NS_ASSUME_NONNULL_BEGIN
 

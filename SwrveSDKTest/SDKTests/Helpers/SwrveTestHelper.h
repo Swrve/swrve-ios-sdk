@@ -2,9 +2,9 @@
 #import <Foundation/Foundation.h>
 #import <objc/NSObject.h>
 #import <UIKit/UIKit.h>
-#import "SwrveSignatureProtectedFile.h"
-#import "Swrve.h"
 #import "OCMock.h"
+@import SwrveSDK;
+@import SwrveSDKCommon;
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 

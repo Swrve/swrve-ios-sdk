@@ -1,10 +1,6 @@
 #import <XCTest/XCTest.h>
-#import "SwrveProtocol.h"
-#import "SwrvePermissions.h"
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
-#import "SwrveMigrationsManager.h"
 
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)setCurrentCacheVersion:(int)cacheVersion;

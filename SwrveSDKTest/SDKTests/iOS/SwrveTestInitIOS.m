@@ -1,16 +1,8 @@
 #import <XCTest/XCTest.h>
-#import "SwrveProtocol.h"
-#import "SwrveTestHelper.h"
-#import "SwrveAssetsManager.h"
 #import <OCMock/OCMock.h>
-#import "SwrveSDK.h"
-#import "SwrveMigrationsManager.h"
-#import "SwrvePermissions.h"
+#import "SwrveTestHelper.h"
 #import "TestPermissionsDelegate.h"
 #import "AppDelegate.h"
-#import "SwrveEventQueueItem.h"
-#import "SwrveCampaignInfluence.h"
-#import "SwrveMessageController.h"
 
 @interface SwrveSDK (InternalAccess)
 + (void)addSharedInstance:(Swrve*)instance;
@@ -170,16 +162,14 @@
     
     // IDFA & Device Info count
     if (@available(iOS 16.2, *)) {
-        XCTAssertEqual([deviceInfo count], 25);
+        XCTAssertEqual([deviceInfo count], 24);
     } else {
-        XCTAssertEqual([deviceInfo count], 23);
+        XCTAssertEqual([deviceInfo count], 22);
     }
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFA"]);
 
     // Extra identifiers
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
-    // Feature versions
-    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
 }
 
 -(void)testDeviceInfoWithiOSPermissions
@@ -203,9 +193,9 @@
     XCTAssertNotNil(deviceInfo);
     
     if (@available(iOS 16.2, *)) {
-        XCTAssertEqual([deviceInfo count], 31);
+        XCTAssertEqual([deviceInfo count], 30);
     } else {
-        XCTAssertEqual([deviceInfo count], 29);
+        XCTAssertEqual([deviceInfo count], 28);
     }
 
     XCTAssertNotNil([deviceInfo objectForKey:@"Swrve.permission.ios.location.always"]);
@@ -425,8 +415,7 @@
 
     // cacheversion
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     XCTAssertTrue([migrationsManager currentCacheVersion] > 2);
 
     // joined
@@ -575,7 +564,7 @@
     [swrve userUpdate:@{@"1":@"1"}];
         
     XCTestExpectation *expectation = [self expectationWithDescription:@"event 0 sent with user id 1234"];
-    [SwrveTestHelper waitForBlock:0.5 conditionBlock:^BOOL(){
+    [SwrveTestHelper waitForBlock:0.05 conditionBlock:^BOOL(){
         return (event0_SentForUserA && userUpdate0_SentForUserA && event1_InPausedEventQueue && userUpdate1_InPausedEventQueue && event1_SentForUserB && userUpdate1_SentForUserB);
     } expectation:expectation];
     [self waitForExpectationsWithTimeout:10.0 handler:nil];

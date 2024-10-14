@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
-#import "SwrveSDK.h"
+#import "SwrveTestHelper.h"
 #import "TestCapabilitiesDelegate.h"
 
 @interface SwrveTestCapabilitiesDelegate : XCTestCase

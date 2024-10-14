@@ -1,5 +1,5 @@
-#import "SwrveMessage.h"
-#import "SwrveInAppMessageConfig.h"
+#import "SwrveMessageController.h"
+#import "SwrveMessageFormat.h"
 
 /*! An in-app message page */
 @interface SwrveMessagePageViewController : UIViewController

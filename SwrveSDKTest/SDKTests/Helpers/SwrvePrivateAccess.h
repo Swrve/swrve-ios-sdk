@@ -1,25 +1,13 @@
 #ifndef EmptyProject_SwrvePrivateAccess_h
 #define EmptyProject_SwrvePrivateAccess_h
-
-
 #import "Swrve.h"
-#import "SwrveSDK.h"
+#import "Swrve.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessageViewController.h"
-#import "SwrveConversationItemViewController.h"
-#import "SwrveConversationPane.h"
-#import "SwrveConversationButton.h"
 #import "SwrveAssetsManager.h"
+#import "SwrveReceiptProvider.h"
 
 @class SwrveRESTClient;
-
-@interface SwrveSDK(SwrveTestAPI)
-
-+ (void) resetSwrveSharedInstance;
-+ (void) addSharedInstance:(Swrve*)instance;
-+ (Swrve*)createInstance;
-
-@end
 
 @interface Swrve(SwrveTestAPI)
 
@@ -62,7 +50,6 @@
 @property (nonatomic, retain) NSString*             apiKey;
 @property (nonatomic, retain) NSString*         	server;
 @property (nonatomic, retain) NSString*             language;
-@property (nonatomic, retain) NSMutableDictionary*  appStoreURLs;
 @property (nonatomic, retain) NSString*             campaignsStateFilePath;
 @property (nonatomic, retain) NSDate*               initialisedTime;
 @property (nonatomic, retain) NSDate*               showMessagesAfterLaunch;
@@ -71,19 +58,9 @@
 @property (nonatomic, retain) SwrveSignatureProtectedFile* campaignFile;
 @property (nonatomic)         bool                  autoShowMessagesEnabled;
 @property (nonatomic, retain) UIWindow*             inAppMessageWindow;
-@property (nonatomic, retain) UIWindow*             conversationWindow;
 @property (nonatomic, retain) SwrveAssetsManager*   assetsManager;
 
 -(void) saveCampaignsState;
-
-@end
-
-
-@interface SwrveConversationItemViewController(SwrveTestAPI)
-
--(void) buttonTapped:(id)sender;
--(void) setConversationPane:(SwrveConversationPane *)conversationPane;
--(void) performActions:(SwrveConversationButton *)control;
 
 @end
 

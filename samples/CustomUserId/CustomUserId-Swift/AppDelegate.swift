@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         let config = SwrveConfig()
-        config.initMode = SWRVE_INIT_MODE_MANAGED
+        config.initMode = .managed
         //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
         SwrveSDK.sharedInstance(withAppID: -1, apiKey: "<API_KEY>", config: config)
 

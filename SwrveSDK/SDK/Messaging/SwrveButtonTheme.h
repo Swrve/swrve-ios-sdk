@@ -20,10 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, retain) NSString *bgColor;
 @property(atomic) NSNumber *borderWidth;
 @property(nonatomic, retain) NSString *borderColor;
-@property(nonatomic, retain) NSString *bgImage;
+@property(nonatomic, retain, nullable) NSString *bgImage;
 @property(atomic) bool truncate;
-@property(nonatomic, retain) SwrveButtonThemeState *pressedState;
-@property(nonatomic, retain) SwrveButtonThemeState *focusedState;
+@property(nonatomic, retain, nullable) SwrveButtonThemeState *pressedState;
+@property(nonatomic, retain, nullable) SwrveButtonThemeState *focusedState;
 @property(nonatomic, retain) NSString *hAlign;
 
 - (id)initWithDictionary:(NSDictionary *)themeData;

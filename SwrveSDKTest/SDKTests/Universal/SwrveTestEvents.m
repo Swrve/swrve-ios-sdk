@@ -7,8 +7,6 @@
 #import "SwrvePermissions.h"
 #import "SwrveProfileManager.h"
 
-#import <OCMock/OCMock.h>
-
 NSString const *iso8601regex = @"\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\\d|3[0-1])T(?:[0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d.\\d\\d\\d(Z|[+]\\d\\d:\\d\\d)";
 
 @interface Swrve()
@@ -436,27 +434,27 @@ id classMockSwrvePermissions;
 -(void)testBadRewards {
     [self setupSwrveMigrated:true];
     SwrveIAPRewards* iapRewards = [SwrveIAPRewards new];
-    XCTAssertEqual([iapRewards.rewards count], 0);
+    XCTAssertEqual([[iapRewards rewards] count], 0);
 
     [iapRewards addItem:nil withQuantity:123];
-    XCTAssertEqual([iapRewards.rewards count], 0);
+    XCTAssertEqual([[iapRewards rewards] count], 0);
 
     [iapRewards addItem:@"" withQuantity:123];
-    XCTAssertEqual([iapRewards.rewards count], 0);
+    XCTAssertEqual([[iapRewards rewards] count], 0);
 
     [iapRewards addItem:@"Book" withQuantity:-1];
-    XCTAssertEqual([iapRewards.rewards count], 0);
+    XCTAssertEqual([[iapRewards rewards] count], 0);
 
     [iapRewards addCurrency:@"Silver" withAmount:-1];
-    XCTAssertEqual([iapRewards.rewards count], 0);
+    XCTAssertEqual([[iapRewards rewards] count], 0);
 }
 
 -(void)testGoodRewards {
     SwrveIAPRewards * iapRewards = [SwrveIAPRewards new];
     [iapRewards addCurrency:@"Gold" withAmount:23];
-    XCTAssertEqual(iapRewards.rewards.count, 1);
-    XCTAssertNotNil([iapRewards.rewards objectForKey:@"Gold"]);
-    NSDictionary * goldReward = [iapRewards.rewards objectForKey:@"Gold"];
+    XCTAssertEqual([[iapRewards rewards] count], 1);
+    XCTAssertNotNil([[iapRewards rewards] objectForKey:@"Gold"]);
+    NSDictionary * goldReward = [[iapRewards rewards] objectForKey:@"Gold"];
     XCTAssertEqualObjects([goldReward objectForKey:@"amount"], [NSNumber numberWithInt:23]);
     XCTAssertEqualObjects([goldReward objectForKey:@"type"], @"currency");
 }

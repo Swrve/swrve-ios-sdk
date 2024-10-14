@@ -1,6 +1,5 @@
 #import "ViewController.h"
-#import "SwrveSDK.h"
-#import "SwrveCampaign.h"
+@import SwrveSDK;
 
 @implementation ViewController
 
@@ -65,12 +64,12 @@
 
     // Campaign start date, change cell background colour based on seen / unseen status
     switch(campaign.state.status) {
-        case SWRVE_CAMPAIGN_STATUS_UNSEEN:
+        case SwrveCampaignStatusUnseen:
             cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
             [cell setBackgroundColor:[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.4f]];
 
             break;
-        case SWRVE_CAMPAIGN_STATUS_SEEN:
+        case SwrveCampaignStatusSeen:
             cell.detailTextLabel.text = [dformat stringFromDate:campaign.dateStart];
             [cell setBackgroundColor:[UIColor colorWithRed:0.0f green:1.0f blue:0.0f alpha:0.4f]];
             break;
@@ -88,7 +87,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Display the campaign when clicked
-    [SwrveSDK showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
+    (void)[SwrveSDK showMessageCenterCampaign:[self.campaigns objectAtIndex:indexPath.row]];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -315,7 +315,7 @@ extension HTTPURLResponse {
             SwrveLogger.logError("SwrveCommon instance not found - Send Event failed.")
             return
         }
-        var payload = NSMutableDictionary()
+        let payload = NSMutableDictionary()
         payload[EVENT_PAYLOAD_PIM_MESSAGE_ID] = String(messageId)
         if actionType != EVENT_ACTION_TYPE_PIM_READ {
             let stateString = state == SwrvePushInboxMessageState.READ ? "read" : "unread"

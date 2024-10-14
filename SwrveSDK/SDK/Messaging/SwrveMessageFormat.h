@@ -1,8 +1,14 @@
 #include <UIKit/UIKit.h>
 #import "SwrveInterfaceOrientation.h"
-#import "SwrveInAppMessageConfig.h"
 #import "SwrveCalibration.h"
 #import "SwrveStorySettings.h"
+
+#if __has_include(<SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>)
+#import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>
+#else
+#import "SwrveInAppCapabilitiesDelegate.h"
+#endif
+
 
 @class SwrveMessage;
 @class SwrveMessageController;
@@ -23,7 +29,6 @@
 
 - (id)initFromJson:(NSDictionary *)json
         campaignId:(long)swrveCampaignId
-         messageId:(long)swrveMessageId
-      appStoreURLs:(NSMutableDictionary *)appStoreURLs;
+         messageId:(long)swrveMessageId;
 
 @end

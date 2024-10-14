@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-#import "SwrveSDK.h"
+@import SwrveSDK;
 
 @interface AppDelegate ()
 
@@ -10,7 +10,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     SwrveConfig *config = [SwrveConfig new];
-    config.initMode = SWRVE_INIT_MODE_MANAGED;
+    config.initMode = SwrveInitModeManaged;
     //FIXME: Add your App ID (instead of -1) and your API Key (instead of <API_KEY>) here.
     [SwrveSDK sharedInstanceWithAppID:-1 apiKey:@"<API_KEY>" config:config];
 

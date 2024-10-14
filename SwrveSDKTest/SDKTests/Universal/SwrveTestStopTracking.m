@@ -1,14 +1,9 @@
 #import <XCTest/XCTest.h>
-#import "SwrveProfileManager.h"
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
-#import "SwrveRESTClient.h"
-#import "SwrveSEConfig.h"
 
 #if __has_include(<OCMock/OCMock.h>)
 #import <OCMock/OCMock.h>
 #import <SwrveSEConfig.h>
-
 #endif
 
 @interface Swrve (Internal)
@@ -142,7 +137,7 @@
     [swrve start];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"event 0 sent with user id 1234"];
-    [SwrveTestHelper waitForBlock:0.5 conditionBlock:^BOOL(){
+    [SwrveTestHelper waitForBlock:0.05 conditionBlock:^BOOL(){
         return (started && stopped && startedagain);
     } expectation:expectation];
     [self waitForExpectationsWithTimeout:10.0 handler:nil];
@@ -229,28 +224,27 @@
     [swrveMock installAction:nil];
     
     XCTAssertEqualObjects([swrveMock externalUserId],@"");
-    [swrveMock setCustomPayloadForConversationInput:[NSMutableDictionary new]];
     [swrveMock embeddedMessageWasShownToUser:[SwrveEmbeddedMessage new]];
     [swrveMock embeddedButtonWasPressed:[SwrveEmbeddedMessage new] buttonName:@""];
     [swrveMock personalizeEmbeddedMessageData:[SwrveEmbeddedMessage new] withPersonalization:@{}];
     [swrveMock personalizeText:@"" withPersonalization:@{}];
     XCTAssertEqualObjects([swrveMock messageCenterCampaigns],@[]);
     [swrveMock messageCenterCampaignsWithPersonalization:@{}];
-
-    [swrveMock showMessageCenterCampaign:[SwrveCampaign new]];
-    [swrveMock showMessageCenterCampaign:[SwrveCampaign new] withPersonalization:@{}];
-    [swrveMock removeMessageCenterCampaign:[SwrveCampaign new]];
-    [swrveMock markMessageCenterCampaignAsSeen:[SwrveCampaign new]];
+    
+    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
+    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@ {} campaignType: 0] withPersonalization:@{}];
+    [swrveMock removeMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
+    [swrveMock markMessageCenterCampaignAsSeen:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
     
     int expectedNumberOfCalls;
     
 #if TARGET_OS_IOS
-    expectedNumberOfCalls = 33;
+    expectedNumberOfCalls = 32;
     [swrveMock setDeviceToken:nil];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0 withPersonalization:@{}];
 #else
-    expectedNumberOfCalls = 30;
+    expectedNumberOfCalls = 29;
 #endif
     XCTAssertEqual(loggerCount, expectedNumberOfCalls);
 }

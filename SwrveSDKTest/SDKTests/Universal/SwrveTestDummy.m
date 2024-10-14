@@ -1,15 +1,6 @@
 #import <XCTest/XCTest.h>
-
-#import "SwrveTestHelper.h"
-#import "SwrveSDK.h"
-#import "SwrveEmpty.h"
-#import "SwrveButton.h"
-#import "SwrveCampaign.h"
-#import "SwrveQA.h"
-
 #import <OCMock/OCMock.h>
-
-#import "SwrveMessageController+Private.h"
+#import "SwrveTestHelper.h"
 
 @interface Swrve(privateAccess)
 @property(atomic) SwrveMessageController *messaging;
@@ -148,7 +139,7 @@
     XCTAssert([[swrve messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:nil] count] == 0);
 #endif
 
-    SwrveCampaign* campaign = [[SwrveCampaign alloc] init];
+    SwrveCampaign* campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0];
     [swrve showMessageCenterCampaign:campaign];
     
     [swrve showMessageCenterCampaign:campaign withPersonalization:nil];

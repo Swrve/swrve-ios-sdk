@@ -1,5 +1,5 @@
-#import <SwrveSDK/SwrveSDK.h>
 #import "ViewController.h"
+@import SwrveSDK;
 
 @interface ViewController ()
 

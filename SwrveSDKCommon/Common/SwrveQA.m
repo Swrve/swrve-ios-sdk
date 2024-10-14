@@ -187,20 +187,6 @@ static dispatch_once_t onceToken;
     [self campaignTriggered:eventName eventPayload:eventPayload displayed:displayed reason:noCampaignTriggeredReason campaignInfo:qaCampaignInfoArray];
 }
 
-+ (void)conversationCampaignTriggered:(NSString *)eventName
-                         eventPayload:(NSDictionary *)eventPayload
-                            displayed:(BOOL)displayed
-                     campaignInfoDict:(NSArray <SwrveQACampaignInfo *> *)qaCampaignInfoArray {
-   NSString *noCampaignTriggeredReason = displayed ? @"" : @"The loaded campaigns returned no conversations";
-    [self campaignTriggered:eventName eventPayload:eventPayload displayed:displayed reason:noCampaignTriggeredReason campaignInfo:qaCampaignInfoArray];
-}
-
-+ (void)conversationCampaignTriggeredNoDisplay:(NSString *)eventName
-                                  eventPayload:(NSDictionary *)eventPayload {
-    NSString *noCampaignTriggeredReason = @"No Conversation triggered because In App Message displayed";
-    [self campaignTriggered:eventName eventPayload:eventPayload displayed:false reason:noCampaignTriggeredReason campaignInfo:nil];
-}
-
 + (void) campaignTriggered:(NSString *)eventName
               eventPayload:(NSDictionary *)eventPayload
                  displayed:(BOOL)displayed

@@ -1,14 +1,14 @@
 
 #import <XCTest/XCTest.h>
-#import "SwrveSDK/SwrveSDK.h"
+#import "SwrveSDK/Swrve.h"
 
 @interface SwrveTestSDKObjCAPI : XCTestCase
 @end
 
 @interface SwrveSDK (InternalAccess)
 + (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
 @end
-
 
 @implementation SwrveTestSDKObjCAPI
 
@@ -16,11 +16,11 @@
     // Initialize SDK
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"SwrveTestKey"];
     [SwrveSDK resetSwrveSharedInstance];
-    
+
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"SwrveTestKey" config: config];
     [SwrveSDK resetSwrveSharedInstance];
-    
+
     // Purchase item
     XCTAssertThrows([SwrveSDK purchaseItem:@"" currency:@"" cost:1 quantity:1]);
     
@@ -110,10 +110,7 @@
     // External user ID
     XCTAssertThrows([SwrveSDK externalUserId]);
     
-    // Custom payload for conversation input
-    XCTAssertThrows([SwrveSDK setCustomPayloadForConversationInput:[@{@"key": @"value"} mutableCopy]]);
-    
-    config.initMode = SWRVE_INIT_MODE_MANAGED;
+    config.initMode = SwrveInitModeManaged;
     
     // Start
     XCTAssertThrows([SwrveSDK start]);
@@ -161,7 +158,7 @@
 
 - (void)testStartWithUserIdAPI {
     SwrveConfig *anotherConfig = [[SwrveConfig alloc] init];
-    anotherConfig.initMode = SWRVE_INIT_MODE_MANAGED;
+    anotherConfig.initMode = SwrveInitModeManaged;
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"SwrveTestKey" config: anotherConfig];
     [SwrveSDK startWithUserId:@"userId"];
 }

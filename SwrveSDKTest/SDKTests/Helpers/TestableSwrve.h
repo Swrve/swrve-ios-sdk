@@ -1,5 +1,5 @@
 
-#import "SwrveSDK.h"
+#import "Swrve.h"
 #import "Swrve+Private.h"
 #import "SwrvePrivateAccess.h"
 

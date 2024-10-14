@@ -1,15 +1,14 @@
 #import <Foundation/Foundation.h>
 
-@interface SwrveQACampaignInfo : NSObject
-
 typedef enum {
     SWRVE_CAMPAIGN_IAM = 0,
-    SWRVE_CAMPAIGN_CONVERSATION = 1,
-    SWRVE_CAMPAIGN_EMBEDDED = 2
+    SWRVE_CAMPAIGN_EMBEDDED = 1
 } SwrveCampaignType;
-// Macro to convert SwrveCampaignType to NSString
-#define swrveCampaignTypeToString(enum) [@[@"iam",@"conversation",@"embedded"] objectAtIndex:enum]
 
+// Macro to convert SwrveCampaignType to NSString
+#define swrveCampaignTypeToString(enum) [@[@"iam", @"embedded"] objectAtIndex:enum]
+
+@interface SwrveQACampaignInfo : NSObject
 @property (atomic)       NSUInteger             campaignID;
 @property (atomic)       NSUInteger             variantID;
 @property (nonatomic, getter=isDisplayed) BOOL  displayed;
@@ -20,6 +19,5 @@ typedef enum {
                 variantID:(NSUInteger)variantID
                      type:(SwrveCampaignType)type
                 displayed:(BOOL)displayed
-               reason:(NSString *)reason;
-
+                   reason:(NSString *)reason;
 @end

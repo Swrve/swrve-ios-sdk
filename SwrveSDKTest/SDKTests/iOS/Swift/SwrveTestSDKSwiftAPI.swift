@@ -92,9 +92,6 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             // External user ID
             SwrveSDK.externalUserId()
 
-            // Custom payload for conversation input
-            SwrveSDK.setCustomPayloadForConversationInput(["key": "value"])
-
             // Start
             SwrveSDK.start()
 
@@ -104,13 +101,10 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             // Stop tracking
             SwrveSDK.stopTracking()
 
-            // Messaging
             let embeddedMessage = SwrveEmbeddedMessage()
-            SwrveSDK.embeddedControlMessageImpressionEvent(embeddedMessage)
+            SwrveSDK.embeddedControlMessageImpressionEvent(SwrveEmbeddedMessage())
             SwrveSDK.embeddedMessageWasShown(toUser: embeddedMessage)
             SwrveSDK.embeddedButtonWasPressed(embeddedMessage, buttonName: "buttonName")
-
-            // Personalize embedded message data
             SwrveSDK.personalizeEmbeddedMessageData(embeddedMessage, withPersonalization: ["key": "value"])
             SwrveSDK.personalizeText("text", withPersonalization: ["key": "value"])
 
@@ -120,17 +114,15 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             let campaign = SwrveSDK.messageCenterCampaign(withID: 1, andPersonalization: ["key": "value"])
 
             #if os(iOS)
-                // Message center campaigns with orientation
                 SwrveSDK.messageCenterCampaignsThatSupport(.portrait)
-                SwrveSDK.messageCenterCampaignsThatSupport(
-                    .portrait, withPersonalization: ["key": "value"])
+                SwrveSDK.messageCenterCampaignsThatSupport(.portrait, withPersonalization: ["key": "value"])
             #endif
 
             // Show and remove message center campaign
-            let showCampaign = SwrveSDK.showMessageCenter(campaign)
-            let showCampaignWithPersonalization = SwrveSDK.showMessageCenter(campaign, withPersonalization: ["key": "value"])
-            SwrveSDK.removeMessageCenter(campaign)
-            SwrveSDK.markMessageCenterCampaign(asSeen: campaign)
+            SwrveSDK.showMessageCenter(SwrveCampaign(at: Date(), from: [:], campaignType: SWRVE_CAMPAIGN_IAM))
+            SwrveSDK.showMessageCenter(SwrveCampaign(at: Date(), from: [:], campaignType: SWRVE_CAMPAIGN_IAM), withPersonalization: ["key": "value"])
+            SwrveSDK.removeMessageCenter(SwrveCampaign(at: Date(), from: [:], campaignType: SWRVE_CAMPAIGN_IAM))
+            SwrveSDK.markMessageCenterCampaign(asSeen: SwrveCampaign(at: Date(), from: [:], campaignType: SWRVE_CAMPAIGN_IAM))
 
             // IDFA
             SwrveSDK.idfa("idfa_string")

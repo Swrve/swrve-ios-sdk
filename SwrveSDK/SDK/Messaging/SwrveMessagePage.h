@@ -14,8 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initFromJson:(NSDictionary *)json
         campaignId:(long)swrveCampaignId
-         messageId:(long)swrveMessageId
-      appStoreURLs:(NSMutableDictionary *)appStoreURLs;
+         messageId:(long)swrveMessageId;
 
 @end
 

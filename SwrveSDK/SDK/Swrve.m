@@ -32,11 +32,9 @@
 #import "SwrveMessageController+Private.h"
 #import "SwrveDeviceProperties.h"
 #import "SwrveEventsManager.h"
-
-#import "SwrveConversationEvents.h"
-
 #import "SwrveProfileManager.h"
 #import "SwrveEventQueueItem.h"
+#import "SwrveReceiptProvider.h"
 
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>
@@ -98,15 +96,6 @@ enum {
 - (void)removeSwrveInstanceID:(long)instanceID;
 
 @end
-
-@interface SwrveResourceManager ()
-
-- (void)setResourcesFromArray:(NSArray *)json;
-
-- (void)setABTestDetailsFromDictionary:(NSDictionary *)json;
-
-@end
-
 
 @interface SwrveProfileManager ()
 
@@ -424,7 +413,7 @@ enum {
         }
 
         // Do migrations first before anything else is done.
-        SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:[[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig]];
+        SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
         [migrationsManager checkMigrations];
 
         [SwrveCommon addSharedInstance:self];
@@ -442,7 +431,7 @@ enum {
         eventsServer = [swrveConfig eventsServer];
         contentServer = [swrveConfig contentServer];
         identityServer = [swrveConfig identityServer];
-        config = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+        config = swrveConfig;
 
         language = [config language];
         httpTimeout = [config httpTimeoutSeconds];
@@ -673,9 +662,9 @@ enum {
 
 - (BOOL)shouldAutoStart {
     BOOL shouldAutostart = false;
-    if ([config initMode] == SWRVE_INIT_MODE_AUTO && [config autoStartLastUser]) {
+    if ([config initMode] == SwrveInitModeAuto && [config autoStartLastUser]) {
         shouldAutostart = true;
-    } else if ([config initMode] == SWRVE_INIT_MODE_MANAGED && [config autoStartLastUser]) {
+    } else if ([config initMode] == SwrveInitModeManaged && [config autoStartLastUser]) {
         NSString *savedUserId = [SwrveLocalStorage swrveUserId];
         if ([savedUserId length] > 0) {
             shouldAutostart = true;
@@ -1323,7 +1312,7 @@ enum {
     event_queued_callback = callbackBlock;
 }
 
-- (NSArray *) pushInboxMessages {
+- (NSArray<SwrvePushInboxMessage *> *) pushInboxMessages {
     if([self pushInbox] != nil) {
         return [[self pushInbox] filteredMessages];
     }
@@ -1378,7 +1367,6 @@ enum {
     [self stopCampaignsAndResourcesTimer];
 
     //ensure UI isn't displaying during shutdown
-    [self.messaging cleanupConversationUI];
     [self.messaging dismissMessageWindow];
     messaging = nil;
     
@@ -1650,7 +1638,7 @@ enum {
     }
 }
 
-- (NSString *)deviceToken {
+- (nullable NSString *)deviceToken {
     return self->_deviceToken;
 }
 
@@ -1724,7 +1712,7 @@ enum {
 }
 
 - (NSString *)stackHostPrefixFromConfig:(SwrveConfig *)newConfig {
-    if (newConfig.stack == SWRVE_STACK_EU) {
+    if (newConfig.stack == SwrveStackEu) {
         return @"eu-";
     } else {
         return @""; // default to US which has no prefix
@@ -1846,7 +1834,6 @@ enum {
 #if TARGET_OS_IOS /** tvOS has no support for telephony or push **/
     swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
                                                      appInstallTimeSeconds:appInstallTimeSeconds
-                                                       conversationVersion:CONVERSATION_VERSION
                                                                deviceToken:self.deviceToken
                                                           permissionStatus:permissionStatus
                                                               sdk_language:self.config.language
@@ -1871,7 +1858,7 @@ enum {
 
 - (NSString *)swrveInitModeString {
     NSString *initMode;
-    if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
+    if (self.config.initMode == SwrveInitModeAuto) {
         initMode = @"auto";
     } else {
         initMode = @"managed";
@@ -2541,7 +2528,7 @@ enum HttpStatus {
         return;
     }
 
-    if ([config initMode] == SWRVE_INIT_MODE_MANAGED && ![config autoStartLastUser]) {
+    if ([config initMode] == SwrveInitModeManaged && ![config autoStartLastUser]) {
         [SwrveLogger warning:@"Warning: SwrveSDK Push to IAM/Conv cannot execute in MANAGED mode and autoStartLastUser==false.", nil];
         return;
     }
@@ -2607,7 +2594,7 @@ enum HttpStatus {
          onError:(void (^)(NSInteger httpCode, NSString *errorMessage))onError
       checkCache:(BOOL)checkCache {
 
-    if (self.config.initMode == SWRVE_INIT_MODE_MANAGED) {
+    if (self.config.initMode == SwrveInitModeManaged) {
         [self throwIllegalOperationException:@"Cannot call identify api in MANAGED initMode."];
     }
 
@@ -2670,7 +2657,7 @@ enum HttpStatus {
 
 - (BOOL)shouldReIdentify {
     BOOL shouldReIdentify = NO;
-    if (self.config.initMode == SWRVE_INIT_MODE_MANAGED || self.identifyRefreshPeriod == -1) {
+    if (self.config.initMode == SwrveInitModeManaged || self.identifyRefreshPeriod == -1) {
         return shouldReIdentify; // not applicable for managed mode or default period
     }
 
@@ -2867,20 +2854,13 @@ enum HttpStatus {
     }
 }
 
-- (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
-    if (![self sdkReady]) {
-        return;
-    }
-    [SwrveConversationEvents setCustomPayload:payload];
-}
-
 - (void)start {
     [self startWithUserIdAllInitModes:self.userID];
 }
 
 - (void)startWithUserId:(NSString *)userId {
-    if (self.config.initMode == SWRVE_INIT_MODE_AUTO) {
-        [self throwIllegalOperationException:@"Cannot call startWithUserId api in SWRVE_INIT_MODE_AUTO initMode."];
+    if (self.config.initMode == SwrveInitModeAuto) {
+        [self throwIllegalOperationException:@"Cannot call startWithUserId api in SwrveInitMode (Auto) initMode."];
     }
     [self startWithUserIdAllInitModes:userId];
 }
@@ -2944,7 +2924,6 @@ enum HttpStatus {
     [SwrveNotificationManager clearAllAuthenticatedNotifications];
 #endif
 
-    [self.messaging cleanupConversationUI];
     [self.messaging dismissMessageWindow];
 }
 
@@ -3007,7 +2986,7 @@ enum HttpStatus {
     return [messaging messageCenterCampaigns];
 }
 
-- (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization {
     if (![self sdkReady]) {
         return @[];
     }
@@ -3023,16 +3002,17 @@ enum HttpStatus {
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
     if (![self sdkReady]) {
         return @[];
     }
     return [messaging messageCenterCampaignsThatSupportOrientation:orientation];
 }
 
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
     if (![self sdkReady]) {
-        return @[];
+        NSArray <SwrveCampaign *> *array = @[];
+        return array;
     }
     return [messaging messageCenterCampaignsThatSupportOrientation:orientation withPersonalization:personalization];
 }

@@ -1,27 +1,13 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import <SwrveMessagePage.h>
-#import <SwrveMessagePageViewController.h>
-#import <SwrveThemedUIButton.h>
-#import <SwrveSDKUtils.h>
 #import "SwrveTestHelper.h"
 
-#import "SwrveMessage.h"
-#import "SwrveMessageController.h"
-#import "SwrveMessageViewController.h"
-#import "SwrveAssetsManager.h"
-#import "SwrveUIButton.h"
-#import "SwrveUtils.h"
-#import "SwrveButton.h"
-#import "SwrveCampaign.h"
-#import "SwrveSDK.h"
-#import "SwrvePrivateAccess.h"
-#import "SwrveMessageFocus.h"
+@interface SwrveSDK()
++ (void)resetSwrveSharedInstance;
+@end
 
 @interface Swrve()
 @property (atomic) SwrveRESTClient *restClient;
-@property(atomic) SwrveMessageController *messaging;
-
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 @end
@@ -159,17 +145,16 @@
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
 
-    // IAM, Embedded and Conversation support these orientations
+    // IAM, Embedded
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 3);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 2);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 2);
 #elif TARGET_OS_TV
-    // should only get two now that the conversation is excluded from the message center response
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
 #endif
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusUnseen);
     XCTAssertEqual([campaign.priority intValue], 5);
     XCTAssertEqualObjects(campaign.name,@"Kindle");
 
@@ -183,7 +168,7 @@
     [viewController onButtonPressed:dismissButton pageId:[NSNumber numberWithInt:0]];
 
     XCTAssertEqual(campaign.state.impressions, 1);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
 
     // We can still get the IAM, even though the rules specify a limit of 1 impression
     SwrveCampaign *firstCampaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
@@ -194,7 +179,7 @@
     [controller removeMessageCenterCampaign:campaign];
 
     XCTAssertFalse([[swrveMock messageCenterCampaigns] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusDeleted);
 
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -226,11 +211,11 @@
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusUnseen);
     
     // Mark message as seen programmatically
     [swrveMock markMessageCenterCampaignAsSeen:campaign];
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
     
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -270,7 +255,7 @@
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0); // Should be 0 message centerCampaign because they all require personalization
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 2); // Should be 2 message centerCampaign with correct personalization passed in
 
-    // IAM and Conversation support these orientations
+    // IAM support these orientations
 #if TARGET_OS_IOS
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight withPersonalization:validPersonalization] count], 2);
     XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:validPersonalization] count], 2);
@@ -280,7 +265,7 @@
 #endif
 
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
 
     // Should be invalid due to missing personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:nil];
@@ -296,7 +281,7 @@
 
     // No Impression should be registered nor state change
     XCTAssertEqual(campaign.state.impressions, 0);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusUnseen);
 
     NSDictionary *invalidPersonalization = @{@"invalid_key": @"test_value"};
 
@@ -314,7 +299,7 @@
 
     // No Impression should be registered nor state change
     XCTAssertEqual(campaign.state.impressions, 0);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusUnseen);
 
     // Should appear now in the message center APIs
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:validPersonalization] count], 2);
@@ -387,7 +372,7 @@
     [self waitForWindowDismissed:controller];
 
     XCTAssertEqual(campaign.state.impressions, 1);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
 
 #if TARGET_OS_IOS /** exclude tvOS **/
     // verify (on iOS) that the value was copied to clipboard
@@ -404,7 +389,7 @@
     [swrveMock removeMessageCenterCampaign:campaign];
 
     XCTAssertFalse([[swrveMock messageCenterCampaigns] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusDeleted);
 
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -459,8 +444,8 @@
     OCMStub([swrveMock getNow]).andReturn(mockInitDate);
     
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 3); // should not display since there's no personalization
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 2); // should not display since there's no personalization
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 3);
 #elif TARGET_OS_TV
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:nil] count], 2);
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 3);
@@ -474,13 +459,13 @@
         }
     }
     
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
     
     // attempt the wrong personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:@{@"wrong":@"id"}];
     
     // it should not show
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
 
     // Display in-app message with the correct personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:testPersonalization];
@@ -488,13 +473,13 @@
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
 
     // Remove the campaign
     [controller removeMessageCenterCampaign:campaign];
     
     XCTAssertFalse([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusDeleted);
     
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -537,7 +522,7 @@
     SwrveMessageController *controller = [swrveMock messaging];
 
 #if TARGET_OS_IOS
-    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 5);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
 #elif TARGET_OS_TV
     XCTAssertEqual([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] count], 4);
 #endif
@@ -550,13 +535,13 @@
         }
     }
     
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
     
     // attempt the wrong personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:@{@"wrong":@"id"}];
     
     // it should not show
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
 
     // Display in-app message with the correct personalization
     [controller showMessageCenterCampaign:campaign withPersonalization:testPersonalization];
@@ -564,13 +549,13 @@
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
 
     // Remove the campaign
     [controller removeMessageCenterCampaign:campaign];
     
     XCTAssertFalse([[swrveMock messageCenterCampaignsWithPersonalization:testPersonalization] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusDeleted);
     
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -606,8 +591,8 @@
 
 #if TARGET_OS_IOS
     //  include no personalization dictionary and we should still get 4
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 2);
 #elif TARGET_OS_TV
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
 #endif
@@ -620,7 +605,7 @@
         }
     }
     
-    XCTAssertEqual(campaign.state.status,SWRVE_CAMPAIGN_STATUS_UNSEEN);
+    XCTAssertEqual(campaign.state.status,SwrveCampaignStatusUnseen);
 
     // Display in-app message with no personalization, should be resolved by injected RTUPs
     [controller showMessageCenterCampaign:campaign withPersonalization:nil];
@@ -628,13 +613,13 @@
     [viewController viewDidAppear:NO];
 
     XCTAssertEqual(campaign.state.impressions, 1);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_SEEN);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusSeen);
 
     // Remove the campaign
     [controller removeMessageCenterCampaign:campaign];
     
     XCTAssertFalse([[swrveMock messageCenterCampaignsWithPersonalization:nil] containsObject:campaign]);
-    XCTAssertEqual(campaign.state.status, SWRVE_CAMPAIGN_STATUS_DELETED);
+    XCTAssertEqual(campaign.state.status, SwrveCampaignStatusDeleted);
     
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
@@ -723,7 +708,7 @@
     //confirm campaign and message center details ok if some nil properties
     campaign = [swrveMock messageCenterCampaignWithID:103 andPersonalization:validPersonalization];
     XCTAssertEqualObjects(campaign.messageCenterDetails.subject, @"some subject personalized test_value");
-    XCTAssertEqualObjects(campaign.messageCenterDetails.description, nil);
+    XCTAssertEqualObjects(campaign.messageCenterDetails.description, @"");
     XCTAssertEqualObjects(campaign.messageCenterDetails.imageUrl, nil);
     XCTAssertEqualObjects(campaign.messageCenterDetails.imageAccessibilityText, nil);
     XCTAssertEqualObjects(campaign.messageCenterDetails.imageSha, nil);

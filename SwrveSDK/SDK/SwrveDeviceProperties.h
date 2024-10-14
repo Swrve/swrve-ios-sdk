@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "SwrveConfig.h"
 #if __has_include(<SwrveSDKCommon/SwrveUtils.h>)
 #import <SwrveSDKCommon/SwrveUtils.h>
 #else
@@ -11,7 +10,6 @@
 @property (nonatomic) NSString * sdk_version;
 @property (nonatomic) NSString * sdk_language;
 @property (nonatomic, assign) UInt64 appInstallTimeSeconds;
-@property (nonatomic, assign) int  conversationVersion;
 @property (nonatomic) NSString * deviceToken;
 @property (nonatomic) NSDictionary* permissionStatus;
 @property (nonatomic) NSString* swrveInitMode;
@@ -25,7 +23,6 @@
  
  @param sdk_version         The SDK version string
  @param appInstallTimeSeconds  The install time in seconds
- @param conversationVersion The SDK conversation version
  @param deviceToken         The device token
  @param permissionStatus    Permission status dictionary
  @param sdk_language        The SDK langauge string
@@ -35,7 +32,6 @@
  */
 - (instancetype) initWithVersion:(NSString *)sdk_version
            appInstallTimeSeconds:(UInt64)appInstallTimeSeconds
-             conversationVersion:(int)conversationVersion
                      deviceToken:(NSString *)deviceToken
                 permissionStatus:(NSDictionary *)permissionStatus
                     sdk_language:(NSString *)sdk_language
@@ -69,7 +65,6 @@
  swrve.os_version
  swrve.device_dpi
  swrve.install_date
- swrve.conversation_version
  swrve.ios_min_version
  swrve.language
  swrve.device_height

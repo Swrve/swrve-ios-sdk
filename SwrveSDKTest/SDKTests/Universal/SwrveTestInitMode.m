@@ -1,7 +1,5 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveCommon.h"
-#import "SwrveSDK.h"
 #import "SwrveTestHelper.h"
 
 @interface SwrveTestInitMode : XCTestCase {
@@ -42,24 +40,24 @@
 }
 
 - (void)testSdkReadyAutoStartTrue {
-    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMock = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     BOOL sdkReady = [swrveMock sdkReady];
     XCTAssertTrue(sdkReady);
 }
 - (void)testSdkReadyAutoStartFalse {
-    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:false];
+    id swrveMock = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:false];
     BOOL sdkReady = [swrveMock sdkReady];
     XCTAssertFalse(sdkReady);
 }
 
 - (void)testSdkReadyStopped {
-    id swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMock = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     BOOL sdkReady = [swrveMock sdkReady];
     XCTAssertTrue(sdkReady);
 
     [SwrveLocalStorage saveTrackingState:STOPPED];
 
-    swrveMock = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    swrveMock = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     sdkReady = [swrveMock sdkReady];
     XCTAssertFalse(sdkReady);
 }
@@ -84,13 +82,13 @@
 
 - (void)testPurchaseItem {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK purchaseItem:@"item" currency:@"dollar" cost:100 quantity:5];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK purchaseItem:@"item" currency:@"dollar" cost:100 quantity:5];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -103,13 +101,13 @@
     SKPaymentTransaction *dummyTransaction =  OCMClassMock([SKPaymentTransaction class]);
     OCMStub([dummyTransaction transactionState]).andReturn(SKPaymentTransactionStateDeferred); // SDK doens't handle SKPaymentTransactionStateDeferred
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK iap:dummyTransaction product:dummyProduct];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK iap:dummyTransaction product:dummyProduct];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -123,13 +121,13 @@
     SKPaymentTransaction *dummyTransaction =  OCMClassMock([SKPaymentTransaction class]);
     OCMStub([dummyTransaction transactionState]).andReturn(SKPaymentTransactionStateDeferred); // SDK doens't handle SKPaymentTransactionStateDeferred
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK iap:dummyTransaction product:dummyProduct rewards:dummyRewards];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK iap:dummyTransaction product:dummyProduct rewards:dummyRewards];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -140,13 +138,13 @@
     
     SwrveIAPRewards *dummyRewards =  OCMClassMock([SwrveIAPRewards class]);
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK unvalidatedIap:dummyRewards localCost:0.0 localCurrency:@"dollar" productId:@"productId" productIdQuantity:1];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK unvalidatedIap:dummyRewards localCost:0.0 localCurrency:@"dollar" productId:@"productId" productIdQuantity:1];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -155,13 +153,13 @@
 
 - (void)testEvent {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK event:@"event1"];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK event:@"event1"];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -170,13 +168,13 @@
 
 - (void)testEventWithPayload {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK event:@"event1" payload:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK event:@"event1" payload:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -185,13 +183,13 @@
 
 - (void)testCurrencyGiven {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK currencyGiven:@"" givenAmount:1];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK currencyGiven:@"" givenAmount:1];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -200,13 +198,13 @@
 
 - (void)testUserUpdate1 {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK userUpdate:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK userUpdate:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -215,13 +213,13 @@
 
 - (void)testUserUpdateWithDate {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK userUpdate:@"prop" withDate:[NSDate new]];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK userUpdate:@"prop" withDate:[NSDate new]];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -230,12 +228,12 @@
 
 - (void)testRefreshCampaignsAndResources {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK refreshCampaignsAndResources];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     [SwrveSDK refreshCampaignsAndResources];
     OCMVerifyAll(swrveMockAuto);
@@ -243,13 +241,13 @@
 
 - (void)testResourceManager {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     SwrveResourceManager *resourceManagerManaged = [SwrveSDK resourceManager];
     XCTAssertNotNil(resourceManagerManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     SwrveResourceManager *resourceManagerAuto = [SwrveSDK resourceManager];
     XCTAssertNotNil(resourceManagerAuto);
@@ -258,12 +256,12 @@
 
 - (void)testUserResources {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK userResources:^(NSDictionary *resources, NSString *resourcesAsJSON) {}];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK userResources:^(NSDictionary *resources, NSString *resourcesAsJSON) {}];
     OCMVerifyAll(swrveMockAuto);
@@ -271,7 +269,7 @@
 
 - (void)testUserResourcesDiffWithListener {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues,
             NSDictionary *newResourcesValues,
@@ -281,7 +279,7 @@
     }];
     OCMVerifyAll(swrveMockManaged);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues,
             NSDictionary *newResourcesValues,
@@ -294,12 +292,12 @@
 
 - (void)testSendQueuedEvents {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK sendQueuedEvents];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK sendQueuedEvents];
     OCMVerifyAll(swrveMockAuto);
@@ -307,12 +305,12 @@
 
 - (void)testSaveEventsToDisk {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK saveEventsToDisk];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK saveEventsToDisk];
     OCMVerifyAll(swrveMockAuto);
@@ -320,12 +318,12 @@
 
 - (void)testSetEventQueuedCallback {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {}];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK setEventQueuedCallback:^(NSDictionary *eventPayload, NSString *eventsPayloadAsJSON) {}];
     OCMVerifyAll(swrveMockAuto);
@@ -333,13 +331,13 @@
 
 - (void)testEventWithNoCallback {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     int successManaged = [SwrveSDK eventWithNoCallback:@"event1" payload:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_FAILURE, successManaged);
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     int successAuto = [SwrveSDK eventWithNoCallback:@"event1" payload:[NSMutableDictionary new]];
     XCTAssertEqual(SWRVE_SUCCESS, successAuto);
@@ -348,12 +346,12 @@
 
 - (void)testHandleDeeplink {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK handleDeeplink:[NSURL new]];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK handleDeeplink:[NSURL new]];
     OCMVerifyAll(swrveMockAuto);
@@ -361,12 +359,12 @@
 
 - (void)testHandleDeferredDeeplink {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK handleDeferredDeeplink:[NSURL new]];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK handleDeferredDeeplink:[NSURL new]];
     OCMVerifyAll(swrveMockAuto);
@@ -374,12 +372,12 @@
 
 - (void)testInstallAction {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK installAction:[NSURL new]];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();
     [SwrveSDK installAction:[NSURL new]];
     OCMVerifyAll(swrveMockAuto);
@@ -387,27 +385,14 @@
 
 - (void)testExternalUserId {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
     [SwrveSDK externalUserId];
     OCMVerifyAll(swrveMockManaged);
     
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
     [SwrveSDK externalUserId];
-    OCMVerifyAll(swrveMockAuto);
-}
-
-- (void)testSetCustomPayloadForConversationInput {
-
-    id swrveMockManaged = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
-    OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
-    [SwrveSDK setCustomPayloadForConversationInput:[NSMutableDictionary new]];
-    OCMVerifyAll(swrveMockManaged);
-    
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
-    OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
-    [SwrveSDK setCustomPayloadForConversationInput:[NSMutableDictionary new]];
     OCMVerifyAll(swrveMockAuto);
 }
 
@@ -416,7 +401,7 @@
 
     NSURL *url = [NSURL URLWithString:@"swrve://app?param1=1&ad_content=2"];
 
-    id swrveMockManagedAutostartFalse = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    id swrveMockManagedAutostartFalse = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:false];
     OCMReject([swrveMockManagedAutostartFalse initSwrveDeeplinkManager]);
     id deeplinkManagerManagedMock = OCMClassMock([SwrveDeeplinkManager class]);
     [swrveMockManagedAutostartFalse setSwrveDeeplinkManager:deeplinkManagerManagedMock];
@@ -425,7 +410,7 @@
     OCMVerifyAll(swrveMockManagedAutostartFalse);
     OCMVerifyAll(deeplinkManagerManagedMock);
 
-    id swrveMockManagedAutostartTrue = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManagedAutostartTrue = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     OCMExpect([swrveMockManagedAutostartTrue initSwrveDeeplinkManager]);
     id deeplinkManagerkManagedAutostartTrue = OCMClassMock([SwrveDeeplinkManager class]);
     [swrveMockManagedAutostartTrue setSwrveDeeplinkManager:deeplinkManagerkManagedAutostartTrue];
@@ -434,7 +419,7 @@
     OCMVerifyAll(swrveMockManagedAutostartTrue);
     OCMVerifyAll(deeplinkManagerkManagedAutostartTrue);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     OCMExpect([swrveMockAuto initSwrveDeeplinkManager]);
     id deeplinkManagerAutoMock = OCMClassMock([SwrveDeeplinkManager class]);
     [swrveMockAuto setSwrveDeeplinkManager:deeplinkManagerAutoMock];
@@ -449,7 +434,7 @@
 
     NSURL *url = [NSURL URLWithString:@"swrve://app?param1=1&ad_content=2"];
 
-    id swrveMockManagedAutostartFalse = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:true];
+    id swrveMockManagedAutostartFalse = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
     [swrveMockManagedAutostartFalse stopTracking];
     
     OCMReject([swrveMockManagedAutostartFalse initSwrveDeeplinkManager]);
@@ -460,7 +445,7 @@
     OCMVerifyAll(swrveMockManagedAutostartFalse);
     OCMVerifyAll(deeplinkManagerManagedMock);
 
-    id swrveMockAuto = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_AUTO autoStart:true];
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
     [swrveMockAuto stopTracking];
     
     OCMReject([swrveMockAuto initSwrveDeeplinkManager]);
@@ -476,7 +461,7 @@
 - (void)testFirstSessionEvent {
 
     // verify Swrve.first_session fired with new user and start api called
-    id swrveMock1 = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    id swrveMock1 = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:false];
     OCMExpect([swrveMock1 eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false]);
     [SwrveSDK start];
     OCMVerifyAllWithDelay(swrveMock1, 5);
@@ -487,7 +472,7 @@
     OCMVerifyAll(swrveMock1);
 
     // verify Swrve.first_session is not fired in next new instance
-    id swrveMock2 = [self initSwrveSDKWithMode:SWRVE_INIT_MODE_MANAGED autoStart:false];
+    id swrveMock2 = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:false];
     OCMReject([swrveMock2 eventInternal:@"Swrve.first_session" payload:nil triggerCallback:false]);
     
     //startCampaignsAndResourcesTimer is the next thing to be called after the check for Swrve.first_session

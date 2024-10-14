@@ -8,11 +8,11 @@
 @synthesize displayed;
 @synthesize reason;
 
-- (id) initWithCampaignID:(NSUInteger)campaignId
+- (instancetype)initWithCampaignID:(NSUInteger)campaignId
             variantID:(NSUInteger)variantId
                  type:(SwrveCampaignType)campType
             displayed:(BOOL) isDisplayed
-               reason:(NSString *)logReason {
+                            reason:(NSString *)logReason {
     self = [super init];
     if (self != nil) {
         self.campaignID = campaignId;

@@ -3,7 +3,7 @@
 
 @interface SwrveMigrationsManager : NSObject
 
-- (id)initWithConfig:(ImmutableSwrveConfig *)swrveConfig;
+- (id)initWithConfig:(SwrveConfig *)swrveConfig;
 - (void)checkMigrations;
 
 @end

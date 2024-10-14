@@ -16,8 +16,8 @@
 		5BEE29DE20EF6E2100CA65B8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEE29D620EF6E2100CA65B8 /* ViewController.m */; };
 		5BEE29DF20EF6E2100CA65B8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEE29D720EF6E2100CA65B8 /* AppDelegate.m */; };
 		5BEE29E120EF6E2100CA65B8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BEE29D920EF6E2100CA65B8 /* main.m */; };
+		A458AE0A6761FDED3D2A8CA2 /* Pods_MinimalIntegrationSample_ObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98D930BF3D00174731BD32A8 /* Pods_MinimalIntegrationSample_ObjC.framework */; };
 		B2A45ECF1D269EC4997CAC88 /* Pods_MinimalIntegrationSample_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */; };
-		CE1D65C7FD15E216E0135605 /* libPods-MinimalIntegrationSample-ObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B473EA0AB00D4C0B1B73CE8D /* libPods-MinimalIntegrationSample-ObjC.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,12 +36,12 @@
 		5BEE29D720EF6E2100CA65B8 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5BEE29D920EF6E2100CA65B8 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5BEE29DB20EF6E2100CA65B8 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		5E6F50EF171A033C465DA783 /* Pods-MinimalIntegrationSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-Swift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
-		837D2E2386867C9DE7D2AD59 /* Pods-MinimalIntegrationSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-ObjC.release.xcconfig"; path = "Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		5E6F50EF171A033C465DA783 /* Pods-MinimalIntegrationSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-Swift.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		837D2E2386867C9DE7D2AD59 /* Pods-MinimalIntegrationSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-ObjC.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
 		883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MinimalIntegrationSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		AFC46689E9C1C1CB1B2A001E /* Pods-MinimalIntegrationSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-Swift.release.xcconfig"; path = "Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
-		B473EA0AB00D4C0B1B73CE8D /* libPods-MinimalIntegrationSample-ObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MinimalIntegrationSample-ObjC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E3987E95FBA75C648A86B92F /* Pods-MinimalIntegrationSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-ObjC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		98D930BF3D00174731BD32A8 /* Pods_MinimalIntegrationSample_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MinimalIntegrationSample_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AFC46689E9C1C1CB1B2A001E /* Pods-MinimalIntegrationSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-Swift.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		E3987E95FBA75C648A86B92F /* Pods-MinimalIntegrationSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample-ObjC.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE1D65C7FD15E216E0135605 /* libPods-MinimalIntegrationSample-ObjC.a in Frameworks */,
+				A458AE0A6761FDED3D2A8CA2 /* Pods_MinimalIntegrationSample_ObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */,
-				B473EA0AB00D4C0B1B73CE8D /* libPods-MinimalIntegrationSample-ObjC.a */,
+				98D930BF3D00174731BD32A8 /* Pods_MinimalIntegrationSample_ObjC.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -161,7 +161,7 @@
 				5BEE29C720EF6DD600CA65B8 /* Sources */,
 				5BEE29CA20EF6DD600CA65B8 /* Frameworks */,
 				5BEE29CB20EF6DD600CA65B8 /* Resources */,
-				9DBB334782EF82CCFDC0CB65 /* [CP] Copy Pods Resources */,
+				55E54B32AE140389050920D0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -250,6 +250,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		28AFD91A7B89AD250A9DA4B5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		4D2B6D4E6AA2E0096983BA1D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -268,21 +285,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9DBB334782EF82CCFDC0CB65 /* [CP] Copy Pods Resources */ = {
+		55E54B32AE140389050920D0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-ObjC/Pods-MinimalIntegrationSample-ObjC-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A4BFBEDC918BBB9E85B58981 /* [CP] Embed Pods Frameworks */ = {

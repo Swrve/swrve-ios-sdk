@@ -1,13 +1,8 @@
 #import <XCTest/XCTest.h>
 #import "SwrveTestHelper.h"
-#import "SwrveMigrationsManager.h"
-#import "SwrveRESTClient.h"
-
 #if __has_include(<OCMock/OCMock.h>)
 #import <OCMock/OCMock.h>
 #endif
-
-#import "SwrveSDK.h"
 
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>

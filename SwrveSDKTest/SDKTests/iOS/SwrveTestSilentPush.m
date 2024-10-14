@@ -1,8 +1,6 @@
 #import <XCTest/XCTest.h>
-#import "SwrveSDK.h"
-#import "SwrveCampaignInfluence.h"
-#import "SwrveNotificationManager.h"
 #import <OCMock/OCMock.h>
+#import "SwrveTestHelper.h"
 
 @interface SwrvePush()
 + (SwrvePush *)sharedInstance;

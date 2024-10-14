@@ -1,6 +1,6 @@
 #import "SwrveUIButton.h"
-#import "SwrveMessage.h"
 #import "SwrveButtonTheme.h"
+#import "SwrveButtonActions.h"
 
 /*! In-app message button. */
 @interface SwrveButton : NSObject
@@ -25,7 +25,6 @@
 
 - (id)initWithDictionary:(NSDictionary *)buttonData
               campaignId:(long)swrveCampaignId
-               messageId:(long)swrveMessageId
-            appStoreURLs:(NSMutableDictionary *)appStoreURLs;
+               messageId:(long)swrveMessageId;
 
 @end

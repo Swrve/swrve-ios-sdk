@@ -1,16 +1,8 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-#import "SwrveSignatureProtectedFile.h"
-#import "SwrveProtocol.h"
-#import "SwrveUtils.h"
-#import "SwrveLocalStorage.h"
-#import "SwrveSDK.h"
-#import "SwrveProfileManager.h"
-#import "SwrveMessageController.h"
-
+#import "SwrveTestHelper.h"
 
 @interface Swrve ()
-@property(atomic) SwrveMessageController *messaging;
 @property(atomic) SwrveProfileManager *profileManager;
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
 @property(atomic) SwrveSignatureProtectedFile *resourcesDiffFile;

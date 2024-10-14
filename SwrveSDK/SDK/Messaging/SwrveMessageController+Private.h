@@ -1,9 +1,6 @@
 #import "Swrve.h"
 #import "SwrveMessageController.h"
 
-#import "SwrveConversationItemViewController.h"
-
-static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 const static int CAMPAIGN_VERSION = 9;
 const static int CAMPAIGN_RESPONSE_VERSION = 2;
 const static int EMBEDDED_CAMPAIGN_VERSION = 3;
@@ -22,8 +19,6 @@ const static int IN_APP_CAMPAIGN_VERSION = 15;
 /*! Save campaigns current state*/
 - (void)saveCampaignsState;
 
-/*! Ensure any currently displaying conversations are dismissed*/
-- (void)cleanupConversationUI;
 
 /*! Format the given time into POSIX time.
  *
@@ -42,16 +37,9 @@ const static int IN_APP_CAMPAIGN_VERSION = 15;
 /*! Called when an event is raised by the Swrve SDK.
  *
  * \param event Event triggered.
- * \returns YES if an in-app message or conversation was shown.
+ * \returns YES if an in-app message was shown.
  */
 - (BOOL)eventRaised:(NSDictionary *)event;
-
-/*! Determine if the conversation filters are supporter at this moment.
- *
- * \param filters Filters we need to support to display the campaign.
- * \returns nil if all devices are supported or the name of the filter that is not supported.
- */
-- (NSString *)supportsDeviceFilters:(NSArray *)filters;
 
 /**! Fire the personalization callback given as part of the SDK and combine it with real time user properties.
  *
@@ -68,7 +56,6 @@ const static int IN_APP_CAMPAIGN_VERSION = 15;
 #pragma mark Properties
 
 @property(nonatomic) Swrve *analyticsSDK;
-@property(nonatomic, retain) SwrveConversationItemViewController *swrveConversationItemViewController;
 
 #pragma mark -
 

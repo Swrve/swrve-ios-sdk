@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 #import "SwrveMessageFormat.h"
-#import "SwrveInAppMessageConfig.h"
+@class SwrveInAppMessageConfig;
 
 NS_ASSUME_NONNULL_BEGIN
 

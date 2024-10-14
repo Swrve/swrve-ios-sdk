@@ -17,15 +17,17 @@
     NSArray* abTestDetails = [swrve.resourceManager abTestDetails];
     XCTAssertEqual(2, [abTestDetails count]);
     
-    SwrveABTestDetails* details1 = [abTestDetails objectAtIndex:0];
-    XCTAssertEqualObjects(@"12", details1.id);
-    XCTAssertEqualObjects(@"AB test Name 1", details1.name);
-    XCTAssertEqual(1, details1.caseIndex);
-    
-    SwrveABTestDetails* details2 = [abTestDetails objectAtIndex:1];
-    XCTAssertEqualObjects(@"13", details2.id);
-    XCTAssertEqualObjects(@"AB test Name 2", details2.name);
-    XCTAssertEqual(4, details2.caseIndex);
+    for (SwrveABTestDetails *details in abTestDetails) {
+        if ([details.name isEqualToString:@"AB test Name 1"]) {
+            XCTAssertEqualObjects(@"12", details.id);
+            XCTAssertEqual(1, details.caseIndex);
+        } else if ([details.name isEqualToString:@"AB test Name 2"]) {
+            XCTAssertEqualObjects(@"13", details.id);
+            XCTAssertEqual(4, details.caseIndex);
+        } else {
+            XCTFail(@"Unexpected Name");
+        }
+    }
 }
 
 @end

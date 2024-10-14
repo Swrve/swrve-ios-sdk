@@ -49,13 +49,6 @@
 + (UInt64)getTimeEpoch;
 
 /**
- Returns YES if running on platforms that support Conversations
- 
- @return BOOL
- */
-+ (BOOL) supportsConversations;
-
-/**
  Returns one of three options "mobile" , "tv" or "desktop" based on the platform running it.
  
  @return NSString representing the device type

@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "SwrveMessage.h"
 
 @interface SwrveUIButton : UIButton
 

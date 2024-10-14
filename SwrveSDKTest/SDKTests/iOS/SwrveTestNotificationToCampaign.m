@@ -1,10 +1,5 @@
 #import <XCTest/XCTest.h>
 #import "SwrveTestHelper.h"
-#import "SwrveTestConversationsHelper.h"
-#import "SwrvePush.h"
-#import "SwrveNotificationConstants.h"
-#import "SwrveNotificationManager.h"
-#import "SwrveMessageController+Private.h"
 
 @interface SwrveNotificationManager (InternalAccess)
 + (void)updateLastProcessedPushId:(NSString *)pushId;
@@ -12,11 +7,12 @@
 
 @interface SwrveMessageController ()
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic, retain) UIWindow *conversationWindow;
 @end
 
 @interface Swrve()
 @property(atomic) SwrveRESTClient *restClient;
+@property(atomic) NSURL *eventFilename;
+@property(atomic) NSMutableArray *eventBuffer;
 
 - (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
 - (NSString *)signatureKey;
@@ -40,9 +36,6 @@
         data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     } else if ([request.URL.absoluteString containsString:@"in_app_campaign_id=295411"]) {
         NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_message" ofType:@"json"];
-        data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-    } else if ([request.URL.absoluteString containsString:@"in_app_campaign_id=295412"]) {
-        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"ad_journey_campaign_conversation" ofType:@"json"];
         data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     } else if ([request.URL.absoluteString containsString:@"batch"]) {
         NSString *emptyJson = @"{}";
@@ -82,7 +75,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.autoDownloadCampaignsAndResources = false;
 
-    TestableSwrve *swrve = [SwrveTestConversationsHelper initializeWithCampaignsFile:@"campaignsNone" andConfig:config];
+    Swrve *swrve = [SwrveTestHelper initializeSwrveWithCampaignsFile:@"campaignsNone" andConfig:config];
     swrve.restClient = [MockRestClientNotifcationToCampaign new];
 
     NSDictionary *payload = @{
@@ -126,7 +119,6 @@
 
     XCTAssertTrue([message.name isEqualToString:@"Double format"]);
     XCTAssertTrue([message.messageID isEqualToNumber:@298085]);
-    [vc cleanupConversationUI];
 }
 
 - (void)testCampaignFromNotification_WrittenToCache {

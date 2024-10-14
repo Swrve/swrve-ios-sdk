@@ -6,6 +6,12 @@
 #import "SwrveCommon.h"
 #endif
 
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
 @interface SwrveEmpty() <SwrveCommonDelegate>
 @property (atomic)         SwrveMessageController *messaging;
 @end
@@ -47,9 +53,11 @@
     appID = swrveAppID;
     apiKey = swrveAPIKey;
     if (swrveConfig == nil) {
-        swrveConfig = [[SwrveConfig alloc] init];
+        config = [[SwrveConfig alloc] init];
+    } else {
+        config = swrveConfig;
     }
-    config = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
+    
     resourceManager = [[SwrveResourceManager alloc] init];
 
     messaging = [[SwrveMessageController alloc] initWithSwrve:nil];
@@ -144,7 +152,7 @@
     return SWRVE_SUCCESS;
 }
 
-- (NSArray *)pushInboxMessages {
+- (NSArray<SwrvePushInboxMessage *> *)pushInboxMessages {
     return @[];
 }
 
@@ -264,10 +272,6 @@
     return @"";
 }
 
-- (void)setCustomPayloadForConversationInput:(NSMutableDictionary *)payload {
-    #pragma unused(payload)
-}
-
 - (double)flushRefreshDelay {
     return 0.0;
 }
@@ -345,12 +349,12 @@
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
 #pragma unused(orientation)
     return @[];
 }
 
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+- (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
 #pragma unused(orientation, personalization)
     return @[];
 }

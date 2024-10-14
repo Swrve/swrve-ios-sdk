@@ -34,14 +34,6 @@
                         displayed:(BOOL)displayed
                  campaignInfoDict:(NSArray <SwrveQACampaignInfo*> *)qaCampaignInfoArray;
 
-+ (void)conversationCampaignTriggered:(NSString *)eventName
-                          eventPayload:(NSDictionary *)eventPayload
-                             displayed:(BOOL)displayed
-                      campaignInfoDict:(NSArray <SwrveQACampaignInfo*> *)qaCampaignInfoArray;
-
-+ (void)conversationCampaignTriggeredNoDisplay:(NSString *)eventName
-                                  eventPayload:(NSDictionary *)eventPayload;
-
 + (void)campaignTriggered:(NSString *)eventName
               eventPayload:(NSDictionary *)eventPayload
                  displayed:(BOOL)displayed

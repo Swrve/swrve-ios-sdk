@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <SwrveUtils.h>
 #import "SwrveUITextView.h"
-#import "SwrveConversationStyler.h"
 
 @interface SwrveTestTextViewIOS : XCTestCase
 

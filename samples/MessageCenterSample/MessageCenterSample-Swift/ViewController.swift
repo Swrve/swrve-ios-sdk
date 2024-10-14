@@ -41,7 +41,7 @@ extension ViewController {
         let campaign = campaigns[indexPath.row] as? SwrveCampaign
 
         if let campaign = campaign {
-            SwrveSDK.showMessageCenter(campaign)
+            _ = SwrveSDK.showMessageCenter(campaign)
         }
     }
 
@@ -66,7 +66,7 @@ extension ViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCenterCell", for: indexPath)
         let baseCampaign = campaigns[indexPath.row] as? SwrveCampaign
-        cell.textLabel?.text = baseCampaign?.messageCenterDetails.subject
+        cell.textLabel?.text = baseCampaign?.messageCenterDetails?.subject ?? ""
 
         let dformat: DateFormatter = DateFormatter()
         dformat.dateFormat = "MMMM dd, yyyy (EEEE) HH:mm:ss z Z"
@@ -75,9 +75,9 @@ extension ViewController {
         // Campaign cell background colour based on seen / unseen status
         if let state = baseCampaign?.state.status {
             switch state {
-            case SWRVE_CAMPAIGN_STATUS_UNSEEN:
+            case .unseen:
                 cell.backgroundColor = UIColor.init(red: 1, green: 0, blue: 0, alpha: 0.4)
-            case SWRVE_CAMPAIGN_STATUS_SEEN:
+            case .seen:
                 cell.backgroundColor = UIColor.init(red: 0, green: 1, blue: 0, alpha: 0.4)
             default:
                 break

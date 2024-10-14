@@ -1,13 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-
-#import "Swrve.h"
 #import "SwrveTestHelper.h"
-#import "SwrveLocalStorage.h"
 #import "SwrveMockNSURLProtocol.h"
-#import "SwrvePermissions.h"
-#import "SwrveSDK.h"
-
 
 @interface TestDeeplinkDelegate:NSObject<SwrveDeeplinkDelegate>
 @end

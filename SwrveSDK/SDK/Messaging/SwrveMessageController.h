@@ -1,18 +1,24 @@
-#import "SwrveBaseMessage.h"
-#import "SwrveMessage.h"
-#import "SwrveEmbeddedMessage.h"
-#import "SwrveConversation.h"
 #import "SwrveMessageViewController.h"
-#import "SwrveEmbeddedMessageConfig.h"
+#import "SwrveInterfaceOrientation.h"
+
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
 
 @class SwrveCampaign;
 @class SwrveMessage;
 @class SwrveBaseMessage;
 @class SwrveEmbeddedMessage;
-@class SwrveConversation;
 @class SwrveButton;
+@class SwrveInAppMessageConfig;
+@class SwrveEmbeddedMessageConfig;
+@class SwrveMessagCenterDetails;
 
-@interface SwrveMessageController : NSObject <SwrveMessageEventHandler, CAAnimationDelegate>
+static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
+
+@interface SwrveMessageController : NSObject
 
 /*! Find a base message which could an in-app or embedded for the given trigger event
  * that also satisfies the rules set up in the dashboard.
@@ -82,7 +88,7 @@
  *
  * \returns List of active Message Center campaigns.
  */
-- (NSArray *)messageCenterCampaigns;
+- (NSArray<SwrveCampaign *> *)messageCenterCampaigns;
 
 /*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the
@@ -94,7 +100,7 @@
  * \param personalization Personalization properties for in-app messages.
  * \returns List of active Message Center campaigns.
  */
-- (NSArray *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
+- (NSArray<SwrveCampaign *> *)messageCenterCampaignsWithPersonalization:(NSDictionary *)personalization;
 
 /*! Get Message Center campaign targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the
@@ -115,7 +121,7 @@
  * \param orientation Required orientation.
  * \returns List of active Message Center campaigns that support the given orientation.
  */
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
+- (NSArray<SwrveCampaign *> *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation;
 
 /*! Get the list active Message Center campaigns targeted for this user and might have personalization that can be resolved.
  * It will exclude campaigns that have been deleted with the
@@ -125,7 +131,7 @@
  * \param personalization Personalization properties for in-app messages.
  * \returns List of active Message Center campaigns that support the given orientation.
 */
-- (NSArray *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+- (NSArray<SwrveCampaign *> *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
 
 #endif
 
@@ -156,11 +162,17 @@
  */
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign;
 
-#pragma mark Properties
+/*! Format the given time into POSIX time.
+ *
+ * \param date Date to format into text.
+ * \returns Date formatted into a POSIX string.
+ */
++ (NSString *)formattedTime:(NSDate *)date;
 
+#pragma mark Properties
 @property(nonatomic, retain) SwrveInAppMessageConfig *inAppMessageConfig;                /*!< Configuration for the InApp Messaging*/
 @property(nonatomic, retain) SwrveEmbeddedMessageConfig *embeddedMessageConfig;          /*!< Configuration for the Embedded Messaging*/
-@property(nonatomic, copy) SwrveMessagePersonalizationCallback personalizationCallback;  /*!< Implement this delegate to intercept IAM calls with personalization . */
+@property(nonatomic, strong) SwrveMessagePersonalizationCallback personalizationCallback;  /*!< Implement this delegate to intercept IAM calls with personalization . */
 #pragma mark -
 
 @end

@@ -25,7 +25,7 @@
 @synthesize theme;
 @synthesize iamZIndex;
 
-- (id)initWithDictionary:(NSDictionary *)buttonData campaignId:(long)swrveCampaignId messageId:(long)swrveMessageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
+- (id)initWithDictionary:(NSDictionary *)buttonData campaignId:(long)swrveCampaignId messageId:(long)swrveMessageId {
     if (self = [super init]) {
 
         self.campaignId = swrveCampaignId;
@@ -68,7 +68,6 @@
         if ([buttonType isEqualToString:@"INSTALL"]) {
             self.actionType = kSwrveActionInstall;
             self.appID = [[(NSDictionary *) [buttonData objectForKey:@"game_id"] objectForKey:@"value"] integerValue];
-            self.actionString = [appStoreURLs objectForKey:[NSString stringWithFormat:@"%ld", self.appID]];
         } else if ([buttonType isEqualToString:@"CUSTOM"]) {
             self.actionType = kSwrveActionCustom;
             self.actionString = [(NSDictionary *) [buttonData objectForKey:@"action"] objectForKey:@"value"];

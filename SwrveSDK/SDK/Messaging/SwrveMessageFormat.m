@@ -22,7 +22,7 @@ static CGFloat extractHex(NSString *color, NSUInteger index) {
     return hexResult / 255.0f;
 }
 
-- (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
+- (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId {
     self = [super init];
 
     self.name = [json objectForKey:@"name"];
@@ -74,7 +74,7 @@ static CGFloat extractHex(NSString *color, NSUInteger index) {
         NSMutableDictionary *loadedPages = [NSMutableDictionary new];
         NSMutableArray *loadedPagesOrdered = [NSMutableArray new];
         for (NSDictionary *pageData in pagesArray) {
-            SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:pageData campaignId:campaignId messageId:messageId appStoreURLs:appStoreURLs];
+            SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:pageData campaignId:campaignId messageId:messageId];
             [loadedPages setObject:page forKey:[NSNumber numberWithLong:page.pageId]];
             [loadedPagesOrdered addObject:[NSNumber numberWithLong:page.pageId]];
         }
@@ -84,7 +84,7 @@ static CGFloat extractHex(NSString *color, NSUInteger index) {
         // for backward compatibility, convert old IAM's into a single page Dictionary
         NSMutableDictionary *loadedPages = [NSMutableDictionary new];
         NSMutableArray *loadedPagesOrdered = [NSMutableArray new];
-        SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:json campaignId:campaignId messageId:messageId appStoreURLs:appStoreURLs];
+        SwrveMessagePage *page = [[SwrveMessagePage alloc] initFromJson:json campaignId:campaignId messageId:messageId];
         [loadedPages setObject:page forKey:[NSNumber numberWithLong:page.pageId]];
         [loadedPagesOrdered addObject:[NSNumber numberWithLong:page.pageId]];
         self.pages = [NSDictionary dictionaryWithDictionary:loadedPages];

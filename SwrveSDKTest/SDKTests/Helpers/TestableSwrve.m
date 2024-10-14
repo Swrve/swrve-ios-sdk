@@ -1,6 +1,11 @@
 #import "TestableSwrve.h"
 #import "TestableSwrveRESTClient.h"
 
+@interface SwrveSDK (InternalAccess)
++ (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
+@end
+
 @implementation TestableSwrve
 
 @synthesize customNowDate;

@@ -1,13 +1,8 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
-
-#import "SwrveProfileManager.h"
-#import "Swrve.h"
 #import "SwrveTestHelper.h"
-#import "SwrveLocalStorage.h"
 #import "SwrveMockNSURLProtocol.h"
-#import "SwrveSDK.h"
-#import "SwrvePermissions.h"
+
 
 @interface Swrve (InternalAccess)
 

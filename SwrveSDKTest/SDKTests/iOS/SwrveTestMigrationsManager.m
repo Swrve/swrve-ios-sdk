@@ -62,8 +62,7 @@
     [[NSUserDefaults standardUserDefaults] setObject:@4567 forKey:@"short_device_id"];
     
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *swrveMigrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *swrveMigrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [swrveMigrationsManager checkMigrations];
     
     NSString *oldShortDeviceIdKey1 = @"swrve_device_id";
@@ -78,8 +77,7 @@
 - (void)testGetSetCurrentCacheVersion {
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
 
     XCTAssertEqual([migrationsManager currentCacheVersion], 0, @"From a cold install the current cache version number should not exist.");
 
@@ -139,8 +137,7 @@
     [self createInstallDateV0FormatWithDate:@"00000000"];
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [migrationsManager checkMigrations];
 
     NSString *installDateFilePath = [self installDateFilePathForConfig];
@@ -165,8 +162,7 @@
     [[NSUserDefaults standardUserDefaults] setValue:@"100" forKey:@"swrve_event_seqnum"];
     [SwrveLocalStorage saveSwrveUserId:@"joe"];
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [migrationsManager checkMigrations];
 
     NSString *seqNumKey = [@"joe" stringByAppendingString:@"swrve_event_seqnum"];
@@ -192,8 +188,7 @@
     XCTAssertTrue([fileManager fileExistsAtPath:settingsFilePath] == YES);
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [migrationsManager checkMigrations];
     
     SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil  appId:1 apiKey:@"api_key"];
@@ -260,8 +255,7 @@
     XCTAssertTrue([fileManager fileExistsAtPath:filePath] == YES);
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [migrationsManager checkMigrations];
     
     SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] initWithIdentityUrl:nil deviceUUID:nil restClient:nil  appId:1 apiKey:@"api_key"];
@@ -297,8 +291,7 @@
     [self createInstallDateV0FormatWithDate:@"00000"];
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:0]; // migrate from 0
     [migrationsManager checkMigrations];
     
@@ -317,8 +310,7 @@
     [SwrveLocalStorage saveUserJoinedTime:987654321 forUserId:@"UserId"];
     
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:1]; //migrate from 1
     [migrationsManager checkMigrations];
     
@@ -352,8 +344,7 @@
                                                                             error:nil];
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:2]; // migrate from 2
 
     // install dates
@@ -395,8 +386,7 @@
                                                                             error:nil];
 
     SwrveConfig *swrveConfig = [[SwrveConfig alloc] init];
-    ImmutableSwrveConfig *immutableSwrveConfig = [[ImmutableSwrveConfig alloc] initWithMutableConfig:swrveConfig];
-    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:immutableSwrveConfig];
+    SwrveMigrationsManager *migrationsManager = [[SwrveMigrationsManager alloc] initWithConfig:swrveConfig];
     [SwrveMigrationsManager setCurrentCacheVersion:2]; // migrate from 2
 
     // install dates

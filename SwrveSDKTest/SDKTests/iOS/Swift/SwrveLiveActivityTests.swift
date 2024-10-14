@@ -17,7 +17,7 @@ final class SwrveLiveActivityTests: XCTestCase {
 
     func testLiveActivitiesDeviceProps_Default() {
         SwrveSDK.sharedInstance(withAppID: 1234, apiKey: "apiKey")
-        SwrveSDKSwift.registerLiveActivity(ofType: TestAttributes.self)
+        SwrveSDK.registerLiveActivity(ofType: TestAttributes.self)
 
         let sdk = SwrveCommon.sharedInstance()
         let liveActivityPermission = sdk?.deviceInfo()?["swrve.permission.ios.live_activities"] as? String

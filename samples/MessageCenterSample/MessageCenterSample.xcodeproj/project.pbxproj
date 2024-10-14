@@ -21,7 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0CE0CC7E7720A0D57C66F67F /* Pods-MessageCenterSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-Swift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		0CE0CC7E7720A0D57C66F67F /* Pods-MessageCenterSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-Swift.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
 		34F60FAFEB75B9DC478C4C11 /* Pods_MessageCenterSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D112301D5C97ED00F34F38 /* MessageCenterSample-Swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MessageCenterSample-Swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D112331D5C97ED00F34F38 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -39,11 +39,11 @@
 		5BD834CF20EFB01D004799A7 /* MessageCenterSample-ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MessageCenterSample-ObjC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BFBFA5720F62288002BB60A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5BFBFA5920F62288002BB60A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		5E48C46F9F871AD45196A787 /* Pods-MessageCenterSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-Swift.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		5E48C46F9F871AD45196A787 /* Pods-MessageCenterSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-Swift.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
 		A910440D7407AA8CF4419482 /* Pods-MessageCenterSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.debug.xcconfig"; sourceTree = "<group>"; };
-		B8CA1DF1F50952A8210B3991 /* Pods-MessageCenterSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		B8CA1DF1F50952A8210B3991 /* Pods-MessageCenterSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
 		BBE1A0B5FF81991836909344 /* Pods-MessageCenterSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.release.xcconfig"; sourceTree = "<group>"; };
-		F45001C5DAD9D038ABE168D9 /* Pods-MessageCenterSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		F45001C5DAD9D038ABE168D9 /* Pods-MessageCenterSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample-ObjC.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
 		FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -247,9 +247,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -269,9 +269,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-ObjC/Pods-MessageCenterSample-ObjC-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (

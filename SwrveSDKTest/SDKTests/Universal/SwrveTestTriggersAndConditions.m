@@ -1,6 +1,4 @@
 #import <XCTest/XCTest.h>
-#import "SwrveTrigger.h"
-#import "SwrveTriggerCondition.h"
 
 @interface SwrveTestTriggersAndConditions : XCTestCase
 
@@ -30,8 +28,8 @@
     SwrveTriggerCondition *condition = [trigger.conditions firstObject];
     XCTAssertEqualObjects(condition.key, @"key1");
     XCTAssertEqualObjects(condition.value, @"value1");
-    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorAND);
-    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEQUALS);
+    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorAnd);
+    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEquals);
     
     XCTAssert(trigger.isValidTrigger);
     
@@ -39,8 +37,8 @@
     condition = [trigger.conditions lastObject];
     XCTAssertEqualObjects(condition.key, @"key2");
     XCTAssertEqualObjects(condition.value, @"value2");
-    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorAND);
-    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEQUALS);
+    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorAnd);
+    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEquals);
     
     XCTAssert(trigger.isValidTrigger);
 }
@@ -65,8 +63,8 @@
     SwrveTriggerCondition *condition = [trigger.conditions firstObject];
     XCTAssertEqualObjects(condition.key, @"key1");
     XCTAssertEqualObjects(condition.value, @"value1");
-    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorOR);
-    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEQUALS);
+    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorOr);
+    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEquals);
     
     XCTAssert(trigger.isValidTrigger);
     
@@ -74,8 +72,8 @@
     condition = [trigger.conditions lastObject];
     XCTAssertEqualObjects(condition.key, @"key2");
     XCTAssertEqualObjects(condition.value, @"value2");
-    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorOR);
-    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEQUALS);
+    XCTAssertEqual(condition.triggerOperator, SwrveTriggerOperatorOr);
+    XCTAssertEqual(condition.conditionOperator, SwrveTriggerOperatorEquals);
     
     XCTAssert(trigger.isValidTrigger);
 }

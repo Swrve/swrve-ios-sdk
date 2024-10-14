@@ -23,10 +23,13 @@
         private static var currentPushToStartToken: String? = {
             return storage.fetchPushToStartToken()
         }()
+
         private static var activityUpdateTokenDict: [String: String] = [:]
-        private static var swrve: Swrve? {
-            guard let sdk = SwrveSDK.sharedInstance() else {
-                SwrveLogger.logDebug("Please call SwrveSDK.init(...) first")
+        private static var swrve: SwrveProtocol? {
+            guard let sdk = SwrveSDK.sharedInstance else {
+                #if DEBUG
+                    SwrveLogger.logDebug("Please call SwrveSDK.init(...) first")
+                #endif
                 return nil
             }
             return sdk
@@ -277,7 +280,7 @@
                         currentPushToStartToken = token
                         storage.savePushToStartToken(token)
                         DispatchQueue.main.async {
-                            SwrveSDK.sharedInstance()?.sendDeviceUpdate()
+                            SwrveSDK.sharedInstance.sendDeviceUpdate()
                         }
                     } else {
                         // token remains the same, don't do anything

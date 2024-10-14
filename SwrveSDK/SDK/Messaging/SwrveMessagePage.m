@@ -12,7 +12,7 @@
 @synthesize swipeBackward;
 @synthesize pageDuration;
 
-- (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId appStoreURLs:(NSMutableDictionary *)appStoreURLs {
+- (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId {
     self = [super init];
 
     NSArray *jsonButtons = [json objectForKey:@"buttons"];
@@ -20,8 +20,7 @@
     for (NSDictionary *jsonButton in jsonButtons) {
         SwrveButton *swrveButton = [[SwrveButton alloc] initWithDictionary:jsonButton
                                                                 campaignId:campaignId
-                                                                 messageId:messageId
-                                                              appStoreURLs:appStoreURLs];
+                                                                 messageId:messageId];
         [loadedButtons addObject:swrveButton];
     }
     self.buttons = [NSArray arrayWithArray:loadedButtons];

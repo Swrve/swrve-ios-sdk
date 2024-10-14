@@ -39,6 +39,12 @@
 		3A982FC829B247BA00114F3B /* campaign_native_button_everything.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A982FC629B247BA00114F3B /* campaign_native_button_everything.json */; };
 		3AB1C04E27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
 		3AB1C04F27C7DCB0007B8906 /* campaigns_multipage.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */; };
+		3ACAF5EA2CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5E92CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m */; };
+		3ACAF5EB2CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5E92CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m */; };
+		3ACAF5ED2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5EC2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m */; };
+		3ACAF5EE2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5EC2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m */; };
+		3ACAF5F02CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5EF2CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m */; };
+		3ACAF5F12CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5EF2CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m */; };
 		3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7225BEF30A00950E98 /* swrve_logo.png */; };
 		3AF36E85287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF36E84287D7828002B2279 /* SwrveTestIAMCampaign.m */; };
 		3AF36E86287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF36E84287D7828002B2279 /* SwrveTestIAMCampaign.m */; };
@@ -73,7 +79,6 @@
 		5B2B6E1E23C49346000B1687 /* SwrveTestSwrveCampaignInfluence.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */; };
 		5B2B6E1F23C49346000B1687 /* SwrveTestInit.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EE22649FA3001AF2EB /* SwrveTestInit.m */; };
 		5B2B6E2023C49346000B1687 /* SwrveTestInitMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */; };
-		5B2B6E2123C49346000B1687 /* SwrveTestCustomPayloads.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */; };
 		5B2B6E2223C49346000B1687 /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */; };
 		5B2B6E2323C49346000B1687 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */; };
 		5B2B6E2423C49346000B1687 /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */; };
@@ -104,7 +109,6 @@
 		5B2B6F0423C4E4DA000B1687 /* SwrveMockNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */; };
 		5B2B6F5323C4E55E000B1687 /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123A2277472900399A66 /* campaigns.json */; };
 		5B2B6F5423C4E55E000B1687 /* abTestDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AA0842A2271AE9900ECA032 /* abTestDetails.json */; };
-		5B2B6F5523C4E55E000B1687 /* ad_journey_campaign_conversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */; };
 		5B2B6F5623C4E55E000B1687 /* ad_journey_campaign_message.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */; };
 		5B2B6F5723C4E55E000B1687 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627092264A065001AF2EB /* campaignsNone.json */; };
 		5B2B6F5823C4E55E000B1687 /* external_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270C2264A065001AF2EB /* external_campaigns.json */; };
@@ -119,7 +123,6 @@
 		5B2B6F6223C4E55E000B1687 /* campaignsMessageCenter.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120B227742E200399A66 /* campaignsMessageCenter.json */; };
 		5B2B6F6323C4E55E000B1687 /* campaignsMessagePriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120E227742E200399A66 /* campaignsMessagePriority.json */; };
 		5B2B6F6423C4E55E000B1687 /* campaignsMessagePriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */; };
-		5B2B6F6623C4E55E000B1687 /* conversationCampaignsPriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */; };
 		5B2B6F6723C4E55E000B1687 /* campaignsQAReset.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123F2277482300399A66 /* campaignsQAReset.json */; };
 		5B2B6F6823C4E55E000B1687 /* campaignsQAUser.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123D2277482300399A66 /* campaignsQAUser.json */; };
 		5B2B6F6A23C4E55E000B1687 /* campaignsRRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411246227748AD00399A66 /* campaignsRRGGBB.json */; };
@@ -127,7 +130,6 @@
 		5B2B6F6C23C4E55E000B1687 /* logo.gif in Resources */ = {isa = PBXBuildFile; fileRef = F66627262264A110001AF2EB /* logo.gif */; };
 		5B2B6F6D23C4E55F000B1687 /* campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123A2277472900399A66 /* campaigns.json */; };
 		5B2B6F6E23C4E55F000B1687 /* abTestDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = 3AA0842A2271AE9900ECA032 /* abTestDetails.json */; };
-		5B2B6F6F23C4E55F000B1687 /* ad_journey_campaign_conversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */; };
 		5B2B6F7023C4E55F000B1687 /* ad_journey_campaign_message.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */; };
 		5B2B6F7123C4E55F000B1687 /* campaignsNone.json in Resources */ = {isa = PBXBuildFile; fileRef = F66627092264A065001AF2EB /* campaignsNone.json */; };
 		5B2B6F7223C4E55F000B1687 /* external_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = F666270C2264A065001AF2EB /* external_campaigns.json */; };
@@ -142,7 +144,6 @@
 		5B2B6F7C23C4E55F000B1687 /* campaignsMessageCenter.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120B227742E200399A66 /* campaignsMessageCenter.json */; };
 		5B2B6F7D23C4E55F000B1687 /* campaignsMessagePriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120E227742E200399A66 /* campaignsMessagePriority.json */; };
 		5B2B6F7E23C4E55F000B1687 /* campaignsMessagePriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */; };
-		5B2B6F8023C4E55F000B1687 /* conversationCampaignsPriorityReverse.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */; };
 		5B2B6F8123C4E55F000B1687 /* campaignsQAReset.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123F2277482300399A66 /* campaignsQAReset.json */; };
 		5B2B6F8223C4E55F000B1687 /* campaignsQAUser.json in Resources */ = {isa = PBXBuildFile; fileRef = F641123D2277482300399A66 /* campaignsQAUser.json */; };
 		5B2B6F8423C4E55F000B1687 /* campaignsRRGGBB.json in Resources */ = {isa = PBXBuildFile; fileRef = F6411246227748AD00399A66 /* campaignsRRGGBB.json */; };
@@ -155,7 +156,6 @@
 		5B2B6F9823C4E6AF000B1687 /* SwrveTestSwrveCampaignInfluence.m in Sources */ = {isa = PBXBuildFile; fileRef = F66174C5226F637000E23980 /* SwrveTestSwrveCampaignInfluence.m */; };
 		5B2B6F9923C4E6AF000B1687 /* SwrveTestInit.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EE22649FA3001AF2EB /* SwrveTestInit.m */; };
 		5B2B6F9A23C4E6AF000B1687 /* SwrveTestInitMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */; };
-		5B2B6F9B23C4E6AF000B1687 /* SwrveTestCustomPayloads.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */; };
 		5B2B6F9C23C4E6AF000B1687 /* SwrveTestEventQueueCallback.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */; };
 		5B2B6F9D23C4E6AF000B1687 /* SwrveTestLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */; };
 		5B2B6F9E23C4E6AF000B1687 /* SwrveTestProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */; };
@@ -176,8 +176,8 @@
 		B531D5422BFCB8D400B76271 /* campaigns_push_inbox.json in Resources */ = {isa = PBXBuildFile; fileRef = B531D53D2BFC98C300B76271 /* campaigns_push_inbox.json */; };
 		B568A1042C25C4840063D55C /* campaigns_push_inbox_past_and_future.json in Resources */ = {isa = PBXBuildFile; fileRef = B568A1032C25C4840063D55C /* campaigns_push_inbox_past_and_future.json */; };
 		B568A1052C25C4840063D55C /* campaigns_push_inbox_past_and_future.json in Resources */ = {isa = PBXBuildFile; fileRef = B568A1032C25C4840063D55C /* campaigns_push_inbox_past_and_future.json */; };
-		B5E9B2F22C21C7C3002E7972 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
-		B5E9B2F32C21C7C3002E7972 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		B5E9B2F22C21C7C3002E7972 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		B5E9B2F32C21C7C3002E7972 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		C530E8F02B15D2B9005D3354 /* campaigns_with_reidentify_period.json in Resources */ = {isa = PBXBuildFile; fileRef = C530E8EF2B15D2B9005D3354 /* campaigns_with_reidentify_period.json */; };
 		C530E8F12B15D2B9005D3354 /* campaigns_with_reidentify_period.json in Resources */ = {isa = PBXBuildFile; fileRef = C530E8EF2B15D2B9005D3354 /* campaigns_with_reidentify_period.json */; };
 		C530E8F32B16E70A005D3354 /* campaigns_without_reidentify_period.json in Resources */ = {isa = PBXBuildFile; fileRef = C530E8F22B16E70A005D3354 /* campaigns_without_reidentify_period.json */; };
@@ -203,12 +203,6 @@
 		F61993202540715D0014F72D /* SwrveTestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F619931E2540715D0014F72D /* SwrveTestUtils.m */; };
 		F61993DD2541C3210014F72D /* SwrveTestSessionManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = F61993DC2541C3210014F72D /* SwrveTestSessionManagement.m */; };
 		F61993DE2541C3210014F72D /* SwrveTestSessionManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = F61993DC2541C3210014F72D /* SwrveTestSessionManagement.m */; };
-		F66986C425BDA90B00950E98 /* SwrveTestConversationWidgetViews.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986BE25BDA90A00950E98 /* SwrveTestConversationWidgetViews.m */; };
-		F66986C525BDA90B00950E98 /* SwrveTestConversationWidgets.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986C125BDA90A00950E98 /* SwrveTestConversationWidgets.m */; };
-		F66986C625BDA90B00950E98 /* SwrveTestConversationEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986BF25BDA90A00950E98 /* SwrveTestConversationEvents.m */; };
-		F66986C725BDA90B00950E98 /* SwrveTestConversations.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986C225BDA90A00950E98 /* SwrveTestConversations.m */; };
-		F66986C825BDA90B00950E98 /* SwrveTestConversationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986C025BDA90A00950E98 /* SwrveTestConversationsHelper.m */; };
-		F66986C925BDA90B00950E98 /* SwrveTestConversationFlow.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986C325BDA90A00950E98 /* SwrveTestConversationFlow.m */; };
 		F66986D825BDA93F00950E98 /* SwrveTestSwrvePushSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986D725BDA93F00950E98 /* SwrveTestSwrvePushSDK.m */; };
 		F66986D925BDA93F00950E98 /* SwrveTestRichPushHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986D525BDA93F00950E98 /* SwrveTestRichPushHelpers.m */; };
 		F66986E725BDA96800950E98 /* SwrveTestNotificationToCampaign.m in Sources */ = {isa = PBXBuildFile; fileRef = F66986E625BDA96800950E98 /* SwrveTestNotificationToCampaign.m */; };
@@ -216,30 +210,17 @@
 		F669875325BDABE300950E98 /* SwrveTestEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = F669875125BDABE300950E98 /* SwrveTestEvents.m */; };
 		F66988CF25BE0C7800950E98 /* SwrveTestUserIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = F66988CE25BE0C7800950E98 /* SwrveTestUserIdentity.m */; };
 		F66988D025BE0C7800950E98 /* SwrveTestUserIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = F66988CE25BE0C7800950E98 /* SwrveTestUserIdentity.m */; };
-		F669891025BEC16F00950E98 /* conversationContactsPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988E325BE29CC00950E98 /* conversationContactsPermission.json */; };
-		F669891525BEC17300950E98 /* conversationLocationAlwaysPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988EB25BE29CD00950E98 /* conversationLocationAlwaysPermission.json */; };
-		F669891A25BEC17600950E98 /* conversationLocationWhenInUsePermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988E825BE29CD00950E98 /* conversationLocationWhenInUsePermission.json */; };
-		F669891F25BEC17800950E98 /* conversationPhotoPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988E925BE29CD00950E98 /* conversationPhotoPermission.json */; };
-		F669892825BEC17B00950E98 /* conversationPushPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988EA25BE29CD00950E98 /* conversationPushPermission.json */; };
-		F669893625BEC4B800950E98 /* conversationAnnounce.json in Resources */ = {isa = PBXBuildFile; fileRef = F669893525BEC4B800950E98 /* conversationAnnounce.json */; };
 		F669894D25BEC7AD00950E98 /* TestableSwrve.m in Sources */ = {isa = PBXBuildFile; fileRef = F669872125BDAA5600950E98 /* TestableSwrve.m */; };
 		F669895625BEC7AE00950E98 /* TestableSwrve.m in Sources */ = {isa = PBXBuildFile; fileRef = F669872125BDAA5600950E98 /* TestableSwrve.m */; };
-		F669895F25BEC7C000950E98 /* TestableDummySwrve.m in Sources */ = {isa = PBXBuildFile; fileRef = F669873925BDAB1200950E98 /* TestableDummySwrve.m */; };
-		F669896825BEC7C100950E98 /* TestableDummySwrve.m in Sources */ = {isa = PBXBuildFile; fileRef = F669873925BDAB1200950E98 /* TestableDummySwrve.m */; };
 		F669897F25BEC8AF00950E98 /* TestableSwrveRESTClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F669872E25BDAACC00950E98 /* TestableSwrveRESTClient.m */; };
 		F669898425BEC8B000950E98 /* TestableSwrveRESTClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F669872E25BDAACC00950E98 /* TestableSwrveRESTClient.m */; };
-		F669899125BEE2F400950E98 /* conversationCameraPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988EC25BE29CE00950E98 /* conversationCameraPermission.json */; };
-		F669899D25BEE36000950E98 /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */; };
-		F66989A225BEE36F00950E98 /* conversation_campaign_with_diff_fonts.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988E525BE29CD00950E98 /* conversation_campaign_with_diff_fonts.json */; };
-		F66989AB25BEE37200950E98 /* conversation_campaign_v3.json in Resources */ = {isa = PBXBuildFile; fileRef = F66988E625BE29CD00950E98 /* conversation_campaign_v3.json */; };
 		F66989B925BEE39000950E98 /* campaignsMultipleTriggerConditions.json in Resources */ = {isa = PBXBuildFile; fileRef = F66989B825BEE39000950E98 /* campaignsMultipleTriggerConditions.json */; };
-		F6698A5925BEF15000950E98 /* campaignsConversationVersion.json in Resources */ = {isa = PBXBuildFile; fileRef = F6698A5825BEF15000950E98 /* campaignsConversationVersion.json */; };
-		F6698A5F25BEF19200950E98 /* campaignsConversationFilters.json in Resources */ = {isa = PBXBuildFile; fileRef = F6698A5E25BEF19200950E98 /* campaignsConversationFilters.json */; };
 		F6698A7325BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7025BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb */; };
 		F6698A7425BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7125BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf */; };
 		F6698A7525BEF30A00950E98 /* swrve_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7225BEF30A00950E98 /* swrve_logo.png */; };
 		F6698A7B25BEF3BF00950E98 /* campaignsIdentity.json in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7A25BEF3BF00950E98 /* campaignsIdentity.json */; };
 		F6698A8025BEF49E00950E98 /* campaignsIdentity.json in Resources */ = {isa = PBXBuildFile; fileRef = F6698A7A25BEF3BF00950E98 /* campaignsIdentity.json */; };
+		F6721E192CB48FAB00DCAA26 /* SwrveCampaignStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6721E182CB48FA300DCAA26 /* SwrveCampaignStateTests.swift */; };
 		F672287C25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */; };
 		F67228A625EE9ED100FA1C77 /* TestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */; };
 		F67228A725EE9ED200FA1C77 /* TestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */; };
@@ -247,12 +228,8 @@
 		F685B52425F0E57F008F5BAA /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
 		F685B55B25F0E580008F5BAA /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
 		F685B59D25F10E51008F5BAA /* iamCapabilites.json in Resources */ = {isa = PBXBuildFile; fileRef = F685B50325F0CD88008F5BAA /* iamCapabilites.json */; };
-		F6A799BA2550B01900E66E47 /* SwrveTestMessageCenterAPIIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A799B92550B01800E66E47 /* SwrveTestMessageCenterAPIIOS.m */; };
 		F6A79A082551BBE500E66E47 /* SwrveTestDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */; };
 		F6A79A092551BBE500E66E47 /* SwrveTestDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */; };
-		F6A79A162551BCB500E66E47 /* SwrveTestConversationAtomFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A142551BCB400E66E47 /* SwrveTestConversationAtomFactory.m */; };
-		F6A79A242551BD9500E66E47 /* SwrveTestConversationStyler.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A232551BD9400E66E47 /* SwrveTestConversationStyler.m */; };
-		F6A79A742551BF6E00E66E47 /* campaignConversation.json in Resources */ = {isa = PBXBuildFile; fileRef = F6A79A332551BF0300E66E47 /* campaignConversation.json */; };
 		F6A79A812551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf in Resources */ = {isa = PBXBuildFile; fileRef = F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */; };
 		F6A79AA52551C87600E66E47 /* SwrveTestTextTemplating.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A9E2551C84B00E66E47 /* SwrveTestTextTemplating.m */; };
 		F6A79AAA2551C87700E66E47 /* SwrveTestTextTemplating.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A9E2551C84B00E66E47 /* SwrveTestTextTemplating.m */; };
@@ -266,7 +243,6 @@
 		F6DF565A29477D0A00ECAC5C /* campaignsHoldout.json in Resources */ = {isa = PBXBuildFile; fileRef = F6DF5655294777AD00ECAC5C /* campaignsHoldout.json */; };
 		F6ED51FC2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
 		F6ED51FD2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6ED51FB2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m */; };
-		F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */ = {isa = PBXBuildFile; fileRef = F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */; };
 		F6F9E9432A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */; };
 		F6F9E9442A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */ = {isa = PBXBuildFile; fileRef = F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */; };
 /* End PBXBuildFile section */
@@ -332,6 +308,9 @@
 		3AA0842E2271B53900ECA032 /* SwrveTestABTestDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestABTestDetails.m; sourceTree = "<group>"; };
 		3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_multipage.json; sourceTree = "<group>"; };
 		3ABBDCCB22771C0D00A69CDE /* SwrveTestUserResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserResources.m; sourceTree = "<group>"; };
+		3ACAF5E92CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageControllerIAMStories.m; sourceTree = "<group>"; };
+		3ACAF5EC2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageControllerMessageDelegate.m; sourceTree = "<group>"; };
+		3ACAF5EF2CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageControllerIAMPages.m; sourceTree = "<group>"; };
 		3AF36E84287D7828002B2279 /* SwrveTestIAMCampaign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestIAMCampaign.m; sourceTree = "<group>"; };
 		3AF4634E24AA1731002A854B /* SwrveSDK-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SwrveSDK-iOS.entitlements"; sourceTree = "<group>"; };
 		43C11890F851D220A19A7F40 /* Pods_SwrveSDKSwiftTestTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveSDKSwiftTestTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -379,6 +358,7 @@
 		B92E05E2CB20DF4A5EA80E01 /* Pods-SwrveSDK-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOS.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOS/Pods-SwrveSDK-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		BA862BC72F94BAE4B426A7BA /* Pods-SwrveSDK-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-iOSTests.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-iOSTests/Pods-SwrveSDK-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB8D0A7DABC671EA0E06C8A /* Pods-SwrveSDK-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveSDK-tvOSTests.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-SwrveSDK-tvOSTests/Pods-SwrveSDK-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C51531072C529EC20031F397 /* SDKTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDKTests-Prefix.pch"; sourceTree = "<group>"; };
 		C530E8EF2B15D2B9005D3354 /* campaigns_with_reidentify_period.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_with_reidentify_period.json; sourceTree = "<group>"; };
 		C530E8F22B16E70A005D3354 /* campaigns_without_reidentify_period.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaigns_without_reidentify_period.json; sourceTree = "<group>"; };
 		C59307682AE9239800E3B26D /* campaignWithMultilineText.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignWithMultilineText.json; sourceTree = "<group>"; };
@@ -410,7 +390,6 @@
 		F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMessagePriorityReverse.json; sourceTree = "<group>"; };
 		F641120E227742E200399A66 /* campaignsMessagePriority.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMessagePriority.json; sourceTree = "<group>"; };
 		F641120F227742E200399A66 /* campaignsAARRGGBB.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsAARRGGBB.json; sourceTree = "<group>"; };
-		F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationCampaignsPriorityReverse.json; sourceTree = "<group>"; };
 		F6411211227742E200399A66 /* campaignsImpressions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsImpressions.json; sourceTree = "<group>"; };
 		F6411213227742E200399A66 /* campaignSessionStart.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignSessionStart.json; sourceTree = "<group>"; };
 		F6411214227742E200399A66 /* campaignsDelay.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsDelay.json; sourceTree = "<group>"; };
@@ -434,12 +413,10 @@
 		F66626E822649F6A001AF2EB /* SwrveTestAuthPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestAuthPush.m; sourceTree = "<group>"; };
 		F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestProfileManager.m; sourceTree = "<group>"; };
 		F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestEventQueueCallback.m; sourceTree = "<group>"; };
-		F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCustomPayloads.m; sourceTree = "<group>"; };
 		F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestLocalStorage.m; sourceTree = "<group>"; };
 		F66626EE22649FA3001AF2EB /* SwrveTestInit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestInit.m; sourceTree = "<group>"; };
 		F66626EF22649FA3001AF2EB /* SwrveTestDeviceProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDeviceProperties.m; sourceTree = "<group>"; };
 		F66626F022649FA3001AF2EB /* SwrveTestTriggersAndConditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTriggersAndConditions.m; sourceTree = "<group>"; };
-		F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ad_journey_campaign_conversation.json; sourceTree = "<group>"; };
 		F66627092264A065001AF2EB /* campaignsNone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsNone.json; sourceTree = "<group>"; };
 		F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMockNSURLProtocol.m; sourceTree = "<group>"; };
 		F666270C2264A065001AF2EB /* external_campaigns.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = external_campaigns.json; sourceTree = "<group>"; };
@@ -448,13 +425,6 @@
 		F66627262264A110001AF2EB /* logo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logo.gif; sourceTree = "<group>"; };
 		F66627282264A2D7001AF2EB /* TestPermissionsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPermissionsDelegate.h; sourceTree = "<group>"; };
 		F66627292264A2D8001AF2EB /* TestPermissionsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPermissionsDelegate.m; sourceTree = "<group>"; };
-		F66986BD25BDA90900950E98 /* SwrveTestConversationsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestConversationsHelper.h; sourceTree = "<group>"; };
-		F66986BE25BDA90A00950E98 /* SwrveTestConversationWidgetViews.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationWidgetViews.m; sourceTree = "<group>"; };
-		F66986BF25BDA90A00950E98 /* SwrveTestConversationEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationEvents.m; sourceTree = "<group>"; };
-		F66986C025BDA90A00950E98 /* SwrveTestConversationsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationsHelper.m; sourceTree = "<group>"; };
-		F66986C125BDA90A00950E98 /* SwrveTestConversationWidgets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationWidgets.m; sourceTree = "<group>"; };
-		F66986C225BDA90A00950E98 /* SwrveTestConversations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversations.m; sourceTree = "<group>"; };
-		F66986C325BDA90A00950E98 /* SwrveTestConversationFlow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationFlow.m; sourceTree = "<group>"; };
 		F66986D525BDA93F00950E98 /* SwrveTestRichPushHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestRichPushHelpers.m; sourceTree = "<group>"; };
 		F66986D725BDA93F00950E98 /* SwrveTestSwrvePushSDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwrvePushSDK.m; sourceTree = "<group>"; };
 		F66986E625BDA96800950E98 /* SwrveTestNotificationToCampaign.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestNotificationToCampaign.m; sourceTree = "<group>"; };
@@ -463,39 +433,23 @@
 		F669872C25BDAACC00950E98 /* SwrvePrivateAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrvePrivateAccess.h; sourceTree = "<group>"; };
 		F669872D25BDAACC00950E98 /* TestableSwrveRESTClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestableSwrveRESTClient.h; sourceTree = "<group>"; };
 		F669872E25BDAACC00950E98 /* TestableSwrveRESTClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestableSwrveRESTClient.m; sourceTree = "<group>"; };
-		F669873925BDAB1200950E98 /* TestableDummySwrve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestableDummySwrve.m; sourceTree = "<group>"; };
 		F669873B25BDAB1200950E98 /* TestableDummySwrve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestableDummySwrve.h; sourceTree = "<group>"; };
 		F669874925BDABA100950E98 /* TestPushResponseDelegateClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPushResponseDelegateClass.h; sourceTree = "<group>"; };
 		F669875125BDABE300950E98 /* SwrveTestEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestEvents.m; sourceTree = "<group>"; };
 		F66988CE25BE0C7800950E98 /* SwrveTestUserIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestUserIdentity.m; sourceTree = "<group>"; };
-		F66988E325BE29CC00950E98 /* conversationContactsPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationContactsPermission.json; sourceTree = "<group>"; };
-		F66988E525BE29CD00950E98 /* conversation_campaign_with_diff_fonts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversation_campaign_with_diff_fonts.json; sourceTree = "<group>"; };
-		F66988E625BE29CD00950E98 /* conversation_campaign_v3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversation_campaign_v3.json; sourceTree = "<group>"; };
-		F66988E825BE29CD00950E98 /* conversationLocationWhenInUsePermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationLocationWhenInUsePermission.json; sourceTree = "<group>"; };
-		F66988E925BE29CD00950E98 /* conversationPhotoPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationPhotoPermission.json; sourceTree = "<group>"; };
-		F66988EA25BE29CD00950E98 /* conversationPushPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationPushPermission.json; sourceTree = "<group>"; };
-		F66988EB25BE29CD00950E98 /* conversationLocationAlwaysPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationLocationAlwaysPermission.json; sourceTree = "<group>"; };
-		F66988EC25BE29CE00950E98 /* conversationCameraPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationCameraPermission.json; sourceTree = "<group>"; };
-		F669893525BEC4B800950E98 /* conversationAnnounce.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationAnnounce.json; sourceTree = "<group>"; };
-		F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversationCampaignsPriority.json; sourceTree = "<group>"; };
 		F66989B825BEE39000950E98 /* campaignsMultipleTriggerConditions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsMultipleTriggerConditions.json; sourceTree = "<group>"; };
 		F66989C625BEEC2D00950E98 /* SwrveTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTestHelper.h; sourceTree = "<group>"; };
 		F66989C725BEEC2D00950E98 /* SwrveTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestHelper.m; sourceTree = "<group>"; };
-		F6698A5825BEF15000950E98 /* campaignsConversationVersion.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsConversationVersion.json; sourceTree = "<group>"; };
-		F6698A5E25BEF19200950E98 /* campaignsConversationFilters.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsConversationFilters.json; sourceTree = "<group>"; };
 		F6698A7025BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb */ = {isa = PBXFileReference; lastKnownFileType = file; path = fc972adec8076d203cbdfd8ca0e4b1bfa483abfb; sourceTree = "<group>"; };
 		F6698A7125BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = 11f95d706be64c4654c18918065a40935531973b.ttf; sourceTree = "<group>"; };
 		F6698A7225BEF30A00950E98 /* swrve_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swrve_logo.png; sourceTree = "<group>"; };
 		F6698A7A25BEF3BF00950E98 /* campaignsIdentity.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignsIdentity.json; sourceTree = "<group>"; };
+		F6721E182CB48FA300DCAA26 /* SwrveCampaignStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveCampaignStateTests.swift; sourceTree = "<group>"; };
 		F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCapabilitiesDelegate.m; sourceTree = "<group>"; };
 		F672289B25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestCapabilitiesDelegate.h; sourceTree = "<group>"; };
 		F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestCapabilitiesDelegate.m; sourceTree = "<group>"; };
 		F685B50325F0CD88008F5BAA /* iamCapabilites.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = iamCapabilites.json; sourceTree = "<group>"; };
-		F6A799B92550B01800E66E47 /* SwrveTestMessageCenterAPIIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestMessageCenterAPIIOS.m; sourceTree = "<group>"; };
 		F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDummy.m; sourceTree = "<group>"; };
-		F6A79A142551BCB400E66E47 /* SwrveTestConversationAtomFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationAtomFactory.m; sourceTree = "<group>"; };
-		F6A79A232551BD9400E66E47 /* SwrveTestConversationStyler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestConversationStyler.m; sourceTree = "<group>"; };
-		F6A79A332551BF0300E66E47 /* campaignConversation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = campaignConversation.json; sourceTree = "<group>"; };
 		F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = 040843601e697027b119f93a3fdb2c9c04d1ea63.otf; sourceTree = "<group>"; };
 		F6A79A9E2551C84B00E66E47 /* SwrveTestTextTemplating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextTemplating.m; sourceTree = "<group>"; };
 		F6A79AB32551C8C300E66E47 /* SwrveTestSwizzleHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestSwizzleHelper.m; sourceTree = "<group>"; };
@@ -590,6 +544,7 @@
 		5B2B6E7123C4A4A9000B1687 /* SDKTests */ = {
 			isa = PBXGroup;
 			children = (
+				C51531072C529EC20031F397 /* SDKTests-Prefix.pch */,
 				F66626CD22649E7D001AF2EB /* Universal */,
 				F666261222608ABD001AF2EB /* iOS */,
 				F60B7F96225F4227009AFCCC /* tvOS */,
@@ -633,6 +588,7 @@
 		C5DCC60B2AC15C590056686A /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				F6721E182CB48FA300DCAA26 /* SwrveCampaignStateTests.swift */,
 				C5DCC60C2AC15C9F0056686A /* SwrveLiveStorageTests.swift */,
 				C5AB4DDD2BAA35B7004723B8 /* SwrveLiveActivityTests.swift */,
 				C5A748FD2C1E414A007FF6F5 /* SwrveTestSDKSwiftAPI.swift */,
@@ -684,15 +640,6 @@
 				F66986E625BDA96800950E98 /* SwrveTestNotificationToCampaign.m */,
 				F66986D725BDA93F00950E98 /* SwrveTestSwrvePushSDK.m */,
 				F66986D525BDA93F00950E98 /* SwrveTestRichPushHelpers.m */,
-				F66986BF25BDA90A00950E98 /* SwrveTestConversationEvents.m */,
-				F66986C325BDA90A00950E98 /* SwrveTestConversationFlow.m */,
-				F66986C225BDA90A00950E98 /* SwrveTestConversations.m */,
-				F66986BD25BDA90900950E98 /* SwrveTestConversationsHelper.h */,
-				F66986C025BDA90A00950E98 /* SwrveTestConversationsHelper.m */,
-				F66986C125BDA90A00950E98 /* SwrveTestConversationWidgets.m */,
-				F66986BE25BDA90A00950E98 /* SwrveTestConversationWidgetViews.m */,
-				F6A79A232551BD9400E66E47 /* SwrveTestConversationStyler.m */,
-				F6A79A142551BCB400E66E47 /* SwrveTestConversationAtomFactory.m */,
 				5BB9AD2A23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m */,
 				5B2B6ED123C4CF16000B1687 /* Info.plist */,
 				3AA08418226F251C00ECA032 /* SwrveTestInitIOS.m */,
@@ -708,7 +655,6 @@
 				3A3A8C3B230ECBFA00D53B0C /* SwrveTestInitModeIOS.m */,
 				3A71967B231D1B3700500C08 /* SwrveTestPushNotifications.m */,
 				52B3D371251A45B5005606D7 /* SwrveTestUtilsIOS.m */,
-				F6A799B92550B01800E66E47 /* SwrveTestMessageCenterAPIIOS.m */,
 				F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */,
 				F6028D0B2705073B00E0BB79 /* SwrveTestTextViewIOS.m */,
 				C5A748FB2C1DC492007FF6F5 /* SwrveTestSDKObjCAPI.m */,
@@ -737,7 +683,6 @@
 				5BB9AD2723E3452E006125DD /* SwrveTestSwrveSEConfig.m */,
 				F66626EE22649FA3001AF2EB /* SwrveTestInit.m */,
 				3A3A8C37230C45AF00D53B0C /* SwrveTestInitMode.m */,
-				F66626EC22649FA3001AF2EB /* SwrveTestCustomPayloads.m */,
 				F66626EB22649FA3001AF2EB /* SwrveTestEventQueueCallback.m */,
 				F66626ED22649FA3001AF2EB /* SwrveTestLocalStorage.m */,
 				F66626EA22649FA3001AF2EB /* SwrveTestProfileManager.m */,
@@ -745,6 +690,9 @@
 				F66174C3226F637000E23980 /* SwrveTestCampaignAndResourcesUpdate.m */,
 				F6411205227742B900399A66 /* SwrveTestMessageCenterAPI.m */,
 				F6411204227742B900399A66 /* SwrveTestMessageController.m */,
+				3ACAF5E92CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m */,
+				3ACAF5EC2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m */,
+				3ACAF5EF2CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m */,
 				3AF36E84287D7828002B2279 /* SwrveTestIAMCampaign.m */,
 				F6DF565229476F6600ECAC5C /* SwrveTestCampaginHoldouts.m */,
 				F612AB92251E2B84002B5775 /* SwrveTestPermissions.m */,
@@ -776,7 +724,6 @@
 				3AB1C04D27C7DCB0007B8906 /* campaigns_multipage.json */,
 				F669874925BDABA100950E98 /* TestPushResponseDelegateClass.h */,
 				F669873B25BDAB1200950E98 /* TestableDummySwrve.h */,
-				F669873925BDAB1200950E98 /* TestableDummySwrve.m */,
 				F669872C25BDAACC00950E98 /* SwrvePrivateAccess.h */,
 				F669872D25BDAACC00950E98 /* TestableSwrveRESTClient.h */,
 				F669872E25BDAACC00950E98 /* TestableSwrveRESTClient.m */,
@@ -790,7 +737,6 @@
 				F666270B2264A065001AF2EB /* SwrveMockNSURLProtocol.m */,
 				F641123A2277472900399A66 /* campaigns.json */,
 				3AA0842A2271AE9900ECA032 /* abTestDetails.json */,
-				F66627072264A065001AF2EB /* ad_journey_campaign_conversation.json */,
 				F666270D2264A065001AF2EB /* ad_journey_campaign_message.json */,
 				1B5CAC142464124B003AE19C /* ad_journey_campaign_message_personalization.json */,
 				5264BF912609135100264777 /* ad_journey_campaign_message_image_personalization.json */,
@@ -811,12 +757,6 @@
 				52843EBD256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json */,
 				F641120D227742E200399A66 /* campaignsMessagePriorityReverse.json */,
 				F66989B825BEE39000950E98 /* campaignsMultipleTriggerConditions.json */,
-				F66988E625BE29CD00950E98 /* conversation_campaign_v3.json */,
-				F66988E525BE29CD00950E98 /* conversation_campaign_with_diff_fonts.json */,
-				F66988EC25BE29CE00950E98 /* conversationCameraPermission.json */,
-				F669893525BEC4B800950E98 /* conversationAnnounce.json */,
-				F669899B25BEE36000950E98 /* conversationCampaignsPriority.json */,
-				F6411210227742E200399A66 /* conversationCampaignsPriorityReverse.json */,
 				F641123F2277482300399A66 /* campaignsQAReset.json */,
 				F641123D2277482300399A66 /* campaignsQAUser.json */,
 				F119405F27F1F64C00098913 /* campaignsAccess.json */,
@@ -824,9 +764,6 @@
 				F64112492277490200399A66 /* campaignsPortraitOnly.json */,
 				F6698A7A25BEF3BF00950E98 /* campaignsIdentity.json */,
 				F66627262264A110001AF2EB /* logo.gif */,
-				F6A79A332551BF0300E66E47 /* campaignConversation.json */,
-				F6698A5825BEF15000950E98 /* campaignsConversationVersion.json */,
-				F6698A5E25BEF19200950E98 /* campaignsConversationFilters.json */,
 				52FC409523FEB5CE0097E9BA /* campaignsPersonalization.json */,
 				C59307682AE9239800E3B26D /* campaignWithMultilineText.json */,
 				F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */,
@@ -836,11 +773,6 @@
 				52F1C9252567F180003B68AF /* campaignsEmbedded.json */,
 				F6F9E9422A45A87F00209404 /* campaignsEmbeddedNulls.json */,
 				F6DF5655294777AD00ECAC5C /* campaignsHoldout.json */,
-				F66988E325BE29CC00950E98 /* conversationContactsPermission.json */,
-				F66988EB25BE29CD00950E98 /* conversationLocationAlwaysPermission.json */,
-				F66988E825BE29CD00950E98 /* conversationLocationWhenInUsePermission.json */,
-				F66988E925BE29CD00950E98 /* conversationPhotoPermission.json */,
-				F66988EA25BE29CD00950E98 /* conversationPushPermission.json */,
 				5228725B25F67BB00014FD1B /* campaignsImagePersonalizationTriggered.json */,
 				F672289B25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.h */,
 				F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */,
@@ -998,7 +930,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F669891F25BEC17800950E98 /* conversationPhotoPermission.json in Resources */,
 				5B2B6F6423C4E55E000B1687 /* campaignsMessagePriorityReverse.json in Resources */,
 				B531D5412BFCB8D200B76271 /* campaigns_push_inbox.json in Resources */,
 				52FC409823FEBB6C0097E9BA /* campaignsPersonalization.json in Resources */,
@@ -1008,13 +939,10 @@
 				3A6947E228B674C0009ACD26 /* campaignDownloadDate1.json in Resources */,
 				3A42255B27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
 				3A2E93342AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */,
-				5B2B6F5523C4E55E000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				5264BF922609135100264777 /* ad_journey_campaign_message_image_personalization.json in Resources */,
-				F669891025BEC16F00950E98 /* conversationContactsPermission.json in Resources */,
 				F6A79A812551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf in Resources */,
 				F66989B925BEE39000950E98 /* campaignsMultipleTriggerConditions.json in Resources */,
 				52F4B3A4268C8A2300C40B1E /* campaignsEmbeddedPersonalizationMessageCenter.json in Resources */,
-				F669891525BEC17300950E98 /* conversationLocationAlwaysPermission.json in Resources */,
 				1B5CAC152464124B003AE19C /* ad_journey_campaign_message_personalization.json in Resources */,
 				3A0DB9CD287827A5008EC1D7 /* campaignsGif.json in Resources */,
 				F6698A7B25BEF3BF00950E98 /* campaignsIdentity.json in Resources */,
@@ -1022,32 +950,23 @@
 				5B2B6F6723C4E55E000B1687 /* campaignsQAReset.json in Resources */,
 				F6698A7425BEF30A00950E98 /* 11f95d706be64c4654c18918065a40935531973b.ttf in Resources */,
 				5B2B6F5A23C4E55E000B1687 /* campaignSingle.json in Resources */,
-				F6A79A742551BF6E00E66E47 /* campaignConversation.json in Resources */,
-				B5E9B2F22C21C7C3002E7972 /* BuildFile in Resources */,
-				F669892825BEC17B00950E98 /* conversationPushPermission.json in Resources */,
+				B5E9B2F22C21C7C3002E7972 /* (null) in Resources */,
 				5B2B6F5323C4E55E000B1687 /* campaigns.json in Resources */,
 				5B2B6F5C23C4E55E000B1687 /* campaignsAutoshow.json in Resources */,
 				521F4344256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */,
 				5B2B6F5623C4E55E000B1687 /* ad_journey_campaign_message.json in Resources */,
-				F66989A225BEE36F00950E98 /* conversation_campaign_with_diff_fonts.json in Resources */,
 				3A6947E028B674C0009ACD26 /* campaignDownloadDate2.json in Resources */,
 				5B2B6F5B23C4E55E000B1687 /* campaignsAARRGGBB.json in Resources */,
 				5B2B6F5723C4E55E000B1687 /* campaignsNone.json in Resources */,
 				F685B50425F0CD88008F5BAA /* iamCapabilites.json in Resources */,
-				F66989AB25BEE37200950E98 /* conversation_campaign_v3.json in Resources */,
 				F6F9E9432A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */,
-				F669899D25BEE36000950E98 /* conversationCampaignsPriority.json in Resources */,
 				C530E8F02B15D2B9005D3354 /* campaigns_with_reidentify_period.json in Resources */,
 				5B2B6F6A23C4E55E000B1687 /* campaignsRRGGBB.json in Resources */,
-				F6698A5F25BEF19200950E98 /* campaignsConversationFilters.json in Resources */,
 				52051B422670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */,
 				F6698A7325BEF30A00950E98 /* fc972adec8076d203cbdfd8ca0e4b1bfa483abfb in Resources */,
 				5B2B6F5F23C4E55E000B1687 /* campaignSessionStart.json in Resources */,
-				F669893625BEC4B800950E98 /* conversationAnnounce.json in Resources */,
-				F669891A25BEC17600950E98 /* conversationLocationWhenInUsePermission.json in Resources */,
 				3A982FC729B247BA00114F3B /* campaign_native_button_everything.json in Resources */,
 				5B2B6F5D23C4E55E000B1687 /* campaignsBothOrientations.json in Resources */,
-				F6698A5925BEF15000950E98 /* campaignsConversationVersion.json in Resources */,
 				5B2B6F6823C4E55E000B1687 /* campaignsQAUser.json in Resources */,
 				B568A1042C25C4840063D55C /* campaigns_push_inbox_past_and_future.json in Resources */,
 				5B2B6F6223C4E55E000B1687 /* campaignsMessageCenter.json in Resources */,
@@ -1060,9 +979,7 @@
 				5B2B6F5823C4E55E000B1687 /* external_campaigns.json in Resources */,
 				F119406027F1F64C00098913 /* campaignsAccess.json in Resources */,
 				5228726A25F67E3D0014FD1B /* campaignsImagePersonalizationTriggered.json in Resources */,
-				5B2B6F6623C4E55E000B1687 /* conversationCampaignsPriorityReverse.json in Resources */,
 				F6698A7525BEF30A00950E98 /* swrve_logo.png in Resources */,
-				F669899125BEE2F400950E98 /* conversationCameraPermission.json in Resources */,
 				52F1C9262567F180003B68AF /* campaignsEmbedded.json in Resources */,
 				52843EBE256E9AE700B6A846 /* campaignsEmbeddedMessagePriority.json in Resources */,
 				5B2B6F6B23C4E55E000B1687 /* campaignsPortraitOnly.json in Resources */,
@@ -1096,7 +1013,6 @@
 				F6F9E9442A45A87F00209404 /* campaignsEmbeddedNulls.json in Resources */,
 				3A982FC829B247BA00114F3B /* campaign_native_button_everything.json in Resources */,
 				5B2B6F7B23C4E55F000B1687 /* campaignsImpressions.json in Resources */,
-				5B2B6F6F23C4E55F000B1687 /* ad_journey_campaign_conversation.json in Resources */,
 				1B5CAC1624641253003AE19C /* ad_journey_campaign_message_personalization.json in Resources */,
 				52AF58B72614C94C00697B09 /* realTimeUserProperties.json in Resources */,
 				3A80F77729BB6017000FA64C /* campaign_native_button_basics.json in Resources */,
@@ -1124,8 +1040,7 @@
 				5B2B6F7D23C4E55F000B1687 /* campaignsMessagePriority.json in Resources */,
 				521F4345256D7FC400D9623B /* ad_journey_campaign_embedded_message.json in Resources */,
 				5B2B6F7223C4E55F000B1687 /* external_campaigns.json in Resources */,
-				5B2B6F8023C4E55F000B1687 /* conversationCampaignsPriorityReverse.json in Resources */,
-				B5E9B2F32C21C7C3002E7972 /* BuildFile in Resources */,
+				B5E9B2F32C21C7C3002E7972 /* (null) in Resources */,
 				5B2B6F8523C4E55F000B1687 /* campaignsPortraitOnly.json in Resources */,
 				3A1443552AF3E660007B5B2D /* in_app_story_campaign.json in Resources */,
 				3AF36E83287D67D1002B2279 /* swrve_logo.png in Resources */,
@@ -1139,7 +1054,6 @@
 				52F1C9272567F180003B68AF /* campaignsEmbedded.json in Resources */,
 				C530E8F42B16E70A005D3354 /* campaigns_without_reidentify_period.json in Resources */,
 				F119406127F1F64C00098913 /* campaignsAccess.json in Resources */,
-				F6F5036925DD0A7B00AEB3FA /* conversationCampaignsPriority.json in Resources */,
 				3A2E93352AFE7C8300AF6E83 /* campaigns_in_app_story.json in Resources */,
 				5B2B6F6E23C4E55F000B1687 /* abTestDetails.json in Resources */,
 				3A42255C27DB78AE0096D33E /* campaigns_multipage_orientations.json in Resources */,
@@ -1348,7 +1262,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F669895F25BEC7C000950E98 /* TestableDummySwrve.m in Sources */,
 				5B2B6E4C23C498B2000B1687 /* main.m in Sources */,
 				F669894D25BEC7AD00950E98 /* TestableSwrve.m in Sources */,
 				5B2B6E4923C498B2000B1687 /* ViewController.m in Sources */,
@@ -1366,11 +1279,8 @@
 				F619930B2540526D0014F72D /* SwrveTestEventsManager.m in Sources */,
 				F6ED51FC2746A4A70071F5DE /* SwrveTestNSURLSessionDelegate.m in Sources */,
 				F685B52425F0E57F008F5BAA /* SwrveTestMessageController.m in Sources */,
-				F6A799BA2550B01900E66E47 /* SwrveTestMessageCenterAPIIOS.m in Sources */,
-				F66986C925BDA90B00950E98 /* SwrveTestConversationFlow.m in Sources */,
 				5B2B6E1B23C49346000B1687 /* SwrveTestUserResources.m in Sources */,
 				527D29A423FA9BCF00ABC361 /* SwrveTestRealTimeUserProperties.m in Sources */,
-				F66986C825BDA90B00950E98 /* SwrveTestConversationsHelper.m in Sources */,
 				F612AB93251E2B84002B5775 /* SwrveTestPermissions.m in Sources */,
 				5B2B6E1D23C49346000B1687 /* SwrveTestQA.m in Sources */,
 				F61993DD2541C3210014F72D /* SwrveTestSessionManagement.m in Sources */,
@@ -1382,18 +1292,15 @@
 				5B2B6E2323C49346000B1687 /* SwrveTestLocalStorage.m in Sources */,
 				5B2B6E3223C4935F000B1687 /* SwrveTestDeviceProperties.m in Sources */,
 				5B2B6E2523C49346000B1687 /* SwrveTestTriggersAndConditions.m in Sources */,
-				F66986C625BDA90B00950E98 /* SwrveTestConversationEvents.m in Sources */,
 				5B2B6E2E23C4935F000B1687 /* SwrveTestNotificationManager.m in Sources */,
 				5BB9AD2823E3452E006125DD /* SwrveTestSwrveSEConfig.m in Sources */,
 				F672287C25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m in Sources */,
-				5B2B6E2123C49346000B1687 /* SwrveTestCustomPayloads.m in Sources */,
 				52C0A63425F140E400BE4549 /* SwrveTestAssetsManager.m in Sources */,
 				5B2B6E3023C4935F000B1687 /* SwrveTestSignatureProtectedFile.m in Sources */,
 				5B2B6E2A23C4935F000B1687 /* SwrveTestCampaignMultipleConditions.m in Sources */,
 				C5DCC60D2AC15C9F0056686A /* SwrveLiveStorageTests.swift in Sources */,
 				B531D5342BFB7C1A00B76271 /* SwrveTestPushInbox.m in Sources */,
 				3AF36E85287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */,
-				F6A79A242551BD9500E66E47 /* SwrveTestConversationStyler.m in Sources */,
 				F669875225BDABE300950E98 /* SwrveTestEvents.m in Sources */,
 				F6DF565329476F6600ECAC5C /* SwrveTestCampaginHoldouts.m in Sources */,
 				C5AB4DDE2BAA35B7004723B8 /* SwrveLiveActivityTests.swift in Sources */,
@@ -1403,33 +1310,33 @@
 				5B2B6E1C23C49346000B1687 /* SwrveTestABTestDetails.m in Sources */,
 				C5A748FC2C1DC492007FF6F5 /* SwrveTestSDKObjCAPI.m in Sources */,
 				5B2B6E2F23C4935F000B1687 /* SwrveTestPushSDK.m in Sources */,
+				F6721E192CB48FAB00DCAA26 /* SwrveCampaignStateTests.swift in Sources */,
 				F66986E725BDA96800950E98 /* SwrveTestNotificationToCampaign.m in Sources */,
 				52C0A6F425F152F600BE4549 /* SwrveTestHelper.m in Sources */,
-				F66986C525BDA90B00950E98 /* SwrveTestConversationWidgets.m in Sources */,
 				F67228A625EE9ED100FA1C77 /* TestCapabilitiesDelegate.m in Sources */,
 				F66988CF25BE0C7800950E98 /* SwrveTestUserIdentity.m in Sources */,
 				5B2B6E2023C49346000B1687 /* SwrveTestInitMode.m in Sources */,
+				3ACAF5EA2CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m in Sources */,
 				3A5BBFD2266FA43200092799 /* SwrveTestStopTracking.m in Sources */,
+				3ACAF5F02CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m in Sources */,
 				F6028D0C2705073B00E0BB79 /* SwrveTestTextViewIOS.m in Sources */,
 				5B2B6E2B23C4935F000B1687 /* SwrveTestAuthPush.m in Sources */,
 				5B2B6E2223C49346000B1687 /* SwrveTestEventQueueCallback.m in Sources */,
 				5BC8F010249A4EEF0077E43B /* SwrveTestQAEventsQueueManager.m in Sources */,
 				5B2B6E2C23C4935F000B1687 /* SwrveTestDeeplinkManager.m in Sources */,
 				5B2B6E3323C4935F000B1687 /* SwrveTestInitModeIOS.m in Sources */,
-				F6A79A162551BCB500E66E47 /* SwrveTestConversationAtomFactory.m in Sources */,
+				3ACAF5ED2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m in Sources */,
 				F6D0FD2425F772E400423C40 /* SwrveTestStaticVersions.m in Sources */,
 				5B2B6E2423C49346000B1687 /* SwrveTestProfileManager.m in Sources */,
 				5BB9AD2B23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m in Sources */,
 				52B3D372251A45B5005606D7 /* SwrveTestUtilsIOS.m in Sources */,
 				F6A79A082551BBE500E66E47 /* SwrveTestDummy.m in Sources */,
-				F66986C425BDA90B00950E98 /* SwrveTestConversationWidgetViews.m in Sources */,
 				5B2B6E1F23C49346000B1687 /* SwrveTestInit.m in Sources */,
 				5B2B6E2D23C4935F000B1687 /* SwrveTestMigrationsManager.m in Sources */,
 				F6A79AA52551C87600E66E47 /* SwrveTestTextTemplating.m in Sources */,
 				F6A79AC72551C8C800E66E47 /* SwrveTestSwizzleHelper.m in Sources */,
 				5B2B6E3123C4935F000B1687 /* SwrveTestSilentPush.m in Sources */,
 				F66986D925BDA93F00950E98 /* SwrveTestRichPushHelpers.m in Sources */,
-				F66986C725BDA90B00950E98 /* SwrveTestConversations.m in Sources */,
 				5B2B6E2723C49346000B1687 /* SwrveTestMessageCenterAPI.m in Sources */,
 				0F694D209AD1593BDF587366 /* AutoMockable.generated.swift in Sources */,
 			);
@@ -1439,7 +1346,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F669896825BEC7C100950E98 /* TestableDummySwrve.m in Sources */,
 				5B2B6E9C23C4CB67000B1687 /* ViewController.m in Sources */,
 				F669895625BEC7AE00950E98 /* TestableSwrve.m in Sources */,
 				5B2B6E9B23C4CB60000B1687 /* main.m in Sources */,
@@ -1456,6 +1362,7 @@
 				5B2B6F9823C4E6AF000B1687 /* SwrveTestSwrveCampaignInfluence.m in Sources */,
 				F6A79ABE2551C8C800E66E47 /* SwrveTestSwizzleHelper.m in Sources */,
 				5B2B6F9A23C4E6AF000B1687 /* SwrveTestInitMode.m in Sources */,
+				3ACAF5EE2CA326D9008136EA /* SwrveTestMessageControllerMessageDelegate.m in Sources */,
 				F6D0FD2525F772E400423C40 /* SwrveTestStaticVersions.m in Sources */,
 				F6A79A092551BBE500E66E47 /* SwrveTestDummy.m in Sources */,
 				5B2B6F9623C4E6AF000B1687 /* SwrveTestABTestDetails.m in Sources */,
@@ -1463,7 +1370,6 @@
 				F67228A725EE9ED200FA1C77 /* TestCapabilitiesDelegate.m in Sources */,
 				F61993DE2541C3210014F72D /* SwrveTestSessionManagement.m in Sources */,
 				B531D5352BFB7C1A00B76271 /* SwrveTestPushInbox.m in Sources */,
-				5B2B6F9B23C4E6AF000B1687 /* SwrveTestCustomPayloads.m in Sources */,
 				F6A79AAA2551C87700E66E47 /* SwrveTestTextTemplating.m in Sources */,
 				F612AB94251E2B84002B5775 /* SwrveTestPermissions.m in Sources */,
 				5B2B6FA623C4E77F000B1687 /* SwrveTVTestDeviceProperties.m in Sources */,
@@ -1476,6 +1382,7 @@
 				5BB9AD2923E34620006125DD /* SwrveTestSwrveSEConfig.m in Sources */,
 				5B2B6F9E23C4E6AF000B1687 /* SwrveTestProfileManager.m in Sources */,
 				5B2B6F8723C4E67A000B1687 /* SwrveTestInitTV.m in Sources */,
+				3ACAF5EB2CA3231F008136EA /* SwrveTestMessageControllerIAMStories.m in Sources */,
 				F619931F2540715D0014F72D /* SwrveTestUtils.m in Sources */,
 				3A36ECAA29F14F2900931B7C /* SwrveTestThemedUIButton.m in Sources */,
 				3AF36E86287D7828002B2279 /* SwrveTestIAMCampaign.m in Sources */,
@@ -1492,6 +1399,7 @@
 				5B2B6F9F23C4E6AF000B1687 /* SwrveTestTriggersAndConditions.m in Sources */,
 				5B2B6F0323C4E4DA000B1687 /* TestPermissionsDelegate.m in Sources */,
 				F66988D025BE0C7800950E98 /* SwrveTestUserIdentity.m in Sources */,
+				3ACAF5F12CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m in Sources */,
 				F619930C2540526D0014F72D /* SwrveTestEventsManager.m in Sources */,
 				5B2B6F9923C4E6AF000B1687 /* SwrveTestInit.m in Sources */,
 				5B2B6FA323C4E76E000B1687 /* SwrveTVTestMigrationManager.m in Sources */,
@@ -1635,6 +1543,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/BlankApp/iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1659,6 +1568,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/BlankApp/iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1683,6 +1593,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1712,6 +1623,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1737,6 +1649,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/BlankApp/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -1761,6 +1674,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/BlankApp/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_FAST_MATH = YES;
@@ -1786,6 +1700,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -1816,6 +1731,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = "${SRCROOT}/SDKTests/SDKTests-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/SDKTests/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;

@@ -1,18 +1,8 @@
 #import <XCTest/XCTest.h>
-#import "SwrveProtocol.h"
-#import "SwrvePermissions.h"
-#import "SwrveDeviceProperties.h"
 #import <OCMock/OCMock.h>
+#import "SwrveTestHelper.h"
 #import "TestPermissionsDelegate.h"
 #import "SwrveMockNSURLProtocol.h"
-#import "SwrveSDK.h"
-#import "SwrveTestHelper.h"
-
-#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
-#import <SwrveSDK/SwrveSDK-Swift.h>
-#elif __has_include("SwrveSDK-Swift.h")
-#import "SwrveSDK-Swift.h"
-#endif
 
 @interface SwrveDeviceProperties ()
 - (NSString *)installDate:(UInt64)appInstallTimeSeconds;
@@ -38,9 +28,9 @@
 - (int)devicePropertyCount {
     if (@available(iOS 16.2, *)) {
         // starting 16.2, we add two additional LA property
-        return 18;
+        return 17;
     } else {
-        return 16;
+        return 15;
     }
 }
 
@@ -48,7 +38,6 @@
     
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:nil
                                                                             appInstallTimeSeconds:0
-                                                                              conversationVersion:0
                                                                                       deviceToken:nil
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
@@ -60,7 +49,6 @@
     XCTAssertEqual([deviceInfo count], [self devicePropertyCount]);
     
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.app_store"], @"apple");
-    XCTAssertNotNil([deviceInfo objectForKey:@"swrve.conversation_version"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_dpi"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_name"]);
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.device_width"]);
@@ -95,7 +83,6 @@
     
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:@SWRVE_SDK_VERSION
                                                                            appInstallTimeSeconds:0
-                                                                             conversationVersion:0
                                                                                      deviceToken:nil
                                                                                 permissionStatus:nil
                                                                                     sdk_language:nil
@@ -113,7 +100,6 @@
     
     SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                             appInstallTimeSeconds:installTimeSecondsTest
-                                                                              conversationVersion:0
                                                                                       deviceToken:nil
                                                                                  permissionStatus:nil
                                                                                      sdk_language:nil
@@ -129,29 +115,10 @@
     XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.install_date"], [dateFormatter stringFromDate:date]);
 }
 
-- (void)testDevicePropertiesNil_WithConversationVersion {
-    
-    int conversationVersionTest = 6;
-    
-    SwrveDeviceProperties * swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
-                                                                            appInstallTimeSeconds:0
-                                                                              conversationVersion:conversationVersionTest
-                                                                                      deviceToken:nil
-                                                                                 permissionStatus:nil
-                                                                                     sdk_language:nil
-                                                                                    swrveInitMode:nil];
-    
-    
-    NSDictionary *deviceInfo = [swrveDeviceProperties deviceProperties];
-    
-    XCTAssertEqualObjects([deviceInfo valueForKey:@"swrve.conversation_version"], [NSNumber numberWithInteger:conversationVersionTest]);
-}
-
 - (void)testDevicePropertiesNil_WithDeviceToken {
     
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                            appInstallTimeSeconds:0
-                                                                             conversationVersion:0
                                                                                      deviceToken:@"TestDeviceToken"
                                                                                 permissionStatus:nil
                                                                                     sdk_language:nil
@@ -179,7 +146,6 @@
     
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                            appInstallTimeSeconds:0
-                                                                             conversationVersion:0
                                                                                      deviceToken:nil
                                                                                 permissionStatus:permissionStatus
                                                                                     sdk_language:nil
@@ -208,7 +174,6 @@
     
     SwrveDeviceProperties *swrveDeviceProperties = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                            appInstallTimeSeconds:0
-                                                                             conversationVersion:0
                                                                                      deviceToken:nil
                                                                                 permissionStatus:nil
                                                                                     sdk_language:config.language
@@ -224,11 +189,10 @@
 - (void)testDevicePropertiesNil_WithInitMode {
 
     SwrveConfig *configManagedAutostartFalse = [[SwrveConfig alloc]init];
-    [configManagedAutostartFalse setInitMode:SWRVE_INIT_MODE_MANAGED];
+    [configManagedAutostartFalse setInitMode:SwrveInitModeManaged];
     [configManagedAutostartFalse setAutoStartLastUser:false];
     SwrveDeviceProperties *swrveDevicePropertiesManagedAutostartFalse = [[SwrveDeviceProperties alloc]initWithVersion:nil
                                                                                   appInstallTimeSeconds:0
-                                                                                    conversationVersion:0
                                                                                             deviceToken:nil
                                                                                        permissionStatus:nil
                                                                                            sdk_language:nil

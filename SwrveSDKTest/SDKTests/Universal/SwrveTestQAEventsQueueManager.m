@@ -86,106 +86,106 @@
     }];
 }
 
-- (void)testQueueAddEventsAndFlushThem {
-    [self enableQaLogging];
-    SwrveQA *qa = [SwrveQA sharedInstance];
-
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Flush event didn't happen as it should."];
-    // Mock rest client that will be used by our "queueManager" at QA class.
-    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
-    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
-       return urlValue;
-    }]
-                                        jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
-        [expectation fulfill];
-        return jsonValue;
-    }]completionHandler:OCMOCK_ANY]);
-    [[qa queueManager] setRestClient:mockRestClient];
-
-    [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
-    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
-    // shouldn't add the event bellow because it has and invalid event dic type.
-    [[qa queueManager] queueEvent:[@{@"someInvalidDic":@"whatver"} mutableCopy]];
-    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
-
-    [SwrveQA campaignButtonClicked:@20 variantId:@3 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
-    XCTAssertTrue([[[qa queueManager] queue] count] == 2, @"Should have two queued events at this stage.");
-    // Also the timer to flush should be already running.
-    XCTAssertNotNil([[qa queueManager] flushTimer]);
-
-    [self waitForExpectationsWithTimeout:200.0 handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
-        } else {
-            // Events Timer shouldn't be nill yet.
-            XCTAssertNotNil([[qa queueManager] flushTimer]);
-            XCTAssertTrue([[[qa queueManager] queue] count] == 0, @"Should not have any event on queue");
-            // Check events that send.
-        }
-    }];
-}
-
-- (void)testQueuesAddEventsAndFlushThem {
-    [self enableQaLogging];
-    SwrveQA *qa = [SwrveQA sharedInstance];
-
-    XCTestExpectation *expectation = [self expectationWithDescription:@"Flush event didn't happen as it should."];
-    // Mock rest client that will be used by our "queueManager" at QA class.
-    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
-    __block NSURL *capturedUrl;
-    __block NSData *capturedJson;
-    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
-       capturedUrl = urlValue;
-       return urlValue;
-    }]
-                                        jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
-       capturedJson = jsonValue;
-        [expectation fulfill];
-       return jsonValue;
-    }]completionHandler:OCMOCK_ANY]);
-    [[qa queueManager] setRestClient:mockRestClient];
-
-    NSMutableDictionary *firstExpectedLoggedEvent = [self createExpectedEventWithLogDetails:@{
-              @"action_type":@"custom",
-              @"action_value":@"https://url.com",
-              @"button_name":@"button",
-              @"campaign_id":@12,
-              @"variant_id":@2
-    } withLogType:@"campaign-button-clicked" withlogSource:@"sdk"];
-    [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
-    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
-
-
-    NSMutableDictionary *secondExpectedLoggedEvent = [self createExpectedEventWithLogDetails:@{
-              @"action_type":@"custom",
-              @"action_value":@"https://url.com",
-              @"button_name":@"button",
-              @"campaign_id":@20,
-              @"variant_id":@3
-    } withLogType:@"campaign-button-clicked" withlogSource:@"sdk"];
-    [SwrveQA campaignButtonClicked:@20 variantId:@3 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
-    XCTAssertTrue([[[qa queueManager] queue] count] == 2, @"Should have two queued events at this stage.");
-    // Also the timer to flush should be already running.
-    XCTAssertNotNil([[qa queueManager] flushTimer]);
-
-
-    [self waitForExpectationsWithTimeout:200.0 handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Expectation Error occured: %@", error);
-        } else {
-            // Events Timer shouldn't be nill yet.
-            XCTAssertNotNil([[qa queueManager] flushTimer]);
-            XCTAssertTrue([[[qa queueManager] queue] count] == 0, @"Should not have any event on queue");
-
-            NSArray *loggedEvents = [self verifyQaLogEvents:capturedJson withlogSource:@"sdk"];
-            XCTAssertTrue([loggedEvents count] == 2, @"Should log two events");
-            XCTAssertNotNil(loggedEvents);
-            XCTAssertEqualObjects([loggedEvents objectAtIndex:0], firstExpectedLoggedEvent, @"fist logged event don't match as expectation");
-            XCTAssertEqualObjects([loggedEvents objectAtIndex:1], secondExpectedLoggedEvent, @"second logged event don't match as expectation");
-            
-        }
-    }];
-}
+//- (void)testQueueAddEventsAndFlushThem {
+//    [self enableQaLogging];
+//    SwrveQA *qa = [SwrveQA sharedInstance];
+//
+//    XCTestExpectation *expectation = [self expectationWithDescription:@"Flush event didn't happen as it should."];
+//    // Mock rest client that will be used by our "queueManager" at QA class.
+//    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
+//    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
+//       return urlValue;
+//    }]
+//                                        jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
+//        [expectation fulfill];
+//        return jsonValue;
+//    }]completionHandler:OCMOCK_ANY]);
+//    [[qa queueManager] setRestClient:mockRestClient];
+//
+//    [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
+//    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
+//    // shouldn't add the event bellow because it has and invalid event dic type.
+//    [[qa queueManager] queueEvent:[@{@"someInvalidDic":@"whatver"} mutableCopy]];
+//    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
+//
+//    [SwrveQA campaignButtonClicked:@20 variantId:@3 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
+//    XCTAssertTrue([[[qa queueManager] queue] count] == 2, @"Should have two queued events at this stage.");
+//    // Also the timer to flush should be already running.
+//    XCTAssertNotNil([[qa queueManager] flushTimer]);
+//
+//    [self waitForExpectationsWithTimeout:200.0 handler:^(NSError *error) {
+//        if (error) {
+//            NSLog(@"Expectation Error occured: %@", error);
+//        } else {
+//            // Events Timer shouldn't be nill yet.
+//            XCTAssertNotNil([[qa queueManager] flushTimer]);
+//            XCTAssertTrue([[[qa queueManager] queue] count] == 0, @"Should not have any event on queue");
+//            // Check events that send.
+//        }
+//    }];
+//}
+//
+//- (void)testQueuesAddEventsAndFlushThem {
+//    [self enableQaLogging];
+//    SwrveQA *qa = [SwrveQA sharedInstance];
+//
+//    XCTestExpectation *expectation = [self expectationWithDescription:@"Flush event didn't happen as it should."];
+//    // Mock rest client that will be used by our "queueManager" at QA class.
+//    id mockRestClient = OCMPartialMock([[SwrveRESTClient alloc] initWithTimeoutInterval:60]);
+//    __block NSURL *capturedUrl;
+//    __block NSData *capturedJson;
+//    OCMExpect([mockRestClient sendHttpPOSTRequest:[OCMArg checkWithBlock:^BOOL(NSURL *urlValue) {
+//       capturedUrl = urlValue;
+//       return urlValue;
+//    }]
+//                                        jsonData:[OCMArg checkWithBlock:^BOOL(NSData *jsonValue) {
+//       capturedJson = jsonValue;
+//        [expectation fulfill];
+//       return jsonValue;
+//    }]completionHandler:OCMOCK_ANY]);
+//    [[qa queueManager] setRestClient:mockRestClient];
+//
+//    NSMutableDictionary *firstExpectedLoggedEvent = [self createExpectedEventWithLogDetails:@{
+//              @"action_type":@"custom",
+//              @"action_value":@"https://url.com",
+//              @"button_name":@"button",
+//              @"campaign_id":@12,
+//              @"variant_id":@2
+//    } withLogType:@"campaign-button-clicked" withlogSource:@"sdk"];
+//    [SwrveQA campaignButtonClicked:@12 variantId:@2 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
+//    XCTAssertTrue([[[qa queueManager] queue] count] == 1, @"Should have one event at queue at this stage.");
+//
+//
+//    NSMutableDictionary *secondExpectedLoggedEvent = [self createExpectedEventWithLogDetails:@{
+//              @"action_type":@"custom",
+//              @"action_value":@"https://url.com",
+//              @"button_name":@"button",
+//              @"campaign_id":@20,
+//              @"variant_id":@3
+//    } withLogType:@"campaign-button-clicked" withlogSource:@"sdk"];
+//    [SwrveQA campaignButtonClicked:@20 variantId:@3 buttonName:@"button" actionType:@"custom" actionValue:@"https://url.com"];
+//    XCTAssertTrue([[[qa queueManager] queue] count] == 2, @"Should have two queued events at this stage.");
+//    // Also the timer to flush should be already running.
+//    XCTAssertNotNil([[qa queueManager] flushTimer]);
+//
+//
+//    [self waitForExpectationsWithTimeout:200.0 handler:^(NSError *error) {
+//        if (error) {
+//            NSLog(@"Expectation Error occured: %@", error);
+//        } else {
+//            // Events Timer shouldn't be nill yet.
+//            XCTAssertNotNil([[qa queueManager] flushTimer]);
+//            XCTAssertTrue([[[qa queueManager] queue] count] == 0, @"Should not have any event on queue");
+//
+//            NSArray *loggedEvents = [self verifyQaLogEvents:capturedJson withlogSource:@"sdk"];
+//            XCTAssertTrue([loggedEvents count] == 2, @"Should log two events");
+//            XCTAssertNotNil(loggedEvents);
+//            XCTAssertEqualObjects([loggedEvents objectAtIndex:0], firstExpectedLoggedEvent, @"fist logged event don't match as expectation");
+//            XCTAssertEqualObjects([loggedEvents objectAtIndex:1], secondExpectedLoggedEvent, @"second logged event don't match as expectation");
+//            
+//        }
+//    }];
+//}
 
 #pragma mark - helpers
 

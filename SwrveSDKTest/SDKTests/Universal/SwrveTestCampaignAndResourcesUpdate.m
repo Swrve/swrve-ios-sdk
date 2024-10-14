@@ -8,6 +8,7 @@
 #import "SwrveUtils.h"
 #import "SwrvePermissions.h"
 #import "SwrveRESTClient.h"
+#import "SwrveReceiptProvider.h"
 
 @interface SwrveReceiptProvider()
 - (NSData *)readMainBundleAppStoreReceipt API_AVAILABLE(ios(12.0));
@@ -206,7 +207,6 @@
                                 [NSURLQueryItem queryItemWithName:@"device_height" value:[NSString stringWithFormat:@"%d", (int) screen_bounds.size.height]],
                                 [NSURLQueryItem queryItemWithName:@"os_version" value:[device systemVersion]],
                                 [NSURLQueryItem queryItemWithName:@"device_name" value:[device model]],
-                                [NSURLQueryItem queryItemWithName:@"conversation_version" value:[NSString stringWithFormat:@"%d", CONVERSATION_VERSION]],
                                 [NSURLQueryItem queryItemWithName:@"os" value:[[device systemName] lowercaseString]],
                                 [NSURLQueryItem queryItemWithName:@"device_type" value:[SwrveUtils platformDeviceType]],
                                 [NSURLQueryItem queryItemWithName:@"embedded_campaign_version" value:[NSString stringWithFormat:@"%d", EMBEDDED_CAMPAIGN_VERSION]],
