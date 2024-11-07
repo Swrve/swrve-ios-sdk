@@ -3,7 +3,8 @@
         "cdn_root": "https://fake_cdn_root",
         "campaigns": [{
                       "id": 102,
-                      "end_date": 1364568900000,
+                      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
                       "triggers": [{
                                    "event_name": "Swrve.currency_given",
                                    "conditions": {}
@@ -13,7 +14,7 @@
                                    "conditions": {}
                                    }
                                    ],
-                      "start_date": 1362671700000,
+                      "start_date_iso": "2013-03-07T15:55:00Z",
                       "message": {
                                    "template": {
                                    "template_id": "20",
@@ -178,12 +179,13 @@
                       }
                       }, {
                       "id": 101,
-                      "end_date": 1364568900000,
+                      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
                       "triggers": [{
                                    "event_name": "test1",
                                    "conditions": {}
                                    }],
-                      "start_date": 1362671700000,
+                      "start_date_iso": "2013-03-07T15:55:00Z",
                       "message": {
                                    "template": {
                                    "template_id": "20",

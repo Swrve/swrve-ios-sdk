@@ -1,7 +1,14 @@
 #include <UIKit/UIKit.h>
+
+#if __has_include(<SwrveSDK/SwrveInterfaceOrientation.h>)
+#import <SwrveSDK/SwrveInterfaceOrientation.h>
+#import <SwrveSDK/SwrveCalibration.h>
+#import <SwrveSDK/SwrveStorySettings.h>
+#else
 #import "SwrveInterfaceOrientation.h"
 #import "SwrveCalibration.h"
 #import "SwrveStorySettings.h"
+#endif
 
 #if __has_include(<SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>)
 #import <SwrveSDKCommon/SwrveInAppCapabilitiesDelegate.h>

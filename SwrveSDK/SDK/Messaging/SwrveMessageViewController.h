@@ -1,4 +1,14 @@
 #import <UIKit/UIKit.h>
+
+#if __has_include(<SwrveSDK/SwrveUIButton.h>)
+#import <SwrveSDK/SwrveUIButton.h>
+#import <SwrveSDK/Swrve.h>
+#import <SwrveSDK/SwrveButton.h>
+#import <SwrveSDK/SwrveImage.h>
+#import <SwrveSDK/SwrveMessageController.h>
+#import <SwrveSDK/SwrveMessagePage.h>
+#import <SwrveSDK/SwrveSDKUtils.h>
+#else
 #import "SwrveUIButton.h"
 #import "Swrve.h"
 #import "SwrveButton.h"
@@ -6,6 +16,7 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessagePage.h"
 #import "SwrveSDKUtils.h"
+#endif
 
 @class SwrveEmbeddedMessage;
 

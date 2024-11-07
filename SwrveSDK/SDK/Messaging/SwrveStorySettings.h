@@ -1,6 +1,10 @@
 #import <Foundation/Foundation.h>
 
+#if __has_include(<SwrveSDK/SwrveStoryDismissButton.h>)
+#import <SwrveSDK/SwrveStoryDismissButton.h>
+#else
 #import "SwrveStoryDismissButton.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

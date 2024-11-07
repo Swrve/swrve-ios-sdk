@@ -139,7 +139,7 @@
     XCTAssert([[swrve messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait withPersonalization:nil] count] == 0);
 #endif
 
-    SwrveCampaign* campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0];
+    SwrveCampaign* campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]];
     [swrve showMessageCenterCampaign:campaign];
     
     [swrve showMessageCenterCampaign:campaign withPersonalization:nil];

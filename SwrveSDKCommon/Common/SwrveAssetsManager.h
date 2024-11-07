@@ -1,4 +1,8 @@
+#if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#else
 #import "SwrveRESTClient.h"
+#endif
 
 @interface SwrveAssetsManager : NSObject
 

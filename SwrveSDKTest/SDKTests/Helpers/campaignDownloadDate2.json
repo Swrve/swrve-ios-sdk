@@ -3,11 +3,12 @@
   "campaigns": [
     {
       "id": 102,
-      "end_date": 1927994560000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [],
       "message_center": true,
       "subject": "IAM subject",
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "message": {
         "template": {
           "template_id": "20",
@@ -144,11 +145,12 @@
     },
     {
       "id": 103,
-      "end_date": 1927994560000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [],
       "message_center": true,
       "subject": "IAM subject 2",
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "message": {
         "template": {
           "template_id": "20",

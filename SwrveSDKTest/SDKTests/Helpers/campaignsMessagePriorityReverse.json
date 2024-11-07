@@ -3,8 +3,9 @@
     "campaigns": [
         {
             "id": 102,
-            "start_date": 1362671700000,
-            "end_date": 1364568900000,
+            "start_date_iso": "2013-03-07T15:55:00Z",
+            "end_date_iso": "2013-03-29T14:55:00Z",
+            "timezone_type": "global",
             "triggers": [
                          {"event_name": "Swrve.currency_given",
                          "conditions": {}
@@ -85,8 +86,9 @@
 
         {
             "id": 103,
-            "start_date": 1362671700000,
-            "end_date": 1364568900000,
+            "start_date_iso": "2013-03-07T15:55:00Z",
+            "end_date_iso": "2013-03-29T14:55:00Z",
+            "timezone_type": "global",
             "triggers": [
                  {"event_name": "Swrve.currency_given",
                  "conditions": {}

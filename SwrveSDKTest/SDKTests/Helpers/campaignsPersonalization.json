@@ -3,7 +3,8 @@
   "campaigns": [
     {
       "id": 102,
-      "end_date": 1364568900000,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "trigger_name",
@@ -12,7 +13,7 @@
       ],
       "message_center": true,
       "subject": "Personalized Campaign",
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "message": {
         "message_center_details": {
           "subject": "some subject personalized ${test_cp}",
@@ -288,7 +289,8 @@
     },
     {
       "id": 103,
-      "end_date": 1364568900000,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "trigger_name",
@@ -297,7 +299,7 @@
       ],
       "message_center": true,
       "subject": "Personalized Campaign",
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "message": {
         "message_center_details": {
           "subject": "some subject personalized ${test_cp}"
@@ -569,11 +571,12 @@
     },
     {
       "id": 104,
-      "end_date": 1364568900000,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
       "triggers": [],
       "message_center": true,
       "subject": "Personalized Campaign",
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "message": {
         "message_center_details": {
           "subject": "this contains an unknown personalization property (with no fallback) which will cause this campaign to be excluded ${message_center_details_test}"

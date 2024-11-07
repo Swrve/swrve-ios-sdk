@@ -231,10 +231,10 @@
     XCTAssertEqualObjects([swrveMock messageCenterCampaigns],@[]);
     [swrveMock messageCenterCampaignsWithPersonalization:@{}];
     
-    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
-    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@ {} campaignType: 0] withPersonalization:@{}];
-    [swrveMock removeMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
-    [swrveMock markMessageCenterCampaignAsSeen:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0]];
+    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]]];
+    [swrveMock showMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@ {} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]] withPersonalization:@{}];
+    [swrveMock removeMessageCenterCampaign:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]]];
+    [swrveMock markMessageCenterCampaignAsSeen:[[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]]];
     
     int expectedNumberOfCalls;
     

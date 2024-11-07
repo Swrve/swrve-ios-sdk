@@ -1,5 +1,10 @@
+#if __has_include(<SwrveSDK/SwrveMessageController.h>)
+#import <SwrveSDK/SwrveMessageController.h>
+#import <SwrveSDK/SwrveMessageFormat.h>
+#else
 #import "SwrveMessageController.h"
 #import "SwrveMessageFormat.h"
+#endif
 
 /*! An in-app message page */
 @interface SwrveMessagePageViewController : UIViewController

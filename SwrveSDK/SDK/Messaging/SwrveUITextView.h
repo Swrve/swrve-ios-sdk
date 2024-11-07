@@ -1,6 +1,12 @@
 #import <UIKit/UIKit.h>
-#import "SwrveTextViewStyle.h"
+
+#if __has_include(<SwrveSDK/SwrveCalibration.h>)
+#import <SwrveSDK/SwrveCalibration.h>
+#import <SwrveSDK/SwrveTextViewStyle.h>
+#else
 #import "SwrveCalibration.h"
+#import "SwrveTextViewStyle.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

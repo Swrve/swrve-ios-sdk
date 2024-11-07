@@ -1588,7 +1588,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
     NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
     
-    
     if (!campaign.messageCenter) {
         
         if([campaign isKindOfClass:[SwrveInAppCampaign class]] && ![(SwrveInAppCampaign *)campaign assetsReady:assetsOnDisk withPersonalization:personalization]) {
@@ -1597,6 +1596,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         } else if (![campaign assetsReady:assetsOnDisk withPersonalization:personalization]){
             return NO;
         }
+    }
+    
+    if (![campaign isActiveAt:[self.analyticsSDK getNow] withReasons:[NSMutableDictionary new]]) {
+        return NO;
     }
 
     if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {

@@ -3,8 +3,9 @@
   "campaigns": [
     {
       "id": 1,
-      "start_date": 1362873500000,
-      "end_date": 2145920400000,
+      "start_date_iso": "2013-03-09T23:58:20Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "timezone_type": "global",
       "rules": {
         "delay_first_message": 0,
         "dismiss_after_views": 99999,
@@ -246,8 +247,9 @@
     },
     {
       "id": 2,
-      "start_date": 1362873500000,
-      "end_date": 2145920400000,
+      "start_date_iso": "2013-03-09T23:58:20Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "timezone_type": "global",
       "rules": {
         "delay_first_message": 0,
         "dismiss_after_views": 99999,

@@ -2,8 +2,9 @@
   "campaigns": [
     {
       "id": 652260,
-      "start_date": 1262671700000,
-      "end_date": 2145920400000,
+      "start_date_iso": "2010-01-05T06:08:20Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "timezone_type": "global",
       "rules": {
         "delay_first_message": 2,
         "dismiss_after_views": 99999,
@@ -691,7 +692,7 @@
                 }
               ],
               "story_settings": {
-                "page_duration": 1000,
+                "page_duration": 2000,
                 "last_page_progression": "stop",
                 "last_page_dismiss_name": "Auto dismiss?",
                 "last_page_dismiss_id": 111111,

@@ -1,6 +1,12 @@
+#if __has_include(<SwrveSDK/SwrveUIButton.h>)
+#import <SwrveSDK/SwrveUIButton.h>
+#import <SwrveSDK/SwrveButtonTheme.h>
+#import <SwrveSDK/SwrveButtonActions.h>
+#else
 #import "SwrveUIButton.h"
 #import "SwrveButtonTheme.h"
 #import "SwrveButtonActions.h"
+#endif
 
 /*! In-app message button. */
 @interface SwrveButton : NSObject

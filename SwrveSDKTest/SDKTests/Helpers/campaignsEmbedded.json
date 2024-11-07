@@ -3,14 +3,15 @@
   "campaigns": [
     {
       "id": 165,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "trigger_embedded",
           "conditions": {}
         }
       ],
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "embedded_message": {
         "id": 20,
         "buttons": [
@@ -31,7 +32,8 @@
     },
     {
       "id": 102,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "embedded_payload",
@@ -42,7 +44,7 @@
           }
         }
       ],
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "embedded_message": {
         "id": 22,
         "buttons": [
@@ -63,14 +65,15 @@
     },
     {
       "id": 111,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "impression_trigger",
           "conditions": {}
         }
       ],
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "embedded_message": {
         "id": 23,
         "buttons": [
@@ -90,14 +93,15 @@
     },
     {
       "id": 112,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
         {
           "event_name": "trigger_embedded_personalization",
           "conditions": {}
         }
       ],
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "embedded_message": {
         "id": 23,
         "buttons": [
@@ -117,11 +121,12 @@
     },
     {
       "id": 11111,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
       ],
       "message_center": true,
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "embedded_message": {
         "id": 23333,
         "buttons": [

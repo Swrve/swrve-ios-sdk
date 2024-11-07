@@ -9,11 +9,12 @@
    "campaigns":[
        {
            "id":102,
-           "end_date":1364568900000,
+           "end_date_iso": "2013-03-29T14:55:00Z",
+           "timezone_type": "global",
            "triggers":[],
            "message_center": true,
            "subject": "IAM subject",
-           "start_date":1362671700000,
+           "start_date_iso": "2013-03-07T15:55:00Z",
            "message":
                {
                    "template":{
@@ -264,11 +265,12 @@
        },
        {
          "id": 105,
-         "end_date": 1364568900000,
+         "end_date_iso": "2013-03-29T14:55:00Z",
+         "timezone_type": "global",
          "triggers": [],
          "message_center": true,
          "subject": "Personalized Image subject",
-         "start_date": 1362671700000,
+         "start_date_iso": "2013-03-07T15:55:00Z",
          "message": {
              "template": {
                  "template_id": "20",
@@ -444,11 +446,12 @@
      },
        {
          "id": 106,
-         "end_date": 9964568900000,
+         "end_date_iso": "2044-12-05T16:41:40Z",
+         "timezone_type": "global",
          "triggers": [],
          "message_center": true,
          "subject": "Personalized RTUP Image subject",
-         "start_date": 1362671700000,
+         "start_date_iso": "2013-03-07T15:55:00Z",
          "message": {
              "template": {
                  "template_id": "20",

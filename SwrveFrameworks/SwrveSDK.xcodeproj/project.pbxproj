@@ -95,8 +95,16 @@
 		3AC26BE82678045B002B9A17 /* SwrveSEConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC26BE62678045B002B9A17 /* SwrveSEConfig.m */; };
 		3AC26BEB2678046A002B9A17 /* SwrveSEConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AC26BE52678045B002B9A17 /* SwrveSEConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AC26BEE26780486002B9A17 /* SwrveSEConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC26BE62678045B002B9A17 /* SwrveSEConfig.m */; };
+		3ACAF5BB2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */; };
+		3ACAF5BC2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */; };
+		3ACAF5BD2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */; };
+		3ACAF5BE2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */; };
 		3ACE1AC52C45858E001F22DF /* SwrvePushInboxMessageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACE1AC42C45858E001F22DF /* SwrvePushInboxMessageState.swift */; };
 		3ACE1AC62C45858E001F22DF /* SwrvePushInboxMessageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ACE1AC42C45858E001F22DF /* SwrvePushInboxMessageState.swift */; };
+		3AF01C6E2CA18B86009768EC /* SwrveTimezoneType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */; };
+		3AF01C6F2CA18B86009768EC /* SwrveTimezoneType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */; };
+		3AF01C702CA18B86009768EC /* SwrveTimezoneType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */; };
+		3AF01C712CA18B86009768EC /* SwrveTimezoneType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */; };
 		3AF34F682822980E00B142D4 /* SwrveMessageFocus.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AF34F662822980E00B142D4 /* SwrveMessageFocus.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AF34F692822980E00B142D4 /* SwrveMessageFocus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF34F672822980E00B142D4 /* SwrveMessageFocus.m */; };
 		3AF34F6A2822981900B142D4 /* SwrveMessageFocus.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AF34F662822980E00B142D4 /* SwrveMessageFocus.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -790,7 +798,9 @@
 		3ABD759F29B20ADA00145B9C /* SwrveButtonThemeState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveButtonThemeState.h; sourceTree = "<group>"; };
 		3AC26BE52678045B002B9A17 /* SwrveSEConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSEConfig.h; sourceTree = "<group>"; };
 		3AC26BE62678045B002B9A17 /* SwrveSEConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSEConfig.m; sourceTree = "<group>"; };
+		3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveUtilsSwift.swift; sourceTree = "<group>"; };
 		3ACE1AC42C45858E001F22DF /* SwrvePushInboxMessageState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrvePushInboxMessageState.swift; sourceTree = "<group>"; };
+		3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveTimezoneType.swift; sourceTree = "<group>"; };
 		3AF34F662822980E00B142D4 /* SwrveMessageFocus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageFocus.h; sourceTree = "<group>"; };
 		3AF34F672822980E00B142D4 /* SwrveMessageFocus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessageFocus.m; sourceTree = "<group>"; };
 		3AFCE83022C634220081FB67 /* SwrveEventQueueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveEventQueueItem.m; sourceTree = "<group>"; };
@@ -1012,6 +1022,8 @@
 		F6900A792A9CF8660067A7E5 /* SwrveSDKSwift */ = {
 			isa = PBXGroup;
 			children = (
+				3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */,
+				3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */,
 				C5BF0B0B2CA1C12B00B860C0 /* SwrveCampaignState.swift */,
 				C5BF0B0C2CA1C12B00B860C0 /* SwrveCampaignStatus.swift */,
 				C5BF0B0E2CA1C12B00B860C0 /* SwrveMessageCenterDetails.swift */,
@@ -1957,6 +1969,7 @@
 				3AF34F6B2822982C00B142D4 /* SwrveMessageFocus.m in Sources */,
 				528F552B201B9B29007AB0A8 /* Swrve.m in Sources */,
 				3ABD75A629B20AF800145B9C /* SwrveButtonThemeState.m in Sources */,
+				3AF01C712CA18B86009768EC /* SwrveTimezoneType.swift in Sources */,
 				3A9E09862B5551160037088C /* SwrveSDKUtils.m in Sources */,
 				3AFCE83522C634510081FB67 /* SwrveEventQueueItem.m in Sources */,
 				C53D21792CA2452C006211BF /* SwrveTrigger.swift in Sources */,
@@ -1982,6 +1995,8 @@
 				F6441D892C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				528F5537201B9B29007AB0A8 /* SwrveEventsManager.m in Sources */,
 				F6441D5B2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
+				3ACAF5BB2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
+				B568A1022C2589370063D55C /* SwrveSDKSwift.swift in Sources */,
 				F6441D522C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */,
 				F6CD24A32C91E37E00D56821 /* SwrveEmbeddedMessage.swift in Sources */,
 				B568A0FF2C25892D0063D55C /* SwrveLiveActivityData.swift in Sources */,
@@ -2056,6 +2071,7 @@
 				F6B871312C58352B00874DEA /* SwrveLiveActivityStorage.swift in Sources */,
 				F6B871352C58352B00874DEA /* SwrveMessageFocus.m in Sources */,
 				C5464D322C64D1E90011E6CE /* SwrveEmbeddedMessage.swift in Sources */,
+				3AF01C6F2CA18B86009768EC /* SwrveTimezoneType.swift in Sources */,
 				F6B871372C58352B00874DEA /* Swrve.m in Sources */,
 				C53D217A2CA2452C006211BF /* SwrveTrigger.swift in Sources */,
 				F6B8713D2C58352B00874DEA /* SwrveEventQueueItem.m in Sources */,
@@ -2080,6 +2096,7 @@
 				F6B871572C58352B00874DEA /* SwrveStoryDismissButton.m in Sources */,
 				F6441D8A2C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				F6B871582C58352B00874DEA /* SwrveMessageUIView.m in Sources */,
+				3ACAF5BC2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				F6441D5C2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				F6B8715B2C58352B00874DEA /* SwrveEventsManager.m in Sources */,
 				F6441D532C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */,
@@ -2155,6 +2172,7 @@
 				C5DCC5C12ABC6A010056686A /* SwrveLiveActivityStorage.swift in Sources */,
 				3AF34F692822980E00B142D4 /* SwrveMessageFocus.m in Sources */,
 				C5464D302C64D1E90011E6CE /* SwrveEmbeddedMessage.swift in Sources */,
+				3AF01C702CA18B86009768EC /* SwrveTimezoneType.swift in Sources */,
 				F63EC3721FBB2E3A00AC6BA2 /* Swrve.m in Sources */,
 				C53D21782CA2452C006211BF /* SwrveTrigger.swift in Sources */,
 				3AFCE83222C634220081FB67 /* SwrveEventQueueItem.m in Sources */,
@@ -2179,6 +2197,7 @@
 				3A1443482AF3B4E4007B5B2D /* SwrveStoryDismissButton.m in Sources */,
 				F6441D882C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				3A48AFBB27C3B9560090481A /* SwrveMessageUIView.m in Sources */,
+				3ACAF5BE2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				F6441D5A2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				F63EC3761FBB2E3A00AC6BA2 /* SwrveEventsManager.m in Sources */,
 				F6441D512C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */,
@@ -2280,9 +2299,11 @@
 				F6EF57E92C888E1500389B2C /* SwrveEventQueueItem.m in Sources */,
 				F6EF57EA2C888E1500389B2C /* SwrveMessageViewController.m in Sources */,
 				F6EF57EB2C888E1500389B2C /* SwrveEmpty.m in Sources */,
+				3ACAF5BD2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				C5BF0B0A2C9DC19600B860C0 /* SwrveEmbeddedCampaign.swift in Sources */,
 				F6EF57EC2C888E1500389B2C /* (null) in Sources */,
 				F6EF57ED2C888E1500389B2C /* (null) in Sources */,
+				3AF01C6E2CA18B86009768EC /* SwrveTimezoneType.swift in Sources */,
 				F6EF57EE2C888E1500389B2C /* (null) in Sources */,
 				F6EF57EF2C888E1500389B2C /* SwrveUITextView.m in Sources */,
 				F6EF57F12C888E1500389B2C /* SwrveMigrationsManager.m in Sources */,

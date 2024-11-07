@@ -3,11 +3,12 @@
   "campaigns": [
     {
       "id": 102,
-      "end_date": 2364568900000,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
       "triggers": [
       ],
       "message_center": true,
-      "start_date": 1362671700000,
+      "start_date_iso": "2013-03-07T15:55:00Z",
       "in_app_version": 8,
       "message": {
         "template": {

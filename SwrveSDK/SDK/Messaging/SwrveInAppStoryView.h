@@ -1,6 +1,11 @@
 #import <UIKit/UIKit.h>
-#import "SwrveMessageFormat.h"
+#if __has_include(<SwrveSDK/SwrveInAppStorySegmentDelegate.h>)
+#import <SwrveSDK/SwrveInAppStorySegmentDelegate.h>
+#import <SwrveSDK/SwrveMessageFormat.h>
+#else
 #import "SwrveInAppStorySegmentDelegate.h"
+#import "SwrveMessageFormat.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

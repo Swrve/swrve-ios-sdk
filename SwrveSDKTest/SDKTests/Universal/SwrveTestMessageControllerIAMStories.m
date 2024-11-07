@@ -291,11 +291,11 @@
     SwrveStorySettings *settings = [[SwrveStorySettings alloc] initWithDictionary:jsonObject];
     return settings;
 }
-/*
+
 - (void)testInAppStoryDismissButton {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
     [SwrveTestHelper createDummyAssets:assets];
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story"];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story_single_page"];
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
 
     SwrveMessageController *controller = [swrveMock messaging];
@@ -303,21 +303,17 @@
     [controller showMessageCenterCampaign:campaign];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForStoryProgression:messageViewController toPageId:1];
+    [self waitForStoryProgression:messageViewController toPageId:1]; // wait for the story to progress to the last page
     XCTAssertEqual([messageViewController.storyView currentIndex], 0);
-    [self waitForStoryProgression:messageViewController toPageId:2];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
-    [self waitForStoryProgression:messageViewController toPageId:3];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 2);
 
-    // Setup expectation for generic_campaign_event dismiss event on Page 3
+    // Setup expectation for generic_campaign_event dismiss event
     NSMutableDictionary *eventData = [NSMutableDictionary new];
     [eventData setValue:[NSNumber numberWithLong:654665] forKey:@"id"];
     [eventData setValue:@"dismiss" forKey:@"actionType"];
-    [eventData setValue:[NSNumber numberWithLong:3] forKey:@"contextId"];
+    [eventData setValue:[NSNumber numberWithLong:1] forKey:@"contextId"];
     [eventData setValue:@"iam" forKey:@"campaignType"];
     NSMutableDictionary *eventPayload = [NSMutableDictionary new];
-    [eventPayload setValue:@"Page 3" forKey:@"pageName"];
+    [eventPayload setValue:@"Page 1" forKey:@"pageName"];
     [eventPayload setValue:@"Dismiss?" forKey:@"buttonName"];
     [eventPayload setValue:[NSNumber numberWithLong:12345] forKey:@"buttonId"];
 #if TARGET_OS_TV
@@ -335,31 +331,13 @@
     XCTAssertEqualObjects(messageViewController.storyDismissButton.accessibilityHint, @"Button");
     XCTAssertEqual(messageViewController.storyDismissButton.currentImage.renderingMode, UIImageRenderingModeAlwaysTemplate); // default image uses svg
 
-    // press the dismiss button mid-flow of progression on page 3
+    // press the dismiss button
     [messageViewController.storyDismissButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 
     [self waitForWindowDismissed:controller];
     OCMVerifyAllWithDelay(swrveMock, 1);
 }
 
-- (void)testInAppStoryWithoutDismissButton {
-    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
-    [SwrveTestHelper createDummyAssets:assets];
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story"];
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
-
-    SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    SwrveMessageFormat *format = campaign.message.formats[0];
-    format.storySettings.dismissButton = nil; // change the Dismiss button
-    [controller showMessageCenterCampaign:campaign];
-
-    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForStoryProgression:messageViewController toPageId:5]; // wait for the story to progress to the last page
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
-
-    XCTAssertNil(messageViewController.storyDismissButton);
-}
 
 - (void)testInAppStoryWithCustomDismissButtonImage {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
@@ -374,16 +352,16 @@
         inAppConfig.storyDismissButtonHighlighted = [UIImage systemImageNamed:@"info.circle.fill"];
     }    
     config.inAppMessageConfig = inAppConfig;
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story" withConfig:config];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story_single_page" withConfig:config];
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign*)[[swrveMock messageCenterCampaigns] objectAtIndex:0];
     [controller showMessageCenterCampaign:campaign];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForStoryProgression:messageViewController toPageId:5]; // wait for the story to progress to the last page
-//    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
+    [self waitForStoryProgression:messageViewController toPageId:1]; // wait for the story to progress to the last page
+    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
 
     XCTAssertNotNil(messageViewController.storyDismissButton);
 
@@ -395,7 +373,7 @@
     XCTAssertEqual(dismissButtonImage.renderingMode, UIImageRenderingModeAutomatic);
     XCTAssertEqual(dismissButtonImagePressed.renderingMode, UIImageRenderingModeAutomatic);
 }
-
+ 
 - (void)testInAppStoryLastPageStop {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
     [SwrveTestHelper createDummyAssets:assets];
@@ -407,41 +385,31 @@
     [controller showMessageCenterCampaign:campaign];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForStoryProgression:messageViewController toPageId:1];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
-    [self waitForStoryProgression:messageViewController toPageId:2];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
-    [self waitForStoryProgression:messageViewController toPageId:3];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 2);
-    [self waitForStoryProgression:messageViewController toPageId:4];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 3);
-    [self waitForStoryProgression:messageViewController toPageId:5];
+    [self waitForStoryProgression:messageViewController toPageId:5]; // wait until progression to last page
     XCTAssertEqual([messageViewController.storyView currentIndex], 4);
 
     // Press button on page 5 which should go to page 3 but the page progression should continue
     SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
     [self pressSwrveUIButton:messageUiView name:@"Back to page 3"];
     [self waitForStoryProgression:messageViewController toPageId:3];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 2);
-    [self waitForStoryProgression:messageViewController toPageId:4];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 3);
+    
     [self waitForStoryProgression:messageViewController toPageId:5];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
+    XCTAssertEqual([messageViewController.storyView currentIndex], 4); // wait until progression to last page
 }
 
 - (void)testInAppStoryLastPageDismiss {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
     [SwrveTestHelper createDummyAssets:assets];
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story"];
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story_dismiss"];
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
 
     NSMutableDictionary *eventData = [NSMutableDictionary new];
     [eventData setValue:[NSNumber numberWithLong:654665] forKey:@"id"];
     [eventData setValue:@"dismiss" forKey:@"actionType"];
-    [eventData setValue:[NSNumber numberWithLong:5] forKey:@"contextId"];
+    [eventData setValue:[NSNumber numberWithLong:2] forKey:@"contextId"];
     [eventData setValue:@"iam" forKey:@"campaignType"];
     NSMutableDictionary *eventPayload = [NSMutableDictionary new];
-    [eventPayload setValue:@"Page 5" forKey:@"pageName"];
+    [eventPayload setValue:@"Page 2" forKey:@"pageName"];
     [eventPayload setValue:@"Auto dismiss?" forKey:@"buttonName"];
     [eventPayload setValue:[NSNumber numberWithLong:111111] forKey:@"buttonId"];
 #if TARGET_OS_TV
@@ -455,43 +423,40 @@
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    SwrveMessageFormat *format = campaign.message.formats[0];
-    format.storySettings.lastPageProgression = kSwrveStoryLastPageProgressionDismiss; // change the last page progression to dismiss
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign*)[[swrveMock messageCenterCampaigns] objectAtIndex:0];
     [controller showMessageCenterCampaign:campaign];
 
-//    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-//    [self waitForStoryProgression:messageViewController toPageId:5]; // wait for the story to progress to the last page
-//    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    [self waitForStoryProgression:messageViewController toPageId:2]; // wait for the story to progress to the last page
+    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
 
     [self waitForWindowDismissed:controller]; // wait for the iam to be dismissed
 
     OCMVerifyAllWithDelay(swrveMock, 1);
 }
 
-- (void)testInAppStoryLastPageLoop {
-    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
-    [SwrveTestHelper createDummyAssets:assets];
-    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story"];
-    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+//TODO fix this
+//- (void)testInAppStoryLastPageLoop {
+//    NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
+//    [SwrveTestHelper createDummyAssets:assets];
+//    id swrveMock = [self swrveMockWithTestJson:@"campaigns_in_app_story_loop"];
+//    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
+//
+//    SwrveMessageController *controller = [swrveMock messaging];
+//    SwrveInAppCampaign *campaign = (SwrveInAppCampaign*)[[swrveMock messageCenterCampaigns] objectAtIndex:0];
+//    [controller showMessageCenterCampaign:campaign];
+//
+//    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+//    [self waitForStoryProgression:messageViewController toPageId:2]; // wait for the story to progress to the last page
+//    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
+//
+//    // after last page reached, wait for the story to loop back to start and continue progression
+//    [self waitForStoryProgression:messageViewController toPageId:1];
+//    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
+//    [self waitForStoryProgression:messageViewController toPageId:2];
+//    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
+//}
 
-    SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
-    SwrveMessageFormat *format = campaign.message.formats[0];
-    format.storySettings.lastPageProgression = kSwrveStoryLastPageProgressionLoop; // change the last page progression to loop
-    [controller showMessageCenterCampaign:campaign];
-
-    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    [self waitForStoryProgression:messageViewController toPageId:5]; // wait for the story to progress to the last page
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
-
-    // after last page reached, wait for the story to loop back to start and continue progression
-    [self waitForStoryProgression:messageViewController toPageId:1];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
-    [self waitForStoryProgression:messageViewController toPageId:2];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 1);
-}
-*/
 - (void)testInAppStoryGesturesEnabled {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
     [SwrveTestHelper createDummyAssets:assets];
@@ -525,7 +490,7 @@
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign*)[[swrveMock messageCenterCampaigns] objectAtIndex:0];
     SwrveMessageFormat *format = campaign.message.formats[0];
     format.storySettings.gesturesEnabled = NO; // change gesturesEnabled to NO
     [controller showMessageCenterCampaign:campaign];
@@ -540,7 +505,7 @@
     }
     XCTAssertNil(tapGestureRecognizer, @"Tap gesture recognizer should be nil because gesturesEnabled is NO");
 }
-/*
+
 - (void)testInAppStoryHandleTap {
     NSArray *assets = @[@"6c871366c876fdb495d96eff3d2905f9d4594c62"];
     [SwrveTestHelper createDummyAssets:assets];
@@ -548,7 +513,7 @@
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     SwrveMessageFormat *format = campaign.message.formats[0];
     format.storySettings.pageDuration = [NSNumber numberWithInt:INT_MAX]; // change page duration to max so that the story does not progress automatically
     [controller showMessageCenterCampaign:campaign];
@@ -576,35 +541,15 @@
     [self waitForStoryProgression:messageViewController toPageId:2];
     XCTAssertEqual([messageViewController.storyView currentIndex], 1);
 
-    // tap right to page 3
-    [messageViewController handleTap:mockRightTap];
-    [self waitForStoryProgression:messageViewController toPageId:3];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 2);
-
-    // tap right to page 4
-    [messageViewController handleTap:mockRightTap];
-    [self waitForStoryProgression:messageViewController toPageId:4];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 3);
-
-    // tap right to page 5
-    [messageViewController handleTap:mockRightTap];
-    [self waitForStoryProgression:messageViewController toPageId:5];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
-
-    // tap right again should remain on page 5
-    [messageViewController handleTap:mockRightTap];
-    [self waitForStoryProgression:messageViewController toPageId:5];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 4);
-
-    // tap left to page 4
+    // tap left to page 1
     [messageViewController handleTap:mockLeftTap];
-    [self waitForStoryProgression:messageViewController toPageId:4];
-    XCTAssertEqual([messageViewController.storyView currentIndex], 3);
+    [self waitForStoryProgression:messageViewController toPageId:1];
+    XCTAssertEqual([messageViewController.storyView currentIndex], 0);
 
     OCMVerify([mockLeftTap locationInView:messageViewController.view]);
     OCMVerify([mockRightTap locationInView:messageViewController.view]);
 }
-*/
+
 - (void)testIAMPageElementOrder_iam_z_index {
     NSArray *assets = @[@"asset1"];
     [SwrveTestHelper createDummyAssets:assets];

@@ -3,13 +3,14 @@
     "campaigns": [
         {
             "id": 105,
-            "end_date": 1363046400000,
+            "end_date_iso": "2013-03-12T00:00:00Z",
+      "timezone_type": "global",
             "triggers": [
                          {"event_name": "Swrve.currency_given",
                          "conditions": {}
                          }
             ],
-            "start_date": 1362960000000,
+            "start_date_iso": "2013-03-11T00:00:00Z",
             "message":
                 {
                     "template": {

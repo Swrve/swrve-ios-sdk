@@ -1,6 +1,10 @@
 #import <Foundation/Foundation.h>
 
+#if __has_include(<SwrveSDK/SwrveButtonThemeState.h>)
+#import <SwrveSDK/SwrveButtonThemeState.h>
+#else
 #import "SwrveButtonThemeState.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

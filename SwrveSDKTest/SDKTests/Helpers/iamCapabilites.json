@@ -3,14 +3,15 @@
     "cdn_root": "https://fake_cdn_root",
     "campaigns": [{
         "id": 1,
-        "end_date": 1364568900000,
+        "end_date_iso": "2013-03-29T14:55:00Z",
+        "timezone_type": "global",
         "triggers": [{
                 "event_name": "eventNotRequestable",
                 "conditions": {}
             }
         ],
         "message_center": true,
-        "start_date": 1362671700000,
+        "start_date_iso": "2013-03-07T15:55:00Z",
         "subject": "IAM subject eventNotRequestable",
         "message": {
             "template": {
@@ -105,13 +106,14 @@
         }
     },{
         "id": 1,
-        "end_date": 1364568900000,
+        "end_date_iso": "2013-03-29T14:55:00Z",
+        "timezone_type": "global",
         "triggers": [{
                 "event_name": "eventRequestable",
                 "conditions": {}
             }
         ],
-        "start_date": 1362671700000,
+        "start_date_iso": "2013-03-07T15:55:00Z",
         "message_center": true,
         "subject": "IAM subject eventRequestable",
         "message": {
@@ -178,13 +180,14 @@
     },
     {
         "id": 1,
-        "end_date": 1364568900000,
+        "end_date_iso": "2013-03-29T14:55:00Z",
+        "timezone_type": "global",
         "triggers": [{
                 "event_name": "eventRequestablePush",
                 "conditions": {}
             }
         ],
-        "start_date": 1362671700000,
+        "start_date_iso": "2013-03-07T15:55:00Z",
         "message_center": true,
         "subject": "IAM subject eventRequestable",
         "message": {

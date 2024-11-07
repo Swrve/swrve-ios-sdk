@@ -1,5 +1,10 @@
+#if __has_include(<SwrveSDK/SwrveMessageViewController.h>)
+#import <SwrveSDK/SwrveMessageViewController.h>
+#import <SwrveSDK/SwrveInterfaceOrientation.h>
+#else
 #import "SwrveMessageViewController.h"
 #import "SwrveInterfaceOrientation.h"
+#endif
 
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>

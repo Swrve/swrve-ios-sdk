@@ -1,6 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "SwrveEvents.h"
-#import "SwrveLocalStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

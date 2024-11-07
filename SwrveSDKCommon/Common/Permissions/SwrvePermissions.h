@@ -1,7 +1,13 @@
 #import <Foundation/Foundation.h>
+#import <UserNotifications/UserNotifications.h>
+
+#if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
+#import <SwrveSDKCommon/SwrveCommon.h>
+#import <SwrveSDKCommon/SwrvePermissionState.h>
+#else
 #import "SwrveCommon.h"
 #import "SwrvePermissionState.h"
-#import <UserNotifications/UserNotifications.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 static NSString* swrve_permission_status_unknown        = @"unknown";

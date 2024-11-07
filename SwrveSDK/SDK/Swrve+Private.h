@@ -1,5 +1,10 @@
+#if __has_include(<SwrveSDK/Swrve.h>)
+#import <SwrveSDK/Swrve.h>
+#import <SwrveSDK/SwrveMessageController.h>
+#else
 #import "Swrve.h"
 #import "SwrveMessageController.h"
+#endif
 
 @interface Swrve ()
 

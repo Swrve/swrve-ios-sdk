@@ -1,10 +1,15 @@
+#if __has_include(<SwrveSDK/Swrve.h>)
+#import <SwrveSDK/Swrve.h>
+#import <SwrveSDK/SwrveMessageController.h>
+#else
 #import "Swrve.h"
 #import "SwrveMessageController.h"
+#endif
 
-const static int CAMPAIGN_VERSION = 9;
+const static int CAMPAIGN_VERSION = 10;
 const static int CAMPAIGN_RESPONSE_VERSION = 2;
-const static int EMBEDDED_CAMPAIGN_VERSION = 3;
-const static int IN_APP_CAMPAIGN_VERSION = 15;
+const static int EMBEDDED_CAMPAIGN_VERSION = 4;
+const static int IN_APP_CAMPAIGN_VERSION = 16;
 
 /*! In-app messages controller */
 @interface SwrveMessageController ()

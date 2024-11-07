@@ -1,7 +1,14 @@
 #import <Foundation/Foundation.h>
+
+#if __has_include(<SwrveSDKCommon/SwrveRESTClient.h>)
+#import <SwrveSDKCommon/SwrveRESTClient.h>
+#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
+#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
+#else
 #import "SwrveRESTClient.h"
 #import "SwrveQACampaignInfo.h"
 #import "SwrveQAImagePersonalizationInfo.h"
+#endif
 
 @interface SwrveQA : NSObject
 

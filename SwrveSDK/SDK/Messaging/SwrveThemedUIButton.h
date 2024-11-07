@@ -1,9 +1,15 @@
 #import <Foundation/Foundation.h>
-
 #import <UIKit/UIKit.h>
+
+#if __has_include(<SwrveSDK/SwrveCalibration.h>)
+#import <SwrveSDK/SwrveCalibration.h>
+#import <SwrveSDK/SwrveButtonTheme.h>
+#import "SwrveUIButton.h"
+#else
+#import "SwrveCalibration.h"
 #import "SwrveButtonTheme.h"
 #import "SwrveUIButton.h"
-#import "SwrveCalibration.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

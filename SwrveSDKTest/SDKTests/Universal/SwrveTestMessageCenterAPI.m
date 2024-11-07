@@ -36,6 +36,8 @@
 
 @interface SwrveTestMessageCenterAPI : XCTestCase
 
+@property NSDate *swrveNowDate;
+
 @end
 
 @implementation SwrveTestMessageCenterAPI
@@ -184,6 +186,52 @@
 #if TARGET_OS_IOS
     [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
 #endif
+}
+
+- (void)testIAMMessageCenterIsActive {
+
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+    id swrveMock = [self swrveMock];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    SwrveMessageController* controller = [swrveMock messaging];
+    controller.analyticsSDK = swrveMock;
+    
+    // Campaign 102 has a start date of 2013-03-07T15:55:00Z and an end date of 2013-03-29T14:55:00Z
+    // Test will get the campaign while campaign is active, then try show it under different date scenarios
+    
+    NSISO8601DateFormatter *iso8601Formatter = [[NSISO8601DateFormatter alloc] init];
+    OCMStub([swrveMock getNow]).andDo(^(NSInvocation *invocation) {
+        NSDate *retVal = self.swrveNowDate;
+        NSLog(@"retVal %@", retVal);
+        [invocation setReturnValue:&retVal];
+    });
+    
+    // No Message Center campaign as it has not started yet
+    self.swrveNowDate = [iso8601Formatter dateFromString:@"2013-03-06T12:00:00Z"];
+    SwrveCampaign *campaign = [swrveMock messageCenterCampaignWithID:102 andPersonalization:nil];
+    XCTAssertNil(campaign);
+    
+    // Get campaign during active period and try show it
+    self.swrveNowDate = [iso8601Formatter dateFromString:@"2013-03-10T12:00:00Z"];
+    campaign = [swrveMock messageCenterCampaignWithID:102 andPersonalization:nil];
+    XCTAssertNotNil(campaign);
+    XCTAssertTrue([swrveMock showMessageCenterCampaign:campaign]);
+
+    // Using campaign which was previously retrieved, try show it after end date
+    self.swrveNowDate = [iso8601Formatter dateFromString:@"2013-03-30T12:00:00Z"];
+    XCTAssertFalse([swrveMock showMessageCenterCampaign:campaign]);
+
+    // Using campaign which was previously retrieved, try show it during active period
+    self.swrveNowDate = [iso8601Formatter dateFromString:@"2013-03-10T12:00:00Z"];
+    XCTAssertTrue([swrveMock showMessageCenterCampaign:campaign]);
 }
 
 - (void)testIAMMessageCenterProgrammaticallySeen {

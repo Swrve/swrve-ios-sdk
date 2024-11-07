@@ -1,8 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+#if __has_include(<SwrveSDK/SwrveDeeplinkManager.h>)
+#import <SwrveSDK/SwrveDeeplinkManager.h>
+#import <SwrveSDK/SwrvePushInboxUpdateDelegate.h>
+#else
 #import "SwrveDeeplinkManager.h"
 #import "SwrvePushInboxUpdateDelegate.h"
+#endif
 
 @class SwrveIAPRewards;
 @class SwrveEmbeddedMessage;
@@ -28,7 +33,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.0.0"
+#define SWRVE_SDK_VERSION "10.1.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.

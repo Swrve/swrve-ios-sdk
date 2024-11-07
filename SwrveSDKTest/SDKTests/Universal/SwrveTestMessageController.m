@@ -881,7 +881,7 @@
     XCTAssertNil(message);
 
     expectedQACampaign = @[
-    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has not started yet"]];
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has not started yet. Start:2013-03-11 00:00:00 GMT TimezoneType:global Now:2013-03-10 00:00:00 GMT"]];
     OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     // 25 hours into the future the campaign should be available
@@ -897,7 +897,7 @@
     XCTAssertNil(message);
 
     expectedQACampaign = @[
-    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has finished"]];
+    [[SwrveQACampaignInfo alloc] initWithCampaignID:105 variantID:170 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:@"Campaign 105 has finished. End:2013-03-12 00:00:00 GMT TimezoneType:global Now:2013-03-12 01:00:00 GMT"]];
     OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
 
     [swrveQAMock stopMocking];

@@ -2,8 +2,9 @@
   "campaigns": [
     {
       "id": 89095,
-      "start_date": 1262671700000,
-      "end_date": 2145920400000,
+      "start_date_iso": "2010-01-05T06:08:20Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "timezone_type": "global",
       "rules": {
         "delay_first_message": 0,
         "dismiss_after_views": 3,

@@ -1,4 +1,8 @@
+#if __has_include(<SwrveSDK/SwrveProtocol.h>)
+#import <SwrveSDK/SwrveProtocol.h>
+#else
 #import "SwrveProtocol.h"
+#endif
 
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 

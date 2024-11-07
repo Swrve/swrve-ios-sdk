@@ -69,12 +69,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		015BD2CC16BE701919B62C92 /* Pods-RichPushSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.debug.xcconfig"; path = "Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
-		16DE0310A14B91C7B5788C48 /* Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; path = "Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		015BD2CC16BE701919B62C92 /* Pods-RichPushSample-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.debug.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		16DE0310A14B91C7B5788C48 /* Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.debug.xcconfig"; sourceTree = "<group>"; };
 		251E4641493249743118EA2B /* Pods_RichPushSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2526BBC436CC801C9B3545D0 /* Pods_RichPushSampleServiceExtension_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSampleServiceExtension_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39F33D0FE028EA51CF6323D9 /* Pods_RichPushSampleServiceExtension_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSampleServiceExtension_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4130DC8614F8F94C55C5ADF8 /* Pods-RichPushSampleServiceExtension-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; path = "Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		4130DC8614F8F94C55C5ADF8 /* Pods-RichPushSampleServiceExtension-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSampleServiceExtension-Swift/Pods-RichPushSampleServiceExtension-Swift.release.xcconfig"; sourceTree = "<group>"; };
 		527386891ECA385E0016D70E /* RichPushSample-ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RichPushSample-ObjC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		527386A81ECA3A650016D70E /* RichPushSampleServiceExtension-ObjC.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "RichPushSampleServiceExtension-ObjC.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B402B2120F3587900601BA4 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -101,12 +101,12 @@
 		5B402BD920F3712600601BA4 /* RichPushSample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSample.entitlements; sourceTree = "<group>"; };
 		5B402BDB20F3727D00601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5B402BDD20F3727D00601BA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		701DAF30B277B4BD9AA7689E /* Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; path = "Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; sourceTree = "<group>"; };
-		A2D1000CDBBC3A22EDA4E6E6 /* Pods-RichPushSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.release.xcconfig"; path = "Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
-		D214EE973368E28412020D25 /* Pods-RichPushSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.release.xcconfig"; path = "Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		701DAF30B277B4BD9AA7689E /* Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.release.xcconfig"; sourceTree = "<group>"; };
+		A2D1000CDBBC3A22EDA4E6E6 /* Pods-RichPushSample-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.release.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.release.xcconfig"; sourceTree = "<group>"; };
+		D214EE973368E28412020D25 /* Pods-RichPushSample-ObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-ObjC.release.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC.release.xcconfig"; sourceTree = "<group>"; };
 		D419911C108D9084BC1BE32D /* Pods_RichPushSample_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSample_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2569B58675CAB7F4E183B41 /* Pods-RichPushSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.debug.xcconfig"; path = "Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
-		E6CF03EE4B127FAEBFABCA81 /* Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; path = "Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		E2569B58675CAB7F4E183B41 /* Pods-RichPushSample-Swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample-Swift.debug.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift.debug.xcconfig"; sourceTree = "<group>"; };
+		E6CF03EE4B127FAEBFABCA81 /* Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; path = "../../public/samples/RichPushSample/Pods/Target Support Files/Pods-RichPushSampleServiceExtension-ObjC/Pods-RichPushSampleServiceExtension-ObjC.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -436,9 +436,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-Swift/Pods-RichPushSample-Swift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -502,9 +502,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample-ObjC/Pods-RichPushSample-ObjC-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (

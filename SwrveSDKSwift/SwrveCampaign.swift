@@ -37,11 +37,36 @@ import UIKit
     /// Indicates if this is a Message Center campaign.
     @objc public var messageCenter: Bool = false
 
+    /// The timezone type of the campaign.
+    @objc public var timezoneType: SwrveTimezoneType
+
+    /// Start date of the campaign.
+    @objc public var startDateIso: String
+
     /// Campaign start date.
-    @objc public var dateStart: Date
+    @objc public var dateStart: Date {
+        if startDateIso.isEmpty {
+            return Date.distantFuture
+        }
+        return SwrveUtilsSwift.parseIso8601Date(startDateIso, timezoneType: timezoneType) ?? Date.distantFuture
+    }
+
+    /// End date of the campaign.
+    @objc public var endDateIso: String
 
     /// Campaign end date.
-    @objc public var dateEnd: Date
+    @objc public var dateEnd: Date {
+        if endDateIso.isEmpty {
+            return Date.distantPast
+        }
+        return SwrveUtilsSwift.parseIso8601Date(endDateIso, timezoneType: timezoneType) ?? Date.distantPast
+    }
+
+    /// Array of blackout dates for the campaign.
+    @objc public var blackoutDates: [SwrveBlackoutDate] = []
+
+    /// Array of interval times for the campaign.
+    @objc public var intervalTimes: [SwrveIntervalTime] = []
 
     /// Enum representing the campaign type for QA Logging.
     @objc public var campaignType: SwrveCampaignType
@@ -58,6 +83,8 @@ import UIKit
     /// Timestamp when the campaign was initialized.
     private var initialisedTime: Date
 
+    private var timeZone: TimeZone
+
     // MARK: - Initialization
 
     /// Initializes the campaign at the given time with data from a dictionary.
@@ -65,7 +92,7 @@ import UIKit
     /// - Parameters:
     ///   - time: The time of initialization.
     ///   - json: A dictionary containing the campaign data.
-    @objc public init(at time: Date, from json: [String: Any], campaignType: SwrveCampaignType) {
+    @objc public init(at time: Date, from json: [String: Any], campaignType: SwrveCampaignType, timeZone: TimeZone = .current) {
         let campaignID = json["id"] as? UInt ?? 0
         self.ID = campaignID
         self.state = SwrveCampaignState(campaignID: campaignID, downloadDate: time)
@@ -73,14 +100,36 @@ import UIKit
         self.initialisedTime = time
         self.messageCenter = json["message_center"] as? Bool ?? false
         self.campaignType = campaignType
-        let now = Date()
-        self.dateStart = now
-        self.dateEnd = now
+        self.startDateIso = json["start_date_iso"] as? String ?? ""
+        self.endDateIso = json["end_date_iso"] as? String ?? ""
+        self.timezoneType = SwrveTimezoneType.create(from: json)
+        self.timeZone = timeZone
         super.init()
 
         loadTriggers(from: json)
         loadRules(from: json)
-        loadDates(from: json)
+        loadBlackoutDates(from: json)
+        loadIntervalTimes(from: json)
+    }
+
+    @objc public class SwrveBlackoutDate: NSObject {
+        @objc public let from: String
+        @objc public let to: String
+
+        public init(from: String, to: String) {
+            self.from = from
+            self.to = to
+        }
+    }
+
+    @objc public class SwrveIntervalTime: NSObject {
+        @objc public let from: String
+        @objc public let to: String
+
+        public init(from: String, to: String) {
+            self.from = from
+            self.to = to
+        }
     }
 
     // MARK: - Methods
@@ -148,13 +197,46 @@ import UIKit
     }
 
     @objc public func isActive(at time: Date, withReasons campaignReasons: NSMutableDictionary) -> Bool {
-        if dateStart.compare(time) != .orderedAscending {
-            logAndAdd(reason: "Campaign \(ID) has not started yet", withReasons: campaignReasons)
+        let startDate = dateStart  // evaluate once
+        if startDate.compare(time) != .orderedAscending {
+            let startDateLog = logDate(date: startDate, timezoneType: timezoneType)
+            let nowLog = logDate(date: time, timezoneType: timezoneType)
+            let text = "Campaign \(ID) has not started yet. Start:\(startDateLog) TimezoneType:\(timezoneType) Now:\(nowLog)"
+            logAndAdd(reason: text, withReasons: campaignReasons)
             return false
         }
 
-        if time.compare(dateEnd) != .orderedAscending {
-            logAndAdd(reason: "Campaign \(ID) has finished", withReasons: campaignReasons)
+        let endDate = dateEnd  // evaluate once
+        if time.compare(endDate) != .orderedAscending {
+            let endDateLog = logDate(date: endDate, timezoneType: timezoneType)
+            let nowLog = logDate(date: time, timezoneType: timezoneType)
+            let text = "Campaign \(ID) has finished. End:\(endDateLog) TimezoneType:\(timezoneType) Now:\(nowLog)"
+            logAndAdd(reason: text, withReasons: campaignReasons)
+            return false
+        }
+
+        for blackoutDate in blackoutDates {
+            guard let fromDate = SwrveUtilsSwift.parseIso8601Date(blackoutDate.from, timezoneType: timezoneType),
+                let toDate = SwrveUtilsSwift.parseIso8601Date(blackoutDate.to, timezoneType: timezoneType)
+            else {
+                SwrveLogger.logError("Error parsing blackout date: \(blackoutDate) in campaign \(ID). Skip to next blackout date")
+                continue
+            }
+
+            if time.compare(fromDate) == .orderedDescending && time.compare(toDate) == .orderedAscending {
+                let fromLog = logDate(date: fromDate, timezoneType: timezoneType)
+                let toLog = logDate(date: toDate, timezoneType: timezoneType)
+                let nowLog = logDate(date: time, timezoneType: timezoneType)
+                let text = "Campaign \(ID) is in blackout period. Blackout from:\(fromLog) to:\(toLog) TimezoneType:\(timezoneType) Now:\(nowLog)"
+                logAndAdd(reason: text, withReasons: campaignReasons)
+                return false
+            }
+        }
+
+        if !hasActiveTimeInterval(now: time) {
+            let nowLog = logDate(date: time, timezoneType: timezoneType)
+            let text = "Campaign \(ID) is outside active interval time. TimezoneType:\(timezoneType) Now:\(nowLog)"
+            logAndAdd(reason: text, withReasons: campaignReasons)
             return false
         }
 
@@ -206,8 +288,6 @@ import UIKit
         return false
     }
 
-    // MARK: - Private Methods
-
     /// Loads triggers from the campaign's JSON data.
     ///
     /// - Parameter json: A dictionary containing campaign data.
@@ -237,15 +317,106 @@ import UIKit
         }
     }
 
-    /// Loads date-related values from the campaign's JSON data.
-    ///
-    /// - Parameter json: A dictionary containing campaign data.
-    private func loadDates(from json: [String: Any]) {
-        if let startDate = json["start_date"] as? NSNumber {
-            self.dateStart = Date(timeIntervalSince1970: startDate.doubleValue / 1000.0)
-        }
-        if let endDate = json["end_date"] as? NSNumber {
-            self.dateEnd = Date(timeIntervalSince1970: endDate.doubleValue / 1000.0)
+    private func loadBlackoutDates(from json: [String: Any]) {
+        if let blackoutDatesData = json["blackout_dates"] as? [[String: Any]] {
+            blackoutDates = blackoutDatesData.compactMap { blackoutDateData -> SwrveBlackoutDate? in
+                guard let fromString = blackoutDateData["from"] as? String,
+                    let toString = blackoutDateData["to"] as? String
+                else {
+                    return nil
+                }
+                return SwrveBlackoutDate(from: fromString, to: toString)
+            }
         }
     }
+
+    private func loadIntervalTimes(from json: [String: Any]) {
+        if let intervalTimesData = json["interval_times"] as? [[String: Any]] {
+            intervalTimes = intervalTimesData.compactMap { intervalTimeData -> SwrveIntervalTime? in
+                guard let fromString = intervalTimeData["from"] as? String,
+                    let toString = intervalTimeData["to"] as? String
+                else {
+                    return nil
+                }
+                return SwrveIntervalTime(from: fromString, to: toString)
+            }
+        }
+    }
+
+    func hasActiveTimeInterval(now: Date) -> Bool {
+        if intervalTimes.isEmpty {
+            return true  // no interval times set, so always return true
+        }
+
+        for intervalTime in intervalTimes {
+            do {
+                let fromSeconds = try secondsSinceMidnight(from: intervalTime.from)
+                let toSeconds = try secondsSinceMidnight(from: intervalTime.to)
+                let nowSeconds = try secondsSinceMidnight(from: now, timezoneType: timezoneType)
+
+                if fromSeconds > toSeconds {
+                    return false  // time intervals should not go over midnight
+                }
+
+                if (fromSeconds...toSeconds).contains(nowSeconds) {
+                    return true
+                }
+
+            } catch {
+                return false
+            }
+        }
+
+        return false  // no interval times matched, so return false
+    }
+
+    func secondsSinceMidnight(from: String) throws -> Int {
+        let timeParts = from.split(separator: ":").map { String($0) }  // Convert to String to validate later
+        guard timeParts.count == 3 else {
+            throw NSError(domain: "InvalidTimeInterval", code: 0, userInfo: [NSLocalizedDescriptionKey: "TimeInterval must be integer in HH:mm:ss"])
+        }
+        // Validate each part before converting to Int
+        guard let hours = Int(timeParts[0]), let minutes = Int(timeParts[1]), let seconds = Int(timeParts[2]) else {
+            throw NSError(domain: "InvalidTimeInterval", code: 0, userInfo: [NSLocalizedDescriptionKey: "TimeInterval must be integer in HH:mm:ss"])
+        }
+        return hours * 3600 + minutes * 60 + seconds
+    }
+
+    func secondsSinceMidnight(from: Date, timezoneType: SwrveTimezoneType) throws -> Int {
+        let calendar = Calendar.current
+        var components: DateComponents
+
+        switch timezoneType {
+        case .GLOBAL:
+            var utcCalendar = calendar
+            utcCalendar.timeZone = TimeZone(secondsFromGMT: 0)!
+            components = utcCalendar.dateComponents([.hour, .minute, .second], from: from)
+        case .LOCAL:
+            components = calendar.dateComponents([.hour, .minute, .second], from: from)
+        }
+
+        let hours = components.hour ?? 0
+        let minutes = components.minute ?? 0
+        let seconds = components.second ?? 0
+
+        return hours * 3600 + minutes * 60 + seconds
+    }
+
+    private func logDate(date: Date, timezoneType: SwrveTimezoneType) -> String {
+        let dateFormat = DateFormatter()
+        dateFormat.dateFormat = "yyyy-MM-dd HH:mm:ss z"
+        dateFormat.locale = Locale(identifier: "en_US")
+
+        let tz: TimeZone
+        switch timezoneType {
+        case .GLOBAL:
+            tz = TimeZone(identifier: "UTC") ?? TimeZone.current
+        case .LOCAL:
+            tz = timeZone
+        }
+
+        dateFormat.timeZone = tz
+        return dateFormat.string(from: date)
+    }
+
 }

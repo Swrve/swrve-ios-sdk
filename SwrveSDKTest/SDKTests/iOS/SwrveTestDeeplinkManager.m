@@ -255,7 +255,7 @@ NSString *mockCacheDir;
     SwrveDeeplinkManager *swrveDeeplinkManager = [[SwrveDeeplinkManager alloc]initWithSwrve:swrveMock];
     id mockSwrveDeeplinkManager = OCMPartialMock(swrveDeeplinkManager);
     
-    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: 0];
+    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt: [NSDate date] from:@{} campaignType: SWRVE_CAMPAIGN_IAM timeZone:[NSTimeZone defaultTimeZone]];
     campaign.ID = 295411;
     
     OCMStub([mockSwrveDeeplinkManager campaignAssets:OCMOCK_ANY withCompletionHandler:([OCMArg invokeBlockWithArgs:campaign, nil])]);
@@ -355,7 +355,7 @@ NSString *mockCacheDir;
                                };
     NSError *error = [NSError errorWithDomain:@"Swrve" code:500 userInfo:userInfo];
     
-    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt:[NSDate date] from:@{} campaignType:0];
+    SwrveCampaign *campaign = [[SwrveCampaign alloc] initAt:[NSDate date] from:@{} campaignType:0 timeZone:[NSTimeZone defaultTimeZone]];
     campaign.ID = 295411;
     
     NSDictionary *cachedCampaign = [json objectForKey:@"1"];

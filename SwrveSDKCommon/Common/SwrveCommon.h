@@ -1,7 +1,14 @@
+#import <UIKit/UIKit.h>
+
+#if __has_include(<SwrveSDKCommon/SwrvePermissionsDelegate.h>)
+#import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
+#import <SwrveSDKCommon/SwrveSessionDelegate.h>
+#import <SwrveSDKCommon/SwrveLogger.h>
+#else
 #import "SwrvePermissionsDelegate.h"
 #import "SwrveSessionDelegate.h"
 #import "SwrveLogger.h"
-#import <UIKit/UIKit.h>
+#endif
 
 /*! Swrve SDK shared protocol (interface) definition */
 @protocol SwrveCommonDelegate <NSObject>
