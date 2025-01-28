@@ -20,6 +20,5 @@
 @interface SwrveReceiptProvider : NSObject
 
 - (SwrveReceiptProviderResult *)receiptForTransaction:(SKPaymentTransaction *)transaction;
-- (NSString *)base64encode:(NSData *)receipt;
 
 @end

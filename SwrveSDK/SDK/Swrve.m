@@ -1821,7 +1821,7 @@ enum {
     return self.config.appGroupIdentifier;
 }
 
-- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSMutableDictionary *)payload {
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSDictionary *)payload {
     NSString *eventName = [NSString stringWithFormat:@"Swrve.Messages.Push-%@.engaged", pushId];
     [self eventInternal:eventName payload:payload triggerCallback:false];
     [self sendQueuedEventsWithCallback:nil eventFileCallback:nil];
@@ -3053,6 +3053,15 @@ enum HttpStatus {
     } else {
         self.idfa = idfa;
         [SwrveLocalStorage saveIDFA:idfa];
+    }
+}
+
+- (void)dismissMessageWindow {
+    if (![self sdkReady]) {
+        return;
+    }
+    if (self.messaging) {
+        [self.messaging dismissMessageWindow];
     }
 }
 

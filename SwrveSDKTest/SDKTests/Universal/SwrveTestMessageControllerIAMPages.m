@@ -23,7 +23,6 @@
 - (int)sessionStart;
 - (void)suspend:(BOOL)terminating;
 - (void)appDidBecomeActive:(NSNotification *)notification;
-@property (atomic) SwrveRESTClient *restClient;
 @property (atomic) NSMutableArray *eventBuffer;
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (void)reIdentifyUser;
@@ -38,15 +37,12 @@
 @interface SwrveMessageController ()
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
-- (void)dismissMessageWindow;
 - (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (void)showMessage:(SwrveMessage *)message;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
 - (void)startSwrveGeoSDK;
 - (bool)shouldStartSwrveGeoSDK;
-@property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic, retain) NSArray *campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 @property (nonatomic, retain) NSString *user;
@@ -55,7 +51,6 @@
 @property (nonatomic, retain) NSString *server;
 @property (nonatomic, retain) NSString *language;
 @property (nonatomic) SwrveInterfaceOrientation orientation;
-@property (nonatomic, retain) NSDate *initialisedTime;
 @property (nonatomic, retain) NSString *campaignsStateFilePath;
 @property (nonatomic, retain) NSDate *showMessagesAfterLaunch;
 @property (nonatomic, retain) NSDate *showMessagesAfterDelay;
@@ -967,14 +962,6 @@
     }                 expectation:expectation];
     [self waitForExpectationsWithTimeout:30.0 handler:nil];
     
-}
-
-- (void)waitForWindowDismissed:(SwrveMessageController *)controller {
-    XCTestExpectation *expectation = [self expectationWithDescription:@"WindowDismissed"];
-    [SwrveTestHelper waitForBlock:0.005 conditionBlock:^BOOL() {
-        return controller.inAppMessageWindow == nil;
-    }                 expectation:expectation];
-    [self waitForExpectationsWithTimeout:2.0 handler:nil];
 }
 
 - (SwrveMessageViewController *)messageViewControllerFrom:(SwrveMessageController *)controller {

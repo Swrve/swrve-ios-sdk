@@ -13,12 +13,8 @@
 @property(atomic) NSTimer *campaignsAndResourcesTimer;
 @property(atomic) SwrveProfileManager *profileManager;
 @property (atomic) SwrveRESTClient *restClient;
-
 @end
 
-@interface SwrveSDK (InternalAccess)
-+ (void)addSharedInstance:(Swrve *)instance;
-@end
 
 @interface SwrveTestStopTracking : XCTestCase
 
@@ -40,9 +36,9 @@
     NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"whatever.group"];
     [userDefaults setBool:NO forKey:@"swrve.is_tracking_state_stopped"];
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [SwrveSDK addSharedInstance:swrveMock];
-    [SwrveCommon addSharedInstance:swrveMock];
+    [SwrveCommon addSharedInstance:(id)swrveMock];
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
     config.appGroupIdentifier = @"whatever.group";
@@ -145,7 +141,7 @@
 
 
 - (void)testStopTrackingAppDidBecomeActive {
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [SwrveSDK addSharedInstance:swrveMock];
     [SwrveCommon addSharedInstance:swrveMock];
 
@@ -185,7 +181,7 @@
 }
 
 - (void)testAPISWhileStopped {
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [SwrveSDK addSharedInstance:swrveMock];
 
     SwrveConfig *config = [[SwrveConfig alloc] init];

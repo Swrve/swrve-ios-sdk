@@ -2,6 +2,12 @@
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
 - (NSInteger)nextEventSequenceNumber;
@@ -38,6 +44,7 @@
     [super tearDown];
 }
 
+
 - (void)testPushEngagedEventManagedModeAutoStartFalse {
 
     SwrveConfig *config = [[SwrveConfig alloc] init];
@@ -50,9 +57,14 @@
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
 
-    id swrveMockManaged = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMockManaged = (Swrve *) OCMPartialMock([Swrve alloc]);
+    swrveMockManaged = [swrveMockManaged initWithAppID:572 apiKey:@"SomeAPIKey"];
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    swrveMockManaged.restClient = restClient;
+    
     [SwrveSDK addSharedInstance:swrveMockManaged];
-    [SwrveCommon addSharedInstance:swrveMockManaged];
+    [SwrveCommon addSharedInstance:(id)swrveMockManaged];
     OCMStub([swrveMockManaged nextEventSequenceNumber]).andReturn(456);
 
     // expect engaged event to be added to eventBuffer queue
@@ -77,9 +89,14 @@
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
 
-    id swrveMockManaged = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMockManaged = (Swrve *) OCMPartialMock([Swrve alloc]);
+    swrveMockManaged = [swrveMockManaged initWithAppID:572 apiKey:@"SomeAPIKey"];
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    swrveMockManaged.restClient = restClient;
+
     [SwrveSDK addSharedInstance:swrveMockManaged];
-    [SwrveCommon addSharedInstance:swrveMockManaged];
+    [SwrveCommon addSharedInstance:(id)swrveMockManaged];
     OCMStub([swrveMockManaged nextEventSequenceNumber]).andReturn(456);
 
     // expect engaged event to be added to eventBuffer queue
@@ -109,7 +126,7 @@
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [SwrveSDK addSharedInstance:swrveMock];
     OCMStub([swrveMock nextEventSequenceNumber]).andReturn(456);
     swrveMock = [swrveMock initWithAppID:123 apiKey:@"456" config:config];
@@ -368,7 +385,7 @@
     id classSwrveUtilsMock = OCMClassMock([SwrveUtils class]);
     OCMStub(ClassMethod([classSwrveUtilsMock getTimeEpoch])).andReturn(987654321);
 
-    id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    id swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [SwrveSDK addSharedInstance:swrveMock];
     [SwrveCommon addSharedInstance:swrveMock];
     OCMStub([swrveMock nextEventSequenceNumber]).andReturn(456);

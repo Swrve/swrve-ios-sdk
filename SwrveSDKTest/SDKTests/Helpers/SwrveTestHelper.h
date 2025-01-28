@@ -8,6 +8,43 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
+
+@interface Swrve ()
+- (NSDate *)getNow;
+- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
+@property(atomic) SwrveRESTClient *restClient;
+@property (atomic) NSURL *campaignsAndResourcesURL;
+@end
+
+@interface SwrveProfileManager ()
+@property(atomic) SwrveRESTClient *restClient;
+@end
+
+@interface SwrveMessageController ()
+- (id)initWithSwrve:(Swrve*)sdk;
+- (void)writeToCampaignCache:(NSData*)campaignData;
+
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
+- (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
+- (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
+- (NSDate *)getNow;
+
+@property(nonatomic, retain) UIWindow *inAppMessageWindow;
+@property(nonatomic, retain) NSArray *campaigns;
+@property(nonatomic, retain) SwrveMessageFocus *messageFocus;
+@property (nonatomic, retain) NSDate *initialisedTime;
+
+@end
+
+@interface SwrveMigrationsManager ()
++ (void)markAsMigrated;
+@end
+
+@interface SwrveSDK (InternalAccess)
++ (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve*)instance;
+@end
+
 @interface SwrveTestHelper : NSObject
 
 // Setup data as if the user was already present and migration was the latest
@@ -33,7 +70,7 @@
 
 + (void)createDummyAssets:(NSArray*)asset;
 + (void)createDummyGifAssets:(NSArray*)assets;
-+ (void)createDummyPngAssets:(NSArray*)assets;
++ (void)createDummyAssets:(NSArray*)assets withResourceName: (NSString *) resourceName ofType: (NSString *) type;
 
 + (void)removeAssets:(NSArray*)assets;
 + (void)removeAllAssets;
@@ -54,10 +91,10 @@
 
 + (void)waitForBlock:(float)deltaSecs conditionBlock:(BOOL (^)(void))conditionBlock expectation:(XCTestExpectation *)expectation;
 
-+ (id)swrveMockWithMockedRestClient;
-+ (id)swrveMockWithFailureMockedRestClient;
-+ (id)swrveMockWithMockedRestClientResponseCode:(int)httpCode mockData:(NSData *)mockData;
++ (id)swrveBasicMockResponse;
++ (id)swrveMockResponse:(int)httpCode mockData:(NSData *)mockData;
 
++ (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 + (Swrve *)initializeSwrveWithRealTimeUserPropertiesFile:(NSString *)filename andConfig:(SwrveConfig *)config;
 

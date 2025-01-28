@@ -15,22 +15,8 @@
 #import "TestCapabilitiesDelegate.h"
 #import "SwrveMigrationsManager.h"
 
-@interface Swrve ()
-- (NSDate *)getNow;
 
-- (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 
-@property(atomic) SwrveRESTClient *restClient;
-@end
-
-@interface SwrveMessageController ()
-@property(nonatomic, retain) UIWindow *inAppMessageWindow;
-
-- (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
-
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
-
-@end
 
 @interface SwrveMessageViewController ()
 @property(nonatomic, retain) SwrveMessageFocus *messageFocus;

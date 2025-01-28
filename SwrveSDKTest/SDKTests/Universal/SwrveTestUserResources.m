@@ -3,6 +3,12 @@
 #import "SwrveMigrationsManager.h"
 #import "SwrveRESTClient.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface Swrve (Internal)
 @property(atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrveSignatureProtectedFile *resourcesFile;
@@ -39,7 +45,7 @@
     NSString *testCacheFileContents = @"[{\"uid\": \"animal.ant\", \"name\": \"ant\", \"cost\": \"5.50\", \"quantity\": \"6\"},{\"uid\": \"animal.bear\",\"name\": \"bear\", \"cost\": \"9.99\",\"quantity\": \"20\"}]";
     
     // Initialise Swrve and write to resources cache file
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
@@ -48,7 +54,7 @@
     // Restart swrve, resource manager will be initialised by contents of cache
     // Getting resources periodically from API will fail (invalid api key) so will keep using cached contents
     [swrveMock shutdown];
-    swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     SwrveConfig *config = [[SwrveConfig alloc] init];
     __block int callbackCounter = 0;
     config.resourcesUpdatedCallback = ^() {
@@ -101,7 +107,7 @@
 - (void)testGetUserResourcesCallback {
     NSString *testCacheFileContents = @"[{\"uid\": \"animal.ant\", \"name\": \"ant\", \"cost\": \"550\", \"cost_type\": \"gold\"},{\"uid\": \"animal.bear\",\"name\": \"bear\", \"cost\": \"999\",\"cost_type\": \"gold\"}]";
     // Initialise Swrve and write to resources cache file
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
@@ -109,7 +115,7 @@
 
     // Restart swrve, getting resources from API will fail, so resources initialised by cache
     [swrveMock shutdown];
-    swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     
@@ -198,8 +204,7 @@
     NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
 
     // Initialise Swrve and write to resources diff cache file
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:500 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
@@ -238,8 +243,7 @@
     NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
 
     // Initialise Swrve and write to resources diff cache file
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:500 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
@@ -250,7 +254,7 @@
     // Getting resources diff from API will fail, so resources diff initialised by cache
     [swrveMock userResourcesDiffWithListener:^(NSDictionary *oldResourcesValues, NSDictionary *newResourcesValues, NSString *resourcesAsJSON, BOOL fromServer, NSError *error) {
         XCTAssertFalse(fromServer);
-        XCTAssertNil(error);
+        XCTAssertNotNil(error);
 
         XCTAssertEqualObjects(resourcesAsJSON, testCacheFileContents);
 
@@ -281,8 +285,7 @@
     NSString *__block testCacheFileContents = @"[{ \"corrupt data\": \"corrupt data\"}]";
 
     // Initialise Swrve and write to resources diff cache file
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:500 mockData:mockData];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:500 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];
@@ -305,9 +308,7 @@
 }
 
 - (void)testUserResourcesDiffListenerWithTrueFromServer {
-
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
 

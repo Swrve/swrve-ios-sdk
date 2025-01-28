@@ -4,7 +4,6 @@
 
 @interface SwrveMessageController ()
 - (NSString *)campaignQueryString API_AVAILABLE(ios(12.0));
-@property (nonatomic, retain) UIWindow *inAppMessageWindow;
 @property (nonatomic, retain) UIWindow *conversationWindow;
 @end
 
@@ -20,7 +19,6 @@
 @end
 
 @interface Swrve()
-@property(atomic) SwrveRESTClient *restClient;
 @property NSMutableArray* eventBuffer;
 @property NSURL* eventFilename;
 - (NSString *)signatureKey;

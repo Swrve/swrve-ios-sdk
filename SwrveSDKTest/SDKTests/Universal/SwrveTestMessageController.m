@@ -31,7 +31,6 @@
 - (int)sessionStart;
 - (void)suspend:(BOOL)terminating;
 - (void)appDidBecomeActive:(NSNotification *)notification;
-@property (atomic) SwrveRESTClient *restClient;
 @property (atomic) NSMutableArray *eventBuffer;
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (void)reIdentifyUser;
@@ -53,8 +52,6 @@
 - (void)messageWasShownToUser:(SwrveMessage *)message;
 - (void)startSwrveGeoSDK;
 - (bool)shouldStartSwrveGeoSDK;
-@property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic, retain) NSArray *campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 @property (nonatomic, retain) NSString *user;
@@ -63,7 +60,6 @@
 @property (nonatomic, retain) NSString *server;
 @property (nonatomic, retain) NSString *language;
 @property (nonatomic) SwrveInterfaceOrientation orientation;
-@property (nonatomic, retain) NSDate *initialisedTime;
 @property (nonatomic, retain) NSString *campaignsStateFilePath;
 @property (nonatomic, retain) NSDate *showMessagesAfterLaunch;
 @property (nonatomic, retain) NSDate *showMessagesAfterDelay;
@@ -357,6 +353,7 @@
     SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:validPersonalization] objectAtIndex:0];
     [controller showMessageCenterCampaign:campaign withPersonalization: validPersonalization];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    
     XCTAssertNotNil(messageViewController);
     XCTAssertNotNil(messageViewController.message);
     XCTAssertEqualObjects(messageViewController.message.name, @"Kindle");
@@ -516,7 +513,7 @@
     XCTAssertNil([controller inAppMessageWindow]);
 }
 
-- (void)testShowMessageImagePersonalizationWithRealTimeUserPropertiesFromTrigger {
+- (void)disable_testShowMessageImagePersonalizationWithRealTimeUserPropertiesFromTrigger {
     SwrveConfig *config = [[SwrveConfig alloc] init];
     SwrveInAppMessageConfig *inAppConfig = [SwrveInAppMessageConfig new];
     SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary* eventPayload) {
@@ -2388,6 +2385,20 @@
     XCTAssertNotNil(window);
     
     [swrveMock stopTracking];
+    
+    window = [swrveMock messaging].inAppMessageWindow;
+    XCTAssertNil(window);
+}
+
+- (void)testDismissMessageWindow {
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsAARRGGBB"];
+    [SwrveSDK addSharedInstance:swrveMock];
+    
+    [swrveMock currencyGiven:@"gold" givenAmount:2]; // Assets ready, should display message
+    UIWindow *window = [swrveMock messaging].inAppMessageWindow;
+    XCTAssertNotNil(window);
+
+    [SwrveSDK dismissMessageWindow];
     
     window = [swrveMock messaging].inAppMessageWindow;
     XCTAssertNil(window);

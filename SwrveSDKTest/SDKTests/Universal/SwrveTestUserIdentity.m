@@ -3,6 +3,12 @@
 #import "SwrveTestHelper.h"
 #import "SwrveMockNSURLProtocol.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface SwrveMigrationsManager()
 + (void)setCurrentCacheVersion:(int)cacheVersion;
 @end
@@ -35,7 +41,6 @@
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId;
 - (NSArray *)swrveUsers;
 - (void)removeSwrveUserWithId:(NSString *)aUserId;
-@property (strong, nonatomic) SwrveRESTClient *restClient;
 @property (strong, nonatomic) NSURL *identityURL;
 @end
 
@@ -1355,7 +1360,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
-    Swrve *swrve = [SwrveSDK sharedInstance];
+    Swrve *swrve = (Swrve *)[SwrveSDK sharedInstance];
 
     [swrve event:@"TestEvent"];
     [swrve pauseEventSending];
@@ -1370,7 +1375,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
-    Swrve *swrve = [SwrveSDK sharedInstance];
+    Swrve *swrve = (Swrve *)[SwrveSDK sharedInstance];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"RandomUserId"];
     [swrve identify:@"RandomUserId" onSuccess:^(NSString *status, NSString *swrveUserId) {
@@ -1421,7 +1426,7 @@
     SwrveConfig *config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];
     [config setInitMode:SwrveInitModeAuto];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:1 apiKey:@"SomeAPIKey" config:config];
     SwrveUser *swrveUser = [[SwrveUser alloc] initWithExternalId:externalId swrveId:swrveId verified:true];
     [swrveMock.profileManager saveSwrveUser:swrveUser];
@@ -1527,15 +1532,16 @@
     [swrveMock appDidBecomeActive:nil];
 
     // Then
-    NSDate *delay = [[NSDate date] dateByAddingTimeInterval:0.1];
     XCTestExpectation *expectation = [self expectationWithDescription:externalId];
     [SwrveTestHelper waitForBlock:0.01 conditionBlock:^BOOL() {
-        return ([[NSDate date] compare:delay] == NSOrderedDescending);
+        NSDate *identifiedDate = [SwrveLocalStorage identifyDate:swrveId];
+        if (identifiedDate == nil) {
+            return NO;
+        }
+        
+        return ([identifiedDate compare:currentDate] == NSOrderedSame);;
     }                 expectation:expectation];
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
-
-    NSDate *identifiedDate = [SwrveLocalStorage identifyDate:swrveId];
-    XCTAssertEqual(currentDate, identifiedDate);
 }
 
 @end

@@ -6,7 +6,6 @@
 
 @interface Swrve ()
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
-@property(atomic) SwrveRESTClient *restClient;
 
 @end
 
@@ -14,12 +13,6 @@
 + (void)markAsMigrated;
 @end
 
-@interface SwrveMessageController ()
-
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
-@property(nonatomic, retain) UIWindow *inAppMessageWindow;
-
-@end
 
 @interface SwrveTestIAMCampaign : XCTestCase
 
@@ -101,7 +94,7 @@
     NSString *asset7 = @"asset7_gif_button";
     NSString *asset8 = @"asset8_png_button";
     [SwrveTestHelper createDummyGifAssets:@[asset1, asset3, asset5, asset7]];
-    [SwrveTestHelper createDummyPngAssets:@[asset2, asset4, asset6, asset8]];
+    [SwrveTestHelper createDummyAssets:@[asset2, asset4, asset6, asset8] withResourceName:@"swrve_logo" ofType:@"png"];
 
     id swrveMock = [self swrveMockWithTestJson:@"campaignsGif" withConfig:[SwrveConfig new]];
     SwrveMessageController *controller = [swrveMock messaging];

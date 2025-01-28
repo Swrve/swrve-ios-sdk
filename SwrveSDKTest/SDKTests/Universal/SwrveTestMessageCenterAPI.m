@@ -7,7 +7,6 @@
 @end
 
 @interface Swrve()
-@property (atomic) SwrveRESTClient *restClient;
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 @end
@@ -19,8 +18,6 @@
 - (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
 - (NSDate *)getNow;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
-@property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic, retain) NSDate *initialisedTime;
 @end
 
 @interface SwrveThemedUIButton ()
@@ -836,7 +833,7 @@
 
 - (void)testThemedButton {
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONButtonThemeAssets]];
-    [SwrveTestHelper createDummyPngAssets:@[@"9973b5003e299dab6394258c459e82b58a7a7633", @"73efb349f6e6ab7753bdfc1073d2035d607bbd40"]];
+    [SwrveTestHelper createDummyAssets:@[@"9973b5003e299dab6394258c459e82b58a7a7633", @"73efb349f6e6ab7753bdfc1073d2035d607bbd40"] withResourceName:@"swrve_logo" ofType:@"png"];
 
     id swrveMock = [self swrveMock];
 #pragma clang diagnostic push

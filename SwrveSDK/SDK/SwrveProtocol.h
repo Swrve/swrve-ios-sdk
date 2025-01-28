@@ -33,7 +33,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.1.0"
+#define SWRVE_SDK_VERSION "10.2.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -335,7 +335,7 @@ NSString * eventsPayloadAsJSON);
 -(NSString*)deviceToken;
 
 /*! Called to send the push engaged event to Swrve. */
--(void) sendPushNotificationEngagedEvent:(NSString*)pushId withPayload:(NSMutableDictionary *)payload;
+-(void) sendPushNotificationEngagedEvent:(NSString*)pushId withPayload:(NSDictionary *)payload;
 
 /**! Should be included to a push response if not using SwrvePushResponseDelegate **/
 - (void) processNotificationResponse:(UNNotificationResponse *)response;
@@ -632,6 +632,8 @@ NSString * eventsPayloadAsJSON);
  * \param listener Called when the push inbox messages are initially loaded and each time messages are updated/changed.
  */
 - (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
+
+- (void)dismissMessageWindow;
 
 #pragma mark - Properties
 

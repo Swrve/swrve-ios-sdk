@@ -4,6 +4,12 @@
 #import "TestPermissionsDelegate.h"
 #import "AppDelegate.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface SwrveSDK (InternalAccess)
 + (void)addSharedInstance:(Swrve*)instance;
 + (void)resetSwrveSharedInstance;
@@ -101,10 +107,11 @@
     // Initialize SDK
     SwrveConfig * config = [[SwrveConfig alloc]init];
     config.autoCollectIDFV = true;
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    
     [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey" config:config];
+  
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
+    
     [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
 
@@ -182,9 +189,11 @@
     config.autoCollectIDFV = true;
     TestPermissionsDelegate *permissionsDelegate = [[TestPermissionsDelegate alloc] init];
     config.permissionsDelegate = permissionsDelegate;
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
+    
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
+
     [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
 
@@ -228,10 +237,11 @@
     SwrveConfig *config = [SwrveConfig new];
     config.pushEnabled = YES;
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
     [SwrveTestHelper setAlreadyInstalledUserId:@"SomeUser"];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"Neverson" config:config];
-
+    
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
+    
     id pushPartialMock = OCMPartialMock([swrveMock push]);
     XCTAssertNotNil(swrveMock);
 
@@ -257,9 +267,9 @@
 
     [SwrveLocalStorage saveSwrveUserId:@"bob"];
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock secondsSinceEpoch]).andReturn(date20160101);
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     XCTAssertEqualObjects([((id<SwrveCommonDelegate>)swrveMock).deviceInfo objectForKey:@"swrve.install_date"], @"20160101");
 
@@ -269,9 +279,9 @@
     [date20150101 writeToFile:[cachePath stringByAppendingPathComponent: @"swrve_install.txt"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock2 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock2 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock2 secondsSinceEpoch]).andReturn(date20160101);
-    swrveMock2 = [swrveMock2 initWithAppID:123 apiKey:@"SomeAPIKey"];
+    swrveMock2 = [swrveMock2 initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock2 appDidBecomeActive:nil];
     XCTAssertEqualObjects([((id<SwrveCommonDelegate>)swrveMock2).deviceInfo objectForKey:@"swrve.install_date"], @"20150101");
     
@@ -280,9 +290,9 @@
     [@"1427850000" writeToFile:[cachePath stringByAppendingPathComponent: @"swrve_install.txt"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock3 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock3 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock3 secondsSinceEpoch]).andReturn(1451610000);
-    swrveMock3 = [swrveMock3 initWithAppID:123 apiKey:@"SomeAPIKey"];
+    swrveMock3 = [swrveMock3 initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock3 appDidBecomeActive:nil];
     XCTAssertEqualObjects([((id<SwrveCommonDelegate>)swrveMock3).deviceInfo objectForKey:@"swrve.install_date"], @"20150401");
 
@@ -291,9 +301,9 @@
     [date20150101 writeToFile:[cachePath stringByAppendingPathComponent: @"swrve_install.txt"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock4 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock4 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock4 secondsSinceEpoch]).andReturn(1451610000);
-    swrveMock4 = [swrveMock4 initWithAppID:123 apiKey:@"SomeAPIKey"];
+    swrveMock4 = [swrveMock4 initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock4 appDidBecomeActive:nil];
     XCTAssertEqualObjects([((id<SwrveCommonDelegate>)swrveMock4).deviceInfo objectForKey:@"swrve.install_date"], @"20150101");
     
@@ -302,9 +312,9 @@
     [date20150101_millis writeToFile:[cachePath stringByAppendingPathComponent: @"swrve_install.txt"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock5 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock5 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock5 secondsSinceEpoch]).andReturn(1451610000);
-    swrveMock5 = [swrveMock5 initWithAppID:123 apiKey:@"SomeAPIKey"];
+    swrveMock5 = [swrveMock5 initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock5 appDidBecomeActive:nil];
     XCTAssertEqualObjects([((id<SwrveCommonDelegate>)swrveMock5).deviceInfo objectForKey:@"swrve.install_date"], @"20150101");
 }
@@ -338,8 +348,9 @@
     // third: reset cache version number
     [SwrveMigrationsManager setCurrentCacheVersion:0];
 
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    
     [swrveMock appDidBecomeActive:nil];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];

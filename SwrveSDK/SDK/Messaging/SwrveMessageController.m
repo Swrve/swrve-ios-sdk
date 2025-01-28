@@ -1298,7 +1298,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     // QA logging
     [SwrveQA campaignButtonClicked:[NSNumber numberWithUnsignedLong:dismissedCampaign.ID] 
                          variantId:message.messageID
-                        buttonName:inAppButtonPressedName
+                        buttonName:self.inAppButtonPressedName ? self.inAppButtonPressedName : @"" // inAppButtonPressedName can be nil if IAM is programmatically dismissed
                         actionType:actionTypeString
                        actionValue:action
     ];
@@ -1587,6 +1587,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
     NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
     NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
+    
     
     if (!campaign.messageCenter) {
         

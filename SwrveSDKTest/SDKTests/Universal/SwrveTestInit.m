@@ -2,6 +2,12 @@
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface SwrveSDK (InternalAccess)
 + (void)resetSwrveSharedInstance;
 + (void)addSharedInstance:(Swrve*)instance;
@@ -13,6 +19,7 @@
 - (NSDate *)getNow;
 
 - (void)setSwrveSessionDelegate:(id <SwrveSessionDelegate>)sessionDelegate;
+- (void)removeSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
 
 - (void)registerLifecycleCallbacks;
 
@@ -88,8 +95,7 @@
 
 - (void)testManyCreations {
     for (int i = 0; i < 5; ++i) {
-        Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-        swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+        Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
         [swrveMock appDidBecomeActive:nil];
         NSDate *futureTime = [NSDate dateWithTimeIntervalSinceNow:0.2];
         [[NSRunLoop currentRunLoop] runUntilDate:futureTime];
@@ -153,8 +159,8 @@
 }
 
 - (void)testSessionDelegate {
-    id swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
-    swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
 
     id mockSwrveSessionDelegate1 = OCMProtocolMock(@protocol(SwrveSessionDelegate)); // mock SessionDelegate for each verify
     XCTestExpectation *completionHandler1 = [self expectationWithDescription:@"SwrveSessionDelegate1"];
@@ -315,7 +321,6 @@
 }
 
 - (void)testInitModeManagedStart {
-
     id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged];
     XCTAssertNotNil(swrveMockManaged);
 
@@ -344,7 +349,7 @@
         XCTAssertTrue([[value absoluteString] containsString:userId], @"refresh campaigns for incorrect userid");
         return true; // asserts above are more descriptive so returning true
     }]                         completionHandler:OCMOCK_ANY]);
-
+    
     //Check if start called again it doesn't begin another session.
     OCMReject([swrveMockManaged beginSession]);
     [SwrveSDK start];

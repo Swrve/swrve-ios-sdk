@@ -1,3 +1,3 @@
-#import "SwrveSDK.h"
-#import <OCMock/OCMock.h>
+
+#import "SwrveTestHelper.h"
 #import <SwrveSDK/SwrveSDK-Swift.h>

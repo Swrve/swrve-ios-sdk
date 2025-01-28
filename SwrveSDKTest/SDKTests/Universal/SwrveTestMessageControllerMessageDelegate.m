@@ -18,9 +18,7 @@
 + (void)markAsMigrated;
 @end
 
-@interface SwrveSDK (InternalAccess)
-+ (void)addSharedInstance:(Swrve*)instance;
-@end
+
 
 @interface Swrve ()
 @property (nonatomic) SwrveReceiptProvider *receiptProvider;
@@ -30,7 +28,6 @@
 - (int)sessionStart;
 - (void)suspend:(BOOL)terminating;
 - (void)appDidBecomeActive:(NSNotification *)notification;
-@property (atomic) SwrveRESTClient *restClient;
 @property (atomic) NSMutableArray *eventBuffer;
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
 - (void)reIdentifyUser;
@@ -52,8 +49,6 @@
 - (void)messageWasShownToUser:(SwrveMessage *)message;
 - (void)startSwrveGeoSDK;
 - (bool)shouldStartSwrveGeoSDK;
-@property (nonatomic, retain) UIWindow *inAppMessageWindow;
-@property (nonatomic, retain) NSArray *campaigns;
 @property (nonatomic) bool autoShowMessagesEnabled;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 @property (nonatomic, retain) NSString *user;
@@ -62,7 +57,6 @@
 @property (nonatomic, retain) NSString *server;
 @property (nonatomic, retain) NSString *language;
 @property (nonatomic) SwrveInterfaceOrientation orientation;
-@property (nonatomic, retain) NSDate *initialisedTime;
 @property (nonatomic, retain) NSString *campaignsStateFilePath;
 @property (nonatomic, retain) NSDate *showMessagesAfterLaunch;
 @property (nonatomic, retain) NSDate *showMessagesAfterDelay;
@@ -245,14 +239,14 @@
     
     SwrveConfig *config = OCMPartialMock([SwrveConfig new]);
     SwrveInAppMessageConfig *inAppMessageConfig = OCMPartialMock([SwrveInAppMessageConfig new]);
-
+    
     //set SwrveInAppMessageDelegate
     id mockMessageDelegate = OCMProtocolMock(@protocol(SwrveInAppMessageDelegate));
     OCMStub([inAppMessageConfig inAppMessageDelegate]).andReturn(mockMessageDelegate);
     config.inAppMessageConfig = inAppMessageConfig;
     
     //Dont set SwrveDeeplinkDelegate
-
+    
     //Confirm open url is called internally even when we set SwrveInAppMessageDelegate
     NSURL *url = [NSURL URLWithString:@"https://google.com"];
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
@@ -264,13 +258,12 @@
     
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
-
+    
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
     [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
     
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
-    SwrveMessagePageViewController *viewController = [self loadMessagePageViewController:messageViewController];
-    [viewController viewDidAppear:NO];
+    [self loadMessagePageViewController:messageViewController];
     
     SwrveMessageUIView *messageUiView = [self swrveMessageUIViewFromController:messageViewController];
     for (UIView *subview in messageUiView.subviews) {
@@ -581,8 +574,7 @@
 #else
     messagePageViewController = [messageViewController.viewControllers firstObject];
 #endif
-    [messagePageViewController viewDidAppear:NO];
-    [messagePageViewController viewWillAppear:NO];
+    [messagePageViewController beginAppearanceTransition:YES animated:NO];
     return messagePageViewController;
 }
 

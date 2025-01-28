@@ -1,0 +1,1570 @@
+{
+  
+    "campaigns": [
+      {
+        "id": 658954,
+        "timezone_type": "global",
+        "start_date_iso": "2024-01-15T15:04:42Z",
+        "end_date_iso": "2038-01-01T01:00:00Z",
+        "rules": {
+          "delay_first_message": 0,
+          "dismiss_after_views": 99999,
+          "display_order": "random",
+          "min_delay_between_messages": 0
+        },
+        "triggers": [],
+        "message_center": true,
+        "blackout_dates": [],
+        "interval_times": [],
+        "message": {
+          "id": 661745,
+          "name": "IAS - Black Friday - (Loop)",
+          "rules": {
+            "orientations": "portrait"
+          },
+          "priority": 9999,
+          "template": {
+            "formats": [
+              {
+                "name": "[0.649746192893401]all - portrait",
+                "orientation": "portrait",
+                "language": "*",
+                "size": {
+                  "w": {
+                    "type": "number",
+                    "value": 1152
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 2048
+                  }
+                },
+                "pages": [
+                  {
+                    "page_id": 820504,
+                    "page_name": "Page 1",
+                    "swipe_backward": -1,
+                    "swipe_forward": -1,
+                    "template_id": 49713,
+                    "images": [
+                      {
+                        "name": "Background",
+                        "ui_order": 0,
+                        "x": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 1537
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 2495
+                        },
+                        "image_width": 1537,
+                        "image_height": 2495,
+                        "image_filename": "iPhone 13 & 14 - 13.png",
+                        "image": {
+                          "type": "asset",
+                          "value": "e69fb2f264bebaad0a11c2c83fd1d2b73bf03990"
+                        },
+                        "color": {
+                          "type": "color",
+                          "value": "FFFFFF"
+                        },
+                        "media_format": "image"
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "button_id": 702484,
+                        "name": "Button 1",
+                        "ui_order": 1,
+                        "x": {
+                          "type": "number",
+                          "value": 1
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 819
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 144
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 116
+                        },
+                        "image_width": 358,
+                        "image_height": 91,
+                        "image_filename": "shop_now.png",
+                        "image_up": {
+                          "type": "asset",
+                          "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                        },
+                        "type": {
+                          "type": "text",
+                          "value": "CUSTOM"
+                        },
+                        "action": {
+                          "type": "text",
+                          "value": "https://www.shop.com/black_friday"
+                        },
+                        "game_id": {
+                          "type": "number",
+                          "value": ""
+                        },
+                        "media_format": "image"
+                      }
+                    ]
+                  },
+                  {
+                    "page_id": 600415,
+                    "page_name": "Page 2",
+                    "swipe_backward": -1,
+                    "swipe_forward": -1,
+                    "template_id": 49713,
+                    "images": [
+                      {
+                        "name": "Background",
+                        "ui_order": 0,
+                        "x": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 1537
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 2495
+                        },
+                        "image_width": 1537,
+                        "image_height": 2495,
+                        "image_filename": "iPhone 13 & 14 - 14.png",
+                        "image": {
+                          "type": "asset",
+                          "value": "3ff8a45cdc71ac58f63f141e0e5141fce8a96c8d"
+                        },
+                        "color": {
+                          "type": "color",
+                          "value": "FFFFFF"
+                        },
+                        "media_format": "image"
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "button_id": 702484,
+                        "name": "Button 1",
+                        "ui_order": 1,
+                        "x": {
+                          "type": "number",
+                          "value": 1
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 819
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 144
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 116
+                        },
+                        "image_width": 358,
+                        "image_height": 91,
+                        "image_filename": "shop_now.png",
+                        "image_up": {
+                          "type": "asset",
+                          "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                        },
+                        "type": {
+                          "type": "text",
+                          "value": "CUSTOM"
+                        },
+                        "action": {
+                          "type": "text",
+                          "value": "https://www.shop.com/black_friday"
+                        },
+                        "game_id": {
+                          "type": "number",
+                          "value": ""
+                        },
+                        "media_format": "image"
+                      }
+                    ]
+                  },
+                  {
+                    "page_id": 190986,
+                    "page_name": "Page 3",
+                    "swipe_backward": -1,
+                    "swipe_forward": -1,
+                    "template_id": 49713,
+                    "images": [
+                      {
+                        "name": "Background",
+                        "ui_order": 0,
+                        "x": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 1537
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 2495
+                        },
+                        "image_width": 1537,
+                        "image_height": 2495,
+                        "image_filename": "iPhone 13 & 14 - 15.png",
+                        "image": {
+                          "type": "asset",
+                          "value": "d76063c1d88db363b1797b8e8a21d31ba57d4451"
+                        },
+                        "color": {
+                          "type": "color",
+                          "value": "FFFFFF"
+                        },
+                        "media_format": "image"
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "button_id": 702484,
+                        "name": "Button 1",
+                        "ui_order": 1,
+                        "x": {
+                          "type": "number",
+                          "value": 1
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 819
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 144
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 116
+                        },
+                        "image_width": 358,
+                        "image_height": 91,
+                        "image_filename": "shop_now.png",
+                        "image_up": {
+                          "type": "asset",
+                          "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                        },
+                        "type": {
+                          "type": "text",
+                          "value": "CUSTOM"
+                        },
+                        "action": {
+                          "type": "text",
+                          "value": "https://www.shop.com/black_friday"
+                        },
+                        "game_id": {
+                          "type": "number",
+                          "value": ""
+                        },
+                        "media_format": "image"
+                      }
+                    ]
+                  },
+                  {
+                    "page_id": 650780,
+                    "page_name": "Page 4",
+                    "swipe_backward": -1,
+                    "swipe_forward": -1,
+                    "template_id": 49713,
+                    "images": [
+                      {
+                        "name": "Background",
+                        "ui_order": 0,
+                        "x": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 0
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 1537
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 2495
+                        },
+                        "image_width": 1537,
+                        "image_height": 2495,
+                        "image_filename": "iPhone 13 & 14 - 16.png",
+                        "image": {
+                          "type": "asset",
+                          "value": "2ebcc99933041a67afc9563edc93518aad2c3641"
+                        },
+                        "color": {
+                          "type": "color",
+                          "value": "FFFFFF"
+                        },
+                        "media_format": "image"
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "button_id": 702484,
+                        "name": "Button 1",
+                        "ui_order": 1,
+                        "x": {
+                          "type": "number",
+                          "value": 1
+                        },
+                        "y": {
+                          "type": "number",
+                          "value": 819
+                        },
+                        "w": {
+                          "type": "number",
+                          "value": 144
+                        },
+                        "h": {
+                          "type": "number",
+                          "value": 116
+                        },
+                        "image_width": 358,
+                        "image_height": 91,
+                        "image_filename": "shop_now.png",
+                        "image_up": {
+                          "type": "asset",
+                          "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                        },
+                        "type": {
+                          "type": "text",
+                          "value": "CUSTOM"
+                        },
+                        "action": {
+                          "type": "text",
+                          "value": "https://www.shop.com/black_friday"
+                        },
+                        "game_id": {
+                          "type": "number",
+                          "value": ""
+                        },
+                        "media_format": "image"
+                      }
+                    ]
+                  }
+                ],
+                "story_settings": {
+                  "page_duration": 3000,
+                  "last_page_progression": "loop",
+                  "progress_bar": {
+                    "bar_color": "#ffffff",
+                    "bg_color": "#7f7f7f",
+                    "w": -1,
+                    "h": 13,
+                    "segment_gap": 16
+                  },
+                  "dismiss_button": {
+                    "id": 126734,
+                    "name": "Default dismiss",
+                    "color": "#ffffff",
+                    "pressed_color": "#d0d0d0",
+                    "focused_color": "#d0d0d0",
+                    "size": 91,
+                    "margin_top": 39,
+                    "accessibility_text": "Dismiss"
+                  },
+                  "padding": {
+                    "top": 39,
+                    "right": 39,
+                    "bottom": 39,
+                    "left": 39
+                  }
+                },
+                "scaled_by": 0.649746192893401,
+                "scaled_from": "all - portrait",
+                "scale": 1
+              }
+            ]
+          }
+        },
+        "subject": "IAS - Black Friday - (Loop)",
+        "in_app_version": 14
+      },
+      {
+               "id": 656652,
+               "timezone_type": "global",
+               "start_date_iso": "2023-12-24T15:39:38Z",
+               "end_date_iso": "2038-01-01T01:00:00Z",
+               "rules": {
+                 "delay_first_message": 0,
+                 "dismiss_after_views": 99999,
+                 "display_order": "random",
+                 "min_delay_between_messages": 0
+               },
+               "triggers": [],
+               "message_center": true,
+               "blackout_dates": [],
+               "interval_times": [],
+               "message": {
+                 "id": 659398,
+                 "name": "Ray's user flow for MG walkthrough",
+                 "rules": {
+                   "orientations": "portrait"
+                 },
+                 "priority": 9999,
+                 "template": {
+                   "formats": [
+                     {
+                       "name": "[0.649746192893401]all - portrait",
+                       "orientation": "portrait",
+                       "language": "*",
+                       "size": {
+                         "w": {
+                           "type": "number",
+                           "value": 1152
+                         },
+                         "h": {
+                           "type": "number",
+                           "value": 2048
+                         }
+                       },
+                       "calibration": {
+                         "width": 3249,
+                         "height": 325,
+                         "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                         "base_font_size": 20
+                       },
+                       "pages": [
+                         {
+                           "page_id": 766220,
+                           "page_name": "Page 1",
+                           "swipe_backward": -1,
+                           "swipe_forward": -1,
+                           "template_id": 49713,
+                           "images": [],
+                           "buttons": [
+                             {
+                               "button_id": 516711,
+                               "name": "Background",
+                               "ui_order": 0,
+                               "x": {
+                                 "type": "number",
+                                 "value": 0
+                               },
+                               "y": {
+                                 "type": "number",
+                                 "value": 0
+                               },
+                               "w": {
+                                 "type": "number",
+                                 "value": 1537
+                               },
+                               "h": {
+                                 "type": "number",
+                                 "value": 2495
+                               },
+                               "image_width": 1537,
+                               "image_height": 2495,
+                               "image_filename": "Breaking bad.png",
+                               "image_up": {
+                                 "type": "asset",
+                                 "value": "16939daf143a8352e903c501ab1528969780ded1"
+                               },
+                               "type": {
+                                 "type": "text",
+                                 "value": "DISMISS"
+                               },
+                               "action": {
+                                 "type": "text",
+                                 "value": ""
+                               },
+                               "game_id": {
+                                 "type": "number",
+                                 "value": ""
+                               },
+                               "accessibility_text": "watch breaking bad now",
+                               "media_format": "image"
+                             },
+                             {
+                               "button_id": 715018,
+                               "name": "Button 1",
+                               "ui_order": 1,
+                               "x": {
+                                 "type": "number",
+                                 "value": 1
+                               },
+                               "y": {
+                                 "type": "number",
+                                 "value": 819
+                               },
+                               "w": {
+                                 "type": "number",
+                                 "value": 585
+                               },
+                               "h": {
+                                 "type": "number",
+                                 "value": 130
+                               },
+                               "type": {
+                                 "type": "text",
+                                 "value": "DISMISS"
+                               },
+                               "action": {
+                                 "type": "text",
+                                 "value": ""
+                               },
+                               "game_id": {
+                                 "type": "number",
+                                 "value": ""
+                               },
+                               "text": {
+                                 "type": "text",
+                                 "value": "WATCH NOW"
+                               },
+                               "theme": {
+                                 "font_size": 10,
+                                 "truncate": true,
+                                 "font_native_style": "Bold",
+                                 "font_file": "_system_font_",
+                                 "padding": {
+                                   "top": 0,
+                                   "bottom": 0,
+                                   "left": 0,
+                                   "right": 0
+                                 },
+                                 "font_color": "#FFFFFFFF",
+                                 "bg_color": "#FFFFC500",
+                                 "corner_radius": 65,
+                                 "button_style_preset": {
+                                   "id": "15",
+                                   "version": 2
+                                 },
+                                 "pressed_state": {
+                                   "font_color": "#FFE64C15",
+                                   "bg_color": "#FFC4C4C4"
+                                 },
+                                 "focused_state": {
+                                   "font_color": "#FFFFFFFF",
+                                   "bg_color": "#FF002787"
+                                 },
+                                 "h_align": "CENTER"
+                               }
+                             }
+                           ]
+                         }
+                       ],
+                       "scaled_by": 0.649746192893401,
+                       "scaled_from": "all - portrait",
+                       "scale": 1
+                     }
+                   ]
+                 }
+               },
+               "subject": "",
+               "in_app_version": 13
+             },
+      {
+            "id": 658949,
+            "timezone_type": "global",
+            "start_date_iso": "2024-01-15T14:38:35Z",
+            "end_date_iso": "2038-01-01T01:00:00Z",
+            "rules": {
+                "delay_first_message": 0,
+                "dismiss_after_views": 99999,
+                "display_order": "random",
+                "min_delay_between_messages": 0
+            },
+            "triggers": [],
+            "message_center": true,
+            "blackout_dates": [],
+            "interval_times": [],
+            "message": {
+                "id": 661740,
+                "name": "IAS - New Shows Available (Loop)",
+                "rules": {
+                "orientations": "portrait"
+                },
+                "priority": 9999,
+                "template": {
+                "formats": [
+                    {
+                    "name": "[0.649746192893401]all - portrait",
+                    "orientation": "portrait",
+                    "language": "*",
+                    "size": {
+                        "w": {
+                        "type": "number",
+                        "value": 1152
+                        },
+                        "h": {
+                        "type": "number",
+                        "value": 2048
+                        }
+                    },
+                    "calibration": {
+                        "width": 3249,
+                        "height": 325,
+                        "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                        "base_font_size": 20
+                    },
+                    "pages": [
+                        {
+                        "page_id": 110978,
+                        "page_name": "Page 1",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                            {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 1537
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "Breaking bad.png",
+                            "image": {
+                                "type": "asset",
+                                "value": "16939daf143a8352e903c501ab1528969780ded1"
+                            },
+                            "color": {
+                                "type": "color",
+                                "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                            }
+                        ],
+                        "buttons": [
+                            {
+                            "button_id": 887622,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                                "type": "number",
+                                "value": 1
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 819
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 936
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 135
+                            },
+                            "type": {
+                                "type": "text",
+                                "value": "CUSTOM"
+                            },
+                            "action": {
+                                "type": "text",
+                                "value": "myapp://shows/breaking_bad"
+                            },
+                            "game_id": {
+                                "type": "number",
+                                "value": ""
+                            },
+                            "text": {
+                                "type": "text",
+                                "value": "Watch now"
+                            },
+                            "theme": {
+                                "font_size": 10,
+                                "truncate": true,
+                                "font_postscript_name": "Roboto-Bold",
+                                "font_family": "Roboto",
+                                "font_style": "Bold",
+                                "font_file": "535.1030.6cbb57ba2355cf442e06899898ff5af55867103e.ttf",
+                                "font_digest": "6cbb57ba2355cf442e06899898ff5af55867103e",
+                                "padding": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 52,
+                                "right": 52
+                                },
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFFFFFFF",
+                                "corner_radius": 39,
+                                "button_style_preset": {
+                                "id": "51",
+                                "version": 0
+                                },
+                                "pressed_state": {
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFE0E0E0"
+                                },
+                                "h_align": "CENTER"
+                            }
+                            }
+                        ]
+                        },
+                        {
+                        "page_id": 822338,
+                        "page_name": "Page 2",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                            {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 1537
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "The wire.png",
+                            "image": {
+                                "type": "asset",
+                                "value": "2309974cc2204aa976c6f52b6706b295884ebd34"
+                            },
+                            "color": {
+                                "type": "color",
+                                "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                            }
+                        ],
+                        "buttons": [
+                            {
+                            "button_id": 887622,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                                "type": "number",
+                                "value": 1
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 819
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 936
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 135
+                            },
+                            "type": {
+                                "type": "text",
+                                "value": "CUSTOM"
+                            },
+                            "action": {
+                                "type": "text",
+                                "value": "myapp://shows/the_wire"
+                            },
+                            "game_id": {
+                                "type": "number",
+                                "value": ""
+                            },
+                            "text": {
+                                "type": "text",
+                                "value": "Watch now"
+                            },
+                            "theme": {
+                                "font_size": 10,
+                                "truncate": true,
+                                "font_postscript_name": "Roboto-Bold",
+                                "font_family": "Roboto",
+                                "font_style": "Bold",
+                                "font_file": "535.1030.6cbb57ba2355cf442e06899898ff5af55867103e.ttf",
+                                "font_digest": "6cbb57ba2355cf442e06899898ff5af55867103e",
+                                "padding": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 52,
+                                "right": 52
+                                },
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFFFFFFF",
+                                "corner_radius": 39,
+                                "button_style_preset": {
+                                "id": "51",
+                                "version": 0
+                                },
+                                "pressed_state": {
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFE0E0E0"
+                                },
+                                "h_align": "CENTER"
+                            }
+                            }
+                        ]
+                        },
+                        {
+                        "page_id": 979994,
+                        "page_name": "Page 3",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                            {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 1537
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "Game of thrones.png",
+                            "image": {
+                                "type": "asset",
+                                "value": "adf258b88fa279c6e94db3d41923638201735dd2"
+                            },
+                            "color": {
+                                "type": "color",
+                                "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                            }
+                        ],
+                        "buttons": [
+                            {
+                            "button_id": 887622,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                                "type": "number",
+                                "value": 1
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 819
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 936
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 135
+                            },
+                            "type": {
+                                "type": "text",
+                                "value": "CUSTOM"
+                            },
+                            "action": {
+                                "type": "text",
+                                "value": "myapp://shows/game_of_thrones"
+                            },
+                            "game_id": {
+                                "type": "number",
+                                "value": ""
+                            },
+                            "text": {
+                                "type": "text",
+                                "value": "Watch now"
+                            },
+                            "theme": {
+                                "font_size": 10,
+                                "truncate": true,
+                                "font_postscript_name": "Roboto-Bold",
+                                "font_family": "Roboto",
+                                "font_style": "Bold",
+                                "font_file": "535.1030.6cbb57ba2355cf442e06899898ff5af55867103e.ttf",
+                                "font_digest": "6cbb57ba2355cf442e06899898ff5af55867103e",
+                                "padding": {
+                                "top": 0,
+                                "bottom": 0,
+                                "left": 52,
+                                "right": 52
+                                },
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFFFFFFF",
+                                "corner_radius": 39,
+                                "button_style_preset": {
+                                "id": "51",
+                                "version": 0
+                                },
+                                "pressed_state": {
+                                "font_color": "#FF000000",
+                                "bg_color": "#FFE0E0E0"
+                                },
+                                "h_align": "CENTER"
+                            }
+                            }
+                        ]
+                        }
+                    ],
+                    "story_settings": {
+                        "page_duration": 1000,
+                        "last_page_progression": "loop",
+                        "progress_bar": {
+                        "bar_color": "#F1F1F1",
+                        "bg_color": "#646464",
+                        "w": -1,
+                        "h": 13,
+                        "segment_gap": 16
+                        },
+                        "dismiss_button": {
+                        "id": 196646,
+                        "name": "Default dismiss",
+                        "color": "#ffffff",
+                        "pressed_color": "#646464",
+                        "focused_color": "#646464",
+                        "size": 91,
+                        "margin_top": 52,
+                        "accessibility_text": "Dismiss"
+                        },
+                        "padding": {
+                        "top": 39,
+                        "right": 39,
+                        "bottom": 39,
+                        "left": 39
+                        }
+                    },
+                    "scaled_by": 0.649746192893401,
+                    "scaled_from": "all - portrait",
+                    "scale": 1
+                    }
+                ]
+                }
+            },
+            "subject": "IAS - New Shows Available (Loop)",
+            "in_app_version": 14
+            },
+      {
+            "id": 681934,
+            "timezone_type": "global",
+            "start_date_iso": "2024-09-20T09:47:58Z",
+            "end_date_iso": "2038-01-01T01:00:00Z",
+            "rules": {
+                "delay_first_message": 0,
+                "dismiss_after_views": 99999,
+                "display_order": "random",
+                "min_delay_between_messages": 0
+            },
+            "triggers": [],
+            "message_center": true,
+            "blackout_dates": [],
+            "interval_times": [],
+            "message": {
+                "id": 686283,
+                "name": "dom. classic",
+                "rules": {
+                "orientations": "portrait"
+                },
+                "priority": 9999,
+                "template": {
+                "formats": [
+                    {
+                    "name": "[0.679746192893401]all - portrait",
+                    "orientation": "portrait",
+                    "language": "*",
+                    "size": {
+                        "w": {
+                        "type": "number",
+                        "value": 1205
+                        },
+                        "h": {
+                        "type": "number",
+                        "value": 2143
+                        }
+                    },
+                    "calibration": {
+                        "width": 3399,
+                        "height": 340,
+                        "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                        "base_font_size": 20
+                    },
+                    "pages": [
+                        {
+                        "page_id": 467579,
+                        "page_name": "Page 1",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                            {
+                            "name": "Button 1",
+                            "iam_z_index": 1,
+                            "x": {
+                                "type": "number",
+                                "value": 1
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 857
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 151
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 121
+                            },
+                            "multiline_text": {
+                                "value": "dismiss",
+                                "h_align": "LEFT",
+                                "font_size": 16,
+                                "scrollable": true,
+                                "font_postscript_name": "ComicSansMS",
+                                "font_family": "Comic Sans MS",
+                                "font_style": "Regular",
+                                "font_file": "535.1030.b60343e5f678c56d52e80b00e604104a73d256f2.ttf",
+                                "font_digest": "b60343e5f678c56d52e80b00e604104a73d256f2",
+                                "line_height": 1.4,
+                                "padding": {
+                                "top": 17,
+                                "right": 17,
+                                "bottom": 17,
+                                "left": 17
+                                },
+                                "font_color": "#ff000000",
+                                "bg_color": "#ffffffff",
+                                "text_style_preset": {
+                                "id": "30",
+                                "version": 3
+                                }
+                            }
+                            }
+                        ],
+                        "buttons": [
+                            {
+                            "button_id": 960817,
+                            "name": "Background",
+                            "iam_z_index": 0,
+                            "x": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "y": {
+                                "type": "number",
+                                "value": 0
+                            },
+                            "w": {
+                                "type": "number",
+                                "value": 1608
+                            },
+                            "h": {
+                                "type": "number",
+                                "value": 2610
+                            },
+                            "image_width": 1608,
+                            "image_height": 2610,
+                            "image_filename": "iPhone 13 & 14 - 13.png",
+                            "image_up": {
+                                "type": "asset",
+                                "value": "374fc78621fa8b4e1944c33c0924702ba01a1eb9"
+                            },
+                            "type": {
+                                "type": "text",
+                                "value": "DISMISS"
+                            },
+                            "action": {
+                                "type": "text",
+                                "value": ""
+                            },
+                            "game_id": {
+                                "type": "number",
+                                "value": ""
+                            },
+                            "media_format": "image"
+                            }
+                        ]
+                        }
+                    ],
+                    "scaled_by": 0.679746192893401,
+                    "scaled_from": "all - portrait",
+                    "scale": 1
+                    }
+                ]
+                }
+            },
+            "subject": "",
+            "in_app_version": 15
+            },
+      {
+            "id": 658954,
+            "timezone_type": "global",
+            "start_date_iso": "2024-01-15T15:04:42Z",
+            "end_date_iso": "2038-01-01T01:00:00Z",
+            "rules": {
+            "delay_first_message": 0,
+            "dismiss_after_views": 99999,
+            "display_order": "random",
+            "min_delay_between_messages": 0
+            },
+            "triggers": [],
+            "message_center": true,
+            "blackout_dates": [],
+            "interval_times": [],
+            "message": {
+            "id": 661745,
+            "name": "IAS - Black Friday - (Loop)",
+            "rules": {
+                "orientations": "portrait"
+            },
+            "priority": 9999,
+            "template": {
+                "formats": [
+                {
+                    "name": "[0.649746192893401]all - portrait",
+                    "orientation": "portrait",
+                    "language": "*",
+                    "size": {
+                    "w": {
+                        "type": "number",
+                        "value": 1152
+                    },
+                    "h": {
+                        "type": "number",
+                        "value": 2048
+                    }
+                    },
+                    "pages": [
+                    {
+                        "page_id": 820504,
+                        "page_name": "Page 1",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                        {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 1537
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "iPhone 13 & 14 - 13.png",
+                            "image": {
+                            "type": "asset",
+                            "value": "e69fb2f264bebaad0a11c2c83fd1d2b73bf03990"
+                            },
+                            "color": {
+                            "type": "color",
+                            "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                        }
+                        ],
+                        "buttons": [
+                        {
+                            "button_id": 702484,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                            "type": "number",
+                            "value": 1
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 819
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 144
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 116
+                            },
+                            "image_width": 358,
+                            "image_height": 91,
+                            "image_filename": "shop_now.png",
+                            "image_up": {
+                            "type": "asset",
+                            "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                            },
+                            "type": {
+                            "type": "text",
+                            "value": "CUSTOM"
+                            },
+                            "action": {
+                            "type": "text",
+                            "value": "https://www.shop.com/black_friday"
+                            },
+                            "game_id": {
+                            "type": "number",
+                            "value": ""
+                            },
+                            "media_format": "image"
+                        }
+                        ]
+                    },
+                    {
+                        "page_id": 600415,
+                        "page_name": "Page 2",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                        {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 1537
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "iPhone 13 & 14 - 14.png",
+                            "image": {
+                            "type": "asset",
+                            "value": "3ff8a45cdc71ac58f63f141e0e5141fce8a96c8d"
+                            },
+                            "color": {
+                            "type": "color",
+                            "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                        }
+                        ],
+                        "buttons": [
+                        {
+                            "button_id": 702484,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                            "type": "number",
+                            "value": 1
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 819
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 144
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 116
+                            },
+                            "image_width": 358,
+                            "image_height": 91,
+                            "image_filename": "shop_now.png",
+                            "image_up": {
+                            "type": "asset",
+                            "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                            },
+                            "type": {
+                            "type": "text",
+                            "value": "CUSTOM"
+                            },
+                            "action": {
+                            "type": "text",
+                            "value": "https://www.shop.com/black_friday"
+                            },
+                            "game_id": {
+                            "type": "number",
+                            "value": ""
+                            },
+                            "media_format": "image"
+                        }
+                        ]
+                    },
+                    {
+                        "page_id": 190986,
+                        "page_name": "Page 3",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                        {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 1537
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "iPhone 13 & 14 - 15.png",
+                            "image": {
+                            "type": "asset",
+                            "value": "d76063c1d88db363b1797b8e8a21d31ba57d4451"
+                            },
+                            "color": {
+                            "type": "color",
+                            "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                        }
+                        ],
+                        "buttons": [
+                        {
+                            "button_id": 702484,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                            "type": "number",
+                            "value": 1
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 819
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 144
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 116
+                            },
+                            "image_width": 358,
+                            "image_height": 91,
+                            "image_filename": "shop_now.png",
+                            "image_up": {
+                            "type": "asset",
+                            "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                            },
+                            "type": {
+                            "type": "text",
+                            "value": "CUSTOM"
+                            },
+                            "action": {
+                            "type": "text",
+                            "value": "https://www.shop.com/black_friday"
+                            },
+                            "game_id": {
+                            "type": "number",
+                            "value": ""
+                            },
+                            "media_format": "image"
+                        }
+                        ]
+                    },
+                    {
+                        "page_id": 650780,
+                        "page_name": "Page 4",
+                        "swipe_backward": -1,
+                        "swipe_forward": -1,
+                        "template_id": 49713,
+                        "images": [
+                        {
+                            "name": "Background",
+                            "ui_order": 0,
+                            "x": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 0
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 1537
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 2495
+                            },
+                            "image_width": 1537,
+                            "image_height": 2495,
+                            "image_filename": "iPhone 13 & 14 - 16.png",
+                            "image": {
+                            "type": "asset",
+                            "value": "2ebcc99933041a67afc9563edc93518aad2c3641"
+                            },
+                            "color": {
+                            "type": "color",
+                            "value": "FFFFFF"
+                            },
+                            "media_format": "image"
+                        }
+                        ],
+                        "buttons": [
+                        {
+                            "button_id": 702484,
+                            "name": "Button 1",
+                            "ui_order": 1,
+                            "x": {
+                            "type": "number",
+                            "value": 1
+                            },
+                            "y": {
+                            "type": "number",
+                            "value": 819
+                            },
+                            "w": {
+                            "type": "number",
+                            "value": 144
+                            },
+                            "h": {
+                            "type": "number",
+                            "value": 116
+                            },
+                            "image_width": 358,
+                            "image_height": 91,
+                            "image_filename": "shop_now.png",
+                            "image_up": {
+                            "type": "asset",
+                            "value": "9439e056df5c24d1cc0bd2f67fab8dad0593727d"
+                            },
+                            "type": {
+                            "type": "text",
+                            "value": "CUSTOM"
+                            },
+                            "action": {
+                            "type": "text",
+                            "value": "https://www.shop.com/black_friday"
+                            },
+                            "game_id": {
+                            "type": "number",
+                            "value": ""
+                            },
+                            "media_format": "image"
+                        }
+                        ]
+                    }
+                    ],
+                    "story_settings": {
+                    "page_duration": 3000,
+                    "last_page_progression": "loop",
+                    "progress_bar": {
+                        "bar_color": "#ffffff",
+                        "bg_color": "#7f7f7f",
+                        "w": -1,
+                        "h": 13,
+                        "segment_gap": 16
+                    },
+                    "dismiss_button": {
+                        "id": 126734,
+                        "name": "Default dismiss",
+                        "color": "#ffffff",
+                        "pressed_color": "#d0d0d0",
+                        "focused_color": "#d0d0d0",
+                        "size": 91,
+                        "margin_top": 39,
+                        "accessibility_text": "Dismiss"
+                    },
+                    "padding": {
+                        "top": 39,
+                        "right": 39,
+                        "bottom": 39,
+                        "left": 39
+                    }
+                    },
+                    "scaled_by": 0.649746192893401,
+                    "scaled_from": "all - portrait",
+                    "scale": 1
+                }
+                ]
+            }
+            },
+            "subject": "IAS - Black Friday - (Loop)",
+            "in_app_version": 14
+        }
+    ],
+    "rules": {
+      "delay_first_message": 0,
+      "max_messages_per_session": 99999,
+      "min_delay_between_messages": 0
+    },
+    "cdn_paths": {
+      "message_images": "https:\/\/content-cdn.swrve.com\/messaging\/message_image\/",
+      "message_fonts": "https:\/\/content-cdn.swrve.com\/messaging\/fonts\/"
+    },
+    "version": 2
+}

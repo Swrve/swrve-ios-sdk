@@ -6,19 +6,11 @@
 
 @interface Swrve ()
 - (void)initSwrveRestClient:(NSTimeInterval)timeOut urlSssionDelegate:(id <NSURLSessionDelegate>)urlSssionDelegate;
-@property(atomic) SwrveRESTClient *restClient;
 
 @end
 
 @interface SwrveMigrationsManager ()
 + (void)markAsMigrated;
-@end
-
-@interface SwrveMessageController ()
-
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
-@property(nonatomic, retain) UIWindow *inAppMessageWindow;
-
 @end
 
 @interface SwrveTestCampaginHoldouts : XCTestCase

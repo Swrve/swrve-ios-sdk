@@ -1,13 +1,15 @@
 
-#ifndef SwrveSDK_iOSTests_Bridging_Header_h
-#define SwrveSDK_iOSTests_Bridging_Header_h
-
-#import "Swrve.h"
-#import <SwrveSDK/Swrve+Private.h>
-
-#endif /* SwrveSDK_iOSTests_Bridging_Header_h */
-
 #import "SwrveTestHelper.h"
 #import <SwrveSDK/SwrveSDK-Swift.h>
 
+@interface SwrveNotificationManager()
++ (void)updateLastProcessedPushId:(NSString *)pushId;
+@end
+
+@interface Swrve()
+@property(atomic) NSURL *eventFilename;
+@property(atomic) NSMutableArray *eventBuffer;
+- (void)processNotificationResponseWithIdentifier:(NSString *)identifier andUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
+- (NSString *)signatureKey;
+@end
 

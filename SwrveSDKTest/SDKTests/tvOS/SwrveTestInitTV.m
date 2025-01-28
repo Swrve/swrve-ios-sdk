@@ -2,6 +2,12 @@
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface SwrveMigrationsManager (SwrveInternalAccess)
 + (void)setCurrentCacheVersion:(int)cacheVersion;
 @end
@@ -29,7 +35,7 @@
 
 - (void)testDeviceInfoWithtvOS {
     // Initialize SDK
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock idfa:@"12345"];
     [swrveMock appDidBecomeActive:nil];
@@ -84,7 +90,7 @@
 
     [SwrveLocalStorage saveSwrveUserId:@"bob"];
     
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock secondsSinceEpoch]).andReturn(1451610000);
     swrveMock = [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
@@ -95,7 +101,7 @@
     [SwrveLocalStorage saveUserJoinedTime:1420074000 forUserId:@"bob"];
 
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock2 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock2 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock2 secondsSinceEpoch]).andReturn(1451610000);
     swrveMock2 = [swrveMock2 initWithAppID:123 apiKey:@"SomeAPIKey"];
     [swrveMock2 appDidBecomeActive:nil];
@@ -106,7 +112,7 @@
     [SwrveLocalStorage saveUserJoinedTime:1427850000 forUserId:@"bob"];
 
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock3 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock3 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock3 secondsSinceEpoch]).andReturn(1451610000);
     swrveMock3 = [swrveMock3 initWithAppID:123 apiKey:@"SomeAPIKey"];
     [swrveMock3 appDidBecomeActive:nil];
@@ -117,7 +123,7 @@
     [SwrveLocalStorage saveUserJoinedTime:1420074000 forUserId:@"bob"];
 
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock4 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock4 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock4 secondsSinceEpoch]).andReturn(1451610000);
     swrveMock4 = [swrveMock4 initWithAppID:123 apiKey:@"SomeAPIKey"];
     [swrveMock4 appDidBecomeActive:nil];
@@ -128,7 +134,7 @@
     [SwrveLocalStorage saveUserJoinedTime:1420074000000 forUserId:@"bob"];
 
     [SwrveMigrationsManager setCurrentCacheVersion:0];
-    Swrve *swrveMock5 = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock5 = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock5 secondsSinceEpoch]).andReturn(1451610000);
     swrveMock5 = [swrveMock5 initWithAppID:123 apiKey:@"SomeAPIKey"];
     [swrveMock5 appDidBecomeActive:nil];

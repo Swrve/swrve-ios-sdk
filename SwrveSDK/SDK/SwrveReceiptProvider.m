@@ -34,8 +34,4 @@
     return [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
 }
 
-- (NSString *)base64encode:(NSData *)receipt API_AVAILABLE(ios(12.0)) {
-    return [receipt base64EncodedStringWithOptions:0];
-}
-
 @end

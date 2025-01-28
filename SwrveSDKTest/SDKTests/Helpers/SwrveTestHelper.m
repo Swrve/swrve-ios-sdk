@@ -11,14 +11,11 @@
 #import <OCMock/OCMock.h>
 #endif
 
-@interface SwrveSDK (InternalAccess)
-+ (void)resetSwrveSharedInstance;
-+ (void)addSharedInstance:(Swrve*)instance;
-@end
-
-@interface SwrveMigrationsManager (SwrveInternalAccess)
-+ (void)markAsMigrated;
-@end
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
 
 #if TARGET_OS_IOS
 @interface SwrvePush (SwrvePushInternalAccess)
@@ -159,8 +156,8 @@
 }
 
 // Makes a copy of the swrve_logo.png image for each asset in the array
-+ (void)createDummyPngAssets:(NSArray*)assets {
-    NSString *dummyImageFilePath = [[NSBundle mainBundle] pathForResource:@"swrve_logo" ofType:@"png"];
++ (void)createDummyAssets:(NSArray*)assets withResourceName: (NSString *) resourceName ofType: (NSString *) type {
+    NSString *dummyImageFilePath = [[NSBundle mainBundle] pathForResource:resourceName ofType:type];
     NSURL *fileURL = [NSURL fileURLWithPath:dummyImageFilePath];
     NSData *dummyImageData = [NSData dataWithContentsOfURL:fileURL];
     for (NSString *asset in assets) {
@@ -280,61 +277,24 @@
     });
 }
 
-+ (id)swrveMockWithMockedRestClientResponseCode:(int)httpCode mockData:(NSData *)mockData {
-    // mock all rest calls with success and empty data
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
-    id mockRestClient = OCMPartialMock(restClient);
-    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
-    OCMStub([mockResponse statusCode]).andReturn(httpCode);
-    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
-                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
-
-    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
-        swrveMock.restClient = mockRestClient;
-    });
-
-    return swrveMock;
++ (id)swrveBasicMockResponse {
+    return [SwrveTestHelper swrveMockResponse:200 mockData:nil];
 }
 
-+ (id)swrveMockWithMockedRestClient {
-    // mock all rest calls with success and empty data
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
-    id mockRestClient = OCMPartialMock(restClient);
-    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
-    OCMStub([mockResponse statusCode]).andReturn(200);
-    OCMStub([mockResponse MIMEType]).andReturn(@"image/png");
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
-                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
-
++ (id)swrveMockResponse:(int)httpCode mockData:(NSData *)mockData {
     Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    if (mockData == nil) {
+        mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    restClient.mockData = mockData;
+    restClient.mockedStatusCode = @(httpCode);
     OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
-        swrveMock.restClient = mockRestClient;
+        swrveMock.restClient = restClient;
     });
-
+    
     return swrveMock;
 }
-
-+ (id)swrveMockWithFailureMockedRestClient {
-    // mock all rest calls with success and empty data
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
-    id mockRestClient = OCMPartialMock(restClient);
-    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
-    OCMStub([mockResponse statusCode]).andReturn(500);
-    NSData *mockData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
-                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
-
-    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
-    OCMStub([swrveMock initSwrveRestClient:60 urlSssionDelegate:nil]).andDo(^(NSInvocation *invocation) {
-        swrveMock.restClient = mockRestClient;
-    });
-
-    return swrveMock;
-}
-
-
 
 + (Swrve *)initializeSwrveWithCampaignsFile:(NSString *)filename andConfig:(SwrveConfig *)config {
     return [self initialiseSwrveWithFile:filename type:SWRVE_CAMPAIGN_FILE andConfig:config];
@@ -368,7 +328,7 @@
     [config setAutoDownloadCampaignsAndResources:NO];
 
     [SwrveLogger debug:@"Finished setting up campaign data for unit tests...", nil];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClient];
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     OCMStub([swrveMock getNow]).andReturn(date);
     swrveMock = [swrveMock initWithAppID:123 apiKey:apiKey config:config];
     [swrveMock appDidBecomeActive:nil];

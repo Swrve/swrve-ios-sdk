@@ -2,8 +2,30 @@
 #import <OCMock/OCMock.h>
 #import "SwrveTestHelper.h"
 
-@interface Swrve(privateAccess)
+@interface SwrveEmpty(privateAccess)
 @property(atomic) SwrveMessageController *messaging;
+- (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback;
+- (int)userUpdate:(NSDictionary *)attributes;
+- (BOOL)processPermissionRequest:(NSString *)action;
+- (void)sendQueuedEvents;
+- (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
+- (void)mergeWithCurrentDeviceInfo:(NSDictionary *)attributes;
+- (void)handleNotificationToCampaign:(NSString *)campaignId;
+- (void)fetchNotificationCampaigns:(NSMutableSet *)campaignIds;
+- (NSString *)swrveSDKVersion;
+- (NSString *)appVersion;
+- (NSSet *)notificationCategories;
+- (NSString *)appGroupIdentifier;
+- (NSString *)userID;
+- (NSDictionary *)deviceInfo;
+- (id <SwrvePermissionsDelegate>)permissionsDelegate;
+- (double)flushRefreshDelay;
+- (NSInteger)nextEventSequenceNumber;
+- (NSString *)sessionToken;
+- (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
+- (void)removeSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
+- (id <NSURLSessionDelegate>)urlSessionDelegate;
+
 @end
 
 @interface SwrveTestDummy : XCTestCase
@@ -149,6 +171,56 @@
     [swrve markMessageCenterCampaignAsSeen:campaign];
 
     XCTAssertFalse([[SwrveQA sharedInstance] isQALogging]);
+    
+    (void)[swrve initWithAppID:1 apiKey:@"someKey"];
+    (void)[swrve initWithAppID:1 apiKey:@"someKey" config:[SwrveConfig new]];
+    [swrve swrveSDKVersion];
+    [swrve userUpdate:@"" withDate:[NSDate new]];
+    [swrve realTimeUserProperties:nil];
+    [swrve pushInboxMessages];
+    [swrve readPushInboxMessage:1 listener:nil];
+    [swrve engagePushInboxMessage:1 listener:nil];
+    [swrve deletePushInboxMessage:1 listener:nil];
+    [swrve pushInboxUpdateListener:nil];
+    
+#if TARGET_OS_IOS
+    [swrve sendDeviceUpdate];
+    [swrve processNotificationResponse:nil];
+    [swrve didReceiveRemoteNotification:@{} withBackgroundCompletionHandler:nil];
+    [swrve processNotificationResponse:nil];
+#endif
+    [swrve handleDeeplink:nil];
+    [swrve handleDeferredDeeplink:nil];
+    [swrve installAction:nil];
+    [swrve eventInternal:@"" payload:@{} triggerCallback:false];
+    [swrve queueEvent:@"" data:nil triggerCallback:false];
+    [swrve appVersion];
+    [swrve notificationCategories];
+    [swrve appGroupIdentifier];
+    [swrve handleNotificationToCampaign:@""];
+    [swrve permissionsDelegate];
+    [swrve mergeWithCurrentDeviceInfo:@{}];
+    [swrve identify:@"" onSuccess:nil onError:nil];
+    [swrve externalUserId];
+    [swrve flushRefreshDelay];
+    [swrve nextEventSequenceNumber];
+    [swrve sessionToken];
+    [swrve fetchNotificationCampaigns:[NSMutableSet new]];
+    [swrve setSwrveSessionDelegate:nil];
+    [swrve removeSwrveSessionDelegate:nil];
+    [swrve urlSessionDelegate];
+    [swrve start];
+    [swrve started];
+    [swrve startWithUserId:@""];
+    [swrve stopTracking];
+    [swrve embeddedMessageWasShownToUser:nil];
+    [swrve embeddedButtonWasPressed:nil buttonName:@""];
+    [swrve personalizeEmbeddedMessageData:nil withPersonalization:@{}];
+    [swrve messageCenterCampaignWithID:1 andPersonalization:@{}];
+    [swrve idfa:@""];
+    [swrve embeddedControlMessageImpressionEvent:nil];
+    [swrve processPermissionRequest:@""];
+
 }
 
 @end

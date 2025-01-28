@@ -239,7 +239,7 @@
     return nil;
 }
 
-- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSMutableDictionary *)payload {
+- (void)sendPushNotificationEngagedEvent:(NSString *)pushId withPayload:(NSDictionary *)payload {
 #pragma unused(pushId, payload)
 }
 
@@ -387,6 +387,8 @@
 #pragma unused(message)
 }
 
+- (void)dismissMessageWindow {
+}
 
 #pragma mark -
 

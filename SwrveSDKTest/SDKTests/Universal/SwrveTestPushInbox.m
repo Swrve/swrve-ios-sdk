@@ -10,6 +10,12 @@
 #import "SwrveSDK-Swift.h"
 #endif
 
+#if TARGET_OS_TV
+#import "SwrveSDK_tvOSTests-Swift.h"
+#else
+#import "SwrveSDK_iOSTests-Swift.h"
+#endif
+
 @interface Swrve (Internal)
 @property(atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrvePushInboxController *pushInbox;
@@ -40,8 +46,15 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 - (void)testPushInboxMessages_Load {
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaigns_push_inbox" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
+    
+    Swrve *swrveMock = OCMPartialMock([Swrve alloc]);
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = mockData;
+    restClient.mockedStatusCode = @200;
+    swrveMock.restClient = restClient;
+    
+    
     [swrveMock appDidBecomeActive:nil];
     
     NSArray* inboxMessages =  [swrveMock pushInboxMessages];
@@ -99,9 +112,10 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 - (void) testGetPushInboxMessages {
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaigns_push_inbox_past_and_future" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
+    
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [SwrveTestHelper removeSDKData];
-    [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     
     NSArray* inboxMessages =  [swrveMock pushInboxMessages];
@@ -114,7 +128,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 }
 
 - (void) testRead_sdkNotReady {
-    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
 
@@ -133,7 +147,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 }
 
 - (void) testDelete_sdkNotReady {
-    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
 
@@ -152,7 +166,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 }
 
 - (void) testEngage_sdkNotReady {
-    Swrve *swrveMock = (Swrve *) OCMPartialMock([Swrve alloc]);
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
 
@@ -513,9 +527,11 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 - (void) testInvokePushInboxUpdateDelegate {
     NSString* json = @"{\"push_inbox_hash\": \"test_hash_1\"}";
     NSData *mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
-    id mockPushInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxUpdateDelegate));
+        
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:mockData];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    
+    id mockPushInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxUpdateDelegate));
     [swrveMock pushInboxUpdateListener:mockPushInboxDelegate];
     [swrveMock appDidBecomeActive:nil];
     [swrveMock start];
@@ -530,14 +546,12 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     //set-up a new rest client, with a hash change, and verify delegate gets called
     json = @"{\"push_inbox_hash\": \"test_hash_2\"}";
     mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
-    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
-    id mockRestClient = OCMPartialMock(restClient);
-    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
-    OCMStub([mockResponse statusCode]).andReturn(200);
-    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
-                          completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
-    swrveMock.restClient = mockRestClient;
     
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = mockData;
+    restClient.mockedStatusCode = @200;
+    swrveMock.restClient = restClient;
+
     [swrveMock refreshCampaignsAndResources];
     OCMVerify(times(2), [mockPushInboxDelegate messagesUpdated]);
     
@@ -549,9 +563,11 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 - (void) testInvokePushInboxUpdateDelegateOnceFirstTime {
     NSString* json = @"{}";
     NSData *mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:200 mockData:mockData];
-    id mockPushInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxUpdateDelegate));
+    
+    Swrve *swrveMock = [SwrveTestHelper swrveBasicMockResponse];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    id mockPushInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxUpdateDelegate));
     [swrveMock pushInboxUpdateListener:mockPushInboxDelegate];
     [swrveMock appDidBecomeActive:nil];
     [swrveMock start];
@@ -582,12 +598,11 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
 
 - (id)swrveMockWithResponseCode:(int)httpCode inboxUpdateResponseBody:(NSString *)inboxUpdateResponseBody {
     NSData *mockResponseData = [inboxUpdateResponseBody dataUsingEncoding:NSUTF8StringEncoding];
-    Swrve *swrveMock = [SwrveTestHelper swrveMockWithMockedRestClientResponseCode:httpCode mockData:mockResponseData];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:httpCode mockData:mockResponseData];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
 #pragma clang diagnostic pop
-    [swrveMock appDidBecomeActive:nil];
     
     // set the inbox messages in the cache
     NSString *jsonFile = @"campaigns_push_inbox";
@@ -598,7 +613,6 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     [[swrveMock pushInbox] updatePushInbox:inboxJson writeToCache:YES];
     return swrveMock;
 }
-
 
 @end
 

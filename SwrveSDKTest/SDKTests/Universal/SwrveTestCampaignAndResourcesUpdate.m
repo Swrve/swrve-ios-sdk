@@ -20,7 +20,6 @@
 @property (atomic) NSTimer *campaignsAndResourcesTimer;
 @property (atomic) int campaignsAndResourcesTimerSeconds;
 @property (nonatomic) SwrveReceiptProvider *receiptProvider;
-@property (atomic) SwrveRESTClient *restClient;
 
 - (void)campaignsAndResourcesTimerTick:(NSTimer *)timer;
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer;

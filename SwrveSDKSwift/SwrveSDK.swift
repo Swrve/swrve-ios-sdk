@@ -478,13 +478,29 @@ public enum SwrveSDKError: Error, Equatable {
 
         /**
      Called to send the push engaged event to Swrve.
-
      - Parameter pushId: Push notification identifier.
-     */
-
+    */
         @objc public class func sendPushEngagedEvent(_ pushId: String) {
             checkInstance()
             sharedInstance.sendPushNotificationEngagedEvent(pushId, withPayload: nil)
+        }
+
+        /**
+     Called to send the push engaged event to Swrve.
+     - Parameter pushId: The push id for engagement (the _p value from the push payload)
+     - Parameter trackingData: Tracking data to be sent with the event (the _td value from the push payload)
+     - Parameter platform: Platform of the push notification (the _smp value from the push payload)
+     */
+        @objc public class func sendPushEngagedEvent(_ pushId: String, _ trackingData: String, _ platform: String) {
+            checkInstance()
+            var payload: [String: String] = [:]
+            if !trackingData.isEmpty {
+                payload[SwrveNotificationTrackingDataKey] = trackingData
+            }
+            if !platform.isEmpty {
+                payload[SwrveNotificationPlatformKey] = platform
+            }
+            sharedInstance.sendPushNotificationEngagedEvent(pushId, withPayload: payload)
         }
 
         /**
@@ -857,6 +873,14 @@ public enum SwrveSDKError: Error, Equatable {
     @objc public class func idfa(_ idfa: String) {
         checkInstance()
         sharedInstance.idfa(idfa)
+    }
+
+    /**
+     Call this method to programmatically dismiss an in-app message
+     */
+    @objc public class func dismissMessageWindow() {
+        checkInstance()
+        sharedInstance.dismissMessageWindow()
     }
 
 }

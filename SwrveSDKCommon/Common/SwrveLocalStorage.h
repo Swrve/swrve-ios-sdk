@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
 
-enum SwrveTrackingState {
+typedef enum SwrveTrackingState {
     UNKNOWN = 0,
     STARTED = 1,
     EVENT_SENDING_PAUSED = 2,
     STOPPED = 3
-};
+} SwrveTrackingState;
 
 @interface SwrveLocalStorage : NSObject
 
