@@ -13,7 +13,6 @@
 @interface SwrveNotificationManager (InternalAccess)
 + (void)downloadAttachment:(NSString *)mediaUrl withCompletedContentCallback:(void (^)(UNNotificationAttachment *attachment, NSError *error))callback;
 + (void)updateLastProcessedPushId:(NSString *)pushId;
-+ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo;
 @end
 
 

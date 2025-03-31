@@ -524,6 +524,11 @@
         [SwrveLogger debug:@"Page view event for page_id %@ already sent", pageId];
         return;
     }
+    
+    if (self.message.messageID == nil || pageId == nil) {
+        [SwrveLogger debug:@"Failed to send page view event, messageID: %@ pageId: %@",self.message.messageID, pageId];
+        return;
+    }
 
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSMutableDictionary *eventData = [NSMutableDictionary new];
@@ -540,7 +545,10 @@
     [eventData setValue:eventPayload forKey:@"payload"];
 
     [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
-    [self.pageViewEventsSent addObject:pageId];
+    
+    if (pageId != nil) {
+        [self.pageViewEventsSent addObject:pageId];
+    }
 }
 
 - (void)queuePageNavEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId pageIdToShow:(NSNumber *)pageIdToShow buttonName:(NSString *)buttonName {
@@ -548,7 +556,12 @@
         [SwrveLogger debug:@"Navigation event for button_id %@ already sent", buttonId];
         return;
     }
-
+    
+    if (self.message.messageID == nil || pageId == nil) {
+        [SwrveLogger error:@"Failed to send navigation event, messageID: %@ pageId: %@",self.message.messageID, pageId];
+        return;
+    }
+    
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSMutableDictionary *eventData = [NSMutableDictionary new];
     [eventData setValue:@"iam" forKey:@"campaignType"];
@@ -580,6 +593,11 @@
 }
 
 - (void)queueDismissEvent:(NSNumber *)pageId buttonId:(NSNumber *)buttonId buttonName:(NSString *)buttonName {
+    if (self.message.messageID == nil || pageId == nil) {
+        [SwrveLogger debug:@"Failed to send dismisss event, messageID: %@ pageId: %@",self.message.messageID, pageId];
+        return;
+    }
+
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSMutableDictionary *eventData = [NSMutableDictionary new];
     [eventData setValue:@"iam" forKey:@"campaignType"];

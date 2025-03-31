@@ -4,14 +4,14 @@ import PackageDescription
 
 let BinaryTargetSwrveSDK: Target = .binaryTarget(
     name: "SwrveSDK",
-    url: "https://github.com/Swrve/swrve-ios-sdk/releases/download/10.2.0/SwrveSDKStatic.xcframework.zip",
-    checksum: "97f61658b6afe7b8d94cb6935633676cc5ec4cbe7c2c5e0868f6166953edb339"
+    url: "https://github.com/Swrve/swrve-ios-sdk/releases/download/10.3.0/SwrveSDKStatic.xcframework.zip",
+    checksum: "7ce973f70d0d1400e3a37fd4f3ccc226ce9300443cd8f62211dc6918707d5604"
 )
 
 let BinaryTargetSwrveSDKCommon: Target = .binaryTarget(
     name: "SwrveSDKCommon",
-    url: "https://github.com/Swrve/swrve-ios-sdk/releases/download/10.2.0/SwrveSDKCommonStatic.xcframework.zip",
-    checksum: "fe109302629ae0066439931dc5f044e528370d3301fe1265717236642fbf64d8"
+    url: "https://github.com/Swrve/swrve-ios-sdk/releases/download/10.3.0/SwrveSDKCommonStatic.xcframework.zip",
+    checksum: "c844036e33aa000516daef432cba7bea64a2c4a868273babae4140a16509a3d5"
 )
 
 let package = Package(

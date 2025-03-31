@@ -1,7 +1,7 @@
 import Foundation
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 /// SwrveIAPRewards contains additional IAP rewards that you want to send to Swrve.

@@ -69,7 +69,7 @@
 
     // expect engaged event to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMockManaged inBuffer:eventBufferMock withPushId:@"1111"];
+    [self expectEngagedEvent:swrveMockManaged inBuffer:eventBufferMock withPushId:@"1111" deeplink:nil];
     OCMExpect([swrveMockManaged sendQueuedEventsWithCallback:nil eventFileCallback:nil]);
 
     [SwrveSDK sendPushEngagedEvent:@"1111"];
@@ -101,7 +101,7 @@
 
     // expect engaged event to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMockManaged inBuffer:eventBufferMock withPushId:@"1111"];
+    [self expectEngagedEvent:swrveMockManaged inBuffer:eventBufferMock withPushId:@"1111" deeplink:nil];
     OCMExpect([swrveMockManaged sendQueuedEventsWithCallback:nil eventFileCallback:nil]);
 
     [SwrveSDK sendPushEngagedEvent:@"1111"];
@@ -134,7 +134,7 @@
 
     // expect engaged event to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"1"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"1" deeplink:nil];
 
     // engage the push
     SwrvePush *puskSDK = [swrveMock push];
@@ -158,7 +158,7 @@
 
     // expect engaged event to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"2"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"2" deeplink:nil];
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
     [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"2"} notificationRequestId:@"2"];
@@ -174,8 +174,8 @@
 
     // expect 2 engaged event to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"3"];
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"4"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"3" deeplink:nil];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"4" deeplink:nil];
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
     [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"3"} notificationRequestId:@"3"];
@@ -195,8 +195,8 @@
 
     // expect engaged event and generic to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"5"];
-    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"5" contextId:@"0" buttonText:@"btn1"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"5" deeplink:@"oldprotocol:\\/\\/custom"];
+    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"5" contextId:@"0" buttonText:@"btn1" deeplink:@"oldprotocol:\\/\\/custom"];
     OCMExpect([mockApplication canOpenURL:OCMOCK_ANY]).andReturn(YES);
 
     NSDictionary *userInfo = @{
@@ -268,8 +268,8 @@
 
     // expect engaged event and generic to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"7"];
-    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"7" contextId:@"1" buttonText:@"btn2"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"7" deeplink:nil];
+    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"7" contextId:@"1" buttonText:@"btn2" deeplink:nil];
 
     NSDictionary *userInfo = @{
             @"_p": @"7",
@@ -311,8 +311,8 @@
 
     // expect engaged event and generic to be added to eventBuffer queue
     id eventBufferMock = OCMPartialMock([NSMutableArray array]);
-    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"8"];
-    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"8" contextId:@"2" buttonText:@"btn3"];
+    [self expectEngagedEvent:swrveMock inBuffer:eventBufferMock withPushId:@"8" deeplink:nil];
+    [self expectGenericEventButtonClick:swrveMock inBuffer:eventBufferMock withPushId:@"8" contextId:@"2" buttonText:@"btn3" deeplink:nil];
 
     NSDictionary *userInfo = @{
             @"_p": @"8",
@@ -392,10 +392,18 @@
     return swrveMock;
 }
 
-- (void)expectEngagedEvent:(Swrve *)swrveMock inBuffer:(id)eventBufferMock withPushId:(NSString *)pushId {
+- (void)expectEngagedEvent:(Swrve *)swrveMock inBuffer:(id)eventBufferMock withPushId:(NSString *)pushId deeplink:(NSString *) deeplink {
     // expect engaged event to be added to eventBuffer queue
     [swrveMock setEventBuffer:eventBufferMock];
-    NSString *expectedEvent = @"{\"payload\":{},\"seqnum\":456,\"name\":\"Swrve.Messages.Push-";
+    NSString *expectedEvent = @"{\"payload\":";
+    if (deeplink != nil) {
+        expectedEvent = [expectedEvent stringByAppendingString:@"{\"deeplink\":\""];
+        expectedEvent = [expectedEvent stringByAppendingString:deeplink];
+        expectedEvent = [expectedEvent stringByAppendingString:@"\"}"];
+    } else {
+        expectedEvent = [expectedEvent stringByAppendingString:@"{}"];
+    }
+    expectedEvent = [expectedEvent stringByAppendingString:@",\"seqnum\":456,\"name\":\"Swrve.Messages.Push-"];
     expectedEvent = [expectedEvent stringByAppendingString:pushId];
     expectedEvent = [expectedEvent stringByAppendingString:@".engaged\",\"type\":\"event\",\"time\":"];
     expectedEvent = [expectedEvent stringByAppendingString:@"987654321"];
@@ -403,7 +411,7 @@
     OCMExpect([eventBufferMock addObject:expectedEvent]).andForwardToRealObject();
 }
 
-- (void)expectGenericEventButtonClick:(Swrve *)swrveMock inBuffer:(id)eventBufferMock withPushId:(NSString *)pushId contextId:(NSString *)contextId buttonText:(NSString *)buttonText {
+- (void)expectGenericEventButtonClick:(Swrve *)swrveMock inBuffer:(id)eventBufferMock withPushId:(NSString *)pushId contextId:(NSString *)contextId buttonText:(NSString *)buttonText deeplink:(NSString *) deeplink {
     // expect generic button click event to be added to eventBuffer queue
     [swrveMock setEventBuffer:eventBufferMock];
     NSString *expectedEvent = @"{\"actionType\":\"button_click\",\"campaignType\":\"push\",\"time\":";
@@ -412,7 +420,13 @@
     expectedEvent = [expectedEvent stringByAppendingString:pushId];
     expectedEvent = [expectedEvent stringByAppendingString:@"\",\"seqnum\":456,\"contextId\":\""];
     expectedEvent = [expectedEvent stringByAppendingString:contextId];
-    expectedEvent = [expectedEvent stringByAppendingString:@"\",\"payload\":{\"buttonText\":\""];
+    expectedEvent = [expectedEvent stringByAppendingString:@"\",\"payload\":{"];
+    if (deeplink != nil) {
+        expectedEvent = [expectedEvent stringByAppendingString:@"\"deeplink\":\""];
+        expectedEvent = [expectedEvent stringByAppendingString:deeplink];
+        expectedEvent = [expectedEvent stringByAppendingString:@"\","];
+    }
+    expectedEvent = [expectedEvent stringByAppendingString:@"\"buttonText\":\""];
     expectedEvent = [expectedEvent stringByAppendingString:buttonText];
     expectedEvent = [expectedEvent stringByAppendingString:@"\"},\"type\":\"generic_campaign_event\"}"];
     OCMExpect([eventBufferMock addObject:expectedEvent]).andForwardToRealObject();

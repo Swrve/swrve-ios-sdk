@@ -74,6 +74,7 @@
 @end
 
 @interface SwrveMessageViewController ()
+- (void)queuePageViewEvent:(NSNumber *)pageId;
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(SwrveMessagePageViewController *)viewController;
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(SwrveMessagePageViewController *)viewController;
 - (CGSize)windowSize;
@@ -2972,4 +2973,24 @@
     OCMVerify(times(0), [swrveMock reIdentifyUser]);
 }
 
+- (void)testQueuePageViewEvent_ValidPageIdAndMessageId_DoesNotCrash {
+    SwrveMessageController *messageController = [[SwrveMessageController alloc] init];
+    
+    SwrveInAppCampaign *campaign = [[SwrveInAppCampaign alloc] initAtTime:[NSDate date]
+                                                             fromDictionary:@{}
+                                                            withAssetsQueue:@[]
+                                                              forController:messageController
+                                                         withPersonalization:@{}];
+
+    SwrveMessage *message = [[SwrveMessage alloc] initWithDictionary:@{}
+                                                            campaign:campaign
+                                                          controller:messageController];
+
+    SwrveMessageViewController *viewController = [[SwrveMessageViewController alloc] initWithMessageController:messageController
+                                                                                                       message:message
+                                                                                              personalization:nil];
+
+    // Ensure no crash when sending invalid pageId
+    XCTAssertNoThrow([viewController queuePageViewEvent:nil]);
+}
 @end

@@ -101,8 +101,8 @@ class MockSwrve: NSObject, SwrveProtocol {
     }
 
     #if os(iOS)
-        func processNotificationResponse(_ response: UNNotificationResponse!) {
-        }
+    func processNotificationResponse(_ response: UNNotificationResponse!) {
+    }
     #endif
 
     func didReceiveRemoteNotification(
@@ -176,15 +176,15 @@ class MockSwrve: NSObject, SwrveProtocol {
     }
 
     #if os(iOS)
-        func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation) -> [SwrveCampaign]! {
-            nil
-        }
+    func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation) -> [SwrveCampaign]! {
+        nil
+    }
 
-        func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation, withPersonalization personalization: [AnyHashable: Any]!)
-            -> [SwrveCampaign]!
-        {
-            nil
-        }
+    func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation, withPersonalization personalization: [AnyHashable: Any]!)
+        -> [SwrveCampaign]!
+    {
+        nil
+    }
     #endif
 
     func showMessageCenter(_ campaign: SwrveCampaign!) -> Bool {
@@ -227,21 +227,40 @@ class MockSwrve: NSObject, SwrveProtocol {
 class SwrveSDKTests: XCTestCase {
 
     #if os(iOS)
-        func testSendPushEngagedEvent() {
+    func testSendPushEngagedEvent() {
 
-            let mockSwrve = MockSwrve(appID: 123, apiKey: "apiKey")
-            SwrveSDK.sharedInstance = mockSwrve
+        let mockSwrve = MockSwrve(appID: 123, apiKey: "apiKey")
+        SwrveSDK.sharedInstance = mockSwrve
 
-            SwrveSDK.sendPushEngagedEvent("testPushId", "testTrackingData", "testPlatform")
+        SwrveSDK.sendPushEngagedEvent("testPushId", "testTrackingData", "testPlatform")
 
-            XCTAssertEqual(mockSwrve!.lastPushNotificationEngagedPushId, "testPushId")
-            if let payload = mockSwrve!.lastPushNotificationEngagedPayload {
-                XCTAssertEqual(payload[SwrveNotificationTrackingDataKey] as? String, "testTrackingData")
-                XCTAssertEqual(payload[SwrveNotificationPlatformKey] as? String, "testPlatform")
-            } else {
-                XCTFail("Payload is nil")
-            }
+        XCTAssertEqual(mockSwrve!.lastPushNotificationEngagedPushId, "testPushId")
+        if let payload = mockSwrve!.lastPushNotificationEngagedPayload {
+            XCTAssertEqual(payload.count, 2)
+            XCTAssertEqual(payload[SwrveNotificationTrackingDataKey] as? String, "testTrackingData")
+            XCTAssertEqual(payload[SwrveNotificationPlatformKey] as? String, "testPlatform")
+        } else {
+            XCTFail("Payload is nil")
         }
+    }
+
+    func testSendPushEngagedEventWithDeeplink() {
+
+        let mockSwrve = MockSwrve(appID: 123, apiKey: "apiKey")
+        SwrveSDK.sharedInstance = mockSwrve
+
+        SwrveSDK.sendPushEngagedEvent("testPushId", "testTrackingData", "testPlatform", "swrve://deeplink")
+
+        XCTAssertEqual(mockSwrve!.lastPushNotificationEngagedPushId, "testPushId")
+        if let payload = mockSwrve!.lastPushNotificationEngagedPayload {
+            XCTAssertEqual(payload.count, 3)
+            XCTAssertEqual(payload[SwrveNotificationTrackingDataKey] as? String, "testTrackingData")
+            XCTAssertEqual(payload[SwrveNotificationPlatformKey] as? String, "testPlatform")
+            XCTAssertEqual(payload["deeplink"] as? String, "swrve://deeplink")
+        } else {
+            XCTFail("Payload is nil")
+        }
+    }
     #endif
 
 }

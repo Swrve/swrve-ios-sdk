@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 @objc public class SwrveMessage: SwrveBaseMessage {
@@ -53,33 +53,33 @@ import UIKit
 
     #if os(iOS)
 
-        /// Obtain the best format for the given orientation.
-        ///
-        /// - Parameter orientation: Wanted orientation for the message.
-        /// - Returns: In-app message format for the given orientation.
-        @objc public func bestFormat(for orientation: UIInterfaceOrientation) -> SwrveMessageFormat? {
-            for format in formats {
-                let formatIsLandscape = format.orientation == SWRVE_ORIENTATION_LANDSCAPE
-                if orientation.isLandscape {
-                    if formatIsLandscape {
-                        return format
-                    }
-                } else {
-                    if !formatIsLandscape {
-                        return format
-                    }
+    /// Obtain the best format for the given orientation.
+    ///
+    /// - Parameter orientation: Wanted orientation for the message.
+    /// - Returns: In-app message format for the given orientation.
+    @objc public func bestFormat(for orientation: UIInterfaceOrientation) -> SwrveMessageFormat? {
+        for format in formats {
+            let formatIsLandscape = format.orientation == SWRVE_ORIENTATION_LANDSCAPE
+            if orientation.isLandscape {
+                if formatIsLandscape {
+                    return format
+                }
+            } else {
+                if !formatIsLandscape {
+                    return format
                 }
             }
-            return nil
         }
+        return nil
+    }
 
-        /// Check if the message has any format for the given device orientation.
-        ///
-        /// - Parameter orientation: Device orientation.
-        /// - Returns: TRUE if the message has any format with the given orientation.
-        @objc public func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
-            bestFormat(for: orientation) != nil
-        }
+    /// Check if the message has any format for the given device orientation.
+    ///
+    /// - Parameter orientation: Device orientation.
+    /// - Returns: TRUE if the message has any format with the given orientation.
+    @objc public func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
+        bestFormat(for: orientation) != nil
+    }
 
     #endif
 

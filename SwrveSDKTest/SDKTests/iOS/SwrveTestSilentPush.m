@@ -16,12 +16,11 @@
 - (void)testNotHandleSilentPushMissingSilentKey {
     id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
     // should not handle the push, missing @"_sp" key.
+    NSString *silentPayloadString = @"{\"New Group 1\":{\"a\":\"b\"},\"New Group 2\":{\"c\":\"b\"}}";
     NSDictionary *userInfo = @{
-                              @"_s.SilentPayload":@{
-                                      @"Mykey" : @"MyValue",
-                                      @"Mykey2" : @"MyValue2"},
-                              @"version": @1
-                              };
+                               @"_s.SilentPayload" : silentPayloadString,
+                               @"version": @1
+                               };
 
     XCTestExpectation *notHandledPushExpectation = [self expectationWithDescription:@"completionHandler"];
     BOOL isPushHandledBySwrve = [swrvePushMock handleSilentPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
@@ -46,11 +45,11 @@
     // Force the lastProcessedPushId to be the same as the push on this test.
     [swrvePushMock setValue:@"999" forKey:@"lastProcessedPushId"];
     // Should not handle the push, regarding the pushId @"999" is the lastProcessedPushId.
+
+    NSString *silentPayloadString = @"{\"New Group 1\":{\"a\":\"b\"},\"New Group 2\":{\"c\":\"b\"}}";
     NSDictionary *userInfo = @{
-                               @"_sp": @"999",
-                               @"_s.SilentPayload":@{
-                                       @"Mykey" : @"MyValue",
-                                       @"Mykey2" : @"MyValue2"},
+                               @"_sp": @999,
+                               @"_s.SilentPayload" : silentPayloadString,
                                @"version": @1
                                };
 
@@ -74,19 +73,23 @@
 }
 
 - (void)testHandleSilentPushWithPayload {
+    
     id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
+    
+    NSString *silentPayloadString = @"{\"New Group 1\":{\"a\":\"b\"},\"New Group 2\":{\"c\":\"b\"}}";
     NSDictionary *userInfo = @{
-                               @"_sp": @"0",
-                               @"_s.SilentPayload":@{
-                                   @"Mykey" : @"MyValue",
-                                   @"Mykey2" : @"MyValue2"},
+                               @"_sp": @999,
+                               @"_s.SilentPayload": silentPayloadString,
                                @"version": @1
                                };
 
     XCTestExpectation *isHandledSilentPushExpectation = [self expectationWithDescription:@"completionHandler"];
     BOOL isPushHandledBySwrve = [swrvePushMock handleSilentPushNotification:userInfo withCompletionHandler:^(UIBackgroundFetchResult fetch, NSDictionary *dic) {
         XCTAssertEqual(fetch, UIBackgroundFetchResultNoData);
-        NSDictionary *expectedpayload = @{ @"Mykey": @"MyValue", @"Mykey2": @"MyValue2"};
+        NSDictionary *expectedpayload = @{
+            @"New Group 1": @{ @"a": @"b"},
+            @"New Group 2": @{ @"c": @"b"}
+        };
         XCTAssertEqualObjects(dic, expectedpayload);
         [isHandledSilentPushExpectation fulfill];
     }];

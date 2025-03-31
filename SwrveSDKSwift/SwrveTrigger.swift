@@ -17,7 +17,6 @@ import Foundation
 
     /// Initializes triggers from a dictionary
     /// - Parameter dictionary: The dictionary containing trigger information
-
     class func initTriggers(from dictionary: [String: Any]) -> [SwrveTrigger]? {
         guard let jsonTriggers = dictionary[triggerEventListKey] as? [[String: Any]] else {
             return nil
@@ -33,7 +32,6 @@ import Foundation
 
     /// Initializes a trigger from a dictionary
     /// - Parameter dictionary: The dictionary containing trigger information
-
     @objc public init?(dictionary: [String: Any]) {
         guard let eventName = dictionary[triggerEventNameKey] as? String else {
             return nil
@@ -56,7 +54,6 @@ import Foundation
 
     /// Produces conditions from a dictionary
     /// - Parameter dictionary: The dictionary containing condition information
-
     private func produceConditions(from dictionary: [String: Any]) -> [SwrveTriggerCondition]? {
         var resultantConditions = [SwrveTriggerCondition]()
         guard !dictionary.isEmpty else {
@@ -120,7 +117,6 @@ import Foundation
     /// Checks if the trigger can fire based on a payload
     /// - Parameter payload: The payload containing event information
     /// - Returns: Boolean indicating if the trigger can fire
-
     @objc public func canTrigger(withPayload payload: [AnyHashable: Any]) -> Bool {
         var canTrigger = true
 
@@ -143,7 +139,6 @@ import Foundation
 
     /// Checks if this is a valid trigger
     /// - Returns: Boolean indicating if the trigger is valid
-
     func isValid() -> Bool {
         isValidTrigger
     }

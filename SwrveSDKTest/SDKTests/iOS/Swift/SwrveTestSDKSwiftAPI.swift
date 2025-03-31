@@ -62,16 +62,16 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             SwrveSDK.shutdown()
 
             #if os(iOS)
-                // Device updates
-                SwrveSDK.setDeviceToken(Data())
-                SwrveSDK.deviceToken()
+            // Device updates
+            SwrveSDK.setDeviceToken(Data())
+            SwrveSDK.deviceToken()
 
-                // Remote notifications
-                SwrveSDK.didReceiveRemoteNotification(["key": "value"]) { (result, userInfo) in
-                    // Handle background completion handler
-                }
-                SwrveSDK.sendPushEngagedEvent("pushId")
-                SwrveSDK.processNotificationResponse(UNNotificationResponse.testNotificationResponse(with: "Test"))
+            // Remote notifications
+            SwrveSDK.didReceiveRemoteNotification(["key": "value"]) { (result, userInfo) in
+                // Handle background completion handler
+            }
+            SwrveSDK.sendPushEngagedEvent("pushId")
+            SwrveSDK.processNotificationResponse(UNNotificationResponse.testNotificationResponse(with: "Test"))
             #endif
 
             // Handle deeplinks
@@ -114,8 +114,8 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             let campaign = SwrveSDK.messageCenterCampaign(withID: 1, andPersonalization: ["key": "value"])
 
             #if os(iOS)
-                SwrveSDK.messageCenterCampaignsThatSupport(.portrait)
-                SwrveSDK.messageCenterCampaignsThatSupport(.portrait, withPersonalization: ["key": "value"])
+            SwrveSDK.messageCenterCampaignsThatSupport(.portrait)
+            SwrveSDK.messageCenterCampaignsThatSupport(.portrait, withPersonalization: ["key": "value"])
             #endif
 
             // Show and remove message center campaign

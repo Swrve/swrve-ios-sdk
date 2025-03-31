@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 /// Base campaign class representing a campaign in the Swrve SDK.
@@ -156,9 +156,9 @@ import UIKit
     /// - Returns: `true` if the campaign supports the orientation.
     ///
     #if os(iOS)
-        @objc public func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
-            false
-        }
+    @objc public func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
+        false
+    }
     #endif
 
     /// Checks if all required assets are ready for the campaign.

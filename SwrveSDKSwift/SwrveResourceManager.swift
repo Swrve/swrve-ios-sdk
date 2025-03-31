@@ -182,6 +182,7 @@ import Foundation
     @objc public dynamic var id: String = ""
     @objc public dynamic var name: String = ""
     @objc public dynamic var caseIndex: Int = 0
+
     /// Create an instance with the given attributes.
     ///
     /// - Parameters:

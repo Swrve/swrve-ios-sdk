@@ -13,10 +13,8 @@
     /// The message has been deleted
     case DELETED
 
-    /**
-     This is necessary to display the enum that uses `@objc`.
-     - Returns: A string representing the message state (`"UNREAD"` or `"READ" or "DELETED"`).
-     */
+    /// This is necessary to display the enum that uses `@objc`.
+    /// - Returns: A string representing the message state (`"UNREAD"` or `"READ" or "DELETED"`).
     public var description: String {
         switch self {
         case .UNREAD:

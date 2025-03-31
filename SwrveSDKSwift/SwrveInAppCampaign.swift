@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 @objc public class SwrveInAppCampaign: SwrveCampaign {
@@ -143,13 +143,9 @@ import UIKit
         super.setMessageMinDelayThrottle(at: timeDismissed)
     }
 
-    /**
-     Quick check to see if this campaign might have messages matching this event trigger.
-     This is used to decide if the campaign is a valid candidate for automatically showing at session start.
-
-     - Parameter event: Trigger event.
-     - Returns: `true` if the campaign contains a message for the given trigger.
-     */
+    /// Quick check to see if this campaign might have messages matching this event trigger. This is used to decide if the campaign is a valid candidate for automatically showing at session start.
+    /// - Parameter event: Trigger event.
+    /// - Returns: `true` if the campaign contains a message for the given trigger.
     func hasMessage(forEvent event: String) -> Bool {
         hasMessage(forEvent: event, withPayload: nil)
     }
@@ -200,17 +196,17 @@ import UIKit
     }
 
     #if os(iOS)
-        @objc public override func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
-            if orientation == .unknown {
-                return true
-            }
-
-            if message!.supportsOrientation(orientation) {
-                return true
-            }
-
-            return message?.supportsOrientation(orientation) ?? false
+    @objc public override func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
+        if orientation == .unknown {
+            return true
         }
+
+        if message!.supportsOrientation(orientation) {
+            return true
+        }
+
+        return message?.supportsOrientation(orientation) ?? false
+    }
     #endif
 
     @objc override public func assetsReady(_ assets: Set<String>, withPersonalization personalization: [String: Any]) -> Bool {

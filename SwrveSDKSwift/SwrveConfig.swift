@@ -1,7 +1,7 @@
 import Foundation
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 /// Swrve stack names.
@@ -23,11 +23,9 @@ import Foundation
 
 @objc public protocol SwrveDeeplinkDelegate: NSObjectProtocol {
 
-    /*! The Swrve SDK currently processes deeplinks with openUrl. This may not work if the
-     * the link is a universal link. Use this delegate to override that processing and use your own
-     * implementation
-     * \param url NSURL to be processed.
-     */
+    /// The Swrve SDK currently processes deeplinks with openUrl. This may not work if the the link is a universal link.
+    /// Use this delegate to override that processing and use your own implementation
+    /// - Parameter url: NSURL to be processed
     @objc optional func handleDeeplink(_ url: NSURL)
 }
 
@@ -81,36 +79,32 @@ public typealias SwrveResourcesUpdatedListener = () -> Void
 
     #if os(iOS)
 
-        /// Controls if `UNAuthorizationOptionProvidesAppNotificationSettings` is added to push options when requesting push permissions.
-        /// Default is false. If set to true, the `SwrvePushResponseDelegate` will include a callback to `openSettingsForNotification:`.
-        @objc public var providesAppNotificationSettings: Bool = false
+    /// Controls if `UNAuthorizationOptionProvidesAppNotificationSettings` is added to push options when requesting push permissions.
+    /// Default is false. If set to true, the `SwrvePushResponseDelegate` will include a callback to `openSettingsForNotification:`.
+    @objc public var providesAppNotificationSettings: Bool = false
 
-        /// Controls if push notifications are enabled.
-        @objc public var pushEnabled: Bool = false
+    /// Controls if push notifications are enabled.
+    @objc public var pushEnabled: Bool = false
 
-        /// The set of Swrve events that will trigger a provisional push notifications request on iOS 12+.
-        /// If you want to request it at app start, set the value to a set with "Swrve.session.start".
-        @objc public var provisionalPushNotificationEvents: Set<String>?
+    /// The set of Swrve events that will trigger a provisional push notifications request on iOS 12+.
+    /// If you want to request it at app start, set the value to a set with "Swrve.session.start".
+    @objc public var provisionalPushNotificationEvents: Set<String>?
 
-        /// The set of Swrve events that will trigger a push notifications request. By default, it will not request the permission.
-        @objc public var pushNotificationPermissionEvents: Set<String>?
+    /// The set of Swrve events that will trigger a push notifications request. By default, it will not request the permission.
+    @objc public var pushNotificationPermissionEvents: Set<String>?
 
-        /// Controls if the SDK automatically collects the push device token.
-        /// To manually set the device token yourself, set to false.
-        @objc public var autoCollectDeviceToken: Bool = true
+    /// Controls if the SDK automatically collects the push device token.
+    /// To manually set the device token yourself, set to false.
+    @objc public var autoCollectDeviceToken: Bool = true
 
-        /// Set of iOS 10+ interactive push notification categories (UNUser).
-        /// Initialize this set only if running on an iOS 10+ device with the interactive actions that
-        /// your app supports for push notifications. Will be used when registering for
-        /// notification permissions with `UNUserNotificationCenter`.
-        @objc public var notificationCategories: Set<UNNotificationCategory>?
+    /// Set of iOS 10+ interactive push notification categories (UNUser).
+    /// Initialize this set only if running on an iOS 10+ device with the interactive actions that your app supports for push notifications.
+    /// Will be used when registering for notification permissions with `UNUserNotificationCenter`.
+    @objc public var notificationCategories: Set<UNNotificationCategory>?
 
-        /*!
-     * This is an optional delegate that can be extended to fire rich push responses from a class of your choice.
-     * For this to work effectively, please ensure it is added before Swrve initialization and initialization happens
-     * before the application has finished loading.
-     */
-        @objc public weak var pushResponseDelegate: SwrvePushResponseDelegate?
+    /// This is an optional delegate that can be extended to fire rich push responses from a class of your choice.
+    /// For this to work effectively, please ensure it is added before Swrve initialization and initialization happens before the application has finished loading.
+    @objc public weak var pushResponseDelegate: SwrvePushResponseDelegate?
 
     #endif  // os(iOS)
 

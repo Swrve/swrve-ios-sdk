@@ -22,7 +22,6 @@ import Foundation
     /// - Parameters:
     ///   - campaignID: The unique identifier for the campaign.
     ///   - downloadDate: The date when the campaign was first downloaded.
-
     public init(campaignID: UInt, downloadDate: Date) {
         self.campaignID = campaignID
         self.impressions = 0
@@ -33,7 +32,6 @@ import Foundation
 
     /// Initialize the campaign state with JSON data.
     /// - Parameter json: A dictionary containing campaign data.
-
     @objc public init(from json: [String: Any]) {
         self.campaignID = json["ID"] as? UInt ?? 0
         self.impressions = json["impressions"] as? UInt ?? 0
@@ -44,7 +42,6 @@ import Foundation
 
     /// Converts the campaign state to a dictionary.
     /// - Returns: A dictionary representation of the campaign state.
-
     @objc public func asDictionary() -> [String: Any] {
         [
             "ID": campaignID,

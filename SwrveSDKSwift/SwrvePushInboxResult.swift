@@ -3,14 +3,11 @@
 /// This class contains the result code, an error message, and the HTTP response code associated with the operation.
 @objc public class SwrvePushInboxResult: NSObject {
 
-    /**
-     Initializes a new instance of `SwrvePushInboxResult` with the given parameters.
-
-     - Parameters:
-       - resultCode: The result code of the operation.
-       - errorMessage: The error message associated with the operation, if any.
-       - httpResponseCode: The HTTP response code from the operation.
-     */
+    /// Initializes a new instance of `SwrvePushInboxResult` with the given parameters.
+    /// - Parameters:
+    ///   - resultCode: The result code of the operation.
+    ///   - errorMessage: The error message associated with the operation, if any.
+    ///   - httpResponseCode: The HTTP response code from the operation.
     @objc public init(_ resultCode: SwrvePushInboxResultCode, _ errorMessage: String, _ httpResponseCode: Int) {
         self.resultCode = resultCode
         self.errorMessage = errorMessage

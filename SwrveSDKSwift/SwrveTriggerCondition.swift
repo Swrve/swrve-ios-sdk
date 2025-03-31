@@ -33,7 +33,6 @@ import Foundation
     /// - Parameters:
     ///   - dictionary: A dictionary containing the condition data
     ///   - operatorKey: The operator used for the condition
-
     @objc public init?(dictionary: [String: Any], operatorKey: String?) {
         guard let key = dictionary["key"] as? String,
             let value = dictionary["value"]
@@ -57,7 +56,6 @@ import Foundation
     /// Determines the Swrve operator based on a string
     /// - Parameter op: The operator string
     /// - Returns: The corresponding `SwrveTriggerOperator`
-
     private static func determineSwrveOperator(_ op: String?) -> SwrveTriggerOperator {
         switch op {
         case "and":
@@ -86,7 +84,6 @@ import Foundation
     /// Checks if the condition has been fulfilled based on the provided payload
     /// - Parameter payload: A dictionary containing the event data
     /// - Returns: Boolean indicating if the condition is fulfilled
-
     func hasFulfilledCondition(with payload: [AnyHashable: Any]) -> Bool {
         guard let payloadObject = payload[key], !(payloadObject is NSNull) else {
             return false

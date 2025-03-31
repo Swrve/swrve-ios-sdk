@@ -1,7 +1,7 @@
 import Foundation
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 //TODO - these generally useful extension helper functions should be moved to a home

@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 @objc public class SwrveEmbeddedCampaign: SwrveCampaign {
@@ -57,7 +57,10 @@ import UIKit
     ///   - campaignReasons: A dictionary containing the reasons the campaign did not return a message.
     /// - Returns: The embedded message for the event, or `nil` if no message exists.
     @objc public func message(
-        forEvent event: String, withPayload payload: [String: Any]?, at time: Date, withReasons campaignReasons: NSMutableDictionary
+        forEvent event: String,
+        withPayload payload: [String: Any]?,
+        at time: Date,
+        withReasons campaignReasons: NSMutableDictionary
     ) -> SwrveEmbeddedMessage? {
 
         if !hasMessage(forEvent: event, withPayload: payload) {
@@ -84,11 +87,10 @@ import UIKit
     ///
     /// - Parameter orientation: The interface orientation.
     /// - Returns: `true` if the campaign supports the orientation, otherwise `false`.
-    ///
     #if os(iOS)
-        public override func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
-            true
-        }
+    public override func supportsOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
+        true
+    }
     #endif
 
     /// Checks if the assets for the campaign are ready.

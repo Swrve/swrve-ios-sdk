@@ -14,9 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         //FIXME: Replace <app_id> and <api_key> with your app ID and API key.
         #if DEBUG
-            SwrveSDK.sharedInstance(withAppID: -1, apiKey: "sandbox_api_key", config: config)
+        SwrveSDK.sharedInstance(withAppID: -1, apiKey: "sandbox_api_key", config: config)
         #else
-            SwrveSDK.sharedInstance(withAppID: -1, apiKey: "production_api_key", config: config)
+        SwrveSDK.sharedInstance(withAppID: -1, apiKey: "production_api_key", config: config)
         #endif
 
         return true

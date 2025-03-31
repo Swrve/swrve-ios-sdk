@@ -415,7 +415,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         deeplinkUrl = [self deeplinkFromUserInfo:userInfo];
 
         // send engaged event
-        [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo];
+        [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkUrl];
 
         // check for campaign, if present try to load
         [self loadCampaignFromNotification:userInfo];
@@ -432,26 +432,29 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             // send button click event
             NSString *actionText = [selectedButton objectForKey:SwrveNotificationButtonTitleKey];
             NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
-            NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+            NSMutableDictionary *payload = [NSMutableDictionary new];
             if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
                 if ([userInfo objectForKey:SwrveNotificationEventPayload]) {
                     NSMutableDictionary *geoPayload = [userInfo objectForKey:SwrveNotificationEventPayload];
-                    eventPayload = [geoPayload mutableCopy];
+                    payload = [geoPayload mutableCopy];
                 }
             }
             NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
             if (trackingPayload != nil) {
-                [eventPayload addEntriesFromDictionary:trackingPayload];
+                [payload addEntriesFromDictionary:trackingPayload];
+            }
+            if (deeplinkUrl != nil) {
+                [payload setObject:deeplinkUrl.absoluteString forKey:@"deeplink"];
             }
 
             [self sendButtonClickEventForNotificationId:notificationId
                                         andCampaignType:campaignType
                                            andContextId:identifier
                                           andActionText:actionText
-                                             andPayload:eventPayload];
+                                             andPayload:payload];
 
             // send engaged event
-            [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo];
+            [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkUrl];
 
             // check for open campaign action, if present try to load
             [self loadCampaignFromButton:selectedButton];
@@ -552,7 +555,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     [swrveCommon sendQueuedEvents];
 }
 
-+ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo {
++ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo andDeeplink:(NSURL *) deeplinkUrl {
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
     if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
@@ -571,11 +574,15 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
         [swrveCommon sendQueuedEvents];
     } else {
+        NSMutableDictionary *payload = [NSMutableDictionary new];
         NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
         if (trackingPayload != nil) {
-            [trackingPayload addEntriesFromDictionary:trackingPayload];
+            [payload addEntriesFromDictionary:trackingPayload];
         }
-        [swrveCommon sendPushNotificationEngagedEvent:notificationId withPayload:trackingPayload];
+        if (deeplinkUrl != nil) {
+            [payload setObject:deeplinkUrl.absoluteString forKey:@"deeplink"];
+        }
+        [swrveCommon sendPushNotificationEngagedEvent:notificationId withPayload:payload];
     }
 }
 

@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 #if canImport(SwrveSDK)
-    import SwrveSDK
+import SwrveSDK
 #endif
 
 #if canImport(SwrveSDKCommon)
-    import SwrveSDKCommon
+import SwrveSDKCommon
 #endif
 
 @objc public class SwrveInAppMessageConfig: NSObject {
@@ -37,8 +37,8 @@ import UIKit
     @objc weak public var inAppMessageDelegate: SwrveInAppMessageDelegate?
 
     #if os(tvOS)
-        /// In-app message focus delegate to process focus view changes
-        @objc weak public var inAppMessageFocusDelegate: SwrveInAppMessageFocusDelegate?
+    /// In-app message focus delegate to process focus view changes
+    @objc weak public var inAppMessageFocusDelegate: SwrveInAppMessageFocusDelegate?
     #endif
 
     /// Custom dismiss button image to use in in-app story campaigns

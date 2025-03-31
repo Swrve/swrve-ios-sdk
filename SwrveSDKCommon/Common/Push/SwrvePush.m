@@ -422,9 +422,18 @@ NSString *appGroupIdentifier;
             // The SDK currently does no fetch operation on its own but will in future releases
             // Obtain the silent push payload and call the customers code
             @try {
-                id silentPayloadRaw = [userInfo objectForKey:SwrveNotificationSilentPushPayloadKey];
-                if (silentPayloadRaw != nil && [silentPayloadRaw isKindOfClass:[NSDictionary class]]) {
-                    completionHandler(UIBackgroundFetchResultNoData, (NSDictionary *) silentPayloadRaw);
+                NSString *silentPayloadRaw = [userInfo objectForKey:SwrveNotificationSilentPushPayloadKey];
+                NSData *jsonData = [silentPayloadRaw dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *silentpayloadDictionary;
+                if (jsonData != nil) {
+                    NSError *error;
+                    silentpayloadDictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+                    if (error) {
+                        [SwrveLogger error:@"Could not convert silent payload to dictionary"];
+                    }
+                }
+                if (silentpayloadDictionary != nil) {
+                    completionHandler(UIBackgroundFetchResultNoData, silentpayloadDictionary);
                 } else {
                     completionHandler(UIBackgroundFetchResultNoData, nil);
                 }

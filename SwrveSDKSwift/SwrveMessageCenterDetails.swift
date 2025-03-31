@@ -40,7 +40,6 @@ import UIKit
     ///   - imageSha: The SHA hash of the image.
     ///   - image: The UIImage object representing the image.
     ///
-
     @objc public init(
         subject: String?,
         descriptionText: String?,
