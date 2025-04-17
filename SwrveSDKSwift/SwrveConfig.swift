@@ -108,6 +108,9 @@ public typealias SwrveResourcesUpdatedListener = () -> Void
 
     #endif  // os(iOS)
 
+    /// Implement this delegate for custom filtering of authenticated push notifications. This config is not supported in regular (non-authenticated) push notifications.
+    @objc public var notificationFilterDelegate: SwrveNotificationFilterDelegate?
+
     /// Identifier which refers to the app group that stores settings information.
     /// Initialize this if you are using extensions and want to share data across to Swrve.
     /// The `appGroupIdentifier` must match the one used in the accompanying extension to be shared correctly.

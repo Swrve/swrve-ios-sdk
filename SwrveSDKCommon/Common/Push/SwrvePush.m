@@ -235,6 +235,19 @@ NSString *appGroupIdentifier;
             [SwrveUtils stopBackgroundTaskCommon:handleContentTask withName:taskName];
             return;
         }
+        
+        if (_commonDelegate != nil && [_commonDelegate notificationFilterDelegate] != nil) {
+            id <SwrveNotificationFilterDelegate> notificationFilterDelegate = [_commonDelegate notificationFilterDelegate];
+            content = [notificationFilterDelegate filterNotification:content withPayload:userInfo];
+            if (content == nil) {
+                [SwrveLogger warning:@"SwrveNotificationFilterDelegate has returned nil and the notification will be suppressed.", nil];
+                if (completionHandler != nil) {
+                    completionHandler(UIBackgroundFetchResultFailed, nil);
+                }
+                [SwrveUtils stopBackgroundTaskCommon:handleContentTask withName:taskName];
+                return;
+            }
+        }
 
         NSString *requestIdentifier = [NSDateFormatter localizedStringFromDate:[NSDate date]
                                                                      dateStyle:NSDateFormatterShortStyle

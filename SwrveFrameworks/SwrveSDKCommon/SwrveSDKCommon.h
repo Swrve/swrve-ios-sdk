@@ -33,6 +33,7 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #import <SwrveSDKCommon/SwrveUser.h>
 #import <SwrveSDKCommon/SwrveNotificationManager.h>
+#import <SwrveSDKCommon/SwrveNotificationFilterDelegate.h>
 #import <SwrveSDKCommon/SwrveNotificationOptions.h>
 #import <SwrveSDKCommon/SwrveNotificationConstants.h>
 #import <SwrveSDKCommon/SwrveSessionDelegate.h>

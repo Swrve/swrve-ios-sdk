@@ -251,6 +251,10 @@
     return nil;
 }
 
+- (id<SwrveNotificationFilterDelegate>)notificationFilterDelegate {
+    return nil;
+}
+
 - (NSString *)userID {
     return nil;
 }

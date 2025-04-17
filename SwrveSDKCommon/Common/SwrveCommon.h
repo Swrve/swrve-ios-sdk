@@ -4,10 +4,12 @@
 #import <SwrveSDKCommon/SwrvePermissionsDelegate.h>
 #import <SwrveSDKCommon/SwrveSessionDelegate.h>
 #import <SwrveSDKCommon/SwrveLogger.h>
+#import <SwrveSDKCommon/SwrveNotificationFilterDelegate.h>
 #else
 #import "SwrvePermissionsDelegate.h"
 #import "SwrveSessionDelegate.h"
 #import "SwrveLogger.h"
+#import "SwrveNotificationFilterDelegate.h"
 #endif
 
 /*! Swrve SDK shared protocol (interface) definition */
@@ -35,6 +37,7 @@
 - (NSString *)sessionToken;
 - (void)setSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
 - (void)removeSwrveSessionDelegate:(id<SwrveSessionDelegate>)sessionDelegate;
+- (id <SwrveNotificationFilterDelegate>)notificationFilterDelegate;
 
 @optional
 - (id <NSURLSessionDelegate>)urlSessionDelegate;

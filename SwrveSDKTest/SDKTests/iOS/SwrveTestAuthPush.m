@@ -9,9 +9,27 @@
 @interface SwrvePush ()
 + (BOOL)isValidNotificationContent:(NSDictionary *)userInfo;
 + (SwrvePush *)sharedInstance;
+- (void)setCommonDelegate:(id<SwrveCommonDelegate>) commonDelegate;
 - (BOOL)handleAuthenticatedPushNotification:(NSDictionary *)userInfo
                             withLocalUserId:(NSString *)localUserId
                       withCompletionHandler:(void (^)(UIBackgroundFetchResult, NSDictionary *))completionHandler API_AVAILABLE(ios(12.0));
+@end
+
+@interface TestNotificationFilterDelegate : NSObject <SwrveNotificationFilterDelegate>
+@end
+@implementation TestNotificationFilterDelegate
+- (UNMutableNotificationContent *)filterNotification:(UNMutableNotificationContent *)notification withPayload:(NSDictionary *)payload {
+    notification.title = @"TestNotificationFilterDelegate Title Change";
+    NSNumber *filterMeNumber = payload[@"filter_me"];
+    BOOL filterMe = NO;
+    if ([filterMeNumber isKindOfClass:[NSNumber class]]) {
+        filterMe = [filterMeNumber boolValue];
+    }
+    if (filterMe) {
+        return nil;
+    }
+    return notification;
+}
 @end
 
 @interface SwrveTestAuthPush : XCTestCase
@@ -210,6 +228,140 @@
     OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
     OCMVerifyAll(currentMockCenter);
     [currentMockCenter stopMocking];
+}
+
+// Test not using SwrveNotificationFilter does not change notification contents.
+- (void)testAuthPushWithNoFilter {
+    
+    NSDictionary *userInfo = @{
+        @"_p":@"1",
+        @"_aui": @"1234",
+        @"_sw":@{
+            @"media": @{
+                @"title": @"rich_title",
+                @"body":  @"rich_body",
+                @"subtitle": @"rich_subtitle"
+            }
+        },
+        @"version": @1
+    };
+    
+    // assert that the captured request's content title is unchanged with nil filter
+    UNNotificationRequest *capturedRequest = [self handleAuthPushWithUserInfo:userInfo
+                                                                    andFilter:nil
+                                                                     suppress:false];
+    XCTAssertEqualObjects(capturedRequest.content.title, @"rich_title", @"The notification title should not have changed.");
+}
+
+// Test SwrveNotificationFilter changes the notification contents.
+- (void)testAuthPushFilteredWithContentsChanged {
+    
+    NSDictionary *userInfo = @{
+        @"_p":@"1",
+        @"_aui": @"1234",
+        @"_sw":@{
+            @"media": @{
+                @"title": @"rich_title",
+                @"body":  @"rich_body",
+                @"subtitle": @"rich_subtitle"
+            }
+        },
+        @"version": @1
+    };
+    
+    // assert that the captured request's content title is "TestNotificationFilterDelegate Title Change" with the filter
+    UNNotificationRequest *capturedRequest = [self handleAuthPushWithUserInfo:userInfo
+                                                                    andFilter:[TestNotificationFilterDelegate new]
+                                                                     suppress:false];
+    XCTAssertEqualObjects(capturedRequest.content.title, @"TestNotificationFilterDelegate Title Change", @"The notification title should have been changed by the filter delegate.");
+}
+
+// Test SwrveNotificationFilter stops or supresses the notification.
+- (void)testAuthPushFilteredAndSuppressed {
+    
+    //  "filter_me" is used in TestNotificationFilterDelegate
+    NSDictionary *userInfoWithFilterMePayload = @{
+        @"_p":@"1",
+        @"_aui": @"1234",
+        @"_sw":@{
+            @"media": @{
+                @"title": @"rich_title",
+                @"body":  @"rich_body",
+                @"subtitle": @"rich_subtitle"
+            }
+        },
+        @"version": @1,
+        @"filter_me": @true
+    };
+    
+    // assert that the captured request's content title is "TestNotificationFilterDelegate Title Change" with the filter
+    UNNotificationRequest *capturedRequest = [self handleAuthPushWithUserInfo:userInfoWithFilterMePayload
+                                                                    andFilter:[TestNotificationFilterDelegate new]
+                                                                     suppress:true];
+    XCTAssertNil(capturedRequest, @"The TestNotificationFilterDelegate should suppress the notification if it has filter_me payload");
+}
+
+- (UNNotificationRequest*)handleAuthPushWithUserInfo:(NSDictionary *) userInfo
+                                           andFilter:(TestNotificationFilterDelegate *) notificationFilterDelegate
+                                            suppress:(BOOL) suppress{
+    
+    [SwrveLocalStorage saveSwrveUserId:@"1234"];
+    
+    // stub the notification center
+    id currentMockCenter = OCMClassMock([UNUserNotificationCenter class]);
+    OCMStub([currentMockCenter currentNotificationCenter]).andReturn(currentMockCenter);
+    
+    // stub/reject the addNotificationRequest API rerquest
+    XCTestExpectation *addNotificationRequest = nil;
+    __block UNNotificationRequest *capturedRequest = nil;
+    if(suppress) {
+        OCMReject([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
+    } else {
+        addNotificationRequest = [self expectationWithDescription:@"addNotificationRequest"];
+        void (^addNotificationRequestObserver)(NSInvocation *) = ^(NSInvocation *invoke) {
+            __unsafe_unretained UNNotificationRequest * request = nil;
+            [invoke getArgument:&request atIndex:2];
+            capturedRequest = request; // Capture the request
+            
+            // Initially check the userInfo to ensure the original title was "rich_title"
+            XCTAssertEqualObjects(request.content.userInfo[@"_sw"][@"media"][@"title"],@"rich_title");
+            [addNotificationRequest fulfill];
+        };
+        OCMStub([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(addNotificationRequestObserver);
+    }
+    
+    // Set the Test SwrveNotificationFilterDelegate in SwrveCommon
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon notificationFilterDelegate]).andReturn(notificationFilterDelegate);
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+    
+    // call handleAuthenticatedPushNotification with valid user
+    id swrvePushMock = OCMPartialMock([SwrvePush sharedInstance]);
+    [swrvePushMock setCommonDelegate:mockSwrveCommon];
+    void (^completionHandler)(UIBackgroundFetchResult, NSDictionary *) = ^(UIBackgroundFetchResult result, NSDictionary *dictionary) {
+        if (suppress) {
+            XCTAssertEqual(result, UIBackgroundFetchResultFailed, @"Completion result should be Failed for suppressed notification.");
+        } else {
+            // because of the way the UNUserNotificationCenter is mocked, the completionHandler doesn't get called for successful addNotificationRequest so nothing to assert here
+        }
+    };
+    BOOL handled = [swrvePushMock handleAuthenticatedPushNotification:userInfo
+                                                      withLocalUserId:[SwrveLocalStorage swrveUserId]
+                                                withCompletionHandler:completionHandler];
+    XCTAssertTrue(handled);
+    
+    if(suppress == false) {
+        [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
+            if (error) {
+                XCTFail(@"addNotificationRequest not called"); // verify no errors and addNotificationRequest called
+            }
+        }];
+        OCMVerify([currentMockCenter addNotificationRequest:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]);
+    }
+    OCMVerifyAll(currentMockCenter);
+    [currentMockCenter stopMocking];
+    
+    return capturedRequest;
 }
 
 - (void)testNotHandlePushAuthDifferentUserId {

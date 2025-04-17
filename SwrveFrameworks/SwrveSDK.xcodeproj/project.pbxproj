@@ -83,6 +83,10 @@
 		3A9E09842B5550F40037088C /* SwrveSDKUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A9E09822B5550F40037088C /* SwrveSDKUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A9E09852B5551020037088C /* SwrveSDKUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A9E09822B5550F40037088C /* SwrveSDKUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A9E09862B5551160037088C /* SwrveSDKUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9E09812B5550F40037088C /* SwrveSDKUtils.m */; };
+		3AA3AEFA2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3AA3AEFB2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3AA3AEFC2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3AA3AEFD2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3ABD75A029B20ADA00145B9C /* SwrveButtonTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABD759C29B20ADA00145B9C /* SwrveButtonTheme.m */; };
 		3ABD75A129B20ADA00145B9C /* SwrveButtonTheme.h in Headers */ = {isa = PBXBuildFile; fileRef = 3ABD759D29B20ADA00145B9C /* SwrveButtonTheme.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3ABD75A229B20ADA00145B9C /* SwrveButtonThemeState.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ABD759E29B20ADA00145B9C /* SwrveButtonThemeState.m */; };
@@ -792,6 +796,7 @@
 		3A982FD429B8A76F00114F3B /* SwrveThemedUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveThemedUIButton.h; sourceTree = "<group>"; };
 		3A9E09812B5550F40037088C /* SwrveSDKUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSDKUtils.m; sourceTree = "<group>"; };
 		3A9E09822B5550F40037088C /* SwrveSDKUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSDKUtils.h; sourceTree = "<group>"; };
+		3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveNotificationFilterDelegate.h; sourceTree = "<group>"; };
 		3ABD759C29B20ADA00145B9C /* SwrveButtonTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveButtonTheme.m; sourceTree = "<group>"; };
 		3ABD759D29B20ADA00145B9C /* SwrveButtonTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveButtonTheme.h; sourceTree = "<group>"; };
 		3ABD759E29B20ADA00145B9C /* SwrveButtonThemeState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveButtonThemeState.m; sourceTree = "<group>"; };
@@ -1151,6 +1156,7 @@
 				3A96C9432228281E00C789A2 /* SwrveSessionDelegate.h */,
 				3A83E0EE20EE9E7D005A6D55 /* SwrveNotificationConstants.h */,
 				3A83E0F020EE9E7D005A6D55 /* SwrveNotificationConstants.m */,
+				3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */,
 				3A83E0ED20EE9E7D005A6D55 /* SwrveNotificationOptions.h */,
 				3A83E0EF20EE9E7D005A6D55 /* SwrveNotificationOptions.m */,
 				3A83E0D620EE1D1C005A6D55 /* SwrveNotificationManager.h */,
@@ -1358,6 +1364,7 @@
 				3A83E0F520EE9E81005A6D55 /* SwrveNotificationConstants.h in Headers */,
 				528F558B201B9C4F007AB0A8 /* SwrveSwizzleHelper.h in Headers */,
 				528F558E201B9C4F007AB0A8 /* SwrveLocalStorage.h in Headers */,
+				3AA3AEFC2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */,
 				5BEA12372292C45E006A9484 /* SwrveUtils.h in Headers */,
 				3A83E0F720EE9E8D005A6D55 /* SwrveNotificationOptions.h in Headers */,
 				528F5590201B9C4F007AB0A8 /* SwrvePush.h in Headers */,
@@ -1440,6 +1447,7 @@
 				F6B872052C58364300874DEA /* SwrveCampaignDelivery.h in Headers */,
 				F6B872062C58364300874DEA /* SwrveUtils.h in Headers */,
 				F6B872072C58364300874DEA /* SwrveQA.h in Headers */,
+				3AA3AEFD2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */,
 				F6B872082C58364300874DEA /* SwrveQACampaignInfo.h in Headers */,
 				F6B872092C58364300874DEA /* SwrveSwizzleHelper.h in Headers */,
 				F6B8720A2C58364300874DEA /* TextTemplating.h in Headers */,
@@ -1522,6 +1530,7 @@
 				5B4A234D23DF38520030D84D /* SwrveCampaignDelivery.h in Headers */,
 				5BEA12362292C45E006A9484 /* SwrveUtils.h in Headers */,
 				F6535E041FC4690200B72A19 /* SwrveQA.h in Headers */,
+				3AA3AEFA2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */,
 				5BBE09C0247D7D50002B2D2C /* SwrveQACampaignInfo.h in Headers */,
 				F6D10CAE1F695AE70094B34E /* SwrveSwizzleHelper.h in Headers */,
 				52FC409123FE7E770097E9BA /* TextTemplating.h in Headers */,
@@ -1640,6 +1649,7 @@
 				F6EF58AE2C888EAA00389B2C /* SwrveQACampaignInfo.h in Headers */,
 				F6EF58AF2C888EAA00389B2C /* SwrveNotificationConstants.h in Headers */,
 				F6EF58B02C888EAA00389B2C /* SwrveSwizzleHelper.h in Headers */,
+				3AA3AEFB2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */,
 				F6EF58B12C888EAA00389B2C /* SwrveLocalStorage.h in Headers */,
 				F6EF58B22C888EAA00389B2C /* SwrveUtils.h in Headers */,
 				F6EF58B32C888EAA00389B2C /* SwrveNotificationOptions.h in Headers */,
@@ -1996,7 +2006,6 @@
 				528F5537201B9B29007AB0A8 /* SwrveEventsManager.m in Sources */,
 				F6441D5B2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				3ACAF5BB2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
-				B568A1022C2589370063D55C /* SwrveSDKSwift.swift in Sources */,
 				F6441D522C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */,
 				F6CD24A32C91E37E00D56821 /* SwrveEmbeddedMessage.swift in Sources */,
 				B568A0FF2C25892D0063D55C /* SwrveLiveActivityData.swift in Sources */,

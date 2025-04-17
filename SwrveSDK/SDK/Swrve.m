@@ -2544,6 +2544,10 @@ enum HttpStatus {
     return self.config.urlSessionDelegate;
 }
 
+- (id <SwrveNotificationFilterDelegate>)notificationFilterDelegate {
+    return self.config.notificationFilterDelegate;
+}
+
 - (NSString *)userID {
     return self.profileManager.userId;
 }
