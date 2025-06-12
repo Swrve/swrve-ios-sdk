@@ -206,7 +206,7 @@
     XCTAssertEqual([swrveMock currencyGiven:@"" givenAmount:0],SWRVE_FAILURE);
     XCTAssertEqual([swrveMock userUpdate:@{}],SWRVE_FAILURE);
     XCTAssertEqual([swrveMock userUpdate:@"" withDate:[NSDate new]],SWRVE_FAILURE);
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     XCTAssertNotNil([swrveMock resourceManager]);
     [swrveMock userResources:^(NSDictionary *resources, NSString *resourcesAsJSON) {
     }];

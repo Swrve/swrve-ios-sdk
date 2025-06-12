@@ -177,6 +177,12 @@
 
     // Extra identifiers
     XCTAssertNotNil([deviceInfo objectForKey:@"swrve.IDFV"]);
+    
+    // Update language and check device info again
+    [swrveMock updateLanguage:@"en-ie"];
+    deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
+    XCTAssertNotNil(deviceInfo);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.language"], @"en-ie");
 }
 
 -(void)testDeviceInfoWithiOSPermissions

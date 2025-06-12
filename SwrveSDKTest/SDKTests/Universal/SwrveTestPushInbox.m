@@ -93,7 +93,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
                           completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
     swrveMock.restClient = mockRestClient;
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     inboxMessages =  [swrveMock pushInboxMessages];
     XCTAssertEqual(inboxMessages.count, 8);
     
@@ -539,7 +539,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     // verify that the delegate is invoked only once
     OCMVerify(times(1), [mockPushInboxDelegate messagesUpdated]);
     
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     // even after refresh, the delegate should not invoked again
     OCMVerify(times(1), [mockPushInboxDelegate messagesUpdated]);
     
@@ -552,10 +552,10 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     restClient.mockedStatusCode = @200;
     swrveMock.restClient = restClient;
 
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     OCMVerify(times(2), [mockPushInboxDelegate messagesUpdated]);
     
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     // even after refresh, the delegate should not invoked again
     OCMVerify(times(2), [mockPushInboxDelegate messagesUpdated]);
 }

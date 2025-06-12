@@ -32,6 +32,9 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             // Refresh campaigns and resources
             SwrveSDK.refreshCampaignsAndResources()
 
+            // Refresh content
+            SwrveSDK.refreshContent(nil)
+
             // Resource manager
             SwrveSDK.resourceManager()
 
@@ -133,6 +136,24 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
         try? SwrveTestHelper.try {
             SwrveSDK.start(withUserId: "userId")
         }
+    }
+
+    func testSwrveLogger() {
+
+        SwrveLogger.setLogLevel(SwrveLogLevel.none)
+        SwrveLogger.setLogLevel(.none)
+
+        SwrveLogger.setLogLevel(SwrveLogLevel.verbose)
+        SwrveLogger.setLogLevel(.verbose)
+        SwrveLogger.logDebug("This is a debug message")
+
+        SwrveLogger.setLogLevel(SwrveLogLevel.warning)
+        SwrveLogger.setLogLevel(.warning)
+        SwrveLogger.logWarning("This is a warning message")
+
+        SwrveLogger.setLogLevel(SwrveLogLevel.error)
+        SwrveLogger.setLogLevel(.error)
+        SwrveLogger.logError("This is an error message")
     }
 
 }

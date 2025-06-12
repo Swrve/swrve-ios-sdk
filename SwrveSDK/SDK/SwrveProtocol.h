@@ -11,9 +11,12 @@
 
 @class SwrveIAPRewards;
 @class SwrveEmbeddedMessage;
+@protocol SwrveRefreshContentDelegate;
 @protocol SwrvePushInboxDelegate;
 @class SwrvePushInboxMessage;
 @class SwrveCampaign;
+@class SwrveInAppCampaign;
+@class SwrveEmbeddedCampaign;
 @class SwrveResourceManager;
 
 #if __has_include(<SwrveSDKCommon/SwrveSignatureProtectedFile.h>)
@@ -33,7 +36,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.4.0"
+#define SWRVE_SDK_VERSION "10.5.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -225,18 +228,7 @@ NSString * eventsPayloadAsJSON);
 #pragma mark -
 #pragma mark User Resources
 
-/*! If SwrveConfig.autoDownloadCampaignsAndResources is YES (default value) this function is called
- * automatically to keep the user resources and campaign data up to date.
- *
- * Use the resourceManager to get the latest up-to-date values for the resources.
- *
- * If SwrveConfig.autoDownloadCampaignsAndResources is set to NO, please call this function to update
- * values. This function issues an asynchronous HTTP request to the Swrve content server
- * specified in SwrveConfig. This function will return immediately, and the
- * callback will be fired after the Swrve server has sent its response. At this point
- * the resourceManager can be used to retrieve the updated resource values.
- */
--(void) refreshCampaignsAndResources;
+-(void) refreshContent:(id<SwrveRefreshContentDelegate>)listener;
 
 /*! Use the resource manager to retrieve the most up-to-date attribute
  * values at any time.
@@ -559,7 +551,18 @@ NSString * eventsPayloadAsJSON);
 */
 - (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
 
+/// Gets active In-app Message Center campaigns with personalization properties, excluding deleted campaigns.
+/// - Parameters:
+///   - personalization: Personalization properties.
+///   - orientation: Required orientation.
+/// - Returns: List of active In-app Message Center campaigns.
+- (NSArray <SwrveInAppCampaign *>*)inAppMessageCenterCampaignsWith:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+
 #endif
+
+/// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
+/// - Returns: List of active Embedded Message Center campaigns.
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.
@@ -582,11 +585,23 @@ NSString * eventsPayloadAsJSON);
  */
 - (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign;
 
+/*! Remove the given campaign. It won't be returned anymore by the method messageCenterCampaigns.
+ *
+ * \param campaignID ID of Campaign that will be removed.
+ */
+- (void)removeMessageCenterCampaignWithID:(NSUInteger)campaignID;
+
 /*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
  *
  * \param campaign Campaign that will be marked as seen.
  */
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign;
+
+/*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
+ *
+ * \param campaignID ID of Campaign that will be marked as seen.
+ */
+- (void)markMessageCenterCampaignAsSeenWithID:(NSUInteger)campaignID;
 
 /*! Call this method after getting the idfa string.
  *
@@ -634,6 +649,8 @@ NSString * eventsPayloadAsJSON);
 - (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
 
 - (void)dismissMessageWindow;
+
+- (void)updateLanguage:(NSString *)language;
 
 #pragma mark - Properties
 

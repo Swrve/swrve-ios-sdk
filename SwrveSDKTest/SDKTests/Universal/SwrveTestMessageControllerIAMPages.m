@@ -909,7 +909,7 @@
 - (void)testPagingWithOldCampaigns {
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
     [viewController viewDidAppear:NO];

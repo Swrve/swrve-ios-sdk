@@ -30,14 +30,6 @@ import SwrveSDKCommon
         self.name = self.message?.name ?? ""
     }
 
-    /// Checks whether the campaign has a message for the given event.
-    ///
-    /// - Parameter event: The trigger event to check for.
-    /// - Returns: `true` if the campaign contains a message for the event, otherwise `false`.
-    func hasMessage(forEvent event: String) -> Bool {
-        hasMessage(forEvent: event, withPayload: nil)
-    }
-
     /// Checks whether the campaign has a message for the given event with payload.
     ///
     /// - Parameters:
@@ -64,7 +56,8 @@ import SwrveSDKCommon
     ) -> SwrveEmbeddedMessage? {
 
         if !hasMessage(forEvent: event, withPayload: payload) {
-            let reason = "There is no trigger in \(self.ID) that matches \(event) with conditions \(String(describing: payload))"
+            let payloadDescription = SwrveUtilsSwift.formatPayloadForDisplay(payload)
+            let reason = "There is no trigger in \(ID) that matches \(event) with conditions \(payloadDescription)"
             SwrveLogger.logDebug(reason)
             logAndAdd(reason: reason, withReasons: campaignReasons)
             return nil

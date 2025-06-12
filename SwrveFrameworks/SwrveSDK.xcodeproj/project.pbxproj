@@ -67,6 +67,18 @@
 		3A83E0F620EE9E89005A6D55 /* SwrveNotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A83E0F020EE9E7D005A6D55 /* SwrveNotificationConstants.m */; };
 		3A83E0F720EE9E8D005A6D55 /* SwrveNotificationOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A83E0ED20EE9E7D005A6D55 /* SwrveNotificationOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A83E0F820EE9E97005A6D55 /* SwrveNotificationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A83E0EF20EE9E7D005A6D55 /* SwrveNotificationOptions.m */; };
+		3A85A4C92DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */; };
+		3A85A4CA2DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */; };
+		3A85A4CB2DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */; };
+		3A85A4CC2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */; };
+		3A85A4CD2DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */; };
+		3A85A4CE2DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */; };
+		3A85A4CF2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */; };
+		3A85A4D02DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */; };
+		3A85A4D12DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */; };
+		3A85A4D22DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */; };
+		3A85A4D32DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */; };
+		3A85A4D42DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */; };
 		3A9601BB2AFA5EA1008C1FEC /* SwrveInAppStoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A9601B92AFA5EA1008C1FEC /* SwrveInAppStoryView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A9601BC2AFA5EA1008C1FEC /* SwrveInAppStoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A9601BA2AFA5EA1008C1FEC /* SwrveInAppStoryView.m */; };
 		3A9601BD2AFA5EB1008C1FEC /* SwrveInAppStoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A9601B92AFA5EA1008C1FEC /* SwrveInAppStoryView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -788,6 +800,9 @@
 		3A83E0EE20EE9E7D005A6D55 /* SwrveNotificationConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveNotificationConstants.h; sourceTree = "<group>"; };
 		3A83E0EF20EE9E7D005A6D55 /* SwrveNotificationOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveNotificationOptions.m; sourceTree = "<group>"; };
 		3A83E0F020EE9E7D005A6D55 /* SwrveNotificationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveNotificationConstants.m; sourceTree = "<group>"; };
+		3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveRefreshContentDelegate.swift; sourceTree = "<group>"; };
+		3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveRefreshContentResult.swift; sourceTree = "<group>"; };
+		3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveRefreshContentResultCode.swift; sourceTree = "<group>"; };
 		3A9601B92AFA5EA1008C1FEC /* SwrveInAppStoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppStoryView.h; sourceTree = "<group>"; };
 		3A9601BA2AFA5EA1008C1FEC /* SwrveInAppStoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveInAppStoryView.m; sourceTree = "<group>"; };
 		3A9601C32AFA9F1C008C1FEC /* SwrveInAppStorySegmentDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveInAppStorySegmentDelegate.h; sourceTree = "<group>"; };
@@ -1027,6 +1042,9 @@
 		F6900A792A9CF8660067A7E5 /* SwrveSDKSwift */ = {
 			isa = PBXGroup;
 			children = (
+				3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */,
+				3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */,
+				3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */,
 				3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */,
 				3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */,
 				C5BF0B0B2CA1C12B00B860C0 /* SwrveCampaignState.swift */,
@@ -2017,6 +2035,9 @@
 				B568A0FC2C2589240063D55C /* SwrvePushInboxController.swift in Sources */,
 				F62505EA26D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,
 				F6441D4E2C934102001B0028 /* SwrveMessage.swift in Sources */,
+				3A85A4CC2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
+				3A85A4CD2DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
+				3A85A4CE2DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
 				3A690C8827D27C550030E55A /* SwrveMessagePageViewController.m in Sources */,
 				528F553A201B9B29007AB0A8 /* SwrveReceiptProvider.m in Sources */,
 				3A1D6BAD2B15314600C53BA6 /* SwrveInAppStoryUIButton.m in Sources */,
@@ -2118,6 +2139,9 @@
 				F6B871662C58352B00874DEA /* SwrveLiveActivity.swift in Sources */,
 				F6B871672C58352B00874DEA /* SwrveTextViewStyle.m in Sources */,
 				F6441D4F2C934102001B0028 /* SwrveMessage.swift in Sources */,
+				3A85A4D22DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
+				3A85A4D32DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
+				3A85A4D42DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
 				F6B871682C58352B00874DEA /* SwrveMessagePageViewController.m in Sources */,
 				F6B8716A2C58352B00874DEA /* SwrvePushInboxController.swift in Sources */,
 				F6B8716B2C58352B00874DEA /* SwrveReceiptProvider.m in Sources */,
@@ -2219,6 +2243,9 @@
 				F6900A7B2A9CF8660067A7E5 /* SwrveLiveActivity.swift in Sources */,
 				F62505E926D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,
 				F6441D4D2C934102001B0028 /* SwrveMessage.swift in Sources */,
+				3A85A4CF2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
+				3A85A4D02DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
+				3A85A4D12DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
 				3A690C8527D27C320030E55A /* SwrveMessagePageViewController.m in Sources */,
 				B568A0F82C2585D90063D55C /* SwrvePushInboxController.swift in Sources */,
 				F63EC37A1FBB2E3A00AC6BA2 /* SwrveReceiptProvider.m in Sources */,
@@ -2364,6 +2391,9 @@
 				F6EF58222C888E1500389B2C /* (null) in Sources */,
 				F6EF58232C888E1500389B2C /* SwrveImage.m in Sources */,
 				F6EF58242C888E1500389B2C /* (null) in Sources */,
+				3A85A4C92DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
+				3A85A4CA2DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
+				3A85A4CB2DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

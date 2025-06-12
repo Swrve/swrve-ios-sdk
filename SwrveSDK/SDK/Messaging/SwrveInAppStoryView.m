@@ -157,7 +157,7 @@ const int PROGRESS_SPEED = 1000;
             UIView *progressView = self.segmentProgressViews[(NSUInteger) i];
             [self updateWidthForView:progressView newWidth:self.segmentMaxWidth];
         }
-    } else if (index < self.currentIndex) {
+    } else if (index <= self.currentIndex) {
         for (int i = self.currentIndex; i >= index; i--) {
             UIView *progressView = self.segmentProgressViews[(NSUInteger) i];
             [self updateWidthForView:progressView newWidth:0];

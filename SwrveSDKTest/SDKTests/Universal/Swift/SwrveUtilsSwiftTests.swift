@@ -59,4 +59,35 @@ class SwrveUtilsSwiftTests: XCTestCase {
         result = SwrveUtilsSwift.parseIso8601Date(invalidIsoDate, timezoneType: .LOCAL)
         XCTAssertNil(result, "The result should be nil because SDK requires local date with no offset at the end")
     }
+
+    func testFormatPayloadForDisplayNil() {
+        let result = SwrveUtilsSwift.formatPayloadForDisplay(nil)
+        XCTAssertEqual(result, "nil", "Should return 'nil' for nil payload")
+    }
+
+    func testFormatPayloadForDisplayEmpty() {
+        let result = SwrveUtilsSwift.formatPayloadForDisplay([:])
+        XCTAssertEqual(result, "[]", "Should return empty brackets for empty dictionary")
+    }
+
+    func testFormatPayloadForDisplayStringAndNumber() {
+        let payload: [AnyHashable: Any] = ["key": "value", "num": 123]
+        let result = SwrveUtilsSwift.formatPayloadForDisplay(payload)
+        // Order is sorted by key, so 'key' then 'num'
+        XCTAssertEqual(result, "['key': 'value', 'num': 123]", "Should format string and number values correctly")
+    }
+
+    func testFormatPayloadForDisplayMixedKeyTypes() {
+        let payload: [AnyHashable: Any] = ["a": 1, 2: "b"]
+        let result = SwrveUtilsSwift.formatPayloadForDisplay(payload)
+        // Sorted keys: 2, "a"
+        XCTAssertEqual(result, "[2: 'b', 'a': 1]", "Should handle mixed key types and sort correctly")
+    }
+
+    func testFormatPayloadForDisplayBoolAndString() {
+        let payload: [AnyHashable: Any] = ["flag": true, "desc": "on"]
+        let result = SwrveUtilsSwift.formatPayloadForDisplay(payload)
+        // Sorted keys: "desc", "flag"
+        XCTAssertEqual(result, "['desc': 'on', 'flag': true]", "Should format bool and string values correctly")
+    }
 }

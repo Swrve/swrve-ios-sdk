@@ -15,8 +15,11 @@ import SwrveSDKCommon
     @objc public var message: SwrveMessage?
 
     @objc public init(
-        atTime time: Date, fromDictionary json: [String: Any], withAssetsQueue assetsQueue: NSMutableSet,
-        forController controller: SwrveMessageController, withPersonalization personalization: [String: Any]
+        atTime time: Date,
+        fromDictionary json: [String: Any],
+        withAssetsQueue assetsQueue: NSMutableSet,
+        forController controller: SwrveMessageController,
+        withPersonalization personalization: [String: Any]
     ) {
         super.init(at: time, from: json, campaignType: SWRVE_CAMPAIGN_IAM)
         if let messageDict = json["message"] as? [String: Any] {
@@ -143,37 +146,37 @@ import SwrveSDKCommon
         super.setMessageMinDelayThrottle(at: timeDismissed)
     }
 
-    /// Quick check to see if this campaign might have messages matching this event trigger. This is used to decide if the campaign is a valid candidate for automatically showing at session start.
-    /// - Parameter event: Trigger event.
-    /// - Returns: `true` if the campaign contains a message for the given trigger.
-    func hasMessage(forEvent event: String) -> Bool {
-        hasMessage(forEvent: event, withPayload: nil)
-    }
-
     @objc public func hasMessage(forEvent event: String, withPayload payload: [AnyHashable: Any]?) -> Bool {
         super.canTrigger(withEvent: event, andPayload: payload)
     }
 
     func message(
-        forEvent event: String, withAssets assets: Set<AnyHashable>, withPersonalization personalization: [String: Any], atTime time: Date
+        forEvent event: String,
+        withAssets assets: Set<AnyHashable>,
+        withPersonalization personalization: [String: Any],
+        atTime time: Date
     ) -> SwrveMessage? {
         message(
-            forEvent: event, withPayload: nil, withAssets: assets, withPersonalization: personalization, atTime: time,
+            forEvent: event,
+            withPayload: nil, withAssets: assets,
+            withPersonalization: personalization,
+            atTime: time,
             withReasons: NSMutableDictionary())
     }
 
     @objc public func message(
-        forEvent event: String, withPayload payload: [AnyHashable: Any]?, withAssets assets: Set<AnyHashable>,
-        withPersonalization personalization: [String: Any], atTime time: Date, withReasons campaignReasons: NSMutableDictionary
+        forEvent event: String,
+        withPayload payload: [AnyHashable: Any]?,
+        withAssets assets: Set<AnyHashable>,
+        withPersonalization personalization: [String: Any],
+        atTime time: Date,
+        withReasons campaignReasons: NSMutableDictionary
     ) -> SwrveMessage? {
 
         guard hasMessage(forEvent: event, withPayload: payload) else {
-            SwrveLogger.logDebug("There is no trigger in \(self.ID) that matches \(event)")
-            logAndAdd(
-                reason:
-                    "There is no trigger in \(self.ID) that matches \(event) with conditions \(String(describing: payload))",
-                withReasons: campaignReasons
-            )
+            let payloadDescription = SwrveUtilsSwift.formatPayloadForDisplay(payload)
+            let reason = "There is no trigger in \(ID) that matches \(event) with conditions \(payloadDescription)"
+            logAndAdd(reason: reason, withReasons: campaignReasons)
             return nil
         }
 
@@ -185,14 +188,16 @@ import SwrveSDKCommon
             return nil
         }
 
-        let assetsAsSet = (assets as? Set<String>) ?? Set<String>()
-        if message.assetsReady(assetsAsSet, withPersonalization: personalization) {
-            SwrveLogger.logDebug("\(event) matches a trigger in \(self.ID)")
-            return message
+        guard checkAssets(message, withAssets: assets, personalization: personalization, reasons: campaignReasons) else {
+            return nil
         }
 
-        logAndAdd(reason: "Campaign \(self.ID) hasn't finished downloading", withReasons: campaignReasons)
-        return nil
+        guard checkPersonalizationProperties(message, personalization: personalization, reasons: campaignReasons) else {
+            return nil
+        }
+
+        SwrveLogger.logDebug("\(event) matches a trigger in \(self.ID)")
+        return message
     }
 
     #if os(iOS)
@@ -218,4 +223,29 @@ import SwrveSDKCommon
         }
         return true
     }
+
+    private func checkAssets(
+        _ message: SwrveMessage,
+        withAssets assets: Set<AnyHashable>,
+        personalization: [String: Any],
+        reasons campaignReasons: NSMutableDictionary
+    ) -> Bool {
+        let assetsAsSet = (assets as? Set<String>) ?? Set<String>()
+        guard message.assetsReady(assetsAsSet, withPersonalization: personalization) else {
+            logAndAdd(reason: "Campaign \(self.ID) hasn't downloaded all assets", withReasons: campaignReasons)
+            return false
+        }
+        return true
+    }
+
+    private func checkPersonalizationProperties(_ message: SwrveMessage, personalization: [String: Any], reasons campaignReasons: NSMutableDictionary)
+        -> Bool
+    {
+        guard message.canResolvePersonalization(personalization) else {
+            logAndAdd(reason: "Campaign \(self.ID) has unresolved personalization properties", withReasons: campaignReasons)
+            return false
+        }
+        return true
+    }
+
 }

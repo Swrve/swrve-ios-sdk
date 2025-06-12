@@ -88,6 +88,16 @@
 - (IBAction)onButtonPressed:(id)buttonView;
 @end
 
+@interface SwrveQA (private_acess)
+@property(nonatomic) SwrveQAEventsQueueManager *queueManager;
+@end
+
+@interface SwrveQAEventsQueueManager (private_acess)
+@property(nonatomic) SwrveQAEventsQueueManager *queueManager;
+@property(atomic) NSMutableArray  *queue;
+@end
+
+
 @interface SwrveTestMessageController : XCTestCase
 
 @property NSDate *swrveNowDate;
@@ -189,10 +199,10 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
     
-    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message1];
     
-    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message2];
     
     XCTAssertEqual([[controller iamQueue] count], 0);
@@ -205,13 +215,13 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
     
-    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message1];
     
-    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message2 queue:true withPersonalization:nil];
     
-    SwrveMessage *message3 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message3 = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message3];
     
     XCTAssertEqual([[controller iamQueue] count], 1);
@@ -225,7 +235,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
     SwrveMessageController *controller = [swrveMock messaging];
     
-    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message1 = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message1 queue:true withPersonalization:nil];
     
     XCTAssertEqual([[controller iamQueue] count], 0);
@@ -431,25 +441,61 @@
 }
 
 - (void)testShowMessagePersonalizationFromTrigger {
-
-    id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalization"];
-    SwrveMessageController *controller = [swrveMock messaging];
+    
     SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary *eventPayload) {
         return @{@"test_cp": @"test_value", @"test_custom": @"urlprocessed", @"test_display": @"display"};
     };
-    [controller setPersonalizationCallback:personalizationCallback];
-
-    NSDictionary *event = @{@"type": @"event",
-            @"seqnum": @1111,
-            @"name": @"trigger_name",
-            @"payload": @{}
-    };
-    [controller eventRaised:event];
-
+    SwrveMessageController *controller = [self showPersonalizedMessageWithCallback:personalizationCallback];
+    
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
     XCTAssertNotNil(messageViewController);
     XCTAssertNotNil(messageViewController.message);
     XCTAssertEqualObjects(messageViewController.message.name, @"Kindle");
+}
+
+- (void)testShowMessagePersonalizationFromTriggerMissingPersonalization {
+    
+    [self enableQaLogging];
+    SwrveQA *qa = [SwrveQA sharedInstance];
+    id swrveQAEventsQueueMock = OCMPartialMock([[SwrveQAEventsQueueManager alloc] initWithSessionToken:@"whatEver"]);
+    // Stub flushEvents so it would not try any request at all or clear our queue.
+    OCMStub([swrveQAEventsQueueMock flushEvents]).andDo(nil);
+    [qa setQueueManager:swrveQAEventsQueueMock];
+    
+    SwrveMessagePersonalizationCallback personalizationCallback = ^(NSDictionary *eventPayload) {
+        return @{@"invalid": @"missing"};
+    };
+    SwrveMessageController *controller = [self showPersonalizedMessageWithCallback:personalizationCallback];
+    XCTAssertNil([controller inAppMessageWindow]);
+    
+    NSMutableArray  *qaEventsQueue = [swrveQAEventsQueueMock queue];
+    XCTAssertEqual([qaEventsQueue count], 2);
+    BOOL foundMessage = NO;
+    NSString *expectedMessage = @"Campaign 103 has unresolved personalization";
+    for (NSDictionary *eventDictionary in qaEventsQueue) {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventDictionary options:0 error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        if ([jsonString containsString:expectedMessage]) {
+            foundMessage = YES;
+            break;
+        }
+    }
+    XCTAssertTrue(foundMessage, @"One of the QA events should contain the message: '%@'", expectedMessage);
+}
+
+- (SwrveMessageController*)showPersonalizedMessageWithCallback:(SwrveMessagePersonalizationCallback)personalizationCallback {
+    
+    id swrveMock = [self swrveMockWithTestJson:@"campaignsPersonalization"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    [controller setPersonalizationCallback:personalizationCallback];
+    NSDictionary *event = @{@"type": @"event",
+                            @"seqnum": @1111,
+                            @"name": @"trigger_name",
+                            @"payload": @{}
+    };
+    [controller eventRaised:event];
+    return controller;
 }
 
 - (void)testShowMessageImagePersonalizationFromTrigger {
@@ -578,12 +624,41 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"InvalidEvent"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"InvalidEvent" withPayload:nil];
 
     OCMVerify([swrveQAMock messageCampaignTriggered:@"InvalidEvent" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
+
+    [swrveQAMock stopMocking];
+}
+
+- (void)testSwrveQAUserCallsWithEventPayload {
+    // Mock SwrveQA
+    id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
+    OCMStub([swrveQAMock isQALogging]).andReturn(YES);
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+
+    SwrveMessageController *controller = [swrveMock messaging];
+    
+    id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
+    controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
+    XCTAssertNotNil(message);
+
+    NSDictionary *eventPayload = @{@"key1": @"value1", @"key2": @2};
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"InvalidEvent" withPayload:eventPayload];
+    XCTAssertNil(message);
+
+    NSString *expectedReason101 = @"There is no trigger in 101 that matches InvalidEvent with conditions ['key1': 'value1', 'key2': 2]";
+    NSString *expectedReason102 = @"There is no trigger in 102 that matches InvalidEvent with conditions ['key1': 'value1', 'key2': 2]";
+    NSArray<SwrveQACampaignInfo*> *expectedQACampaign = @[
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:102 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:expectedReason102],
+        [[SwrveQACampaignInfo alloc] initWithCampaignID:101 variantID:165 type:SWRVE_CAMPAIGN_IAM displayed:NO reason:expectedReason101]
+    ];
+    OCMVerify([swrveQAMock messageCampaignTriggered:@"InvalidEvent" eventPayload:eventPayload displayed:NO campaignInfoDict:expectedQACampaign]);
 
     [swrveQAMock stopMocking];
 }
@@ -603,7 +678,7 @@
     // Campaign has start delay of 60 seconds, so no message should be returned after 40 seconds
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     expectedQACampaign = @[
@@ -613,7 +688,7 @@
 
     // Go another 30 seconds into future to get to start time + 70 seconds, message should appear now
     self.swrveNowDate = [NSDate dateWithTimeInterval:30 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
@@ -621,7 +696,7 @@
     // Go 10 seconds into the future, no message should show because there need to be 30 seconds between messages
     self.swrveNowDate = [NSDate dateWithTimeInterval:10 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     expectedQACampaign = @[
@@ -632,7 +707,7 @@
     // Another 25 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:25 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
@@ -641,13 +716,13 @@
     // This message should only be shown 3 times, it has been shown twice already
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     expectedQACampaign = @[
@@ -666,14 +741,14 @@
     SwrveMessageController *controller = [swrveMock messaging];
 
     // This message should only be shown 2 times
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
     // Cannot show the message anymore
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
     
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsNone" ofType:@"json"];
@@ -695,7 +770,7 @@
     XCTAssertEqual([[controller campaigns] count], 1);
     
     // Impressions rule still in place
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 }
 
@@ -709,7 +784,7 @@
     // First message display
     self.swrveNowDate = [NSDate dateWithTimeInterval:130 sinceDate:self.swrveNowDate];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller showMessage:message];
 
@@ -725,13 +800,13 @@
     [self waitForWindowDismissed:controller];
 
     // No message should be shown as the message has just been dismissed
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     // Another 35 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:35 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 }
 
@@ -755,7 +830,7 @@
     // campaigns it shouldn't show yet
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO campaignInfoDict:expectedQACampaign]);
@@ -769,7 +844,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
     [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
     
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 
     [swrveQAMock stopMocking];
@@ -786,28 +861,28 @@
 
     // First Message Delay
     // App has start delay of 30 seconds, so no message should be returned
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNil(message);
 
     OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App throttle limit} Too soon after launch. Wait until 00:00:30 +0000" campaignInfo:nil]);
     
     // Go 40 seconds into future
     self.swrveNowDate = [NSDate dateWithTimeInterval:40 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
     // Delay between messages
     // Go 5 seconds into the future, no message should show because there need to be 10 seconds between messages
     self.swrveNowDate = [NSDate dateWithTimeInterval:5 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNil(message);
 
     OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App throttle limit} Too soon after last iam. Wait until 00:00:50 +0000" campaignInfo:nil]);
 
     // Another 15 seconds and a message should be shown again
     self.swrveNowDate = [NSDate dateWithTimeInterval:15 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
@@ -815,17 +890,17 @@
 
     // Any message should only be shown 4 times, it has been shown twice already
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
     self.swrveNowDate = [NSDate dateWithTimeInterval:60 sinceDate:self.swrveNowDate];
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.user_purchase" withPayload:nil];
     XCTAssertNil(message);
 
     OCMVerify([swrveQAMock campaignTriggered:@"Swrve.user_purchase" eventPayload:nil displayed:NO reason:@"{App Throttle limit} Too many iam s shown" campaignInfo:nil]);
@@ -837,7 +912,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsDelay"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"InvalidTrigger"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"InvalidTrigger" withPayload:nil];
     XCTAssertNil(message);
 }
 
@@ -854,7 +929,7 @@
     
     [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     OCMVerify([swrveQAMock campaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:NO reason:@"No iams available" campaignInfo:nil]);
@@ -875,7 +950,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsFuture"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     expectedQACampaign = @[
@@ -885,13 +960,13 @@
     // 25 hours into the future the campaign should be available
     self.swrveNowDate = [NSDate dateWithTimeInterval:60*60*25 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 
     // The campaign is only live for 24 hours, so another 24 hours into the future it should no longer be available
     self.swrveNowDate = [NSDate dateWithTimeInterval:60*60*24 sinceDate:self.swrveNowDate];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     expectedQACampaign = @[
@@ -913,7 +988,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
     
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1077,7 +1152,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1130,7 +1205,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1186,7 +1261,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controllerMock.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controllerMock baseMessageForEvent:@"test1"];
+    SwrveMessage *message = (SwrveMessage *)[controllerMock baseMessageForEvent:@"test1" withPayload:nil];
     [controllerMock showMessage:message];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controllerMock];
@@ -1340,7 +1415,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1412,7 +1487,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush" withPayload:nil];
     [controller showMessage:message withPersonalization: @{@"test_1":@"some personalized value1", @"test_2":@"some personalized value2"}];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1477,13 +1552,13 @@
     SwrveMessageController *controller = [swrveMock messaging];
     controller.pushEnabled = true;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush" withPayload:nil];
     XCTAssertNotNil(message);
     
     id permissionMock = OCMClassMock([SwrvePermissions class]);
     OCMStub([permissionMock didWeAskForPushPermissionsAlready]).andReturn(true);
     
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestablePush" withPayload:nil];
     XCTAssertNil(message);
 }
 
@@ -1512,7 +1587,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsQAReset"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     [controller messageWasShownToUser:message];
 
@@ -1525,7 +1600,7 @@
     BOOL isLoadingCampaign = [[SwrveQA sharedInstance] resetDeviceState];
     [controller updateCampaigns: jsonDict withLoadingPreviousCampaignState:isLoadingCampaign];
 
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
 
     // An SDK reset will cause the rules to reset
@@ -1534,7 +1609,7 @@
     [controller messageWasShownToUser:message];
 
     // Message shows because rules have been reset
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 }
 
@@ -1546,26 +1621,26 @@
     SwrveMessageController *controller = [swrveMock messaging];
 
     // Message ID 1 should be highest priority
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 1);
     [controller messageWasShownToUser:message];
 
     // Message ID 2 should be second highest priority
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [controller messageWasShownToUser:message];
 
     //Max impressiong for message id 2 is set to 2, so it show should again.
     //Also Display order is random and round robin has been removed,
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [controller messageWasShownToUser:message];
 
     //Should now move to message id 4
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 4);
 }
@@ -1577,19 +1652,19 @@
     SwrveMessageController *controller = [swrveMock messaging];
 
     // Highest priority first (first in round robin)
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [controller messageWasShownToUser:message];
 
     //
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 2);
     [controller messageWasShownToUser:message];
 
     // Lowest priority (first message in JSON)
-    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 1);
 }
@@ -1599,14 +1674,14 @@
     SwrveMessageController *controller = [swrveMock messaging];
 
     // Message ID 4 should be highest priority and should be embedded
-    SwrveBaseMessage *message = [controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveBaseMessage *message = [controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 4);
     XCTAssertTrue([message isKindOfClass:[SwrveEmbeddedMessage class]]);
     
     // Now go over embedded message's message rules
     [controller embeddedMessageWasShownToUser:(SwrveEmbeddedMessage *)message];
-    message = [controller baseMessageForEvent:@"Swrve.currency_given"];
+    message = [controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
     XCTAssertEqual([[message messageID] intValue], 1);
     XCTAssertTrue([message isKindOfClass:[SwrveMessage class]]);
@@ -1634,7 +1709,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsMessagePriority"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -1643,7 +1718,7 @@
     OCMStub([swrveMock getNow]).andReturn([NSDate dateWithTimeInterval:40 sinceDate:[swrveMock getNow]]);
 
     // Ensure that if we try to display a second message without dismissing the first one this fails and the same message is still shown
-    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message2 = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message2];
     viewController = [self messageViewControllerFrom:controller];
 
@@ -1677,7 +1752,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -1715,7 +1790,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsBothOrientations"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -1747,7 +1822,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsPortraitOnly"];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -1970,7 +2045,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -1993,7 +2068,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -2047,7 +2122,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsRRGGBB" withConfig:config];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -2066,7 +2141,7 @@
     id swrveMock = [self swrveMockWithTestJson:@"campaignsAARRGGBB" withConfig:config];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     [controller showMessage:message];
 
     SwrveMessageViewController *viewController = [self messageViewControllerFrom:controller];
@@ -2255,7 +2330,7 @@
     
     self.swrveNowDate = [NSDate dateWithTimeInterval:130 sinceDate:self.swrveNowDate];
     
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 
     NSArray *eventsBuffer = [swrveMock eventBuffer];
@@ -2316,7 +2391,7 @@
     id swrveQAMock = OCMPartialMock([SwrveQA sharedInstance]);
     [swrveQAMock updateQAUser:@{@"logging": @YES, @"reset_device_state": @YES} andSessionToken:@"aSessinToken"];
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
 
     OCMVerify([swrveQAMock messageCampaignTriggered:@"Swrve.currency_given" eventPayload:nil displayed:YES campaignInfoDict:OCMOCK_ANY]);
@@ -2329,7 +2404,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestable"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventRequestable" withPayload:nil];
     XCTAssertNotNil(message);
         
     OCMVerify([testCapabilitiesDelegateMock canRequestCapability:@"swrve.contacts"]);
@@ -2342,7 +2417,7 @@
     id testCapabilitiesDelegateMock = OCMPartialMock([TestCapabilitiesDelegate new]);
     controller.inAppMessageConfig.inAppCapabilitiesDelegate = testCapabilitiesDelegateMock;
 
-    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventNotRequestable"];
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"eventNotRequestable" withPayload:nil];
     XCTAssertNil(message);
     
     OCMVerify([testCapabilitiesDelegateMock canRequestCapability:@"swrve.contacts"]);
@@ -2921,7 +2996,7 @@
     });
     
     [swrveMock initWithAppID:123 apiKey:@"someAPIKey"];
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     
     NSDate *delay = [[NSDate date] dateByAddingTimeInterval: 1];
     XCTestExpectation *expectation = [self expectationWithDescription: @"campaigns_with_reidentify_period"];
@@ -2958,7 +3033,7 @@
     });
     
     [swrveMock initWithAppID:123 apiKey:@"someAPIKey"];
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     
     NSDate *delay = [[NSDate date] dateByAddingTimeInterval: 1];
     XCTestExpectation *expectation = [self expectationWithDescription: @"campaigns_without_reidentify_period"];
@@ -2993,4 +3068,14 @@
     // Ensure no crash when sending invalid pageId
     XCTAssertNoThrow([viewController queuePageViewEvent:nil]);
 }
+
+- (void)enableQaLogging {
+    NSDictionary *jsonQa = @{
+                             @"logging": @true,
+                             @"logging_url": @"http://123.swrve.com",
+                             @"campaigns": @{}
+                             };
+    [SwrveQA updateQAUser:jsonQa andSessionToken:@"whatEver"];
+}
+
 @end

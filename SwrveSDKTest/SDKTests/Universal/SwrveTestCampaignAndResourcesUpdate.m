@@ -80,7 +80,7 @@
 
     [swrveMock appDidBecomeActive:nil];
     XCTAssertNotNil([swrveMock campaignsAndResourcesTimer], "Timer will be not be nil after session is started.");
-    OCMVerify([swrveMock refreshCampaignsAndResources]); // refresh called once immediately
+    OCMVerify([swrveMock refreshContent:OCMOCK_ANY]); // refresh called once immediately
 
     NSTimeInterval interval = [[swrveMock campaignsAndResourcesTimer] timeInterval];
     XCTAssertEqual(interval, 1, @"The timer should be set to 1 second intervals.");
@@ -213,8 +213,30 @@
                              ];
  
     NSURL *expectedUrl = components.URL;
-    
     XCTAssertEqualObjects([url absoluteString],[expectedUrl absoluteString]);
+
+    // Update the language and retest
+    [swrveMock updateLanguage:@"en-ie"];
+    url = [swrveMock campaignsAndResourcesURL];
+    
+    // Find the index of the language query item and replace it
+    NSMutableArray *mutableQueryItems = [components.queryItems mutableCopy];
+    NSUInteger languageIndex = [mutableQueryItems indexOfObjectPassingTest:^BOOL(NSURLQueryItem *item, NSUInteger idx, BOOL *stop) {
+        if ([item.name isEqualToString:@"language"]) {
+            *stop = YES; // Found it, stop searching
+            return YES;
+        }
+        return NO;
+    }];
+    if (languageIndex == NSNotFound) {
+        XCTFail(@"Language query item not found in the URL components.");
+    } else {
+        NSURLQueryItem *newLanguageItem = [NSURLQueryItem queryItemWithName:@"language" value:@"en-ie"];
+        [mutableQueryItems replaceObjectAtIndex:languageIndex withObject:newLanguageItem];
+        components.queryItems = mutableQueryItems; // Update the query items with the new language
+    }
+    expectedUrl = components.URL;
+    XCTAssertEqualObjects([url absoluteString], [expectedUrl absoluteString], @"expectedUrl: %@ does not match url: %@", [expectedUrl absoluteString], [url absoluteString]);
 }
 
 

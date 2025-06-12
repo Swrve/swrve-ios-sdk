@@ -31,6 +31,7 @@ import SwrveSDKCommon
             self.messageCenterDetails = SwrveMessageCenterDetails(withJSON: messageCenterDetailsJson)
         }
         self.campaign = campaign
+        self.campaignID = self.campaign?.ID ?? 0
         self.messageID = json["id"] as? NSNumber
         self.name = json["name"] as? String
         self.priority = json["priority"] as? NSNumber ?? 9999

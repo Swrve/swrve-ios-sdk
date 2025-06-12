@@ -1,12 +1,18 @@
 #import <Foundation/Foundation.h>
 
 /*! Swrve SDK logger class. Defaults to verbose on DEBUG builds and to none on release builds. You can change the level at runtime with setLogLevel */
-typedef enum SwrveLogLevel : NSUInteger {
-    NONE,
-    ERROR,
-    WARNING,
-    VERBOSE
-} SwrveLogLevel;
+typedef NS_ENUM(NSUInteger, SwrveLogLevel) {
+    SwrveLogLevelNone,
+    SwrveLogLevelError,
+    SwrveLogLevelWarning,
+    SwrveLogLevelVerbose
+};
+
+// Backward compatibility for old constant names
+#define NONE SwrveLogLevelNone
+#define ERROR SwrveLogLevelError
+#define WARNING SwrveLogLevelWarning
+#define VERBOSE SwrveLogLevelVerbose
 
 @interface SwrveLogger : NSObject
 

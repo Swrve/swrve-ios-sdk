@@ -100,7 +100,7 @@
     XCTAssertFalse([resource attributeAsBool:@"purchased" withDefault:YES]);
     
     XCTAssertEqual(callbackCounter, 2);
-    [swrveMock refreshCampaignsAndResources];
+    [swrveMock refreshContent:nil];
     XCTAssertEqual(callbackCounter, 2); // callback should not be called again because the flag campaignsAndResourcesInitialized prevents it. 
 }
 
@@ -243,7 +243,7 @@
     NSString *__block testCacheFileContents = @"[{ \"uid\": \"animal.ant\", \"diff\": { \"cost\": { \"old\": \"550\", \"new\": \"666\" }}}, { \"uid\": \"animal.bear\", \"diff\": { \"level\": { \"old\": \"10\", \"new\": \"9000\" }}}]";
 
     // Initialise Swrve and write to resources diff cache file
-    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:500 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:999 mockData:[@"{}" dataUsingEncoding:NSUTF8StringEncoding]];
     swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
     [swrveMock appDidBecomeActive:nil];
     [[swrveMock resourcesDiffFile] writeWithRespectToPlatform:[testCacheFileContents dataUsingEncoding:NSUTF8StringEncoding]];

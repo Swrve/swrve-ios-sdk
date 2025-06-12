@@ -40,9 +40,17 @@ import XCTest
     @objc override public func sendHttpGETRequest(_ url: URL!, completionHandler handler: ((URLResponse?, Data?, Error?) -> Void)!) {
         lastURLTriggered = url
 
-        if let statusCode = mockedStatusCode, statusCode.intValue != 200 {
+        // Return http response code without any error if below 999
+        if let statusCode = mockedStatusCode, statusCode.intValue < 999 {
             let httpResponse = HTTPURLResponse(url: url, statusCode: statusCode.intValue, httpVersion: nil, headerFields: nil)!
-            let error = NSError(domain: "Error", code: -1, userInfo: nil)
+            handler?(httpResponse, mockData, nil)
+            return
+        }
+
+        // Return error if status code is 999
+        if let statusCode = mockedStatusCode, statusCode.intValue == 999 {
+            let httpResponse = HTTPURLResponse(url: url, statusCode: statusCode.intValue, httpVersion: nil, headerFields: nil)!
+            let error = NSError(domain: "Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "A custom NSError occurred"])
             handler?(httpResponse, mockData, error)
             return
         }

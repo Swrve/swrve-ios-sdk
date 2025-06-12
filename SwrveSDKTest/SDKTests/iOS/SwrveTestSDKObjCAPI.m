@@ -47,7 +47,10 @@
     
     // Refresh campaigns and resources
     XCTAssertThrows([SwrveSDK refreshCampaignsAndResources]);
-    
+
+    // Refresh content
+    XCTAssertThrows([SwrveSDK refreshContent:nil]);
+
     // Resource manager
    XCTAssertThrows([SwrveSDK resourceManager]);
     
@@ -161,6 +164,24 @@
     anotherConfig.initMode = SwrveInitModeManaged;
     [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"SwrveTestKey" config: anotherConfig];
     [SwrveSDK startWithUserId:@"userId"];
+}
+
+- (void)testSwrveLogger {
+
+    [SwrveLogger setLogLevel:SwrveLogLevelNone];
+    [SwrveLogger setLogLevel:NONE];
+    
+    [SwrveLogger setLogLevel:SwrveLogLevelVerbose];
+    [SwrveLogger setLogLevel:VERBOSE];
+    [SwrveLogger debug:@"This is a debug message"];
+    
+    [SwrveLogger setLogLevel:SwrveLogLevelWarning];
+    [SwrveLogger setLogLevel:WARNING];
+    [SwrveLogger warning:@"This is a warning message"];
+    
+    [SwrveLogger setLogLevel:SwrveLogLevelError];
+    [SwrveLogger setLogLevel:ERROR];
+    [SwrveLogger error:@"This is an error message"];
 }
 
 @end

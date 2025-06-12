@@ -13,6 +13,8 @@ import SwrveSDKCommon
 
     @objc public var campaign: SwrveCampaign?
 
+    @objc public var campaignID: UInt = 0
+
     @objc public var messageID: NSNumber?
 
     @objc public var priority: NSNumber?

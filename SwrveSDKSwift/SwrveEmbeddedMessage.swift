@@ -23,6 +23,7 @@ import SwrveSDKCommon
     @objc public static func fromDictionary(_ json: [String: Any], andCampaign campaign: SwrveCampaign) -> SwrveEmbeddedMessage {
         let message = SwrveEmbeddedMessage()
         message.campaign = campaign
+        message.campaignID = campaign.ID
 
         guard let id = json["id"] as? NSNumber else {
             return message

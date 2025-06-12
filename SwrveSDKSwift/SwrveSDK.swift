@@ -216,9 +216,20 @@ public enum SwrveSDKError: Error, Equatable {
     /// If SwrveConfig.autoDownloadCampaignsAndResources is set to NO, please call this function to update values. This function issues an asynchronous
     /// HTTP request to the Swrve content server specified in SwrveConfig. This function will return immediately, and the callback will be fired after the Swrve
     /// server has sent its response. At this point the resourceManager can be used to retrieve the updated resource values.
+    /// Use refreshContent instead.
     @objc public class func refreshCampaignsAndResources() {
         checkInstance()
-        sharedInstance.refreshCampaignsAndResources()
+        sharedInstance.refreshContent(nil)
+    }
+
+    /// Refresh content from server, which includes campaigns, resources, push inbox, real time user properties.
+    /// Content is refreshed automatically but you can use this API to refresh manually or if SwrveConfig.autoDownloadCampaignsAndResources
+    /// is false. This is an asynchronous operation and the delegate will be called when the operation is complete.
+    /// Check the returned result object for success or failure. Set the delegate to null if you don't want to be
+    /// notified when the operation is complete.
+    @objc public class func refreshContent(_ listener: SwrveRefreshContentDelegate?) {
+        checkInstance()
+        sharedInstance.refreshContent(listener)
     }
 
     /// Use the resource manager to retrieve the most up-to-date attribute values at any time.
@@ -536,24 +547,63 @@ public enum SwrveSDKError: Error, Equatable {
         return sharedInstance.personalizeText(text, withPersonalization: personalizationProperties)
     }
 
-    /// Get the list of active Message Center campaigns targeted for this user. It will exclude campaigns that have been deleted with the
-    /// removeCampaign method and those that do not support the current orientation. To obtain all Message Center campaigns independent of
-    /// their orientation support use the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
-    /// - Returns: List of active Message Center campaigns.
+    /// Gets active In-app and Embedded Message Center campaigns for the current orientation, excluding deleted campaigns.
+    /// - Returns: List of active In-app and Embedded Message Center campaigns.
     @objc public class func messageCenterCampaigns() -> [SwrveCampaign] {
         checkInstance()
         return sharedInstance.messageCenterCampaigns()
     }
 
-    /// Get the list of active Message Center campaigns targeted for this user and might have personalization that can be resolved. It will
-    /// exclude campaigns that have been deleted with the removeCampaign method and those that do not support the current orientation.
-    /// To obtain all Message Center campaigns independent of their orientation support use
-    /// the messageCenterCampaignsThatSupportOrientation(UIInterfaceOrientationUnknown) method.
-    /// - Parameter personalization: Personalization properties for in-app messages.
-    /// - Returns: List of active Message Center campaigns.
+    /// Gets active In-app and Embedded Message Center campaigns for the current orientation, with personalization properties, excluding deleted campaigns.
+    /// - Parameter personalization: Personalization properties.
+    /// - Returns: List of active In-app and Embedded Message Center campaigns.
     @objc public class func messageCenterCampaigns(withPersonalization personalization: [String: Any]) -> [SwrveCampaign] {
         checkInstance()
         return sharedInstance.messageCenterCampaigns(withPersonalization: personalization)
+    }
+
+    #if os(iOS)
+    /// Gets active In-app and Embedded Message Center campaigns for the specified orientation, excluding deleted campaigns.
+    /// - Parameter orientation: Required orientation.
+    /// - Returns: List of active In-app and Embedded Message Center campaigns that support the given orientation.
+    @objc(messageCenterCampaignsThatSupportOrientation:)
+    public class func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation) -> [SwrveCampaign] {
+        checkInstance()
+        return sharedInstance.messageCenterCampaignsThatSupport(orientation)
+    }
+
+    /// Gets active In-app and Embedded Message Center campaigns for the specified orientation, with personalization properties, excluding deleted campaigns.
+    /// - Parameters:
+    ///   - orientation: Required orientation.
+    ///   - personalization: Personalization properties.
+    /// - Returns: List of active In-app and Embedded Message Center campaigns that support the given orientation.
+    @objc(messageCenterCampaignsThatSupportOrientation:withPersonalization:)
+    public class func messageCenterCampaignsThatSupport(_ orientation: UIInterfaceOrientation, withPersonalization personalization: [String: Any])
+        -> [SwrveCampaign]
+    {
+        checkInstance()
+        return sharedInstance.messageCenterCampaignsThatSupport(orientation, withPersonalization: personalization)
+    }
+
+    /// Gets active In-app Message Center campaigns with personalization properties, excluding deleted campaigns.
+    /// - Parameters:
+    ///   - personalization: Personalization properties.
+    ///   - orientation: Required orientation.
+    /// - Returns: List of active In-app Message Center campaigns.
+    @objc(inAppMessageCenterCampaignsWithOrientation:withPersonalization:)
+    public class func inAppMessageCenterCampaignsWith(
+        _ orientation: UIInterfaceOrientation, withPersonalization personalization: [String: Any]
+    ) -> [SwrveInAppCampaign] {
+        checkInstance()
+        return sharedInstance.inAppMessageCenterCampaigns(with: orientation, withPersonalization: personalization)
+    }
+    #endif
+
+    /// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
+    /// - Returns: List of active Embedded Message Center campaigns.
+    @objc public class func embeddedMessageCenterCampaigns() -> [SwrveEmbeddedMessage] {
+        checkInstance()
+        return sharedInstance.embeddedMessageCenterCampaigns()
     }
 
     /// Get Message Center campaign targeted for this user and might have personalization that can be resolved. It will exclude campaigns
@@ -566,32 +616,6 @@ public enum SwrveSDKError: Error, Equatable {
         checkInstance()
         return sharedInstance.messageCenterCampaign(withID: campaignID, andPersonalization: personalization)
     }
-
-    #if os(iOS)
-    /// Get the list of active Message Center campaigns targeted for this user. It will exclude campaigns that have been deleted with the
-    /// removeCampaign method and those that do not support the given orientation.
-    /// - Parameter orientation: Required orientation.
-    /// - Returns: List of active Message Center campaigns that support the given orientation.
-    @objc(messageCenterCampaignsThatSupportOrientation:) public class func messageCenterCampaignsThatSupport(
-        _ orientation: UIInterfaceOrientation
-    ) -> [SwrveCampaign] {
-        checkInstance()
-        return sharedInstance.messageCenterCampaignsThatSupport(orientation)
-    }
-
-    /// Get the list of active Message Center campaigns targeted for this user and might have personalization that can be resolved. It will exclude campaigns
-    /// that have been deleted with the removeCampaign method and those that do not support the given orientation.
-    /// - Parameters:
-    ///   - orientation: Required orientation.
-    ///   - personalization: Personalization properties for in-app messages.
-    /// - Returns: List of active Message Center campaigns that support the given orientation.
-    @objc(messageCenterCampaignsThatSupportOrientation:withPersonalization:) public class func messageCenterCampaignsThatSupport(
-        _ orientation: UIInterfaceOrientation, withPersonalization personalization: [String: Any]
-    ) -> [SwrveCampaign] {
-        checkInstance()
-        return sharedInstance.messageCenterCampaignsThatSupport(orientation, withPersonalization: personalization)
-    }
-    #endif
 
     /// Display the given campaign without the need to trigger an event and skipping the configured rules.
     /// - Parameter campaign: Campaign that will be displayed.
@@ -620,11 +644,27 @@ public enum SwrveSDKError: Error, Equatable {
         sharedInstance.removeMessageCenter(campaign)
     }
 
+    /// Remove the given campaign. It won't be returned anymore by the method messageCenterCampaigns.
+    /// - Parameter campaignID: ID of Campaign that will be removed.
+    @objc(removeMessageCenterCampaignWithID:)
+    public class func removeMessageCenterCampaign(_ campaignID: UInt) {
+        checkInstance()
+        sharedInstance.removeMessageCenterCampaign(withID: campaignID)
+    }
+
     /// Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
     /// - Parameter campaign: Campaign that will be marked as seen.
     @objc(markMessageCenterCampaignAsSeen:) public class func markMessageCenterCampaign(asSeen campaign: SwrveCampaign) {
         checkInstance()
         sharedInstance.markMessageCenterCampaign(asSeen: campaign)
+    }
+
+    /// Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
+    /// - Parameter campaignID: ID of Campaign that will be marked as seen.
+    @objc(markMessageCenterCampaignAsSeenWithId:)
+    public class func markMessageCenterCampaignAsSeen(_ campaignID: UInt) {
+        checkInstance()
+        sharedInstance.markMessageCenterCampaignAsSeen(withID: campaignID)
     }
 
     /// Call this method after getting the IDFA string.
@@ -640,6 +680,15 @@ public enum SwrveSDKError: Error, Equatable {
         sharedInstance.dismissMessageWindow()
     }
 
+    /// Sets the device language to be used in the SDK.
+    /// The language should normally be set in the SwrveConfig object before the SDK is initialized.
+    /// This API allows you to dynamically change the language after the SDK has been initialized.
+    /// Next time the SDK initializes a new session, you should set the language again in the SwrveConfig object.
+    /// - Parameter language: The language code to set (eg: "en-US").
+    @objc public class func setLanguage(_ language: String) {
+        checkInstance()
+        sharedInstance.updateLanguage(language)
+    }
 }
 
 extension SwrveSDK {

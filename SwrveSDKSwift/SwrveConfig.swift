@@ -68,7 +68,7 @@ public typealias SwrveResourcesUpdatedListener = () -> Void
     /// the latest value for each attribute at the time you need it. Resources and attributes in the resourceManager
     /// are kept up to date.
     /// When `autoDownloadCampaignsAndResources` is false, resources will not be kept up to date, and you will have
-    /// to manually call `refreshCampaignsAndResources` - which will call this listener on completion.
+    /// to manually call `refreshContent` - which will call this listener on completion.
     @objc public var resourcesUpdatedCallback: (() -> Void)?
 
     /// Controls if `sendEvents` is automatically called when the app resumes in the foreground.

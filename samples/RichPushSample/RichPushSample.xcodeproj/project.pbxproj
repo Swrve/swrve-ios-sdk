@@ -840,7 +840,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E2569B58675CAB7F4E183B41 /* Pods-RichPushSample-Swift.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -873,7 +872,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A2D1000CDBBC3A22EDA4E6E6 /* Pods-RichPushSample-Swift.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;

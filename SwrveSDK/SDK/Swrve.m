@@ -134,6 +134,7 @@ enum {
 
 @property(nonatomic, retain) NSArray *campaigns;
 @property(nonatomic) bool autoShowMessagesEnabled;
+@property(atomic) NSString *language;
 
 - (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
 
@@ -171,7 +172,7 @@ enum {
 
 #endif //TARGET_OS_IOS
 
-@interface Swrve () <SwrveCommonDelegate> {
+@interface Swrve () <SwrveCommonDelegate, SwrveRefreshContentDelegate> {
     BOOL initialised;
     BOOL sdkStarted;
     BOOL lifecycleCallbacksRegistered;
@@ -920,184 +921,70 @@ enum {
     return [dateFormatter stringFromDate:date];
 }
 
-- (void)refreshCampaignsAndResources {
-    if (![self sdkReady]) {
-        return;
-    }
-    // When campaigns need to be downloaded manually, enforce max. flush frequency
-    if (!self.config.autoDownloadCampaignsAndResources) {
-        NSDate *now = [self getNow];
+- (void)refreshContent:(id <SwrveRefreshContentDelegate>)listener {
 
-        if (self.campaignsAndResourcesLastRefreshed != nil) {
-            NSDate *nextAllowedTime = [NSDate dateWithTimeInterval:self.campaignsAndResourcesFlushFrequency sinceDate:self.campaignsAndResourcesLastRefreshed];
-            if ([now compare:nextAllowedTime] == NSOrderedAscending) {
-                // Too soon to call refresh again
-                [SwrveLogger warning:@"Request to retrieve campaign and user resource data was rate-limited.", nil];
-                return;
-            }
+    NSString *shouldRefreshContentErrorMessage = [self shouldRefreshContent];
+    if (shouldRefreshContentErrorMessage) {
+        if (listener != nil) {
+            [listener onComplete:[[SwrveRefreshContentResult alloc] init: SwrveRefreshContentResultCodeERROR:shouldRefreshContentErrorMessage :0]];
         }
-
-        self.campaignsAndResourcesLastRefreshed = [self getNow];
+        return;
     }
 
     NSURL *url = [self campaignsAndResourcesURL];
-    [SwrveLogger debug:@"Refreshing campaigns from URL %@", url];
+    [SwrveLogger debug:@"Swrve refreshing content from URL %@", url];
     [restClient sendHttpGETRequest:url completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        SwrveRefreshContentResultCode resultCode = SwrveRefreshContentResultCodeERROR_UNKNOWN;
+        NSString *errorMsg = @"";
+        NSInteger statusCode = 0;
         if (!error) {
-            NSInteger statusCode = 200;
             enum HttpStatus status = HTTP_SUCCESS;
-
-            NSDictionary *headers = [[NSDictionary alloc] init];
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                 statusCode = [httpResponse statusCode];
                 status = [self httpStatusFromResponse:httpResponse];
-                headers = [httpResponse allHeaderFields];
             }
-
             if (status == SWRVE_SUCCESS) {
-                if ([self isValidJson:data]) {
-                    NSString *etagHeader = [headers objectForKey:@"ETag"];
-                    if (etagHeader != nil) {
-                        [SwrveLocalStorage saveETag:etagHeader forUserId:self.userID];
-                    }
-
-                    BOOL loadPreviousCampaignState = YES;
-                    NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                    if ([responseDict count] == 0) { //if responseDict is == 0 then etag hasn't changed.
-                        [SwrveLogger debug:@"SwrveSDK etag has not changed", nil];
-                    } else if ([responseDict objectForKey:@"qa"]) {
-                        BOOL wasPreviouslyResetDevice = [[SwrveQA sharedInstance] resetDeviceState];
-                        BOOL resetDevice = [[responseDict objectForKey:@"reset_device_state"] boolValue];
-                        if (!wasPreviouslyResetDevice && resetDevice) {
-                            loadPreviousCampaignState = NO;
-                        }
-                        [SwrveQA updateQAUser:[responseDict objectForKey:@"qa"] andSessionToken:self.sessionToken];
-                        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
-                                               userId:self.userID
-                                       eventServerUrl:self.eventsServer
-                                             deviceId:self.deviceUUID
-                                         sessionToken:self.sessionToken
-                                           appVersion:self.appVersion
-                                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
-                        // The qauser push token is stored separately to regular users and requires an update for newly identified users who happen to be a qauser also.
-                        NSDictionary *deviceInfo = [self deviceInfo];
-                        [self mergeWithCurrentDeviceInfo:deviceInfo];
-                        [self queueDeviceInfo];
-                        [self sendQueuedEvents];
-                    } else {
-                        [SwrveQA updateQAUser:@{@"logging": @NO, @"reset_device_state": @NO} andSessionToken:self.sessionToken];
-                        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
-                                               userId:self.userID
-                                       eventServerUrl:self.eventsServer
-                                             deviceId:self.deviceUUID
-                                         sessionToken:self.sessionToken
-                                           appVersion:self.appVersion
-                                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
-                    }
-
-                    NSNumber *flushFrequency = [responseDict objectForKey:@"flush_frequency"];
-                    if (flushFrequency != nil) {
-                        self.campaignsAndResourcesFlushFrequency = [flushFrequency integerValue] / 1000;
-                        [SwrveLocalStorage saveFlushFrequency:self.campaignsAndResourcesFlushFrequency];
-                    }
-
-                    NSNumber *flushDelay = [responseDict objectForKey:@"flush_refresh_delay"];
-                    if (flushDelay != nil) {
-                        self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
-                        [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
-                    }
-
-                    NSNumber *identifyRefreshPeriodNew = [responseDict objectForKey:@"identify_refresh_period"];
-                    if (identifyRefreshPeriodNew != nil) {
-                        if (self.identifyRefreshPeriod != [identifyRefreshPeriodNew intValue]) {
-                            self.identifyRefreshPeriod = [identifyRefreshPeriodNew intValue];
-                            [SwrveLocalStorage saveIdentifyRefreshPeriod:self.identifyRefreshPeriod];
-                            [self reIdentifyUser];
-                        }
-                    }
-
-                    NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
-                    if (resourceJson != nil) {
-                        [self updateResources:resourceJson writeToCache:YES];
-                    }
-
-                    NSDictionary *realTimeUserPropertiesJson = [responseDict objectForKey:@"real_time_user_properties"];
-                    if (realTimeUserPropertiesJson != nil) {
-                        [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
-                    }
-                    
-                    NSArray *inboxJson = [responseDict objectForKey:@"push_inbox"];
-                    if (inboxJson != nil) {
-                       [self.pushInbox updatePushInbox:inboxJson writeToCache:YES];
-                    }
-                    
-                    NSString *pushInboxHash = [SwrveLocalStorage pushInboxHashForUserId:self.userID];
-                    
-                    NSString *newPushInboxHash = [responseDict objectForKey:@"push_inbox_hash"];
-                    if (newPushInboxHash != nil) {
-                        if(pushInboxHash == nil || ![newPushInboxHash isEqualToString:pushInboxHash]){
-                            if([self campaignsAndResourcesInitialized]) {
-                                [self invokePushInboxUpdatedDelegate];
-                            }
-                            [SwrveLocalStorage savePushInboxHash:newPushInboxHash forUserId:self.userID];
-                        }
-                    }
-
-                    if (self.messaging) {
-                        NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
-                        if (campaignJson != nil) {
-                            [self.messaging updateCampaigns:campaignJson withLoadingPreviousCampaignState:loadPreviousCampaignState];
-
-                            NSData *campaignData = [NSJSONSerialization dataWithJSONObject:campaignJson options:0 error:nil];
-                            [self.messaging writeToCampaignCache:campaignData];
-                            [self.messaging autoShowMessages];
-                        } else if (realTimeUserPropertiesJson != nil) {
-                            // if real time user properties has changed then we need to resync InApp assets
-                            [self.messaging refreshInAppCampaignAssets];
-                        }
-                    }
-                    if (self.config.abTestDetailsEnabled) {
-                        NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
-                        if (campaignJson != nil) {
-                            id abTestDetailsJson = [campaignJson objectForKey:@"ab_test_details"];
-                            if (abTestDetailsJson != nil && [abTestDetailsJson isKindOfClass:[NSDictionary class]]) {
-                                [self updateABTestDetails:abTestDetailsJson];
-                            }
-                        }
-                    }
-
-                    if (resourceJson != nil || realTimeUserPropertiesJson != nil) {
-                        if (self.campaignsAndResourcesInitialized) {
-                            [self invokeResourcesRTUPCallback];
-                        }
-                    }
-
-                } else {
-                    [SwrveLogger error:@"Invalid JSON received for user resources and campaigns", nil];
-                }
-            } else if (statusCode == 429) {
-                [SwrveLogger warning:@"Request to retrieve campaign and user resource data was rate-limited.", nil];
+                [self handleRefreshContentResponse:response data:data];
+                resultCode = SwrveRefreshContentResultCodeSUCCESS;
             } else {
-                [SwrveLogger error:@"Request to retrieve campaign and user resource data failed", nil];
+                resultCode = SwrveRefreshContentResultCodeERROR;
+                if (data != nil) {
+                    errorMsg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                } else {
+                    errorMsg = @"Error retrieving campaign and user resource data.";
+                }
+                [SwrveLogger error:@"Error refreshing content:%@", errorMsg];
             }
+        } else {
+            resultCode = SwrveRefreshContentResultCodeERROR_UNKNOWN;
+            errorMsg = error.localizedDescription;
+            [SwrveLogger error:@"Error refreshing content:%@", errorMsg];
         }
 
-        if (![self campaignsAndResourcesInitialized]) {
-            [self setCampaignsAndResourcesInitialized:YES];
-
-            // Only called first time API call returns - whether failed or successful, whether new campaigns were returned or not;
-            // this ensures that if API call fails or there are no changes, we call autoShowMessages with cached campaigns
-            if (self.messaging) {
-                [self.messaging autoShowMessages];
-            }
-
-            // Invoke listeners once to denote that the first attempt at downloading has finished
-            // independent of whether the resources or campaigns have changed from cached values
-            [self invokeResourcesRTUPCallback];
-            [self invokePushInboxUpdatedDelegate];
+        if (listener != nil) {
+            [listener onComplete:[[SwrveRefreshContentResult alloc] init:resultCode :errorMsg :statusCode]];
         }
     }];
+}
+
+- (NSString *)shouldRefreshContent {
+    NSString *errorMessage = nil;
+    if (![self sdkReady]) {
+        errorMessage = @"SDK is not ready";
+    } else if (!self.config.autoDownloadCampaignsAndResources) { // When campaigns need to be downloaded manually, enforce max. flush frequency
+        NSDate *now = [self getNow];
+        if (self.campaignsAndResourcesLastRefreshed != nil) {
+            NSDate *nextAllowedTime = [NSDate dateWithTimeInterval:self.campaignsAndResourcesFlushFrequency sinceDate:self.campaignsAndResourcesLastRefreshed];
+            if ([now compare:nextAllowedTime] == NSOrderedAscending) {
+                // Too soon to call refresh again
+                errorMessage = @"Request to retrieve campaign and user resource data was rate-limited";
+                [SwrveLogger warning:errorMessage, nil];
+            }
+        }
+        self.campaignsAndResourcesLastRefreshed = [self getNow];
+    }
+    return errorMessage;
 }
 
 - (UInt64)joinedDateMilliSeconds {
@@ -1125,6 +1012,134 @@ enum {
     return [NSURL URLWithString:queryString relativeToURL:self.baseCampaignsAndResourcesURL];
 }
 
+- (void) handleRefreshContentResponse:(NSURLResponse *)response data:(NSData *)data {
+    if (![self isValidJson:data]) {
+        [SwrveLogger error:@"Invalid JSON received for user resources and campaigns", nil];
+        return;
+    }
+    
+    NSDictionary *headers = [[NSDictionary alloc] init];
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        headers = [httpResponse allHeaderFields];
+    }
+    NSString *etagHeader = [headers objectForKey:@"ETag"];
+    if (etagHeader != nil) {
+        [SwrveLocalStorage saveETag:etagHeader forUserId:self.userID];
+    }
+    
+    BOOL loadPreviousCampaignState = YES;
+    NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    if ([responseDict count] == 0) { //if responseDict is == 0 then etag hasn't changed.
+        [SwrveLogger debug:@"SwrveSDK etag has not changed", nil];
+    } else if ([responseDict objectForKey:@"qa"]) {
+        BOOL wasPreviouslyResetDevice = [[SwrveQA sharedInstance] resetDeviceState];
+        BOOL resetDevice = [[responseDict objectForKey:@"reset_device_state"] boolValue];
+        if (!wasPreviouslyResetDevice && resetDevice) {
+            loadPreviousCampaignState = NO;
+        }
+        [SwrveQA updateQAUser:[responseDict objectForKey:@"qa"] andSessionToken:self.sessionToken];
+        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
+                               userId:self.userID
+                       eventServerUrl:self.eventsServer
+                             deviceId:self.deviceUUID
+                         sessionToken:self.sessionToken
+                           appVersion:self.appVersion
+                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
+        // The qauser push token is stored separately to regular users and requires an update for newly identified users who happen to be a qauser also.
+        NSDictionary *deviceInfo = [self deviceInfo];
+        [self mergeWithCurrentDeviceInfo:deviceInfo];
+        [self queueDeviceInfo];
+        [self sendQueuedEvents];
+    } else {
+        [SwrveQA updateQAUser:@{@"logging": @NO, @"reset_device_state": @NO} andSessionToken:self.sessionToken];
+        [SwrveSEConfig saveAppGroupId:self.appGroupIdentifier
+                               userId:self.userID
+                       eventServerUrl:self.eventsServer
+                             deviceId:self.deviceUUID
+                         sessionToken:self.sessionToken
+                           appVersion:self.appVersion
+                             isQAUser:[[SwrveQA sharedInstance] isQALogging]];
+    }
+    
+    NSNumber *flushFrequency = [responseDict objectForKey:@"flush_frequency"];
+    if (flushFrequency != nil) {
+        self.campaignsAndResourcesFlushFrequency = [flushFrequency integerValue] / 1000;
+        [SwrveLocalStorage saveFlushFrequency:self.campaignsAndResourcesFlushFrequency];
+    }
+    
+    NSNumber *flushDelay = [responseDict objectForKey:@"flush_refresh_delay"];
+    if (flushDelay != nil) {
+        self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
+        [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
+    }
+    
+    NSNumber *identifyRefreshPeriodNew = [responseDict objectForKey:@"identify_refresh_period"];
+    if (identifyRefreshPeriodNew != nil) {
+        if (self.identifyRefreshPeriod != [identifyRefreshPeriodNew intValue]) {
+            self.identifyRefreshPeriod = [identifyRefreshPeriodNew intValue];
+            [SwrveLocalStorage saveIdentifyRefreshPeriod:self.identifyRefreshPeriod];
+            [self reIdentifyUser];
+        }
+    }
+    
+    NSArray *resourceJson = [responseDict objectForKey:@"user_resources"];
+    if (resourceJson != nil) {
+        [self updateResources:resourceJson writeToCache:YES];
+    }
+    
+    NSDictionary *realTimeUserPropertiesJson = [responseDict objectForKey:@"real_time_user_properties"];
+    if (realTimeUserPropertiesJson != nil) {
+        [self updateRealTimeUserProperties:realTimeUserPropertiesJson writeToCache:YES];
+    }
+    
+    NSArray *inboxJson = [responseDict objectForKey:@"push_inbox"];
+    if (inboxJson != nil) {
+        [self.pushInbox updatePushInbox:inboxJson writeToCache:YES];
+    }
+    
+    NSString *pushInboxHash = [SwrveLocalStorage pushInboxHashForUserId:self.userID];
+    
+    NSString *newPushInboxHash = [responseDict objectForKey:@"push_inbox_hash"];
+    if (newPushInboxHash != nil) {
+        if(pushInboxHash == nil || ![newPushInboxHash isEqualToString:pushInboxHash]){
+            if([self campaignsAndResourcesInitialized]) {
+                [self invokePushInboxUpdatedDelegate];
+            }
+            [SwrveLocalStorage savePushInboxHash:newPushInboxHash forUserId:self.userID];
+        }
+    }
+    
+    if (self.messaging) {
+        NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
+        if (campaignJson != nil) {
+            [self.messaging updateCampaigns:campaignJson withLoadingPreviousCampaignState:loadPreviousCampaignState];
+            
+            NSData *campaignData = [NSJSONSerialization dataWithJSONObject:campaignJson options:0 error:nil];
+            [self.messaging writeToCampaignCache:campaignData];
+            [self.messaging autoShowMessages];
+        } else if (realTimeUserPropertiesJson != nil) {
+            // if real time user properties has changed then we need to resync InApp assets
+            [self.messaging refreshInAppCampaignAssets];
+        }
+    }
+    if (self.config.abTestDetailsEnabled) {
+        NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
+        if (campaignJson != nil) {
+            id abTestDetailsJson = [campaignJson objectForKey:@"ab_test_details"];
+            if (abTestDetailsJson != nil && [abTestDetailsJson isKindOfClass:[NSDictionary class]]) {
+                [self updateABTestDetails:abTestDetailsJson];
+            }
+        }
+    }
+    
+    if (resourceJson != nil || realTimeUserPropertiesJson != nil) {
+        if (self.campaignsAndResourcesInitialized) {
+            [self invokeResourcesRTUPCallback];
+        }
+    }
+}
+
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer {
     // If this wasn't called from the timer then reset the timer
     if (timer == nil) {
@@ -1144,7 +1159,12 @@ enum {
         [self sendQueuedEvents];
         [self setEventsWereSent:NO];
 
-        [NSTimer scheduledTimerWithTimeInterval:self.campaignsAndResourcesFlushRefreshDelay target:self selector:@selector(refreshCampaignsAndResources) userInfo:nil repeats:NO];
+        [NSTimer scheduledTimerWithTimeInterval:[self campaignsAndResourcesFlushRefreshDelay]
+                                        repeats:NO
+                                          block:^(NSTimer *_Nonnull blockTimer) {
+#pragma unused(blockTimer)
+            [self refreshContent:self];
+        }];
     }
 }
 
@@ -1522,7 +1542,7 @@ enum {
         return;
     }
 
-    [self refreshCampaignsAndResources];
+    [self refreshContent:self];
     // Start repeating timer
     [self setCampaignsAndResourcesTimer:[NSTimer scheduledTimerWithTimeInterval:1
                                                                          target:self
@@ -1532,10 +1552,11 @@ enum {
 
     // Call refresh once after refresh delay to ensure campaigns are reloaded after initial events have been sent
     [NSTimer scheduledTimerWithTimeInterval:[self campaignsAndResourcesFlushRefreshDelay]
-                                     target:self
-                                   selector:@selector(refreshCampaignsAndResources)
-                                   userInfo:nil
-                                    repeats:NO];
+                                    repeats:NO
+                                      block:^(NSTimer *_Nonnull blockTimer) {
+#pragma unused(blockTimer)
+        [self refreshContent:self];
+    }];
 }
 
 - (void)campaignsAndResourcesTimerTick:(NSTimer *)timer {
@@ -1836,14 +1857,14 @@ enum {
                                                      appInstallTimeSeconds:appInstallTimeSeconds
                                                                deviceToken:self.deviceToken
                                                           permissionStatus:permissionStatus
-                                                              sdk_language:self.config.language
+                                                              sdk_language:self.language
                                                              swrveInitMode:[self swrveInitModeString]];
 
 #elif TARGET_OS_TV
     swrveDeviceProperties = [[SwrveDeviceProperties alloc] initWithVersion:@SWRVE_SDK_VERSION
                                                      appInstallTimeSeconds:appInstallTimeSeconds
                                                           permissionStatus:permissionStatus
-                                                              sdk_language:self.config.language
+                                                              sdk_language:self.language
                                                              swrveInitMode:[self swrveInitModeString]];
 
 
@@ -1883,7 +1904,7 @@ enum {
             self.apiKey,
             self.appID,
             self.appVersion,
-            self.config.language,
+            self.language,
             self.config.eventsServer,
             self.config.contentServer,
             self.config.identityServer];
@@ -2997,13 +3018,6 @@ enum HttpStatus {
     return [messaging messageCenterCampaignsWithPersonalization:personalization];
 }
 
-- (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {
-    if (![self sdkReady]) {
-        return nil;
-    }
-    return [messaging messageCenterCampaignWithID:campaignID andPersonalization:personalization];
-}
-
 #if TARGET_OS_IOS /** exclude tvOS **/
 
 - (NSArray <SwrveCampaign *>*)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation {
@@ -3021,7 +3035,27 @@ enum HttpStatus {
     return [messaging messageCenterCampaignsThatSupportOrientation:orientation withPersonalization:personalization];
 }
 
+- (NSArray <SwrveInAppCampaign *>*)inAppMessageCenterCampaignsWith:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+    if (![self sdkReady]) {
+        return nil;
+    }
+    return [messaging inAppMessageCenterCampaignsWith:orientation withPersonalization:personalization];
+}
 #endif
+
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns {
+    if (![self sdkReady]) {
+        return nil;
+    }
+    return [messaging embeddedMessageCenterCampaigns];
+}
+
+- (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {
+    if (![self sdkReady]) {
+        return nil;
+    }
+    return [messaging messageCenterCampaignWithID:campaignID andPersonalization:personalization];
+}
 
 - (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {
     if (![self sdkReady]) {
@@ -3044,11 +3078,25 @@ enum HttpStatus {
     [messaging removeMessageCenterCampaign:campaign];
 }
 
+- (void)removeMessageCenterCampaignWithID:(NSUInteger)campaignID {
+    if (![self sdkReady]) {
+        return;
+    }
+    [messaging removeMessageCenterCampaignWithID:campaignID];
+}
+
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign {
     if (![self sdkReady]) {
         return;
     }
     [messaging markMessageCenterCampaignAsSeen:campaign];
+}
+
+- (void)markMessageCenterCampaignAsSeenWithID:(NSUInteger)campaignID {
+    if (![self sdkReady]) {
+        return;
+    }
+    [messaging markMessageCenterCampaignAsSeenWithID:campaignID];
 }
 
 - (void)idfa:(NSString *)idfa {
@@ -3069,6 +3117,36 @@ enum HttpStatus {
     }
 }
 
-#pragma mark -
+- (void)updateLanguage:(NSString *)newLanguage {
+    if (![self sdkReady]) {
+        return;
+    }
+    
+    self.language = newLanguage;
+    self.messaging.language = newLanguage;
+}
+
+#pragma mark - SwrveRefreshContentDelegate
+
+- (void)onComplete:(SwrveRefreshContentResult*)result {
+    [self firstRefreshContentFinished];
+}
+
+- (void) firstRefreshContentFinished {
+    if (![self campaignsAndResourcesInitialized]) {
+        [self setCampaignsAndResourcesInitialized:YES];
+        
+        // Only called first time API call returns - whether failed or successful, whether new campaigns were returned or not;
+        // this ensures that if API call fails or there are no changes, we call autoShowMessages with cached campaigns
+        if (self.messaging) {
+            [self.messaging autoShowMessages];
+        }
+        
+        // Invoke listeners once to denote that the first attempt at downloading has finished
+        // independent of whether the resources or campaigns have changed from cached values
+        [self invokeResourcesRTUPCallback];
+        [self invokePushInboxUpdatedDelegate];
+    }
+}
 
 @end

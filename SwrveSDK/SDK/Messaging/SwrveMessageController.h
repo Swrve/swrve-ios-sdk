@@ -13,6 +13,8 @@
 #endif
 
 @class SwrveCampaign;
+@class SwrveInAppCampaign;
+@class SwrveEmbeddedCampaign;
 @class SwrveMessage;
 @class SwrveBaseMessage;
 @class SwrveEmbeddedMessage;
@@ -24,14 +26,6 @@
 static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.showAtSessionStart";
 
 @interface SwrveMessageController : NSObject
-
-/*! Find a base message which could an in-app or embedded for the given trigger event
- * that also satisfies the rules set up in the dashboard.
- *
- * \param event Trigger event name.
- * \returns SwrveBaseMessage for the given trigger.
- */
-- (SwrveBaseMessage *)baseMessageForEvent:(NSString *)event;
 
 /*! Send impression event for an embedded control campaign
  *
@@ -138,7 +132,18 @@ static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
 */
 - (NSArray<SwrveCampaign *> *)messageCenterCampaignsThatSupportOrientation:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
 
+/// Gets active In-app Message Center campaigns with personalization properties, excluding deleted campaigns.
+/// - Parameters:
+///   - personalization: Personalization properties.
+///   - orientation: Required orientation.
+/// - Returns: List of active In-app Message Center campaigns.
+- (NSArray <SwrveInAppCampaign *>*)inAppMessageCenterCampaignsWith:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization;
+
 #endif
+
+/// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
+/// - Returns: List of active Embedded Message Center campaigns.
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.
@@ -161,11 +166,23 @@ static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
  */
 - (void)removeMessageCenterCampaign:(SwrveCampaign *)campaign;
 
+/*! Remove the given campaign. It won't be returned anymore by the method messageCenterCampaigns.
+ *
+ * \param campaignID Id of the Campaign that will be removed.
+ */
+- (void)removeMessageCenterCampaignWithID:(NSUInteger)campaignID;
+
 /*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
  *
  * \param campaign Campaign that will be marked as seen.
  */
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign;
+
+/*! Mark the campaign as seen. This is done automatically by Swrve but you can call this if you are rendering the messages on your own.
+ *
+ * \param campaignID Id of the Campaign that will be marked as seen.
+ */
+- (void)markMessageCenterCampaignAsSeenWithID:(NSUInteger)campaignID;
 
 /*! Format the given time into POSIX time.
  *

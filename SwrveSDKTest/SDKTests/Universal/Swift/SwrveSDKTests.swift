@@ -57,7 +57,7 @@ class MockSwrve: NSObject, SwrveProtocol {
         0
     }
 
-    func refreshCampaignsAndResources() {
+    func refreshContent(_ listener: (any SwrveRefreshContentDelegate)!) {
     }
 
     func userResources(_ callbackBlock: SwrveUserResourcesCallback!) {
@@ -185,7 +185,18 @@ class MockSwrve: NSObject, SwrveProtocol {
     {
         nil
     }
+
+    func inAppMessageCenterCampaigns(with orientation: UIInterfaceOrientation, withPersonalization personalization: [AnyHashable: Any]!)
+        -> [SwrveInAppCampaign]!
+    {
+        nil
+    }
+
     #endif
+
+    func embeddedMessageCenterCampaigns() -> [SwrveEmbeddedMessage]! {
+        nil
+    }
 
     func showMessageCenter(_ campaign: SwrveCampaign!) -> Bool {
         false
@@ -198,7 +209,13 @@ class MockSwrve: NSObject, SwrveProtocol {
     func removeMessageCenter(_ campaign: SwrveCampaign!) {
     }
 
+    func removeMessageCenterCampaign(withID campaignID: UInt) {
+    }
+
     func markMessageCenterCampaign(asSeen campaign: SwrveCampaign!) {
+    }
+
+    func markMessageCenterCampaignAsSeen(withID campaignID: UInt) {
     }
 
     func idfa(_ idfa: String!) {
@@ -221,6 +238,9 @@ class MockSwrve: NSObject, SwrveProtocol {
     }
 
     func dismissMessageWindow() {
+    }
+
+    func updateLanguage(_ language: String!) {
     }
 }
 

@@ -50,7 +50,7 @@
 @property(atomic, readonly) NSString *contentServer;
 @property(atomic, readonly) NSString *identityServer;
 @property(atomic, readonly) NSString *joined;
-@property(atomic, readonly) NSString *language;
+@property(atomic) NSString *language;
 @property(atomic, readonly) int httpTimeout;
 @property(atomic, readonly) NSString *deviceUUID;
 

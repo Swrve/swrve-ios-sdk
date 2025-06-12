@@ -111,7 +111,7 @@
 
     [swrve userUpdate:dic];
 
-    [swrve refreshCampaignsAndResources];
+    [swrve refreshContent:nil];
 
     XCTAssertNotNil([swrve resourceManager]);
 

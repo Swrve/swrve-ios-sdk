@@ -118,7 +118,7 @@
     return SWRVE_SUCCESS;
 }
 
-- (void)refreshCampaignsAndResources {
+-(void) refreshContent:(id<SwrveRefreshContentDelegate>)listener {
 }
 
 - (SwrveResourceManager *) resourceManager {
@@ -363,7 +363,16 @@
     return @[];
 }
 
+- (NSArray<SwrveInAppCampaign *> *)inAppMessageCenterCampaignsWith:(UIInterfaceOrientation)orientation withPersonalization:(NSDictionary *)personalization {
+#pragma unused(orientation, personalization)
+    return @[];
+}
+
 #endif
+
+- (NSArray<SwrveEmbeddedMessage *> *)embeddedMessageCenterCampaigns {
+    return @[];
+}
 
 - (BOOL)showMessageCenterCampaign:(SwrveCampaign *)campaign {
 #pragma unused(campaign)
@@ -379,8 +388,16 @@
 #pragma unused(campaign)
 }
 
+- (void)removeMessageCenterCampaignWithID:(NSUInteger)campaignID {
+#pragma unused(campaignID)
+}
+
 - (void)markMessageCenterCampaignAsSeen:(SwrveCampaign *)campaign {
 #pragma unused(campaign)
+}
+
+- (void)markMessageCenterCampaignAsSeenWithID:(NSUInteger)campaignID {
+#pragma unused(campaignID)
 }
 
 - (void)idfa:(NSString *)idfa {
@@ -392,6 +409,10 @@
 }
 
 - (void)dismissMessageWindow {
+}
+
+- (void)updateLanguage:(NSString *)language {
+    #pragma unused(language)
 }
 
 #pragma mark -
