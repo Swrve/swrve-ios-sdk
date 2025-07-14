@@ -36,7 +36,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.5.0"
+#define SWRVE_SDK_VERSION "10.5.1"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -227,6 +227,8 @@ NSString * eventsPayloadAsJSON);
 
 #pragma mark -
 #pragma mark User Resources
+
+-(void) refreshCampaignsAndResources; // Used by Swrve react native SDK
 
 -(void) refreshContent:(id<SwrveRefreshContentDelegate>)listener;
 

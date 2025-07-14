@@ -57,6 +57,9 @@ class MockSwrve: NSObject, SwrveProtocol {
         0
     }
 
+    func refreshCampaignsAndResources() {
+    }
+
     func refreshContent(_ listener: (any SwrveRefreshContentDelegate)!) {
     }
 

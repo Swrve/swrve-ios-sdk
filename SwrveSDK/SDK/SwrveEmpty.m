@@ -118,6 +118,9 @@
     return SWRVE_SUCCESS;
 }
 
+- (void)refreshCampaignsAndResources {
+}
+
 -(void) refreshContent:(id<SwrveRefreshContentDelegate>)listener {
 }
 

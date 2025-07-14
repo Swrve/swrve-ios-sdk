@@ -921,6 +921,10 @@ enum {
     return [dateFormatter stringFromDate:date];
 }
 
+- (void)refreshCampaignsAndResources { // Used by Swrve react native SDK
+    [self refreshContent:nil];
+}
+
 - (void)refreshContent:(id <SwrveRefreshContentDelegate>)listener {
 
     NSString *shouldRefreshContentErrorMessage = [self shouldRefreshContent];
