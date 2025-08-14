@@ -307,7 +307,7 @@ public enum SwrveSDKError: Error, Equatable {
 
     #if os(iOS)
 
-    @objc class func sendDeviceUpdate() {
+    @objc public class func sendDeviceUpdate() {
         checkInstance()
         sharedInstance.sendDeviceUpdate()
     }

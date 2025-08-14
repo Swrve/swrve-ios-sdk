@@ -42,10 +42,10 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 
 - (void)downloadAssets:(NSSet *)assetsQueue withCompletionHandler:(void (^)(void))completionHandler {
     if (!assetsQueue || [assetsQueue count] == 0) { completionHandler(); return;}
-    
+
     NSSet *assetItemsToDownload = [self filterExistingFiles:assetsQueue];
     if ([assetItemsToDownload count] == 0 ) { completionHandler(); return;}
-    
+
     for (NSDictionary *assetItem in assetItemsToDownload) {
         NSNumber *isExternal = [assetItem objectForKey:SWRVE_ASSETQ_ITEM_IS_EXTERNAL];
         if ([isExternal boolValue]) {
@@ -245,6 +245,7 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     BOOL isSupportedMimeType = NO;
     if (mimeType && (
             [mimeType isEqualToString:@"image/jpeg"] ||
+                    [mimeType isEqualToString:@"image/jpg"] ||
                     [mimeType isEqualToString:@"image/png"] ||
                     [mimeType isEqualToString:@"image/gif"] ||
                     [mimeType isEqualToString:@"image/bmp"])

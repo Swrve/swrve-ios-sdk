@@ -70,6 +70,9 @@
         // Handle real-time user properties callback
     }]);
     
+    // Device updates
+    XCTAssertThrows([SwrveSDK sendDeviceUpdate]);
+    
     // Event queue
     XCTAssertThrows([SwrveSDK sendQueuedEvents]);
     XCTAssertThrows([SwrveSDK saveEventsToDisk]);

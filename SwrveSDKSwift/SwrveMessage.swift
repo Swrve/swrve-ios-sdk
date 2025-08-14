@@ -84,6 +84,15 @@ import SwrveSDKCommon
 
     #endif
 
+    @objc public func supportsSwrveOrientation(_ swrveOrientation: SwrveInterfaceOrientation) -> Bool {
+        for format in formats {
+            if format.orientation == swrveOrientation {
+                return true
+            }
+        }
+        return false
+    }
+
     /// Check if assets are downloaded.
     ///
     /// - Parameters:

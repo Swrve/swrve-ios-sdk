@@ -459,6 +459,162 @@
               ],
               "name": "Kindle (English (US))",
               "language": "en-US"
+            },
+            {
+              "orientation": "portrait",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 320
+                },
+                "h": {
+                  "type": "number",
+                  "value": 240
+                }
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "dynamic_image_url": "https://fakeitem/${test_key_with_fallback}.png",
+                  "image_height": 114,
+                  "image_width": 200,
+                  "image": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 900
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 600
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "accept",
+                  "x": {
+                    "type": "number",
+                    "value": -200
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "dynamic_image_url": "https://fakeitem/${test_key_no_fallback}.gif",
+                  "image_height": 113,
+                  "image_width": 199,
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": "150"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "INSTALL"
+                  }
+                },
+                {
+                  "name": "custom",
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "dynamic_image_url": "https://fakeitem/${test_key_additional|fallback=\"asset3\"}.jpg",
+                  "image_height": 112,
+                  "image_width": 100,
+                  "image_up": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                },
+                {
+                  "name": "close",
+                  "x": {
+                    "type": "number",
+                    "value": 932
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 32
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "image_up": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                }
+              ],
+              "name": "portrait",
+              "language": "en-US"
             }
           ]
         },
@@ -635,6 +791,158 @@
                 }
               ],
               "name": "Kindle (English (US))",
+              "language": "en-US"
+            },
+            {
+              "orientation": "portrait",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 320
+                },
+                "h": {
+                  "type": "number",
+                  "value": 240
+                }
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "dynamic_image_url": "https://fakeitem/${user.test1}.png",
+                  "image_height": 114,
+                  "image_width": 200,
+                  "image": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 900
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 600
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "accept",
+                  "x": {
+                    "type": "number",
+                    "value": -200
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "dynamic_image_url": "https://fakeitem/${user.test2}.gif",
+                  "image_height": 113,
+                  "image_width": 199,
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": "150"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "INSTALL"
+                  }
+                },
+                {
+                  "name": "custom",
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "dynamic_image_url": "https://fakeitem/${test_key}.jpg",
+                  "image_height": 112,
+                  "image_width": 100,
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                },
+                {
+                  "name": "close",
+                  "x": {
+                    "type": "number",
+                    "value": 932
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 32
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "image_up": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                }
+              ],
+              "name": "portrait",
               "language": "en-US"
             }
           ]
@@ -815,6 +1123,161 @@
                 }
               ],
               "name": "Kindle (English (US))",
+              "language": "en-US"
+            },
+            {
+              "orientation": "portrait",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 320
+                },
+                "h": {
+                  "type": "number",
+                  "value": 240
+                }
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "dynamic_image_url": "https://fakeitem/${user.test1}.png",
+                  "image_height": 114,
+                  "image_width": 200,
+                  "image": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 900
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 600
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "accept",
+                  "x": {
+                    "type": "number",
+                    "value": -200
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "dynamic_image_url": "https://fakeitem/${user.test2}.gif",
+                  "image_height": 113,
+                  "image_width": 199,
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": "150"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "INSTALL"
+                  }
+                },
+                {
+                  "name": "custom",
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 80
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 229
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 114
+                  },
+                  "image_height": 112,
+                  "image_width": 100,
+                  "image_up": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                },
+                {
+                  "name": "close",
+                  "x": {
+                    "type": "number",
+                    "value": 932
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 32
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 50
+                  },
+                  "image_up": {
+                    "type": "asset",
+                    "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  }
+                }
+              ],
+              "name": "portrait",
               "language": "en-US"
             }
           ]

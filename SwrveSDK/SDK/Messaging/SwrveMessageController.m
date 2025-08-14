@@ -1578,7 +1578,6 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSSet *assetsOnDisk = [assetsManager assetsOnDisk];
     NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
     
-    
     if (!campaign.messageCenter) {
         
         if([campaign isKindOfClass:[SwrveInAppCampaign class]] && ![(SwrveInAppCampaign *)campaign assetsReady:assetsOnDisk withPersonalization:personalization]) {
@@ -1596,8 +1595,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if ([campaign isKindOfClass:[SwrveInAppCampaign class]]) {
         SwrveInAppCampaign *swrveCampaign = (SwrveInAppCampaign *) campaign;
         SwrveMessage *message = swrveCampaign.message;
-        
-        if (![message canResolvePersonalization:personalizationProperties]) {
+
+        if (![self canDisplaySwrveMessage:message withPersonalization:personalizationProperties]) {
             return NO;
         }
         
@@ -1733,6 +1732,51 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         shouldStart = !isStarted; // if its started (true) then shouldStart must be false
     }
     return shouldStart;
+}
+
+- (BOOL) canDisplaySwrveMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization {
+    
+    if (![message canResolvePersonalization:personalization]) {
+        return NO;
+    }
+    
+    CGSize windowSize = [self windowSize];
+    if (windowSize.width > windowSize.height) {
+        if (![message supportsSwrveOrientation:SWRVE_ORIENTATION_LANDSCAPE]) {
+            [SwrveLogger warning:@"This campaign does not support landscape orientation."];
+            return NO;
+        }
+    } else {
+        if (![message supportsSwrveOrientation:SWRVE_ORIENTATION_PORTRAIT]) {
+            [SwrveLogger warning:@"This campaign does not support portrait orientation."];
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+- (CGSize)windowSize NS_EXTENSION_UNAVAILABLE_IOS("") {
+    UIWindow *keyWindow = nil;
+    if (@available(iOS 13, *)) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for (UIWindow *window in windows) {
+            if (window.isKeyWindow) {
+                keyWindow = window;
+                break;
+            }
+        }
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        keyWindow = [[UIApplication sharedApplication] keyWindow];
+#pragma clang diagnostic pop
+    }
+    CGSize screenSize = [keyWindow bounds].size;
+    if (screenSize.width == 0.0 || screenSize.height == 0) {
+        screenSize = [UIScreen mainScreen].bounds.size;
+    }
+    return screenSize;
 }
 
 @end

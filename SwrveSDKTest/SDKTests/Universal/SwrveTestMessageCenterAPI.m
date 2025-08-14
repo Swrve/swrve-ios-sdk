@@ -637,7 +637,7 @@
 #if TARGET_OS_IOS
     //  include no personalization dictionary and we should still get 4
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
-    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 4);
 #elif TARGET_OS_TV
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 4);
 #endif
@@ -1086,5 +1086,80 @@
     XCTAssertEqual(inAppCampaign109.ID, 109);
 }
 #endif
+
+
+- (void)testIAMMessageCenterWithOrientation {
+    // use ios for portrait testing and tvOS for landscape testing
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#elif TARGET_OS_TV
+    // tvOS is landscape
+#endif
+
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+    id swrveMock = [self swrveMock];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenterOrientation" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+#if TARGET_OS_IOS
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationLandscapeRight] count], 2);
+    XCTAssertEqual([[swrveMock messageCenterCampaignsThatSupportOrientation:UIInterfaceOrientationPortrait] count], 2);
+#elif TARGET_OS_TV
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);
+#endif
+    
+    // Get all campaigns (Both orientations)
+    NSArray<SwrveCampaign *> *allCampaigns = [swrveMock messageCenterCampaigns];
+    SwrveCampaign *campaign102Both = [allCampaigns objectAtIndex:0];
+    XCTAssertEqual(campaign102Both.ID, 102);
+    SwrveCampaign *campaign105Landscape = [allCampaigns objectAtIndex:1];
+    XCTAssertEqual(campaign105Landscape.ID, 105);
+    SwrveCampaign *campaign106Portrait = [allCampaigns objectAtIndex:2];
+    XCTAssertEqual(campaign106Portrait.ID, 106);
+
+    SwrveMessageController* controller = [swrveMock messaging];
+    SwrveUIButton* dummyDismissButton = [SwrveUIButton new];
+    
+    // Show campaign 102 which supports both orientations. 
+    [controller showMessageCenterCampaign:campaign102Both];
+    SwrveMessageViewController* messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    [messageViewController onButtonPressed:dummyDismissButton pageId:[NSNumber numberWithInt:0]];
+    [self waitForWindowDismissed:controller];
+
+    // Try showing campaign 105 which only supports landscape orientation (so only tvOS will show it)
+#if TARGET_OS_IOS
+    [controller showMessageCenterCampaign:campaign105Landscape];
+    messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNil(messageViewController);
+#elif TARGET_OS_TV
+    [controller showMessageCenterCampaign:campaign105Landscape];
+    messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    [messageViewController onButtonPressed:dummyDismissButton pageId:[NSNumber numberWithInt:0]];
+    [self waitForWindowDismissed:controller];
+#endif
+
+    // Try showing campaign 106 which only supports portrait orientation (so only iOS will show it)
+#if TARGET_OS_IOS
+    [controller showMessageCenterCampaign:campaign106Portrait];
+    messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    [messageViewController onButtonPressed:dummyDismissButton pageId:[NSNumber numberWithInt:0]];
+    [self waitForWindowDismissed:controller];
+#elif TARGET_OS_TV
+    [controller showMessageCenterCampaign:campaign106Portrait];
+    messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNil(messageViewController);
+#endif
+}
 
 @end

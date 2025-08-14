@@ -2,6 +2,35 @@ import XCTest
 
 final class SwrveTestSDKSwiftAPI: XCTestCase {
 
+    func testSwrveSDKPublicAPIHasNotChanged() throws {
+        // Get all class methods declared in SwrveSDK
+        var methodCount: UInt32 = 0
+        guard let methodList = class_copyMethodList(object_getClass(SwrveSDK.self), &methodCount) else {
+            XCTFail("Failed to get SwrveSDK methods")
+            return
+        }
+
+        // Collect @objc selectors
+        var selectors: [String] = []
+        for i in 0..<Int(methodCount) {
+            let sel = method_getName(methodList[i])
+            selectors.append(NSStringFromSelector(sel))
+        }
+        free(methodList)
+
+        // Sort for consistency
+        selectors.sort()
+
+        // This is the "baseline" count — update intentionally if API changes
+        let expectedCount = 75  // <-- Set to current count of APIs we want to track
+        XCTAssertEqual(
+            selectors.count, expectedCount,
+            """
+            SwrveSDK API count changed! Expected \(expectedCount), found \(selectors.count).
+            New or removed APIs: \(selectors)
+            """)
+    }
+
     func testAllAPISSwift() throws {
         try? SwrveTestHelper.try {
 
@@ -46,6 +75,8 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
             SwrveSDK.userResourcesDiff { _, _, _, _, _ in
 
             }
+
+            SwrveSDK.sendDeviceUpdate()
 
             // Real-time user properties
             SwrveSDK.realTimeUserProperties { (properties) in

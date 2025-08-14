@@ -2893,7 +2893,7 @@
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:1 andPersonalization:nil]; // campign id 1
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:1 andPersonalization:nil]; // campaign id 1
     XCTAssertNotNil(campaign);
     [controller showMessageCenterCampaign:campaign];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
@@ -2913,7 +2913,7 @@
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 2);
 
     SwrveMessageController *controller = [swrveMock messaging];
-    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:2 andPersonalization:nil]; // campign id 2
+    SwrveInAppCampaign *campaign = (SwrveInAppCampaign *) [swrveMock messageCenterCampaignWithID:2 andPersonalization:nil]; // campaign id 2
     XCTAssertNotNil(campaign);
     [controller showMessageCenterCampaign:campaign];
     SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
