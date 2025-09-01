@@ -6,6 +6,8 @@
 #import "SwrveInAppCapabilitiesDelegate.h"
 #endif
 
+@class SwrveVideoSettings;
+
 /*! In-app message background image. */
 @interface SwrveImage : NSObject
 
@@ -19,6 +21,10 @@
 @property(nonatomic, retain) NSDictionary *multilineText;
 @property(nonatomic, retain) NSString *accessibilityText;  /*!< Alternative text for use with accessibility voice over */
 @property(atomic) long iamZIndex;
+
+@property(atomic) NSNumber *mediaId;
+
+@property(nonatomic) SwrveVideoSettings *videoSettings;
 
 - (id)initWithDictionary:(NSDictionary *)imageData
               campaignId:(long)swrveCampaignId

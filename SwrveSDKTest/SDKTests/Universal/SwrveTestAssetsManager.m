@@ -330,4 +330,73 @@
     }];
 }
 
+- (void)testDownloadMp4 {
+    NSString *externalMp4Asset = [SwrveUtils sha1:[@"https://external.swrve.asset/video.mp4" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Mock RESTClient to do nothing, return 200 and set the mimetype to video/mp4
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    OCMExpect([mockResponse MIMEType]).andReturn(@"video/mp4");
+    NSData *mockData = [@"video" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetMp4QueueItem = [SwrveAssetsManager assetQItemWith:externalMp4Asset andDigest:@"https://external.swrve.asset/video.mp4" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetMp4QueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+
+    // we must set these or it won't progress to the point where sendHttpGETRequest could be called
+    assetsManager.cdnImages = @"https://swrve.test.com/";
+    assetsManager.cdnFonts = @"https://swrve.test.com/";
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        // download should only have been called once
+        OCMVerify(times(1), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalMp4Asset]);
+
+        NSString *fileAssetName = [externalMp4Asset stringByAppendingString:@".mp4"];
+        NSString *target = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:fileAssetName];
+        XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:target]);
+    }];
+}
+
+- (void)testExternalMp4AssetAlreadyDownloaded {
+    NSString *externalMp4Asset = [SwrveUtils sha1:[@"https://external.swrve.asset/video.mp4" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+
+    // Simulate that the .mp4 asset is already on disk
+    [SwrveTestHelper createDummyMp4Assets:@[externalMp4Asset]];
+
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+
+    // Make sure it would return something if called, but we expect it not to be
+    id mockResponse = OCMClassMock([NSHTTPURLResponse class]);
+    OCMExpect([mockResponse statusCode]).andReturn(200);
+    NSData *mockData = [@"video" dataUsingEncoding:NSUTF8StringEncoding];
+    OCMStub([mockRestClient sendHttpGETRequest:OCMOCK_ANY
+                             completionHandler:([OCMArg invokeBlockWithArgs:mockResponse, mockData, [NSNull null], nil])]);
+
+    NSMutableDictionary *assetQueueItem = [SwrveAssetsManager assetQItemWith:externalMp4Asset andDigest:@"https://external.swrve.asset/video.mp4" andIsExternal:YES andIsImage:YES];
+    NSMutableSet *testAssets = [[NSMutableSet alloc] initWithArray:@[assetQueueItem]];
+
+    SwrveAssetsManager *assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:mockRestClient andCacheFolder:[SwrveTestHelper campaignCacheDirectory]];
+    assetsManager.cdnImages = @"https://swrve.test.com/";
+    assetsManager.cdnFonts = @"https://swrve.test.com/";
+
+    [assetsManager downloadAssets:testAssets withCompletionHandler:^{
+        // Should never attempt to redownload
+        OCMVerify(never(), [mockRestClient sendHttpGETRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+
+        NSSet *assetsDownloaded = assetsManager.assetsOnDisk;
+        XCTAssertEqual([assetsDownloaded count], 1);
+        XCTAssertTrue([assetsDownloaded containsObject:externalMp4Asset]);
+    }];
+}
+
 @end

@@ -32,7 +32,6 @@ import SwrveSDKCommon
     func addAssetToQueue(assetsQueue: NSMutableSet, withUrl url: String?, withPersonalization personalization: [String: Any]) {
         guard let url = url else { return }
         do {
-
             let resolvedUrl = try TextTemplating.templatedText(from: url, withProperties: personalization)
             let data = resolvedUrl.data(using: .utf8, allowLossyConversion: true)
             let sha1Url = SwrveUtils.sha1(data)
@@ -77,9 +76,8 @@ import SwrveSDKCommon
                         }
                     }
 
-                    page.images.forEach { image in
-
-                        if let image = image as? SwrveImage {
+                    page.images.forEach { media in
+                        if let image = media as? SwrveImage {
                             addAssetToQueue(assetsQueue: assetsQueue, withUrl: image.dynamicImageUrl, withPersonalization: personalization)
 
                             if let file = image.file,

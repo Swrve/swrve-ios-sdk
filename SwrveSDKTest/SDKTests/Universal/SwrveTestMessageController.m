@@ -86,6 +86,8 @@
 @interface SwrveMessageUIView()
 - (void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view;
 - (IBAction)onButtonPressed:(id)buttonView;
+- (NSURL *)fileURL:(NSString *)assetName;
+- (CGRect)frameWithDynamicScale:(CGFloat)dynamicScale width:(CGFloat)width height:(CGFloat)height;
 @end
 
 @interface SwrveQA (private_acess)
@@ -3076,6 +3078,103 @@
                              @"campaigns": @{}
                              };
     [SwrveQA updateQAUser:jsonQa andSessionToken:@"whatEver"];
+}
+
+
+- (void)testVideoView {
+    NSDictionary *format = @{
+        @"images" : @[
+                @{
+                @"w" : @{
+                    @"type": @"number",
+                    @"value": @846
+                },
+                @"h": @{
+                    @"type": @"number",
+                    @"value": @1335
+                },
+                @"dynamic_image_url": @"https://cdn.pika.art/v1/1a0ac021-f599-49e2-be88-e71306bbf16b/video.mp4",
+                @"media_format": @"gif",
+                @"media_id": @"12345",
+                @"video_settings": @{
+                  @"auto_play": @0,
+                  @"show_controls": @0,
+                  @"loop": @0,
+                  @"fill_screen": @1
+                },
+                @"accessibility_text": @"This is a shiny video"
+                }
+            ],
+        @"buttons": @[],
+        @"name": @"[0.467005076142132]all - portrait",
+        @"orientation": @"portrait",
+        @"language": @"*",
+        @"scaled_by": @0.467005076142132,
+        @"scaled_from": @"all - portrait",
+        @"scale": @1,
+        @"size": @{
+            @"w": @{
+                @"type": @"number",
+                @"value": @828
+            },
+            @"h": @{
+                @"type": @"number",
+                @"value": @1472
+            }
+        }
+    };
+    SwrveMessageFormat *messageFormat = [[SwrveMessageFormat alloc]initFromJson:format campaignId:0 messageId:0];
+    SwrveMessageController *messageController = [[SwrveMessageController alloc] init];
+    SwrveMessagePageViewController *pageController = [[SwrveMessagePageViewController alloc]
+            initWithMessageController:messageController
+                               format:messageFormat
+                      personalization:nil
+                               pageId:@0
+                                 size:CGSizeMake(1000, 2000)];
+    
+    // Embed in a parent controller to simulate real view hierarchy
+    UIViewController *parentController = [[UIViewController alloc] init];
+    [parentController addChildViewController:pageController];
+    [parentController.view addSubview:pageController.view];
+    [pageController didMoveToParentViewController:parentController];
+
+    [pageController viewWillAppear:true];
+
+    NSString *expectedVideoUrlFilePath = @"";
+    NSString *expectedAccessibilityText = @"";
+    bool expectedAutoPlay = true;
+    bool expectedShowControls = true;
+    bool expectedLoop = true;
+    bool expectedFillScreen = false;
+    
+    for (UIView *view in pageController.view.subviews){
+          if ([view isKindOfClass:[SwrveMessageUIView class]]) {
+              for (UIView *item in view.subviews){
+                    if ([item isKindOfClass:[SwrveVideoPlayerView class]]) {
+                        SwrveVideoPlayerView *videoView = (SwrveVideoPlayerView *)item;
+                        expectedVideoUrlFilePath = videoView.videoURL.absoluteString;
+                        expectedAutoPlay = videoView.videoSettings.autoPlay;
+                        expectedShowControls = videoView.videoSettings.showControls;
+                        expectedLoop = videoView.videoSettings.loop;
+                        expectedFillScreen = videoView.videoSettings.fillScreen;
+                        expectedAccessibilityText = videoView.accessibilityLabel;
+                    }
+              };
+          }
+    };
+    
+    XCTAssertEqualObjects(expectedAccessibilityText, @"This is a shiny video");
+    XCTAssertEqual(expectedAutoPlay, false);
+    XCTAssertEqual(expectedShowControls, false);
+    XCTAssertEqual(expectedLoop, false);
+    XCTAssertEqual(expectedFillScreen, true);
+    
+    NSData *data = [@"https://cdn.pika.art/v1/1a0ac021-f599-49e2-be88-e71306bbf16b/video.mp4" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    NSString *urlAssetSha1 = [SwrveUtils sha1:data];
+    SwrveMessageUIView *temp = [[SwrveMessageUIView alloc]init];
+    NSURL *url = [temp fileURL:urlAssetSha1];
+    
+    XCTAssertEqualObjects(expectedVideoUrlFilePath, url.absoluteURL.absoluteString);
 }
 
 @end

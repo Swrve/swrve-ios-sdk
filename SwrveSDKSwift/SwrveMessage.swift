@@ -104,7 +104,6 @@ import SwrveSDKCommon
         for format in formats {
             let pages = format.pages as? [AnyHashable: SwrveMessagePage] ?? [:]
             for (_, page) in pages {
-
                 if let buttons = page.buttons as? [SwrveButton] {
                     for button in buttons {
                         if let theme = button.theme {
@@ -113,13 +112,12 @@ import SwrveSDKCommon
                             }
                         } else {
                             var hasButtonImage = true
-                            if let buttonImage = button.image, !assets.contains(buttonImage) {
-                                hasButtonImage = false
+                            if let buttonImage = button.image {
+                                hasButtonImage = assets.contains(buttonImage)
                             }
-                            if let dynamicImageUrl = button.dynamicImageUrl,
-                                canResolvePersonalizedImageAsset(assetUrl: dynamicImageUrl, withPersonalization: personalization, withAssets: assets)
-                            {
-                                hasButtonImage = true
+                            if let dynamicImageUrl = button.dynamicImageUrl {
+                                hasButtonImage = canResolvePersonalizedImageAsset(
+                                    assetUrl: dynamicImageUrl, withPersonalization: personalization, withAssets: assets)
                             }
                             if !hasButtonImage {
                                 SwrveLogger.logDebug("Button Asset not yet downloaded: \(button.image ?? "") / \(button.dynamicImageUrl ?? "")")
@@ -140,15 +138,13 @@ import SwrveSDKCommon
                                 return false
                             }
                         } else {
-
                             var hasImage = true
                             if let file = image.file {
                                 hasImage = assets.contains(file)
                             }
-                            if let dynamicImageUrl = image.dynamicImageUrl,
-                                canResolvePersonalizedImageAsset(assetUrl: dynamicImageUrl, withPersonalization: personalization, withAssets: assets)
-                            {
-                                hasImage = true
+                            if let dynamicImageUrl = image.dynamicImageUrl {
+                                hasImage = canResolvePersonalizedImageAsset(
+                                    assetUrl: dynamicImageUrl, withPersonalization: personalization, withAssets: assets)
                             }
                             if !hasImage {
                                 SwrveLogger.logDebug("Image Asset not yet downloaded: \(image.file ?? "") / \(image.dynamicImageUrl ?? "")")

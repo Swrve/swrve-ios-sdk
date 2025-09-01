@@ -70,6 +70,7 @@
 
 + (void)createDummyAssets:(NSArray*)asset;
 + (void)createDummyGifAssets:(NSArray*)assets;
++ (void)createDummyMp4Assets:(NSArray *)assets;
 + (void)createDummyAssets:(NSArray*)assets withResourceName: (NSString *) resourceName ofType: (NSString *) type;
 
 + (void)removeAssets:(NSArray*)assets;

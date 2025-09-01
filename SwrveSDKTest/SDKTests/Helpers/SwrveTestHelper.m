@@ -143,6 +143,18 @@
     }
 }
 
+// Makes a copy of the SampleVideo.mp4 image for each asset in the array
++ (void)createDummyMp4Assets:(NSArray *)assets {
+    NSString *dummyFilePath = [[NSBundle mainBundle] pathForResource:@"SampleVideo" ofType:@"mp4"];
+    NSURL *fileURL = [NSURL fileURLWithPath:dummyFilePath];
+    NSData *dummyVideoData = [NSData dataWithContentsOfURL:fileURL];
+    for (NSString *asset in assets) {
+        NSString *assetNameMp4 = [asset stringByAppendingString:@".mp4"];
+        NSString *path = [[SwrveTestHelper campaignCacheDirectory] stringByAppendingPathComponent:assetNameMp4];
+        [dummyVideoData writeToFile:path atomically:YES];
+    }
+}
+
 // Makes a copy of the logo.gif image for each asset in the array
 + (void)createDummyGifAssets:(NSArray *)assets {
     NSString *dummyGifFilePath = [[NSBundle mainBundle] pathForResource:@"logo" ofType:@"gif"];

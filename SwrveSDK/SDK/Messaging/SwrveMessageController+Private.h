@@ -9,7 +9,7 @@
 const static int CAMPAIGN_VERSION = 10;
 const static int CAMPAIGN_RESPONSE_VERSION = 2;
 const static int EMBEDDED_CAMPAIGN_VERSION = 4;
-const static int IN_APP_CAMPAIGN_VERSION = 16;
+const static int IN_APP_CAMPAIGN_VERSION = 17;
 
 /*! In-app messages controller */
 @interface SwrveMessageController ()

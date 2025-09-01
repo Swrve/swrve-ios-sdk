@@ -8,6 +8,7 @@
 #import "SwrveThemedUIButton.h"
 #import "SwrveSDKUtils.h"
 #import "SwrveMessageViewController.h"
+#import "SwrveMessagePageViewController.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 
@@ -36,6 +37,12 @@
 #import "UIButton+WebCache.h"
 #endif
 
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
 #define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))
 #define DEFAULT_WIDTH 100
 #define DEFAULT_HEIGHT 20
@@ -55,28 +62,32 @@
 @synthesize isFallback;
 @end
 
-@interface SwrveMessageUIView ()
+@interface SwrveMessageUIView () <SwrveVideoPlayerViewDelegate>
 
 @property(nonatomic) SwrveMessageFormat *messageFormat;
 @property(nonatomic) NSNumber *pageId;
+@property(nonatomic) NSNumber *mediaId;
 @property(nonatomic, weak) UIViewController *controller;
 @property(nonatomic) NSDictionary *personalization;
 @property(nonatomic) SwrveInAppMessageConfig *inAppConfig;
 @property(nonatomic) CGFloat centerX;
 @property(nonatomic) CGFloat centerY;
 @property(nonatomic) CGFloat renderScale;
+@property(nonatomic) SwrveVideoPlayerView *videoPlayerView;
 @end
 
 @implementation SwrveMessageUIView
 
 @synthesize messageFormat;
 @synthesize pageId;
+@synthesize mediaId;
 @synthesize controller;
 @synthesize personalization;
 @synthesize inAppConfig;
 @synthesize centerX;
 @synthesize centerY;
 @synthesize renderScale;
+@synthesize videoPlayerView;
 
 static CGPoint scaled(CGPoint point, float scale) {
     return CGPointMake(point.x * scale, point.y * scale);
@@ -111,7 +122,11 @@ static CGPoint scaled(CGPoint point, float scale) {
                 [self addButton:(SwrveButton *) obj buttonTag:buttonTag];
                 buttonTag++;
             } else if ([obj isKindOfClass:[SwrveImage class]]) {
-                [self addImage:(SwrveImage *) obj];
+                if ([obj videoSettings] != nil) {
+                    [self addVideoView:(SwrveImage *) obj];
+                } else {
+                    [self addImage:(SwrveImage *) obj];
+                }
             }
         }
     }
@@ -143,6 +158,33 @@ static CGPoint scaled(CGPoint point, float scale) {
         [self addTextView:image];
     } else {
         [self addImageView:image];
+    }
+}
+
+- (void)addVideoView:(SwrveImage *)swrveVideo {
+    SwrveMessagePageViewController *currentPageController = [self currentPageController];
+    if (currentPageController) {
+        SwrveQAImagePersonalizationInfo *imagePersonalizationQAInfo = [[SwrveQAImagePersonalizationInfo alloc]
+                initWithCampaign:(NSUInteger) swrveVideo.campaignId
+                       variantID:(NSUInteger) swrveVideo.messageId
+                     hasFallback:(swrveVideo.file != nil)
+                   unresolvedUrl:swrveVideo.dynamicImageUrl];
+        
+        self.mediaId = swrveVideo.mediaId;
+        
+        NSString *urlSha = [self resolveUrlImageAssetToSha1:swrveVideo.dynamicImageUrl andQAInfo:imagePersonalizationQAInfo];
+        NSURL *videoURL = [self fileURL:urlSha];
+        if (videoURL) {
+            
+            CGRect frame = [self frameWithDynamicScale:1.0f width:swrveVideo.size.width height:swrveVideo.size.height];
+              
+            self.videoPlayerView = [[SwrveVideoPlayerView alloc]initWithFrame:frame videoSettings: swrveVideo.videoSettings videoURL:videoURL controller:currentPageController delegate:self];
+            [self setPosition:self.videoPlayerView center:swrveVideo.center];
+ 
+            [self addAccessibilityText:swrveVideo.accessibilityText backupText:nil withPersonalization:self.personalization toView:self.videoPlayerView];
+                    
+            [self addSubview:self.videoPlayerView];
+        }
     }
 }
 
@@ -457,14 +499,66 @@ static CGPoint scaled(CGPoint point, float scale) {
     }
 
     // disable traits as we dont want additional information read out from VO image / speech recognition
-    // instead just assign simple hints as the role type: image or button
+    // instead just assign simple hints as the role type: image / button or video
     view.accessibilityTraits = UIAccessibilityTraitNone;
     if (view.accessibilityLabel != nil && ![view.accessibilityLabel isEqualToString:@""]) {
         if ([view isKindOfClass:[SwrveUIButton class]]) {
             view.accessibilityHint = @"Button";
         } else if ([view isKindOfClass:[UIImageView class]]) {
             view.accessibilityHint = @"Image";
+        }  else if ([view isKindOfClass:[SwrveVideoPlayerView class]]) {
+            view.accessibilityHint = @"Video";
         }
     }
 }
+
+- (NSURL *)fileURL:(NSString *)assetName {
+    NSString *cacheFolder = [SwrveLocalStorage swrveCacheFolder];
+    
+    NSArray<NSString *> *supportedExtensions = @[@"gif", @"mp4", @"mov"];
+    
+    for (NSString *extension in supportedExtensions) {
+        NSString *filenameWithExt = [assetName stringByAppendingPathExtension:extension];
+        NSString *fullPath = [cacheFolder stringByAppendingPathComponent:filenameWithExt];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+            return [NSURL fileURLWithPath:fullPath];
+        }
+    }
+    
+    // Fall back to raw asset name
+    NSString *fallbackPath = [cacheFolder stringByAppendingPathComponent:assetName];
+    return [NSURL fileURLWithPath:fallbackPath];
+}
+
+- (SwrveMessagePageViewController *)currentPageController {
+    //when transitioning between pages, 2 SwrveMessagePageViewController can exist, we need
+    //to ensure we add the video to the correct video AVPlayerViewController.
+    NSArray<UIViewController *> *childViewControllers = self.controller.childViewControllers;
+    SwrveMessagePageViewController *currentPageController = nil;
+    for (UIViewController *childVC in childViewControllers) {
+        if ([childVC isKindOfClass:[SwrveMessagePageViewController class]]) {
+            NSNumber *childVCPageId = [(SwrveMessagePageViewController *)childVC pageId];
+            if ([childVCPageId compare:self.pageId] == NSOrderedSame) {
+                currentPageController = (SwrveMessagePageViewController *)childVC;
+                return currentPageController;
+            }
+        }
+    }
+    return nil;
+}
+
+- (void)videoDidStartPlaying {
+    if ([self.controller isKindOfClass:[SwrveMessageViewController class]]) {
+        SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) self.controller;
+        [messageViewController queueVideoEvent:self.pageId mediaId:self.mediaId action:@"video_started"];
+    }
+}
+
+- (void)videoDidFinishPlaying {
+    if ([self.controller isKindOfClass:[SwrveMessageViewController class]]) {
+        SwrveMessageViewController *messageViewController = (SwrveMessageViewController *) self.controller;
+        [messageViewController queueVideoEvent:self.pageId mediaId:self.mediaId action:@"video_ended"];
+    }
+}
+ 
 @end

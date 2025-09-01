@@ -37,6 +37,8 @@
 @property(nonatomic) BOOL wasShownToUserNotified;
 @property(nonatomic, retain) NSMutableArray *pageViewEventsSent;
 @property(nonatomic, retain) NSMutableArray *navigationEventsSent;
+@property(nonatomic, retain) NSMutableArray *videoStartedEventsSent;
+@property(nonatomic, retain) NSMutableArray *videoEndedEventsSent;
 @property(nonatomic, retain) SwrveMessageFocus *messageFocus;
 @property(nonatomic) SwrveInAppStoryView *storyView;
 @property(nonatomic) SwrveInAppStoryUIButton *storyDismissButton;
@@ -53,6 +55,8 @@
 @synthesize wasShownToUserNotified;
 @synthesize pageViewEventsSent;
 @synthesize navigationEventsSent;
+@synthesize videoStartedEventsSent;
+@synthesize videoEndedEventsSent;
 @synthesize messageFocus;
 @synthesize storyView;
 @synthesize storyDismissButton;
@@ -75,6 +79,8 @@
         self.personalization = personalizationDict;
         self.pageViewEventsSent = [NSMutableArray array];
         self.navigationEventsSent = [NSMutableArray array];
+        self.videoStartedEventsSent = [NSMutableArray array];
+        self.videoEndedEventsSent = [NSMutableArray array];
 #if TARGET_OS_IOS
         self.dataSource = self; // this is required for swiping capability
 #endif
@@ -516,6 +522,50 @@
             scrollView.scrollEnabled = NO;
             break;
         }
+    }
+}
+
+- (void)queueVideoEvent:(NSNumber *)pageId mediaId:(NSNumber *)mediaId action:(NSString *)action {
+    if ([action isEqualToString:@"video_started"] && [self.videoStartedEventsSent containsObject:pageId]) {
+        [SwrveLogger debug:@"Video started event for page_id %@ already sent", pageId];
+        return;
+    }
+    
+    if ([action isEqualToString:@"video_ended"] && [self.videoEndedEventsSent containsObject:pageId]) {
+        [SwrveLogger debug:@"Video ended event for page_id %@ already sent", pageId];
+        return;
+    }
+    
+    if (self.message.messageID == nil || pageId == nil) {
+        [SwrveLogger debug:@"Failed to send page view event, messageID: %@ pageId: %@",self.message.messageID, pageId];
+        return;
+    }
+
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"iam" forKey:@"campaignType"];
+    [eventData setValue:action forKey:@"actionType"];
+    [eventData setValue:self.message.messageID forKey:@"id"];
+    [eventData setValue:pageId forKey:@"contextId"];
+    if(mediaId != nil) {
+        [eventData setValue:mediaId forKey:@"mediaId"];
+    }
+  
+    NSMutableDictionary *eventPayload = [SwrveUtils iamCommonEventPayload];
+    SwrveMessagePage *page = [self.currentMessageFormat.pages objectForKey:pageId];
+    if(page.pageName && page.pageName.length > 0) {
+        [eventPayload setValue:page.pageName forKey:@"pageName"];
+    }
+    [eventData setValue:eventPayload forKey:@"payload"];
+
+    [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
+    
+    if (pageId != nil && [action isEqualToString:@"video_started"]) {
+        [self.videoStartedEventsSent addObject:pageId];
+    }
+    
+    if (pageId != nil && [action isEqualToString:@"video_ended"]) {
+        [self.videoEndedEventsSent addObject:pageId];
     }
 }
 

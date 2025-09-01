@@ -1,8 +1,18 @@
 #import "SwrveImage.h"
+#import "Swrve.h"
+#import "SwrveInterfaceOrientation.h"
+#import "SwrveButtonActions.h"
+
 #if __has_include(<SwrveSDKCommon/SwrveLogger.h>)
 #import <SwrveSDKCommon/SwrveLogger.h>
 #else
 #import "SwrveLogger.h"
+#endif
+
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
 #endif
 
 @implementation SwrveImage
@@ -17,6 +27,8 @@
 @synthesize multilineText;
 @synthesize accessibilityText;
 @synthesize iamZIndex;
+@synthesize videoSettings;
+@synthesize mediaId;
 
 - (id)initWithDictionary:(NSDictionary *)imageData
               campaignId:(long)swrveCampaignId
@@ -28,7 +40,7 @@
         if ([imageData objectForKey:@"image"]) {
             self.file = [(NSDictionary *) [imageData objectForKey:@"image"] objectForKey:@"value"];
         }
-
+        
         if ([imageData objectForKey:@"dynamic_image_url"]) {
             self.dynamicImageUrl = [imageData objectForKey:@"dynamic_image_url"];
         }
@@ -59,6 +71,14 @@
 
         if ([imageData objectForKey:@"iam_z_index"]) {
             self.iamZIndex = [[imageData objectForKey:@"iam_z_index"] longValue];
+        }
+        
+        if ([imageData objectForKey:@"video_settings"]) {
+            self.videoSettings = [[SwrveVideoSettings alloc] initWithJson:[imageData objectForKey:@"video_settings"]];
+        }
+        
+        if ([imageData objectForKey:@"media_id"]) {
+            self.mediaId = [imageData objectForKey:@"media_id"];
         }
     }
     return self;

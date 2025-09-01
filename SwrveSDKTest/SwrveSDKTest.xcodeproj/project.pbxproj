@@ -252,10 +252,16 @@
 		F672287C25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */; };
 		F67228A625EE9ED100FA1C77 /* TestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */; };
 		F67228A725EE9ED200FA1C77 /* TestCapabilitiesDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */; };
+		F677DEA22DAD2DC70029B088 /* SwrveVideoSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F677DEA12DAD2DC00029B088 /* SwrveVideoSettingsTests.swift */; };
 		F685B50425F0CD88008F5BAA /* iamCapabilites.json in Resources */ = {isa = PBXBuildFile; fileRef = F685B50325F0CD88008F5BAA /* iamCapabilites.json */; };
 		F685B52425F0E57F008F5BAA /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
 		F685B55B25F0E580008F5BAA /* SwrveTestMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6411204227742B900399A66 /* SwrveTestMessageController.m */; };
 		F685B59D25F10E51008F5BAA /* iamCapabilites.json in Resources */ = {isa = PBXBuildFile; fileRef = F685B50325F0CD88008F5BAA /* iamCapabilites.json */; };
+		F698BA002DA00A8500BC98FB /* SwrveVideoPlayerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698B9FF2DA00A8200BC98FB /* SwrveVideoPlayerViewTests.swift */; };
+		F698BA062DA00CB000BC98FB /* SampleVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */; };
+		F698BA072DA00CB000BC98FB /* SampleVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */; };
+		F698BA122DA02A4B00BC98FB /* SampleVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */; };
+		F698BA132DA02A4B00BC98FB /* SampleVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */; };
 		F6A79A082551BBE500E66E47 /* SwrveTestDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */; };
 		F6A79A092551BBE500E66E47 /* SwrveTestDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */; };
 		F6A79A812551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf in Resources */ = {isa = PBXBuildFile; fileRef = F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */; };
@@ -495,7 +501,10 @@
 		F672287B25EE47B900FA1C77 /* SwrveTestCapabilitiesDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwrveTestCapabilitiesDelegate.m; sourceTree = "<group>"; };
 		F672289B25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestCapabilitiesDelegate.h; sourceTree = "<group>"; };
 		F672289C25EE9DAB00FA1C77 /* TestCapabilitiesDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestCapabilitiesDelegate.m; sourceTree = "<group>"; };
+		F677DEA12DAD2DC00029B088 /* SwrveVideoSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveVideoSettingsTests.swift; sourceTree = "<group>"; };
 		F685B50325F0CD88008F5BAA /* iamCapabilites.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = iamCapabilites.json; sourceTree = "<group>"; };
+		F698B9FF2DA00A8200BC98FB /* SwrveVideoPlayerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveVideoPlayerViewTests.swift; sourceTree = "<group>"; };
+		F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SampleVideo.mp4; sourceTree = "<group>"; };
 		F6A79A072551BBE500E66E47 /* SwrveTestDummy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestDummy.m; sourceTree = "<group>"; };
 		F6A79A802551BFD400E66E47 /* 040843601e697027b119f93a3fdb2c9c04d1ea63.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = 040843601e697027b119f93a3fdb2c9c04d1ea63.otf; sourceTree = "<group>"; };
 		F6A79A9E2551C84B00E66E47 /* SwrveTestTextTemplating.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTestTextTemplating.m; sourceTree = "<group>"; };
@@ -661,6 +670,8 @@
 		C5DCC60B2AC15C590056686A /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				F677DEA12DAD2DC00029B088 /* SwrveVideoSettingsTests.swift */,
+				F698B9FF2DA00A8200BC98FB /* SwrveVideoPlayerViewTests.swift */,
 				F6E9F5E72D1095DD00982F5B /* SwrveTextImageViewTests.swift */,
 				F6E9F5E52D10937600982F5B /* SwrvePushInboxResultCodeTests.swift */,
 				C5C151172D01CC7200B648A9 /* SnapshotTests */,
@@ -789,6 +800,7 @@
 		F66627062264A01A001AF2EB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				F698BA012DA00B2700BC98FB /* SampleVideo.mp4 */,
 				B568A1032C25C4840063D55C /* campaigns_push_inbox_past_and_future.json */,
 				3A63CEFB2BA352EB00484F52 /* campaigns_iam_z_index_tests.json */,
 				3A2E93332AFE7C8300AF6E83 /* campaigns_in_app_story.json */,
@@ -1083,6 +1095,7 @@
 				239EBD8D97EB83578A3074B5 /* multipage_campaign_swipe.json in Resources */,
 				3A8E4740296730A000D5CB6C /* campaigns_start_geo.json in Resources */,
 				C59307692AE9239800E3B26D /* campaignWithMultilineText.json in Resources */,
+				F698BA122DA02A4B00BC98FB /* SampleVideo.mp4 in Resources */,
 				F6DF565929477D0A00ECAC5C /* campaignsHoldout.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1091,6 +1104,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F698BA062DA00CB000BC98FB /* SampleVideo.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1121,6 +1135,7 @@
 				52051B432670CD7900CADC00 /* campaignsMessageCenterInvalid.json in Resources */,
 				5B2B6F7423C4E55F000B1687 /* campaignSingle.json in Resources */,
 				5B2B6F6D23C4E55F000B1687 /* campaigns.json in Resources */,
+				F698BA132DA02A4B00BC98FB /* SampleVideo.mp4 in Resources */,
 				5B2B6F7623C4E55F000B1687 /* campaignsAutoshow.json in Resources */,
 				5B2B6F7023C4E55F000B1687 /* ad_journey_campaign_message.json in Resources */,
 				3A0DB9CE287827A5008EC1D7 /* campaignsGif.json in Resources */,
@@ -1166,6 +1181,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F698BA072DA00CB000BC98FB /* SampleVideo.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1427,6 +1443,7 @@
 				C5ED42C32D0FF75D005FB959 /* SwrveTestCampaignMultipleConditions.swift in Sources */,
 				3ACAF5F02CA32A5D008136EA /* SwrveTestMessageControllerIAMPages.m in Sources */,
 				F6028D0C2705073B00E0BB79 /* SwrveTestTextViewIOS.m in Sources */,
+				F698BA002DA00A8500BC98FB /* SwrveVideoPlayerViewTests.swift in Sources */,
 				5B2B6E2B23C4935F000B1687 /* SwrveTestAuthPush.m in Sources */,
 				3AE777802D10754C00CD25F6 /* SwrveTestLocalStorage.swift in Sources */,
 				5B2B6E2223C49346000B1687 /* SwrveTestEventQueueCallback.m in Sources */,
@@ -1438,6 +1455,7 @@
 				F6D0FD2425F772E400423C40 /* SwrveTestStaticVersions.swift in Sources */,
 				5B2B6E2423C49346000B1687 /* SwrveTestProfileManager.m in Sources */,
 				3ACAF5CD2CA1B780008136EA /* SwrveCampaignTests.swift in Sources */,
+				F677DEA22DAD2DC70029B088 /* SwrveVideoSettingsTests.swift in Sources */,
 				5BB9AD2B23E3466B006125DD /* SwrveTestSwrveCampaignDeliveryIOS.m in Sources */,
 				52B3D372251A45B5005606D7 /* SwrveTestUtilsIOS.m in Sources */,
 				F6A79A082551BBE500E66E47 /* SwrveTestDummy.m in Sources */,

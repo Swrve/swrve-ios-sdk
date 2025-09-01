@@ -338,6 +338,14 @@
 		F6618FF527137847008B0D91 /* SwrveCalibration.m in Sources */ = {isa = PBXBuildFile; fileRef = F6618FF227137846008B0D91 /* SwrveCalibration.m */; };
 		F6618FF627137847008B0D91 /* SwrveCalibration.m in Sources */ = {isa = PBXBuildFile; fileRef = F6618FF227137846008B0D91 /* SwrveCalibration.m */; };
 		F6900A7B2A9CF8660067A7E5 /* SwrveLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6900A7A2A9CF8660067A7E5 /* SwrveLiveActivity.swift */; };
+		F69864042DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */; };
+		F69864052DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */; };
+		F69864062DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */; };
+		F69864072DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */; };
+		F698BA0B2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
+		F698BA0C2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
+		F698BA0D2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
+		F698BA0E2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
 		F6B2E2CD206D2C0F007F2E7F /* SwrveUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B2E2CB206D2C0F007F2E7F /* SwrveUser.m */; };
 		F6B2E2CE206D2C0F007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B2E2CF206D2C25007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -887,6 +895,8 @@
 		F6618FF127137846008B0D91 /* SwrveCalibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveCalibration.h; sourceTree = "<group>"; };
 		F6618FF227137846008B0D91 /* SwrveCalibration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveCalibration.m; sourceTree = "<group>"; };
 		F6900A7A2A9CF8660067A7E5 /* SwrveLiveActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveLiveActivity.swift; sourceTree = "<group>"; };
+		F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveVideoSettings.swift; sourceTree = "<group>"; };
+		F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveVideoPlayerView.swift; sourceTree = "<group>"; };
 		F6B2E2CB206D2C0F007F2E7F /* SwrveUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveUser.m; sourceTree = "<group>"; };
 		F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveUser.h; sourceTree = "<group>"; };
 		F6B2E2D1206E3BA2007F2E7F /* SwrveProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveProfileManager.h; sourceTree = "<group>"; };
@@ -1045,6 +1055,8 @@
 				3A85A4C62DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift */,
 				3A85A4C72DDCDE5900F6C34A /* SwrveRefreshContentResult.swift */,
 				3A85A4C82DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift */,
+				F69864032DAE7DE800774653 /* SwrveVideoSettings.swift */,
+				F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */,
 				3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */,
 				3AF01C6D2CA18B86009768EC /* SwrveTimezoneType.swift */,
 				C5BF0B0B2CA1C12B00B860C0 /* SwrveCampaignState.swift */,
@@ -2004,6 +2016,7 @@
 				528F552C201B9B29007AB0A8 /* SwrveMessageViewController.m in Sources */,
 				528F552D201B9B29007AB0A8 /* SwrveEmpty.m in Sources */,
 				3A21DCDE29C8A998000657AD /* SwrveUITextView.m in Sources */,
+				F69864062DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */,
 				528F552F201B9B29007AB0A8 /* SwrveMigrationsManager.m in Sources */,
 				C5E125782C653242007372A2 /* SwrveEmbeddedMessageConfig.swift in Sources */,
 				528F5531201B9B29007AB0A8 /* SwrveDeviceProperties.m in Sources */,
@@ -2022,6 +2035,7 @@
 				528F5534201B9B29007AB0A8 /* SwrveMessageController.m in Sources */,
 				F6441D892C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				528F5537201B9B29007AB0A8 /* SwrveEventsManager.m in Sources */,
+				F698BA0E2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */,
 				F6441D5B2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				3ACAF5BB2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				F6441D522C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */,
@@ -2108,6 +2122,7 @@
 				F6B8713E2C58352B00874DEA /* SwrveMessageViewController.m in Sources */,
 				F6B8713F2C58352B00874DEA /* SwrveEmpty.m in Sources */,
 				F6B871442C58352B00874DEA /* SwrveUITextView.m in Sources */,
+				F69864042DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */,
 				F6B871462C58352B00874DEA /* SwrveMigrationsManager.m in Sources */,
 				F6B871482C58352B00874DEA /* SwrveDeviceProperties.m in Sources */,
 				C5E125792C653242007372A2 /* SwrveEmbeddedMessageConfig.swift in Sources */,
@@ -2126,6 +2141,7 @@
 				F6B871572C58352B00874DEA /* SwrveStoryDismissButton.m in Sources */,
 				F6441D8A2C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				F6B871582C58352B00874DEA /* SwrveMessageUIView.m in Sources */,
+				F698BA0B2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */,
 				3ACAF5BC2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				F6441D5C2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				F6B8715B2C58352B00874DEA /* SwrveEventsManager.m in Sources */,
@@ -2212,6 +2228,7 @@
 				F63EC36E1FBB2E3A00AC6BA2 /* SwrveMessageViewController.m in Sources */,
 				F63EC3751FBB2E3A00AC6BA2 /* SwrveEmpty.m in Sources */,
 				3A21DCDB29C8A980000657AD /* SwrveUITextView.m in Sources */,
+				F69864052DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */,
 				F63EC3781FBB2E3A00AC6BA2 /* SwrveMigrationsManager.m in Sources */,
 				F63EC3741FBB2E3A00AC6BA2 /* SwrveDeviceProperties.m in Sources */,
 				C5E125772C653242007372A2 /* SwrveEmbeddedMessageConfig.swift in Sources */,
@@ -2230,6 +2247,7 @@
 				3A1443482AF3B4E4007B5B2D /* SwrveStoryDismissButton.m in Sources */,
 				F6441D882C98608D001B0028 /* SwrveResourceManager.swift in Sources */,
 				3A48AFBB27C3B9560090481A /* SwrveMessageUIView.m in Sources */,
+				F698BA0D2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */,
 				3ACAF5BE2CA1A9FC008136EA /* SwrveUtilsSwift.swift in Sources */,
 				F6441D5A2C9343B6001B0028 /* SwrveMessageDetails.swift in Sources */,
 				F63EC3761FBB2E3A00AC6BA2 /* SwrveEventsManager.m in Sources */,
@@ -2314,6 +2332,7 @@
 				F6EF57DB2C888E1500389B2C /* (null) in Sources */,
 				C5BF0B132CA1C12B00B860C0 /* SwrveCampaignState.swift in Sources */,
 				F6EF57DC2C888E1500389B2C /* (null) in Sources */,
+				F698BA0C2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */,
 				F6EF57DD2C888E1500389B2C /* SwrveInAppStoryView.m in Sources */,
 				F6CD24A42C91E38000D56821 /* SwrveEmbeddedMessage.swift in Sources */,
 				F6EF57DF2C888E1500389B2C /* SwrveMessageFocus.m in Sources */,
@@ -2377,6 +2396,7 @@
 				F6EF58152C888E1500389B2C /* SwrveReceiptProvider.m in Sources */,
 				F6EF58162C888E1500389B2C /* SwrveInAppStoryUIButton.m in Sources */,
 				C5BF0B1F2CA1C12B00B860C0 /* SwrveMessageCenterDetails.swift in Sources */,
+				F69864072DAE7DE800774653 /* SwrveVideoSettings.swift in Sources */,
 				F6EF58192C888E1500389B2C /* (null) in Sources */,
 				F6EF581A2C888E1500389B2C /* SwrveButtonTheme.m in Sources */,
 				F6EF581B2C888E1500389B2C /* SwrveUIButton.m in Sources */,

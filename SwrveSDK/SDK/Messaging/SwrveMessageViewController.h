@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showPage:(NSNumber *)number;
 - (void)onButtonPressed:(SwrveUIButton*)button pageId:(NSNumber *)pageId;
 - (void)queuePageViewEvent:(NSNumber *)pageId;
+- (void)queueVideoEvent:(NSNumber *)pageId mediaId:(NSNumber *)mediaId action:(NSString *)action;
 
 @end
 

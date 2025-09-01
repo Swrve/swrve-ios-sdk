@@ -4,8 +4,16 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessageUIView.h"
 
+@interface SwrveMessageUIView ()
+@property (nonatomic, strong) SwrveVideoPlayerView *videoPlayerView;
+@end
+
 @interface SwrveMessageController ()
 @property (nonatomic, retain) UIWindow *inAppMessageWindow;
+@end
+
+@interface SwrveMessagePageViewController ()
+@property(nonatomic, strong) SwrveMessageUIView *swrveMessageUIView;
 @end
 
 @implementation SwrveMessagePageViewController
@@ -15,6 +23,7 @@
 @synthesize personalization;
 @synthesize size;
 @synthesize messageController;
+@synthesize swrveMessageUIView;
 
 - (id)initWithMessageController:(SwrveMessageController *)swrveMessageController
                          format:(SwrveMessageFormat *)swrveMessageFormat
@@ -72,13 +81,13 @@
 
     [self removeAllSubViews];
 
-    SwrveMessageUIView *swrveMessageUIView = [[SwrveMessageUIView alloc] initWithMessageFormat:self.messageFormat
+    self.swrveMessageUIView = [[SwrveMessageUIView alloc] initWithMessageFormat:self.messageFormat
                                                                                         pageId:self.pageId
                                                                                     parentSize:self.size
                                                                                     controller:self.parentViewController
                                                                                personalization:self.personalization
                                                                                    inAppConfig:self.messageController.inAppMessageConfig];
-    [self.view addSubview:swrveMessageUIView];
+    [self.view addSubview:self.swrveMessageUIView];
 
 #if TARGET_OS_TV
     UITapGestureRecognizer *menuPress = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tvSelectorMenuButtonPressed)];
@@ -95,6 +104,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [self.swrveMessageUIView.videoPlayerView pause];
 }
 
 @end

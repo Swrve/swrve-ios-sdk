@@ -187,10 +187,14 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     if ([fileManager fileExistsAtPath:target]) {
         isDownloaded = YES;
     } else {
-        NSString *assetNameGif = [assetItemName stringByAppendingString:@".gif"];
-        NSString *gifTarget = [self.cacheFolder stringByAppendingPathComponent:assetNameGif];
-        if ([fileManager fileExistsAtPath:gifTarget]) {
-            isDownloaded = YES;
+        NSArray *types = @[@".gif", @".mov", @".mp4"];
+        for (NSString *type in types) {
+            NSString *assetNameWithType = [assetItemName stringByAppendingString:type];
+            target = [self.cacheFolder stringByAppendingPathComponent:assetNameWithType];
+            if ([fileManager fileExistsAtPath:target]) {
+                isDownloaded = YES;
+                break;
+            }
         }
     }
     return isDownloaded;
@@ -244,11 +248,14 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
 - (BOOL)isSupportedMimeType:(NSString *)mimeType {
     BOOL isSupportedMimeType = NO;
     if (mimeType && (
-            [mimeType isEqualToString:@"image/jpeg"] ||
+                    [mimeType isEqualToString:@"image/jpeg"] ||
                     [mimeType isEqualToString:@"image/jpg"] ||
                     [mimeType isEqualToString:@"image/png"] ||
                     [mimeType isEqualToString:@"image/gif"] ||
-                    [mimeType isEqualToString:@"image/bmp"])
+                    [mimeType isEqualToString:@"image/bmp"] ||
+                    [mimeType isEqualToString:@"video/mp4"] ||
+                    [mimeType isEqualToString:@"video/mov"] ||
+                    [mimeType isEqualToString:@"video/quicktime"])
             ) {
         isSupportedMimeType = YES;
     }
@@ -260,6 +267,12 @@ static NSString* const SWRVE_ASSETQ_ITEM_IS_IMAGE = @"isImage";
     NSString *fileAssetName = assetName;
     if (mimeType && [mimeType containsString:@"image/gif"]) {
         fileAssetName = [assetName stringByAppendingString:@".gif"];
+    }
+    else if (mimeType && [mimeType containsString:@"video/mp4"]) {
+        fileAssetName = [assetName stringByAppendingString:@".mp4"];
+    }
+    else if (mimeType && ([mimeType containsString:@"video/mov"] || [mimeType containsString:@"video/quicktime"])) {
+        fileAssetName = [assetName stringByAppendingString:@".mov"];
     }
     return fileAssetName;
 }

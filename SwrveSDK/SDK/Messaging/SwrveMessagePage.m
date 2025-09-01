@@ -31,6 +31,7 @@
         SwrveImage *image = [[SwrveImage alloc] initWithDictionary:jsonImage campaignId:campaignId messageId:messageId];
         [loadedImages addObject:image];
     }
+    
     self.images = [NSArray arrayWithArray:loadedImages];
 
     if ([json objectForKey:@"page_name"]) {
