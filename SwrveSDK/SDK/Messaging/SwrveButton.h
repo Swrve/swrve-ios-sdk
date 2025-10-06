@@ -1,12 +1,8 @@
-#if __has_include(<SwrveSDK/SwrveUIButton.h>)
-#import <SwrveSDK/SwrveUIButton.h>
-#import <SwrveSDK/SwrveButtonTheme.h>
-#import <SwrveSDK/SwrveButtonActions.h>
-#else
-#import "SwrveUIButton.h"
-#import "SwrveButtonTheme.h"
-#import "SwrveButtonActions.h"
-#endif
+#include <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSInteger, SwrveActionType);
+
+@class SwrveButtonTheme;
 
 /*! In-app message button. */
 @interface SwrveButton : NSObject

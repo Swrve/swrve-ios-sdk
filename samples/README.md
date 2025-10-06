@@ -2,8 +2,8 @@ Swrve SDK Samples
 -----------------
 Examples of usage of the Swrve SDK:
 
-- [Custom UserId App (ObjC and Swift)](CustomUserId)
-- [Minimal Integration App (ObjC and Swift)](MinimalIntegrationSample)
-- [Message Center API (ObjC and Swift)](MessageCenterSample)
-- [Integrating Rich Push (ObjC and Swift)](RichPushSample)
-
+- [Custom UserId App](CustomUserId)
+- [Minimal Integration App](MinimalIntegrationSample)
+- [Message Center App](MessageCenterSample)
+- [Push Notification App](RichPushSample)
+- [Swrve Embedded Campaigns App](SwrveEmbeddedSample)

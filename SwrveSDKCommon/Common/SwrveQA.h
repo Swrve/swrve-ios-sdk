@@ -47,4 +47,6 @@
                     reason:(NSString *)reason
               campaignInfo:(NSArray<SwrveQACampaignInfo*> *)qaCampaignInfoArray;
 
++ (void)flushEvents;
+
 @end

@@ -225,4 +225,21 @@ static dispatch_once_t onceToken;
     [[[SwrveQA sharedInstance] queueManager] queueEvent:qaLogEvent];
 }
 
++ (void)flushEvents {
+    SwrveQA *swrveQA = [SwrveQA sharedInstance];
+    if (!swrveQA || ![swrveQA isQALogging]) {
+        return;
+    }
+
+    @try { // Defensively catch any exceptions and swallow
+        @synchronized (swrveQA.queueManager) {
+            if (swrveQA.queueManager != nil) {
+                [swrveQA.queueManager flushEvents];
+            }
+        }
+    } @catch (NSException *ex) {
+        (void)ex;
+    }
+}
+
 @end

@@ -3,9 +3,9 @@
 #import "SwrveMessagePage.h"
 #import "SwrveTextViewStyle.h"
 #import "SwrveUITextView.h"
+#import "SwrveButtonActions.h"
 #import "SwrveButton.h"
 #import "SwrveTextImageView.h"
-#import "SwrveThemedUIButton.h"
 #import "SwrveSDKUtils.h"
 #import "SwrveMessageViewController.h"
 #import "SwrveMessagePageViewController.h"
@@ -353,7 +353,7 @@ static CGPoint scaled(CGPoint point, float scale) {
         buttonView = [[SwrveThemedUIButton alloc] initWithTheme:swrveButton.theme
                                                            text:textStr
                                                           frame:frame
-                                                    calabration:self.messageFormat.calibration
+                                                    calibration:self.messageFormat.calibration
                                                     renderScale:self.renderScale];
 
         // set position

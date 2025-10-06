@@ -1,15 +1,7 @@
 #if __has_include(<SwrveSDK/SwrveMessageViewController.h>)
 #import <SwrveSDK/SwrveMessageViewController.h>
-#import <SwrveSDK/SwrveInterfaceOrientation.h>
 #else
 #import "SwrveMessageViewController.h"
-#import "SwrveInterfaceOrientation.h"
-#endif
-
-#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
-#import <SwrveSDK/SwrveSDK-Swift.h>
-#elif __has_include("SwrveSDK-Swift.h")
-#import "SwrveSDK-Swift.h"
 #endif
 
 @class SwrveCampaign;
@@ -143,7 +135,7 @@ static NSString *const AUTOSHOW_AT_SESSION_START_TRIGGER = @"Swrve.Messages.show
 
 /// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
 /// - Returns: List of active Embedded Message Center campaigns.
-- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns;
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns:(NSDictionary *)personalization;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.

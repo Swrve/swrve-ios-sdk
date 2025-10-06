@@ -1,0 +1,387 @@
+{
+  "game_data": {
+    "1030": {}
+  },
+  "campaigns": [
+    {
+      "id": 101,
+      "timezone_type": "global",
+      "start_date_iso": "2024-01-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 101,
+        "name": "Back to School",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"carousel\",\"display_order\":100,\"title\":{\"text\":\"Back to school deals\",\"color\":\"#111111\"},\"body\":{\"text\":\"Laptops and tablets from $199\",\"color\":\"#666666\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/c75454aa506be42dda90052e619b1c91dec8c327\",\"background_color\":\"#FFFFFF\",\"layout\":\"tall_card\",\"cta\":{\"text\":\"Browse\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#1D8F00\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 102,
+      "timezone_type": "global",
+      "start_date_iso": "2023-07-17T15:32:47Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 102,
+        "name": "July Sale",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"carousel\",\"display_order\":200,\"title\":{\"text\":\"4th of July Sale!\",\"color\":\"#000000\"},\"body\":{\"text\":\"Save up to 50% on selected technology\",\"color\":\"#666666\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/abdcb59114705ed661701d037ed3c1abd94beb9d\",\"background_color\":\"#FFFFFF\",\"layout\":\"tall_card\",\"cta\":{\"text\":\"Shop now\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#4B00E0\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1001,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1001,
+        "name": "Rewards Back",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"carousel\",\"display_order\":1000,\"image\":\"https:\/\/mg-cf.messagegears.net\/img\/9D179FB743B81A01FD167421F318574564EDE30C\/Retail\/Credit%20Card\/CCbanner.png\",\"background_color\":\"#FFFFFF\",\"layout\":\"image_only_card\",\"cta\":{\"url\":\"https:\/\/messagegears.com\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1002,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1002,
+        "name": "No annual Fee",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"carousel\",\"display_order\":2000,\"image\":\"https:\/\/mg-cf.messagegears.net\/img\/9D179FB743B81A01FD167421F318574564EDE30C\/General\/CC.png\",\"background_color\":\"#FFFFFF\",\"layout\":\"image_only_card\",\"cta\":{\"url\":\"https:\/\/messagegears.com\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1003,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1003,
+        "name": "New debit card",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"carousel\",\"display_order\":3000,\"image\":\"https:\/\/mg-cf.messagegears.net\/img\/9D179FB743B81A01FD167421F318574564EDE30C\/General\/Finance.png\",\"background_color\":\"#FFFFFF\",\"layout\":\"image_only_card\",\"cta\":{\"url\":\"https:\/\/messagegears.com\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1004,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+        {
+          "event_name": "add_to_cart_product_1",
+          "conditions": {}
+        }
+      ],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1004,
+        "name": "summer_deals_banner",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"banner\",\"title\":{\"text\":\"SUMMER SALE \\nSTARTS NOW!\",\"color\":\"#FF5733\"},\"body\":{\"text\":\"Enjoy up to 40% off during \\nour limited-time summer sale.\",\"color\":\"#FF5733\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/5faf404fb64ab60d22b46f4470f5a26b97405e0e\",\"layout\":\"left_aligned_banner\",\"cta\":{\"text\":\"Shop the Sale\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#FF5733\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1005,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+        {
+          "event_name": "add_to_cart_product_2",
+          "conditions": {}
+        }
+      ],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1005,
+        "name": "winter_deals_banner",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"banner\",\"title\":{\"text\":\"Winter Deals Are Here!\",\"color\":\"#007AFF\"},\"body\":{\"text\":\"Enjoy up to 40% off select \\nitems during our Winter Savings Event.\",\"color\":\"#007AFF\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/d3f0c716b05e0c03d46c19150a01522e2eb0ba62\",\"layout\":\"centered_banner\",\"cta\":{\"text\":\"Shop the Sale\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#007AFF\"}},\"version\":1",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 1006,
+      "timezone_type": "global",
+      "start_date_iso": "2024-05-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+        {
+          "event_name": "add_to_cart_product_3",
+          "conditions": {}
+        },
+        {
+          "event_name": "banner",
+          "conditions": {}
+        }
+      ],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 1006,
+        "name": "autumn_deals_banner",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"banner\",\"title\":{\"text\":\"Autumn Deals \\nAre Here!\",\"color\":\"#FFFFFF\"},\"body\":{\"text\":\"Enjoy up to 40% off select items \\nduring our Autumn Savings Event.\",\"color\":\"#FFFFFF\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/01f2aa45209359989c50b5a9cf8257e1b2ba1c84\",\"layout\":\"right_aligned_banner\",\"cta\":{\"text\":\"Shop the Sale\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#be2a01\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 10001,
+      "timezone_type": "global",
+      "start_date_iso": "2023-07-17T15:32:47Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 10001,
+        "name": "rewards_offer",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"offer\",\"display_order\":100,\"title\":{\"text\":\"10% back in Rewards\",\"color\":\"#FFFFFF\"},\"body\":{\"text\":\"For a limited time only, get rewards when purchasing with your club member card\",\"color\":\"#FFFFFF\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/f0e8a6edde23379cea9722ff0c924c5c506d5600\",\"background_color\":\"#4B00E0\",\"layout\":\"compact_card\",\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 10002,
+      "timezone_type": "global",
+      "start_date_iso": "2023-07-17T15:32:47Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 10002,
+        "name": "July Sale",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"offer\",\"display_order\":200,\"title\":{\"text\":\"4th of July Sale!\",\"color\":\"#000000\"},\"body\":{\"text\":\"Save up to 50% on selected technology\",\"color\":\"#666666\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/abdcb59114705ed661701d037ed3c1abd94beb9d\",\"background_color\":\"#FFFFFF\",\"layout\":\"tall_card\",\"cta\":{\"text\":\"Shop now\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#4B00E0\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 10003,
+      "timezone_type": "global",
+      "start_date_iso": "2024-01-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 10003,
+        "name": "Back to School",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"offer\",\"display_order\":300,\"title\":{\"text\":\"$100 bonus reward with select TV purchases\",\"color\":\"#000000\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/679d429954e5f617ae8dbe0f7c17b1cc92a5a7f3\",\"background_color\":\"#FFFFFF\",\"layout\":\"tall_card\",\"cta\":{\"text\":\"Shop now\",\"url\":\"https:\/\/messagegears.com\",\"color\":\"#FFFFFF\",\"background_color\":\"#4B00E0\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 10004,
+      "timezone_type": "global",
+      "start_date_iso": "2024-01-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 10004,
+        "name": "tv_reward_2",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"offer\",\"display_order\":400,\"title\":{\"text\":\"$100 bonus reward with select TV and audio purchases $999+\",\"color\":\"#000000\"},\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/c9c22ddea04c09efccce29a738460d8800065612\",\"background_color\":\"#FFFFFF\",\"layout\":\"compact_card\",\"cta\":{\"text\":\"Shop now\",\"url\":\"https:\/\/example.com\/tv-reward-2\",\"color\":\"#FFFFFF\",\"background_color\":\"#4B00E0\"},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    },
+    {
+      "id": 10005,
+      "timezone_type": "global",
+      "start_date_iso": "2024-01-01T00:00:00Z",
+      "end_date_iso": "2058-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 2,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "embedded_message": {
+        "id": 10005,
+        "name": "Hot_Promo",
+        "rules": {},
+        "priority": 1000,
+        "data": "{\"type\":\"floating_banner\",\"background_color\":\"#686669\",\"location\":\"top\",\"layout\":\"collapsed_to_expanded\",\"image\":\"https:\/\/content-cdn.swrve.com\/messaging\/message_image\/37298a535be6b95348a87016e0795de6129a1ed8\",\"collapsed\":{\"title\":{\"text\":\"Hot Promo\",\"color\":\"#ffffff\"},\"body\":{\"text\":\"Free for 1 month. See offer.\",\"color\":\"#ffffff\"}},\"expanded\":{\"title\":{\"text\":\"Hot Promo\",\"color\":\"#ffffff\"},\"body\":{\"text\":\"Enjoy 1 month free of our premium plan - limited time offer.\",\"color\":\"#ffffff\"},\"helper_text\":{\"text\":\"Tap again to collapse or tap below to claim.\",\"color\":\"#ffffff\"},\"cta\":{\"text\":\"Claim Offer\",\"url\":\"https:\/\/example.com\/winter-sale\",\"color\":\"#FFFFFF\",\"background_color\":\"#0a8d4f\"}},\"version\":1}",
+        "type": "json",
+        "buttons": [],
+        "version": 1
+      },
+      "subject": ""
+    }
+  ],
+  "rules": {
+    "delay_first_message": 0,
+    "max_messages_per_session": 9999,
+    "min_delay_between_messages": 0
+  },
+  "cdn_paths": {
+    "message_images": "https://campaign-content.swrve.com/messaging/message_image/",
+    "message_fonts": "https://campaign-content.swrve.com/messaging/fonts/"
+  },
+  "version": 2
+}

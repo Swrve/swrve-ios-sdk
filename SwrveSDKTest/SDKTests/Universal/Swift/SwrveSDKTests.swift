@@ -197,7 +197,7 @@ class MockSwrve: NSObject, SwrveProtocol {
 
     #endif
 
-    func embeddedMessageCenterCampaigns() -> [SwrveEmbeddedMessage]! {
+    func embeddedMessageCenterCampaigns(_ personalization: [AnyHashable: Any]!) -> [SwrveEmbeddedMessage]! {
         nil
     }
 

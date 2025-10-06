@@ -1,4 +1,5 @@
 #import "SwrveEmpty.h"
+#import "SwrveButtonActions.h"
 #import "SwrveMessageController+Private.h"
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
@@ -373,7 +374,8 @@
 
 #endif
 
-- (NSArray<SwrveEmbeddedMessage *> *)embeddedMessageCenterCampaigns {
+- (NSArray<SwrveEmbeddedMessage *> *)embeddedMessageCenterCampaigns:(NSDictionary *)personalization {
+#pragma unused(personalization)
     return @[];
 }
 

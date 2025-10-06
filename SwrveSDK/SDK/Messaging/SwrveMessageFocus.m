@@ -1,6 +1,14 @@
 #import "SwrveMessageFocus.h"
-#import "SwrveThemedUIButton.h"
 #import "SwrveInAppStoryUIButton.h"
+
+#import "Swrve.h"
+#import "SwrveButtonActions.h"
+#import "SwrveInterfaceOrientation.h"
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
 
 #if __has_include(<SwrveSDKCommon/SwrveLogger.h>)
 #import <SwrveSDKCommon/SwrveLogger.h>
@@ -9,12 +17,6 @@
 #import "SwrveLogger.h"
 #import "SwrveUtils.h"
 #endif
-
-@interface SwrveThemedUIButton (Internal)
-
-@property(atomic, retain) SwrveButtonTheme *theme;
-
-@end
 
 @interface SwrveMessageFocus ()
 

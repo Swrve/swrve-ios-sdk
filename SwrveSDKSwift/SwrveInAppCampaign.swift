@@ -106,14 +106,14 @@ import SwrveSDKCommon
 
         let fontFile = theme.fontFile
 
-        if !SwrveSDKUtils.isSystemFont(fontFile),
+        if !SwrveSDKUtils.isSystemFont(fontFile ?? ""),
             let assetQueueItem = SwrveAssetsManager.assetQItem(with: fontFile, andDigest: theme.fontDigest, andIsExternal: false, andIsImage: false)
         {
             assetsQueue.add(assetQueueItem)
         }
 
-        if let pressedState = theme.pressedState,
-            let bgImage = pressedState.bgImage,
+        let pressedState = theme.pressedState
+        if let bgImage = pressedState.bgImage,
             let assetQueueItem = SwrveAssetsManager.assetQItem(with: bgImage, andDigest: bgImage, andIsExternal: false, andIsImage: true)
         {
             assetsQueue.add(assetQueueItem)

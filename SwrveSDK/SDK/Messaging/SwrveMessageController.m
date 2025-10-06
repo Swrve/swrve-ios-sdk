@@ -1,5 +1,6 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessageController+Private.h"
+#import "SwrveButtonActions.h"
 #import "SwrveButton.h"
 #import "Swrve+Private.h"
 
@@ -946,15 +947,15 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         NSString *resolvedMessageData = nil;
         
         if (message.type == SwrveEmbeddedDataTypeJson) {
-            resolvedMessageData = [TextTemplating templatedTextFromJSONString:message.data withProperties:personalizationProperties andError:&error];
+            resolvedMessageData = [TextTemplating templatedTextFromJSONString:message.dataRaw withProperties:personalizationProperties andError:&error];
         } else {
-            resolvedMessageData = [TextTemplating templatedTextFromString:message.data withProperties:personalizationProperties andError:&error];
+            resolvedMessageData = [TextTemplating templatedTextFromString:message.dataRaw withProperties:personalizationProperties andError:&error];
         }
         
         if (error != nil || resolvedMessageData == nil) {
             SwrveEmbeddedCampaign *campaign = (SwrveEmbeddedCampaign *) message.campaign;
-            [SwrveLogger debug:@"For campaign id: %ld. Could not resolve personalization: %@", campaign.ID, message.data];
-            [SwrveQA embeddedPersonalizationFailed:[NSNumber numberWithUnsignedInteger:message.campaign.ID] variantId:message.messageID unresolvedData:message.data reason:@"Failed to resolve personalization"];
+            [SwrveLogger debug:@"For campaign id: %ld. Could not resolve personalization: %@", campaign.ID, message.dataRaw];
+            [SwrveQA embeddedPersonalizationFailed:[NSNumber numberWithUnsignedInteger:message.campaign.ID] variantId:message.messageID unresolvedData:message.dataRaw reason:@"Failed to resolve personalization"];
             return nil;
         } else {
             return resolvedMessageData;
@@ -1298,7 +1299,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 [SwrveLogger debug:@"Passing url to deeplink delegate for processing [%@]", url];
             } else {
                 [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-                    [SwrveLogger debug:@"Opening url [%@] successfully: %d", url, success];
+                    [SwrveLogger debug:@"Opening url [%@] successfully: %@", url, success ? @"YES" : @"NO"];
                 }];
             }
         } else {
@@ -1496,13 +1497,18 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             if (filterRedundantCampaign) {
                 continue;
             } else if (![message canResolvePersonalization:personalization]) {
-                continue;
+                continue; // Skip IAM campaign if personalization cannot be resolved
             } else {
                 campaign.priority = message.priority;
                 campaign.messageCenterDetails = [self personalizeMessageCenterDetails:message.messageCenterDetails withPersonalization:personalization];
             }
         } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
             SwrveEmbeddedCampaign *swrveEmbeddedCampaign = (SwrveEmbeddedCampaign *) campaign;
+            NSString *personalizedData = [self personalizeEmbeddedMessageData:swrveEmbeddedCampaign.message withPersonalization:personalization];
+            if (!personalizedData) {
+                continue; // Skip embedded campaign if personalization cannot be resolved
+            }
+            swrveEmbeddedCampaign.message.data = personalizedData; // originalData retained automatically
             campaign.priority = swrveEmbeddedCampaign.message.priority;
         }
         
@@ -1550,8 +1556,9 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 #endif
 
-- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns {
-    NSArray *embeddedCampaigns = [self messageCenterCampaignsWithPersonalization:nil andPredicate:^BOOL(SwrveCampaign *campaign) {
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns:(NSDictionary *)personalization {
+    NSDictionary *personalizationProperties = [self includeRealTimeUserProperties:personalization];
+    NSArray *embeddedCampaigns = [self messageCenterCampaignsWithPersonalization:personalizationProperties andPredicate:^BOOL(SwrveCampaign *campaign) {
         return [campaign isKindOfClass:[SwrveEmbeddedCampaign class]];
     }];
     NSMutableArray *embeddedMessages = [NSMutableArray new];

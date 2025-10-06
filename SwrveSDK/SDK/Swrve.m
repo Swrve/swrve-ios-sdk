@@ -36,6 +36,7 @@
 #import "SwrveEventQueueItem.h"
 #import "SwrveReceiptProvider.h"
 
+#import "SwrveButtonActions.h"
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>
 #elif __has_include("SwrveSDK-Swift.h")
@@ -1536,6 +1537,7 @@ enum {
         }
     } else {
         [self sendQueuedEvents];
+        [SwrveQA flushEvents];
     }
 
     [self stopCampaignsAndResourcesTimer];
@@ -1708,7 +1710,7 @@ enum {
         [SwrveLogger debug:@"Passing url to deeplink delegate for processing [%@]", url];
     } else {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-            [SwrveLogger debug:@"Opening url [%@] successfully: %d", url, success];
+            [SwrveLogger debug:@"Opening url [%@] successfully: %@", url, success ? @"YES" : @"NO"];
         }];
     }
 }
@@ -2678,7 +2680,7 @@ enum HttpStatus {
              onSuccess:^(NSString *status, NSString *swrveUserId) {
                  [SwrveLogger debug:@"Re-identify successful. Status:%@ userId:%@", status, swrveUserId];
              } onError:^(NSInteger httpCode, NSString *errorMessage) {
-                    [SwrveLogger error:@"Re-identify failed. ResponseCode:%@ errorMessage:%d", httpCode, errorMessage];
+                    [SwrveLogger error:@"Re-identify failed. ResponseCode:%ld errorMessage:%@", (long)httpCode, errorMessage];
                 }
             checkCache:NO]; // note checkCache is NO will should force identify network call
     }
@@ -3047,11 +3049,11 @@ enum HttpStatus {
 }
 #endif
 
-- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns {
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns:(NSDictionary *)personalization {
     if (![self sdkReady]) {
         return nil;
     }
-    return [messaging embeddedMessageCenterCampaigns];
+    return [messaging embeddedMessageCenterCampaigns:personalization];
 }
 
 - (SwrveCampaign *)messageCenterCampaignWithID:(NSUInteger)campaignID andPersonalization:(NSDictionary *)personalization {

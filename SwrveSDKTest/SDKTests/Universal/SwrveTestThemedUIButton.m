@@ -1,5 +1,4 @@
 #import <XCTest/XCTest.h>
-#import <SwrveThemedUIButton.h>
 
 @interface SwrveTestThemedUIButton : XCTestCase
 
@@ -21,7 +20,7 @@
     SwrveThemedUIButton *themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                                                 text:text
                                                                                frame:frame
-                                                                         calabration:nilCalibration
+                                                                         calibration:nilCalibration
                                                                          renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 0);
 
@@ -33,7 +32,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:frame
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 24);
 
@@ -45,7 +44,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:frame
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 25);
 
@@ -59,7 +58,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:frame
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 0);
 
@@ -71,7 +70,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:frame
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 249);
 
@@ -83,7 +82,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:frame
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.layer.cornerRadius, 250);
 }
@@ -100,7 +99,7 @@
     SwrveThemedUIButton *themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                                                 text:text
                                                                                frame:rect
-                                                                         calabration:nilCalibration
+                                                                         calibration:nilCalibration
                                                                          renderScale:1.0];
     XCTAssertEqual(themedUIButton.titleLabel.font.pointSize, 38);
 
@@ -112,7 +111,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:rect
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.titleLabel.font.pointSize, 23);
 
@@ -124,7 +123,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:rect
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.titleLabel.font.pointSize, 10);
 
@@ -136,7 +135,7 @@
     themedUIButton = [[SwrveThemedUIButton alloc] initWithTheme:theme
                                                            text:text
                                                           frame:rect
-                                                    calabration:nilCalibration
+                                                    calibration:nilCalibration
                                                     renderScale:1.0];
     XCTAssertEqual(themedUIButton.titleLabel.font.pointSize, 100);
 }

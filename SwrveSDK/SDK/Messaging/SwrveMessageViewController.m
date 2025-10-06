@@ -2,6 +2,7 @@
 #import "SwrveMessagePage.h"
 #import "SwrveMessagePageViewController.h"
 #import "SwrveMessageController.h"
+#import "SwrveButtonActions.h"
 #import "SwrveButton.h"
 #import "SwrveMessageFocus.h"
 #import "SwrveInAppStoryView.h"
@@ -16,6 +17,12 @@
 #import "SwrveCommon.h"
 #import "SwrveLogger.h"
 #import "SwrveUtils.h"
+#endif
+
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
 #endif
 
 @interface SwrveMessageController ()

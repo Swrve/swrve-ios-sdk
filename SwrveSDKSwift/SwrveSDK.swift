@@ -603,7 +603,16 @@ public enum SwrveSDKError: Error, Equatable {
     /// - Returns: List of active Embedded Message Center campaigns.
     @objc public class func embeddedMessageCenterCampaigns() -> [SwrveEmbeddedMessage] {
         checkInstance()
-        return sharedInstance.embeddedMessageCenterCampaigns()
+        return sharedInstance.embeddedMessageCenterCampaigns(nil)
+    }
+
+    /// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
+    /// - Parameters:
+    ///   - personalization: Additional personalization properties.
+    /// - Returns: List of active Embedded Message Center campaigns.
+    @objc public class func embeddedMessageCenterCampaigns(personalization: [String: Any]? = nil) -> [SwrveEmbeddedMessage] {
+        checkInstance()
+        return sharedInstance.embeddedMessageCenterCampaigns(personalization)
     }
 
     /// Get Message Center campaign targeted for this user and might have personalization that can be resolved. It will exclude campaigns

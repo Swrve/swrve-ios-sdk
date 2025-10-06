@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5BEE298C20EF6C4500CA65B8"
-               BuildableName = "MinimalIntegrationSample-Swift.app"
-               BlueprintName = "MinimalIntegrationSample-Swift"
+               BuildableName = "MinimalIntegrationSample.app"
+               BlueprintName = "MinimalIntegrationSample"
                ReferencedContainer = "container:MinimalIntegrationSample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -31,8 +31,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5BEE298C20EF6C4500CA65B8"
-            BuildableName = "MinimalIntegrationSample-Swift.app"
-            BlueprintName = "MinimalIntegrationSample-Swift"
+            BuildableName = "MinimalIntegrationSample.app"
+            BlueprintName = "MinimalIntegrationSample"
             ReferencedContainer = "container:MinimalIntegrationSample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -54,8 +54,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5BEE298C20EF6C4500CA65B8"
-            BuildableName = "MinimalIntegrationSample-Swift.app"
-            BlueprintName = "MinimalIntegrationSample-Swift"
+            BuildableName = "MinimalIntegrationSample.app"
+            BlueprintName = "MinimalIntegrationSample"
             ReferencedContainer = "container:MinimalIntegrationSample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -71,8 +71,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5BEE298C20EF6C4500CA65B8"
-            BuildableName = "MinimalIntegrationSample-Swift.app"
-            BlueprintName = "MinimalIntegrationSample-Swift"
+            BuildableName = "MinimalIntegrationSample.app"
+            BlueprintName = "MinimalIntegrationSample"
             ReferencedContainer = "container:MinimalIntegrationSample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -8,12 +8,7 @@ def shared_pods
   #pod 'SwrveSDK'
 end
 
-target 'MinimalIntegrationSample-ObjC' do
-  use_frameworks!
-  shared_pods
-end
-
-target 'MinimalIntegrationSample-Swift' do
+target 'MinimalIntegrationSample' do
   use_frameworks!
   shared_pods
 end

@@ -22,7 +22,7 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
         selectors.sort()
 
         // This is the "baseline" count — update intentionally if API changes
-        let expectedCount = 75  // <-- Set to current count of APIs we want to track
+        let expectedCount = 76  // <-- Set to current count of APIs we want to track
         XCTAssertEqual(
             selectors.count, expectedCount,
             """

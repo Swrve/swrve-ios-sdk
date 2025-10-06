@@ -36,7 +36,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.7.0"
+#define SWRVE_SDK_VERSION "10.8.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -562,9 +562,10 @@ NSString * eventsPayloadAsJSON);
 
 #endif
 
-/// Gets active Embedded Message Center campaigns, excluding deleted campaigns.
+/// Gets active Embedded Message Center campaigns with additional personalization properties, excluding deleted campaigns.
+/// - Parameter personalization: Additional personalization properties for embedded messages.
 /// - Returns: List of active Embedded Message Center campaigns.
-- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns;
+- (NSArray <SwrveEmbeddedMessage *>*)embeddedMessageCenterCampaigns:(NSDictionary *)personalization;
 
 /*! Display the given campaign without the need to trigger an event and skipping
  * the configured rules.

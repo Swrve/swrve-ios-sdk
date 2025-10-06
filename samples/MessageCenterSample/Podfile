@@ -8,12 +8,7 @@ def shared_pods
   #pod 'SwrveSDK'
 end
 
-target 'MessageCenterSample-ObjC' do
-  use_frameworks!
-  shared_pods
-end
-
-target 'MessageCenterSample-Swift' do
+target 'MessageCenterSample' do
   use_frameworks!
   shared_pods
 end

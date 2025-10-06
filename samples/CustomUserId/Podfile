@@ -8,12 +8,7 @@ def shared_pods
   #pod 'SwrveSDK'
 end
 
-target 'CustomUserId-ObjC' do
-  use_frameworks!
-  shared_pods
-end
-
-target 'CustomUserId-Swift' do
+target 'CustomUserId' do
   use_frameworks!
   shared_pods
 end

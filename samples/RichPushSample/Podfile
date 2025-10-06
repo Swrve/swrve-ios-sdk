@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '14.0'
 
 def shared_pods
   pod 'SwrveSDK', :path => '../../'
@@ -7,26 +7,12 @@ def shared_pods
   #pod 'SwrveSDK'
 end
 
-target 'RichPushSample-ObjC' do
+target 'RichPushSample' do
   use_frameworks!
   shared_pods
 end
 
-target 'RichPushSampleServiceExtension-ObjC' do
-  use_frameworks!
-  pod 'SwrveSDKCommon', :path => '../../'
-
-  #use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDKCommon'
-end
-
-
-target 'RichPushSample-Swift' do
-  use_frameworks!
-  shared_pods
-end
-
-target 'RichPushSampleServiceExtension-Swift' do
+target 'RichPushSampleServiceExtension' do
   use_frameworks!
   pod 'SwrveSDKCommon', :path => '../../'
   #use remote podfile by commenting out above and uncommenting below

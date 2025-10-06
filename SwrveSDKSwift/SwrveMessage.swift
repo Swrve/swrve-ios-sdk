@@ -60,7 +60,7 @@ import SwrveSDKCommon
     /// - Returns: In-app message format for the given orientation.
     @objc public func bestFormat(for orientation: UIInterfaceOrientation) -> SwrveMessageFormat? {
         for format in formats {
-            let formatIsLandscape = format.orientation == SWRVE_ORIENTATION_LANDSCAPE
+            let formatIsLandscape = format.orientation == .SWRVE_ORIENTATION_LANDSCAPE
             if orientation.isLandscape {
                 if formatIsLandscape {
                     return format
@@ -164,11 +164,11 @@ import SwrveSDKCommon
             SwrveLogger.logDebug("Button theme bgImage asset not yet downloaded: \(bgImage)")
             return false
         }
-        if !SwrveSDKUtils.isSystemFont(theme.fontFile), !assets.contains(theme.fontFile) {
-            SwrveLogger.logDebug("Button theme font asset not yet downloaded: \(theme.fontFile)")
+        if !SwrveSDKUtils.isSystemFont(theme.fontFile ?? ""), !assets.contains(theme.fontFile ?? "") {
+            SwrveLogger.logDebug("Button theme font asset not yet downloaded: \(String(describing: theme.fontFile))")
             return false
         }
-        if let bgImage = theme.pressedState?.bgImage, !assets.contains(bgImage) {
+        if let bgImage = theme.pressedState.bgImage, !assets.contains(bgImage) {
             SwrveLogger.logDebug("Button pressed theme bgImage asset not yet downloaded: \(bgImage)")
             return false
         }

@@ -17,6 +17,7 @@
 #import "SwrveUtils.h"
 #endif
 
+#import "SwrveButtonActions.h"
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>
 #elif __has_include("SwrveSDK-Swift.h")

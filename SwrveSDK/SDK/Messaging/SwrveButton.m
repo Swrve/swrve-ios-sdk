@@ -1,5 +1,17 @@
 #import "SwrveButton.h"
-#import "SwrveButtonTheme.h"
+#import "Swrve.h"
+#import "SwrveInterfaceOrientation.h"
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
+#if __has_include(<SwrveSDK/SwrveButtonActions.h>)
+#import <SwrveSDK/SwrveButtonActions.h>
+#else
+#import "SwrveButtonActions.h"
+#endif
 
 @interface SwrveButton ()
 

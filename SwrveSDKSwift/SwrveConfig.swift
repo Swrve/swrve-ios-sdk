@@ -36,7 +36,7 @@ public typealias SwrveResourcesUpdatedListener = () -> Void
 @objc public class SwrveConfig: NSObject {
 
     /// The supported orientations of the app.
-    @objc public var orientation: SwrveInterfaceOrientation = SWRVE_ORIENTATION_BOTH
+    @objc public var orientation: SwrveInterfaceOrientation = .SWRVE_ORIENTATION_BOTH
 
     /// By default, Swrve will read the application version from the current application bundle.
     /// This is used to allow you to test and target users with a particular application version.

@@ -1,17 +1,13 @@
 #import <UIKit/UIKit.h>
 
-#if __has_include(<SwrveSDK/SwrveUIButton.h>)
-#import <SwrveSDK/SwrveUIButton.h>
+#if __has_include(<SwrveSDK/Swrve.h>)
 #import <SwrveSDK/Swrve.h>
-#import <SwrveSDK/SwrveButton.h>
 #import <SwrveSDK/SwrveImage.h>
 #import <SwrveSDK/SwrveMessageController.h>
 #import <SwrveSDK/SwrveMessagePage.h>
 #import <SwrveSDK/SwrveSDKUtils.h>
 #else
-#import "SwrveUIButton.h"
 #import "Swrve.h"
-#import "SwrveButton.h"
 #import "SwrveImage.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessagePage.h"
@@ -19,6 +15,7 @@
 #endif
 
 @class SwrveEmbeddedMessage;
+@class SwrveUIButton;
 
 NS_ASSUME_NONNULL_BEGIN
 

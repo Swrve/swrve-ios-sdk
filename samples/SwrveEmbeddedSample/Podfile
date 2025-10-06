@@ -1,0 +1,12 @@
+platform :ios, '16.0'
+
+target 'SwrveEmbeddedSample' do
+  use_frameworks!
+
+  # Pods for SwrveEmbeddedSample
+#  pod 'SwrveSDK'
+# TODO revert this to use remote pod
+  pod 'SwrveSDK', :path => '../../'
+  pod 'SwrveSDKCommon', :path => '../../'
+
+end

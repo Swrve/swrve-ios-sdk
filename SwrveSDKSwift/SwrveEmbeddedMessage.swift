@@ -17,6 +17,7 @@ import SwrveSDKCommon
 @objc public class SwrveEmbeddedMessage: SwrveBaseMessage {
 
     @objc public var data: String?
+    @objc public var dataRaw: String?
     @objc public var type: SwrveEmbeddedDataType = .other
     @objc public var buttons: [String] = []
 
@@ -37,6 +38,7 @@ import SwrveSDKCommon
         message.type = typeString == "json" ? .json : .other
 
         message.data = json["data"] as? String
+        message.dataRaw = json["data"] as? String
         message.name = json["name"] as? String
 
         if let messageCenterDetailsJSON = json["message_center_details"] as? [String: Any] {
