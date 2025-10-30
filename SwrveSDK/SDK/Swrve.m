@@ -2586,7 +2586,8 @@ enum HttpStatus {
 #pragma mark  Switch User ID
 
 - (void)switchUser:(NSString *)newUserID isFirstSession:(BOOL)isFirstSession {
-
+    [self registerLifecycleCallbacks];
+    
     // dont do anything if the current user is the same as the new one and its already been started
     if ((newUserID == nil) || (sdkStarted == true && [newUserID isEqualToString:self.profileManager.userId])) {
         [self enableEventSending];
@@ -2912,8 +2913,6 @@ enum HttpStatus {
 
     // this code should only execute after the 2 callbacks in flushAllEvents complete
     dispatch_group_notify(sendEventsCallback, dispatch_get_main_queue(), ^{
-
-        [self registerLifecycleCallbacks];
 
         // If join time for the user is zero then its the first time this userId has been on this device so send first session event
         BOOL isFirstSession = [SwrveLocalStorage userJoinedTimeSeconds:userId] == 0;

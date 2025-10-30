@@ -346,6 +346,7 @@
 		F698BA0C2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
 		F698BA0D2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
 		F698BA0E2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
+		F69BBF472EB260080036F949 /* SwrveInAppCapabilitiesDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C5C1240D2C6A7E7F009554B7 /* SwrveInAppCapabilitiesDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B2E2CD206D2C0F007F2E7F /* SwrveUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B2E2CB206D2C0F007F2E7F /* SwrveUser.m */; };
 		F6B2E2CE206D2C0F007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B2E2CF206D2C25007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1638,6 +1639,7 @@
 				F6EF58AD2C888EAA00389B2C /* SwrveQA.h in Headers */,
 				F6EF58AE2C888EAA00389B2C /* SwrveQACampaignInfo.h in Headers */,
 				F6EF58AF2C888EAA00389B2C /* SwrveNotificationConstants.h in Headers */,
+				F69BBF472EB260080036F949 /* SwrveInAppCapabilitiesDelegate.h in Headers */,
 				F6EF58B02C888EAA00389B2C /* SwrveSwizzleHelper.h in Headers */,
 				3AA3AEFB2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */,
 				F6EF58B12C888EAA00389B2C /* SwrveLocalStorage.h in Headers */,
