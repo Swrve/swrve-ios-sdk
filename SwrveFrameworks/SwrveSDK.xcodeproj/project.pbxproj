@@ -282,10 +282,6 @@
 		F63EC3761FBB2E3A00AC6BA2 /* SwrveEventsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CD61F74083F003B0EA4 /* SwrveEventsManager.m */; };
 		F63EC3781FBB2E3A00AC6BA2 /* SwrveMigrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CDC1F74083F003B0EA4 /* SwrveMigrationsManager.m */; };
 		F63EC37A1FBB2E3A00AC6BA2 /* SwrveReceiptProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F6D54CE11F74083F003B0EA4 /* SwrveReceiptProvider.m */; };
-		F6441D4D2C934102001B0028 /* SwrveMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4A2C934101001B0028 /* SwrveMessage.swift */; };
-		F6441D4E2C934102001B0028 /* SwrveMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4A2C934101001B0028 /* SwrveMessage.swift */; };
-		F6441D4F2C934102001B0028 /* SwrveMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4A2C934101001B0028 /* SwrveMessage.swift */; };
-		F6441D502C934102001B0028 /* SwrveMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4A2C934101001B0028 /* SwrveMessage.swift */; };
 		F6441D512C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4B2C934101001B0028 /* SwrveInAppMessageDelegate.swift */; };
 		F6441D522C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4B2C934101001B0028 /* SwrveInAppMessageDelegate.swift */; };
 		F6441D532C934102001B0028 /* SwrveInAppMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6441D4B2C934101001B0028 /* SwrveInAppMessageDelegate.swift */; };
@@ -857,7 +853,6 @@
 		F62505E726D43CBA0065C836 /* SwrveTextImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveTextImageView.m; sourceTree = "<group>"; };
 		F62505E826D43CBA0065C836 /* SwrveTextViewStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveTextViewStyle.h; sourceTree = "<group>"; };
 		F6329B451FBA0DFB00FF9FAD /* SwrveSDK.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = SwrveSDK.modulemap; sourceTree = "<group>"; };
-		F6441D4A2C934101001B0028 /* SwrveMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveMessage.swift; sourceTree = "<group>"; };
 		F6441D4B2C934101001B0028 /* SwrveInAppMessageDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveInAppMessageDelegate.swift; sourceTree = "<group>"; };
 		F6441D4C2C934102001B0028 /* SwrveMessageButtonDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveMessageButtonDetails.swift; sourceTree = "<group>"; };
 		F6441D592C9343B6001B0028 /* SwrveMessageDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwrveMessageDetails.swift; sourceTree = "<group>"; };
@@ -1074,7 +1069,6 @@
 				F6441D4C2C934102001B0028 /* SwrveMessageButtonDetails.swift */,
 				F6441D592C9343B6001B0028 /* SwrveMessageDetails.swift */,
 				C5464D292C64D1E90011E6CE /* SwrveSDK.swift */,
-				F6441D4A2C934101001B0028 /* SwrveMessage.swift */,
 			);
 			name = SwrveSDKSwift;
 			path = ../SwrveSDKSwift;
@@ -2013,7 +2007,6 @@
 				F6775CE22E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				B568A0FC2C2589240063D55C /* SwrvePushInboxController.swift in Sources */,
 				F62505EA26D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,
-				F6441D4E2C934102001B0028 /* SwrveMessage.swift in Sources */,
 				3A85A4CC2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
 				3A85A4CD2DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
 				3A85A4CE2DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
@@ -2119,7 +2112,6 @@
 				F6775CDF2E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				F6B871662C58352B00874DEA /* SwrveLiveActivity.swift in Sources */,
 				F6B871672C58352B00874DEA /* SwrveTextViewStyle.m in Sources */,
-				F6441D4F2C934102001B0028 /* SwrveMessage.swift in Sources */,
 				3A85A4D22DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
 				3A85A4D32DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
 				3A85A4D42DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
@@ -2225,7 +2217,6 @@
 				F6775CE82E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				F6900A7B2A9CF8660067A7E5 /* SwrveLiveActivity.swift in Sources */,
 				F62505E926D43CBA0065C836 /* SwrveTextViewStyle.m in Sources */,
-				F6441D4D2C934102001B0028 /* SwrveMessage.swift in Sources */,
 				3A85A4CF2DDCDE5900F6C34A /* SwrveRefreshContentResult.swift in Sources */,
 				3A85A4D02DDCDE5900F6C34A /* SwrveRefreshContentDelegate.swift in Sources */,
 				3A85A4D12DDCDE5900F6C34A /* SwrveRefreshContentResultCode.swift in Sources */,
@@ -2305,7 +2296,6 @@
 				F6EF57E32C888E1500389B2C /* (null) in Sources */,
 				F6CD24A92C91E39500D56821 /* SwrveSDK.swift in Sources */,
 				F6EF57E42C888E1500389B2C /* (null) in Sources */,
-				F6441D502C934102001B0028 /* SwrveMessage.swift in Sources */,
 				C53D217B2CA2452C006211BF /* SwrveTrigger.swift in Sources */,
 				F6441D632C9438C6001B0028 /* SwrveInAppMessageFocusDelegate.swift in Sources */,
 				F6EF57E52C888E1500389B2C /* Swrve.m in Sources */,

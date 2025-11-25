@@ -364,11 +364,12 @@ public enum SwrveSDKError: Error, Equatable {
     @objc public class func sendPushEngagedEvent(_ pushId: String, _ trackingData: String, _ platform: String, _ deeplink: String) {
         checkInstance()
         var payload: [String: String] = [:]
+        //Don't use SwrveNotificationConstants, scope issue with Swift/Objc interop
         if !trackingData.isEmpty {
-            payload[SwrveNotificationTrackingDataKey] = trackingData
+            payload["_td"] = trackingData
         }
         if !platform.isEmpty {
-            payload[SwrveNotificationPlatformKey] = platform
+            payload["_smp"] = platform
         }
         if !deeplink.isEmpty {
             payload["deeplink"] = deeplink
