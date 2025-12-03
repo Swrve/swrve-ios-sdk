@@ -114,18 +114,27 @@
     XCTAssertTrue([messageUiView.subviews[3] isKindOfClass:[UIImageView class]]);           // 4 - png image
 
     // Basic (hacky) assertion of background image for buttons.
-    UIButton *button5 = (messageUiView.subviews[4]);
-    NSURL *button5URL = [button5 sd_backgroundImageURLForState:UIControlStateNormal];
-    NSString *asset5Gif = [asset5 stringByAppendingString:@".gif"];
-    XCTAssertTrue([[button5URL path] hasSuffix:asset5Gif]);                                 // 5 - external url gif button
-    UIButton *button6 = (messageUiView.subviews[5]);
-    XCTAssertNotNil([button6 backgroundImageForState:UIControlStateNormal]);                // 6 - external url png button
-    UIButton *button7 = (messageUiView.subviews[6]);
-    NSURL *button7URL = [button7 sd_backgroundImageURLForState:UIControlStateNormal];
-    NSString *asset7Gif = [asset7 stringByAppendingString:@".gif"];
-    XCTAssertTrue([[button7URL path] hasSuffix:asset7Gif]);                                 // 7 - gif button
-    UIButton *button8 = (messageUiView.subviews[7]);
-    XCTAssertNotNil([button8 backgroundImageForState:UIControlStateNormal]);                // 6 - png button
+    SwrveUIButton *button5 = (SwrveUIButton *)(messageUiView.subviews[4]);
+#if TARGET_OS_IOS
+    XCTAssertTrue([button5.subviews[0] isKindOfClass:[SDAnimatedImageView class]]);
+#else
+    // tvOS adds a focus view at position 0
+    XCTAssertTrue([button5.subviews[1] isKindOfClass:[SDAnimatedImageView class]]);
+#endif
+    
+    SwrveUIButton *button6 = (SwrveUIButton *)(messageUiView.subviews[5]);
+    XCTAssertNotNil([button6 backgroundImageForState:UIControlStateNormal]);
+    
+    SwrveUIButton *button7 = (SwrveUIButton *)(messageUiView.subviews[6]);
+#if TARGET_OS_IOS
+    XCTAssertTrue([button7.subviews[0] isKindOfClass:[SDAnimatedImageView class]]);
+#else
+    // tvOS adds a focus view at position 0
+    XCTAssertTrue([button7.subviews[1] isKindOfClass:[SDAnimatedImageView class]]);
+#endif
+    
+    SwrveUIButton *button8 = (SwrveUIButton *)(messageUiView.subviews[7]);
+    XCTAssertNotNil([button8 backgroundImageForState:UIControlStateNormal]);
 }
 
 - (SwrveMessageViewController *)messageViewControllerFrom:(SwrveMessageController *)controller {

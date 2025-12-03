@@ -437,7 +437,20 @@ static CGPoint scaled(CGPoint point, float scale) {
         swrveUIButton.imageView.adjustsImageWhenAncestorFocused = YES;
 #endif
         if (imageInfo.isGif) {
-            [swrveUIButton sd_setBackgroundImageWithURL:imageInfo.fileImageURL forState:UIControlStateNormal];
+            if ([imageInfo.image isKindOfClass:[SDAnimatedImage class]]) {
+                SDAnimatedImage *anim = (SDAnimatedImage *)imageInfo.image;
+                //Use SDAnimatedImageView to set animated gif for button, better performance for large gifs
+                //SDWebImage logic is kept in Objective-C to avoid exposing its types in the Swift interface, which breaks SPM binary XCFramework loading.
+                SDAnimatedImageView *imageView = [[SDAnimatedImageView alloc] initWithFrame:swrveUIButton.bounds];
+                imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                imageView.image = anim;
+
+                [swrveUIButton addSubview:imageView];
+                
+            } else {
+                // Fallback: image is not an SDAnimatedImage, set as static background
+                [swrveUIButton setBackgroundImage:up forState:UIControlStateNormal];
+            }
         } else {
             [swrveUIButton setBackgroundImage:up forState:UIControlStateNormal];
         }
