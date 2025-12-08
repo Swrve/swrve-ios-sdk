@@ -122,7 +122,13 @@
 
     self.iamWindowSize = size;
     [self updateCurrentMessageFormat];
-    [self showPage:self.currentPageId];
+    if(self.currentPageId != nil) {
+        [self showPage:self.currentPageId];
+    } else {
+        NSNumber *firstPageId = self.currentMessageFormat.pagesOrdered[0];
+        [self showPage:firstPageId];
+    }
+
     [self redrawStoryView];
 }
 
