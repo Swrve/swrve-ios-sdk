@@ -7,24 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B37B453E478A06E8F762370 /* Pods_MessageCenterSample_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */; };
 		52D112341D5C97ED00F34F38 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D112331D5C97ED00F34F38 /* AppDelegate.swift */; };
 		52D112361D5C97ED00F34F38 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D112351D5C97ED00F34F38 /* ViewController.swift */; };
 		52D112391D5C97ED00F34F38 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52D112371D5C97ED00F34F38 /* Main.storyboard */; };
 		52D1123E1D5C97ED00F34F38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52D1123C1D5C97ED00F34F38 /* LaunchScreen.storyboard */; };
 		F63C42D72E74642F001180DD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63C42D62E74642F001180DD /* SceneDelegate.swift */; };
+		FDBA8C275D5AF70713F3A81F /* Pods_MessageCenterSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F60FAFEB75B9DC478C4C11 /* Pods_MessageCenterSample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		34F60FAFEB75B9DC478C4C11 /* Pods_MessageCenterSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		38962801A01BFDB42923A4F7 /* Pods-MessageCenterSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.release.xcconfig"; path = "Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.release.xcconfig"; sourceTree = "<group>"; };
 		52D112301D5C97ED00F34F38 /* MessageCenterSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MessageCenterSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D112331D5C97ED00F34F38 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		52D112351D5C97ED00F34F38 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		52D112381D5C97ED00F34F38 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		52D1123D1D5C97ED00F34F38 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		52D1123F1D5C97ED00F34F38 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5D9A49754D656B15F7644F7 /* Pods-MessageCenterSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessageCenterSample.debug.xcconfig"; path = "Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F63C42D62E74642F001180DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessageCenterSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B37B453E478A06E8F762370 /* Pods_MessageCenterSample_Swift.framework in Frameworks */,
+				FDBA8C275D5AF70713F3A81F /* Pods_MessageCenterSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +46,7 @@
 				52D112321D5C97ED00F34F38 /* MessageCenterSample */,
 				52D112311D5C97ED00F34F38 /* Products */,
 				59131C66212EF1D6DCD9AF2B /* Frameworks */,
+				B521D0C60BFD0F74F4B92551 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,9 +75,18 @@
 			isa = PBXGroup;
 			children = (
 				34F60FAFEB75B9DC478C4C11 /* Pods_MessageCenterSample.framework */,
-				FB0CCC3D0D5E2D8E54B9152B /* Pods_MessageCenterSample_Swift.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B521D0C60BFD0F74F4B92551 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F5D9A49754D656B15F7644F7 /* Pods-MessageCenterSample.debug.xcconfig */,
+				38962801A01BFDB42923A4F7 /* Pods-MessageCenterSample.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../../../SwrvePrivateWorkspace/Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,10 +166,10 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -168,7 +179,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample-Swift/Pods-MessageCenterSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MessageCenterSample/Pods-MessageCenterSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C8657D5A5BA984A21527D8B4 /* [CP] Check Pods Manifest.lock */ = {
@@ -182,7 +193,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MessageCenterSample-Swift-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MessageCenterSample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -332,6 +343,7 @@
 		};
 		52D112431D5C97ED00F34F38 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5D9A49754D656B15F7644F7 /* Pods-MessageCenterSample.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
@@ -349,6 +361,7 @@
 		};
 		52D112441D5C97ED00F34F38 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 38962801A01BFDB42923A4F7 /* Pods-MessageCenterSample.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;

@@ -5,6 +5,8 @@
 #import "SwrveLocalStorage.h"
 #endif
 
+@protocol SwrveUserDisabledDelegate;
+
 @interface SwrveProfileManager : NSObject
 
 @property (readonly, nonatomic, retain) NSString * userId;
@@ -13,5 +15,8 @@
 @property (nonatomic) enum SwrveTrackingState trackingState;
 
 - (void)persistUser;
+- (void)handleDisableUser:(NSData *)data
+                   userId:(NSString *)disabledSwrveUserId
+     userDisabledDelegate:(id<SwrveUserDisabledDelegate>)delegate;
 
 @end

@@ -24,6 +24,8 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3A8CB6712E670B45005F5FDF /* SwrveEmbeddedSample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = SwrveEmbeddedSample;
 			sourceTree = "<group>";
 		};
@@ -158,13 +160,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

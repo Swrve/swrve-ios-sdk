@@ -34,7 +34,7 @@ class SwrveUtilsSwift {
         }
 
         let sortedKeys = actualPayload.keys.sorted { (key1, key2) -> Bool in
-            return String(describing: key1.base) < String(describing: key2.base)
+            String(describing: key1.base) < String(describing: key2.base)
         }
 
         let formattedEntries = sortedKeys.map { key -> String in

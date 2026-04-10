@@ -1,7 +1,6 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveButtonActions.h"
-#import "SwrveButton.h"
 #import "Swrve+Private.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
@@ -10,6 +9,7 @@
 #import <SwrveSDKCommon/SwrveUtils.h>
 #import <SwrveSDKCommon/SwrveQA.h>
 #import <SwrveSDKCommon/TextTemplating.h>
+#import <SwrveSDKCommon/SwrveQACampaignInfo.h>
 
 #if TARGET_OS_IOS /** exclude tvOS **/
 
@@ -17,6 +17,7 @@
 
 #endif //TARGET_OS_IOS
 #else
+#import "SwrveQACampaignInfo.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveAssetsManager.h"
 #import "SwrveUtils.h"
@@ -914,7 +915,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (void)queueMessageClickEvent:(SwrveButton *)button page:(SwrveMessagePage *)page {
     if (button.actionType != kSwrveActionDismiss) {
-        NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%ld.click", button.messageId];
+        NSString *clickEvent = [NSString stringWithFormat:@"Swrve.Messages.Message-%lld.click", button.messageId];
         [SwrveLogger debug:@"Sending click event: %@", clickEvent];
         NSMutableDictionary *payload = [SwrveUtils iamCommonEventPayload];
         [payload setValue:button.name forKey:@"name"];

@@ -9,6 +9,14 @@
 #import "SwrveLogger.h"
 #endif
 
+#import "Swrve.h"
+#import "SwrveButtonActions.h"
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
 @implementation SwrveUITextView
 
 - (id)initWithStyle:(SwrveTextViewStyle *)style

@@ -1,5 +1,14 @@
 #import "SwrveStorySettings.h"
 
+#import "Swrve.h"
+#import "SwrveButtonActions.h"
+#import "SwrveInterfaceOrientation.h"
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
 @implementation SwrveStorySettings
 
 @synthesize pageDuration;

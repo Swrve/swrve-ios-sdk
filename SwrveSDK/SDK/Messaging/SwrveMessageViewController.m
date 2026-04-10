@@ -3,11 +3,8 @@
 #import "SwrveMessagePageViewController.h"
 #import "SwrveMessageController.h"
 #import "SwrveButtonActions.h"
-#import "SwrveButton.h"
 #import "SwrveMessageFocus.h"
-#import "SwrveInAppStoryView.h"
 #import "SwrveSDKUtils.h"
-#import "SwrveInAppStoryUIButton.h"
 
 #if __has_include(<SwrveSDKCommon/SwrveCommon.h>)
 #import <SwrveSDKCommon/SwrveCommon.h>
@@ -485,9 +482,10 @@
 }
 
 // SwrveInAppStorySegmentDelegate
-- (void)segmentFinishedAtIndex:(NSUInteger)segmentIndex {
-    if (segmentIndex < self.currentMessageFormat.pagesOrdered.count - 1) {
-        NSNumber *pageIdToShow = self.currentMessageFormat.pagesOrdered[segmentIndex + 1];
+- (void)segmentFinishedAtIndex:(NSInteger)segmentIndex {
+    NSInteger pageCount = (NSInteger)self.currentMessageFormat.pagesOrdered.count;
+    if (segmentIndex >= 0 && segmentIndex < pageCount - 1) {
+        NSNumber *pageIdToShow = [self.currentMessageFormat.pagesOrdered objectAtIndex:(NSUInteger)(segmentIndex + 1)];
         [self showPage:pageIdToShow];
     } else {
         [self handleLastPageProgression:self.currentMessageFormat.storySettings.lastPageProgression];

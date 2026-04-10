@@ -16,7 +16,7 @@ class SwrveInAppStoryUIButtonTests: XCTestCase {
             "accessibility_text": "Close Button"
         ]
 
-        let dismissButton = SwrveStoryDismissButton(dictionary: storySettings)
+        let dismissButton = SwrveStoryDismissButton(storySettings: storySettings)
 
         var normalImage: UIImage?
         var highlightedImage: UIImage?
@@ -34,7 +34,7 @@ class SwrveInAppStoryUIButtonTests: XCTestCase {
 
         let button = SwrveInAppStoryUIButton(
             button: dismissButton,
-            dismiss: normalImage!,
+            dismissImage: normalImage!,
             dismissImageHighlighted: highlightedImage
         )
 
@@ -64,7 +64,7 @@ class SwrveInAppStoryUIButtonTests: XCTestCase {
             "accessibility_text": "Close Button"
         ]
 
-        let dismissButton = SwrveStoryDismissButton(dictionary: storySettings)
+        let dismissButton = SwrveStoryDismissButton(storySettings: storySettings)
 
         var dismissImage: UIImage?
         var dismissHighlightedImage: UIImage?
@@ -82,7 +82,7 @@ class SwrveInAppStoryUIButtonTests: XCTestCase {
 
         let button = SwrveInAppStoryUIButton(
             button: dismissButton,
-            dismiss: dismissImage!,
+            dismissImage: dismissImage!,
             dismissImageHighlighted: dismissHighlightedImage!
         )
 

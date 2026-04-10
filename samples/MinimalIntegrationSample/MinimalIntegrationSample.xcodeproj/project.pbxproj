@@ -11,19 +11,21 @@
 		5BEE299320EF6C4500CA65B8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEE299220EF6C4500CA65B8 /* ViewController.swift */; };
 		5BEE299620EF6C4500CA65B8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5BEE299420EF6C4500CA65B8 /* Main.storyboard */; };
 		5BEE299B20EF6C4700CA65B8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5BEE299920EF6C4700CA65B8 /* LaunchScreen.storyboard */; };
-		B2A45ECF1D269EC4997CAC88 /* Pods_MinimalIntegrationSample_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */; };
+		CAD738B878AE6B0006112821 /* Pods_MinimalIntegrationSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25E60F43BF9778BC0E200EBF /* Pods_MinimalIntegrationSample.framework */; };
 		F63C42D92E746443001180DD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63C42D82E746443001180DD /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		25E60F43BF9778BC0E200EBF /* Pods_MinimalIntegrationSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MinimalIntegrationSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		59675736FA2F6AA8A7E3A7CA /* Pods-MinimalIntegrationSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample.release.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample/Pods-MinimalIntegrationSample.release.xcconfig"; sourceTree = "<group>"; };
 		5BEE298D20EF6C4500CA65B8 /* MinimalIntegrationSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinimalIntegrationSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BEE299020EF6C4500CA65B8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5BEE299220EF6C4500CA65B8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		5BEE299520EF6C4500CA65B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5BEE299A20EF6C4700CA65B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5BEE299C20EF6C4700CA65B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MinimalIntegrationSample_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		98D930BF3D00174731BD32A8 /* Pods_MinimalIntegrationSample_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MinimalIntegrationSample_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4A02FCF796E546B1DDE0A28 /* Pods-MinimalIntegrationSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MinimalIntegrationSample.debug.xcconfig"; path = "../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-MinimalIntegrationSample/Pods-MinimalIntegrationSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F63C42D82E746443001180DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -32,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2A45ECF1D269EC4997CAC88 /* Pods_MinimalIntegrationSample_Swift.framework in Frameworks */,
+				CAD738B878AE6B0006112821 /* Pods_MinimalIntegrationSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +44,8 @@
 		174028DA5B782F9821064183 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				C4A02FCF796E546B1DDE0A28 /* Pods-MinimalIntegrationSample.debug.xcconfig */,
+				59675736FA2F6AA8A7E3A7CA /* Pods-MinimalIntegrationSample.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -80,8 +84,8 @@
 		7CCE2AC8E89D3321BFD1CC7F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				883F22C5EFA958F81244DAB2 /* Pods_MinimalIntegrationSample_Swift.framework */,
 				98D930BF3D00174731BD32A8 /* Pods_MinimalIntegrationSample_ObjC.framework */,
+				25E60F43BF9778BC0E200EBF /* Pods_MinimalIntegrationSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -166,7 +170,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MinimalIntegrationSample-Swift-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MinimalIntegrationSample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -179,19 +183,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample/Pods-MinimalIntegrationSample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample/Pods-MinimalIntegrationSample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample-Swift/Pods-MinimalIntegrationSample-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MinimalIntegrationSample/Pods-MinimalIntegrationSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -345,6 +345,7 @@
 		};
 		5BEE29A020EF6C4700CA65B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C4A02FCF796E546B1DDE0A28 /* Pods-MinimalIntegrationSample.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;
@@ -363,6 +364,7 @@
 		};
 		5BEE29A120EF6C4700CA65B8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 59675736FA2F6AA8A7E3A7CA /* Pods-MinimalIntegrationSample.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 38YP67HQGE;

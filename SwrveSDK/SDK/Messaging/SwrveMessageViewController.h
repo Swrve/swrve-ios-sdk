@@ -2,13 +2,11 @@
 
 #if __has_include(<SwrveSDK/Swrve.h>)
 #import <SwrveSDK/Swrve.h>
-#import <SwrveSDK/SwrveImage.h>
 #import <SwrveSDK/SwrveMessageController.h>
 #import <SwrveSDK/SwrveMessagePage.h>
 #import <SwrveSDK/SwrveSDKUtils.h>
 #else
 #import "Swrve.h"
-#import "SwrveImage.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessagePage.h"
 #import "SwrveSDKUtils.h"

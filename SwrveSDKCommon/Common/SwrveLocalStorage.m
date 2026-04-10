@@ -704,4 +704,99 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
     }
 }
 
++ (void)deleteAllDataForUserId:(NSString *)userId {
+    if (userId.length == 0) {
+        return;
+    }
+
+    [self deleteUserDefaultsForUserId:userId];
+    [self deleteApplicationSupportFilesForUserId:userId];
+    [self deleteUserInstallFileForUserId:userId];
+}
+
++ (void)deleteUserDefaultsForUserId:(NSString *)userId {
+    NSUserDefaults *defaults = [self defaults];
+
+    // Known user-scoped keys
+    NSArray<NSString *> *keysToRemove = @[
+        [userId stringByAppendingString:SWRVE_CAMPAIGN_RESOURCE_ETAG],
+        [userId stringByAppendingString:SWRVE_PUSH_INBOX_HASH],
+        [NSString stringWithFormat:@"%@%@", SWRVE_QA_USER, userId]
+    ];
+
+    for (NSString *key in keysToRemove) {
+        [defaults removeObjectForKey:key];
+        [SwrveLocalStorage removeValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:key];
+    }
+
+    // Remove identify date
+    NSMutableDictionary *identifyDates =
+        [[defaults objectForKey:SWRVE_USER_IDENTIFY_DATES] mutableCopy];
+
+    if (identifyDates[userId]) {
+        [identifyDates removeObjectForKey:userId];
+        [defaults setObject:identifyDates forKey:SWRVE_USER_IDENTIFY_DATES];
+    }
+}
+
++ (void)deleteApplicationSupportFilesForUserId:(NSString *)userId {
+    NSArray<NSString *> *fileNames = @[
+        SWRVE_EVENTS,
+        SWRVE_CAMPAIGNS,
+        SWRVE_CAMPAIGNS_SGT,
+        SWRVE_AD_CAMPAIGNS,
+        SWRVE_AD_CAMPAIGNS_SGT,
+        SWRVE_PUSH_CAMPAIGNS,
+        SWRVE_PUSH_CAMPAIGNS_SGT,
+        SWRVE_OFFLINE_CAMPAIGNS,
+        SWRVE_OFFLINE_CAMPAIGNS_SGT,
+        SWRVE_USER_RESOURCES,
+        SWRVE_USER_RESOURCES_SGT,
+        SWRVE_USER_RESOURCES_DIFF,
+        SWRVE_USER_RESOURCES_DIFF_SGT,
+        SWRVE_REAL_TIME_USER_PROPERTIES,
+        SWRVE_REAL_TIME_USER_PROPERTIES_SGT,
+        SWRVE_PUSH_INBOX,
+        SWRVE_PUSH_INBOX_SGT,
+        SWRVE_CAMPAIGNS_STATE_PLIST
+    ];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *baseDir = [SwrveLocalStorage swrveAppSupportDir];
+
+    for (NSString *fileName in fileNames) {
+        NSString *path =
+            [baseDir stringByAppendingPathComponent:
+                [userId stringByAppendingString:fileName]];
+
+        if ([fileManager fileExistsAtPath:path]) {
+            NSError *error = nil;
+            [fileManager removeItemAtPath:path error:&error];
+            if (error) {
+                [SwrveLogger error:@"Failed to delete user file %@: %@", path, error.localizedDescription];
+            }
+        }
+    }
+}
+
++ (void)deleteUserInstallFileForUserId:(NSString *)userId {
+#if TARGET_OS_TV
+    NSString *installDateKey = [userId stringByAppendingString:SWRVE_INSTALL];
+    [[self defaults] removeObjectForKey:installDateKey];
+#else
+    NSString *filePath = [SwrveLocalStorage userInitDateFilePath:userId];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    if ([fileManager fileExistsAtPath:filePath]) {
+        NSError *error = nil;
+        [fileManager removeItemAtPath:filePath error:&error];
+        if (error) {
+            [SwrveLogger error:@"Failed to delete user install file %@: %@", filePath, error.localizedDescription];
+        }
+    }
+#endif
+}
+
+
+
 @end

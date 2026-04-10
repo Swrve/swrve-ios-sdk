@@ -7,17 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05206F69DCECCCAD6B74FAE7 /* Pods_CustomUserId.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEE6D5234AE377D825E1DC91 /* Pods_CustomUserId.framework */; };
 		3A9648C6232944780081D0AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9648C5232944780081D0AE /* AppDelegate.swift */; };
 		3A9648C8232944780081D0AE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9648C7232944780081D0AE /* ViewController.swift */; };
 		3A9648CB232944780081D0AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A9648C9232944780081D0AE /* Main.storyboard */; };
 		3A9648CD232944790081D0AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A9648CC232944790081D0AE /* Assets.xcassets */; };
 		3A9648D0232944790081D0AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3A9648CE232944790081D0AE /* LaunchScreen.storyboard */; };
-		F5260B6717D135CB2DBEB21F /* Pods_CustomUserId_Swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BCE062AE84ACA7A06D261B9 /* Pods_CustomUserId_Swift.framework */; };
 		F63C42DD2E74646A001180DD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63C42DC2E74646A001180DD /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2BCE062AE84ACA7A06D261B9 /* Pods_CustomUserId_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CustomUserId_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A9648C3232944780081D0AE /* CustomUserId.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomUserId.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A9648C5232944780081D0AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3A9648C7232944780081D0AE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -26,7 +25,10 @@
 		3A9648CF232944790081D0AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3A9648D1232944790081D0AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4B55F80F3C9D9E47CB1FBAC7 /* Pods_CustomUserId_ObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CustomUserId_ObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C9C4101BCD1DC030E5ACFB9 /* Pods-CustomUserId.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomUserId.release.xcconfig"; path = "Target Support Files/Pods-CustomUserId/Pods-CustomUserId.release.xcconfig"; sourceTree = "<group>"; };
+		BEE6D5234AE377D825E1DC91 /* Pods_CustomUserId.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CustomUserId.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F63C42DC2E74646A001180DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		F76E33FCDCF3B5C5B2583C81 /* Pods-CustomUserId.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CustomUserId.debug.xcconfig"; path = "Target Support Files/Pods-CustomUserId/Pods-CustomUserId.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,18 +36,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5260B6717D135CB2DBEB21F /* Pods_CustomUserId_Swift.framework in Frameworks */,
+				05206F69DCECCCAD6B74FAE7 /* Pods_CustomUserId.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		138D87C221E587202D0F9DD6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F76E33FCDCF3B5C5B2583C81 /* Pods-CustomUserId.debug.xcconfig */,
+				7C9C4101BCD1DC030E5ACFB9 /* Pods-CustomUserId.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../../../SwrvePrivateWorkspace/Pods;
+			sourceTree = "<group>";
+		};
 		332B17204CFFE5C5FEC6D7E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2BCE062AE84ACA7A06D261B9 /* Pods_CustomUserId_Swift.framework */,
 				4B55F80F3C9D9E47CB1FBAC7 /* Pods_CustomUserId_ObjC.framework */,
+				BEE6D5234AE377D825E1DC91 /* Pods_CustomUserId.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -56,6 +68,7 @@
 				3A9648C4232944780081D0AE /* CustomUserId */,
 				3A96488D232944330081D0AE /* Products */,
 				332B17204CFFE5C5FEC6D7E9 /* Frameworks */,
+				138D87C221E587202D0F9DD6 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -156,19 +169,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CustomUserId-Swift/Pods-CustomUserId-Swift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CustomUserId/Pods-CustomUserId-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CustomUserId-Swift/Pods-CustomUserId-Swift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CustomUserId/Pods-CustomUserId-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CustomUserId-Swift/Pods-CustomUserId-Swift-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CustomUserId/Pods-CustomUserId-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E301F6B99318A5FD252C2424 /* [CP] Check Pods Manifest.lock */ = {
@@ -186,7 +195,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CustomUserId-Swift-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-CustomUserId-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -343,6 +352,7 @@
 		};
 		3A9648D3232944790081D0AE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F76E33FCDCF3B5C5B2583C81 /* Pods-CustomUserId.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -364,6 +374,7 @@
 		};
 		3A9648D4232944790081D0AE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C9C4101BCD1DC030E5ACFB9 /* Pods-CustomUserId.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

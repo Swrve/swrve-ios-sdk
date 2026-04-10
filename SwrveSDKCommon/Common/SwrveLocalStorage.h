@@ -80,5 +80,6 @@ typedef enum SwrveTrackingState {
 + (void)savePushInboxHash:(NSString *)hasg forUserId:(NSString *)userId;
 + (NSString *)pushInboxHashForUserId:(NSString *)userId;
 + (void)removePushInboxHashForUserId:(NSString *)userId;
++ (void)deleteAllDataForUserId:(NSString *)userId;
 
 @end

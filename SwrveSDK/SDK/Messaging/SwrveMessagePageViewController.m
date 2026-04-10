@@ -1,6 +1,6 @@
 #import "SwrveMessagePageViewController.h"
 #import "Swrve.h"
-#import "SwrveButton.h"
+#import "SwrveButtonActions.h"
 #import "SwrveMessageController.h"
 #import "SwrveMessageUIView.h"
 

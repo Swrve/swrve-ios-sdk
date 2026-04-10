@@ -1,10 +1,10 @@
-#if __has_include(<SwrveSDK/SwrveCalibration.h>)
-#import <SwrveSDK/SwrveCalibration.h>
+#if __has_include(<SwrveSDK/SwrveMessageFormat.h>)
 #import <SwrveSDK/SwrveMessageFormat.h>
 #else
-#import "SwrveCalibration.h"
 #import "SwrveMessageFormat.h"
 #endif
+
+@class SwrveCalibration;
 
 NS_ASSUME_NONNULL_BEGIN
 

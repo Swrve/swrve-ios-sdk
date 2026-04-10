@@ -11,6 +11,15 @@
 #import "Swrve.h"
 #import <sys/time.h>
 
+//required for now to access SwrveSDK correctly (for stopTracking)
+#import "SwrveButtonActions.h"
+#import "SwrveInterfaceOrientation.h"
+#if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
+#import <SwrveSDK/SwrveSDK-Swift.h>
+#elif __has_include("SwrveSDK-Swift.h")
+#import "SwrveSDK-Swift.h"
+#endif
+
 @interface SwrveUser()
 
 @property (nonatomic, strong) NSString *swrveId;
@@ -26,6 +35,7 @@
 @property (strong, nonatomic) NSString *deviceUUID;
 @property (nonatomic) long appId;
 @property (strong, nonatomic) NSString *apiKey;
+@property (strong, nonatomic) NSMutableSet<NSString *> *disabledUserIds;
 
 - (void)switchUser:(NSString*)userId;
 
@@ -42,6 +52,7 @@
 @synthesize deviceUUID = _deviceUUID;
 @synthesize appId;
 @synthesize apiKey;
+@synthesize disabledUserIds;
 
 #pragma mark - Init Setup
 
@@ -51,9 +62,10 @@
         self.restClient = restClient;
         self.identityURL = [NSURL URLWithString:identityBaseUrl];
         self.deviceUUID = deviceUUID;
+        self.disabledUserIds = [NSMutableSet set];
         NSString* initialUser = [SwrveLocalStorage swrveUserId];
         if ((initialUser == nil) || [initialUser isEqualToString:@""]) {
-            initialUser = [[NSUUID UUID] UUIDString];
+            initialUser = [self generateSwrveUserId];
         }
         self.appId = _appId;
         self.apiKey = _apiKey;
@@ -62,6 +74,10 @@
         _trackingState = [SwrveLocalStorage trackingState];
     }
     return self;
+}
+
+- (NSString *)generateSwrveUserId {
+    return [[NSUUID UUID] UUIDString];
 }
 
 - (void)switchUser:(NSString*)userId {
@@ -184,6 +200,69 @@
             [SwrveLocalStorage saveSwrveUsers:data];
             return;
         }
+    }
+}
+
+- (void)handleDisableUser:(NSData *)data
+                   userId:(NSString *)disabledSwrveUserId
+     userDisabledDelegate:(id<SwrveUserDisabledDelegate>)delegate {
+    if (data == nil || disabledSwrveUserId == nil || [disabledSwrveUserId length] == 0) {
+        return;
+    }
+
+    NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    NSString *message = [responseDict objectForKey:@"message"];
+    if (![message isEqualToString:@"User access has been disabled"]) {
+        return;
+    }
+
+    // If already disabled and we receive another 401 for the same user, ignore it as the user is already disabled
+    // and we don't want to trigger the delegate twice for the same user.
+    if (![self addNewDisabledUserId:disabledSwrveUserId]) {
+        return;
+    }
+
+    // Before deleting all user data, get external Id to use in the listener onUserDisabled
+    NSString *externalUserId = @"";
+    SwrveUser *disabledUser = [self swrveUserWithId:disabledSwrveUserId];
+    if ([disabledUser externalId] != nil) {
+        externalUserId = [disabledUser.externalId copy];
+    }
+    [SwrveLocalStorage deleteAllDataForUserId:disabledSwrveUserId];
+    [self removeSwrveUserWithId:disabledSwrveUserId];
+
+    // Ensure the user has not changed to another user before calling stopTracking.
+    if ([self isCurrentUserDisabled]) {
+        [SwrveSDK stopTracking];
+        [self generateNewUser:disabledSwrveUserId];
+    }
+
+    if (delegate != nil) {
+        [delegate userDisabled:disabledSwrveUserId externalId:externalUserId];
+    }
+}
+
+- (BOOL)addNewDisabledUserId:(NSString *)userId {
+    @synchronized (self) {
+        if ([self.disabledUserIds containsObject:userId]) {
+            [SwrveLogger debug:@"Ignoring duplicate disabled user request for user id %@", userId];
+            return NO;
+        }
+
+        [self.disabledUserIds addObject:userId];
+        return YES;
+    }
+}
+
+- (void)generateNewUser:(NSString *)disabledSwrveUserId {
+    NSString *newSwrveUserId = [self generateSwrveUserId];
+    [self switchUser:newSwrveUserId];
+    [self persistUser];
+}
+
+- (BOOL)isCurrentUserDisabled {
+    @synchronized (self) {
+        return [self.disabledUserIds containsObject:self.userId];
     }
 }
 

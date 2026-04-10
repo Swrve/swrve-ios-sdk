@@ -223,6 +223,46 @@ class SwrveTestLocalStorage: XCTestCase {
         XCTAssertEqual(expectedFromBackup, data)
     }
 
+    func testDeleteAllDataForUserId() {
+        let userId = "TestUser"
+        let fm = FileManager.default
+
+        // Seed files
+        let files = [
+            SwrveLocalStorage.eventsFilePath(forUserId: userId),
+            SwrveLocalStorage.campaignsFilePath(forUserId: userId),
+            SwrveLocalStorage.userResourcesFilePath(forUserId: userId),
+            SwrveLocalStorage.pushInboxFilePath(forUserId: userId)
+        ]
+
+        for path in files {
+            XCTAssertNotNil(path)
+            try? "test".write(toFile: path!, atomically: true, encoding: .utf8)
+            XCTAssertTrue(fm.fileExists(atPath: path!))
+        }
+
+        // Seed defaults
+        SwrveLocalStorage.saveETag("etag", forUserId: userId)
+        SwrveLocalStorage.savePushInboxHash("hash", forUserId: userId)
+
+        XCTAssertNotNil(SwrveLocalStorage.eTag(forUserId: userId))
+        XCTAssertNotNil(SwrveLocalStorage.pushInboxHash(forUserId: userId))
+
+        // Act
+        SwrveLocalStorage.deleteAllData(forUserId: userId)
+
+        // Assert files removed
+        for path in files {
+            XCTAssertFalse(
+                fm.fileExists(atPath: path!),
+                "File should have been deleted: \(path!)")
+        }
+
+        // Assert defaults removed
+        XCTAssertNil(SwrveLocalStorage.eTag(forUserId: userId))
+        XCTAssertNil(SwrveLocalStorage.pushInboxHash(forUserId: userId))
+    }
+
     enum SwrveTrackingStateSwift: Int {
         case UNKNOWN = 0
         case STARTED = 1

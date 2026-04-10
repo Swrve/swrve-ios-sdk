@@ -16,8 +16,36 @@
 #import "SwrveSDK_iOSTests-Swift.h"
 #endif
 
+@interface SwrveSDK (InternalAccess)
++ (void)resetSwrveSharedInstance;
++ (void)addSharedInstance:(Swrve *)instance;
+@end
+
 @interface Swrve (Internal)
 @property(atomic) NSDate *campaignsAndResourcesLastRefreshed;
+@property(atomic) id profileManager;
+@end
+
+@interface NSObject (SwrveProfileManagerInternal)
+- (void)switchUser:(NSString *)userId;
+- (void)persistUser;
+- (void)generateNewUser:(NSString *)disabledSwrveUserId;
+@end
+
+@interface SwrveUserDisabledDelegateSpy : NSObject <SwrveUserDisabledDelegate>
+@property(nonatomic) NSInteger callCount;
+@property(nonatomic, copy) NSString *disabledUserId;
+@property(nonatomic, copy) NSString *externalUserId;
+@end
+
+@implementation SwrveUserDisabledDelegateSpy
+
+- (void)userDisabled:(NSString *)userId externalId:(NSString *)externalId {
+    self.callCount += 1;
+    self.disabledUserId = userId;
+    self.externalUserId = externalId;
+}
+
 @end
 
 @interface SwrveTestRefreshContent : XCTestCase
@@ -110,13 +138,131 @@
 }
 
 - (id)swrveMockWithResponseCode:(int)httpCode responseBody:(NSString *)responseBody {
+    return [self swrveMockWithResponseCode:httpCode responseBody:responseBody config:[SwrveConfig new]];
+}
+
+- (id)swrveMockWithResponseCode:(int)httpCode responseBody:(NSString *)responseBody config:(SwrveConfig *)config {
     NSData *mockResponseData = [responseBody dataUsingEncoding:NSUTF8StringEncoding];
     Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:httpCode mockData:mockResponseData];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-value"
-    [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+    [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
 #pragma clang diagnostic pop
+    [SwrveSDK resetSwrveSharedInstance];
+    [SwrveSDK addSharedInstance:swrveMock];
     return swrveMock;
+}
+
+- (NSArray<NSString *> *)seedPathsForUserId:(NSString *)userId {
+    return @[
+        [SwrveLocalStorage eventsFilePathForUserId:userId],
+        [SwrveLocalStorage campaignsFilePathForUserId:userId],
+        [SwrveLocalStorage campaignsSignatureFilePathForUserId:userId],
+        [SwrveLocalStorage userResourcesFilePathForUserId:userId],
+        [SwrveLocalStorage pushInboxFilePathForUserId:userId],
+        [SwrveLocalStorage offlineCampaignsFilePathForUserId:userId]
+    ];
+}
+
+- (void)seedUserDataForUserId:(NSString *)userId {
+    for (NSString *path in [self seedPathsForUserId:userId]) {
+        [@"test" writeToFile:path
+                  atomically:YES
+                    encoding:NSUTF8StringEncoding
+                       error:nil];
+        XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:path]);
+    }
+
+    [SwrveLocalStorage saveETag:@"etag" forUserId:userId];
+    [SwrveLocalStorage savePushInboxHash:@"hash" forUserId:userId];
+}
+
+- (void)assertUserDataDeletedForUserId:(NSString *)userId {
+    for (NSString *path in [self seedPathsForUserId:userId]) {
+        XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:path],
+                       @"Expected file to be deleted: %@", path);
+    }
+
+    XCTAssertNil([SwrveLocalStorage eTagForUserId:userId]);
+    XCTAssertNil([SwrveLocalStorage pushInboxHashForUserId:userId]);
+}
+
+- (void)testEvent401DisablesCurrentUser {
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    SwrveUserDisabledDelegateSpy *userDisabledDelegate = [SwrveUserDisabledDelegateSpy new];
+    config.userDisabledDelegate = userDisabledDelegate;
+
+    Swrve *swrve = [self swrveMockWithResponseCode:200 responseBody:@"{}" config:config];
+    NSString *userIdBefore = swrve.userID;
+    NSData *responseData = [@"{ \"code\" : 401, \"message\" : \"User access has been disabled\"}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    [self seedUserDataForUserId:userIdBefore];
+
+    [swrve.profileManager handleDisableUser:responseData
+                                     userId:userIdBefore
+                       userDisabledDelegate:userDisabledDelegate];
+
+    XCTAssertEqual(userDisabledDelegate.callCount, 1);
+    XCTAssertEqualObjects(userDisabledDelegate.disabledUserId, userIdBefore);
+    XCTAssertNotEqualObjects(swrve.userID, userIdBefore);
+    XCTAssertFalse([swrve started]);
+    [self assertUserDataDeletedForUserId:userIdBefore];
+}
+
+
+- (void)testHandleDisableUserDuplicateDisabledResponseIgnored {
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    SwrveUserDisabledDelegateSpy *userDisabledDelegate = [SwrveUserDisabledDelegateSpy new];
+    config.userDisabledDelegate = userDisabledDelegate;
+
+    Swrve *swrve = [self swrveMockWithResponseCode:200 responseBody:@"{}" config:config];
+    NSString *userIdBefore = swrve.userID;
+    NSData *responseData = [@"{ \"code\" : 401, \"message\" : \"User access has been disabled\"}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    [self seedUserDataForUserId:userIdBefore];
+
+    [swrve.profileManager handleDisableUser:responseData
+                                     userId:userIdBefore
+                       userDisabledDelegate:userDisabledDelegate];
+    NSString *userIdAfterFirst401 = swrve.userID;
+
+    [swrve.profileManager handleDisableUser:responseData
+                                     userId:userIdBefore
+                       userDisabledDelegate:userDisabledDelegate];
+
+    XCTAssertEqual(userDisabledDelegate.callCount, 1);
+    XCTAssertEqualObjects(userDisabledDelegate.disabledUserId, userIdBefore);
+    XCTAssertEqualObjects(swrve.userID, userIdAfterFirst401);
+    XCTAssertFalse([swrve started]);
+    [self assertUserDataDeletedForUserId:userIdBefore];
+}
+
+- (void)testHandleDisableUserDoesNotStopTrackingWhenCurrentUserChanged {
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    SwrveUserDisabledDelegateSpy *userDisabledDelegate = [SwrveUserDisabledDelegateSpy new];
+    config.userDisabledDelegate = userDisabledDelegate;
+
+    Swrve *swrve = [self swrveMockWithResponseCode:200 responseBody:@"{}" config:config];
+    NSString *disabledUserId = swrve.userID;
+    NSString *activeUserId = @"456";
+    NSData *responseData = [@"{ \"code\" : 401, \"message\" : \"User access has been disabled\"}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    [self seedUserDataForUserId:disabledUserId];
+
+    [swrve.profileManager switchUser:activeUserId];
+    [swrve.profileManager persistUser];
+    XCTAssertEqualObjects(swrve.userID, activeUserId);
+    XCTAssertTrue([swrve started]);
+
+    [swrve.profileManager handleDisableUser:responseData
+                                     userId:disabledUserId
+                       userDisabledDelegate:userDisabledDelegate];
+
+    XCTAssertEqual(userDisabledDelegate.callCount, 1);
+    XCTAssertEqualObjects(userDisabledDelegate.disabledUserId, disabledUserId);
+    XCTAssertEqualObjects(swrve.userID, activeUserId);
+    XCTAssertTrue([swrve started]);
+    [self assertUserDataDeletedForUserId:disabledUserId];
 }
 
 @end

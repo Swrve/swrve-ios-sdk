@@ -29,6 +29,16 @@ import SwrveSDK
     @objc optional func handleDeeplink(_ url: NSURL)
 }
 
+@objc public protocol SwrveUserDisabledDelegate: NSObjectProtocol {
+    ///Called when a user has been disabled.
+
+    /// - Parameters:
+    ///   - swrveUserId: The Swrve generated user identifier that has been disabled.
+    ///   - externalId:  The external user identifier associated with the user.
+    ///                  If no external ID is present, this value will be an empty string (`""`), not `nil`.
+    @objc optional func userDisabled(_ swrveUserId: String, externalId: String?)
+}
+
 /// Defines the block signature for being notified when the resources have been updated with new content.
 public typealias SwrveResourcesUpdatedListener = () -> Void
 
@@ -164,6 +174,9 @@ public typealias SwrveResourcesUpdatedListener = () -> Void
 
     /// Implement this delegate to listen to our rest client calls for authentication challenges.
     @objc public weak var urlSessionDelegate: URLSessionDelegate?
+
+    /// Implement this delegate to be notified if a user gets block listed due to GDPR request.
+    @objc public weak var userDisabledDelegate: SwrveUserDisabledDelegate?
 
     @objc public override init() {
         self.language = Locale.preferredLanguages.first

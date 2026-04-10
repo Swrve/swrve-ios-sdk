@@ -2,11 +2,9 @@
 
 #if __has_include(<SwrveSDK/SwrveInterfaceOrientation.h>)
 #import <SwrveSDK/SwrveInterfaceOrientation.h>
-#import <SwrveSDK/SwrveCalibration.h>
 #import <SwrveSDK/SwrveStorySettings.h>
 #else
 #import "SwrveInterfaceOrientation.h"
-#import "SwrveCalibration.h"
 #import "SwrveStorySettings.h"
 #endif
 
@@ -19,6 +17,7 @@
 
 @class SwrveMessage;
 @class SwrveMessageController;
+@class SwrveCalibration;
 
 /*! In-app message format */
 @interface SwrveMessageFormat : NSObject

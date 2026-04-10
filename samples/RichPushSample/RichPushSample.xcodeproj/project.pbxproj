@@ -43,7 +43,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A2A7349EFE7845DB1FE1599 /* Pods-RichPushSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample.debug.xcconfig"; path = "../../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-RichPushSample/Pods-RichPushSample.debug.xcconfig"; sourceTree = "<group>"; };
 		2E5CC04C9B87976BB0B6779A /* Pods_RichPushSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		47CA30A5F6654893BF792D4E /* Pods-RichPushSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSample.release.xcconfig"; path = "../../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-RichPushSample/Pods-RichPushSample.release.xcconfig"; sourceTree = "<group>"; };
 		5B402B6F20F35E4500601BA4 /* RichPushSampleServiceExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSampleServiceExtension.entitlements; sourceTree = "<group>"; };
 		5B402BB320F36E6800601BA4 /* RichPushSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RichPushSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B402BB520F36E6800601BA4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -55,6 +57,8 @@
 		5B402BCF20F36F6100601BA4 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		5B402BD120F36F6100601BA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5B402BD920F3712600601BA4 /* RichPushSample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RichPushSample.entitlements; sourceTree = "<group>"; };
+		96D0BE178A1191CDC5214ABC /* Pods-RichPushSampleServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension.release.xcconfig"; path = "../../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-RichPushSampleServiceExtension/Pods-RichPushSampleServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
+		C1E41276A34BD10688F7A07C /* Pods-RichPushSampleServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RichPushSampleServiceExtension.debug.xcconfig"; path = "../../../../SwrvePrivateWorkspace/Pods/Target Support Files/Pods-RichPushSampleServiceExtension/Pods-RichPushSampleServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		F39C72B64AEDE18D061ED17E /* Pods_RichPushSampleServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RichPushSampleServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F63C42DA2E74645A001180DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -85,6 +89,7 @@
 				5B402B3C20F35D3D00601BA4 /* RichPushSample */,
 				5273868A1ECA385E0016D70E /* Products */,
 				D191EEE65EEEE5DA8BDAD9E4 /* Frameworks */,
+				78BF4070F69E5F08EBECB0BC /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,6 +125,18 @@
 				5B402B6F20F35E4500601BA4 /* RichPushSampleServiceExtension.entitlements */,
 			);
 			path = RichPushSampleServiceExtension;
+			sourceTree = "<group>";
+		};
+		78BF4070F69E5F08EBECB0BC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0A2A7349EFE7845DB1FE1599 /* Pods-RichPushSample.debug.xcconfig */,
+				47CA30A5F6654893BF792D4E /* Pods-RichPushSample.release.xcconfig */,
+				C1E41276A34BD10688F7A07C /* Pods-RichPushSampleServiceExtension.debug.xcconfig */,
+				96D0BE178A1191CDC5214ABC /* Pods-RichPushSampleServiceExtension.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		D191EEE65EEEE5DA8BDAD9E4 /* Frameworks */ = {
@@ -263,9 +280,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RichPushSample/Pods-RichPushSample-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage-iOS/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDK-iOS/SwrveSDK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon-iOS/SwrveSDKCommon.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -464,6 +481,7 @@
 		};
 		5B402BC320F36E6A00601BA4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A2A7349EFE7845DB1FE1599 /* Pods-RichPushSample.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -496,6 +514,7 @@
 		};
 		5B402BC420F36E6A00601BA4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47CA30A5F6654893BF792D4E /* Pods-RichPushSample.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -527,6 +546,7 @@
 		};
 		5B402BD620F36F6100601BA4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C1E41276A34BD10688F7A07C /* Pods-RichPushSampleServiceExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -560,6 +580,7 @@
 		};
 		5B402BD720F36F6100601BA4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 96D0BE178A1191CDC5214ABC /* Pods-RichPushSampleServiceExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;

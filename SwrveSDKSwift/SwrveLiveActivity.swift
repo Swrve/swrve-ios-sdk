@@ -21,7 +21,7 @@ public protocol SwrveLiveActivityAttributes: ActivityAttributes {
 
     private static let storage = SwrveLiveActivityStorage()
     private static var currentPushToStartToken: String? = {
-        return storage.fetchPushToStartToken()
+        storage.fetchPushToStartToken()
     }()
 
     private static var activityUpdateTokenDict: [String: String] = [:]

@@ -120,6 +120,15 @@ enum {
 - (SwrveUser *)swrveUserWithId:(NSString *)aUserId;
 
 - (void)removeSwrveUserWithId:(NSString *)aUserId;
+
+- (NSString *)generateSwrveUserId;
+
+- (BOOL)isCurrentUserDisabled;
+
+- (void)generateNewUser:(NSString *)disabledSwrveUserId;
+
+- (BOOL)addNewDisabledUserId:(NSString *)userId;
+
 @end
 
 @interface SwrveUser ()
@@ -1017,7 +1026,7 @@ enum {
     return [NSURL URLWithString:queryString relativeToURL:self.baseCampaignsAndResourcesURL];
 }
 
-- (void) handleRefreshContentResponse:(NSURLResponse *)response data:(NSData *)data {
+- (void)handleRefreshContentResponse:(NSURLResponse *)response data:(NSData *)data {
     if (![self isValidJson:data]) {
         [SwrveLogger error:@"Invalid JSON received for user resources and campaigns", nil];
         return;
@@ -2146,6 +2155,9 @@ enum HttpStatus {
                 break;
             case HTTP_CLIENT_ERROR:
                 [SwrveLogger error:@"HTTP Error - not adding events back into the queue: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+                [self.profileManager handleDisableUser:data
+                                                userId:swrveUserIdForEventsSent
+                                  userDisabledDelegate:self.config.userDisabledDelegate];
                 break;
             case HTTP_SERVER_ERROR:
             case HTTP_CLIENT_ERROR_RETRY:
@@ -2941,12 +2953,16 @@ enum HttpStatus {
     [profileManager setTrackingState:STOPPED];
     [SwrveSEConfig saveTrackingStateStopped:self.appGroupIdentifier isTrackingStateStopped:YES];
 
-    NSDictionary *deviceInfo = [self deviceInfo];
-    [self mergeWithCurrentDeviceInfo:deviceInfo];
-    [self logDeviceInfo:deviceInfo];
+    // Don't send device info if the user is disabled, as it will cause another 401 response.
+    if (![self.profileManager isCurrentUserDisabled]) {
+        //Queue device info with stopped tracking state,
+        NSDictionary *deviceInfo = [self deviceInfo];
+        [self mergeWithCurrentDeviceInfo:deviceInfo];
+        [self logDeviceInfo:deviceInfo];
 
-    // This call isn't blocked when Stopped and is not publicly exposed.
-    [self sendQueuedEventsWithCallback:nil eventFileCallback:nil forceFlush:true];
+        // This call isn't blocked when Stopped and is not publicly exposed.
+        [self sendQueuedEventsWithCallback:nil eventFileCallback:nil forceFlush:true];
+    }
 
     [self stopCampaignsAndResourcesTimer];
 
