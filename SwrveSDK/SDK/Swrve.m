@@ -1078,13 +1078,13 @@ enum {
     
     NSNumber *flushFrequency = [responseDict objectForKey:@"flush_frequency"];
     if (flushFrequency != nil) {
-        self.campaignsAndResourcesFlushFrequency = [flushFrequency integerValue] / 1000;
+        self.campaignsAndResourcesFlushFrequency = (double)[flushFrequency integerValue] / 1000;
         [SwrveLocalStorage saveFlushFrequency:self.campaignsAndResourcesFlushFrequency];
     }
     
     NSNumber *flushDelay = [responseDict objectForKey:@"flush_refresh_delay"];
     if (flushDelay != nil) {
-        self.campaignsAndResourcesFlushRefreshDelay = [flushDelay integerValue] / 1000;
+        self.campaignsAndResourcesFlushRefreshDelay = (double)[flushDelay integerValue] / 1000;
         [SwrveLocalStorage saveflushDelay:self.campaignsAndResourcesFlushRefreshDelay];
     }
     
@@ -1620,7 +1620,7 @@ enum {
         [disableAutoshowInvocation setSelector:autoShowSelector];
         [disableAutoshowInvocation setTarget:self.messaging];
         [disableAutoshowInvocation setArgument:&arg atIndex:2];
-        [NSTimer scheduledTimerWithTimeInterval:(self.config.autoShowMessagesMaxDelay / 1000) invocation:disableAutoshowInvocation repeats:NO];
+        [NSTimer scheduledTimerWithTimeInterval:((NSTimeInterval)self.config.autoShowMessagesMaxDelay / 1000) invocation:disableAutoshowInvocation repeats:NO];
     }
 }
 
@@ -2717,7 +2717,7 @@ enum HttpStatus {
         shouldReIdentify = YES;
     } else {
         NSDate *currentDate = [self getNow];
-        NSTimeInterval identifyRefreshPeriodSeconds = self.identifyRefreshPeriod * 24 * 60 * 60;
+        NSTimeInterval identifyRefreshPeriodSeconds = (NSTimeInterval)self.identifyRefreshPeriod * 24 * 60 * 60;
         NSDate *expirationDate = [identifyDate dateByAddingTimeInterval:identifyRefreshPeriodSeconds];
         if ([currentDate compare:expirationDate] == NSOrderedSame || [currentDate compare:expirationDate] == NSOrderedDescending) {
             [SwrveLogger debug:@"Identify date expired. Will re-identify now.", nil];

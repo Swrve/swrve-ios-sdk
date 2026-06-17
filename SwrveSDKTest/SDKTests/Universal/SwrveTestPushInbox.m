@@ -294,6 +294,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     [eventData setValue:@"push_inbox" forKey:@"campaignType"];
     NSMutableDictionary *payload = [NSMutableDictionary new];
     [payload setValue:@"1" forKey:@"messageId"];
+    [payload setValue:@"test-tracking-data" forKey:@"trackingData"];
     [eventData setValue:payload forKey:@"payload"];
     
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
@@ -336,6 +337,28 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     OCMVerifyAllWithDelay(swrveMock, 1);
 }
 
+- (void) testRead_noTrackingData {
+    Swrve *swrveMock = [self swrveMockWithResponseCode:200 inboxUpdateResponseBody:RESPONSE_MODIFED];
+    SwrvePushInboxMessage *message = [[swrveMock pushInbox] getPushInboxMessage:2];
+    XCTAssertNotNil(message);
+
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:@"22" forKey:@"id"];
+    [eventData setValue:@"read" forKey:@"actionType"];
+    [eventData setValue:@"push_inbox" forKey:@"campaignType"];
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setValue:@"2" forKey:@"messageId"];
+    // no trackingData key — message 2 has no mg_tracking_data
+    [eventData setValue:payload forKey:@"payload"];
+
+    OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
+
+    id mockInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxDelegate));
+    [swrveMock readPushInboxMessage:2 listener:mockInboxDelegate];
+
+    OCMVerifyAllWithDelay(swrveMock, 1);
+}
+
 - (void) testEngage_restSuccess {
     Swrve *swrveMock = [self swrveMockWithResponseCode:200 inboxUpdateResponseBody:RESPONSE_MODIFED];
     SwrvePushInboxMessage *message = [[swrveMock pushInbox] getPushInboxMessage:1];
@@ -350,6 +373,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     NSMutableDictionary *firstPayload = [NSMutableDictionary new];
     [firstPayload setValue:@"unread" forKey:@"state"];
     [firstPayload setValue:@"1" forKey:@"messageId"];
+    [firstPayload setValue:@"test-tracking-data" forKey:@"trackingData"];
     [firstEvent setValue:firstPayload forKey:@"payload"];
     
     NSMutableDictionary *secondEvent = [NSMutableDictionary new];
@@ -358,6 +382,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     [secondEvent setValue:@"push_inbox" forKey:@"campaignType"];
     NSMutableDictionary *secondPayload = [NSMutableDictionary new];
     [secondPayload setValue:@"1" forKey:@"messageId"];
+    [secondPayload setValue:@"test-tracking-data" forKey:@"trackingData"];
     [secondEvent setValue:secondPayload forKey:@"payload"];
     
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:firstEvent triggerCallback:false]);
@@ -425,6 +450,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     NSMutableDictionary *payload = [NSMutableDictionary new];
     [payload setValue:@"unread" forKey:@"state"];
     [payload setValue:@"1" forKey:@"messageId"];
+    [payload setValue:@"test-tracking-data" forKey:@"trackingData"];
     [eventData setValue:payload forKey:@"payload"];
     
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
@@ -458,6 +484,7 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     NSMutableDictionary *payload = [NSMutableDictionary new];
     [payload setValue:@"unread" forKey:@"state"];
     [payload setValue:@"1" forKey:@"messageId"];
+    [payload setValue:@"test-tracking-data" forKey:@"trackingData"];
     [eventData setValue:payload forKey:@"payload"];
     
     OCMExpect([swrveMock queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false]);
@@ -593,6 +620,10 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     id customerJson = message0.customerJson;
     XCTAssert([customerJson isKindOfClass:[NSDictionary class]], @"The CustomerJson is not a Json Dictionary Object!");
     XCTAssertTrue([jsonDict isEqualToDictionary:(NSDictionary *)customerJson]);
+    XCTAssertEqualObjects(message0.trackingData, @"test-tracking-data");
+
+    SwrvePushInboxMessage *message1 = [inboxMessages objectAtIndex:1];
+    XCTAssertEqualObjects(message1.trackingData, @"");
     return true;
 }
 

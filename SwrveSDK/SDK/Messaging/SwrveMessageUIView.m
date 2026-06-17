@@ -72,6 +72,8 @@
 @property(nonatomic) CGFloat centerY;
 @property(nonatomic) CGFloat renderScale;
 @property(nonatomic) SwrveVideoPlayerView *videoPlayerView;
+@property(nonatomic) BOOL freemarkerEnabled;
+@property(nonatomic) BOOL useLocalTimezone;
 @end
 
 @implementation SwrveMessageUIView
@@ -86,6 +88,9 @@
 @synthesize centerY;
 @synthesize renderScale;
 @synthesize videoPlayerView;
+@synthesize freemarkerEnabled;
+@synthesize useLocalTimezone;
+@synthesize renderError;
 
 static CGPoint scaled(CGPoint point, float scale) {
     return CGPointMake(point.x * scale, point.y * scale);
@@ -105,6 +110,10 @@ static CGPoint scaled(CGPoint point, float scale) {
         self.controller = delegate;
         self.personalization = personalizationDict;
         self.inAppConfig = config;
+        if ([delegate isKindOfClass:[SwrveMessageViewController class]]) {
+            self.freemarkerEnabled = ((SwrveMessageViewController *)delegate).message.campaign.freemarkerEnabled;
+            self.useLocalTimezone = ((SwrveMessageViewController *)delegate).message.campaign.useLocalTimezone;
+        }
 
         self.centerX = sizeParent.width / 2;
         self.centerY = sizeParent.height / 2;
@@ -116,6 +125,12 @@ static CGPoint scaled(CGPoint point, float scale) {
         NSArray *pageElements = [self pageElements];
         int buttonTag = 0;
         for (id obj in pageElements) {
+            if (![self shouldRenderElement:obj]) {
+                if (self.renderError) {
+                    break;
+                }
+                continue;
+            }
             if ([obj isKindOfClass:[SwrveButton class]]) {
                 [self addButton:(SwrveButton *) obj buttonTag:buttonTag];
                 buttonTag++;
@@ -129,6 +144,29 @@ static CGPoint scaled(CGPoint point, float scale) {
         }
     }
     return self;
+}
+
+
+- (BOOL)shouldRenderElement:(id)element {
+    NSString *visibleIf = @"";
+    if ([element isKindOfClass:[SwrveButton class]]) {
+        visibleIf = ((SwrveButton *)element).visibleIf;
+    } else if ([element isKindOfClass:[SwrveImage class]]) {
+        visibleIf = ((SwrveImage *)element).visibleIf;
+    }
+    if (visibleIf.length == 0) {
+        return YES;
+    }
+    NSString *template = [NSString stringWithFormat:@"<#if %@>true<#else>false</#if>", visibleIf];
+    NSError *error = nil;
+    NSString *result = [SwrveFreemarkerEvaluator evaluate:template properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+    if (error != nil || result == nil) {
+        NSString *errorDetail = error != nil ? error.localizedDescription : @"evaluator returned nil result";
+        [SwrveLogger error:@"visible_if evaluation failed for condition '%@': %@", visibleIf, errorDetail];
+        self.renderError = YES;
+        return NO;
+    }
+    return [result isEqualToString:@"true"];
 }
 
 - (NSArray *)pageElements {
@@ -193,8 +231,12 @@ static CGPoint scaled(CGPoint point, float scale) {
                                                         defaultForegroundColor:self.inAppConfig.personalizationForegroundColor
                                                         defaultBackgroundColor:self.inAppConfig.personalizationBackgroundColor];
 
-    NSError *error;
-    style.text = [TextTemplating templatedTextFromString:style.text withProperties:self.personalization andError:&error];
+    NSError *error = nil;
+    if (self.freemarkerEnabled) {
+        style.text = [SwrveFreemarkerEvaluator evaluate:style.text properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+    } else {
+        style.text = [TextTemplating templatedTextFromString:style.text withProperties:self.personalization andError:&error];
+    }
     if (error != nil) {
         [SwrveLogger error:@"SwrveMessageUIView:Error applying IAM text personalization: %@", error];
         return;
@@ -214,8 +256,12 @@ static CGPoint scaled(CGPoint point, float scale) {
     NSString *textStr = nil;
     NSString *urlAssetSha1 = nil;
     if (swrveImage.text) {
-        NSError *error;
-        textStr = [TextTemplating templatedTextFromString:swrveImage.text withProperties:self.personalization andError:&error];
+        NSError *error = nil;
+        if (self.freemarkerEnabled) {
+            textStr = [SwrveFreemarkerEvaluator evaluate:swrveImage.text properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+        } else {
+            textStr = [TextTemplating templatedTextFromString:swrveImage.text withProperties:self.personalization andError:&error];
+        }
         if (error != nil) {
             [SwrveLogger error:@"%@", error];
         }
@@ -321,8 +367,12 @@ static CGPoint scaled(CGPoint point, float scale) {
     NSString *actionStr = nil;
     NSString *urlAssetSha1 = nil;
     if (swrveButton.text) {
-        NSError *error;
-        textStr = [TextTemplating templatedTextFromString:swrveButton.text withProperties:self.personalization andError:&error];
+        NSError *error = nil;
+        if (self.freemarkerEnabled) {
+            textStr = [SwrveFreemarkerEvaluator evaluate:swrveButton.text properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+        } else {
+            textStr = [TextTemplating templatedTextFromString:swrveButton.text withProperties:self.personalization andError:&error];
+        }
         if (error != nil) {
             [SwrveLogger error:@"%@", error];
         }
@@ -338,8 +388,12 @@ static CGPoint scaled(CGPoint point, float scale) {
     }
 
     if (swrveButton.actionType == kSwrveActionClipboard || swrveButton.actionType == kSwrveActionCustom) {
-        NSError *error;
-        actionStr = [TextTemplating templatedTextFromString:swrveButton.actionString withProperties:self.personalization andError:&error];
+        NSError *error = nil;
+        if (self.freemarkerEnabled) {
+            actionStr = [SwrveFreemarkerEvaluator evaluate:swrveButton.actionString properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+        } else {
+            actionStr = [TextTemplating templatedTextFromString:swrveButton.actionString withProperties:self.personalization andError:&error];
+        }
         if (error != nil) {
             [SwrveLogger error:@"%@", error];
         }
@@ -476,8 +530,13 @@ static CGPoint scaled(CGPoint point, float scale) {
         return urlAssetSha1;
     }
 
-    NSError *error;
-    NSString *resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:self.personalization andError:&error];
+    NSError *error = nil;
+    NSString *resolvedUrl = nil;
+    if (self.freemarkerEnabled) {
+        resolvedUrl = [SwrveFreemarkerEvaluator evaluate:assetUrl properties:(NSDictionary<NSString*, NSString*>*)self.personalization useLocalTimezone:self.useLocalTimezone error:&error];
+    } else {
+        resolvedUrl = [TextTemplating templatedTextFromString:assetUrl withProperties:self.personalization andError:&error];
+    }
     if (error != nil || resolvedUrl == nil) {
         [SwrveLogger debug:@"Could not resolve url with personalization: %@", assetUrl];
         [qaInfo setReason:@"Could not resolve url personalization"];
@@ -496,12 +555,19 @@ static CGPoint scaled(CGPoint point, float scale) {
 -(void)addAccessibilityText:(NSString *)accessibilityText backupText:(NSString *)backupText withPersonalization:(NSDictionary *)personalizationDict toView:(UIView *)view {
     view.isAccessibilityElement = true;
     if (accessibilityText != nil && ![accessibilityText isEqualToString:@""]) {
-        NSError *error;
-        NSString *personalizedAccessibilityText = [TextTemplating templatedTextFromString:accessibilityText withProperties:personalizationDict andError:&error];
-        if (error == nil) {
-            view.accessibilityLabel = personalizedAccessibilityText;
+        NSError *error = nil;
+        NSString *personalizedAccessibilityText = nil;
+        if (self.freemarkerEnabled) {
+            personalizedAccessibilityText = [SwrveFreemarkerEvaluator evaluate:accessibilityText properties:(NSDictionary<NSString*, NSString*>*)personalizationDict useLocalTimezone:self.useLocalTimezone error:&error];
         } else {
+            personalizedAccessibilityText = [TextTemplating templatedTextFromString:accessibilityText withProperties:personalizationDict andError:&error];
+        }
+        if (error != nil) {
+            personalizedAccessibilityText = nil;
             [SwrveLogger error:@"Adding accessibility text error: %@", error];
+        }
+        if (personalizedAccessibilityText != nil) {
+            view.accessibilityLabel = personalizedAccessibilityText;
         }
     } else {
         if (backupText != nil && ![backupText isEqualToString:@""]) {

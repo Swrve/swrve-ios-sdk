@@ -1,0 +1,22 @@
+[string-concat]
+String concat FIRST_NAME + LOYALTY_POINTS:  Jane  — 850 pts
+[if-elseif-else]
+if/elseif/else LOYALTY_POINTS?number gte 500: branch 2
+[compound-boolean]
+
+[has-content]
+promo_code?has_content: false
+[switch]
+switch country: UK matched
+[has-content-fallback]
+has_content fallback: property missing, fallback used
+[boolean-exists]
+is_premium?? exists + boolean: property exists and is false
+[less-than]
+loyalty_points?number lt 500: false
+[nested-switch-if]
+nested if/switch: UK branch
+[exists]
+promo_code?? exists: false
+[trim]
+trim built-in: Jane

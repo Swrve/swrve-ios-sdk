@@ -50,6 +50,7 @@ extension HTTPURLResponse {
     private let EVENT_ACTION_TYPE_PIM_DELETE = "delete"
     private let EVENT_PAYLOAD_PIM_STATE = "state"
     private let EVENT_PAYLOAD_PIM_MESSAGE_ID = "messageId"
+    private let EVENT_PAYLOAD_TRACKING_DATA = "trackingData"
 
     private let serialQueue = DispatchQueue(label: "PushInbox")
     private var inbox: [SwrvePushInboxMessage] = []
@@ -220,7 +221,7 @@ extension HTTPURLResponse {
     @objc public func engageMessage(_ messageId: UInt64, listener: SwrvePushInboxDelegate?) {
 
         if let message = getPushInboxMessage(messageId) {
-            sendEvent(EVENT_ACTION_TYPE_PIM_ENGAGED, message.variantId, message.messageId, message.state)
+            sendEvent(EVENT_ACTION_TYPE_PIM_ENGAGED, message.variantId, message.messageId, message.state, message.trackingData)
         }
 
         readMessage(messageId, listener: listener)
@@ -292,9 +293,9 @@ extension HTTPURLResponse {
             jsonState == "modified"
         {
             if state == SwrvePushInboxMessageState.READ {
-                self.sendEvent(self.EVENT_ACTION_TYPE_PIM_READ, message.variantId, messageId, message.state)
+                self.sendEvent(self.EVENT_ACTION_TYPE_PIM_READ, message.variantId, messageId, message.state, message.trackingData)
             } else if state == SwrvePushInboxMessageState.DELETED {
-                self.sendEvent(self.EVENT_ACTION_TYPE_PIM_DELETE, message.variantId, messageId, message.state)
+                self.sendEvent(self.EVENT_ACTION_TYPE_PIM_DELETE, message.variantId, messageId, message.state, message.trackingData)
             }
         }
 
@@ -310,7 +311,9 @@ extension HTTPURLResponse {
         }
     }
 
-    private func sendEvent(_ actionType: String, _ variantId: UInt64, _ messageId: UInt64, _ state: SwrvePushInboxMessageState) {
+    private func sendEvent(
+        _ actionType: String, _ variantId: UInt64, _ messageId: UInt64, _ state: SwrvePushInboxMessageState, _ trackingData: String
+    ) {
         guard let sdkCommon = SwrveCommon.sharedInstance() else {
             SwrveLogger.logError("SwrveCommon instance not found - Send Event failed.")
             return
@@ -320,6 +323,9 @@ extension HTTPURLResponse {
         if actionType != EVENT_ACTION_TYPE_PIM_READ {
             let stateString = state == SwrvePushInboxMessageState.READ ? "read" : "unread"
             payload[EVENT_PAYLOAD_PIM_STATE] = stateString
+        }
+        if !trackingData.isEmpty {
+            payload[EVENT_PAYLOAD_TRACKING_DATA] = trackingData
         }
 
         let eventDict = NSMutableDictionary()

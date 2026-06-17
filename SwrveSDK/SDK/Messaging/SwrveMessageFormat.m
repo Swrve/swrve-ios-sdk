@@ -26,7 +26,7 @@ static CGFloat extractHex(NSString *color, NSUInteger index) {
     NSString *componentString = [color substringWithRange:NSMakeRange(index, 2)];
     unsigned hexResult;
     [[NSScanner scannerWithString:componentString] scanHexInt:&hexResult];
-    return hexResult / 255.0f;
+    return (float)hexResult / 255.0f;
 }
 
 - (id)initFromJson:(NSDictionary *)json campaignId:(long)campaignId messageId:(long)messageId {

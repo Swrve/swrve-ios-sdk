@@ -31,6 +31,14 @@
 		3A21DCDC29C8A980000657AD /* SwrveUITextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A21DCDA29C8A980000657AD /* SwrveUITextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A21DCDD29C8A98A000657AD /* SwrveUITextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A21DCDA29C8A980000657AD /* SwrveUITextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A21DCDE29C8A998000657AD /* SwrveUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A21DCD929C8A980000657AD /* SwrveUITextView.m */; };
+		3A3212372F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */; };
+		3AAEF9C72F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */; };
+		3AAEF9C82F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */; };
+		3AAEF9C92F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */; };
+		3AAEF9CA2F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */; };
+		3A3212382F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */; };
+		3A3212392F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */; };
+		3A32123A2F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */; };
 		3A48AF9327BE678D0090481A /* SwrveMessagePage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A48AF9127BE678D0090481A /* SwrveMessagePage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3A48AF9427BE678D0090481A /* SwrveMessagePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A48AF9227BE678D0090481A /* SwrveMessagePage.m */; };
 		3A48AF9527BE67AA0090481A /* SwrveMessagePage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A48AF9127BE678D0090481A /* SwrveMessagePage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -77,6 +85,18 @@
 		3AA3AEFB2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AA3AEFC2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AA3AEFD2DA4196600AAC84C /* SwrveNotificationFilterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3AAEF9AC2F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */; };
+		3AAEF9AD2F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */; };
+		3AAEF9AE2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */; };
+		3AAEF9B02F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */; };
+		3AAEF9B12F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */; };
+		3AAEF9B22F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */; };
+		3AAEF9B42F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */; };
+		3AAEF9B52F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */; };
+		3AAEF9B62F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */; };
+		3AAEF9B82F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */; };
+		3AAEF9B92F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */; };
+		3AAEF9BA2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */; };
 		3AC26BE72678045B002B9A17 /* SwrveSEConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AC26BE52678045B002B9A17 /* SwrveSEConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AC26BE82678045B002B9A17 /* SwrveSEConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC26BE62678045B002B9A17 /* SwrveSEConfig.m */; };
 		3AC26BEB2678046A002B9A17 /* SwrveSEConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 3AC26BE52678045B002B9A17 /* SwrveSEConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -322,6 +342,7 @@
 		F698BA0C2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
 		F698BA0D2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
 		F698BA0E2DA011DD00BC98FB /* SwrveVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F698BA0A2DA011DD00BC98FB /* SwrveVideoPlayerView.swift */; };
+		F69BBF472EB260080036F949 /* SwrveInAppCapabilitiesDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C5C1240D2C6A7E7F009554B7 /* SwrveInAppCapabilitiesDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6A8B4132EA24D5700AA0A59 /* SwrveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B4122EA24D5700AA0A59 /* SwrveButton.swift */; };
 		F6A8B4142EA24D5700AA0A59 /* SwrveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B4122EA24D5700AA0A59 /* SwrveButton.swift */; };
 		F6A8B4152EA24D5700AA0A59 /* SwrveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B4122EA24D5700AA0A59 /* SwrveButton.swift */; };
@@ -342,7 +363,6 @@
 		F6A8B43C2EA635AC00AA0A59 /* SwrveInAppStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B42D2EA635AC00AA0A59 /* SwrveInAppStoryView.swift */; };
 		F6A8B43D2EA635AC00AA0A59 /* SwrveStoryDismissButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B42E2EA635AC00AA0A59 /* SwrveStoryDismissButton.swift */; };
 		F6A8B43E2EA635AC00AA0A59 /* SwrveInAppStoryUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A8B42C2EA635AC00AA0A59 /* SwrveInAppStoryUIButton.swift */; };
-		F69BBF472EB260080036F949 /* SwrveInAppCapabilitiesDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C5C1240D2C6A7E7F009554B7 /* SwrveInAppCapabilitiesDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B2E2CD206D2C0F007F2E7F /* SwrveUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B2E2CB206D2C0F007F2E7F /* SwrveUser.m */; };
 		F6B2E2CE206D2C0F007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6B2E2CF206D2C25007F2E7F /* SwrveUser.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B2E2CC206D2C0F007F2E7F /* SwrveUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -743,6 +763,8 @@
 		3A1443432AF3B4E4007B5B2D /* SwrveStorySettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveStorySettings.m; sourceTree = "<group>"; };
 		3A21DCD929C8A980000657AD /* SwrveUITextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveUITextView.m; sourceTree = "<group>"; };
 		3A21DCDA29C8A980000657AD /* SwrveUITextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveUITextView.h; sourceTree = "<group>"; };
+		3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveFreemarkerEvaluator.swift; sourceTree = "<group>"; };
+		3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveFreemarkerBuiltins.swift; sourceTree = "<group>"; };
 		3A48AF9127BE678D0090481A /* SwrveMessagePage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessagePage.h; sourceTree = "<group>"; };
 		3A48AF9227BE678D0090481A /* SwrveMessagePage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveMessagePage.m; sourceTree = "<group>"; };
 		3A48AFB827C3B9560090481A /* SwrveMessageUIView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveMessageUIView.h; sourceTree = "<group>"; };
@@ -762,6 +784,9 @@
 		3A9E09812B5550F40037088C /* SwrveSDKUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSDKUtils.m; sourceTree = "<group>"; };
 		3A9E09822B5550F40037088C /* SwrveSDKUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSDKUtils.h; sourceTree = "<group>"; };
 		3AA3AEF92DA4196600AAC84C /* SwrveNotificationFilterDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveNotificationFilterDelegate.h; sourceTree = "<group>"; };
+		3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveFreemarkerEvaluatorImpl.swift; sourceTree = "<group>"; };
+		3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveFreemarkerParser.swift; sourceTree = "<group>"; };
+		3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveFreemarkerTokenizer.swift; sourceTree = "<group>"; };
 		3AC26BE52678045B002B9A17 /* SwrveSEConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwrveSEConfig.h; sourceTree = "<group>"; };
 		3AC26BE62678045B002B9A17 /* SwrveSEConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwrveSEConfig.m; sourceTree = "<group>"; };
 		3ACAF5BA2CA1A9FC008136EA /* SwrveUtilsSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwrveUtilsSwift.swift; sourceTree = "<group>"; };
@@ -993,6 +1018,11 @@
 		F6900A792A9CF8660067A7E5 /* SwrveSDKSwift */ = {
 			isa = PBXGroup;
 			children = (
+				3AAEF9A92F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift */,
+				3AAEF9AA2F9F7A6B00757224 /* SwrveFreemarkerParser.swift */,
+				3AAEF9AB2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift */,
+				3A3212362F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift */,
+				3AAEF9C62F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift */,
 				F6775CE92E7D7B07000FDC29 /* SwrveUIButton.swift */,
 				F6775CDA2E7D7AAF000FDC29 /* SwrveButtonTheme.swift */,
 				F6775CDB2E7D7AAF000FDC29 /* SwrveButtonThemeState.swift */,
@@ -1034,7 +1064,6 @@
 				F6441D4C2C934102001B0028 /* SwrveMessageButtonDetails.swift */,
 				F6441D592C9343B6001B0028 /* SwrveMessageDetails.swift */,
 				C5464D292C64D1E90011E6CE /* SwrveSDK.swift */,
-				F6441D4A2C934101001B0028 /* SwrveMessage.swift */,
 				F677A6FF2EA1052400974620 /* SwrveImage.swift */,
 				F6A8B4122EA24D5700AA0A59 /* SwrveButton.swift */,
 				F6A8B42B2EA635AC00AA0A59 /* SwrveCalibration.swift */,
@@ -1891,6 +1920,9 @@
 				C5BF0B212CA1C12B00B860C0 /* SwrveTriggerCondition.swift in Sources */,
 				B530AF932C25DDB2009214B4 /* SwrvePushInboxResult.swift in Sources */,
 				F6775CEB2E7D7B07000FDC29 /* SwrveUIButton.swift in Sources */,
+				3AAEF9B02F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */,
+				3AAEF9B12F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */,
+				3AAEF9B22F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */,
 				C5BF0B042C9DC19600B860C0 /* SwrveCampaign.swift in Sources */,
 				3AF34F6B2822982C00B142D4 /* SwrveMessageFocus.m in Sources */,
 				528F552B201B9B29007AB0A8 /* Swrve.m in Sources */,
@@ -1937,6 +1969,8 @@
 				528F5538201B9B29007AB0A8 /* SwrveMessageFormat.m in Sources */,
 				F6775CE02E7D7AAF000FDC29 /* SwrveButtonTheme.swift in Sources */,
 				F6775CE12E7D7AAF000FDC29 /* SwrveThemedUIButton.swift in Sources */,
+				3A32123A2F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */,
+				3AAEF9C72F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */,
 				F6775CE22E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				B568A0FC2C2589240063D55C /* SwrvePushInboxController.swift in Sources */,
 				F6A8B4142EA24D5700AA0A59 /* SwrveButton.swift in Sources */,
@@ -1996,6 +2030,9 @@
 				F6B8712F2C58352B00874DEA /* SwrvePushInboxResultCode.swift in Sources */,
 				F6775CED2E7D7B08000FDC29 /* SwrveUIButton.swift in Sources */,
 				C5C1240C2C6A6F63009554B7 /* SwrveInAppMessageConfig.swift in Sources */,
+				3AAEF9AC2F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */,
+				3AAEF9AD2F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */,
+				3AAEF9AE2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */,
 				F6B871302C58352B00874DEA /* SwrvePushInboxResult.swift in Sources */,
 				F6B871312C58352B00874DEA /* SwrveLiveActivityStorage.swift in Sources */,
 				F6B871352C58352B00874DEA /* SwrveMessageFocus.m in Sources */,
@@ -2042,6 +2079,8 @@
 				F6B871642C58352B00874DEA /* SwrvePushInboxDelegate.swift in Sources */,
 				F6775CDD2E7D7AAF000FDC29 /* SwrveButtonTheme.swift in Sources */,
 				F6775CDE2E7D7AAF000FDC29 /* SwrveThemedUIButton.swift in Sources */,
+				3A3212392F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */,
+				3AAEF9C82F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */,
 				F6775CDF2E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				F6B871662C58352B00874DEA /* SwrveLiveActivity.swift in Sources */,
 				F6A8B4152EA24D5700AA0A59 /* SwrveButton.swift in Sources */,
@@ -2101,6 +2140,9 @@
 				B530AF982C25DDB2009214B4 /* SwrvePushInboxResultCode.swift in Sources */,
 				F6775CEA2E7D7B07000FDC29 /* SwrveUIButton.swift in Sources */,
 				C5C1240A2C6A6F63009554B7 /* SwrveInAppMessageConfig.swift in Sources */,
+				3AAEF9B42F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */,
+				3AAEF9B52F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */,
+				3AAEF9B62F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */,
 				B530AF922C25DDB2009214B4 /* SwrvePushInboxResult.swift in Sources */,
 				C5DCC5C12ABC6A010056686A /* SwrveLiveActivityStorage.swift in Sources */,
 				3AF34F692822980E00B142D4 /* SwrveMessageFocus.m in Sources */,
@@ -2147,6 +2189,8 @@
 				B530AF942C25DDB2009214B4 /* SwrvePushInboxDelegate.swift in Sources */,
 				F6775CE62E7D7AAF000FDC29 /* SwrveButtonTheme.swift in Sources */,
 				F6775CE72E7D7AAF000FDC29 /* SwrveThemedUIButton.swift in Sources */,
+				3A3212372F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */,
+				3AAEF9C92F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */,
 				F6775CE82E7D7AAF000FDC29 /* SwrveButtonThemeState.swift in Sources */,
 				F6900A7B2A9CF8660067A7E5 /* SwrveLiveActivity.swift in Sources */,
 				F6A8B4132EA24D5700AA0A59 /* SwrveButton.swift in Sources */,
@@ -2265,6 +2309,8 @@
 				F6EF58022C888E1500389B2C /* SwrveMessageUIView.m in Sources */,
 				F6EF58032C888E1500389B2C /* (null) in Sources */,
 				F6A8B4162EA24D5700AA0A59 /* SwrveButton.swift in Sources */,
+				3A3212382F9246AD00D9C402 /* SwrveFreemarkerEvaluator.swift in Sources */,
+				3AAEF9CA2F9F7A6B00757224 /* SwrveFreemarkerBuiltins.swift in Sources */,
 				F6EF58042C888E1500389B2C /* SwrveMessageController.m in Sources */,
 				F6EF58062C888E1500389B2C /* SwrveEventsManager.m in Sources */,
 				F6EF58072C888E1500389B2C /* (null) in Sources */,
@@ -2289,6 +2335,9 @@
 				F6EF581D2C888E1500389B2C /* (null) in Sources */,
 				F6CD24A62C91E38900D56821 /* SwrveInAppMessageConfig.swift in Sources */,
 				F6EF581E2C888E1500389B2C /* (null) in Sources */,
+				3AAEF9B82F9F7A6B00757224 /* SwrveFreemarkerEvaluatorImpl.swift in Sources */,
+				3AAEF9B92F9F7A6B00757224 /* SwrveFreemarkerParser.swift in Sources */,
+				3AAEF9BA2F9F7A6B00757224 /* SwrveFreemarkerTokenizer.swift in Sources */,
 				F6EF58202C888E1500389B2C /* (null) in Sources */,
 				F6CD24AA2C91E3AE00D56821 /* SwrveBaseMessage.swift in Sources */,
 				F6EF58212C888E1500389B2C /* SwrveStorySettings.m in Sources */,

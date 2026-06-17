@@ -159,4 +159,44 @@
     return messagePageViewController;
 }
 
+// ---------------------------------------------------------------------------
+// MARK: - visible_if render-time element visibility
+// ---------------------------------------------------------------------------
+
+- (void)testVisibleIfConditionTrueShowsButton {
+    // campaign_visible_if.json: background image + always_visible button + conditional button
+    NSDictionary *personalization = @{@"Recipient.show_button": @"true"};
+    id swrveMock = [self swrveMockWithTestJson:@"campaign_visible_if"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    // Pass personalization so canResolvePersonalization passes for the visible_if expression.
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:personalization] objectAtIndex:0];
+    XCTAssertNotNil(campaign);
+
+    [controller showMessageCenterCampaign:campaign withPersonalization:personalization];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+
+    SwrveMessageUIView *view = [self swrveMessageUIViewFromController:messageViewController];
+    // image (UIImageView) + always_visible button (SwrveUIButton) + conditional button (SwrveUIButton, true) = 3
+    XCTAssertEqual(3, view.subviews.count);
+}
+
+- (void)testVisibleIfConditionFalseHidesButton {
+    NSDictionary *personalization = @{@"Recipient.show_button": @"false"};
+    id swrveMock = [self swrveMockWithTestJson:@"campaign_visible_if"];
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:personalization] objectAtIndex:0];
+    XCTAssertNotNil(campaign);
+
+    [controller showMessageCenterCampaign:campaign withPersonalization:personalization];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+
+    SwrveMessageUIView *view = [self swrveMessageUIViewFromController:messageViewController];
+    // image (UIImageView) + always_visible button (SwrveUIButton); conditional button (false) = hidden
+    XCTAssertEqual(2, view.subviews.count);
+}
+
 @end

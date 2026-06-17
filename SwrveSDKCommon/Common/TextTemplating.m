@@ -38,7 +38,7 @@
                 [matchedStrings setObject:fallback forKey:templateFullValue];
             } else {
                 if (error) {
-                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": [NSString stringWithFormat:@"Missing property value for key: %@", metaData]}];
                 }
                 return nil;
             }
@@ -105,7 +105,7 @@
                 [matchedStrings setObject:fallback forKey:templateFullValue];
             } else {
                 if (error) {
-                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": @"Missing property for text templating"}];
+                    *error = [NSError errorWithDomain:@"com.swrve.sdk" code:500 userInfo:@{@"Error reason": [NSString stringWithFormat:@"Missing property value for key: %@", metaData]}];
                 }
                 return nil;
             }

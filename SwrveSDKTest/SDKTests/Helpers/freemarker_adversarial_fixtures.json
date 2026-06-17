@@ -1,0 +1,2113 @@
+[
+  {
+    "name": "trimInterpolationLeadingTrailing",
+    "template": "${Recipient.v?trim}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "trimInterpolationEmptyString",
+    "template": "${Recipient.v?trim}",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "trimInterpolationWhitespaceOnly",
+    "template": "${Recipient.v?trim}",
+    "props": {
+      "Recipient.v": "   \t  "
+    },
+    "expected": ""
+  },
+  {
+    "name": "trimInterpolationNoWhitespace",
+    "template": "${Recipient.v?trim}",
+    "props": {
+      "Recipient.v": "hello"
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "lowerCaseInterpolationAllCaps",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": "HELLO WORLD"
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "lowerCaseInterpolationMixed",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": "HeLLo WoRLd"
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "lowerCaseInterpolationAlreadyLower",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": "hello"
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "lowerCaseInterpolationEmpty",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "lowerCaseInterpolationWithDigits",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": "ABC123"
+    },
+    "expected": "abc123"
+  },
+  {
+    "name": "upperCaseInterpolationAllLower",
+    "template": "${Recipient.v?upper_case}",
+    "props": {
+      "Recipient.v": "hello world"
+    },
+    "expected": "HELLO WORLD"
+  },
+  {
+    "name": "upperCaseInterpolationMixed",
+    "template": "${Recipient.v?upper_case}",
+    "props": {
+      "Recipient.v": "HeLLo WoRLd"
+    },
+    "expected": "HELLO WORLD"
+  },
+  {
+    "name": "upperCaseInterpolationAlreadyUpper",
+    "template": "${Recipient.v?upper_case}",
+    "props": {
+      "Recipient.v": "HELLO"
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "upperCaseInterpolationEmpty",
+    "template": "${Recipient.v?upper_case}",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "trimConditionLhsEqualsMatch",
+    "template": "<#if Recipient.v?trim == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  gold  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimConditionLhsEqualsNoMatch",
+    "template": "<#if Recipient.v?trim == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  silver  "
+    },
+    "expected": "no"
+  },
+  {
+    "name": "trimConditionLhsNotEqualsMatch",
+    "template": "<#if Recipient.v?trim != \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  silver  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimConditionLhsEmptyStringVsEmpty",
+    "template": "<#if Recipient.v?trim == \"\">empty<#else>nonempty</#if>",
+    "props": {
+      "Recipient.v": "   "
+    },
+    "expected": "empty"
+  },
+  {
+    "name": "lowerCaseConditionLhsEqualsMatch",
+    "template": "<#if Recipient.v?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "GOLD"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerCaseConditionLhsEqualsNoMatch",
+    "template": "<#if Recipient.v?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "SILVER"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "lowerCaseConditionLhsNotEqualsMatch",
+    "template": "<#if Recipient.v?lower_case != \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "SILVER"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerCaseConditionLhsNotEqualsNoMatch",
+    "template": "<#if Recipient.v?lower_case != \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "GOLD"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "upperCaseConditionLhsEqualsMatch",
+    "template": "<#if Recipient.v?upper_case == \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperCaseConditionLhsEqualsNoMatch",
+    "template": "<#if Recipient.v?upper_case == \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "silver"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "upperCaseConditionLhsNotEqualsMatch",
+    "template": "<#if Recipient.v?upper_case != \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "silver"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimSwitchLeadingSpaces",
+    "template": "<#switch Recipient.v?trim><#case \"a\">A<#break><#default>D</#switch>",
+    "props": {
+      "Recipient.v": "  a  "
+    },
+    "expected": "A"
+  },
+  {
+    "name": "trimSwitchNoMatch",
+    "template": "<#switch Recipient.v?trim><#case \"a\">A<#break><#default>D</#switch>",
+    "props": {
+      "Recipient.v": "  b  "
+    },
+    "expected": "D"
+  },
+  {
+    "name": "lowerCaseSwitchMatch",
+    "template": "<#switch Recipient.v?lower_case><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "GOLD"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "lowerCaseSwitchNoMatch",
+    "template": "<#switch Recipient.v?lower_case><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "SILVER"
+    },
+    "expected": "Other"
+  },
+  {
+    "name": "lowerCaseSwitchMixedCaseInput",
+    "template": "<#switch Recipient.v?lower_case><#case \"gold\">Gold<#break><#case \"silver\">Silver<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "GoLd"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "upperCaseSwitchMatch",
+    "template": "<#switch Recipient.v?upper_case><#case \"GOLD\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "upperCaseSwitchNoMatch",
+    "template": "<#switch Recipient.v?upper_case><#case \"GOLD\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "silver"
+    },
+    "expected": "Other"
+  },
+  {
+    "name": "trimConcatLeadingPart",
+    "template": "${Recipient.a?trim + \" world\"}",
+    "props": {
+      "Recipient.a": "  hello  "
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "trimConcatTrailingPart",
+    "template": "${\"hello \" + Recipient.a?trim}",
+    "props": {
+      "Recipient.a": "  world  "
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "trimConcatMiddlePart",
+    "template": "${\"a \" + Recipient.v?trim + \" b\"}",
+    "props": {
+      "Recipient.v": "  mid  "
+    },
+    "expected": "a mid b"
+  },
+  {
+    "name": "lowerCaseConcatLeadingPart",
+    "template": "${Recipient.a?lower_case + \" world\"}",
+    "props": {
+      "Recipient.a": "HELLO"
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "lowerCaseConcatTrailingPart",
+    "template": "${\"hello \" + Recipient.a?lower_case}",
+    "props": {
+      "Recipient.a": "WORLD"
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "lowerCaseConcatMiddlePart",
+    "template": "${\"A \" + Recipient.v?lower_case + \" B\"}",
+    "props": {
+      "Recipient.v": "MID"
+    },
+    "expected": "A mid B"
+  },
+  {
+    "name": "upperCaseConcatLeadingPart",
+    "template": "${Recipient.a?upper_case + \" world\"}",
+    "props": {
+      "Recipient.a": "hello"
+    },
+    "expected": "HELLO world"
+  },
+  {
+    "name": "upperCaseConcatTrailingPart",
+    "template": "${\"hello \" + Recipient.a?upper_case}",
+    "props": {
+      "Recipient.a": "world"
+    },
+    "expected": "hello WORLD"
+  },
+  {
+    "name": "upperCaseConcatMiddlePart",
+    "template": "${\"a \" + Recipient.v?upper_case + \" b\"}",
+    "props": {
+      "Recipient.v": "mid"
+    },
+    "expected": "a MID b"
+  },
+  {
+    "name": "trimThenLowerInterpolation",
+    "template": "${Recipient.v?trim?lower_case}",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "trimThenUpperInterpolation",
+    "template": "${Recipient.v?trim?upper_case}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "lowerThenTrimInterpolation",
+    "template": "${Recipient.v?lower_case?trim}",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "upperThenTrimInterpolation",
+    "template": "${Recipient.v?upper_case?trim}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "trimThenLowerInCondition",
+    "template": "<#if Recipient.v?trim?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  GOLD  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimThenUpperInCondition",
+    "template": "<#if Recipient.v?trim?upper_case == \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  gold  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenTrimInCondition",
+    "template": "<#if Recipient.v?lower_case?trim == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  GOLD  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimThenLowerInSwitch",
+    "template": "<#switch Recipient.v?trim?lower_case><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "  GOLD  "
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "trimThenUpperInSwitch",
+    "template": "<#switch Recipient.v?trim?upper_case><#case \"GOLD\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "  gold  "
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "trimThenLowerInConcat",
+    "template": "${Recipient.v?trim?lower_case + \"!\"}",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "hello!"
+  },
+  {
+    "name": "trimThenUpperInConcat",
+    "template": "${Recipient.v?trim?upper_case + \"!\"}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "HELLO!"
+  },
+  {
+    "name": "lowerThenBooleanChain",
+    "template": "<#if Recipient.v?lower_case?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "TRUE"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimThenLowerThenBooleanChain",
+    "template": "<#if Recipient.v?trim?lower_case?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  TRUE  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenHasContentKeyPresent",
+    "template": "<#if Recipient.v?lower_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "HELLO"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenHasContentEmptyString",
+    "template": "<#if Recipient.v?lower_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": "no"
+  },
+  {
+    "name": "upperThenHasContentKeyPresent",
+    "template": "<#if Recipient.v?upper_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "hello"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimThenLowerTrimAgain",
+    "template": "<#if Recipient.v?trim?lower_case?trim == \"alice\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  ALICE  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenUpperInterpolation",
+    "template": "${Recipient.v?lower_case?upper_case}",
+    "props": {
+      "Recipient.v": "HeLLo"
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "upperThenLowerInterpolation",
+    "template": "${Recipient.v?upper_case?lower_case}",
+    "props": {
+      "Recipient.v": "HeLLo"
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "lowerThenUpperInCondition",
+    "template": "<#if Recipient.v?lower_case?upper_case == \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "GoLd"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperThenLowerInCondition",
+    "template": "<#if Recipient.v?upper_case?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "GoLd"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenTrimSwitch",
+    "template": "<#switch Recipient.v?lower_case?trim><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "  GOLD  "
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "lowerThenTrimConcat",
+    "template": "${Recipient.v?lower_case?trim + \"!\"}",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "hello!"
+  },
+  {
+    "name": "upperThenTrimCondition",
+    "template": "<#if Recipient.v?upper_case?trim == \"GOLD\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  gold  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperThenTrimSwitch",
+    "template": "<#switch Recipient.v?upper_case?trim><#case \"GOLD\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.v": "  gold  "
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "upperThenTrimConcat",
+    "template": "${Recipient.v?upper_case?trim + \"!\"}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "HELLO!"
+  },
+  {
+    "name": "trimBooleanTrue",
+    "template": "<#if Recipient.v?trim?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  true  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimBooleanFalse",
+    "template": "<#if Recipient.v?trim?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  false  "
+    },
+    "expected": "no"
+  },
+  {
+    "name": "lowerTrimBooleanChain",
+    "template": "<#if Recipient.v?lower_case?trim?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  TRUE  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenNumberInteger",
+    "template": "<#if Recipient.v?lower_case?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "150"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerThenNumberScientificUpperE",
+    "template": "<#if Recipient.v?lower_case?number == 1000>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1E3"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperThenNumberInteger",
+    "template": "<#if Recipient.v?upper_case?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "150"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperThenNumberScientificLowerE",
+    "template": "<#if Recipient.v?upper_case?number == 1000>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1e3"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimLowerHasContentPresent",
+    "template": "<#if Recipient.v?trim?lower_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimLowerHasContentEmpty",
+    "template": "<#if Recipient.v?trim?lower_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": "no"
+  },
+  {
+    "name": "trimUpperHasContentPresent",
+    "template": "<#if Recipient.v?trim?upper_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimUpperHasContentWhitespaceOnly",
+    "template": "<#if Recipient.v?trim?upper_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "   "
+    },
+    "expected": "no"
+  },
+  {
+    "name": "lowerTrimHasContentPresent",
+    "template": "<#if Recipient.v?lower_case?trim?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  HELLO  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "upperTrimHasContentPresent",
+    "template": "<#if Recipient.v?upper_case?trim?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerCaseDefaultKeyPresent",
+    "template": "${Recipient.v?lower_case!\"fallback\"}",
+    "props": {
+      "Recipient.v": "GOLD"
+    },
+    "expected": "gold"
+  },
+  {
+    "name": "upperCaseDefaultKeyPresent",
+    "template": "${Recipient.v?upper_case!\"fallback\"}",
+    "props": {
+      "Recipient.v": "gold"
+    },
+    "expected": "GOLD"
+  },
+  {
+    "name": "numericGtIntegerTrue",
+    "template": "<#if Recipient.v?number gt 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "11"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericGtIntegerFalseEqual",
+    "template": "<#if Recipient.v?number gt 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "10"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericGtIntegerFalseBelow",
+    "template": "<#if Recipient.v?number gt 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "9"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericGtFloat",
+    "template": "<#if Recipient.v?number gt 1.5>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1.51"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericGtNegativeValues",
+    "template": "<#if Recipient.v?number gt -5>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "-3"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericGteExact",
+    "template": "<#if Recipient.v?number gte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "10"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericGteAbove",
+    "template": "<#if Recipient.v?number gte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "11"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericGteBelow",
+    "template": "<#if Recipient.v?number gte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "9"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericLtIntegerTrue",
+    "template": "<#if Recipient.v?number lt 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "9"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericLtIntegerFalseEqual",
+    "template": "<#if Recipient.v?number lt 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "10"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericLtFloat",
+    "template": "<#if Recipient.v?number lt 1.5>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1.49"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericLteExact",
+    "template": "<#if Recipient.v?number lte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "10"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericLteBelow",
+    "template": "<#if Recipient.v?number lte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "9"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericLteAbove",
+    "template": "<#if Recipient.v?number lte 10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "11"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericEqIntegerMatch",
+    "template": "<#if Recipient.v?number == 42>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "42"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericEqIntegerNoMatch",
+    "template": "<#if Recipient.v?number == 42>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "43"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericEqFloatMatch",
+    "template": "<#if Recipient.v?number == 3.14>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "3.14"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericEqFloatNoMatch",
+    "template": "<#if Recipient.v?number == 3.14>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "3.15"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericEqZero",
+    "template": "<#if Recipient.v?number == 0>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "0"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericEqNegative",
+    "template": "<#if Recipient.v?number == -1>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "-1"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericEqScientificNotation",
+    "template": "<#if Recipient.v?number == 1000>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1e3"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericNeqMatch",
+    "template": "<#if Recipient.v?number != 42>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "43"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericNeqNoMatch",
+    "template": "<#if Recipient.v?number != 42>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "42"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "numericNeqFloat",
+    "template": "<#if Recipient.v?number != 3.14>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "2.72"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericNeqZero",
+    "template": "<#if Recipient.v?number != 0>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "1"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimNumberGtWhitespacePadded",
+    "template": "<#if Recipient.v?trim?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  150  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimNumberEqWhitespacePadded",
+    "template": "<#if Recipient.v?trim?number == 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  100  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimNumberLteWhitespacePadded",
+    "template": "<#if Recipient.v?trim?number lte 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  99  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andBothStringEqualities",
+    "template": "<#if Recipient.a == \"x\" && Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "y"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andLeftFalseShortCircuits",
+    "template": "<#if Recipient.a == \"x\" && Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "z",
+      "Recipient.b": "y"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "orBothFalse",
+    "template": "<#if Recipient.a == \"x\" || Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "z",
+      "Recipient.b": "z"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "orLeftTrueShortCircuits",
+    "template": "<#if Recipient.a == \"x\" || Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "z"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andWithNumericGt",
+    "template": "<#if Recipient.a == \"gold\" && Recipient.b?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "gold",
+      "Recipient.b": "200"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andWithNumericGtFalse",
+    "template": "<#if Recipient.a == \"gold\" && Recipient.b?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "gold",
+      "Recipient.b": "50"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "orWithNumericAndString",
+    "template": "<#if Recipient.a == \"vip\" || Recipient.b?number gte 1000>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "basic",
+      "Recipient.b": "1500"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andWithTransformAndNumeric",
+    "template": "<#if Recipient.a?lower_case == \"gold\" && Recipient.b?number gt 0>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "GOLD",
+      "Recipient.b": "1"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "orWithTwoTransformConditions",
+    "template": "<#if Recipient.a?lower_case == \"gold\" || Recipient.a?lower_case == \"platinum\">premium<#else>standard</#if>",
+    "props": {
+      "Recipient.a": "PLATINUM"
+    },
+    "expected": "premium"
+  },
+  {
+    "name": "andPrecedenceOverOr",
+    "template": "<#if Recipient.a == \"1\" || Recipient.b == \"1\" && Recipient.c == \"1\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "0",
+      "Recipient.b": "0",
+      "Recipient.c": "0"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenOverridesAndPrecedence",
+    "template": "<#if (Recipient.a == \"1\" || Recipient.b == \"1\") && Recipient.c == \"1\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "1",
+      "Recipient.b": "0",
+      "Recipient.c": "0"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenOverridesAndPrecedenceMatch",
+    "template": "<#if (Recipient.a == \"1\" || Recipient.b == \"1\") && Recipient.c == \"1\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "1",
+      "Recipient.b": "0",
+      "Recipient.c": "1"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "tripleAndAllTrue",
+    "template": "<#if Recipient.a == \"x\" && Recipient.b == \"y\" && Recipient.c == \"z\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "y",
+      "Recipient.c": "z"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "tripleAndMiddleFalse",
+    "template": "<#if Recipient.a == \"x\" && Recipient.b == \"y\" && Recipient.c == \"z\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "BAD",
+      "Recipient.c": "z"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "negationInAnd",
+    "template": "<#if !Recipient.a?boolean && Recipient.b == \"x\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "false",
+      "Recipient.b": "x"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "negationInOr",
+    "template": "<#if !Recipient.a?boolean || Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "true",
+      "Recipient.b": "y"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andWithExistsCheck",
+    "template": "<#if Recipient.a?? && Recipient.b == \"x\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "present",
+      "Recipient.b": "x"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "andWithExistsCheckMissing",
+    "template": "<#if Recipient.a?? && Recipient.b == \"x\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "orWithHasContent",
+    "template": "<#if Recipient.a?has_content || Recipient.b == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "",
+      "Recipient.b": "y"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "defaultKeyPresent",
+    "template": "${Recipient.v!\"fallback\"}",
+    "props": {
+      "Recipient.v": "hello"
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "defaultKeyMissing",
+    "template": "${Recipient.v!\"fallback\"}",
+    "props": {},
+    "expected": "fallback"
+  },
+  {
+    "name": "defaultEmptyStringDoesNotTrigger",
+    "template": "${Recipient.v!\"fallback\"}",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "defaultSingleQuoted",
+    "template": "${Recipient.v!'fallback'}",
+    "props": {},
+    "expected": "fallback"
+  },
+  {
+    "name": "defaultInConditionParenKeyMissing",
+    "template": "<#if (Recipient.v!\"default\") == \"default\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "defaultInConditionParenKeyPresent",
+    "template": "<#if (Recipient.v!\"default\") == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "bareDefaultKeyMissing",
+    "template": "${Recipient.v!}",
+    "props": {},
+    "expected": ""
+  },
+  {
+    "name": "bareDefaultKeyPresent",
+    "template": "${Recipient.v!}",
+    "props": {
+      "Recipient.v": "hello"
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "bareDefaultInConditionKeyMissing",
+    "template": "<#if Recipient.v! == \"\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "bareDefaultInConditionKeyPresent",
+    "template": "<#if Recipient.v! == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimDefaultKeyPresent",
+    "template": "${Recipient.v?trim!\"fallback\"}",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "hello"
+  },
+  {
+    "name": "trimDefaultEmptyStringDoesNotTrigger",
+    "template": "${Recipient.v?trim!\"fallback\"}",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "nestedIfBothTrue",
+    "template": "<#if Recipient.a == \"x\"><#if Recipient.b == \"y\">both<#else>aOnly</#if><#else>neither</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "y"
+    },
+    "expected": "both"
+  },
+  {
+    "name": "nestedIfInnerFalse",
+    "template": "<#if Recipient.a == \"x\"><#if Recipient.b == \"y\">both<#else>aOnly</#if><#else>neither</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "z"
+    },
+    "expected": "aOnly"
+  },
+  {
+    "name": "nestedIfOuterFalse",
+    "template": "<#if Recipient.a == \"x\"><#if Recipient.b == \"y\">both<#else>aOnly</#if><#else>neither</#if>",
+    "props": {
+      "Recipient.a": "z",
+      "Recipient.b": "y"
+    },
+    "expected": "neither"
+  },
+  {
+    "name": "nestedIfWithTransformOuter",
+    "template": "<#if Recipient.a?lower_case == \"gold\"><#if Recipient.b?number gt 100>VIP<#else>Standard</#if><#else>Other</#if>",
+    "props": {
+      "Recipient.a": "GOLD",
+      "Recipient.b": "200"
+    },
+    "expected": "VIP"
+  },
+  {
+    "name": "nestedIfWithTransformOuterBelowThreshold",
+    "template": "<#if Recipient.a?lower_case == \"gold\"><#if Recipient.b?number gt 100>VIP<#else>Standard</#if><#else>Other</#if>",
+    "props": {
+      "Recipient.a": "GOLD",
+      "Recipient.b": "50"
+    },
+    "expected": "Standard"
+  },
+  {
+    "name": "switchWithNestedIf",
+    "template": "<#switch Recipient.a?upper_case><#case \"US\"><#if Recipient.b?number gt 0>US+<#else>US0</#if><#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.a": "us",
+      "Recipient.b": "1"
+    },
+    "expected": "US+"
+  },
+  {
+    "name": "switchWithNestedIfFalse",
+    "template": "<#switch Recipient.a?upper_case><#case \"US\"><#if Recipient.b?number gt 0>US+<#else>US0</#if><#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.a": "us",
+      "Recipient.b": "0"
+    },
+    "expected": "US0"
+  },
+  {
+    "name": "ifWithInterpolationAndTransformInBody",
+    "template": "<#if Recipient.active?boolean>Hello ${Recipient.name?trim?lower_case}!<#else>Inactive</#if>",
+    "props": {
+      "Recipient.active": "true",
+      "Recipient.name": "  ALICE  "
+    },
+    "expected": "Hello alice!"
+  },
+  {
+    "name": "elseIfChainWithTransforms",
+    "template": "<#if Recipient.tier?lower_case == \"gold\">Gold<#elseif Recipient.tier?lower_case == \"silver\">Silver<#elseif Recipient.tier?lower_case == \"bronze\">Bronze<#else>Other</#if>",
+    "props": {
+      "Recipient.tier": "BRONZE"
+    },
+    "expected": "Bronze"
+  },
+  {
+    "name": "elseIfChainFallsToElse",
+    "template": "<#if Recipient.tier?lower_case == \"gold\">Gold<#elseif Recipient.tier?lower_case == \"silver\">Silver<#else>Other</#if>",
+    "props": {
+      "Recipient.tier": "PLATINUM"
+    },
+    "expected": "Other"
+  },
+  {
+    "name": "numericElseIfChain",
+    "template": "<#if Recipient.v?number gt 1000>High<#elseif Recipient.v?number gt 500>Mid<#elseif Recipient.v?number gt 0>Low<#else>Zero</#if>",
+    "props": {
+      "Recipient.v": "750"
+    },
+    "expected": "Mid"
+  },
+  {
+    "name": "numericElseIfChainHigh",
+    "template": "<#if Recipient.v?number gt 1000>High<#elseif Recipient.v?number gt 500>Mid<#elseif Recipient.v?number gt 0>Low<#else>Zero</#if>",
+    "props": {
+      "Recipient.v": "2000"
+    },
+    "expected": "High"
+  },
+  {
+    "name": "numericElseIfChainZero",
+    "template": "<#if Recipient.v?number gt 1000>High<#elseif Recipient.v?number gt 500>Mid<#elseif Recipient.v?number gt 0>Low<#else>Zero</#if>",
+    "props": {
+      "Recipient.v": "0"
+    },
+    "expected": "Zero"
+  },
+  {
+    "name": "emptyStringEquality",
+    "template": "<#if Recipient.v == \"\">empty<#else>nonempty</#if>",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": "empty"
+  },
+  {
+    "name": "singleSpaceStringEquality",
+    "template": "<#if Recipient.v == \" \">space<#else>other</#if>",
+    "props": {
+      "Recipient.v": " "
+    },
+    "expected": "space"
+  },
+  {
+    "name": "stringWithSpecialCharsEquality",
+    "template": "<#if Recipient.v == \"a&b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "a&b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericIntegerZero",
+    "template": "<#if Recipient.v?number == 0>zero<#else>nonzero</#if>",
+    "props": {
+      "Recipient.v": "0"
+    },
+    "expected": "zero"
+  },
+  {
+    "name": "numericNegativeGtNegative",
+    "template": "<#if Recipient.v?number gt -10>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "-5"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "numericLargeInt",
+    "template": "<#if Recipient.v?number gt 999999>big<#else>small</#if>",
+    "props": {
+      "Recipient.v": "1000000"
+    },
+    "expected": "big"
+  },
+  {
+    "name": "stringWithGtCharInValue",
+    "template": "<#if Recipient.v == \"a>b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "a>b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "lowerCaseWithDigitsAndSymbols",
+    "template": "${Recipient.v?lower_case}",
+    "props": {
+      "Recipient.v": "Hello-World_123"
+    },
+    "expected": "hello-world_123"
+  },
+  {
+    "name": "upperCaseWithDigitsAndSymbols",
+    "template": "${Recipient.v?upper_case}",
+    "props": {
+      "Recipient.v": "Hello-World_123"
+    },
+    "expected": "HELLO-WORLD_123"
+  },
+  {
+    "name": "booleanLowerTrue",
+    "template": "<#if Recipient.v?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "true"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "booleanLowerFalse",
+    "template": "<#if Recipient.v?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "false"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "existsCheckOnPresentEmptyString",
+    "template": "<#if Recipient.v??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "existsCheckOnMissing",
+    "template": "<#if Recipient.v??>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "hasContentEmptyString",
+    "template": "<#if Recipient.v?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": ""
+    },
+    "expected": "no"
+  },
+  {
+    "name": "hasContentWhitespaceOnly",
+    "template": "<#if Recipient.v?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "   "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "trimHasContentWhitespaceOnlyFalse",
+    "template": "<#if Recipient.v?trim?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "   "
+    },
+    "expected": "no"
+  },
+  {
+    "name": "trimHasContentNonEmpty",
+    "template": "<#if Recipient.v?trim?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.v": "  hello  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "concatThreeParts",
+    "template": "${Recipient.a + \" \" + Recipient.b}",
+    "props": {
+      "Recipient.a": "hello",
+      "Recipient.b": "world"
+    },
+    "expected": "hello world"
+  },
+  {
+    "name": "concatFourParts",
+    "template": "${Recipient.a + \", \" + Recipient.b + \"!\"}",
+    "props": {
+      "Recipient.a": "hello",
+      "Recipient.b": "world"
+    },
+    "expected": "hello, world!"
+  },
+  {
+    "name": "concatLiteralOnly",
+    "template": "${\"hello\" + \" \" + \"world\"}",
+    "props": {},
+    "expected": "hello world"
+  },
+  {
+    "name": "concatWithLowerAndUpper",
+    "template": "${Recipient.a?lower_case + \"-\" + Recipient.b?upper_case}",
+    "props": {
+      "Recipient.a": "HELLO",
+      "Recipient.b": "world"
+    },
+    "expected": "hello-WORLD"
+  },
+  {
+    "name": "concatWithTrimBothSides",
+    "template": "${Recipient.a?trim + \"-\" + Recipient.b?trim}",
+    "props": {
+      "Recipient.a": "  hello  ",
+      "Recipient.b": "  world  "
+    },
+    "expected": "hello-world"
+  },
+  {
+    "name": "concatWithTransformAndLiteral",
+    "template": "${\"greeting: \" + Recipient.name?trim?lower_case + \"!\"}",
+    "props": {
+      "Recipient.name": "  ALICE  "
+    },
+    "expected": "greeting: alice!"
+  },
+  {
+    "name": "realWorldTierAndPoints",
+    "template": "<#if Recipient.tier?lower_case == \"gold\" && Recipient.points?number gte 500>Premium Gold<#elseif Recipient.tier?lower_case == \"gold\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "600",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Premium Gold"
+  },
+  {
+    "name": "realWorldTierAndPointsGoldLowPoints",
+    "template": "<#if Recipient.tier?lower_case == \"gold\" && Recipient.points?number gte 500>Premium Gold<#elseif Recipient.tier?lower_case == \"gold\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "100",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "realWorldTierAndPointsStandard",
+    "template": "<#if Recipient.tier?lower_case == \"gold\" && Recipient.points?number gte 500>Premium Gold<#elseif Recipient.tier?lower_case == \"gold\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "1000",
+      "Recipient.tier": "BRONZE"
+    },
+    "expected": "Standard"
+  },
+  {
+    "name": "realWorldPersonalisedGreeting",
+    "template": "<#if Recipient.name?has_content>Hello ${Recipient.name?trim}<#else>Hello there</#if>",
+    "props": {
+      "Recipient.name": "  Alice  "
+    },
+    "expected": "Hello Alice"
+  },
+  {
+    "name": "realWorldPersonalisedGreetingMissing",
+    "template": "<#if Recipient.name?has_content>Hello ${Recipient.name?trim}<#else>Hello there</#if>",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": "Hello there"
+  },
+  {
+    "name": "realWorldCountrySwitch",
+    "template": "<#switch Recipient.country?upper_case><#case \"US\">United States<#break><#case \"UK\">United Kingdom<#break><#case \"CA\">Canada<#break><#default>International</#switch>",
+    "props": {
+      "Recipient.country": "ca"
+    },
+    "expected": "Canada"
+  },
+  {
+    "name": "realWorldCountrySwitchDefault",
+    "template": "<#switch Recipient.country?upper_case><#case \"US\">United States<#break><#case \"UK\">United Kingdom<#break><#case \"CA\">Canada<#break><#default>International</#switch>",
+    "props": {
+      "Recipient.country": "de"
+    },
+    "expected": "International"
+  },
+  {
+    "name": "realWorldOptInStatus",
+    "template": "<#if Recipient.opt_in?trim?lower_case?boolean>Subscribed<#else>Not subscribed</#if>",
+    "props": {
+      "Recipient.opt_in": "  TRUE  "
+    },
+    "expected": "Subscribed"
+  },
+  {
+    "name": "parenDefaultBooleanAndKeyAbsent",
+    "template": "<#if (Recipient.flag!\"false\")?boolean && Recipient.tier == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultBooleanAndKeyPresent",
+    "template": "<#if (Recipient.flag!\"false\")?boolean && Recipient.tier == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "true",
+      "Recipient.tier": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultBooleanOrKeyAbsentTrueDefault",
+    "template": "<#if (Recipient.flag!\"true\")?boolean || Recipient.tier == \"gold\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultBooleanNegateKeyAbsentFalseDefault",
+    "template": "<#if !(Recipient.flag!\"false\")?boolean>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultBooleanNegateKeyPresentTrue",
+    "template": "<#if !(Recipient.flag!\"false\")?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "true"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberGtKeyAbsentFalse",
+    "template": "<#if (Recipient.points!\"0\")?number gt 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberGteKeyAbsentTrue",
+    "template": "<#if (Recipient.points!\"100\")?number gte 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberGtKeyPresentOverrides",
+    "template": "<#if (Recipient.points!\"0\")?number gt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.points": "200"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberGteAndStringKeyAbsent",
+    "template": "<#if (Recipient.points!\"0\")?number gte 500 && Recipient.tier == \"gold\">VIP<#else>other</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "other"
+  },
+  {
+    "name": "parenDefaultHasContentKeyAbsentEmptyDefault",
+    "template": "<#if (Recipient.promo!\"\")?has_content>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultHasContentKeyAbsentNonEmptyDefault",
+    "template": "<#if (Recipient.promo!\"SAVE10\")?has_content>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultHasContentKeyPresentEmpty",
+    "template": "<#if (Recipient.promo!\"SAVE10\")?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.promo": ""
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultHasContentAndConditionBothTrue",
+    "template": "<#if (Recipient.promo!\"\")?has_content && Recipient.tier == \"gold\">show<#else>hide</#if>",
+    "props": {
+      "Recipient.promo": "SAVE20",
+      "Recipient.tier": "gold"
+    },
+    "expected": "show"
+  },
+  {
+    "name": "parenDefaultHasContentOrFallsToOther",
+    "template": "<#if (Recipient.promo!\"\")?has_content || Recipient.vip == \"true\">show<#else>hide</#if>",
+    "props": {
+      "Recipient.vip": "true"
+    },
+    "expected": "show"
+  },
+  {
+    "name": "switchDefaultKeyAbsentMatchesCase",
+    "template": "<#switch Recipient.tier!\"free\"><#case \"free\">Free<#break><#case \"pro\">Pro<#break><#default>Other</#switch>",
+    "props": {},
+    "expected": "Free"
+  },
+  {
+    "name": "switchDefaultKeyAbsentNoMatchHitsDefault",
+    "template": "<#switch Recipient.tier!\"basic\"><#case \"free\">Free<#break><#case \"pro\">Pro<#break><#default>Other</#switch>",
+    "props": {},
+    "expected": "Other"
+  },
+  {
+    "name": "switchDefaultKeyAbsentNoMatchNoDefault",
+    "template": "<#switch Recipient.tier!\"vip\"><#case \"free\">Free<#break><#case \"pro\">Pro<#break></#switch>",
+    "props": {},
+    "expected": ""
+  },
+  {
+    "name": "switchDefaultKeyPresentOverridesDefault",
+    "template": "<#switch Recipient.tier!\"free\"><#case \"free\">Free<#break><#case \"pro\">Pro<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.tier": "pro"
+    },
+    "expected": "Pro"
+  },
+  {
+    "name": "switchDefaultKeyPresentNoMatch",
+    "template": "<#switch Recipient.tier!\"free\"><#case \"free\">Free<#break><#case \"pro\">Pro<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.tier": "enterprise"
+    },
+    "expected": "Other"
+  },
+  {
+    "name": "switchDefaultWithInterpolationInBody",
+    "template": "<#switch Recipient.tier!\"guest\"><#case \"guest\">Hello Guest<#break><#case \"member\">Hello ${Recipient.name}<#break></#switch>",
+    "props": {
+      "Recipient.name": "Alice"
+    },
+    "expected": "Hello Guest"
+  },
+  {
+    "name": "elseIfExistsCheckPresent",
+    "template": "<#if Recipient.a == \"x\">A<#elseif Recipient.b??>B<#else>C</#if>",
+    "props": {
+      "Recipient.a": "y",
+      "Recipient.b": "anything"
+    },
+    "expected": "B"
+  },
+  {
+    "name": "elseIfExistsCheckMissing",
+    "template": "<#if Recipient.a == \"x\">A<#elseif Recipient.b??>B<#else>C</#if>",
+    "props": {
+      "Recipient.a": "y"
+    },
+    "expected": "C"
+  },
+  {
+    "name": "elseIfNegatedExistsCheckMissing",
+    "template": "<#if Recipient.a == \"x\">A<#elseif !Recipient.b??>B<#else>C</#if>",
+    "props": {
+      "Recipient.a": "y"
+    },
+    "expected": "B"
+  },
+  {
+    "name": "elseIfExistsWithAnd",
+    "template": "<#if Recipient.a == \"x\">A<#elseif Recipient.b?? && Recipient.c == \"z\">BC<#else>C</#if>",
+    "props": {
+      "Recipient.a": "y",
+      "Recipient.b": "present",
+      "Recipient.c": "z"
+    },
+    "expected": "BC"
+  },
+  {
+    "name": "concatNoSpacesTwoParts",
+    "template": "${Recipient.a+Recipient.b}",
+    "props": {
+      "Recipient.a": "foo",
+      "Recipient.b": "bar"
+    },
+    "expected": "foobar"
+  },
+  {
+    "name": "concatNoSpacesPropertyAndLiteral",
+    "template": "${Recipient.a+\"!\"}",
+    "props": {
+      "Recipient.a": "hello"
+    },
+    "expected": "hello!"
+  },
+  {
+    "name": "concatMixedSpacing",
+    "template": "${Recipient.a+Recipient.b + Recipient.c}",
+    "props": {
+      "Recipient.a": "a",
+      "Recipient.b": "b",
+      "Recipient.c": "c"
+    },
+    "expected": "abc"
+  },
+  {
+    "name": "concatNoSpacesWithTransform",
+    "template": "${Recipient.a?upper_case+Recipient.b?lower_case}",
+    "props": {
+      "Recipient.a": "hello",
+      "Recipient.b": "WORLD"
+    },
+    "expected": "HELLOworld"
+  },
+  {
+    "name": "realWorldSwitchWithDefault",
+    "template": "<#switch Recipient.plan!\"starter\"><#case \"starter\">Free plan<#break><#case \"pro\">Pro plan<#break><#default>Unknown plan</#switch>",
+    "props": {},
+    "expected": "Free plan"
+  },
+  {
+    "name": "realWorldParenDefaultBooleanFlag",
+    "template": "<#if (Recipient.opted_in!\"false\")?boolean>Exclusive offer inside!<#else>Subscribe for exclusive offers.</#if>",
+    "props": {},
+    "expected": "Subscribe for exclusive offers."
+  },
+  {
+    "name": "realWorldParenDefaultNumberDiscount",
+    "template": "<#if (Recipient.discount!\"0\")?number gt 0>Save ${Recipient.discount}%!<#else>No discount available.</#if>",
+    "props": {},
+    "expected": "No discount available."
+  },
+  {
+    "name": "realWorldParenDefaultHasContentGreeting",
+    "template": "<#if (Recipient.first_name!\"\")?has_content>Dear ${Recipient.first_name}<#else>Dear Customer</#if>",
+    "props": {},
+    "expected": "Dear Customer"
+  },
+  {
+    "name": "realWorldCombinedDefaultsEliteGold",
+    "template": "<#if (Recipient.tier!\"bronze\") == \"gold\" && (Recipient.points!\"0\")?number gte 500>Elite Gold<#elseif (Recipient.tier!\"bronze\") == \"gold\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "600",
+      "Recipient.tier": "gold"
+    },
+    "expected": "Elite Gold"
+  },
+  {
+    "name": "realWorldCombinedDefaultsGold",
+    "template": "<#if (Recipient.tier!\"bronze\") == \"gold\" && (Recipient.points!\"0\")?number gte 500>Elite Gold<#elseif (Recipient.tier!\"bronze\") == \"gold\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "200",
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "realWorldCombinedDefaultsStandard",
+    "template": "<#if (Recipient.tier!\"bronze\") == \"gold\" && (Recipient.points!\"0\")?number gte 500>Elite Gold<#elseif (Recipient.tier!\"bronze\") == \"gold\">Gold<#else>Standard</#if>",
+    "props": {},
+    "expected": "Standard"
+  },
+  {
+    "name": "parenDefaultTransformLowerCaseMatchKeyAbsent",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultTransformLowerCaseMatchKeyPresent",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultTransformLowerCaseNoMatchKeyPresent",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "SILVER"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultTransformUpperCaseMatchKeyAbsent",
+    "template": "<#if (Recipient.status!\"active\")?upper_case == \"ACTIVE\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultTransformTrimMatchKeyAbsent",
+    "template": "<#if (Recipient.code!\"  vip  \")?trim == \"vip\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultTransformLowerCaseWithAndKeyAbsent",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case == \"gold\" && Recipient.points == \"500\">VIP<#else>other</#if>",
+    "props": {},
+    "expected": "other"
+  },
+  {
+    "name": "parenDefaultTransformLowerCaseWithAndBothMatch",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case == \"gold\" && Recipient.points == \"500\">VIP<#else>other</#if>",
+    "props": {
+      "Recipient.points": "500",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "VIP"
+  },
+  {
+    "name": "parenDefaultTransformInElseIf",
+    "template": "<#if Recipient.a == \"x\">A<#elseif (Recipient.tier!\"bronze\")?lower_case == \"gold\">Gold<#else>other</#if>",
+    "props": {
+      "Recipient.a": "y",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "parenDefaultInterpolationUpperCaseKeyAbsent",
+    "template": "${(Recipient.name!\"guest\")?upper_case}",
+    "props": {},
+    "expected": "GUEST"
+  },
+  {
+    "name": "parenDefaultInterpolationUpperCaseKeyPresent",
+    "template": "${(Recipient.name!\"guest\")?upper_case}",
+    "props": {
+      "Recipient.name": "alice"
+    },
+    "expected": "ALICE"
+  },
+  {
+    "name": "parenDefaultInterpolationLowerCaseKeyAbsent",
+    "template": "${(Recipient.status!\"ACTIVE\")?lower_case}",
+    "props": {},
+    "expected": "active"
+  },
+  {
+    "name": "parenDefaultInterpolationTrimKeyAbsent",
+    "template": "${(Recipient.code!\"  vip  \")?trim}",
+    "props": {},
+    "expected": "vip"
+  },
+  {
+    "name": "parenDefaultInterpolationTrimKeyPresent",
+    "template": "${(Recipient.code!\"  vip  \")?trim}",
+    "props": {
+      "Recipient.code": "  gold  "
+    },
+    "expected": "gold"
+  },
+  {
+    "name": "parenDefaultInterpolationNoTransformKeyAbsent",
+    "template": "${(Recipient.name!\"Guest\")}",
+    "props": {},
+    "expected": "Guest"
+  },
+  {
+    "name": "parenDefaultInterpolationChainedTransformKeyAbsent",
+    "template": "${(Recipient.name!\"  hello  \")?trim?upper_case}",
+    "props": {},
+    "expected": "HELLO"
+  },
+  {
+    "name": "bareBooleanTrueKeyPresent",
+    "template": "<#if Recipient.flag?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "true"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "bareBooleanFalseKeyPresent",
+    "template": "<#if Recipient.flag?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "false"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "bareBooleanWithDefaultTrueKeyAbsent",
+    "template": "<#if (Recipient.flag!\"true\")?boolean>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "bareBooleanWithDefaultFalseKeyAbsent",
+    "template": "<#if (Recipient.flag!\"false\")?boolean>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNotEqualsKeyAbsentMatchesDefault",
+    "template": "<#if (Recipient.tier!\"bronze\") != \"gold\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNotEqualsKeyAbsentDefaultIsValue",
+    "template": "<#if (Recipient.tier!\"gold\") != \"gold\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNotEqualsKeyPresent",
+    "template": "<#if (Recipient.tier!\"bronze\") != \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "silver"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultTransformNotEqualsKeyAbsent",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case != \"gold\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultTransformNotEqualsKeyPresentMatchesAfterTransform",
+    "template": "<#if (Recipient.tier!\"bronze\")?lower_case != \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberLtKeyAbsentTrue",
+    "template": "<#if (Recipient.points!\"50\")?number lt 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberLtKeyAbsentFalse",
+    "template": "<#if (Recipient.points!\"150\")?number lt 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberLtKeyPresentOverrides",
+    "template": "<#if (Recipient.points!\"200\")?number lt 100>yes<#else>no</#if>",
+    "props": {
+      "Recipient.points": "50"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberLteKeyAbsentTrue",
+    "template": "<#if (Recipient.points!\"100\")?number lte 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberLteKeyAbsentFalse",
+    "template": "<#if (Recipient.points!\"101\")?number lte 100>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberNotEqualsKeyAbsentTrue",
+    "template": "<#if (Recipient.points!\"0\")?number != 5>yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultNumberNotEqualsKeyAbsentDefaultMatchesRhs",
+    "template": "<#if (Recipient.points!\"5\")?number != 5>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultNumberNotEqualsKeyPresent",
+    "template": "<#if (Recipient.points!\"0\")?number != 5>yes<#else>no</#if>",
+    "props": {
+      "Recipient.points": "10"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "existsCheckOrFalse",
+    "template": "<#if Recipient.a?? || Recipient.b??>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "existsCheckOrLeftTrue",
+    "template": "<#if Recipient.a?? || Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "existsCheckOrRightTrue",
+    "template": "<#if Recipient.a?? || Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.b": "x"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "existsCheckOrBothTrue",
+    "template": "<#if Recipient.a?? || Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "y"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "doubleExistsCheckBothPresent",
+    "template": "<#if Recipient.a?? && Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x",
+      "Recipient.b": "y"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "doubleExistsCheckFirstMissing",
+    "template": "<#if Recipient.a?? && Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.b": "y"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "doubleExistsCheckSecondMissing",
+    "template": "<#if Recipient.a?? && Recipient.b??>yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "doubleExistsCheckBothMissing",
+    "template": "<#if Recipient.a?? && Recipient.b??>yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "switchDefaultWithTransformKeyAbsent",
+    "template": "<#switch Recipient.tier!\"BRONZE\"?lower_case><#case \"bronze\">Bronze<#break><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {},
+    "expected": "Bronze"
+  },
+  {
+    "name": "switchDefaultWithTransformKeyPresentAlreadyNormalized",
+    "template": "<#switch Recipient.tier!\"BRONZE\"?lower_case><#case \"bronze\">Bronze<#break><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "switchDefaultWithTransformKeyAbsentNoCase",
+    "template": "<#switch Recipient.tier!\"VIP\"?lower_case><#case \"bronze\">Bronze<#break><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {},
+    "expected": "Other"
+  },
+  {
+    "name": "concatParenDefaultBothAbsent",
+    "template": "${(Recipient.first!\"J\") + (Recipient.last!\"Doe\")}",
+    "props": {},
+    "expected": "JDoe"
+  },
+  {
+    "name": "concatParenDefaultFirstPresent",
+    "template": "${(Recipient.first!\"J\") + (Recipient.last!\"Doe\")}",
+    "props": {
+      "Recipient.first": "Alice"
+    },
+    "expected": "AliceDoe"
+  },
+  {
+    "name": "concatParenDefaultBothPresent",
+    "template": "${(Recipient.first!\"J\") + (Recipient.last!\"Doe\")}",
+    "props": {
+      "Recipient.first": "Alice",
+      "Recipient.last": "Smith"
+    },
+    "expected": "AliceSmith"
+  },
+  {
+    "name": "concatParenDefaultWithTransform",
+    "template": "${(Recipient.first!\"hello\")?upper_case + \" \" + (Recipient.last!\"world\")?upper_case}",
+    "props": {},
+    "expected": "HELLO WORLD"
+  },
+  {
+    "name": "parenDefaultOrBothAbsentBothMatch",
+    "template": "<#if (Recipient.a!\"x\") == \"x\" || (Recipient.b!\"y\") == \"y\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultOrBothAbsentNeitherMatch",
+    "template": "<#if (Recipient.a!\"z\") == \"x\" || (Recipient.b!\"w\") == \"y\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "parenDefaultOrBothAbsentSecondMatch",
+    "template": "<#if (Recipient.a!\"z\") == \"x\" || (Recipient.b!\"y\") == \"y\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "yes"
+  },
+  {
+    "name": "parenDefaultOrFirstPresentMatchesRhs",
+    "template": "<#if (Recipient.a!\"z\") == \"x\" || (Recipient.b!\"w\") == \"y\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "x"
+    },
+    "expected": "yes"
+  }
+]

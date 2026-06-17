@@ -32,7 +32,12 @@ import SwrveSDKCommon
     func addAssetToQueue(assetsQueue: NSMutableSet, withUrl url: String?, withPersonalization personalization: [String: Any]) {
         guard let url = url else { return }
         do {
-            let resolvedUrl = try TextTemplating.templatedText(from: url, withProperties: personalization)
+            let resolvedUrl: String
+            if freemarkerEnabled {
+                resolvedUrl = try SwrveFreemarkerEvaluator.evaluate(url, properties: personalization, useLocalTimezone: useLocalTimezone)
+            } else {
+                resolvedUrl = try TextTemplating.templatedText(from: url, withProperties: personalization)
+            }
             let data = resolvedUrl.data(using: .utf8, allowLossyConversion: true)
             let sha1Url = SwrveUtils.sha1(data)
             if let assetQueueItem = SwrveAssetsManager.assetQItem(with: sha1Url, andDigest: resolvedUrl, andIsExternal: true, andIsImage: true) {
@@ -239,8 +244,8 @@ import SwrveSDKCommon
     private func checkPersonalizationProperties(_ message: SwrveMessage, personalization: [String: Any], reasons campaignReasons: NSMutableDictionary)
         -> Bool
     {
-        guard message.canResolvePersonalization(personalization) else {
-            logAndAdd(reason: "Campaign \(self.ID) has unresolved personalization properties", withReasons: campaignReasons)
+        if let failureReason = message.personalizationFailureReason(personalization) {
+            logAndAdd(reason: "Campaign \(self.ID) has unresolved personalization properties: \(failureReason)", withReasons: campaignReasons)
             return false
         }
         return true

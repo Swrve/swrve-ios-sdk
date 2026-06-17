@@ -12,6 +12,7 @@
       "end_date": 32515660796000,
       "state": "U",
       "sent_date": 1714555770,
+      "mg_tracking_data": "test-tracking-data",
       "customer_json": {
         "title": "New Arrivals!",
         "body": "Check out our latest collection of running shoes and activewear. Stay ahead of the game with FitGear's newest arrivals."

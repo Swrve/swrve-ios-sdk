@@ -1,0 +1,22 @@
+[string-concat]
+String concat FIRST_NAME + LOYALTY_POINTS:   John   — 1200 pts
+[if-elseif-else]
+if/elseif/else LOYALTY_POINTS?number gte 1000: branch 1
+[compound-boolean]
+loyalty_points gte 1000 && country == US: both true
+[has-content]
+promo_code?has_content: true (SAVE20)
+[switch]
+switch country: US matched
+[has-content-fallback]
+has_content fallback: property missing, fallback used
+[boolean-exists]
+is_premium?? exists + boolean: property exists and is true
+[less-than]
+loyalty_points?number lt 500: false
+[nested-switch-if]
+nested if/switch: US + premium true
+[exists]
+promo_code?? exists: true
+[trim]
+trim built-in: John

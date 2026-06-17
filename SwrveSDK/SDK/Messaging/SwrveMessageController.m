@@ -944,10 +944,15 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
 
 - (NSString *)personalizeEmbeddedMessageData:(SwrveEmbeddedMessage *)message withPersonalization:(NSDictionary *)personalizationProperties {
     if (message != nil) {
-        NSError *error;
+        NSError *error = nil;
         NSString *resolvedMessageData = nil;
-        
-        if (message.type == SwrveEmbeddedDataTypeJson) {
+
+        BOOL useLocalTimezone = message.campaign.useLocalTimezone;
+        if (message.campaign.freemarkerEnabled && message.type == SwrveEmbeddedDataTypeJson) {
+            resolvedMessageData = [self applyFreemarkerToJSONString:message.dataRaw properties:personalizationProperties useLocalTimezone:useLocalTimezone error:&error];
+        } else if (message.campaign.freemarkerEnabled) {
+            resolvedMessageData = [SwrveFreemarkerEvaluator evaluate:message.dataRaw properties:(NSDictionary<NSString*, id>*)personalizationProperties useLocalTimezone:useLocalTimezone error:&error];
+        } else if (message.type == SwrveEmbeddedDataTypeJson) {
             resolvedMessageData = [TextTemplating templatedTextFromJSONString:message.dataRaw withProperties:personalizationProperties andError:&error];
         } else {
             resolvedMessageData = [TextTemplating templatedTextFromString:message.dataRaw withProperties:personalizationProperties andError:&error];
@@ -955,8 +960,12 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
         
         if (error != nil || resolvedMessageData == nil) {
             SwrveEmbeddedCampaign *campaign = (SwrveEmbeddedCampaign *) message.campaign;
-            [SwrveLogger debug:@"For campaign id: %ld. Could not resolve personalization: %@", campaign.ID, message.dataRaw];
-            [SwrveQA embeddedPersonalizationFailed:[NSNumber numberWithUnsignedInteger:message.campaign.ID] variantId:message.messageID unresolvedData:message.dataRaw reason:@"Failed to resolve personalization"];
+            if (campaign != nil) {
+                [SwrveLogger debug:@"For campaign id: %lu. Could not resolve personalization. Error: %@. Data: %@", (unsigned long)campaign.ID, error.localizedDescription, message.dataRaw];
+                [SwrveQA embeddedPersonalizationFailed:[NSNumber numberWithUnsignedInteger:campaign.ID] variantId:message.messageID unresolvedData:message.dataRaw reason:@"Failed to resolve personalization"];
+            } else {
+                [SwrveLogger debug:@"Could not resolve embedded message personalization. Error: %@. Data: %@", error.localizedDescription, message.dataRaw];
+            }
             return nil;
         } else {
             return resolvedMessageData;
@@ -966,10 +975,78 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return nil;
 }
 
+- (NSString *)applyFreemarkerToJSONString:(NSString *)jsonString properties:(NSDictionary *)properties useLocalTimezone:(BOOL)useLocalTimezone error:(NSError **)error {
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *parseError = nil;
+    id parsed = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&parseError];
+    if (parseError || !parsed) {
+        if (error) *error = parseError;
+        return nil;
+    }
+    id resolved = [self applyFreemarkerToJSONValue:parsed properties:properties useLocalTimezone:useLocalTimezone error:error];
+    if ((error && *error) || !resolved) {
+        return nil;
+    }
+    NSData *resultData = [NSJSONSerialization dataWithJSONObject:resolved options:0 error:error];
+    if ((error && *error) || !resultData) {
+        return nil;
+    }
+    return [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
+}
+
+- (id)applyFreemarkerToJSONValue:(id)value properties:(NSDictionary *)properties useLocalTimezone:(BOOL)useLocalTimezone error:(NSError **)error {
+    if ([value isKindOfClass:[NSString class]]) {
+        NSString *resolved = [SwrveFreemarkerEvaluator evaluate:value properties:(NSDictionary<NSString*, id>*)properties useLocalTimezone:useLocalTimezone error:error];
+        return (error && *error) ? nil : resolved;
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+        return [self applyFreemarkerToJSONDictionary:value properties:properties useLocalTimezone:useLocalTimezone error:error];
+    } else if ([value isKindOfClass:[NSArray class]]) {
+        return [self applyFreemarkerToJSONArray:value properties:properties useLocalTimezone:useLocalTimezone error:error];
+    }
+    return value;
+}
+
+- (NSDictionary *)applyFreemarkerToJSONDictionary:(NSDictionary *)dict properties:(NSDictionary *)properties useLocalTimezone:(BOOL)useLocalTimezone error:(NSError **)error {
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:dict.count];
+    for (NSString *key in dict) {
+        NSString *resolvedKey = [SwrveFreemarkerEvaluator evaluate:key properties:(NSDictionary<NSString*, id>*)properties useLocalTimezone:useLocalTimezone error:error];
+        if (error && *error) {
+            [SwrveLogger debug:@"FreeMarker failed evaluating key '%@': %@", key, (*error).localizedDescription];
+            return nil;
+        }
+        id resolvedValue = [self applyFreemarkerToJSONValue:dict[key] properties:properties useLocalTimezone:useLocalTimezone error:error];
+        if (error && *error) {
+            [SwrveLogger debug:@"FreeMarker failed evaluating value for key '%@': %@", key, (*error).localizedDescription];
+            return nil;
+        }
+        result[resolvedKey] = resolvedValue;
+    }
+    return result;
+}
+
+- (NSArray *)applyFreemarkerToJSONArray:(NSArray *)array properties:(NSDictionary *)properties useLocalTimezone:(BOOL)useLocalTimezone error:(NSError **)error {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:array.count];
+    for (id item in array) {
+        id resolvedItem = [self applyFreemarkerToJSONValue:item properties:properties useLocalTimezone:useLocalTimezone error:error];
+        if (error && *error) return nil;
+        [result addObject:resolvedItem];
+    }
+    return result;
+}
+
 - (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties {
+    return [self personalizeText:text withPersonalization:personalizationProperties freemarkerEnabled:NO useLocalTimezone:NO];
+}
+
+- (NSString *)personalizeText:(NSString *)text withPersonalization:(NSDictionary *)personalizationProperties freemarkerEnabled:(BOOL)freemarkerEnabled useLocalTimezone:(BOOL)useLocalTimezone {
     if (text != nil) {
-        NSError *error;
-        NSString *resolvedText = [TextTemplating templatedTextFromString:text withProperties:personalizationProperties andError:&error];
+        NSError *error = nil;
+        NSString *resolvedText;
+        if (freemarkerEnabled) {
+            resolvedText = [SwrveFreemarkerEvaluator evaluate:text properties:(NSDictionary<NSString*, id>*)personalizationProperties useLocalTimezone:useLocalTimezone error:&error];
+        } else {
+            resolvedText = [TextTemplating templatedTextFromString:text withProperties:personalizationProperties andError:&error];
+        }
         if (error != nil || resolvedText == nil) {
             [SwrveLogger debug:@"Could not resolve personalization: %@", text];
             return nil;
@@ -1138,13 +1215,13 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             SwrveMessagePage *page = [pages objectForKey:key];
             for (SwrveButton *button in page.buttons) {
                 
-                NSDictionary *personlisationProps = ((SwrveMessageViewController *) self.inAppMessageWindow.rootViewController).personalization;
-                NSString *personlizedText = [self personalizeText:button.text withPersonalization:personlisationProps];
-                NSString *personlizedActionString = [self personalizeText:button.actionString withPersonalization:personlisationProps];
+                NSDictionary *personalizationProps = ((SwrveMessageViewController *) self.inAppMessageWindow.rootViewController).personalization;
+                NSString *personalizedText = [self personalizeText:button.text withPersonalization:personalizationProps freemarkerEnabled:campaign.freemarkerEnabled useLocalTimezone:campaign.useLocalTimezone];
+                NSString *personalizedActionString = [self personalizeText:button.actionString withPersonalization:personalizationProps freemarkerEnabled:campaign.freemarkerEnabled useLocalTimezone:campaign.useLocalTimezone];
                 SwrveMessageButtonDetails *messageButtonDetails = [[SwrveMessageButtonDetails alloc] initWith:button.name
-                                                                                                   buttonText:personlizedText
+                                                                                                   buttonText:personalizedText
                                                                                                    actionType:button.actionType
-                                                                                                 actionString:personlizedActionString];
+                                                                                                 actionString:personalizedActionString];
                 [allButtons addObject:messageButtonDetails];
             }
         }
@@ -1424,27 +1501,27 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return [UIImage imageWithData:[NSData dataWithContentsOfURL:localImageFileUrl]];
 }
 
-- (SwrveMessageCenterDetails *)personalizeMessageCenterDetails:(SwrveMessageCenterDetails *)rawMessageCenterDetails withPersonalization:(NSDictionary *)personalization {
+- (SwrveMessageCenterDetails *)personalizeMessageCenterDetails:(SwrveMessageCenterDetails *)rawMessageCenterDetails withPersonalization:(NSDictionary *)personalization freemarkerEnabled:(BOOL)freemarkerEnabled useLocalTimezone:(BOOL)useLocalTimezone {
     if (rawMessageCenterDetails == nil) return nil;
-    
+
     NSString *subject = rawMessageCenterDetails.subject;
     if (subject != nil) {
-        subject = [self personalizeText:subject withPersonalization:personalization];
+        subject = [self personalizeText:subject withPersonalization:personalization freemarkerEnabled:freemarkerEnabled useLocalTimezone:useLocalTimezone];
     }
-    
+
     NSString *description = rawMessageCenterDetails.description;
     if (description != nil) {
-        description = [self personalizeText:description withPersonalization:personalization];
+        description = [self personalizeText:description withPersonalization:personalization freemarkerEnabled:freemarkerEnabled useLocalTimezone:useLocalTimezone];
     }
-    
+
     NSString *imageAccessibilityText = rawMessageCenterDetails.imageAccessibilityText;
     if (imageAccessibilityText != nil) {
-        imageAccessibilityText = [self personalizeText:imageAccessibilityText withPersonalization:personalization];
+        imageAccessibilityText = [self personalizeText:imageAccessibilityText withPersonalization:personalization freemarkerEnabled:freemarkerEnabled useLocalTimezone:useLocalTimezone];
     }
-    
+
     NSString *imageUrl = rawMessageCenterDetails.imageUrl;
     if (imageUrl != nil) {
-        imageUrl = [self personalizeText:imageUrl withPersonalization:personalization];
+        imageUrl = [self personalizeText:imageUrl withPersonalization:personalization freemarkerEnabled:freemarkerEnabled useLocalTimezone:useLocalTimezone];
     }
     
     NSString *imageSha = rawMessageCenterDetails.imageSha; // imageSha is not personalized
@@ -1501,7 +1578,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
                 continue; // Skip IAM campaign if personalization cannot be resolved
             } else {
                 campaign.priority = message.priority;
-                campaign.messageCenterDetails = [self personalizeMessageCenterDetails:message.messageCenterDetails withPersonalization:personalization];
+                campaign.messageCenterDetails = [self personalizeMessageCenterDetails:message.messageCenterDetails withPersonalization:personalization freemarkerEnabled:swrveInAppCampaign.freemarkerEnabled useLocalTimezone:swrveInAppCampaign.useLocalTimezone];
             }
         } else if ([campaign isKindOfClass:[SwrveEmbeddedCampaign class]]) {
             SwrveEmbeddedCampaign *swrveEmbeddedCampaign = (SwrveEmbeddedCampaign *) campaign;
@@ -1679,6 +1756,8 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     for (NSString *key in rtupsKeys) {
         NSString *modifiedKey = [NSString stringWithFormat:@"user.%@", key];
         [result setValue:realTimeUserProperties[key] forKey:modifiedKey];
+        NSString *recipientKey = [NSString stringWithFormat:@"Recipient.%@", key];
+        [result setValue:realTimeUserProperties[key] forKey:recipientKey];
     }
     
     return result;

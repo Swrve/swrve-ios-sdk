@@ -37,8 +37,16 @@ import SwrveSDKCommon
     /// Indicates if this is a Message Center campaign.
     @objc public var messageCenter: Bool = false
 
+    /// Indicates if FreeMarker templating is enabled for this campaign.
+    @objc public var freemarkerEnabled: Bool = false
+
     /// The timezone type of the campaign.
     @objc public var timezoneType: SwrveTimezoneType
+
+    /// Whether date built-ins in FreeMarker templates should be evaluated in the device's local
+    /// timezone (`LOCAL`) rather than UTC (`GLOBAL`). Single source of truth for the GLOBAL/LOCAL
+    /// mapping — mirrors how `timezoneType` drives campaign start/end/blackout date parsing.
+    @objc public var useLocalTimezone: Bool { timezoneType == .LOCAL }
 
     /// Start date of the campaign.
     @objc public var startDateIso: String
@@ -99,6 +107,7 @@ import SwrveSDKCommon
         self.showMsgsAfterLaunch = time.addingTimeInterval(SwrveCampaign.defaultDelayFirstMessage)
         self.initialisedTime = time
         self.messageCenter = json["message_center"] as? Bool ?? false
+        self.freemarkerEnabled = json["freemarker_enabled"] as? Bool ?? false
         self.campaignType = campaignType
         self.startDateIso = json["start_date_iso"] as? String ?? ""
         self.endDateIso = json["end_date_iso"] as? String ?? ""

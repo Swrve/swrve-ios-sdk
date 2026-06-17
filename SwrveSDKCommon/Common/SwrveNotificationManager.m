@@ -412,10 +412,13 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         [SwrveLogger debug:@"SwrveNotificationManager: Performed a direct press on Swrve notification with id %@", notificationId];
 
         // get deeplink if there is one, but pass it back up so it can be processed by calling code
-        deeplinkUrl = [self deeplinkFromUserInfo:userInfo];
-
+        NSString *deeplinkString = [self deeplinkStringFromUserInfo:userInfo];
+        if (deeplinkString != nil) {
+            deeplinkUrl = [self deeplinkUrlfromString:deeplinkString];
+        }
+        
         // send engaged event
-        [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkUrl];
+        [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkString];
 
         // check for campaign, if present try to load
         [self loadCampaignFromNotification:userInfo];
@@ -427,7 +430,10 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             NSDictionary *selectedButton = [swrvebuttons objectAtIndex:(NSUInteger) position];
 
             // get deeplink if there is one, but pass it back up so it can be processed by calling code
-            deeplinkUrl = [self deeplinkFromButton:selectedButton];
+            NSString *deeplinkString = [self deeplinkStringFromButton:selectedButton];
+            if (deeplinkString != nil) {
+                deeplinkUrl = [self deeplinkUrlfromString:deeplinkString];
+            }
 
             // send button click event
             NSString *actionText = [selectedButton objectForKey:SwrveNotificationButtonTitleKey];
@@ -443,8 +449,8 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
             if (trackingPayload != nil) {
                 [payload addEntriesFromDictionary:trackingPayload];
             }
-            if (deeplinkUrl != nil) {
-                [payload setObject:deeplinkUrl.absoluteString forKey:@"deeplink"];
+            if (deeplinkString != nil) {
+                [payload setObject:deeplinkString forKey:@"deeplink"];
             }
 
             [self sendButtonClickEventForNotificationId:notificationId
@@ -454,7 +460,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                                              andPayload:payload];
 
             // send engaged event
-            [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkUrl];
+            [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkString];
 
             // check for open campaign action, if present try to load
             [self loadCampaignFromButton:selectedButton];
@@ -496,8 +502,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return notificationIdString;
 }
 
-+ (NSURL *)deeplinkFromUserInfo:(NSDictionary *)userInfo {
-    NSURL *deeplinkUrl = nil;
++ (NSString *)deeplinkStringFromUserInfo:(NSDictionary *)userInfo {
     // deeplink _sd (and old _d)
     id deeplinkRaw = [userInfo objectForKey:SwrveNotificationDeeplinkKey];
     if (deeplinkRaw == nil || ![deeplinkRaw isKindOfClass:[NSString class]]) {
@@ -505,15 +510,14 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         deeplinkRaw = [userInfo objectForKey:SwrveNotificationDeprecatedDeeplinkKey];
     }
     if ([deeplinkRaw isKindOfClass:[NSString class]]) {
-        NSString *deeplinkString = (NSString *) deeplinkRaw;
-        deeplinkUrl = [self deeplinkFromUrl:deeplinkString];
+        return (NSString *) deeplinkRaw;
     }
-    return deeplinkUrl;
+    return nil;
 }
 
-+ (NSURL *)deeplinkFromUrl:(NSString *)deeplinkString NS_EXTENSION_UNAVAILABLE_IOS("") {
++ (NSURL *)deeplinkUrlfromString:(NSString *)deeplinkString NS_EXTENSION_UNAVAILABLE_IOS("") {
     NSURL *deeplinkUrl = [NSURL URLWithString:deeplinkString];
-    BOOL canOpen = [[SwrveCommon sharedUIApplication] canOpenURL:deeplinkUrl];
+    BOOL canOpen = deeplinkUrl != nil && [[SwrveCommon sharedUIApplication] canOpenURL:deeplinkUrl];
     if (deeplinkUrl != nil && canOpen) {
         [SwrveLogger debug:@"SwrveNotificationManager: Deeplink - %@ - found.  Sending to application as URL", deeplinkString];
     } else {
@@ -523,15 +527,14 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     return deeplinkUrl;
 }
 
-+ (NSURL *)deeplinkFromButton:(NSDictionary *)selectedButton {
-    NSURL *deeplinkUrl = nil;
++ (NSString *)deeplinkStringFromButton:(NSDictionary *)selectedButton {
     NSString *action = [selectedButton objectForKey:SwrveNotificationButtonActionKey];
     NSString *actionType = [selectedButton objectForKey:SwrveNotificationButtonActionTypeKey];
     // get the deeplink if available in Action
-    if ([actionType isEqualToString:SwrveNotificationCustomButtonUrlIdentiferKey]) {
-        deeplinkUrl = [self deeplinkFromUrl:action];
+    if ([actionType isEqualToString:SwrveNotificationCustomButtonUrlIdentiferKey] && [action isKindOfClass:[NSString class]]) {
+        return action;
     }
-    return deeplinkUrl;
+    return nil;
 }
 
 + (void)sendButtonClickEventForNotificationId:(NSString *)notificationId
@@ -555,7 +558,7 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     [swrveCommon sendQueuedEvents];
 }
 
-+ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo andDeeplink:(NSURL *) deeplinkUrl {
++ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo andDeeplink:(NSString *)deeplink {
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
     if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
@@ -579,8 +582,8 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         if (trackingPayload != nil) {
             [payload addEntriesFromDictionary:trackingPayload];
         }
-        if (deeplinkUrl != nil) {
-            [payload setObject:deeplinkUrl.absoluteString forKey:@"deeplink"];
+        if (deeplink != nil) {
+            [payload setObject:deeplink forKey:@"deeplink"];
         }
         [swrveCommon sendPushNotificationEngagedEvent:notificationId withPayload:payload];
     }

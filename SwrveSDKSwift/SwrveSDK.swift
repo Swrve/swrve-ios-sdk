@@ -350,8 +350,8 @@ public enum SwrveSDKError: Error, Equatable {
     /// Called to send the push engaged event to Swrve.
     /// - Parameters:
     ///   - pushId: The push id for engagement (the _p value from the push payload)
-    ///   - trackingData: Tracking data to be sent with the event (the _td value from the push payload)
-    ///   - platform: Platform of the push notification (the _smp value from the push payload)
+    ///   - trackingData: Tracking data from the push payload's _td field. If the push payload does not contain a _td field, pass empty string ("").
+    ///   - platform: Platform from the push payload's _smp field. If the push payload does not contain a _smp field, pass empty string ("").
     @objc public class func sendPushEngagedEvent(_ pushId: String, _ trackingData: String, _ platform: String) {
         sendPushEngagedEvent(pushId, trackingData, platform, "")
     }
@@ -359,8 +359,8 @@ public enum SwrveSDKError: Error, Equatable {
     /// Called to send the push engaged event to Swrve.
     /// - Parameters:
     ///   - pushId: The push id for engagement (the _p value from the push payload)
-    ///   - trackingData: Tracking data to be sent with the event (the _td value from the push payload)
-    ///   - platform: Platform of the push notification (the _smp value from the push payload)
+    ///   - trackingData: Tracking data from the push payload's _td field. If the push payload does not contain a _td field, pass empty string ("").
+    ///   - platform: Platform from the push payload's _smp field. If the push payload does not contain a _smp field, pass empty string ("").
     @objc public class func sendPushEngagedEvent(_ pushId: String, _ trackingData: String, _ platform: String, _ deeplink: String) {
         checkInstance()
         var payload: [String: String] = [:]

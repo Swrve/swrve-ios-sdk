@@ -770,6 +770,51 @@
 #endif
 }
 
+- (void)testIAMMessageCenterDetailsWithFreemarker {
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    id swrveMock = [self swrveMock];
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600];
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsFreemarkerMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+    // FreeMarker conditional resolves correctly for gold tier
+    NSDictionary *goldPersonalization = @{@"Recipient.tier": @"gold", @"Recipient.name": @"Alice"};
+    SwrveCampaign *campaign = [swrveMock messageCenterCampaignWithID:105 andPersonalization:goldPersonalization];
+    XCTAssertEqualObjects(campaign.messageCenterDetails.subject, @"Gold Member");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.description, @"Welcome, Alice");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageAccessibilityText, @"Gold banner");
+
+    // FreeMarker conditional resolves correctly for non-gold tier
+    NSDictionary *standardPersonalization = @{@"Recipient.tier": @"bronze", @"Recipient.name": @"Bob"};
+    campaign = [swrveMock messageCenterCampaignWithID:105 andPersonalization:standardPersonalization];
+    XCTAssertEqualObjects(campaign.messageCenterDetails.subject, @"Standard Member");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.description, @"Welcome, Bob");
+    XCTAssertEqualObjects(campaign.messageCenterDetails.imageAccessibilityText, @"Standard banner");
+
+    // Missing required FreeMarker property suppresses the campaign
+    NSDictionary *missingProps = @{@"Recipient.name": @"Charlie"};
+    campaign = [swrveMock messageCenterCampaignWithID:105 andPersonalization:missingProps];
+    XCTAssertNil(campaign);
+
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+}
+
 - (void)testDownloadDate {
     [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
 
@@ -1039,6 +1084,123 @@
     XCTAssertEqual(updatedCampaigns.count, 1);
     embeddedMessage = updatedCampaigns.firstObject;
     XCTAssertEqual(embeddedMessage.campaignID, 108);
+}
+
+- (void)testEmbeddedMessageCenterCampaignsWithFreemarker {
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    id swrveMock = [self swrveMock];
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsFreemarkerMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+
+    // All 7 embedded campaigns — pass required properties so all campaigns resolve during the filter step
+    NSArray *embeddedCampaigns = [swrveMock embeddedMessageCenterCampaigns:@{@"Recipient.tier": @"bronze", @"Recipient.first_name": @"test"}];
+    XCTAssertEqual(embeddedCampaigns.count, 7);
+
+    // Find each message by campaignID
+    SwrveEmbeddedMessage *embeddedOther = nil;
+    SwrveEmbeddedMessage *embeddedJson = nil;
+    SwrveEmbeddedMessage *embeddedJsonDoubleQuote = nil;
+    SwrveEmbeddedMessage *embeddedJsonNested = nil;
+    SwrveEmbeddedMessage *embeddedJsonArray = nil;
+    SwrveEmbeddedMessage *embeddedOtherStringLiteral = nil;
+    SwrveEmbeddedMessage *embeddedJsonTopLevelArray = nil;
+    for (SwrveEmbeddedMessage *msg in embeddedCampaigns) {
+        if (msg.campaignID == 106) embeddedOther = msg;
+        if (msg.campaignID == 107) embeddedJson = msg;
+        if (msg.campaignID == 108) embeddedJsonDoubleQuote = msg;
+        if (msg.campaignID == 109) embeddedJsonNested = msg;
+        if (msg.campaignID == 110) embeddedJsonArray = msg;
+        if (msg.campaignID == 111) embeddedOtherStringLiteral = msg;
+        if (msg.campaignID == 112) embeddedJsonTopLevelArray = msg;
+    }
+    XCTAssertNotNil(embeddedOther);
+    XCTAssertNotNil(embeddedJson);
+    XCTAssertNotNil(embeddedJsonDoubleQuote);
+    XCTAssertNotNil(embeddedJsonNested);
+    XCTAssertNotNil(embeddedJsonArray);
+    XCTAssertNotNil(embeddedOtherStringLiteral);
+    XCTAssertNotNil(embeddedJsonTopLevelArray);
+
+    NSDictionary *propsWithName = @{@"user_name": @"Alice"};
+
+    // --- type: other ---
+    // Property present — FreeMarker resolves to the value
+    NSString *resolvedOther = [swrveMock personalizeEmbeddedMessageData:embeddedOther withPersonalization:propsWithName];
+    XCTAssertEqualObjects(resolvedOther, @"Alice");
+
+    // Property absent — FreeMarker <#else> branch resolves to "anonymous"
+    NSString *resolvedOtherDefault = [swrveMock personalizeEmbeddedMessageData:embeddedOther withPersonalization:@{}];
+    XCTAssertEqualObjects(resolvedOtherDefault, @"anonymous");
+
+    // --- type: json (parse-first) ---
+    // NSJSONSerialization produces compact JSON (no spaces), compare parsed values
+    NSString *resolvedJson = [swrveMock personalizeEmbeddedMessageData:embeddedJson withPersonalization:propsWithName];
+    NSDictionary *resolvedJsonDict = [NSJSONSerialization JSONObjectWithData:[resolvedJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    XCTAssertEqualObjects(resolvedJsonDict[@"name"], @"Alice");
+
+    NSString *resolvedJsonDefault = [swrveMock personalizeEmbeddedMessageData:embeddedJson withPersonalization:@{}];
+    NSDictionary *resolvedJsonDefaultDict = [NSJSONSerialization JSONObjectWithData:[resolvedJsonDefault dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    XCTAssertEqualObjects(resolvedJsonDefaultDict[@"name"], @"anonymous");
+
+    // --- type: json with double-quoted string literal ---
+    // Verifies parse-first correctly handles \"gold\" from server double-escaping
+    NSDictionary *goldProps = @{@"Recipient.tier": @"gold"};
+    NSString *resolvedGold = [swrveMock personalizeEmbeddedMessageData:embeddedJsonDoubleQuote withPersonalization:goldProps];
+    NSDictionary *resolvedGoldDict = [NSJSONSerialization JSONObjectWithData:[resolvedGold dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    XCTAssertEqualObjects(resolvedGoldDict[@"tier_message"], @"Gold Member");
+
+    NSDictionary *bronzeProps = @{@"Recipient.tier": @"bronze"};
+    NSString *resolvedBronze = [swrveMock personalizeEmbeddedMessageData:embeddedJsonDoubleQuote withPersonalization:bronzeProps];
+    NSDictionary *resolvedBronzeDict = [NSJSONSerialization JSONObjectWithData:[resolvedBronze dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    XCTAssertEqualObjects(resolvedBronzeDict[@"tier_message"], @"Standard Member");
+
+    // --- type: json with nested object ---
+    // Verifies parse-first recursively evaluates FreeMarker in nested JSON values
+    NSDictionary *nestedProps = @{@"Recipient.first_name": @"Alice", @"Recipient.tier": @"gold"};
+    NSString *resolvedNested = [swrveMock personalizeEmbeddedMessageData:embeddedJsonNested withPersonalization:nestedProps];
+    NSDictionary *resolvedNestedDict = [NSJSONSerialization JSONObjectWithData:[resolvedNested dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    NSDictionary *userDict = resolvedNestedDict[@"user"];
+    XCTAssertEqualObjects(userDict[@"name"], @"Alice");
+    XCTAssertEqualObjects(userDict[@"tier"], @"gold");
+    XCTAssertEqualObjects(resolvedNestedDict[@"message"], @"Hello Alice");
+
+    // --- type: json with array ---
+    // Verifies parse-first recursively evaluates FreeMarker in JSON array elements
+    NSDictionary *arrayProps = @{@"Recipient.first_name": @"Alice", @"Recipient.tier": @"gold"};
+    NSString *resolvedArray = [swrveMock personalizeEmbeddedMessageData:embeddedJsonArray withPersonalization:arrayProps];
+    NSDictionary *resolvedArrayDict = [NSJSONSerialization JSONObjectWithData:[resolvedArray dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    NSArray *tagsArray = resolvedArrayDict[@"tags"];
+    XCTAssertEqualObjects(tagsArray[0], @"Alice");
+    XCTAssertEqualObjects(tagsArray[1], @"gold");
+
+    // --- type: other with string literal double-quote comparison ---
+    // Verifies other type passes raw FreeMarker to engine; == "gold" string literals work without escaping issues
+    NSDictionary *otherGoldProps = @{@"Recipient.tier": @"gold"};
+    NSString *resolvedOtherGold = [swrveMock personalizeEmbeddedMessageData:embeddedOtherStringLiteral withPersonalization:otherGoldProps];
+    XCTAssertEqualObjects(resolvedOtherGold, @"Gold Member");
+
+    NSDictionary *otherBronzeProps = @{@"Recipient.tier": @"bronze"};
+    NSString *resolvedOtherBronze = [swrveMock personalizeEmbeddedMessageData:embeddedOtherStringLiteral withPersonalization:otherBronzeProps];
+    XCTAssertEqualObjects(resolvedOtherBronze, @"Standard Member");
+
+    // --- type: json with top-level array ---
+    // Verifies NSJSONSerialization + applyFreemarkerToJSONValue: dispatch handles array root correctly
+    NSDictionary *topLevelArrayProps = @{@"Recipient.first_name": @"Alice", @"Recipient.tier": @"gold"};
+    NSString *resolvedTopLevelArray = [swrveMock personalizeEmbeddedMessageData:embeddedJsonTopLevelArray withPersonalization:topLevelArrayProps];
+    NSArray *topLevelArray = [NSJSONSerialization JSONObjectWithData:[resolvedTopLevelArray dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    XCTAssertEqualObjects(topLevelArray[0], @"Alice");
+    XCTAssertEqualObjects(topLevelArray[1], @"gold");
 }
 
 #if TARGET_OS_IOS

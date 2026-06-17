@@ -31,6 +31,9 @@ extension Optional where Wrapped == String {
     /// The expiry date of the push message. After this date, the message will no longer be returned from APIs.
     @objc public private(set) var endDate: UInt64 = 0
 
+    /// Optional tracking data from MG, forwarded in inbox events. Empty string if not present.
+    @objc public private(set) var trackingData: String = ""
+
     @objc init(_ objectData: NSDictionary) throws {
 
         messageId = (objectData.value(forKey: "message_id") as? UInt64)!
@@ -47,6 +50,7 @@ extension Optional where Wrapped == String {
         customerJson = objectData.value(forKey: "customer_json") as? NSDictionary ?? nil
         sentDate = (objectData.value(forKey: "sent_date") as? UInt64)!
         endDate = (objectData.value(forKey: "end_date") as? UInt64)!
+        trackingData = objectData.value(forKey: "mg_tracking_data") as? String ?? ""
     }
 
 }

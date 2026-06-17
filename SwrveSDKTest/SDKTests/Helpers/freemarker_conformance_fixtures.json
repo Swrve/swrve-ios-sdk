@@ -1,0 +1,1157 @@
+[
+  {
+    "name": "testSimpleInterpolation",
+    "template": "Hello ${Recipient.firstName}!",
+    "props": {
+      "Recipient.firstName": "Joe"
+    },
+    "expected": "Hello Joe!"
+  },
+  {
+    "name": "testMultipleInterpolations",
+    "template": "${Recipient.firstName} ${Recipient.lastName}",
+    "props": {
+      "Recipient.firstName": "Joe",
+      "Recipient.lastName": "Smith"
+    },
+    "expected": "Joe Smith"
+  },
+  {
+    "name": "testDefaultValueKeyPresent",
+    "template": "Hello ${Recipient.firstName!\"there\"}",
+    "props": {
+      "Recipient.firstName": "Joe"
+    },
+    "expected": "Hello Joe"
+  },
+  {
+    "name": "testDefaultValueKeyMissing",
+    "template": "Hello ${Recipient.firstName!\"there\"}",
+    "props": {},
+    "expected": "Hello there"
+  },
+  {
+    "name": "testDefaultValueDoesNotTriggerOnEmptyString",
+    "template": "${Recipient.name!\"fallback\"}",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "testDefaultValueSingleQuotedKeyMissing",
+    "template": "Hello ${Recipient.firstName!'there'}",
+    "props": {},
+    "expected": "Hello there"
+  },
+  {
+    "name": "testDefaultValueSingleQuotedKeyPresent",
+    "template": "Hello ${Recipient.firstName!'there'}",
+    "props": {
+      "Recipient.firstName": "Joe"
+    },
+    "expected": "Hello Joe"
+  },
+  {
+    "name": "testNumericGt",
+    "template": "<#if Recipient.balance?number gt 100>Eligible<#else>Not eligible</#if>",
+    "props": {
+      "Recipient.balance": "150"
+    },
+    "expected": "Eligible"
+  },
+  {
+    "name": "testNumericGte",
+    "template": "<#if Recipient.balance?number gte 100>Eligible<#else>Not eligible</#if>",
+    "props": {
+      "Recipient.balance": "100"
+    },
+    "expected": "Eligible"
+  },
+  {
+    "name": "testNumericLt",
+    "template": "<#if Recipient.balance?number lt 100>Low<#else>OK</#if>",
+    "props": {
+      "Recipient.balance": "50"
+    },
+    "expected": "Low"
+  },
+  {
+    "name": "testNumericLte",
+    "template": "<#if Recipient.balance?number lte 100>C</#if>",
+    "props": {
+      "Recipient.balance": "100"
+    },
+    "expected": "C"
+  },
+  {
+    "name": "testNumericGtBoundaryExcludes",
+    "template": "<#if Recipient.balance?number gt 100>A</#if>",
+    "props": {
+      "Recipient.balance": "100"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testNumericLtBoundaryExcludes",
+    "template": "<#if Recipient.balance?number lt 100>B</#if>",
+    "props": {
+      "Recipient.balance": "100"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testNumericFloat",
+    "template": "<#if Recipient.score?number gt 3.0>High<#else>Low</#if>",
+    "props": {
+      "Recipient.score": "3.14"
+    },
+    "expected": "High"
+  },
+  {
+    "name": "testPlainTextPassThrough",
+    "template": "Hello World",
+    "props": {},
+    "expected": "Hello World"
+  },
+  {
+    "name": "testEmptyTemplate",
+    "template": "",
+    "props": {},
+    "expected": ""
+  },
+  {
+    "name": "testIfElseTrueBranch",
+    "template": "<#if Recipient.loyalty_points == \"1200\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.loyalty_points": "1200"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testIfElseFalseBranch",
+    "template": "<#if Recipient.loyalty_points == \"1200\">Gold<#else>Standard</#if>",
+    "props": {
+      "Recipient.loyalty_points": "500"
+    },
+    "expected": "Standard"
+  },
+  {
+    "name": "testIfWithoutElse",
+    "template": "<#if Recipient.flag == \"yes\">Shown</#if>",
+    "props": {
+      "Recipient.flag": "yes"
+    },
+    "expected": "Shown"
+  },
+  {
+    "name": "testIfWithoutElseFalse",
+    "template": "<#if Recipient.flag == \"yes\">Shown</#if>",
+    "props": {
+      "Recipient.flag": "no"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testNotEquals",
+    "template": "<#if Recipient.country != \"US\">International<#else>Domestic</#if>",
+    "props": {
+      "Recipient.country": "UK"
+    },
+    "expected": "International"
+  },
+  {
+    "name": "testElseIfFirstBranch",
+    "template": "<#if Recipient.loyalty_points?number gte 1000>Gold<#elseif Recipient.loyalty_points?number gte 500>Silver<#else>Bronze</#if>",
+    "props": {
+      "Recipient.loyalty_points": "1200"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testElseIfSecondBranch",
+    "template": "<#if Recipient.loyalty_points?number gte 1000>Gold<#elseif Recipient.loyalty_points?number gte 500>Silver<#else>Bronze</#if>",
+    "props": {
+      "Recipient.loyalty_points": "700"
+    },
+    "expected": "Silver"
+  },
+  {
+    "name": "testElseIfFallsToElse",
+    "template": "<#if Recipient.loyalty_points?number gte 1000>Gold<#elseif Recipient.loyalty_points?number gte 500>Silver<#else>Bronze</#if>",
+    "props": {
+      "Recipient.loyalty_points": "100"
+    },
+    "expected": "Bronze"
+  },
+  {
+    "name": "testElseIfBoundaryGte",
+    "template": "<#if Recipient.loyalty_points?number gte 1000>Gold<#elseif Recipient.loyalty_points?number gte 500>Silver<#else>Bronze</#if>",
+    "props": {
+      "Recipient.loyalty_points": "1000"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testBooleanTrue",
+    "template": "<#if Recipient.email_opt_in?boolean>Subscribed<#else>Not subscribed</#if>",
+    "props": {
+      "Recipient.email_opt_in": "true"
+    },
+    "expected": "Subscribed"
+  },
+  {
+    "name": "testBooleanFalse",
+    "template": "<#if Recipient.email_opt_in?boolean>Subscribed<#else>Not subscribed</#if>",
+    "props": {
+      "Recipient.email_opt_in": "false"
+    },
+    "expected": "Not subscribed"
+  },
+  {
+    "name": "testTrimBooleanChainTrue",
+    "template": "<#if Recipient.flag?trim?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "  true  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testTrimBooleanChainFalse",
+    "template": "<#if Recipient.flag?trim?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "  false  "
+    },
+    "expected": "no"
+  },
+  {
+    "name": "testNegationFalseBecomesTrue",
+    "template": "<#if !Recipient.email_opt_in?boolean>Not subscribed<#else>Subscribed</#if>",
+    "props": {
+      "Recipient.email_opt_in": "false"
+    },
+    "expected": "Not subscribed"
+  },
+  {
+    "name": "testNegationTrueBecomesFalse",
+    "template": "<#if !Recipient.email_opt_in?boolean>Not subscribed<#else>Subscribed</#if>",
+    "props": {
+      "Recipient.email_opt_in": "true"
+    },
+    "expected": "Subscribed"
+  },
+  {
+    "name": "testNegationOfExistsCheck",
+    "template": "<#if !Recipient.name??>No name<#else>Has name</#if>",
+    "props": {},
+    "expected": "No name"
+  },
+  {
+    "name": "testExistsCheckKeyPresent",
+    "template": "<#if Recipient.firstName??>Hello ${Recipient.firstName}<#else>Hello there</#if>",
+    "props": {
+      "Recipient.firstName": "Joe"
+    },
+    "expected": "Hello Joe"
+  },
+  {
+    "name": "testExistsCheckKeyMissing",
+    "template": "<#if Recipient.firstName??>Hello ${Recipient.firstName}<#else>Hello there</#if>",
+    "props": {},
+    "expected": "Hello there"
+  },
+  {
+    "name": "testNestedIfBothTrue",
+    "template": "<#if Recipient.tier == \"gold\"><#if Recipient.vip == \"true\">VIP Gold<#else>Gold</#if><#else>Standard</#if>",
+    "props": {
+      "Recipient.tier": "gold",
+      "Recipient.vip": "true"
+    },
+    "expected": "VIP Gold"
+  },
+  {
+    "name": "testNestedIfInnerFalseBranch",
+    "template": "<#if Recipient.tier == \"gold\"><#if Recipient.vip == \"true\">VIP Gold<#else>Gold</#if><#else>Standard</#if>",
+    "props": {
+      "Recipient.tier": "gold",
+      "Recipient.vip": "false"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testNestedIfOuterFalseBranch",
+    "template": "<#if Recipient.tier == \"gold\"><#if Recipient.vip == \"true\">VIP Gold<#else>Gold</#if><#else>Standard</#if>",
+    "props": {
+      "Recipient.tier": "bronze",
+      "Recipient.vip": "true"
+    },
+    "expected": "Standard"
+  },
+  {
+    "name": "testAndBothTrue",
+    "template": "<#if Recipient.tier == \"gold\" && Recipient.active == \"true\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.active": "true",
+      "Recipient.tier": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testAndLeftFalse",
+    "template": "<#if Recipient.tier == \"gold\" && Recipient.active == \"true\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.active": "true",
+      "Recipient.tier": "silver"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "testAndRightFalse",
+    "template": "<#if Recipient.tier == \"gold\" && Recipient.active == \"true\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.active": "false",
+      "Recipient.tier": "gold"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "testOrLeftTrue",
+    "template": "<#if Recipient.tier == \"gold\" || Recipient.tier == \"platinum\">premium<#else>standard</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "premium"
+  },
+  {
+    "name": "testOrRightTrue",
+    "template": "<#if Recipient.tier == \"gold\" || Recipient.tier == \"platinum\">premium<#else>standard</#if>",
+    "props": {
+      "Recipient.tier": "platinum"
+    },
+    "expected": "premium"
+  },
+  {
+    "name": "testOrBothFalse",
+    "template": "<#if Recipient.tier == \"gold\" || Recipient.tier == \"platinum\">premium<#else>standard</#if>",
+    "props": {
+      "Recipient.tier": "bronze"
+    },
+    "expected": "standard"
+  },
+  {
+    "name": "testAndPrecedenceOverOr",
+    "template": "<#if Recipient.a == \"1\" || Recipient.b == \"1\" && Recipient.c == \"1\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "1",
+      "Recipient.b": "0",
+      "Recipient.c": "0"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testChainedAnd",
+    "template": "<#if Recipient.a == \"1\" && Recipient.b == \"1\" && Recipient.c == \"1\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.a": "1",
+      "Recipient.b": "1",
+      "Recipient.c": "1"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testNegationWithAnd",
+    "template": "<#if !Recipient.flag?boolean && Recipient.tier == \"gold\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "false",
+      "Recipient.tier": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testAndShortCircuitMissingKey",
+    "template": "<#if Recipient.a?? && Recipient.b == \"x\">yes<#else>no</#if>",
+    "props": {},
+    "expected": "no"
+  },
+  {
+    "name": "testOrShortCircuitMissingKey",
+    "template": "<#if Recipient.tier == \"gold\" || Recipient.missing == \"x\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testIfDirectiveNewlineStripped",
+    "template": "<#if Recipient.tier == \"gold\">\nGold\n</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold\n"
+  },
+  {
+    "name": "testEndIfDirectiveNewlineStripped",
+    "template": "<#if Recipient.tier == \"gold\">\nGold\n</#if>\nafter",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold\nafter"
+  },
+  {
+    "name": "testDefaultInConditionKeyMissing",
+    "template": "<#if (Recipient.tier!\"bronze\") == \"gold\">Gold<#else>Not gold</#if>",
+    "props": {},
+    "expected": "Not gold"
+  },
+  {
+    "name": "testDefaultInConditionKeyMissingDefaultMatches",
+    "template": "<#if (Recipient.tier!\"gold\") == \"gold\">Gold<#else>Not gold</#if>",
+    "props": {},
+    "expected": "Gold"
+  },
+  {
+    "name": "testDefaultInConditionKeyPresent",
+    "template": "<#if (Recipient.tier!\"bronze\") == \"gold\">Gold<#else>Not gold</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testDefaultInNotEqualsCondition",
+    "template": "<#if (Recipient.tier!\"bronze\") != \"gold\">Not gold<#else>Gold</#if>",
+    "props": {},
+    "expected": "Not gold"
+  },
+  {
+    "name": "testBareDefaultInConditionKeyMissing",
+    "template": "<#if Recipient.tier! == \"gold\">Gold<#else>Not gold</#if>",
+    "props": {},
+    "expected": "Not gold"
+  },
+  {
+    "name": "testBareDefaultInConditionEmptyStringMatchesEmpty",
+    "template": "<#if Recipient.tier! == \"\">Empty</#if>",
+    "props": {},
+    "expected": "Empty"
+  },
+  {
+    "name": "testBareDefaultInConditionKeyPresent",
+    "template": "<#if Recipient.tier! == \"gold\">Gold<#else>Not gold</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testBareDefaultNotEqualsKeyMissing",
+    "template": "<#if Recipient.tier! != \"gold\">Not gold</#if>",
+    "props": {},
+    "expected": "Not gold"
+  },
+  {
+    "name": "testGreaterThanInsideStringLiteralMatches",
+    "template": "<#if Recipient.label == \"a>b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.label": "a>b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testGreaterThanInsideStringLiteralNoMatch",
+    "template": "<#if Recipient.label == \"a>b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.label": "other"
+    },
+    "expected": "no"
+  },
+  {
+    "name": "testIfWithInterpolationInBody",
+    "template": "<#if Recipient.tier == \"gold\">Welcome ${Recipient.name}, Gold member!<#else>Welcome ${Recipient.name}.</#if>",
+    "props": {
+      "Recipient.name": "Alice",
+      "Recipient.tier": "gold"
+    },
+    "expected": "Welcome Alice, Gold member!"
+  },
+  {
+    "name": "testSwitchMatchesFirstCase",
+    "template": "<#switch Recipient.country><#case \"US\">US message<#break><#case \"UK\">UK message<#break><#default>Default message</#switch>",
+    "props": {
+      "Recipient.country": "US"
+    },
+    "expected": "US message"
+  },
+  {
+    "name": "testSwitchMatchesMiddleCase",
+    "template": "<#switch Recipient.country><#case \"US\">US message<#break><#case \"UK\">UK message<#break><#default>Default message</#switch>",
+    "props": {
+      "Recipient.country": "UK"
+    },
+    "expected": "UK message"
+  },
+  {
+    "name": "testSwitchNoMatchFallsToDefault",
+    "template": "<#switch Recipient.country><#case \"US\">US message<#break><#case \"UK\">UK message<#break><#default>Default message</#switch>",
+    "props": {
+      "Recipient.country": "CA"
+    },
+    "expected": "Default message"
+  },
+  {
+    "name": "testSwitchNoCasesReturnsEmpty",
+    "template": "<#switch Recipient.country></#switch>",
+    "props": {
+      "Recipient.country": "US"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testSwitchNoMatchNoDefaultReturnsEmpty",
+    "template": "<#switch Recipient.country><#case \"US\">US message<#break></#switch>",
+    "props": {
+      "Recipient.country": "CA"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testSwitchFallThroughWithoutBreak",
+    "template": "<#switch Recipient.x><#case \"a\">A<#case \"b\">B<#break><#default>D</#switch>",
+    "props": {
+      "Recipient.x": "a"
+    },
+    "expected": "AB"
+  },
+  {
+    "name": "testSwitchFallThroughIntoDefault",
+    "template": "<#switch Recipient.x><#case \"a\">A<#default>D</#switch>",
+    "props": {
+      "Recipient.x": "a"
+    },
+    "expected": "AD"
+  },
+  {
+    "name": "testSwitchWhitespaceBetweenDirectivesAllowed",
+    "template": "<#switch Recipient.x>\n  <#case \"a\">A<#break>\n</#switch>",
+    "props": {
+      "Recipient.x": "a"
+    },
+    "expected": "A"
+  },
+  {
+    "name": "testDefaultDirectiveNewlineStripped",
+    "template": "<#switch Recipient.tier>\n<#case \"gold\">\nGold<#break>\n<#default>\nOther</#switch>",
+    "props": {
+      "Recipient.tier": "bronze"
+    },
+    "expected": "Other"
+  },
+  {
+    "name": "testTrimStripsWhitespace",
+    "template": "${Recipient.name?trim}",
+    "props": {
+      "Recipient.name": "  Alice  "
+    },
+    "expected": "Alice"
+  },
+  {
+    "name": "testTrimLeadingOnly",
+    "template": "${Recipient.name?trim}",
+    "props": {
+      "Recipient.name": "  Bob"
+    },
+    "expected": "Bob"
+  },
+  {
+    "name": "testTrimTrailingOnly",
+    "template": "${Recipient.name?trim}",
+    "props": {
+      "Recipient.name": "Carol  "
+    },
+    "expected": "Carol"
+  },
+  {
+    "name": "testTrimNoWhitespaceUnchanged",
+    "template": "${Recipient.name?trim}",
+    "props": {
+      "Recipient.name": "Dave"
+    },
+    "expected": "Dave"
+  },
+  {
+    "name": "testTrimWhitespaceOnlyBecomesEmpty",
+    "template": "${Recipient.name?trim}",
+    "props": {
+      "Recipient.name": "   "
+    },
+    "expected": ""
+  },
+  {
+    "name": "testHasContentKeyPresentNonEmpty",
+    "template": "<#if Recipient.name?has_content>Hello ${Recipient.name}<#else>Hello there</#if>",
+    "props": {
+      "Recipient.name": "Alice"
+    },
+    "expected": "Hello Alice"
+  },
+  {
+    "name": "testHasContentKeyPresentEmpty",
+    "template": "<#if Recipient.name?has_content>Hi<#else>No name</#if>",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": "No name"
+  },
+  {
+    "name": "testHasContentKeyMissing",
+    "template": "<#if Recipient.name?has_content>Hi<#else>No name</#if>",
+    "props": {},
+    "expected": "No name"
+  },
+  {
+    "name": "testHasContentNegated",
+    "template": "<#if !Recipient.name?has_content>No name<#else>Has name</#if>",
+    "props": {},
+    "expected": "No name"
+  },
+  {
+    "name": "testHasContentDistinctFromExistsOnEmptyString_exists",
+    "template": "<#if Recipient.name??>exists</#if>",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": "exists"
+  },
+  {
+    "name": "testHasContentDistinctFromExistsOnEmptyString_hasContent",
+    "template": "<#if Recipient.name?has_content>non-empty</#if>",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "testTrimHasContentWhitespaceOnlyIsFalse",
+    "template": "<#if Recipient.name?trim?has_content>Hi ${Recipient.name?trim}<#else>Hi there</#if>",
+    "props": {
+      "Recipient.name": "   "
+    },
+    "expected": "Hi there"
+  },
+  {
+    "name": "testTrimHasContentNonEmptyAfterTrim",
+    "template": "<#if Recipient.name?trim?has_content>Hi ${Recipient.name?trim}<#else>Hi there</#if>",
+    "props": {
+      "Recipient.name": "  Alice  "
+    },
+    "expected": "Hi Alice"
+  },
+  {
+    "name": "testTrimEqualsMatchAfterTrim",
+    "template": "<#if Recipient.country?trim == \"US\">Domestic<#else>International</#if>",
+    "props": {
+      "Recipient.country": "  US  "
+    },
+    "expected": "Domestic"
+  },
+  {
+    "name": "testTrimEqualsNoMatchAfterTrim",
+    "template": "<#if Recipient.country?trim == \"US\">Domestic<#else>International</#if>",
+    "props": {
+      "Recipient.country": "  UK  "
+    },
+    "expected": "International"
+  },
+  {
+    "name": "testTrimEqualsNoWhitespaceBehavesNormally",
+    "template": "<#if Recipient.country?trim == \"US\">Domestic<#else>International</#if>",
+    "props": {
+      "Recipient.country": "US"
+    },
+    "expected": "Domestic"
+  },
+  {
+    "name": "testTrimNotEqualsMatchAfterTrim",
+    "template": "<#if Recipient.country?trim != \"US\">International<#else>Domestic</#if>",
+    "props": {
+      "Recipient.country": "  UK  "
+    },
+    "expected": "International"
+  },
+  {
+    "name": "testTrimNumberStripsBeforeParsing",
+    "template": "<#if Recipient.balance?trim?number gt 100>Eligible<#else>Not eligible</#if>",
+    "props": {
+      "Recipient.balance": "  150  "
+    },
+    "expected": "Eligible"
+  },
+  {
+    "name": "testTrimNumberNoWhitespaceBehavesNormally",
+    "template": "<#if Recipient.balance?trim?number gte 100>Eligible<#else>Not eligible</#if>",
+    "props": {
+      "Recipient.balance": "100"
+    },
+    "expected": "Eligible"
+  },
+  {
+    "name": "testTrimDefaultKeyPresentTrimsValue",
+    "template": "Hello ${Recipient.name?trim!\"there\"}",
+    "props": {
+      "Recipient.name": "  Alice  "
+    },
+    "expected": "Hello Alice"
+  },
+  {
+    "name": "testTrimDefaultDoesNotTriggerOnEmptyString",
+    "template": "${Recipient.name?trim!\"fallback\"}",
+    "props": {
+      "Recipient.name": ""
+    },
+    "expected": ""
+  },
+  {
+    "name": "testNotEqualsNoSpaces",
+    "template": "<#if Recipient.country!=\"UK\">Not UK<#else>UK</#if>",
+    "props": {
+      "Recipient.country": "US"
+    },
+    "expected": "Not UK"
+  },
+  {
+    "name": "testEqualsNoSpaces",
+    "template": "<#if Recipient.country==\"UK\">Match<#else>No match</#if>",
+    "props": {
+      "Recipient.country": "UK"
+    },
+    "expected": "Match"
+  },
+  {
+    "name": "testEqualsNoSpacesNonMatch",
+    "template": "<#if Recipient.country==\"UK\">Match<#else>No match</#if>",
+    "props": {
+      "Recipient.country": "US"
+    },
+    "expected": "No match"
+  },
+  {
+    "name": "testEqualsLeadingSpaceOnly",
+    "template": "<#if Recipient.country ==\"UK\">Match</#if>",
+    "props": {
+      "Recipient.country": "UK"
+    },
+    "expected": "Match"
+  },
+  {
+    "name": "testEqualsTrailingSpaceOnly",
+    "template": "<#if Recipient.country== \"UK\">Match</#if>",
+    "props": {
+      "Recipient.country": "UK"
+    },
+    "expected": "Match"
+  },
+  {
+    "name": "testEqualsNoSpacesWithTrim",
+    "template": "<#if Recipient.name?trim==\"Alice\">Match<#else>No match</#if>",
+    "props": {
+      "Recipient.name": "  Alice  "
+    },
+    "expected": "Match"
+  },
+  {
+    "name": "testParenGroupingStripsOuterParens",
+    "template": "<#if (Recipient.tier == \"gold\")>Gold</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testNestedParensStripped",
+    "template": "<#if ((Recipient.tier == \"gold\"))>Gold</#if>",
+    "props": {
+      "Recipient.tier": "gold"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testParenGroupingChangesOperatorPrecedence_noMatch",
+    "template": "<#if (Recipient.loyalty_points?number gt 1000 || Recipient.account_status == \"active\") && Recipient.region == \"US\">Match</#if>",
+    "props": {
+      "Recipient.account_status": "inactive",
+      "Recipient.loyalty_points": "1200",
+      "Recipient.region": "CA"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testParenGroupingChangesOperatorPrecedence_match",
+    "template": "<#if (Recipient.loyalty_points?number gt 1000 || Recipient.account_status == \"active\") && Recipient.region == \"US\">Match</#if>",
+    "props": {
+      "Recipient.account_status": "inactive",
+      "Recipient.loyalty_points": "1200",
+      "Recipient.region": "US"
+    },
+    "expected": "Match"
+  },
+  {
+    "name": "testParenGroupingOrBeforeAnd_withParen",
+    "template": "<#if (Recipient.x == \"a\" || Recipient.x == \"b\") && Recipient.y == \"yes\">Hit</#if>",
+    "props": {
+      "Recipient.x": "a",
+      "Recipient.y": "no"
+    },
+    "expected": ""
+  },
+  {
+    "name": "testParenGroupingOrBeforeAnd_withoutParen",
+    "template": "<#if Recipient.x == \"a\" || Recipient.x == \"b\" && Recipient.y == \"yes\">Hit</#if>",
+    "props": {
+      "Recipient.x": "a",
+      "Recipient.y": "no"
+    },
+    "expected": "Hit"
+  },
+  {
+    "name": "testConcatLiteralsAndVariables",
+    "template": "${\"Hi \" + Recipient.first_name + \", you have \" + Recipient.loyalty_points + \" points\"}",
+    "props": {
+      "Recipient.first_name": "John",
+      "Recipient.loyalty_points": "1200"
+    },
+    "expected": "Hi John, you have 1200 points"
+  },
+  {
+    "name": "testConcatLiteralOnly",
+    "template": "${\"Hello\" + \" World\"}",
+    "props": {},
+    "expected": "Hello World"
+  },
+  {
+    "name": "testConcatTrimLeadingPart",
+    "template": "${Recipient.first_name?trim + \" world\"}",
+    "props": {
+      "Recipient.first_name": "  Alice  "
+    },
+    "expected": "Alice world"
+  },
+  {
+    "name": "testConcatTrimMiddlePart",
+    "template": "${\"Hello \" + Recipient.first_name?trim + \"!\"}",
+    "props": {
+      "Recipient.first_name": "  Bob  "
+    },
+    "expected": "Hello Bob!"
+  },
+  {
+    "name": "testConcatTrimTrailingPart",
+    "template": "${\"prefix: \" + Recipient.first_name?trim}",
+    "props": {
+      "Recipient.first_name": "  Carol  "
+    },
+    "expected": "prefix: Carol"
+  },
+  {
+    "name": "testConcatTrimPreservesOtherWhitespace",
+    "template": "${\"prefix: \" + Recipient.first_name?trim + Recipient.last_name}",
+    "props": {
+      "Recipient.first_name": "  Alice  ",
+      "Recipient.last_name": " Smith"
+    },
+    "expected": "prefix: Alice Smith"
+  },
+  {
+    "name": "testEqualityWithGtInStringLiteralNotMisinterpretedAsNumericCompare",
+    "template": "<#if Recipient.label == \"a gt b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.label": "a gt b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testEqualityWithLtInStringLiteralNotMisinterpretedAsNumericCompare",
+    "template": "<#if Recipient.label == \"a lt b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.label": "a lt b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testEqualityWithGteInStringLiteralNotMisinterpretedAsNumericCompare",
+    "template": "<#if Recipient.label == \"a gte b\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.label": "a gte b"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testLowerCaseInterpolation",
+    "template": "${Recipient.name?lower_case}",
+    "props": {
+      "Recipient.name": "ALICE"
+    },
+    "expected": "alice"
+  },
+  {
+    "name": "testUpperCaseInterpolation",
+    "template": "${Recipient.name?upper_case}",
+    "props": {
+      "Recipient.name": "alice"
+    },
+    "expected": "ALICE"
+  },
+  {
+    "name": "testTrimThenLowerCaseChain",
+    "template": "${Recipient.name?trim?lower_case}",
+    "props": {
+      "Recipient.name": "  ALICE  "
+    },
+    "expected": "alice"
+  },
+  {
+    "name": "testLowerCaseThenTrimChain",
+    "template": "${Recipient.name?lower_case?trim}",
+    "props": {
+      "Recipient.name": "  ALICE  "
+    },
+    "expected": "alice"
+  },
+  {
+    "name": "testLowerCaseWithDefaultKeyPresent",
+    "template": "${Recipient.tier?lower_case!\"unknown\"}",
+    "props": {
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "gold"
+  },
+  {
+    "name": "testLowerCaseInConditionEquality",
+    "template": "<#if Recipient.tier?lower_case == \"gold\">Gold<#else>Other</#if>",
+    "props": {
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testUpperCaseInConditionEquality",
+    "template": "<#if Recipient.country?upper_case == \"US\">USA<#else>International</#if>",
+    "props": {
+      "Recipient.country": "us"
+    },
+    "expected": "USA"
+  },
+  {
+    "name": "testLowerCaseBooleanChain",
+    "template": "<#if Recipient.flag?lower_case?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "TRUE"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testTrimLowerCaseBooleanChain",
+    "template": "<#if Recipient.flag?trim?lower_case?boolean>yes<#else>no</#if>",
+    "props": {
+      "Recipient.flag": "  TRUE  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testLowerCaseHasContentChainKeyPresent",
+    "template": "<#if Recipient.name?lower_case?has_content>yes<#else>no</#if>",
+    "props": {
+      "Recipient.name": "ALICE"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testLowerCaseInElseIfChain",
+    "template": "<#if Recipient.tier?lower_case == \"gold\">Gold<#elseif Recipient.tier?lower_case == \"silver\">Silver<#else>Bronze</#if>",
+    "props": {
+      "Recipient.tier": "SILVER"
+    },
+    "expected": "Silver"
+  },
+  {
+    "name": "testLowerCaseInConcat",
+    "template": "${\"prefix: \" + Recipient.name?lower_case}",
+    "props": {
+      "Recipient.name": "ALICE"
+    },
+    "expected": "prefix: alice"
+  },
+  {
+    "name": "testUpperCaseInConcat",
+    "template": "${Recipient.code?upper_case + \" suffix\"}",
+    "props": {
+      "Recipient.code": "gold"
+    },
+    "expected": "GOLD suffix"
+  },
+  {
+    "name": "testSwitchWithLowerCaseTransform",
+    "template": "<#switch Recipient.tier?lower_case><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testSwitchWithTrimLowerCaseChain",
+    "template": "<#switch Recipient.tier?trim?lower_case><#case \"gold\">Gold<#break><#default>Other</#switch>",
+    "props": {
+      "Recipient.tier": "  GOLD  "
+    },
+    "expected": "Gold"
+  },
+  {
+    "name": "testNumericEqualsMatch",
+    "template": "<#if Recipient.points?number == 10>ten<#else>other</#if>",
+    "props": {
+      "Recipient.points": "10"
+    },
+    "expected": "ten"
+  },
+  {
+    "name": "testNumericEqualsNoMatch",
+    "template": "<#if Recipient.points?number == 10>ten<#else>other</#if>",
+    "props": {
+      "Recipient.points": "5"
+    },
+    "expected": "other"
+  },
+  {
+    "name": "testNumericNotEquals",
+    "template": "<#if Recipient.points?number != 0>nonzero<#else>zero</#if>",
+    "props": {
+      "Recipient.points": "5"
+    },
+    "expected": "nonzero"
+  },
+  {
+    "name": "testNumericEqualsFloat",
+    "template": "<#if Recipient.score?number == 9.5>yes<#else>no</#if>",
+    "props": {
+      "Recipient.score": "9.5"
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testNumericEqualsWithTrimChain",
+    "template": "<#if Recipient.points?trim?number == 10>ten<#else>other</#if>",
+    "props": {
+      "Recipient.points": "  10  "
+    },
+    "expected": "ten"
+  },
+  {
+    "name": "testNumericEqualsScientificNotation",
+    "template": "<#if Recipient.amount?number == 1000>match<#else>no</#if>",
+    "props": {
+      "Recipient.amount": "1e3"
+    },
+    "expected": "match"
+  },
+  {
+    "name": "testBareDefaultKeyMissing",
+    "template": "${Recipient.name!}",
+    "props": {},
+    "expected": ""
+  },
+  {
+    "name": "testBareDefaultKeyPresent",
+    "template": "${Recipient.name!}",
+    "props": {
+      "Recipient.name": "Alice"
+    },
+    "expected": "Alice"
+  },
+  {
+    "name": "testLowerCaseAndNumericCondition",
+    "template": "<#if Recipient.tier?lower_case == \"gold\" && Recipient.points?number gte 100>Premium<#else>Standard</#if>",
+    "props": {
+      "Recipient.points": "150",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Premium"
+  },
+  {
+    "name": "testUpperCaseOrCondition",
+    "template": "<#if Recipient.country?upper_case == \"US\" || Recipient.country?upper_case == \"CA\">North America<#else>Other</#if>",
+    "props": {
+      "Recipient.country": "ca"
+    },
+    "expected": "North America"
+  },
+  {
+    "name": "testNestedIfWithTransforms",
+    "template": "<#if Recipient.tier?lower_case == \"gold\"><#if Recipient.points?number gte 500>VIP<#else>Standard Gold</#if><#else>Other</#if>",
+    "props": {
+      "Recipient.points": "600",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "VIP"
+  },
+  {
+    "name": "testNumericEqualsAndTransformCondition",
+    "template": "<#if Recipient.tier?lower_case == \"gold\" && Recipient.points?number == 1000>Exact Gold<#else>Not exact</#if>",
+    "props": {
+      "Recipient.points": "1000",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "Exact Gold"
+  },
+  {
+    "name": "testSwitchWithNestedIfAndTransforms",
+    "template": "<#switch Recipient.country?upper_case><#case \"US\"><#if Recipient.tier?lower_case == \"gold\">US Gold<#else>US Standard</#if><#break><#default>International</#switch>",
+    "props": {
+      "Recipient.country": "us",
+      "Recipient.tier": "GOLD"
+    },
+    "expected": "US Gold"
+  },
+  {
+    "name": "testMultipleTransformsInCondition",
+    "template": "<#if Recipient.name?trim?lower_case?trim == \"alice\">yes<#else>no</#if>",
+    "props": {
+      "Recipient.name": "  ALICE  "
+    },
+    "expected": "yes"
+  },
+  {
+    "name": "testLongAndChainWithTransforms",
+    "template": "<#if Recipient.a?boolean && Recipient.b?lower_case == \"active\" && Recipient.c?number gt 0>all<#else>not all</#if>",
+    "props": {
+      "Recipient.a": "true",
+      "Recipient.b": "ACTIVE",
+      "Recipient.c": "1"
+    },
+    "expected": "all"
+  },
+  {
+    "name": "testNumericEqualityInElseIf",
+    "template": "<#if Recipient.level?number == 1>One<#elseif Recipient.level?number == 2>Two<#elseif Recipient.level?number == 3>Three<#else>Other</#if>",
+    "props": {
+      "Recipient.level": "2"
+    },
+    "expected": "Two"
+  },
+  {
+    "name": "testLowerCaseInterpolationInIfBody",
+    "template": "<#if Recipient.active?boolean>Hello ${Recipient.name?lower_case}!<#else>Inactive</#if>",
+    "props": {
+      "Recipient.active": "true",
+      "Recipient.name": "ALICE"
+    },
+    "expected": "Hello alice!"
+  },
+  {
+    "name": "testConcatWithMultipleTransforms",
+    "template": "${Recipient.greeting?upper_case + \", \" + Recipient.name?lower_case + \"!\"}",
+    "props": {
+      "Recipient.greeting": "hello",
+      "Recipient.name": "WORLD"
+    },
+    "expected": "HELLO, world!"
+  }
+]

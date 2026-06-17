@@ -22,6 +22,7 @@ import SwrveSDKCommon
     @objc public var iamZIndex: Int64 = 0
     @objc public var videoSettings: SwrveVideoSettings?
     @objc public var mediaId: NSNumber?
+    @objc public var visibleIf: String = ""
 
     @objc(initWithDictionary:campaignId:messageId:) public init(
         imageData: [String: Any], campaignId swrveCampaignId: Int64, messageId swrveMessageId: Int64
@@ -82,5 +83,7 @@ import SwrveSDKCommon
         if let mediaId = imageData["media_id"] as? NSNumber {
             self.mediaId = mediaId
         }
+
+        self.visibleIf = imageData["visible_if"] as? String ?? ""
     }
 }

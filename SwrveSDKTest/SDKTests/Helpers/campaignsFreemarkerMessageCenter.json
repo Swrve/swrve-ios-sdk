@@ -1,0 +1,226 @@
+{
+  "cdn_root": "https://fake_cdn_root",
+  "campaigns": [
+    {
+      "id": 105,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Campaign",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "message": {
+        "message_center_details": {
+          "subject": "<#if Recipient.tier == \"gold\">Gold Member<#else>Standard Member</#if>",
+          "description": "Welcome, ${Recipient.name}",
+          "image_asset": "f6eb9596d473afcd13eb3d47d1347ea31a2f8ecb",
+          "dynamic_image_url": "https://cdn.example.com/${Recipient.name}.png",
+          "accessibility_text": "<#if Recipient.tier == \"gold\">Gold banner<#else>Standard banner</#if>"
+        },
+        "template": {
+          "template_id": "20",
+          "formats": [
+            {
+              "orientation": "landscape",
+              "size": {
+                "w": {"type": "number", "value": 320},
+                "h": {"type": "number", "value": 240}
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {"type": "color", "value": "FFFFFF"},
+                  "image": {"type": "asset", "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca"},
+                  "x": {"type": "number", "value": 0},
+                  "y": {"type": "number", "value": 0},
+                  "w": {"type": "number", "value": 900},
+                  "h": {"type": "number", "value": 600}
+                }
+              ],
+              "buttons": [],
+              "name": "Landscape (English (US))",
+              "language": "en-US"
+            }
+          ]
+        },
+        "id": 1050,
+        "name": "FreeMarker Test",
+        "rules": {}
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 106,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded Other",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 30,
+        "data": "<#if user_name??>${user_name}<#else>anonymous</#if>",
+        "type": "other",
+        "priority": 500,
+        "name": "FreeMarker Embedded Other"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 107,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded JSON",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 31,
+        "data": "{\"name\": \"<#if user_name??>${user_name}<#else>anonymous</#if>\"}",
+        "type": "json",
+        "priority": 500,
+        "name": "FreeMarker Embedded JSON"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 108,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded JSON Double Quote",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 32,
+        "data": "{\"tier_message\": \"<#if Recipient.tier == \\\"gold\\\">Gold Member<#else>Standard Member</#if>\"}",
+        "type": "json",
+        "priority": 500,
+        "name": "FreeMarker Embedded JSON Double Quote"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 109,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded JSON Nested",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 33,
+        "data": "{\"user\": {\"name\": \"${Recipient.first_name}\", \"tier\": \"${Recipient.tier}\"}, \"message\": \"Hello ${Recipient.first_name}\"}",
+        "type": "json",
+        "priority": 500,
+        "name": "FreeMarker Embedded JSON Nested"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 110,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded JSON Array",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 34,
+        "data": "{\"tags\": [\"${Recipient.first_name}\", \"${Recipient.tier}\"]}",
+        "type": "json",
+        "priority": 500,
+        "name": "FreeMarker Embedded JSON Array"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 111,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded Other String Literal",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 35,
+        "data": "<#if Recipient.tier == \"gold\">Gold Member<#else>Standard Member</#if>",
+        "type": "other",
+        "priority": 500,
+        "name": "FreeMarker Embedded Other String Literal"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    },
+    {
+      "id": 112,
+      "freemarker_enabled": true,
+      "end_date_iso": "2013-03-29T14:55:00Z",
+      "timezone_type": "global",
+      "triggers": [],
+      "message_center": true,
+      "subject": "FreeMarker Embedded JSON Top-Level Array",
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "embedded_message": {
+        "id": 36,
+        "data": "[\"${Recipient.first_name}\", \"${Recipient.tier}\"]",
+        "type": "json",
+        "priority": 500,
+        "name": "FreeMarker Embedded JSON Top-Level Array"
+      },
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 20,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      }
+    }
+  ],
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 999,
+    "delay_first_message": 0
+  },
+  "version": 2
+}

@@ -98,7 +98,7 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"]];
     [dateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:appInstallTimeSeconds];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)appInstallTimeSeconds];
     return [dateFormatter stringFromDate:date];
 }
 

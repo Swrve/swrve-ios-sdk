@@ -11,6 +11,20 @@ class SwrveCampaignTests: XCTestCase {
         NSTimeZone.default = defaultTimezone
     }
 
+    func testUseLocalTimezoneMapping() {
+        // useLocalTimezone is the single source of truth that drives FreeMarker date built-ins
+        // to evaluate in device-local time (LOCAL) vs UTC (GLOBAL) — mirroring start/end date parsing.
+        let global = createCampaign(currentTime: Date(), startDateIso: "", endDateIso: "", timezoneType: "global")
+        XCTAssertFalse(global.useLocalTimezone, "GLOBAL campaign should evaluate dates in UTC")
+
+        let local = createCampaign(currentTime: Date(), startDateIso: "", endDateIso: "", timezoneType: "local")
+        XCTAssertTrue(local.useLocalTimezone, "LOCAL campaign should evaluate dates in device timezone")
+
+        // Unknown/missing timezone_type defaults to GLOBAL (see SwrveTimezoneType.create(from:)).
+        let unknown = createCampaign(currentTime: Date(), startDateIso: "", endDateIso: "", timezoneType: "bogus")
+        XCTAssertFalse(unknown.useLocalTimezone, "Unknown timezone_type should default to GLOBAL (UTC)")
+    }
+
     func testDateStartAndEndWithEmptyDateIso() {
         let campaign = createCampaign(currentTime: Date(), startDateIso: "", endDateIso: "", timezoneType: "global")
         XCTAssertEqual(campaign.dateStart, Date.distantFuture, "dateStart should be distantFuture when startDateIso is empty")

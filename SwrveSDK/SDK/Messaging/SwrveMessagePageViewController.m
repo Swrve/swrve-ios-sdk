@@ -4,6 +4,12 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessageUIView.h"
 
+#if __has_include(<SwrveSDKCommon/SwrveLogger.h>)
+#import <SwrveSDKCommon/SwrveLogger.h>
+#else
+#import "SwrveLogger.h"
+#endif
+
 #if __has_include(<SwrveSDK/SwrveSDK-Swift.h>)
 #import <SwrveSDK/SwrveSDK-Swift.h>
 #elif __has_include("SwrveSDK-Swift.h")
@@ -87,12 +93,22 @@
 
     [self removeAllSubViews];
 
+    SwrveMessageController *controller = self.messageController;
     self.swrveMessageUIView = [[SwrveMessageUIView alloc] initWithMessageFormat:self.messageFormat
                                                                                         pageId:self.pageId
                                                                                     parentSize:self.size
                                                                                     controller:self.parentViewController
                                                                                personalization:self.personalization
-                                                                                   inAppConfig:self.messageController.inAppMessageConfig];
+                                                                                   inAppConfig:controller.inAppMessageConfig];
+
+    // Defensive: visible_if expressions are pre-validated in canResolvePersonalization before display.
+    // renderError should be unreachable in production; dismiss rather than showing a partial view.
+    if (self.swrveMessageUIView.renderError) {
+        [SwrveLogger error:@"SwrveMessageUIView render error — dismissing campaign"];
+        [controller dismissMessageWindow];
+        return;
+    }
+
     [self.view addSubview:self.swrveMessageUIView];
 
 #if TARGET_OS_TV

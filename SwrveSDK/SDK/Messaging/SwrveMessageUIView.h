@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SwrveMessageUIView : UIView
 
+@property (nonatomic) BOOL renderError;
+
 - (id)initWithMessageFormat:(SwrveMessageFormat *)format
                      pageId:(NSNumber *)pageId
                  parentSize:(CGSize)sizeParent

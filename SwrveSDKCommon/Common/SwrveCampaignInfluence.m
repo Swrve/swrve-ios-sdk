@@ -114,7 +114,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
             if ([maxInfluenceWindow isKindOfClass:[NSNumber class]]) {
                 long maxWindowTimeSeconds = [(NSNumber *) maxInfluenceWindow longValue];
 
-                if (maxWindowTimeSeconds > 0 && maxWindowTimeSeconds >= nowSeconds) {
+                if (maxWindowTimeSeconds > 0 && (double)maxWindowTimeSeconds >= nowSeconds) {
                     // Send an influenced event for this tracking id
                     if (swrveCommon != nil) {
                         NSInteger trackingIdLong = [trackingId integerValue];
@@ -125,7 +125,7 @@ NSString *const SwrveInfluenceDataKey = @"swrve.influence_data_v2";
 
                         // Influence payload.
                         NSMutableDictionary *eventPayload = [NSMutableDictionary new];
-                        [eventPayload setValue:[NSString stringWithFormat:@"%i", (int) ((maxWindowTimeSeconds - nowSeconds) / 60)] forKey:@"delta"];
+                        [eventPayload setValue:[NSString stringWithFormat:@"%i", (int) (((double)maxWindowTimeSeconds - nowSeconds) / 60)] forKey:@"delta"];
                         [eventPayload setValue:[NSNumber numberWithBool:isSilentPush] forKey:@"silent"];
                         NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:influenceItem];
                         if (trackingPayload != nil) {

@@ -67,6 +67,7 @@
 @property(nonatomic) bool pushEnabled;
 @property(nonatomic) SwrveActionType inAppMessageActionType;
 @property(nonatomic, retain) NSString *inAppMessageAction;
+- (NSDictionary *)processRealTimeUserProperties:(NSDictionary *)realTimeUserProperties;
 @end
 
 @interface SwrveReceiptProvider ()
@@ -473,7 +474,7 @@
     NSMutableArray  *qaEventsQueue = [swrveQAEventsQueueMock queue];
     XCTAssertEqual([qaEventsQueue count], 2);
     BOOL foundMessage = NO;
-    NSString *expectedMessage = @"Campaign 103 has unresolved personalization";
+    NSString *expectedMessage = @"Campaign 103 has unresolved personalization properties: Missing property value for key: test_cp";
     for (NSDictionary *eventDictionary in qaEventsQueue) {
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:eventDictionary options:0 error:&error];
@@ -2445,10 +2446,36 @@
     Swrve *swrveMock = [SwrveTestHelper initializeSwrveWithRealTimeUserPropertiesFile:@"realTimeUserProperties" andConfig:config];
     SwrveMessageController *controller = [swrveMock messaging];
 
-    NSDictionary *expectedDictionary = @{@"user.test1": @"rtup_value1", @"user.test2": @"changed_value", @"key1": @"value1"};
+    NSDictionary *expectedDictionary = @{@"user.test1": @"rtup_value1", @"user.test2": @"changed_value", @"key1": @"value1",
+                                          @"Recipient.test1": @"rtup_value1", @"Recipient.test2": @"rtup_value2"};
     NSDictionary *resultDictionary = [controller retrievePersonalizationProperties:nil];
     
     XCTAssertEqualObjects(expectedDictionary, resultDictionary);
+}
+
+- (void)testProcessRealTimeUserPropertiesAddsRecipientPrefixedEntries {
+    Swrve *swrveMock = [SwrveTestHelper initializeSwrveWithRealTimeUserPropertiesFile:@"realTimeUserProperties" andConfig:[SwrveConfig new]];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    NSDictionary *result = [controller processRealTimeUserProperties:@{@"loyalty_points": @"1200", @"country": @"US"}];
+
+    // user. prefix — existing behaviour must be preserved
+    XCTAssertEqualObjects(result[@"user.loyalty_points"], @"1200");
+    XCTAssertEqualObjects(result[@"user.country"], @"US");
+
+    // Recipient. prefix — new behaviour
+    XCTAssertEqualObjects(result[@"Recipient.loyalty_points"], @"1200");
+    XCTAssertEqualObjects(result[@"Recipient.country"], @"US");
+
+    // Each input key produces exactly two output keys
+    XCTAssertEqual(result.count, 4u);
+}
+
+- (void)testProcessRealTimeUserPropertiesNilReturnsNil {
+    Swrve *swrveMock = [SwrveTestHelper initializeSwrveWithRealTimeUserPropertiesFile:@"realTimeUserProperties" andConfig:[SwrveConfig new]];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    XCTAssertNil([controller processRealTimeUserProperties:nil]);
 }
 
 /**

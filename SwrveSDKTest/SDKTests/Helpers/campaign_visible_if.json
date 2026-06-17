@@ -1,0 +1,116 @@
+{
+  "cdn_root": "http://www.sonecdn.com/",
+  "game_data": {},
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 9999,
+    "delay_first_message": 0
+  },
+  "version": 2,
+  "campaigns": [
+    {
+      "id": 300,
+      "message_center": true,
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "rules": {"dismiss_after_views": 9999, "delay_first_message": 0, "min_delay_between_messages": 0},
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "timezone_type": "global",
+      "message": {
+        "id": 300,
+        "name": "VisibleIfTest",
+        "rules": {},
+        "template": {
+          "template_id": "300",
+          "formats": [
+            {
+              "orientation": "portrait",
+              "name": "Phone Portrait (English (US))",
+              "language": "en-US",
+              "size": {
+                "w": { "type": "number", "value": 320 },
+                "h": { "type": "number", "value": 480 }
+              },
+              "images": [
+                {
+                  "name": "background",
+                  "color": { "type": "color", "value": "FFFFFF" },
+                  "image": { "type": "asset", "value": "8f984a803374d7c03c97dd122bce3ccf565bbdb5" },
+                  "x": { "type": "number", "value": 0 },
+                  "y": { "type": "number", "value": 0 },
+                  "w": { "type": "number", "value": 320 },
+                  "h": { "type": "number", "value": 480 }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "always_visible",
+                  "x": { "type": "number", "value": -80 },
+                  "y": { "type": "number", "value": 80 },
+                  "w": { "type": "number", "value": 100 },
+                  "h": { "type": "number", "value": 50 },
+                  "image_up": { "type": "asset", "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca" },
+                  "action": { "type": "text", "value": "" },
+                  "type": { "type": "text", "value": "DISMISS" }
+                },
+                {
+                  "name": "conditional",
+                  "visible_if": "Recipient.show_button?boolean",
+                  "x": { "type": "number", "value": 40 },
+                  "y": { "type": "number", "value": 80 },
+                  "w": { "type": "number", "value": 100 },
+                  "h": { "type": "number", "value": 50 },
+                  "image_up": { "type": "asset", "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca" },
+                  "action": { "type": "text", "value": "" },
+                  "type": { "type": "text", "value": "DISMISS" }
+                }
+              ]
+            },
+            {
+              "orientation": "landscape",
+              "name": "Phone Landscape (English (US))",
+              "language": "en-US",
+              "size": {
+                "w": { "type": "number", "value": 480 },
+                "h": { "type": "number", "value": 320 }
+              },
+              "images": [
+                {
+                  "name": "background",
+                  "color": { "type": "color", "value": "FFFFFF" },
+                  "image": { "type": "asset", "value": "8f984a803374d7c03c97dd122bce3ccf565bbdb5" },
+                  "x": { "type": "number", "value": 0 },
+                  "y": { "type": "number", "value": 0 },
+                  "w": { "type": "number", "value": 480 },
+                  "h": { "type": "number", "value": 320 }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "always_visible",
+                  "x": { "type": "number", "value": -80 },
+                  "y": { "type": "number", "value": 80 },
+                  "w": { "type": "number", "value": 100 },
+                  "h": { "type": "number", "value": 50 },
+                  "image_up": { "type": "asset", "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca" },
+                  "action": { "type": "text", "value": "" },
+                  "type": { "type": "text", "value": "DISMISS" }
+                },
+                {
+                  "name": "conditional",
+                  "visible_if": "Recipient.show_button?boolean",
+                  "x": { "type": "number", "value": 40 },
+                  "y": { "type": "number", "value": 80 },
+                  "w": { "type": "number", "value": 100 },
+                  "h": { "type": "number", "value": 50 },
+                  "image_up": { "type": "asset", "value": "8721fd4e657980a5e12d498e73aed6e6a565dfca" },
+                  "action": { "type": "text", "value": "" },
+                  "type": { "type": "text", "value": "DISMISS" }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

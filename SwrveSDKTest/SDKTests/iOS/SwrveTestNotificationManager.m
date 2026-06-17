@@ -60,6 +60,50 @@
 
 }
 
+- (void)testNotificationResponseReceivedWithInvalidDeeplinkStillSendsDeeplinkPayload {
+    id mockApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMStub([mockApplication canOpenURL:OCMOCK_ANY]).andReturn(NO);
+
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
+        @"deeplink": @":/somelink/"
+    };
+
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+    [userInfo setObject:@":/somelink/" forKey:SwrveNotificationDeeplinkKey];
+    NSURL *deeplink = [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey withUserInfo:userInfo notificationRequestId:@"someId"];
+
+    XCTAssertNil(deeplink);
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
+    [mockApplication stopMocking];
+}
+
+- (void)testNotificationResponseReceivedWithUnopenableDeeplinkStillSendsDeeplinkPayload {
+    id mockApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMStub([mockApplication canOpenURL:OCMOCK_ANY]).andReturn(NO);
+
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
+        @"deeplink": @"oldprotocol://custom"
+    };
+
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+    [userInfo setObject:@"oldprotocol://custom" forKey:SwrveNotificationDeeplinkKey];
+    NSURL *deeplink = [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey withUserInfo:userInfo notificationRequestId:@"someId"];
+
+    XCTAssertNil(deeplink);
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
+    [mockApplication stopMocking];
+}
+
 - (void)testNotificationResponseReceivedGeo {
     id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
     [SwrveCommon addSharedInstance:mockSwrveCommon];

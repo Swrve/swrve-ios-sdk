@@ -22,6 +22,7 @@ import SwrveSDK
     @objc public var userUpdates: [[String: Any]]?
     @objc public var theme: SwrveButtonTheme?
     @objc public var iamZIndex: Int64 = 0
+    @objc public var visibleIf: String = ""
 
     // MARK: - Initializer
 
@@ -135,6 +136,7 @@ import SwrveSDK
         if let zIndex = data["iam_z_index"] as? Int64 {
             iamZIndex = zIndex
         }
+        visibleIf = data["visible_if"] as? String ?? ""
     }
 
     private func parseAppId(from data: [String: Any]) -> Int64 {

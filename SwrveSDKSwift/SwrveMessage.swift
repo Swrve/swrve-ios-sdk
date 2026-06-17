@@ -183,7 +183,13 @@ import SwrveSDKCommon
         assetUrl: String, withPersonalization personalization: [String: Any], withAssets assets: Set<String>
     ) -> Bool {
         do {
-            let resolvedUrl = try TextTemplating.templatedText(from: assetUrl, withProperties: personalization)
+            let resolvedUrl: String
+            if campaign?.freemarkerEnabled ?? false {
+                resolvedUrl = try SwrveFreemarkerEvaluator.evaluate(
+                    assetUrl, properties: personalization, useLocalTimezone: campaign?.useLocalTimezone ?? false)
+            } else {
+                resolvedUrl = try TextTemplating.templatedText(from: assetUrl, withProperties: personalization)
+            }
             let data = resolvedUrl.data(using: .utf8)!
             if let assetSha1 = SwrveUtils.sha1(data) {
                 return assets.contains(assetSha1)
@@ -202,58 +208,103 @@ import SwrveSDKCommon
     /// - Parameter personalization: The personalization dictionary.
     /// - Returns: TRUE if all personalized text parts have either fallbacks or values available to them.
     @objc public func canResolvePersonalization(_ personalization: [String: Any]) -> Bool {
+        personalizationFailureReason(personalization) == nil
+    }
 
+    /// Returns the first personalization failure reason, or nil if all properties resolve successfully.
+    func personalizationFailureReason(_ personalization: [String: Any]) -> String? {
+        let isFreemarker = campaign?.freemarkerEnabled ?? false
         if let details = messageCenterDetails {
-            let props = [details.subject, details.description, details.imageUrl, details.imageAccessibilityText].compactMap({ $0 })
-            for textToPersonalize in props {
-                let personalizedText = try? TextTemplating.templatedText(from: textToPersonalize, withProperties: personalization)
-                if personalizedText == nil {
-                    SwrveLogger.logWarning("Message Center Details has no personalization for text: \(textToPersonalize)")
-                    return false
+            for text in [details.subject, details.description, details.imageUrl, details.imageAccessibilityText].compactMap({ $0 }) {
+                if let reason = textResolutionFailure(text, personalization: personalization, freemarkerEnabled: isFreemarker) {
+                    return reason
                 }
             }
         }
         for format in formats {
-            if let pages = format.pages as? [AnyHashable: SwrveMessagePage] {
-                for (_, page) in pages {
-                    if let buttons = page.buttons as? [SwrveButton] {
-                        for button in buttons {
-                            if let buttonText = button.text {
-                                let personalizedText = try? TextTemplating.templatedText(from: buttonText, withProperties: personalization)
-                                if personalizedText == nil {
-                                    SwrveLogger.logWarning("Button Asset has no personalization for text: \(buttonText)")
-                                    return false
-                                }
-                            }
+            guard let pages = format.pages as? [AnyHashable: SwrveMessagePage] else { continue }
+            for (_, page) in pages {
+                if let reason = personalizationFailureReasonForPage(page, personalization: personalization, freemarkerEnabled: isFreemarker) {
+                    return reason
+                }
+            }
+        }
+        return validateVisibleIfExpressions(personalization)
+    }
 
-                            if button.actionType == .clipboard
-                                || button.actionType == .custom
-                            {
-                                let personalizedText = try? TextTemplating.templatedText(from: button.actionString, withProperties: personalization)
-                                if personalizedText == nil {
-                                    SwrveLogger.logWarning("Button Asset has no personalization for action: \(button.actionString ?? "")")
-                                    return false
-                                }
-                            }
-                        }
-                    }
+    private func personalizationFailureReasonForPage(_ page: SwrveMessagePage, personalization: [String: Any], freemarkerEnabled: Bool) -> String? {
+        if let buttons = page.buttons as? [SwrveButton] {
+            for button in buttons {
+                if let buttonText = button.text,
+                    let reason = textResolutionFailure(buttonText, personalization: personalization, freemarkerEnabled: freemarkerEnabled)
+                {
+                    return reason
+                }
+                if button.actionType == .clipboard || button.actionType == .custom,
+                    let reason = textResolutionFailure(
+                        button.actionString, personalization: personalization, freemarkerEnabled: freemarkerEnabled,
+                        nilMessage: "Button action template could not be resolved: \(button.actionString)")
+                {
+                    return reason
+                }
+            }
+        }
+        if let images = page.images as? [SwrveImage] {
+            for image in images {
+                if let text = image.text ?? image.multilineText?["value"] as? String,
+                    let reason = textResolutionFailure(text, personalization: personalization, freemarkerEnabled: freemarkerEnabled)
+                {
+                    return reason
+                }
+            }
+        }
+        return nil
+    }
 
-                    if let images = page.images as? [SwrveImage] {
-                        for image in images {
-                            if let currentImageText = image.text ?? image.multilineText?["value"] as? String {
-                                let personalizedText = try? TextTemplating.templatedText(from: currentImageText, withProperties: personalization)
-                                if personalizedText == nil {
-                                    SwrveLogger.logWarning("Button Asset has no personalization for text: \(currentImageText)")
-                                    return false
-                                }
-                            }
-                        }
+    func validateVisibleIfExpressions(_ personalization: [String: Any]) -> String? {
+        for format in formats {
+            guard let pages = format.pages as? [AnyHashable: SwrveMessagePage] else { continue }
+            for (_, page) in pages {
+                var visibleIfExpressions: [String] = []
+                if let images = page.images as? [SwrveImage] {
+                    visibleIfExpressions.append(contentsOf: images.map(\.visibleIf))
+                }
+                if let buttons = page.buttons as? [SwrveButton] {
+                    visibleIfExpressions.append(contentsOf: buttons.map(\.visibleIf))
+                }
+                for visibleIf in visibleIfExpressions {
+                    guard !visibleIf.isEmpty else { continue }
+                    let template = "<#if \(visibleIf)>true<#else>false</#if>"
+                    do {
+                        // Validate syntax/resolvability only — result discarded; render-time evaluation in shouldRenderElement determines actual visibility.
+                        _ = try SwrveFreemarkerEvaluator.evaluate(
+                            template, properties: personalization, useLocalTimezone: campaign?.useLocalTimezone ?? false)
+                    } catch {
+                        return "visible_if condition could not be evaluated"
                     }
                 }
             }
         }
-        return true
+        return nil
+    }
 
+    private func textResolutionFailure(_ text: String, personalization: [String: Any], freemarkerEnabled: Bool, nilMessage: String? = nil) -> String?
+    {
+        do {
+            let result: String?
+            if freemarkerEnabled {
+                result = try SwrveFreemarkerEvaluator.evaluate(
+                    text, properties: personalization, useLocalTimezone: campaign?.useLocalTimezone ?? false)
+            } else {
+                result = try TextTemplating.templatedText(from: text, withProperties: personalization)
+            }
+            if result == nil {
+                return nilMessage ?? "Text template could not be resolved: \(text)"
+            }
+            return nil
+        } catch {
+            return (error as NSError).userInfo["Error reason"] as? String ?? error.localizedDescription
+        }
     }
 
 }

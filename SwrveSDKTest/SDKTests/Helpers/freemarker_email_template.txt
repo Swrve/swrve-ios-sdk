@@ -1,0 +1,22 @@
+[string-concat]
+${"String concat FIRST_NAME + LOYALTY_POINTS: " + Recipient.FIRST_NAME + " — " + Recipient.LOYALTY_POINTS + " pts"}
+[if-elseif-else]
+<#if Recipient.LOYALTY_POINTS?number gte 1000>if/elseif/else LOYALTY_POINTS?number gte 1000: branch 1<#elseif Recipient.LOYALTY_POINTS?number gte 500>if/elseif/else LOYALTY_POINTS?number gte 500: branch 2<#else>if/elseif/else LOYALTY_POINTS?number: else branch</#if>
+[compound-boolean]
+<#if Recipient.LOYALTY_POINTS?number gte 1000 && Recipient.COUNTRY == "US">loyalty_points gte 1000 && country == US: both true</#if>
+[has-content]
+<#if Recipient.PROMO_CODE?has_content>promo_code?has_content: true (${Recipient.PROMO_CODE})<#else>promo_code?has_content: false</#if>
+[switch]
+<#switch Recipient.COUNTRY><#case "US">switch country: US matched<#break><#case "UK">switch country: UK matched<#break><#default>switch country: default matched</#switch>
+[has-content-fallback]
+<#if Recipient.NONEXISTENT_PROP?has_content>${Recipient.NONEXISTENT_PROP}<#else>has_content fallback: property missing, fallback used</#if>
+[boolean-exists]
+<#if Recipient.IS_PREMIUM?? && Recipient.IS_PREMIUM == "TRUE">is_premium?? exists + boolean: property exists and is true<#else>is_premium?? exists + boolean: property exists and is false</#if>
+[less-than]
+<#if Recipient.LOYALTY_POINTS?number lt 500>loyalty_points?number lt 500: true<#else>loyalty_points?number lt 500: false</#if>
+[nested-switch-if]
+<#switch Recipient.COUNTRY><#case "US"><#if Recipient.IS_PREMIUM == "TRUE">nested if/switch: US + premium true<#else>nested if/switch: US + premium false</#if><#break><#case "UK">nested if/switch: UK branch<#break><#default>nested if/switch: default branch</#switch>
+[exists]
+<#if Recipient.PROMO_CODE??>promo_code?? exists: true<#else>promo_code?? exists: false</#if>
+[trim]
+${"trim built-in: " + Recipient.FIRST_NAME?trim}

@@ -188,7 +188,7 @@
         unsigned hexComponent;
         unsigned int hexInt = 0;
         [[NSScanner scannerWithString:alphaSub] scanHexInt:&hexComponent];
-        float alpha = hexComponent / 255.0f;
+        float alpha = (float)hexComponent / 255.0f;
 
         NSScanner *scanner = [NSScanner scannerWithString:colorSub];
         [scanner scanHexInt:&hexInt];

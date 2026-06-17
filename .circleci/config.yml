@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     macos:
-      xcode: 26.3.0
+      xcode: 26.5.0
     resource_class: m4pro.medium
     steps:
       - checkout
@@ -12,7 +12,7 @@ jobs:
           command: |
             cd SwrveSDKTest
             pod install
-      - run: fastlane unitTestsiOS scheme:"SwrveSDKiOS" device:"iPhone 17 (26.3)"
+      - run: fastlane unitTestsiOS scheme:"SwrveSDKiOS" device:"iPhone 17 (26.5)"
       - run: fastlane unitTeststvOS scheme:"SwrveSDKtvOS"
       - store_test_results:
           path: fastlane/test_output/
