@@ -1,0 +1,21 @@
+platform :ios, '16.0'
+
+target 'PushNotificationSample' do
+  use_frameworks!
+
+  pod 'SwrveSDK'
+# To build against local SDK source instead, comment out the line above and uncomment these two:
+#  pod 'SwrveSDK', :path => '../../'
+#  pod 'SwrveSDKCommon', :path => '../../'
+
+end
+
+target 'PushNotificationSampleServiceExtension' do
+  use_frameworks!
+
+  # The extension only needs SwrveSDKCommon — SwrvePush.handle lives there.
+  pod 'SwrveSDKCommon'
+# To build against local SDK source instead, comment out the line above and uncomment this:
+#  pod 'SwrveSDKCommon', :path => '../../'
+
+end

@@ -76,7 +76,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
 
     return swrveMock;
 }

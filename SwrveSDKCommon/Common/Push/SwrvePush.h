@@ -39,6 +39,15 @@ extern NSString *const SwrveContentVersionKey;
            withAppGroupIdentifier:(nullable NSString *)appGroupIdentifier
      withCompletedContentCallback:(void (^)(UNMutableNotificationContent *content))callback;
 
+/*! Returns whether the payload represents a Swrve push. Intended for apps integrating a second push
+ *  provider, so each notification can be routed to the provider that sent it.
+ *
+ *  \param userInfo The notification payload, ie UNNotificationContent.userInfo.
+ *  \returns YES if one of the Swrve tracking keys holds a usable push id, that is a non-empty
+ *  string or a number. NO otherwise, including when a key is present but empty or of another type.
+ */
++ (BOOL)isSwrvePush:(NSDictionary *)userInfo;
+
 #endif
 @end
 

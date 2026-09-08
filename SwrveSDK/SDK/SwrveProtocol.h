@@ -4,9 +4,11 @@
 #if __has_include(<SwrveSDK/SwrveDeeplinkManager.h>)
 #import <SwrveSDK/SwrveDeeplinkManager.h>
 #import <SwrveSDK/SwrvePushInboxUpdateDelegate.h>
+#import <SwrveSDK/SwrveCampaignsUpdateDelegate.h>
 #else
 #import "SwrveDeeplinkManager.h"
 #import "SwrvePushInboxUpdateDelegate.h"
+#import "SwrveCampaignsUpdateDelegate.h"
 #endif
 
 @class SwrveIAPRewards;
@@ -36,7 +38,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.10.0"
+#define SWRVE_SDK_VERSION "10.11.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -650,6 +652,27 @@ NSString * eventsPayloadAsJSON);
  * \param listener Called when the push inbox messages are initially loaded and each time messages are updated/changed.
  */
 - (void)pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
+
+/*!The campaignsUpdateListener campaignsUpdated() method is invoked once after the initial content load attempt, whether or not it succeeded
+ * or anything changed, and again whenever content the SDK has fetched *may* have changed the campaigns. Invocations are independent and
+ * arrive in no guaranteed order. Campaigns are a snapshot, so re-read them on every invocation. The SDK does not compare against
+ * what you last read, so let your own comparison decide whether to redraw. It covers every campaign surface, including Message Center and
+ * embedded.
+ *
+ * Register where the SDK is created: the initial notification is sent once and never replayed, so a delegate installed later may miss it.
+ *
+ * SDK-driven changes only. markMessageCenterCampaignAsSeen and removeMessageCenterCampaign change what the getters return without invoking
+ * this, so re-read after your own calls.
+ *
+ * One of the invocations follows the SDK's attempt to download campaign assets, which is when new campaigns normally become readable — a
+ * campaign is not listable until its assets are on disk, and individual downloads can fail, so it is not a promise that everything is present.
+ *
+ * The SDK holds the listener weakly, so keep a reference to it yourself. A listener the SDK is the only holder of
+ * will be deallocated and the callbacks will simply stop, with nothing reported.
+ *
+ * \param listener Called after the initial content load attempt and whenever fetched content may have changed the campaigns.
+ */
+- (void)campaignsUpdateListener:(id<SwrveCampaignsUpdateDelegate>)listener;
 
 - (void)dismissMessageWindow;
 

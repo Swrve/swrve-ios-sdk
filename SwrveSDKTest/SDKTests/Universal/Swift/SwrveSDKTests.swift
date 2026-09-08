@@ -240,6 +240,9 @@ class MockSwrve: NSObject, SwrveProtocol {
     func pushInboxUpdateListener(_ listener: (any SwrvePushInboxUpdateDelegate)!) {
     }
 
+    func campaignsUpdateListener(_ listener: (any SwrveCampaignsUpdateDelegate)!) {
+    }
+
     func dismissMessageWindow() {
     }
 

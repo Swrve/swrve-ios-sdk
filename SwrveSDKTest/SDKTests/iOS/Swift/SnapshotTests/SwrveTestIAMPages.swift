@@ -46,7 +46,7 @@ class SwrveTestIAMPages: XCTestCase {
         }
 
         let mockedJSON = try getMockDataAsDictionary(fileName: "campaigns_snapshot")
-        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false)
+        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false, notifyCampaignsUpdated: false)
 
         if let campaign = controller.campaigns[1] as? SwrveInAppCampaign {
             let vc = SwrveMessageViewController(messageController: controller, message: campaign.message!, personalization: [:])
@@ -70,7 +70,7 @@ class SwrveTestIAMPages: XCTestCase {
         }
 
         let mockedJSON = try getMockDataAsDictionary(fileName: "campaigns_snapshot")
-        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false)
+        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false, notifyCampaignsUpdated: false)
 
         if let campaign = controller.campaigns[2] as? SwrveInAppCampaign {
             let vc = SwrveMessageViewController(messageController: controller, message: campaign.message!, personalization: [:])
@@ -94,7 +94,7 @@ class SwrveTestIAMPages: XCTestCase {
         }
 
         let mockedJSON = try getMockDataAsDictionary(fileName: "campaigns_snapshot")
-        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false)
+        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false, notifyCampaignsUpdated: false)
 
         if let campaign = controller.campaigns[3] as? SwrveInAppCampaign {
             let vc = SwrveMessageViewController(messageController: controller, message: campaign.message!, personalization: [:])
@@ -118,7 +118,7 @@ class SwrveTestIAMPages: XCTestCase {
         }
 
         let mockedJSON = try getMockDataAsDictionary(fileName: "campaigns_snapshot")
-        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false)
+        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false, notifyCampaignsUpdated: false)
 
         if let campaign = controller.campaigns[4] as? SwrveInAppCampaign {
             let vc = SwrveMessageViewController(messageController: controller, message: campaign.message!, personalization: [:])

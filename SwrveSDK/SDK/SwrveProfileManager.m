@@ -278,6 +278,9 @@
 
 - (NSArray *)swrveUsers {
     NSData *encodedObject = [SwrveLocalStorage swrveUsers];
+    if (encodedObject == nil) {
+        return nil;
+    }
     NSArray *swrveUsers = nil;
     NSError *error = nil;
     NSSet *classes = [NSSet setWithArray:@[[NSArray class], [SwrveUser class], [NSString class]]];

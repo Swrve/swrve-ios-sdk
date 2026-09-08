@@ -235,14 +235,14 @@
     int expectedNumberOfCalls;
     
 #if TARGET_OS_IOS
-    expectedNumberOfCalls = 32;
+    expectedNumberOfCalls = 31;
     [swrveMock setDeviceToken:nil];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0];
     [swrveMock messageCenterCampaignsThatSupportOrientation:0 withPersonalization:@{}];
 #else
-    expectedNumberOfCalls = 29;
+    expectedNumberOfCalls = 28;
 #endif
-    XCTAssertEqual(loggerCount, expectedNumberOfCalls);
+    XCTAssertEqual(loggerCount, expectedNumberOfCalls, @"gated api count changed: fewer means an sdkReady gate was removed, more means one was added");
 }
 
 @end

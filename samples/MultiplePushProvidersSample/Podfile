@@ -1,0 +1,25 @@
+platform :ios, '16.0'
+
+target 'MultiplePushProvidersSample' do
+  use_frameworks!
+
+  # Your other push provider goes here. The app delegate then decides which SDK handles each
+  # incoming notification.
+  # pod 'TheirPushSDK', '~> 1.2'
+
+  pod 'SwrveSDK'
+# To build against local SDK source instead, comment out the line above and uncomment these two:
+#  pod 'SwrveSDK', :path => '../../'
+#  pod 'SwrveSDKCommon', :path => '../../'
+
+end
+
+target 'MultiplePushProvidersSampleServiceExtension' do
+  use_frameworks!
+
+  # The extension only needs SwrveSDKCommon — SwrvePush.handle lives there.
+  pod 'SwrveSDKCommon'
+# To build against local SDK source instead, comment out the line above and uncomment this:
+#  pod 'SwrveSDKCommon', :path => '../../'
+
+end

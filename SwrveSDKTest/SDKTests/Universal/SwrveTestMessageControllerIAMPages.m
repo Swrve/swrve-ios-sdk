@@ -37,7 +37,7 @@
 @interface SwrveMessageController ()
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (void)showMessage:(SwrveMessage *)message;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
@@ -154,7 +154,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
     
     return swrveMock;
 }
@@ -172,14 +172,14 @@
 
     // Ensure calling updateCampaigns with nil doesn't change the current campaigns
     NSArray *currentCampaigns = [controller campaigns];
-    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     if ([controller campaigns] != nil) {
         XCTAssertEqualObjects([controller campaigns], currentCampaigns);
     }
 
     NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     XCTAssertEqual([[controller campaigns] count], 0);
     
@@ -187,7 +187,7 @@
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     XCTAssertEqual([[controller campaigns] count], 2);
 
     NSTimeInterval nowTime = [[swrveMock getNow] timeIntervalSince1970];
@@ -356,14 +356,14 @@
 
     // Ensure calling updateCampaigns with nil doesn't change the current campaigns
     NSArray *currentCampaigns = [controller campaigns];
-    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:nil withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     if ([controller campaigns] != nil) {
         XCTAssertEqualObjects([controller campaigns], currentCampaigns);
     }
 
     NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     XCTAssertEqual([[controller campaigns] count], 0);
 
@@ -371,7 +371,7 @@
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     XCTAssertEqual([[controller campaigns] count], 1);
 
     NSTimeInterval nowTime = [[swrveMock getNow] timeIntervalSince1970];

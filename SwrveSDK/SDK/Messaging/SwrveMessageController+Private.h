@@ -62,6 +62,8 @@ const static int IN_APP_CAMPAIGN_VERSION = 18;
 
 @property(nonatomic) Swrve *analyticsSDK;
 
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
+
 #pragma mark -
 
 @end

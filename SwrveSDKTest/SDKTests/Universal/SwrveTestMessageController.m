@@ -46,7 +46,7 @@
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 - (void)dismissMessageWindow;
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (void)showMessage:(SwrveMessage *)message;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
@@ -188,7 +188,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
     
     return swrveMock;
 }
@@ -259,7 +259,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaign_native_button_everything" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     XCTAssertEqual([[controller campaigns] count], 1);
 
     SwrveInAppCampaign *campaign = [[controller campaigns] firstObject];
@@ -586,7 +586,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
 
@@ -759,7 +759,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     // Fake campaigns gone and come back
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     XCTAssertEqual([[controller campaigns] count], 0);
     
     [[swrveMock messaging] saveCampaignsState];
@@ -769,7 +769,7 @@
     mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES notifyCampaignsUpdated:NO];
     XCTAssertEqual([[controller campaigns] count], 1);
     
     // Impressions rule still in place
@@ -845,7 +845,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsDelay" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNotNil(message);
@@ -930,7 +930,7 @@
     NSData *emptyJson = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:emptyJson options:0 error:nil];
     
-    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [controller updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
@@ -1601,7 +1601,7 @@
 
     [SwrveQA updateQAUser: [jsonDict objectForKey:@"qa"] andSessionToken:@"whatEverSessionToken"];
     BOOL isLoadingCampaign = [[SwrveQA sharedInstance] resetDeviceState];
-    [controller updateCampaigns: jsonDict withLoadingPreviousCampaignState:isLoadingCampaign];
+    [controller updateCampaigns: jsonDict withLoadingPreviousCampaignState:isLoadingCampaign notifyCampaignsUpdated:NO];
 
     message = (SwrveMessage *)[controller baseMessageForEvent:@"Swrve.currency_given" withPayload:nil];
     XCTAssertNil(message);
@@ -2203,7 +2203,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsAARRGGBB" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     [swrveMock currencyGiven:@"gold" givenAmount:2];
     
@@ -2253,7 +2253,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsAARRGGBB" ofType:@"json"];
     NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     SwrveMessageController *controller = [swrveMock messaging];
     [swrveMock currencyGiven:@"gold" givenAmount:2];

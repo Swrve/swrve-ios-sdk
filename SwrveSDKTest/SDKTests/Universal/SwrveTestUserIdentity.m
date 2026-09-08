@@ -1271,6 +1271,25 @@
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
 }
 
+- (void)testGetExternalIdFromCacheWithoutStarting {
+    // Seed an identified user, then create the sdk with autoStartLastUser off so it is never started.
+    SwrveUser *cachedUser = [[SwrveUser alloc] initWithExternalId:@"User1" swrveId:@"SwrveUser1" verified:true];
+    SwrveProfileManager *profileManager = [[SwrveProfileManager alloc] init];
+    [profileManager saveSwrveUser:cachedUser];
+    [SwrveTestHelper setAlreadyInstalledUserId:@"SwrveUser1"];
+
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    [config setAutoDownloadCampaignsAndResources:NO];
+    config.autoStartLastUser = NO;
+    [SwrveSDK sharedInstanceWithAppID:1030 apiKey:@"Key" config:config];
+
+    XCTAssertFalse([SwrveSDK started], @"precondition: the sdk must not be started");
+
+    // The value has to come from the cache, so this fails if externalUserId stops reading persisted
+    // state — which an empty-cache assertion would not catch (MG-26424).
+    XCTAssertEqualObjects(@"User1", [SwrveSDK externalUserId]);
+}
+
 - (void)testIdentify_GetExternalId {
     SwrveConfig* config = [[SwrveConfig alloc] init];
     [config setAutoDownloadCampaignsAndResources:NO];

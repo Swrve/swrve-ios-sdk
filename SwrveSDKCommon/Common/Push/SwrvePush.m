@@ -323,6 +323,14 @@ NSString *appGroupIdentifier;
 
 #pragma mark - Service Extension Modification (public facing)
 
++ (BOOL)isSwrvePush:(NSDictionary *)userInfo {
+    NSString *pushId = [SwrvePush pushIdFromNotificationContent:userInfo andPushIdKey:SwrveNotificationIdentifierKey];
+    if (pushId == nil) {
+        pushId = [SwrvePush pushIdFromNotificationContent:userInfo andPushIdKey:SwrveNotificationSilentPushIdentifierKey];
+    }
+    return pushId != nil;
+}
+
 + (void)handleNotificationContent:(UNNotificationContent *)notificationContent
            withAppGroupIdentifier:(NSString *)appGroupIdentifier
      withCompletedContentCallback:(void (^)(UNMutableNotificationContent *content))callback {

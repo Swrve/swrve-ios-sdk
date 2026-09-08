@@ -36,7 +36,7 @@ class SwrveTestCampaignMultipleConditions: XCTestCase {
         date = date.addingTimeInterval(-280)
         controller.initialisedTime = date
 
-        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false)
+        controller.updateCampaigns(mockedJSON, withLoadingPreviousCampaignState: false, notifyCampaignsUpdated: false)
 
         return controller
     }

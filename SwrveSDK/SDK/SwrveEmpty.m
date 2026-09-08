@@ -176,6 +176,10 @@
     return;
 }
 
+- (void)campaignsUpdateListener:(id<SwrveCampaignsUpdateDelegate>)listener {
+    return;
+}
+
 - (void)shutdown {
 }
 

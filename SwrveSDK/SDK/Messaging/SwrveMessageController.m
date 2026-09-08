@@ -396,7 +396,8 @@ const static int DEFAULT_MIN_DELAY = 55;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:content options:0 error:&jsonError];
         if (!jsonError) {
             BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
-            [self updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
+            // A cache load is not a campaigns change, so notifyCampaignsUpdated is NO.
+            [self updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
         }
     } else {
         [self.analyticsSDK invalidateETag];
@@ -441,7 +442,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return supported;
 }
 
-- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState {
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated {
     
     if (campaignDic == nil) {
         [SwrveLogger error:@"Error parsing campaign JSON", nil];
@@ -451,6 +452,10 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     if ([campaignDic count] == 0) {
         [SwrveLogger debug:@"Campaign JSON empty, no campaigns downloaded", nil];
         self.campaigns = [NSArray new];
+        if (notifyCampaignsUpdated) {
+            // No assets to wait for, so notify here rather than from the completion handler below.
+            [self.analyticsSDK invokeCampaignsUpdatedDelegate];
+        }
         return;
     }
     
@@ -531,12 +536,17 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     // QA logging
     [SwrveQA campaignsDownloaded:jsonCampaigns];
     
+    // Must stay above downloadAssets: its completion handler reaches autoShowMessages, which reads self.campaigns, and that handler runs synchronously when there is nothing left to fetch.
+    self.campaigns = [result copy];
+
     // Obtain assets we don't have yet
     [assetsManager downloadAssets:assetsQueue withCompletionHandler:^{
         [self autoShowMessages];
+        if (notifyCampaignsUpdated) {
+            // Campaigns are filtered on assetsReady, so this is the earliest point at which the new ones are actually returned by the getters.
+            [self.analyticsSDK invokeCampaignsUpdatedDelegate];
+        }
     }];
-    
-    self.campaigns = [result copy];
 }
 
 - (void)updateCdnPaths:(NSDictionary *)campaignJson {
@@ -569,7 +579,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
     
     [assetsManager downloadAssets:assetsQ withCompletionHandler:^{
-        // do nothing, we're just refreshing
+        [self.analyticsSDK invokeCampaignsUpdatedDelegate];
     }];
 }
 

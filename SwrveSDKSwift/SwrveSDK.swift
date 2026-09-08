@@ -74,6 +74,13 @@ public enum SwrveSDKError: Error, Equatable {
         return sharedInstance.apiKey
     }
 
+    /// The release version of this SDK.
+    /// - Returns: SDK version as a string, for example "10.10.0".
+    @objc public class func sdkVersion() -> String {
+        checkInstance()
+        return SWRVE_SDK_VERSION
+    }
+
     /// User ID used to initialize this Swrve object.
     /// - Returns: User ID as a string.
     @objc public class func userID() -> String {
@@ -764,6 +771,32 @@ extension SwrveSDK {
     /// - Parameter listener: Called when the push inbox messages are initially loaded and each time messages are updated/changed.
     @objc public class func pushInboxUpdateListener(_ listener: SwrvePushInboxUpdateDelegate) {
         sharedInstance.pushInboxUpdateListener(listener)
+    }
+
+    /// Invoked once after the initial content load attempt, whether or not it succeeded or anything changed, and
+    /// again whenever content the SDK has fetched may have changed the campaigns. Invocations are independent and
+    /// arrive in no guaranteed order.
+    ///
+    /// Campaigns are a snapshot, so re-read them on every invocation rather than holding the previous result. The
+    /// SDK does not compare against what you last read, so let your own comparison decide whether to redraw. It
+    /// covers every campaign surface, including Message Center and embedded.
+    ///
+    /// Register where the SDK is created: the initial notification is sent once and never replayed, so a delegate
+    /// installed later may miss it.
+    ///
+    /// SDK-driven changes only. `markMessageCenterCampaignAsSeen` and `removeMessageCenterCampaign` change what the
+    /// getters return without invoking this, so re-read after your own calls.
+    ///
+    /// One of the invocations follows the SDK's attempt to download campaign assets, which is when new campaigns
+    /// normally become readable — a campaign is not listable until its assets are on disk, and individual downloads
+    /// can fail, so it is not a promise that everything is present.
+    ///
+    /// The SDK holds the listener weakly, so keep a reference to it yourself.
+    ///
+    /// - Parameter listener: Called after the initial content load attempt and whenever fetched content may have changed the campaigns.
+    @objc public class func campaignsUpdateListener(_ listener: SwrveCampaignsUpdateDelegate) {
+        checkInstance()
+        sharedInstance.campaignsUpdateListener(listener)
     }
 
 }

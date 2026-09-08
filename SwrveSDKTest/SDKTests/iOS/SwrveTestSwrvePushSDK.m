@@ -358,6 +358,31 @@
     pushDelegateInvokedExpectation = nil;
 }
 
+#pragma mark - Test isSwrvePush
+
+- (void)testIsSwrvePush_trackingKey {
+    XCTAssertTrue([SwrvePush isSwrvePush:@{SwrveNotificationIdentifierKey: @"1"}]);
+    // The tracking key arrives as a number as often as a string.
+    XCTAssertTrue([SwrvePush isSwrvePush:@{SwrveNotificationIdentifierKey: @1}]);
+}
+
+- (void)testIsSwrvePush_silentTrackingKey {
+    XCTAssertTrue([SwrvePush isSwrvePush:@{SwrveNotificationSilentPushIdentifierKey: @"1"}]);
+    XCTAssertTrue([SwrvePush isSwrvePush:@{SwrveNotificationSilentPushIdentifierKey: @1}]);
+}
+
+- (void)testIsSwrvePush_notSwrvePush {
+    XCTAssertFalse([SwrvePush isSwrvePush:@{}]);
+    XCTAssertFalse([SwrvePush isSwrvePush:@{@"other-provider-id": @"1"}]);
+}
+
+- (void)testIsSwrvePush_emptyOrNullTrackingKey {
+    XCTAssertFalse([SwrvePush isSwrvePush:@{SwrveNotificationIdentifierKey: @""}]);
+    XCTAssertFalse([SwrvePush isSwrvePush:@{SwrveNotificationIdentifierKey: [NSNull null]}]);
+    // An unexpected type is not a usable push id, so this is not a Swrve push.
+    XCTAssertFalse([SwrvePush isSwrvePush:@{SwrveNotificationIdentifierKey: @[@"1"]}]);
+}
+
 #pragma mark - SwrvePushResponseDelegate
 - (void) didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     XCTAssert(completionHandler);

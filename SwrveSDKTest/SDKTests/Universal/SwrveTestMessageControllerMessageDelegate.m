@@ -43,7 +43,7 @@
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 - (void)dismissMessageWindow;
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (void)showMessage:(SwrveMessage *)message;
 - (void)messageWasShownToUser:(SwrveMessage *)message;
@@ -157,7 +157,7 @@
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
     
     return swrveMock;
 }

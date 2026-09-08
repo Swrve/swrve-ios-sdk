@@ -24,7 +24,7 @@
 - (id)initWithSwrve:(Swrve*)sdk;
 - (void)writeToCampaignCache:(NSData*)campaignData;
 
-- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (NSDate *)getNow;

@@ -5,7 +5,7 @@ target 'SwrveEmbeddedSample' do
 
   # Pods for SwrveEmbeddedSample
   pod 'SwrveSDK'
-# To use local pods, uncomment below
+# To build against local SDK source instead, comment out the line above and uncomment these two:
 #  pod 'SwrveSDK', :path => '../../'
 #  pod 'SwrveSDKCommon', :path => '../../'
 

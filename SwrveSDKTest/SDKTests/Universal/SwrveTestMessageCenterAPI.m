@@ -15,7 +15,7 @@
 
 - (id)initWithSwrve:(Swrve*)sdk;
 - (void)writeToCampaignCache:(NSData*)campaignData;
-- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (NSDate *)getNow;
 @property (nonatomic, retain) SwrveAssetsManager *assetsManager;
 @end
@@ -109,10 +109,114 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     // No Message Center campaigns
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 0);
+}
+
+- (void)testCampaignsUpdateDelegateFiresOnlyAfterAsyncAssetDownload {
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+
+    // No createDummyAssets: the assets are missing, as on a fresh install.
+    id swrveMock = [self swrveMock];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+    // Hold the completion handler rather than letting the download run, so the notification can be
+    // observed both before and after the assets land. This is the fresh-install path: the handler is
+    // what the app depends on, and it arrives long after updateCampaigns has returned.
+    __block void (^heldCompletion)(void) = nil;
+    __block BOOL assetsLanded = NO;
+    NSSet *noAssets = [NSSet set];
+    NSSet *allAssets = [NSSet setWithArray:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    id mockAssetsManager = OCMPartialMock([[swrveMock messaging] assetsManager]);
+    OCMStub([mockAssetsManager downloadAssets:OCMOCK_ANY withCompletionHandler:OCMOCK_ANY]).andDo(^(NSInvocation *invocation) {
+        __unsafe_unretained void (^handler)(void) = nil;
+        [invocation getArgument:&handler atIndex:3];
+        heldCompletion = [handler copy];
+    });
+    OCMStub([mockAssetsManager assetsOnDisk]).andDo(^(NSInvocation *invocation) {
+        NSSet *result = assetsLanded ? allAssets : noAssets;
+        [invocation setReturnValue:&result];
+    });
+
+    __block NSUInteger countSeenByDelegate = NSNotFound;
+    id mockDelegate = OCMProtocolMock(@protocol(SwrveCampaignsUpdateDelegate));
+    OCMStub([mockDelegate campaignsUpdated]).andDo(^(NSInvocation *invocation) {
+        countSeenByDelegate = [[swrveMock messageCenterCampaigns] count];
+    });
+    [swrveMock campaignsUpdateListener:mockDelegate];
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:YES];
+
+    // Only the embedded campaign is listable: it has no assets to wait for, while the IAM one is gated on
+    // assetsReady. Notifying now is the bug this feature exists to remove — the app would re-read and find
+    // an incomplete Message Center with no further callback to tell it the rest had arrived.
+    XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 1, @"only the asset-free embedded campaign should be listable yet");
+    XCTAssertEqual(countSeenByDelegate, NSNotFound, @"the delegate must not be told before the assets land");
+    XCTAssertNotNil(heldCompletion, @"downloadAssets should have been asked for the missing assets");
+
+    // The assets arrive, then the handler runs — the order the SDK actually produces.
+    assetsLanded = YES;
+    heldCompletion();
+
+    XCTAssertEqual(countSeenByDelegate, 2, @"the delegate must see both campaigns as listable once the assets land");
+}
+
+- (void)testCampaignsUpdateDelegateCanReadNewCampaigns {
+#if TARGET_OS_IOS
+    [SwrveTestHelper setScreenOrientation:UIInterfaceOrientationPortrait];
+#endif
+
+    // Assets already on disk, so downloadAssets has nothing to fetch and its completion handler —
+    // which is where the delegate is invoked — runs synchronously inside updateCampaigns.
+    [SwrveTestHelper createDummyAssets:[SwrveTestMessageCenterAPI testJSONAssets]];
+
+    id swrveMock = [self swrveMock];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+    [swrveMock initWithAppID:123 apiKey:@"SomeAPIKey"];
+#pragma clang diagnostic pop
+
+    // The campaigns in this fixture are only inside their window at this date.
+    NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
+    OCMStub([swrveMock getNow]).andReturn(mockInitDate);
+
+    // Read the getters from inside the callback. The contract promises the new campaigns are readable
+    // by then, which only holds because self.campaigns is assigned before downloadAssets is called.
+    __block NSUInteger countSeenByDelegate = NSNotFound;
+    id mockDelegate = OCMProtocolMock(@protocol(SwrveCampaignsUpdateDelegate));
+    OCMStub([mockDelegate campaignsUpdated]).andDo(^(NSInvocation *invocation) {
+        countSeenByDelegate = [[swrveMock messageCenterCampaigns] count];
+    });
+    [swrveMock campaignsUpdateListener:mockDelegate];
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
+    NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
+
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:YES];
+
+    // One assertion, deliberately: it fails as NSNotFound if the delegate was never called, and with the
+    // wrong count if it was called before the campaigns were readable. The number of calls is not asserted —
+    // downloadAssets fires its handler from each asset's own completion, so it coalesces only while requests
+    // overlap, and this harness answers HTTP synchronously, giving one call per asset.
+    XCTAssertEqual(countSeenByDelegate, 2, @"the delegate must be able to read the new campaigns when it is called");
 }
 
 - (void)testIAMMessageCenter {
@@ -133,7 +237,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
 
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     SwrveMessageController* controller = [swrveMock messaging];
 
@@ -197,7 +301,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenter" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     SwrveMessageController* controller = [swrveMock messaging];
     controller.analyticsSDK = swrveMock;
     
@@ -253,7 +357,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     SwrveCampaign *campaign = [[swrveMock messageCenterCampaigns] objectAtIndex:0];
     XCTAssertEqual(campaign.state.status, SwrveCampaignStatusUnseen);
@@ -286,7 +390,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsPersonalization" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     SwrveMessageController *controller = [swrveMock messaging];
 
@@ -477,7 +581,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
     
@@ -562,7 +666,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
 
@@ -630,7 +734,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     SwrveMessageController *controller = [swrveMock messaging];
 
@@ -697,7 +801,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     // mock date
     NSDate *mockInitDate = [NSDate dateWithTimeIntervalSince1970:1362873600]; // March 10, 2013
@@ -736,7 +840,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
 
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     // Now use valid, Expected by campaign personalization Dictionary
     NSDictionary *validPersonalization = @{@"test_cp": @"test_value",
@@ -789,7 +893,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsFreemarkerMessageCenter" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     // FreeMarker conditional resolves correctly for gold tier
     NSDictionary *goldPersonalization = @{@"Recipient.tier": @"gold", @"Recipient.name": @"Alice"};
@@ -833,7 +937,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignDownloadDate1" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES notifyCampaignsUpdated:NO];
 
     // verify there's only 1 campaign and the download date is yesterday
     NSArray<SwrveCampaign *> *campaigns = [swrveMock messageCenterCampaigns];
@@ -856,7 +960,7 @@
     filePath = [[NSBundle mainBundle] pathForResource:@"campaignDownloadDate2" ofType:@"json"];
     mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:YES notifyCampaignsUpdated:NO];
 
     // verify there's 2 campaigns now
     campaigns = [swrveMock messageCenterCampaigns];
@@ -889,7 +993,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaign_native_button_basics" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     SwrveMessageController *controller = [swrveMock messaging];
     SwrveCampaign *campaign = [controller messageCenterCampaignWithID:625386 andPersonalization:nil];
@@ -1052,7 +1156,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     NSArray *embeddedCampaigns = [swrveMock embeddedMessageCenterCampaigns:nil];
     XCTAssertNotNil(embeddedCampaigns);
@@ -1101,7 +1205,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsFreemarkerMessageCenter" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
     // All 7 embedded campaigns — pass required properties so all campaigns resolve during the filter step
     NSArray *embeddedCampaigns = [swrveMock embeddedMessageCenterCampaigns:@{@"Recipient.tier": @"bronze", @"Recipient.first_name": @"test"}];
@@ -1222,7 +1326,7 @@
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
     
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
     
     // Test without personalization
     NSArray *inAppCampaigns = [swrveMock inAppMessageCenterCampaignsWith:UIInterfaceOrientationPortrait withPersonalization:@{}];
@@ -1280,7 +1384,7 @@
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaignsMessageCenterOrientation" ofType:@"json"];
     NSData *mockData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockData options:0 error:nil];
-    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO];
+    [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:NO notifyCampaignsUpdated:NO];
 
 #if TARGET_OS_IOS
     XCTAssertEqual([[swrveMock messageCenterCampaigns] count], 3);

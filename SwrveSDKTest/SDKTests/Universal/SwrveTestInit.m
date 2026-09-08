@@ -16,6 +16,8 @@
 @interface Swrve (Internal)
 - (void)appDidBecomeActive:(NSNotification *)notification;
 
+- (NSString *)appVersion;
+
 - (NSDate *)getNow;
 
 - (void)setSwrveSessionDelegate:(id <SwrveSessionDelegate>)sessionDelegate;
@@ -117,6 +119,29 @@
     XCTAssertTrue(config.autoSaveEventsOnResign);
     XCTAssertTrue(config.autoSendEventsOnResume);
     XCTAssertTrue(config.inAppMessageConfig.prefersStatusBarHidden);
+}
+
+- (void)testAppVersionPrefersConfig {
+    SwrveConfig *config = [[SwrveConfig alloc] init];
+    config.appVersion = @"1.2.3";
+    Swrve *swrve = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey" config:config];
+
+    XCTAssertEqualObjects([swrve appVersion], @"1.2.3");
+}
+
+- (void)testAppVersionFallsBackWhenInfoPlistHasNoVersion {
+    Swrve *swrve = [[Swrve alloc] initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    // An Info.plist with no CFBundleShortVersionString, which is what project generators produce unless
+    // told to set MARKETING_VERSION. This used to return nil, and nil crashed the app at launch in
+    // SwrveSEConfig and reached request urls as the literal "(null)".
+    id bundleMock = OCMClassMock([NSBundle class]);
+    OCMStub([bundleMock mainBundle]).andReturn(bundleMock);
+    OCMStub([bundleMock infoDictionary]).andReturn(@{});
+
+    XCTAssertEqualObjects([swrve appVersion], @"unknown");
+
+    [bundleMock stopMocking];
 }
 
 - (void)testStackConfig {

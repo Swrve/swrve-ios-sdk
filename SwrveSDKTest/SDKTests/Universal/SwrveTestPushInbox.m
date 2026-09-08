@@ -20,6 +20,7 @@
 @property(atomic) SwrveRESTClient *restClient;
 @property(atomic) SwrvePushInboxController *pushInbox;
 @property (atomic) NSMutableArray *eventBuffer;
+@property (atomic, weak) id <SwrveCampaignsUpdateDelegate> campaignsUpdateDelegate;
 - (void)appDidBecomeActive:(NSNotification *)notification;
 - (void)updateResources:(NSArray *)resourceJson writeToCache:(BOOL)writeToCache;
 - (int)queueEvent:(NSString *)eventType data:(NSMutableDictionary *)eventData triggerCallback:(bool)triggerCallback;
@@ -549,6 +550,89 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     [swrveMock readPushInboxMessage:123 listener:mockSwrvePushInboxDelegate];
     
     OCMVerify(times(3), [mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+}
+
+- (void) testInvokeCampaignsUpdateDelegate {
+    // No campaigns section in the response, so the only invocation should be the startup one that
+    // reports the first content attempt finishing.
+    NSString* json = @"{\"push_inbox_hash\": \"test_hash_1\"}";
+    NSData *mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
+
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    id mockCampaignsDelegate = OCMProtocolMock(@protocol(SwrveCampaignsUpdateDelegate));
+    [swrveMock campaignsUpdateListener:mockCampaignsDelegate];
+    [swrveMock appDidBecomeActive:nil];
+    [swrveMock start];
+
+    OCMVerify(times(1), [mockCampaignsDelegate campaignsUpdated]);
+
+    [swrveMock refreshContent:nil];
+    // Still once: firstRefreshContentFinished only fires the startup notification a single time.
+    OCMVerify(times(1), [mockCampaignsDelegate campaignsUpdated]);
+}
+
+- (void) testInvokeCampaignsUpdateDelegateOnRealTimeUserPropertiesChange {
+    // Start with a response carrying neither campaigns nor RTUP, so the only notification is the
+    // startup one from firstRefreshContentFinished.
+    NSString* json = @"{\"push_inbox_hash\": \"test_hash_1\"}";
+    NSData *mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
+
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    id mockCampaignsDelegate = OCMProtocolMock(@protocol(SwrveCampaignsUpdateDelegate));
+    [swrveMock campaignsUpdateListener:mockCampaignsDelegate];
+    [swrveMock appDidBecomeActive:nil];
+    [swrveMock start];
+
+    OCMVerify(times(1), [mockCampaignsDelegate campaignsUpdated]);
+
+    [swrveMock refreshContent:nil];
+    // Nothing changed, so still just the startup notification.
+    OCMVerify(times(1), [mockCampaignsDelegate campaignsUpdated]);
+
+    // Now a real-time user properties change. The campaign JSON is untouched, but personalization feeds
+    // the Message Center filters, so which campaigns are listable and how they render can both change.
+    json = @"{\"real_time_user_properties\": {\"swrve.language\": \"en-IE\"}}";
+    mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
+
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = mockData;
+    restClient.mockedStatusCode = @200;
+    swrveMock.restClient = restClient;
+
+    [swrveMock refreshContent:nil];
+    OCMVerify(times(2), [mockCampaignsDelegate campaignsUpdated]);
+}
+
+- (void) testInvokeCampaignsUpdateDelegateWhenCampaignsRemoved {
+    // Start with a response carrying nothing, so the only notification is the startup one.
+    NSString* json = @"{\"push_inbox_hash\": \"test_hash_1\"}";
+    NSData *mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
+
+    Swrve *swrveMock = [SwrveTestHelper swrveMockResponse:200 mockData:mockData];
+    swrveMock = [swrveMock initWithAppID:572 apiKey:@"SomeAPIKey"];
+
+    id mockCampaignsDelegate = OCMProtocolMock(@protocol(SwrveCampaignsUpdateDelegate));
+    [swrveMock campaignsUpdateListener:mockCampaignsDelegate];
+    [swrveMock appDidBecomeActive:nil];
+    [swrveMock start];
+
+    OCMVerify(times(1), [mockCampaignsDelegate campaignsUpdated]);
+
+    // An empty campaigns object clears every campaign and takes an early return before the asset download, so this is the one change that has to be reported from the parse itself.
+    json = @"{\"campaigns\": {}}";
+    mockData = [json dataUsingEncoding:NSUTF8StringEncoding];
+
+    MockSwrveRESTClient *restClient = [[MockSwrveRESTClient alloc] initWithTimeoutInterval:60];
+    restClient.mockData = mockData;
+    restClient.mockedStatusCode = @200;
+    swrveMock.restClient = restClient;
+
+    [swrveMock refreshContent:nil];
+    OCMVerify(times(2), [mockCampaignsDelegate campaignsUpdated]);
 }
 
 - (void) testInvokePushInboxUpdateDelegate {

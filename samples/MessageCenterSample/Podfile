@@ -1,25 +1,18 @@
+# Kept deliberately. Separate pod projects force cross-module imports to be framework-style
+# (#import <SwrveSDKCommon/Foo.h>) rather than plain (#import "Foo.h"), which is why the SDK headers
+# wrap them in __has_include checks. This is the only sample with the setting, so it is the only
+# thing exercising that path — the others cover the plain-import case. See MOBILE-33124, which was
+# missed precisely because this sample was not in CI at the time.
 install! 'cocoapods', :generate_multiple_pod_projects => true, :incremental_installation => true
-platform :ios, '12.0'
 
-def shared_pods
-  pod 'SwrveSDK', :path => '../../'
-  pod 'SwrveSDKCommon', :path => '../../'
-  # use remote podfile by commenting out above and uncommenting below
-  #pod 'SwrveSDK'
-end
+platform :ios, '16.0'
 
 target 'MessageCenterSample' do
   use_frameworks!
-  shared_pods
-end
 
-post_install do |installer|
-  unless installer.pods_project.nil?
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-        config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
-      end
-    end
-  end
+  pod 'SwrveSDK'
+# To build against local SDK source instead, comment out the line above and uncomment these two:
+#  pod 'SwrveSDK', :path => '../../'
+#  pod 'SwrveSDKCommon', :path => '../../'
+
 end

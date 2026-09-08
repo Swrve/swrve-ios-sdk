@@ -385,14 +385,15 @@
 
 - (void)testExternalUserId {
 
-    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:true];
-    OCMExpect([swrveMockManaged sdkReady]).andForwardToRealObject();
-    [SwrveSDK externalUserId];
+    // Deliberately not gated on sdkReady, unlike the apis above — it answers when not started
+    id swrveMockManaged = [self initSwrveSDKWithMode:SwrveInitModeManaged autoStart:false];
+    OCMReject([swrveMockManaged sdkReady]);
+    XCTAssertEqualObjects([SwrveSDK externalUserId], @"", @"no user has identified, so an empty string");
     OCMVerifyAll(swrveMockManaged);
-    
-    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:true];
-    OCMExpect([swrveMockAuto sdkReady]).andForwardToRealObject();;
-    [SwrveSDK externalUserId];
+
+    id swrveMockAuto = [self initSwrveSDKWithMode:SwrveInitModeAuto autoStart:false];
+    OCMReject([swrveMockAuto sdkReady]);
+    XCTAssertEqualObjects([SwrveSDK externalUserId], @"", @"no user has identified, so an empty string");
     OCMVerifyAll(swrveMockAuto);
 }
 

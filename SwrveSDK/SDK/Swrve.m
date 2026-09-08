@@ -146,7 +146,7 @@ enum {
 @property(nonatomic) bool autoShowMessagesEnabled;
 @property(atomic) NSString *language;
 
-- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState;
+- (void)updateCampaigns:(NSDictionary *)campaignDic withLoadingPreviousCampaignState:(BOOL)isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 
 - (NSString *)campaignQueryString;
 
@@ -237,6 +237,8 @@ enum {
 
 - (void) pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener;
 
+- (void) campaignsUpdateListener:(id<SwrveCampaignsUpdateDelegate>)listener;
+
 - (void)checkForCampaignAndResourcesUpdates:(NSTimer *)timer;
 
 @property(atomic) BOOL initialised;
@@ -305,6 +307,8 @@ enum {
 @property(atomic) NSString *idfa;
 
 @property (atomic, weak) id <SwrvePushInboxUpdateDelegate> pushInboxUpdateDelegate;
+
+@property (atomic, weak) id <SwrveCampaignsUpdateDelegate> campaignsUpdateDelegate;
 
 @end
 
@@ -408,6 +412,7 @@ enum {
 @synthesize swrveDeeplinkManager;
 @synthesize idfa = _idfa;
 @synthesize pushInboxUpdateDelegate;
+@synthesize campaignsUpdateDelegate;
 
 // Non shared instance initialization methods
 - (id)initWithAppID:(int)swrveAppID apiKey:(NSString *)swrveAPIKey {
@@ -1127,13 +1132,13 @@ enum {
     if (self.messaging) {
         NSDictionary *campaignJson = [responseDict objectForKey:@"campaigns"];
         if (campaignJson != nil) {
-            [self.messaging updateCampaigns:campaignJson withLoadingPreviousCampaignState:loadPreviousCampaignState];
+            [self.messaging updateCampaigns:campaignJson withLoadingPreviousCampaignState:loadPreviousCampaignState notifyCampaignsUpdated:YES];
             
             NSData *campaignData = [NSJSONSerialization dataWithJSONObject:campaignJson options:0 error:nil];
             [self.messaging writeToCampaignCache:campaignData];
             [self.messaging autoShowMessages];
         } else if (realTimeUserPropertiesJson != nil) {
-            // if real time user properties has changed then we need to resync InApp assets
+            // if real time user properties has changed then we need to resync InApp assets, and notify SwrveCampaignsUpdateDelegate once they land — personalization changes which campaigns are listable.
             [self.messaging refreshInAppCampaignAssets];
         }
     }
@@ -1389,6 +1394,10 @@ enum {
 
 - (void) pushInboxUpdateListener:(id<SwrvePushInboxUpdateDelegate>)listener {
     self.pushInboxUpdateDelegate = listener;
+}
+
+- (void) campaignsUpdateListener:(id<SwrveCampaignsUpdateDelegate>)listener {
+    self.campaignsUpdateDelegate = listener;
 }
 
 - (void)shutdown {
@@ -1831,12 +1840,11 @@ enum {
 - (NSString *)appVersion {
     NSString *appVersion = self.config.appVersion;
     if (appVersion == nil) {
-        @try {
-            appVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
-        }
-        @catch (NSException *e) {
-            [SwrveLogger error:@"Could not obtian version: %@", e];
-        }
+        appVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
+    }
+    if (appVersion == nil) {
+        [SwrveLogger warning:@"No app version available. Set CFBundleShortVersionString in your Info.plist or config.appVersion, otherwise \"unknown\" is reported.", nil];
+        appVersion = @"unknown";
     }
     return appVersion;
 }
@@ -2840,9 +2848,6 @@ enum HttpStatus {
 }
 
 - (NSString *)externalUserId {
-    if (![self sdkReady]) {
-        return @"";
-    }
     SwrveUser *swrveUser = [self.profileManager swrveUserWithId:self.userID];
     return (swrveUser == nil) ? @"" : swrveUser.externalId;
 }
@@ -2895,6 +2900,13 @@ enum HttpStatus {
     id <SwrvePushInboxUpdateDelegate> delegate = pushInboxUpdateDelegate;
     if (delegate != nil && [delegate respondsToSelector:@selector(messagesUpdated)]) {
         [delegate messagesUpdated];
+    }
+}
+
+- (void)invokeCampaignsUpdatedDelegate {
+    id <SwrveCampaignsUpdateDelegate> delegate = campaignsUpdateDelegate;
+    if (delegate != nil && [delegate respondsToSelector:@selector(campaignsUpdated)]) {
+        [delegate campaignsUpdated];
     }
 }
 
@@ -3167,6 +3179,7 @@ enum HttpStatus {
         // independent of whether the resources or campaigns have changed from cached values
         [self invokeResourcesRTUPCallback];
         [self invokePushInboxUpdatedDelegate];
+        [self invokeCampaignsUpdatedDelegate];
     }
 }
 

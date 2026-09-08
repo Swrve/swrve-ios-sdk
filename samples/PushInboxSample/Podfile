@@ -1,0 +1,11 @@
+platform :ios, '16.0'
+
+target 'PushInboxSample' do
+  use_frameworks!
+
+  pod 'SwrveSDK'
+# To build against local SDK source instead, comment out the line above and uncomment these two:
+#  pod 'SwrveSDK', :path => '../../'
+#  pod 'SwrveSDKCommon', :path => '../../'
+
+end

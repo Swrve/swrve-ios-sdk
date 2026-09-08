@@ -1,6 +1,13 @@
 import XCTest
 
+@testable import SwrveSDK
+
 final class SwrveTestSDKSwiftAPI: XCTestCase {
+
+    override func tearDown() {
+        SwrveSDK.resetSwrveSharedInstance()
+        super.tearDown()
+    }
 
     func testSwrveSDKPublicAPIHasNotChanged() throws {
         // Get all class methods declared in SwrveSDK
@@ -22,13 +29,25 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
         selectors.sort()
 
         // This is the "baseline" count — update intentionally if API changes
-        let expectedCount = 76  // <-- Set to current count of APIs we want to track
+        let expectedCount = 78  // <-- Set to current count of APIs we want to track
         XCTAssertEqual(
             selectors.count, expectedCount,
             """
             SwrveSDK API count changed! Expected \(expectedCount), found \(selectors.count).
             New or removed APIs: \(selectors)
             """)
+    }
+
+    func testAPIsThatDoNotRequireStart() {
+        // Managed mode with no autostart is the one configuration where an instance exists but the SDK has not started, which is what these apis have to tolerate.
+        SwrveSDK.resetSwrveSharedInstance()
+        let config = SwrveConfig()
+        config.initMode = .managed
+        config.autoStartLastUser = false
+        SwrveSDK.sharedInstance(withAppID: 123, apiKey: "SomeAPIKey", config: config)
+
+        XCTAssertFalse(SwrveSDK.started())
+        XCTAssertEqual(SwrveSDK.sdkVersion(), SWRVE_SDK_VERSION)
     }
 
     func testAllAPISSwift() throws {
@@ -125,6 +144,9 @@ final class SwrveTestSDKSwiftAPI: XCTestCase {
 
             // External user ID
             SwrveSDK.externalUserId()
+
+            // SDK version — the one accessor that does not need the SDK started
+            SwrveSDK.sdkVersion()
 
             // Start
             SwrveSDK.start()

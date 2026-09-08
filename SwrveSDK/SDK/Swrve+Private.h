@@ -17,5 +17,6 @@
 - (int)eventInternal:(NSString *)eventName payload:(NSDictionary *)eventPayload triggerCallback:(bool)triggerCallback;
 - (int)queueEvent:(NSString*)eventType data:(NSMutableDictionary*)eventData triggerCallback:(bool)triggerCallback;
 - (NSString *)signatureKey;
+- (void)invokeCampaignsUpdatedDelegate;
 
 @end

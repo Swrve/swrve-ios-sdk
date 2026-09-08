@@ -9,7 +9,7 @@ This sample app demonstrates how to consume **Swrve Embedded Campaigns** and ren
 
 ---
 ## Why Embedded Campaigns?
-Embedded campaigns let you design & target content server‑side (in Swrve) while retaining **full client rendering control**. They are ideal when:
+Embedded campaigns let you design & target content server‑side while retaining **full client rendering control**. They are ideal when:
 * You already have bespoke UI components / design system.
 * You want AB‑testable content without shipping an app update.
 * You need a mixture of layouts (carousel, banners, contextual offers) powered by one remote feed.
@@ -73,7 +73,7 @@ Layouts: `tall_card` (image + reserved text band) or `image_only_card` (just ima
 Layouts: `tall_card` (image on top) or `compact_card` (square thumbnail + text column). CTA optional; card taps still possible.
 
 #### Banner (`type: banner`)
-Fields include `layout` variants: `left_aligned_banner`, `centered_banner`, `right_aligned_banner`. Uses `image` plus overlay text & CTA.
+Uses `image` plus overlay text & CTA. Alignment comes from `layout`, matched loosely — the sample checks whether the value *contains* `left` or `right` (e.g. `left_aligned_banner`), and anything else, including an absent `layout`, renders centred.
 
 #### Floating Banner (`type: floating_banner`)
 Adds:
