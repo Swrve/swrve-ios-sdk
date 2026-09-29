@@ -478,14 +478,11 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if (!notificationIdentifierString || [notificationIdentifierString isEqualToString:@"-1"]) {
         [SwrveLogger debug:@"SwrveNotificationManager: Got unidentified notification", nil];
     } else {
-        if (lastProcessedPushId == nil || [notificationIdentifierString isEqualToString:@"0"] || ![notificationIdentifierString isEqualToString:lastProcessedPushId]) {
-            if (notificationRequestId != nil) {
-                lastProcessedPushId = notificationRequestId;
-            }
-
+        if (lastProcessedPushId == nil || [notificationIdentifierString isEqualToString:@"0"] || ![notificationRequestId isEqualToString:lastProcessedPushId]) {
+            lastProcessedPushId = notificationRequestId;
             canProcess = YES;
         } else {
-            [SwrveLogger debug:@"SwrveNotificationManager: Got Swrve notification with id %@, ignoring as we already processed it", notificationIdentifierString];
+            [SwrveLogger warning:@"SwrveNotificationManager: Duplicate push engagement ignored (push id %@, request id %@). If this occurs on every tap, the app is reporting taps twice — either Swrve owns UNUserNotificationCenter delegate or use processNotificationResponse in your delegate, not both.", notificationIdentifierString, notificationRequestId];
         }
     }
     return canProcess;

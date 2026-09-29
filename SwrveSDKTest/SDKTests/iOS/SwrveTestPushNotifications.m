@@ -361,12 +361,53 @@
     });
 
     // no buttons payload so pass SwrveNotificationResponseDefaultActionKey
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"9"];
-    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"9"];
+    // notificationRequestId deliberately differs from _p so the dedupe must key off the request id
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"request-9"];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"9"} notificationRequestId:@"request-9"];
 
     XCTAssertEqual(callCount, 1);
     OCMVerifyAll(eventBufferMock);
     OCMVerifyAll(mockApplication);
+    [mockApplication stopMocking];
+}
+
+- (void)testSameCampaignDifferentRequestsProcessedTwice {
+    id mockApplication = [self mockApplicationStateWith:UIApplicationStateBackground];
+
+    Swrve *swrveMock = [self swrveMockWithPushAndStubs];
+
+    // two separate deliveries of the same push campaign should each send an engaged event
+    id eventBufferMock = OCMPartialMock([NSMutableArray array]);
+    [swrveMock setEventBuffer:eventBufferMock];
+    __block int callCount = 0;
+    OCMStub([eventBufferMock addObject:OCMOCK_ANY]).andDo(^(NSInvocation *invocation) {
+        ++callCount;
+    });
+
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"10"} notificationRequestId:@"request-10a"];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"10"} notificationRequestId:@"request-10b"];
+
+    XCTAssertEqual(callCount, 2);
+    [mockApplication stopMocking];
+}
+
+- (void)testNilNotificationRequestIdIsProcessed {
+    id mockApplication = [self mockApplicationStateWith:UIApplicationStateBackground];
+
+    Swrve *swrveMock = [self swrveMockWithPushAndStubs];
+
+    // a nil request id can't be deduped, so each response is processed rather than dropped
+    id eventBufferMock = OCMPartialMock([NSMutableArray array]);
+    [swrveMock setEventBuffer:eventBufferMock];
+    __block int callCount = 0;
+    OCMStub([eventBufferMock addObject:OCMOCK_ANY]).andDo(^(NSInvocation *invocation) {
+        ++callCount;
+    });
+
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"11"} notificationRequestId:nil];
+    [swrveMock processNotificationResponseWithIdentifier:SwrveNotificationResponseDefaultActionKey andUserInfo:@{@"_p": @"11"} notificationRequestId:nil];
+
+    XCTAssertEqual(callCount, 2);
     [mockApplication stopMocking];
 }
 
