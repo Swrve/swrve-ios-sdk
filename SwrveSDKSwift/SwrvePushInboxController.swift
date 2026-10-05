@@ -203,7 +203,10 @@ extension HTTPURLResponse {
 
             var result: SwrvePushInboxResult
 
-            if httpStatus == HttpStatus.HTTP_SUCCESS {
+            if response?.http == nil {
+                let errorMessage = "Push Inbox Message error marking as Read:\(error?.localizedDescription ?? "")"
+                result = SwrvePushInboxResult(SwrvePushInboxResultCode.ERROR_UNKNOWN, errorMessage, 0)
+            } else if httpStatus == HttpStatus.HTTP_SUCCESS {
                 self.updateSuccess(messageId: messageId, state: SwrvePushInboxMessageState.READ, responseBody: data)
                 result = SwrvePushInboxResult(SwrvePushInboxResultCode.SUCCESS, "", statusCode)
             } else {
@@ -236,7 +239,10 @@ extension HTTPURLResponse {
 
             var result: SwrvePushInboxResult
 
-            if httpStatus == HttpStatus.HTTP_SUCCESS {
+            if response?.http == nil {
+                let errorMessage = "Push Inbox Message error deleting:\(error?.localizedDescription ?? "")"
+                result = SwrvePushInboxResult(SwrvePushInboxResultCode.ERROR_UNKNOWN, errorMessage, 0)
+            } else if httpStatus == HttpStatus.HTTP_SUCCESS {
                 self.updateSuccess(messageId: messageId, state: SwrvePushInboxMessageState.DELETED, responseBody: data)
                 result = SwrvePushInboxResult(SwrvePushInboxResultCode.SUCCESS, "", statusCode)
             } else {
@@ -266,8 +272,13 @@ extension HTTPURLResponse {
         var localHandler: RestHandlerClosure?
         localHandler = { [weak self] response, data, error in
             guard let self = self else { return }
-            let status = (response as! HTTPURLResponse).httpStatus
-            let statusCode = response?.http?.statusCode ?? 0
+            // response is nil when the request fails without a server response (offline, timeout, DNS/TLS error).
+            guard let httpResponse = response?.http else {
+                handler(response, data, error)
+                return
+            }
+            let status = httpResponse.httpStatus
+            let statusCode = httpResponse.statusCode
             if status != HttpStatus.HTTP_SUCCESS && attempt < self.REST_MAX_ATTEMPTS {
                 SwrveLogger.logWarning("Retrying Push Inbox REST error \(statusCode) on attempt \(attempt)")
                 attempt += 1

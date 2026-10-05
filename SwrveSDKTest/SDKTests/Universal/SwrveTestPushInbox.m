@@ -552,6 +552,63 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     OCMVerify(times(3), [mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 }
 
+// A transport failure (offline, timeout, DNS/TLS error) delivers a nil response with an error
+- (id)mockRestClientWithNoResponse {
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    id mockRestClient = OCMPartialMock(restClient);
+    NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
+    OCMStub([mockRestClient sendHttpRequest:OCMOCK_ANY
+                          completionHandler:([OCMArg invokeBlockWithArgs:[NSNull null], [NSNull null], error, nil])]);
+    return mockRestClient;
+}
+
+- (id)expectErrorUnknownForMessageId:(UInt64)messageId {
+    id mockSwrvePushInboxDelegate = OCMProtocolMock(@protocol(SwrvePushInboxDelegate));
+    OCMExpect([mockSwrvePushInboxDelegate onComplete:messageId result:[OCMArg checkWithBlock:^BOOL(id result) {
+        if (![result isKindOfClass:[SwrvePushInboxResult class]]) { return NO; };
+        SwrvePushInboxResult* theResult = (SwrvePushInboxResult*)result;
+        return theResult.resultCode == SwrvePushInboxResultCodeERROR_UNKNOWN
+                && theResult.httpResponseCode == 0;
+    }]]);
+    return mockSwrvePushInboxDelegate;
+}
+
+- (void)testRead_restNoResponse {
+    Swrve *swrveMock = [self swrveMockWithResponseCode:200 inboxUpdateResponseBody:RESPONSE_MODIFED];
+    id mockRestClient = [self mockRestClientWithNoResponse];
+    SwrvePushInboxController *pushInbox = [[SwrvePushInboxController alloc]init:@"userid"
+                                                                        baseUrl:@"https://whatever.swrve.com/api/1/push_inbox_update"
+                                                                         apiKey:@"apiKey"
+                                                                   signatureKey:@"key"
+                                                                     restClient:mockRestClient];
+    [swrveMock setPushInbox:pushInbox];
+
+    id mockSwrvePushInboxDelegate = [self expectErrorUnknownForMessageId:123];
+    [swrveMock readPushInboxMessage:123 listener:mockSwrvePushInboxDelegate];
+
+    OCMVerifyAll(mockSwrvePushInboxDelegate);
+    // Transport failures are not retried
+    OCMVerify(times(1), [mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+}
+
+- (void)testDelete_restNoResponse {
+    Swrve *swrveMock = [self swrveMockWithResponseCode:200 inboxUpdateResponseBody:RESPONSE_MODIFED];
+    id mockRestClient = [self mockRestClientWithNoResponse];
+    SwrvePushInboxController *pushInbox = [[SwrvePushInboxController alloc]init:@"userid"
+                                                                        baseUrl:@"https://whatever.swrve.com/api/1/push_inbox_update"
+                                                                         apiKey:@"apiKey"
+                                                                   signatureKey:@"key"
+                                                                     restClient:mockRestClient];
+    [swrveMock setPushInbox:pushInbox];
+
+    id mockSwrvePushInboxDelegate = [self expectErrorUnknownForMessageId:123];
+    [swrveMock deletePushInboxMessage:123 listener:mockSwrvePushInboxDelegate];
+
+    OCMVerifyAll(mockSwrvePushInboxDelegate);
+    // Transport failures are not retried
+    OCMVerify(times(1), [mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+}
+
 - (void) testInvokeCampaignsUpdateDelegate {
     // No campaigns section in the response, so the only invocation should be the startup one that
     // reports the first content attempt finishing.
