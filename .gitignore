@@ -16,3 +16,6 @@ fastlane/report.xml
 .swiftpm
 SwrveFrameworks/Dynamic
 SwrveFrameworks/Static
+
+# Samples float to the latest SwrveSDK 10.x, so their resolved package versions are not pinned.
+samples/**/Package.resolved

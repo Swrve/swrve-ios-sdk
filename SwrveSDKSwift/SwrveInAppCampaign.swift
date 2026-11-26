@@ -1,10 +1,6 @@
 import Foundation
 import UIKit
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 #if canImport(SwrveSDKCommon)
 import SwrveSDKCommon
 #endif
@@ -68,15 +64,14 @@ import SwrveSDKCommon
                         if let button = button as? SwrveButton {
                             addAssetToQueue(assetsQueue: assetsQueue, withUrl: button.dynamicImageUrl, withPersonalization: personalization)
 
-                            if let image = button.image,
+                            // A themed button is drawn from its theme and does not use image_up
+                            if let theme = button.theme {
+                                addButtonThemeAssets(theme: theme, assetsQueue: assetsQueue)
+                            } else if let image = button.image,
                                 let assetQueueItem = SwrveAssetsManager.assetQItem(
                                     with: image, andDigest: image, andIsExternal: false, andIsImage: true)
                             {
                                 assetsQueue.add(assetQueueItem)
-                            }
-
-                            if let theme = button.theme {
-                                addButtonThemeAssets(theme: theme, assetsQueue: assetsQueue)
                             }
                         }
                     }
@@ -92,7 +87,7 @@ import SwrveSDKCommon
                                 assetsQueue.add(assetQueueItem)
                             }
 
-                            if let multilineText = image.multilineText as? [String: Any] {
+                            if let multilineText = image.multilineText {
                                 addFontToQueue(assetQueue: assetsQueue, withAsset: multilineText)
                             }
                         }

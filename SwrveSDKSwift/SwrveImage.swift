@@ -1,9 +1,5 @@
 import UIKit
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 #if canImport(SwrveSDKCommon)
 import SwrveSDKCommon
 #endif

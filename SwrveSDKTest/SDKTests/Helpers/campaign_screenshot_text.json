@@ -1,0 +1,301 @@
+{
+  "game_data": {},
+  "campaigns": [
+    {
+      "id": 749300,
+      "timezone_type": "global",
+      "start_date_iso": "2026-11-03T17:00:18Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+        {
+          "event_name": "show_text_message",
+          "conditions": {}
+        }
+      ],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "message": {
+        "id": 754821,
+        "name": "Screenshot test (used in public SwrveSDKTest) - Text",
+        "rules": {
+          "orientations": "portrait"
+        },
+        "priority": 9999,
+        "template": {
+          "formats": [
+            {
+              "name": "[0.6568627450980392]phones-foldables-tablets-global-census-2026-10-15 - portrait",
+              "orientation": "portrait",
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1206
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1875
+                }
+              },
+              "calibration": {
+                "width": 3284,
+                "height": 328,
+                "text": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "base_font_size": 20
+              },
+              "images": [
+                {
+                  "name": "Button 1",
+                  "iam_z_index": 1,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": -788
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1084
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 197
+                  },
+                  "multiline_text": {
+                    "value": "A custom font",
+                    "h_align": "CENTER",
+                    "font_size": 30,
+                    "scrollable": false,
+                    "font_postscript_name": "Pacifico-Regular",
+                    "font_family": "Pacifico",
+                    "font_style": "Regular",
+                    "font_file": "535.32032.3d0b9eb17e645ac34f83c49c3f988372b242173a.ttf",
+                    "font_digest": "3d0b9eb17e645ac34f83c49c3f988372b242173a",
+                    "line_height": 1.2,
+                    "padding": {
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "font_color": "#ffff0000"
+                  }
+                },
+                {
+                  "name": "Button 2",
+                  "iam_z_index": 2,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": -469
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1084
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 460
+                  },
+                  "multiline_text": {
+                    "value": "This text is too long for its box at the size it was set, so the SDK shrinks it until all of it fits. Scrolling is off, so nothing is hidden: every word, down to the last one, shows.",
+                    "h_align": "LEFT",
+                    "font_size": 20,
+                    "scrollable": false,
+                    "font_native_style": "Normal",
+                    "font_file": "_system_font_",
+                    "line_height": 1.2,
+                    "padding": {
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "font_color": "#ffffffff"
+                  }
+                },
+                {
+                  "name": "Button 3",
+                  "iam_z_index": 3,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 361
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1084
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 460
+                  },
+                  "multiline_text": {
+                    "value": "This text keeps the size it was set and scrolls instead: scrolling is on, so the SDK leaves the font alone and the user scrolls to read on. Only the first lines show here; the rest of this paragraph is below the bottom of the box, out of view until the user scrolls down to it.",
+                    "h_align": "LEFT",
+                    "font_size": 20,
+                    "scrollable": true,
+                    "font_native_style": "Normal",
+                    "font_file": "_system_font_",
+                    "line_height": 1.2,
+                    "padding": {
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "font_color": "#ffffffff"
+                  }
+                },
+                {
+                  "name": "Button 4",
+                  "iam_z_index": 4,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 725
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1084
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 118
+                  },
+                  "multiline_text": {
+                    "value": "Centred",
+                    "h_align": "CENTER",
+                    "font_size": 20,
+                    "scrollable": true,
+                    "font_native_style": "Normal",
+                    "font_file": "_system_font_",
+                    "line_height": 1.2,
+                    "padding": {
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "font_color": "#ffffffff"
+                  }
+                },
+                {
+                  "name": "Button 5",
+                  "iam_z_index": 5,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 854
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1084
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 118
+                  },
+                  "multiline_text": {
+                    "value": "Right aligned",
+                    "h_align": "RIGHT",
+                    "font_size": 20,
+                    "scrollable": true,
+                    "font_native_style": "Normal",
+                    "font_file": "_system_font_",
+                    "line_height": 1.2,
+                    "padding": {
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "font_color": "#ffffffff"
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "Background",
+                  "iam_z_index": 0,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1809
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 2810
+                  },
+                  "image_width": 1809,
+                  "image_height": 2810,
+                  "image_filename": "iam_test_2754x4278_portrait_safe1836x2855.png",
+                  "image_up": {
+                    "type": "asset",
+                    "value": "57a40d228c6f3530361a4558b53f50cfcc5c8cae"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "media_format": "image"
+                }
+              ],
+              "scaled_by": 0.6568627450980392,
+              "scaled_from": "phones-foldables-tablets-global-census-2026-10-15 - portrait",
+              "scale": 1
+            }
+          ]
+        }
+      },
+      "subject": "",
+      "in_app_version": 15
+    }
+  ],
+  "rules": {
+    "max_messages_per_session": 99999,
+    "delay_first_message": 0,
+    "min_delay_between_messages": 0
+  },
+  "cdn_paths": {
+    "message_images": "https://campaign-content.swrve.com/messaging/message_image/",
+    "message_fonts": "https://campaign-content.swrve.com/messaging/fonts/"
+  },
+  "version": 2
+}

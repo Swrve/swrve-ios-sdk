@@ -25,6 +25,9 @@ NSString *const SwrveCampaignKey = @"campaign";
 
 #pragma mark - rich media keys
 NSString *const SwrveNotificationMediaKey = @"media";
+NSString *const SwrveNotificationCarouselKey = @"carousel";
+NSString *const SwrveNotificationCarouselImageUrlKey = @"image_url";
+NSString *const SwrveNotificationCarouselCategoryIdentifier = @"swrve.carousel";
 NSString *const SwrveNotificationTitleKey = @"title";
 NSString *const SwrveNotificationSubtitleKey = @"subtitle";
 NSString *const SwrveNotificationBodyKey = @"body";

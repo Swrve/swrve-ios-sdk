@@ -1,0 +1,166 @@
+{
+  "canonical": {
+    "version": 1,
+    "carousel": [
+      {
+        "title": "$110 off",
+        "body": "55-inch 4K LED television",
+        "image_url": "https://cdn.example.com/carousel/item1.png",
+        "action_type": "open_url",
+        "action": "https://www.example.com/"
+      },
+      {
+        "title": "$150 off",
+        "body": "65-inch OLED television",
+        "image_url": "https://cdn.example.com/carousel/item2.png",
+        "action_type": "open_app",
+        "action": ""
+      }
+    ],
+    "buttons": [
+      {
+        "title": "Shop now",
+        "action_type": "open_url",
+        "action": "https://www.example.com/deals"
+      }
+    ]
+  },
+
+  "empty_array": {
+    "version": 1,
+    "carousel": []
+  },
+
+  "not_an_array": {
+    "version": 1,
+    "carousel": {
+      "autoPlay": true,
+      "transitionSpeed": 3,
+      "showPageControl": true,
+      "slides": [
+        {
+          "title": "superseded shape",
+          "subtitle": "must parse as NOT a carousel",
+          "imageUrl": "https://cdn.example.com/carousel/old.png",
+          "actionUrl": "https://www.example.com/"
+        }
+      ]
+    }
+  },
+
+  "item_missing_image_url": {
+    "version": 1,
+    "carousel": [
+      {
+        "title": "index 0",
+        "image_url": "https://cdn.example.com/carousel/item1.png",
+        "action_type": "open_app",
+        "action": ""
+      },
+      {
+        "title": "index 1 has no image_url"
+      }
+    ]
+  },
+
+  "item_empty_image_url": {
+    "version": 1,
+    "carousel": [
+      {
+        "title": "index 0",
+        "image_url": ""
+      }
+    ]
+  },
+
+  "optional_fields_absent": {
+    "version": 1,
+    "carousel": [
+      {
+        "title": "index 0",
+        "body": "complete",
+        "image_url": "https://cdn.example.com/carousel/item1.png",
+        "action_type": "open_url",
+        "action": "https://www.example.com/offers/0"
+      },
+      {
+        "image_url": "https://cdn.example.com/carousel/item2.png"
+      },
+      {
+        "body": "index 2 has no title",
+        "image_url": "https://cdn.example.com/carousel/item3.png",
+        "action_type": "open_app",
+        "action": ""
+      },
+      {
+        "title": "index 3",
+        "body": "complete",
+        "image_url": "https://cdn.example.com/carousel/item4.png",
+        "action_type": "open_url",
+        "action": "https://www.example.com/offers/3"
+      }
+    ]
+  },
+
+  "seven_items_all_retained": {
+    "version": 1,
+    "carousel": [
+      { "title": "0", "image_url": "https://cdn.example.com/carousel/0.png" },
+      { "title": "1", "image_url": "https://cdn.example.com/carousel/1.png" },
+      { "title": "2", "image_url": "https://cdn.example.com/carousel/2.png" },
+      { "title": "3", "image_url": "https://cdn.example.com/carousel/3.png" },
+      { "title": "4", "image_url": "https://cdn.example.com/carousel/4.png" },
+      { "title": "5", "image_url": "https://cdn.example.com/carousel/5.png" },
+      { "title": "6", "image_url": "https://cdn.example.com/carousel/6.png" }
+    ]
+  },
+
+  "action_type_variants": {
+    "version": 1,
+    "carousel": [
+      {
+        "title": "index 0 — open_url",
+        "image_url": "https://cdn.example.com/carousel/0.png",
+        "action_type": "open_url",
+        "action": "https://www.example.com/"
+      },
+      {
+        "title": "index 1 — open_app with empty action",
+        "image_url": "https://cdn.example.com/carousel/1.png",
+        "action_type": "open_app",
+        "action": ""
+      },
+      {
+        "title": "index 2 — action_type absent",
+        "image_url": "https://cdn.example.com/carousel/2.png"
+      },
+      {
+        "title": "index 3 — unrecognised action_type",
+        "image_url": "https://cdn.example.com/carousel/3.png",
+        "action_type": "not_a_real_action_type",
+        "action": "ignored"
+      },
+      {
+        "title": "index 4 — open_campaign is out of scope",
+        "image_url": "https://cdn.example.com/carousel/4.png",
+        "action_type": "open_campaign",
+        "action": "12345"
+      }
+    ]
+  },
+
+  "stray_settings_keys_are_ignored": {
+    "version": 1,
+    "autoPlay": true,
+    "transitionSpeed": 3,
+    "showPageControl": false,
+    "carousel": [
+      {
+        "title": "page control shows regardless",
+        "image_url": "https://cdn.example.com/carousel/0.png",
+        "action_type": "open_app",
+        "action": ""
+      }
+    ]
+  }
+}

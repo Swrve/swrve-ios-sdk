@@ -46,6 +46,9 @@
 - (void)showMessage:(SwrveMessage *)message queue:(bool)isQueued withPersonalization:(NSDictionary *)personalization;
 - (void)showMessage:(SwrveMessage *)message withPersonalization:(NSDictionary *)personalization;
 - (void)dismissMessageWindow;
+- (CGRect)messageWindowFrame:(UIWindow *)window;
+- (NSString *)campaignQueryString;
+- (void)sceneDidActivate:(NSNotification *)notification;
 - (void)updateCampaigns:(NSDictionary *)campaignJson withLoadingPreviousCampaignState:(BOOL) isLoadingPreviousCampaignState notifyCampaignsUpdated:(BOOL)notifyCampaignsUpdated;
 - (SwrveBaseMessage *)baseMessageForEvent:(NSString *)eventName withPayload:(NSDictionary *)payload;
 - (void)showMessage:(SwrveMessage *)message;
@@ -68,6 +71,10 @@
 @property(nonatomic) SwrveActionType inAppMessageActionType;
 @property(nonatomic, retain) NSString *inAppMessageAction;
 - (NSDictionary *)processRealTimeUserProperties:(NSDictionary *)realTimeUserProperties;
+@end
+
+@interface SwrveLocalStorage (LargestScreenTests)
++ (void)writeValueToDictionaryFile:(NSString *)fileName value:(id)value key:(NSString *)key;
 @end
 
 @interface SwrveReceiptProvider ()
@@ -1169,6 +1176,11 @@
     id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     OCMExpect([mockUIApplication openURL:url options:@{} completionHandler:nil]);
+    if (@available(iOS 15.4, *)) {
+        // must not fall through to the notification settings action
+        NSURL *notificationSettingsUrl = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
+        OCMReject([mockUIApplication openURL:notificationSettingsUrl options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+    }
     OCMStub([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 
     // Pretend to press open app settings buttons
@@ -1196,6 +1208,45 @@
 
     [mockUIApplication stopMocking];
     OCMVerifyAll(swrveMock);
+}
+
+- (void)testOpenAppSettingsPressedQALogsActionType {
+    id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+    SwrveMessageController *controller = [swrveMock messaging];
+
+    SwrveMessage *message = (SwrveMessage *)[controller baseMessageForEvent:@"test1" withPayload:nil];
+    [controller showMessage:message];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    SwrveMessagePageViewController *pageViewController = [self loadMessagePageViewController:messageViewController];
+
+    SwrveMessageFormat *format =[pageViewController messageFormat];
+    SwrveMessagePage *page = [[format pages] objectForKey:[NSNumber numberWithInt:0]];
+    NSArray *buttons = [page buttons];
+
+    id mockUIApplication = OCMPartialMock([UIApplication sharedApplication]);
+    OCMStub([mockUIApplication openURL:OCMOCK_ANY options:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
+
+    id swrveQAMock = OCMClassMock([SwrveQA class]);
+    OCMExpect(ClassMethod([swrveQAMock campaignButtonClicked:OCMOCK_ANY
+                                                   variantId:OCMOCK_ANY
+                                                  buttonName:OCMOCK_ANY
+                                                  actionType:@"open_app_settings"
+                                                 actionValue:OCMOCK_ANY]));
+
+    for (NSInteger i = 0; i < [buttons count]; i++) {
+        SwrveButton* swrveButton = [buttons objectAtIndex:i];
+        if ([swrveButton actionType] == kSwrveActionOpenSettings) {
+            SwrveUIButton* button = [SwrveUIButton new];
+            [button setTag:i];
+            [messageViewController onButtonPressed:button pageId:[NSNumber numberWithLong:page.pageId]];
+        }
+    }
+
+    OCMVerifyAllWithDelay(swrveQAMock, 5);
+
+    [swrveQAMock stopMocking];
+    [mockUIApplication stopMocking];
 }
 
 /**
@@ -2164,6 +2215,296 @@
     // Assets ready, should display message
     UIWindow *window = [swrveMock messaging].inAppMessageWindow;
     XCTAssertNotNil(window);
+}
+
+/**
+ * Test that the message window is sized from its window scene, not [UIScreen mainScreen]. On a device with more than
+ * one screen, such as the iPhone Duo, mainScreen can describe a different screen from the one the app is on.
+ */
+- (void)testMessageWindowFrameComesFromWindowScene {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = nil;
+        for (UIScene *connectedScene in [UIApplication sharedApplication].connectedScenes) {
+            if ([connectedScene isKindOfClass:[UIWindowScene class]]) {
+                scene = (UIWindowScene *)connectedScene;
+                break;
+            }
+        }
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+
+        // A wide scene, unlike the portrait main screen of the test simulator
+        CGRect sceneBounds = CGRectMake(0, 0, 951, 669);
+        id coordinateSpace = OCMProtocolMock(@protocol(UICoordinateSpace));
+        OCMStub([coordinateSpace bounds]).andReturn(sceneBounds);
+        id sceneMock = OCMPartialMock(scene);
+        // From iOS 26 the bounds come from the scene's effective geometry; before that, from the scene itself
+        if (@available(iOS 26.0, tvOS 26.0, *)) {
+            id geometry = OCMClassMock([UIWindowSceneGeometry class]);
+            OCMStub([geometry coordinateSpace]).andReturn(coordinateSpace);
+            OCMStub([sceneMock effectiveGeometry]).andReturn(geometry);
+        } else {
+            OCMStub([sceneMock coordinateSpace]).andReturn(coordinateSpace);
+        }
+
+        SwrveMessageController *controller = [[SwrveMessageController alloc] initWithSwrve:nil];
+        UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
+        XCTAssertTrue(CGRectEqualToRect([controller messageWindowFrame:window], sceneBounds));
+
+        window.hidden = YES;
+        [sceneMock stopMocking];
+    }
+}
+
+// The test host's first window scene, if it has one
+- (UIWindowScene *)firstWindowScene API_AVAILABLE(ios(13.0), tvos(13.0)) {
+    for (UIScene *connectedScene in [UIApplication sharedApplication].connectedScenes) {
+        if ([connectedScene isKindOfClass:[UIWindowScene class]]) {
+            return (UIWindowScene *)connectedScene;
+        }
+    }
+    return nil;
+}
+
+/**
+ * Test that a message window without a window scene falls back to the bounds of the app's screen
+ */
+- (void)testMessageWindowFrameFallsBackToTheAppsScreen {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        SwrveMessageController *controller = [[SwrveMessageController alloc] initWithSwrve:nil];
+        UIWindow *window = [[UIWindow alloc] init];
+        XCTAssertTrue(CGRectEqualToRect([controller messageWindowFrame:window], scene.screen.bounds));
+    }
+}
+
+/**
+ * Test that a window's screen comes from its scene, not [UIScreen mainScreen]
+ */
+- (void)testScreenForWindowUsesItsScene {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        UIScreen *sceneScreen = OCMClassMock([UIScreen class]);
+        id sceneMock = OCMPartialMock(scene);
+        OCMStub([sceneMock screen]).andReturn(sceneScreen);
+
+        UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
+        XCTAssertEqual([SwrveSDKUtils screenForWindow:window], sceneScreen);
+
+        window.hidden = YES;
+        [sceneMock stopMocking];
+    }
+}
+
+/**
+ * Test that a window without a scene, or no window, gets the screen of the app's first scene
+ */
+- (void)testScreenForWindowWithoutSceneUsesTheAppsScene {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        XCTAssertEqual([SwrveSDKUtils screenForWindow:[[UIWindow alloc] init]], scene.screen);
+        XCTAssertEqual([SwrveSDKUtils screenForWindow:nil], scene.screen);
+    }
+}
+
+/**
+ * Test that the render scale fits the format to the parent, touching its nearest pair of edges, whatever the screen's
+ * pixel density
+ */
+- (void)testRenderScaleFitsTheFormatToTheParent {
+    SwrveMessageFormat *format = [[SwrveMessageFormat alloc] init];
+    format.size = CGSizeMake(1772, 3150);
+    format.scale = 1;
+    // Taller than the format: the width is reached first
+    XCTAssertEqualWithAccuracy([SwrveSDKUtils renderScaleFor:format withParentSize:CGSizeMake(402, 874)], 402.0 / 1772, 1e-9);
+    // Wider than the format: the height is reached first
+    XCTAssertEqualWithAccuracy([SwrveSDKUtils renderScaleFor:format withParentSize:CGSizeMake(1032, 1376)], 1376.0 / 3150, 1e-9);
+    // The format's own scale multiplies the fit
+    format.scale = 2;
+    XCTAssertEqualWithAccuracy([SwrveSDKUtils renderScaleFor:format withParentSize:CGSizeMake(886, 1575)], 1.0, 1e-9);
+}
+
+/**
+ * Test that the largest screen is only replaced by one with a larger area, by enough to be worth a new content request,
+ * whichever way round it is
+ */
+- (void)testLargestScreenOnlyGrows {
+    XCTAssertTrue([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(1080, 2424) scale:3]);
+    XCTAssertFalse([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(960, 2142) scale:3]); // smaller
+    XCTAssertFalse([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(2424, 1080) scale:3]); // the same, in landscape
+    XCTAssertFalse([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(1080, 2448) scale:3]); // 1% larger
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(1080, 2424)));
+    XCTAssertEqual([SwrveSDKUtils largestScreenDpi], [SwrveUtils estimateDpiForScale:3]);
+
+    XCTAssertTrue([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(2152, 2076) scale:2.6]); // a foldable's inner screen
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(2076, 2152)));
+    XCTAssertEqual([SwrveSDKUtils largestScreenDpi], [SwrveUtils estimateDpiForScale:2.6f]);
+    XCTAssertEqualObjects([SwrveLocalStorage largestScreen], (@{@"width": @2076, @"height": @2152, @"scale": @2.6}));
+}
+
+/**
+ * Test that until a screen is stored, the device's screen is reported
+ */
+- (void)testLargestScreenFallsBackToTheDeviceScreen {
+    XCTAssertNil([SwrveLocalStorage largestScreen]);
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], [SwrveUtils deviceScreenBounds].size));
+    XCTAssertEqual([SwrveSDKUtils largestScreenDpi], [SwrveUtils estimate_dpi]);
+}
+
+// Partially mocks the app's first scene so its screen is 3000x2000 points at a scale of 2
+- (id)sceneMockWithLargeScreen:(UIWindowScene *)scene API_AVAILABLE(ios(13.0), tvos(13.0)) {
+    UIScreen *screen = OCMClassMock([UIScreen class]);
+    OCMStub([screen bounds]).andReturn(CGRectMake(0, 0, 3000, 2000));
+    OCMStub([screen scale]).andReturn(2.0);
+    id sceneMock = OCMPartialMock(scene);
+    OCMStub([sceneMock screen]).andReturn(screen);
+    return sceneMock;
+}
+
+/**
+ * Test that the largest screen is read from the backup file when it's missing from user defaults
+ */
+- (void)testLargestScreenIsReadFromTheBackupFile {
+    XCTAssertTrue([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(4000, 6000) scale:2]);
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"swrve_largest_screen"];
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(4000, 6000)));
+    XCTAssertEqual([SwrveSDKUtils largestScreenDpi], [SwrveUtils estimateDpiForScale:2]);
+}
+
+/**
+ * Test that a stored largest screen that can't be used is ignored, falling back to the device's screen
+ */
+- (void)testUnusableLargestScreenFallsBackToTheDeviceScreen {
+    CGSize deviceScreen = [SwrveUtils deviceScreenBounds].size;
+    [SwrveLocalStorage writeValueToDictionaryFile:@"swrve_backup_defaults" value:@"not a dictionary" key:@"swrve_largest_screen"];
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], deviceScreen));
+
+    [SwrveLocalStorage saveLargestScreen:@{@"width": @0, @"height": @6000, @"scale": @2}];
+    XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], deviceScreen));
+    XCTAssertEqual([SwrveSDKUtils largestScreenDpi], [SwrveUtils estimate_dpi]);
+    XCTAssertTrue([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(1080, 2424) scale:3]); // and is replaced
+}
+
+/**
+ * Test that updating from another thread reads the scenes on the main thread rather than skipping them
+ */
+- (void)testUpdateFromConnectedScenesOffTheMainThread {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        id sceneMock = [self sceneMockWithLargeScreen:scene];
+
+        XCTestExpectation *updated = [self expectationWithDescription:@"updated on the main thread"];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+            [SwrveSDKUtils updateLargestScreenFromConnectedScenes];
+            dispatch_async(dispatch_get_main_queue(), ^{ // queued after the update
+                [updated fulfill];
+            });
+        });
+        [self waitForExpectations:@[updated] timeout:5];
+        XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(4000, 6000)));
+
+        [sceneMock stopMocking];
+    }
+}
+
+/**
+ * Test that a scene counts at its screen's size in pixels, but only if it's one of the app's own scenes
+ */
+- (void)testLargestScreenOnlyCountsTheAppsScenes {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        id sceneMock = [self sceneMockWithLargeScreen:scene];
+        __block NSString *role = @"com.example.other-role"; // such as an external display's
+        UISceneSession *session = OCMClassMock([UISceneSession class]);
+        OCMStub([session role]).andDo(^(NSInvocation *invocation) {
+            [invocation setReturnValue:&role];
+        });
+        OCMStub([sceneMock session]).andReturn(session);
+
+        [SwrveSDKUtils updateLargestScreenWithScene:scene];
+        XCTAssertNil([SwrveLocalStorage largestScreen]);
+
+        role = UIWindowSceneSessionRoleApplication;
+        [SwrveSDKUtils updateLargestScreenWithScene:scene];
+        XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(4000, 6000)));
+
+        [sceneMock stopMocking];
+    }
+}
+
+/**
+ * Test that the largest screen is updated when a scene is activated
+ */
+- (void)testLargestScreenIsUpdatedWhenASceneIsActivated {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+        XCTAssertNotNil([swrveMock messaging]);
+        id sceneMock = [self sceneMockWithLargeScreen:scene];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:UISceneDidActivateNotification object:scene];
+        XCTAssertTrue(CGSizeEqualToSize([SwrveSDKUtils largestScreenSize], CGSizeMake(4000, 6000)));
+
+        [sceneMock stopMocking];
+    }
+}
+
+/**
+ * Test that a scene activation is handled once, even after initWithSwrve: runs again on a user switch
+ */
+- (void)testSceneActivationIsHandledOnceAfterSwitchingUser {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+        SwrveMessageController *controller = [swrveMock messaging];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+        [controller initWithSwrve:swrveMock]; // as Swrve initWithUserId: does when switching user
+#pragma clang diagnostic pop
+        id controllerMock = OCMPartialMock(controller);
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:UISceneDidActivateNotification object:scene];
+        OCMVerify(times(1), [controllerMock sceneDidActivate:OCMOCK_ANY]);
+
+        [controllerMock stopMocking];
+    }
+}
+
+/**
+ * Test that device info updates the largest screen before reporting it, as it's sent before the first content request
+ */
+- (void)testDeviceInfoUpdatesTheLargestScreen {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = [self firstWindowScene];
+        XCTSkipIf(scene == nil, @"The test host has no window scene");
+        // deviceInfo otherwise starts an async push settings lookup that calls back into swrveMock after the test ends
+        id permissionsMock = [SwrveTestHelper mockPushRequest];
+        id swrveMock = [self swrveMockWithTestJson:@"campaigns"];
+        id sceneMock = [self sceneMockWithLargeScreen:scene];
+
+        NSDictionary *deviceInfo = [(id<SwrveCommonDelegate>)swrveMock deviceInfo];
+        XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], @4000);
+        XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"], @6000);
+
+        [sceneMock stopMocking];
+        [swrveMock stopMocking];
+        [permissionsMock stopMocking];
+    }
+}
+
+/**
+ * Test that content is requested for the largest screen seen, not the current one
+ */
+- (void)testCampaignQueryStringReportsTheLargestScreen {
+    XCTAssertTrue([SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(4000, 6000) scale:2]); // larger than any simulator
+    SwrveMessageController *controller = [[SwrveMessageController alloc] initWithSwrve:nil];
+    XCTAssertTrue([[controller campaignQueryString] containsString:@"&device_width=4000&device_height=6000&"]);
 }
 
 /**

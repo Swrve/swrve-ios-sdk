@@ -5,6 +5,9 @@
 #import "OCMock.h"
 @import SwrveSDK;
 @import SwrveSDKCommon;
+// The SDK's only private header. CocoaPods used to expose it through the pod umbrella; the framework
+// project ships it in PrivateHeaders, so the tests import it explicitly.
+#import "SwrveMessageController+Private.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 

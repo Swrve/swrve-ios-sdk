@@ -21,7 +21,6 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveUtils.h"
 #import "SwrveQA.h"
-#import "SwrveQAImagePersonalizationInfo.h"
 #import "TextTemplating.h"
 #import "SwrveLogger.h"
 
@@ -39,6 +38,12 @@
 #import <SwrveSDK/SwrveSDK-Swift.h>
 #elif __has_include("SwrveSDK-Swift.h")
 #import "SwrveSDK-Swift.h"
+#endif
+
+#if __has_include(<SwrveSDKCommon/SwrveSDKCommon-Swift.h>)
+#import <SwrveSDKCommon/SwrveSDKCommon-Swift.h>
+#elif __has_include("SwrveSDKCommon-Swift.h")
+#import "SwrveSDKCommon-Swift.h"
 #endif
 
 #define SWRVEMIN(a, b)    ((a) < (b) ? (a) : (b))

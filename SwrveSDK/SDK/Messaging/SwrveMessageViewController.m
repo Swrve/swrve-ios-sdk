@@ -184,7 +184,7 @@
     CGSize screenSize = [keyWindow bounds].size;
     // if campaign is launched before window is visible, there is strong possibility of screenSize to be zero
     if (screenSize.width == 0.0 || screenSize.height == 0) {
-        screenSize = [UIScreen mainScreen].bounds.size;
+        screenSize = [SwrveSDKUtils screenForWindow:keyWindow].bounds.size;
     }
     return screenSize;
 }

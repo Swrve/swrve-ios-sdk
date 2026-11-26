@@ -4,9 +4,11 @@
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #import <SwrveSDKCommon/SwrveLogger.h>
+#import <SwrveSDKCommon/SwrveUtils.h>
 #else
 #import "SwrveLocalStorage.h"
 #import "SwrveLogger.h"
+#import "SwrveUtils.h"
 #endif
 
 #import "Swrve.h"
@@ -18,6 +20,9 @@
 #endif
 
 #define SWRVE_MIN(a, b)    ((a) < (b) ? (a) : (b))
+
+// A screen replaces the stored one only if its area is larger by this much. A new size changes the content request, so the content is downloaded in full again: not worth doing for a negligible gain
+static const double SWRVE_LARGEST_SCREEN_MIN_GROWTH = 1.02;
 
 @implementation SwrveSDKUtils
 
@@ -137,12 +142,100 @@
 }
 
 + (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent {
-    // Calculate the scale needed to fit the format in the current viewport
-    CGFloat screenScale = [[UIScreen mainScreen] scale];
-    float wscale = (float) ((sizeParent.width * screenScale) / format.size.width);
-    float hscale = (float) ((sizeParent.height * screenScale) / format.size.height);
-    float viewportScale = (wscale < hscale) ? wscale : hscale;
-    return (format.scale / screenScale) * viewportScale; // Adjust scale, accounting for retina devices
+    // Scale the format until it touches the nearest pair of the parent's edges
+    CGFloat wscale = sizeParent.width / format.size.width;
+    CGFloat hscale = sizeParent.height / format.size.height;
+    return format.scale * MIN(wscale, hscale);
+}
+
+// The screen a window is on, from its scene rather than [UIScreen mainScreen], which is deprecated in iOS 26 and on a device with more than one screen, 
+// such as the iPhone Duo, can describe a different one. A window without a scene (one not shown yet) gets the screen of the app's first scene.
++ (UIScreen *)screenForWindow:(UIWindow *)window NS_EXTENSION_UNAVAILABLE_IOS("") {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        UIWindowScene *scene = window.windowScene;
+        if (scene == nil) {
+            for (UIScene *connected in [[UIApplication sharedApplication] connectedScenes]) {
+                if ([connected isKindOfClass:[UIWindowScene class]]) {
+                    scene = (UIWindowScene *)connected;
+                    break;
+                }
+            }
+        }
+        if (scene != nil) {
+            return scene.screen;
+        }
+    }
+    return window.screen ?: [UIScreen mainScreen]; // before iOS 13, an app has a single screen
+}
+
++ (void)updateLargestScreenFromConnectedScenes NS_EXTENSION_UNAVAILABLE_IOS("") {
+    if (![NSThread isMainThread]) {
+        // Scenes can only be read on the main thread: this request reports what's stored, later ones the update
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateLargestScreenFromConnectedScenes];
+        });
+        return;
+    }
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        for (UIScene *scene in [[UIApplication sharedApplication] connectedScenes]) {
+            [self updateLargestScreenWithScene:scene];
+        }
+    }
+}
+
++ (void)updateLargestScreenWithScene:(UIScene *)scene {
+    if (![scene isKindOfClass:[UIWindowScene class]] || ![scene.session.role isEqualToString:UIWindowSceneSessionRoleApplication]) {
+        return;
+    }
+    UIScreen *screen = ((UIWindowScene *)scene).screen;
+    CGFloat scale = screen.scale;
+    [self updateLargestScreenWithSize:CGSizeMake(screen.bounds.size.width * scale, screen.bounds.size.height * scale) scale:scale];
+}
+
++ (BOOL)updateLargestScreenWithSize:(CGSize)size scale:(CGFloat)scale {
+    int width = (int)MIN(size.width, size.height);
+    int height = (int)MAX(size.width, size.height);
+    if (width <= 0 || scale <= 0) {
+        return NO;
+    }
+    NSDictionary *largest = [self storedLargestScreen];
+    if (largest != nil) {
+        double largestArea = [largest[@"width"] doubleValue] * [largest[@"height"] doubleValue];
+        if ((double)width * height < largestArea * SWRVE_LARGEST_SCREEN_MIN_GROWTH) {
+            return NO;
+        }
+    }
+    [SwrveLocalStorage saveLargestScreen:@{@"width": @(width), @"height": @(height), @"scale": @(scale)}];
+    [SwrveLogger debug:@"Swrve largest screen is now %dx%d (scale %.2f)", width, height, scale];
+    return YES;
+}
+
+// The stored largest screen, or nil if there isn't a usable one
++ (nullable NSDictionary *)storedLargestScreen {
+    NSDictionary *largest = [SwrveLocalStorage largestScreen];
+    for (NSString *key in @[@"width", @"height", @"scale"]) {
+        id value = largest[key];
+        if (![value isKindOfClass:[NSNumber class]] || [value doubleValue] <= 0) {
+            return nil;
+        }
+    }
+    return largest;
+}
+
++ (CGSize)largestScreenSize {
+    NSDictionary *largest = [self storedLargestScreen];
+    if (largest == nil) {
+        return [SwrveUtils deviceScreenBounds].size;
+    }
+    return CGSizeMake([largest[@"width"] intValue], [largest[@"height"] intValue]);
+}
+
++ (float)largestScreenDpi {
+    NSDictionary *largest = [self storedLargestScreen];
+    if (largest == nil) {
+        return [SwrveUtils estimate_dpi];
+    }
+    return [SwrveUtils estimateDpiForScale:[largest[@"scale"] floatValue]];
 }
 
 // Note:

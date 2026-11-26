@@ -1,6 +1,6 @@
 # Push Notification Sample
 
-Baseline Swrve SDK integration with push notifications, including rich push, in SwiftUI.
+Baseline Swrve SDK integration with push notifications, including rich push. UIKit app lifecycle with a scene delegate, SwiftUI for the views.
 
 This is the smallest complete push setup: create the SDK with push enabled, share an app group with a notification service extension, trigger the permission prompt, and handle notification responses.
 
@@ -10,7 +10,7 @@ Push is the most common reason to integrate the SDK, and it is the part with the
 
 ## Setup
 
-1. `pod install`, then open `PushNotificationSample.xcworkspace` (not the `.xcodeproj`).
+1. Open `PushNotificationSample.xcodeproj`. Xcode resolves the Swrve SDK package automatically.
 2. In [`PushNotificationSampleApp.swift`](PushNotificationSample/PushNotificationSampleApp.swift), replace the app IDs and API keys with your own, from the Swrve dashboard under **Settings → Integration settings**. There are two pairs — see the `#if DEBUG` note below. The same values can go in both if you use one app for both.
 3. Replace the identifiers with your own. Both targets ship ours — `swrve.RichPushSample` and `swrve.RichPushSample.ServiceExtension` — because they are registered in our Apple portal, so signing fails until you change them. Your App IDs need the **Push Notifications** capability, and your app group must be registered to your team.
 4. Set your app group to the same value in **five** places:
@@ -23,6 +23,7 @@ Push is the most common reason to integrate the SDK, and it is the part with the
    A real app might share one constant across targets — the samples repeat the value so each file stands alone.
 5. Run the app and grant notification permission. The button appears only while the permission is outstanding — once granted it is replaced by a confirmation. A physical device is the surest test, though an Apple Silicon simulator on macOS 13+ can register for real push too.
 6. Send yourself a push from a campaign in the dashboard.
+7. To test deeplinks, send `pushsample://anything` as the campaign's deeplink. That scheme is registered in [`Info.plist`](PushNotificationSample/Info.plist) — without that entry iOS has nowhere to route the URL and the tap does nothing. Use your own scheme in a real app.
 
 ## Key API calls
 
@@ -65,8 +66,8 @@ SwrvePush.handle(request.content, withAppGroupIdentifier: "group.your.app") { co
 - **The SDK never asks for permission on its own.** Without `pushNotificationPermissionEvents`, no prompt appears and no push arrives.
 - **You get one chance to ask.** iOS shows the authorization alert once per install; after that, requesting again returns the existing status and shows nothing. A denial is effectively permanent, recoverable only in Settings.
 - **Which is why permission is usually asked for with an in-app message rather than app code.** A campaign can ask at a moment that makes sense, in your own words, with a button that requests notification permission — and a later campaign can send users who have already denied straight to their notification settings, since iOS will not show the prompt again. Both are configured in the dashboard, so your app needs no permission handling of its own. The button in this sample is a shortcut so you can test push without setting up a campaign.
-- **Deeplinks are handled for you.** Swrve opens any deeplink in the payload when the notification is tapped, and sends the engaged event with the campaign's tracking data. Set `config.deeplinkDelegate` if you would rather route it yourself.
-- **`pushResponseDelegate` must be set before initialisation**, and initialisation must happen before the app finishes launching. That is why this sample keeps a `UIApplicationDelegate` alongside the SwiftUI `App`.
+- **Deeplinks are handled for you.** Swrve opens any deeplink in the payload on tap and sends the engaged event with the campaign's tracking data — no app code needed. Set `config.deeplinkDelegate` if you would rather route them yourself; without it the URL round-trips through `openURL` and the system hands it back to your app. With a scene delegate it arrives at `scene(_:openURLContexts:)`. Without one it arrives at `application(_:open:options:)`.
+- **`pushResponseDelegate` must be set before initialisation**, and initialisation must happen before the app finishes launching — which is why the SDK is created in `didFinishLaunchingWithOptions` rather than from a view.
 - **Without the service extension push still arrives**, but only as plain text — no images, no buttons, no influence tracking.
 - **Influence tracking needs the app group**, which is what the extension writes through. It is how Swrve attributes an app open to a notification the user saw but did not tap.
 - **Silent push is not covered by any sample.** Swrve's [iOS integration guide](https://docs.swrve.com/developer-documentation/integration/ios/) has you enable the **Remote notifications** background mode and implement `didReceiveRemoteNotification` to refresh app data in the background. The samples cover display push only, so neither declares that capability.

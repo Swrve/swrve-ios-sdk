@@ -1,5 +1,6 @@
 #import "SwrveMessageController.h"
 #import "SwrveMessageController+Private.h"
+#import "SwrveSDKUtils.h"
 #import "SwrveButtonActions.h"
 #import "Swrve+Private.h"
 
@@ -86,7 +87,6 @@ const static int DEFAULT_MIN_DELAY = 55;
 
 @property(atomic) SwrveRESTClient *restClient;
 @property(atomic, readonly) NSString *language;
-- (CGRect)deviceScreenBounds;
 - (NSString *)signatureKey;
 - (NSString *)userID;
 @end
@@ -126,8 +126,6 @@ const static int DEFAULT_MIN_DELAY = 55;
 @property(nonatomic, retain) NSString *inAppButtonPressedText;
 
 // Current Device Properties
-@property(nonatomic) int device_width;
-@property(nonatomic) int device_height;
 @property(nonatomic) SwrveInterfaceOrientation orientation;
 
 // Only ever show this many messages. This number is decremented each time a message is shown.
@@ -168,8 +166,6 @@ const static int DEFAULT_MIN_DELAY = 55;
 @synthesize inAppMessageAction;
 @synthesize inAppButtonPressedName;
 @synthesize inAppButtonPressedText;
-@synthesize device_width;
-@synthesize device_height;
 @synthesize orientation;
 @synthesize autoShowMessagesEnabled;
 @synthesize analyticsSDK;
@@ -203,9 +199,13 @@ const static int DEFAULT_MIN_DELAY = 55;
     self.assetsManager = [[SwrveAssetsManager alloc] initWithRestClient:sdk.restClient andCacheFolder:cacheFolder];
     self.campaignsStateFilePath = [SwrveLocalStorage campaignsStateFilePathForUserId:[sdk userID]];
     
-    CGRect screen_bounds = [SwrveUtils deviceScreenBounds];
-    self.device_height = (int) screen_bounds.size.height;
-    self.device_width = (int) screen_bounds.size.width;
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UISceneDidActivateNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(sceneDidActivate:)
+                                                     name:UISceneDidActivateNotification
+                                                   object:nil];
+    }
     self.orientation = sdk.config.orientation;
     self.language = sdk.language;
     self.user = [sdk userID];
@@ -1130,6 +1130,20 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     return [[UIWindow alloc] init];
 }
 
+// The message window must cover the scene it is attached to. [UIScreen mainScreen] is not a substitute: on a device with more than one screen, such as the iPhone Duo, it can describe a different screen from the one the scene is on.
+- (CGRect)messageWindowFrame:(UIWindow *)window {
+    if (@available(iOS 26.0, tvOS 26.0, *)) {
+        if (window.windowScene != nil) {
+            return window.windowScene.effectiveGeometry.coordinateSpace.bounds;
+        }
+    } else if (@available(iOS 13.0, tvOS 13.0, *)) {
+        if (window.windowScene != nil) {
+            return window.windowScene.coordinateSpace.bounds; // deprecated in iOS 26 in favour of the above
+        }
+    }
+    return [[SwrveSDKUtils screenForWindow:window] bounds];
+}
+
 - (void)handleNextIAM:(NSMutableArray *)queue {
     if ([queue count] > 0) {
         SwrveMessage *message = [queue objectAtIndex:0];
@@ -1151,7 +1165,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     
     self.inAppMessageWindow = [self createUIWindow];
     self.inAppMessageWindow.backgroundColor = [UIColor clearColor];
-    self.inAppMessageWindow.frame = [[UIScreen mainScreen] bounds];
+    self.inAppMessageWindow.frame = [self messageWindowFrame:self.inAppMessageWindow];
     self.inAppMessageWindow.rootViewController.view.alpha = 0.0f;
     self.inAppMessageWindow.windowLevel = UIWindowLevelAlert + 1;
     [self.inAppMessageWindow makeKeyAndVisible];
@@ -1343,10 +1357,12 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
             break;
         case kSwrveActionOpenSettings: {
 #if TARGET_OS_IOS
+            actionTypeString = @"open_app_settings";
             NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
             [[SwrveCommon sharedUIApplication] openURL:url options:@{} completionHandler:nil];
 #endif //TARGET_OS_IOS
         }
+            break;
         case kSwrveActionOpenNotificationSettings: {
 #if TARGET_OS_IOS
             if (@available(iOS 15.4, *)) {
@@ -1500,9 +1516,15 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     NSString *encodedSystemVersion = [[device systemVersion] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSString *systemName = [[device systemName] lowercaseString];
     NSString *deviceType = [SwrveUtils platformDeviceType];
+    [SwrveSDKUtils updateLargestScreenFromConnectedScenes]; // A scene may have moved screen since it was activated, such as on a fold
+    CGSize screenSize = [SwrveSDKUtils largestScreenSize];
     
     return [NSString stringWithFormat:@"version=%d&orientation=%@&language=%@&app_store=%@&device_width=%d&device_height=%d&os_version=%@&device_name=%@&os=%@&device_type=%@&embedded_campaign_version=%d&in_app_version=%d",
-            CAMPAIGN_VERSION, orientationName, self.language, @"apple", self.device_width, self.device_height, encodedSystemVersion, encodedDeviceName, systemName, deviceType, EMBEDDED_CAMPAIGN_VERSION, IN_APP_CAMPAIGN_VERSION];
+            CAMPAIGN_VERSION, orientationName, self.language, @"apple", (int) screenSize.width, (int) screenSize.height, encodedSystemVersion, encodedDeviceName, systemName, deviceType, EMBEDDED_CAMPAIGN_VERSION, IN_APP_CAMPAIGN_VERSION];
+}
+
+- (void)sceneDidActivate:(NSNotification *)notification API_AVAILABLE(ios(13.0), tvos(13.0)) {
+    [SwrveSDKUtils updateLargestScreenWithScene:notification.object];
 }
 
 - (UIImage *)imageFromCache:(NSString *)sha {
@@ -1860,7 +1882,7 @@ static NSNumber *numberFromJsonWithDefault(NSDictionary *json, NSString *key, in
     }
     CGSize screenSize = [keyWindow bounds].size;
     if (screenSize.width == 0.0 || screenSize.height == 0) {
-        screenSize = [UIScreen mainScreen].bounds.size;
+        screenSize = [SwrveSDKUtils screenForWindow:keyWindow].bounds.size;
     }
     return screenSize;
 }

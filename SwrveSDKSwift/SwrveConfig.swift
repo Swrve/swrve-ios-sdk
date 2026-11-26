@@ -1,9 +1,5 @@
 import Foundation
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 /// Swrve stack names.
 @objc public enum SwrveStack: Int {
     /// Swrve US stack.

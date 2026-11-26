@@ -31,7 +31,8 @@ platform :ios do
       output_directory: options[:output_directory],
       build_for_testing: options[:build_for_testing],
       test_without_building: options[:test_without_building],
-      derived_data_path: options[:derived_data_path]
+      derived_data_path: options[:derived_data_path],
+      skip_testing: options[:skip_testing]
     )
   end
   

@@ -10,7 +10,7 @@ The difficulty is not any single API call — it is *ownership*. Two SDKs both w
 
 ## Setup
 
-1. `pod install`, then open `MultiplePushProvidersSample.xcworkspace` (not the `.xcodeproj`).
+1. Open `MultiplePushProvidersSample.xcodeproj`. Xcode resolves the Swrve SDK package automatically.
 2. In [`MultiplePushProvidersSampleApp.swift`](MultiplePushProvidersSample/MultiplePushProvidersSampleApp.swift), replace `YOUR_APP_ID` and `YOUR_API_KEY` with your own, from the Swrve dashboard under **Settings → Integration settings**.
 3. Replace the identifiers with your own. Both targets ship ours — `swrve.RichPushSample` and `swrve.RichPushSample.ServiceExtension` — because they are registered in our Apple portal, so signing fails until you change them. Your App IDs need the **Push Notifications** capability, and your app group must be registered to your team.
 4. Set your app group to the same value in **four** places:
@@ -65,7 +65,7 @@ SwrvePush.handle(request.content, withAppGroupIdentifier: APP_GROUP) { content i
 ## Good to know
 
 - **Everything else matches [PushNotificationSample](../PushNotificationSample).** Rich content, influence tracking and asking for permission with a campaign all work identically, so this sample deliberately does not repeat that material. Read that one first.
-- **Register your other provider's dependency.** The commented-out line in the [`Podfile`](Podfile) shows where it goes, and each relay point is marked so adding the second call is obvious.
+- **Add your other provider's dependency** alongside the Swrve SDK package in the app target. Each relay point is marked so adding the second call is obvious.
 - **Permission is requested by the app here, not by Swrve.** Whoever owns registration owns the prompt, and in this pattern that is the app or the other provider — so `pushNotificationPermissionEvents` is not used. It sits behind a button because iOS shows the alert once per install: asking at first launch, before the user knows what the app is, is how you get declined permanently. A real app asks at a moment that makes sense, or with a campaign that can also send already-declined users to Settings.
 - **`autoCollectDeviceToken = false` is the line that matters.** Leave it at its default `true` and both providers race to own registration. Setting it makes the app responsible for the token, which is why `setDeviceToken` exists.
 - **A missed `setDeviceToken` fails silently.** Everything compiles, the SDK starts, events flow — and no push ever arrives, because Swrve has no token to send to.

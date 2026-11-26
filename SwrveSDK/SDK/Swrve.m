@@ -31,6 +31,7 @@
 #import "SwrveMigrationsManager.h"
 #import "SwrveMessageController+Private.h"
 #import "SwrveDeviceProperties.h"
+#import "SwrveSDKUtils.h"
 #import "SwrveEventsManager.h"
 #import "SwrveProfileManager.h"
 #import "SwrveEventQueueItem.h"
@@ -488,6 +489,11 @@ enum {
             push = [SwrvePush sharedInstanceWithPushDelegate:self andCommonDelegate:self];
 
             UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            id existingDelegate = center.delegate;
+            if (existingDelegate != nil && existingDelegate != push) {
+                [SwrveLogger warning:@"SwrveSDK has replaced an existing UNUserNotificationCenter delegate (%@). Notification callbacks will no longer reach it. If your app or another push provider needs them, either assign your delegate after SwrveSDK.sharedInstance and relay taps with processNotificationResponse, or implement SwrvePushResponseDelegate and set config.pushResponseDelegate.",
+                                    NSStringFromClass([existingDelegate class])];
+            }
             center.delegate = push;
 
             if (swrveConfig.autoCollectDeviceToken) {
@@ -1872,6 +1878,7 @@ enum {
 }
 
 - (NSDictionary *)deviceInfo {
+    [SwrveSDKUtils updateLargestScreenFromConnectedScenes]; // before the first content request, nothing may be stored yet
     NSDictionary *permissionStatus = [SwrvePermissions currentStatusWithSDK:self];
     SwrveDeviceProperties *swrveDeviceProperties = nil;
 

@@ -50,6 +50,13 @@
 }
 
 - (id)swrveMockWithTestJson:(NSString *)jsonFileName withConfig:(SwrveConfig *)config {
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:jsonFileName ofType:@"json"];
+    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
+    return [self swrveMockWithCampaigns:jsonDict withConfig:config];
+}
+
+- (id)swrveMockWithCampaigns:(NSDictionary *)jsonDict withConfig:(SwrveConfig *)config {
     [SwrveMigrationsManager markAsMigrated];
 
     Swrve *swrve = [Swrve alloc];
@@ -71,10 +78,6 @@
 #pragma clang diagnostic ignored "-Wunused-value"
     [swrveMock initWithAppID:123 apiKey:@"someAPIKey" config:config];
 #pragma clang diagnostic pop
-
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:jsonFileName ofType:@"json"];
-    NSData *mockJsonData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:nil];
-    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:mockJsonData options:0 error:nil];
 
     BOOL isLoadingPreviousCampaignState = ![[SwrveQA sharedInstance] resetDeviceState];
     [[swrveMock messaging] updateCampaigns:jsonDict withLoadingPreviousCampaignState:isLoadingPreviousCampaignState notifyCampaignsUpdated:NO];
@@ -197,6 +200,168 @@
     SwrveMessageUIView *view = [self swrveMessageUIViewFromController:messageViewController];
     // image (UIImageView) + always_visible button (SwrveUIButton); conditional button (false) = hidden
     XCTAssertEqual(2, view.subviews.count);
+}
+
+// ---------------------------------------------------------------------------
+// MARK: - Assets queued for buttons
+// ---------------------------------------------------------------------------
+
+- (NSDictionary *)firstCampaignInFile:(NSString *)jsonFileName {
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:jsonFileName ofType:@"json"];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:filePath] options:0 error:nil];
+    return [[json objectForKey:@"campaigns"] firstObject];
+}
+
+// campaign_native_button_basics, with the first format's MButton1 changed by the block
+- (NSDictionary *)buttonBasicsCampaignWithFirstButton:(void (^)(NSMutableDictionary *button))change {
+    NSData *data = [NSJSONSerialization dataWithJSONObject:[self firstCampaignInFile:@"campaign_native_button_basics"] options:0 error:nil];
+    NSMutableDictionary *campaignDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    NSDictionary *format = [[campaignDict valueForKeyPath:@"message.template.formats"] firstObject];
+    change([[format objectForKey:@"buttons"] firstObject]);
+    return campaignDict;
+}
+
+// What campaign_native_button_basics queues as it is
+- (NSSet<NSString *> *)buttonBasicsAssets {
+    return [NSSet setWithArray:@[
+            @"1111111111111111111111111", // background image
+            @"9973b5003e299dab6394258c459e82b58a7a7633", // Msystem 12 background
+            @"73efb349f6e6ab7753bdfc1073d2035d607bbd40", // Msystem 12 pressed and focused background
+            @"535.1030.b60343e5f678c56d52e80b00e604104a73d256f2.ttf" // MComic 16 font
+    ]];
+}
+
+- (SwrveInAppCampaign *)campaignFromDictionary:(NSDictionary *)campaignDict assetsQueue:(NSMutableSet *)assetsQueue {
+    XCTAssertNotNil(campaignDict);
+    SwrveInAppCampaign *campaign = [[SwrveInAppCampaign alloc] initAtTime:[NSDate date]
+                                                           fromDictionary:campaignDict
+                                                          withAssetsQueue:assetsQueue
+                                                            forController:[[SwrveMessageController alloc] init]
+                                                      withPersonalization:@{}];
+    XCTAssertNotNil(campaign);
+    return campaign;
+}
+
+// Names of the assets queued when the campaign loads
+- (NSSet<NSString *> *)queuedAssetNamesForCampaign:(NSDictionary *)campaignDict {
+    NSMutableSet *assetsQueue = [NSMutableSet new];
+    [self campaignFromDictionary:campaignDict assetsQueue:assetsQueue];
+    NSMutableSet *names = [NSMutableSet new];
+    for (NSDictionary *item in assetsQueue) {
+        [names addObject:[item objectForKey:@"name"]];
+    }
+    return names;
+}
+
+- (NSString *)sha1ForUrl:(NSString *)url {
+    return [SwrveUtils sha1:[url dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+}
+
+- (void)testThemedButtonsQueueOnlyThemeAssets {
+    // MButton1 and MButton2 have an empty image_up, the other two have none
+    NSSet *names = [self queuedAssetNamesForCampaign:[self firstCampaignInFile:@"campaign_native_button_basics"]];
+
+    XCTAssertEqualObjects(names, [self buttonBasicsAssets]);
+}
+
+- (void)testImageButtonQueuesImageUp {
+    NSDictionary *campaignDict = [self buttonBasicsCampaignWithFirstButton:^(NSMutableDictionary *button) {
+        [button removeObjectForKey:@"theme"];
+        [button setObject:@{@"type": @"asset", @"value": @"image_button_asset"} forKey:@"image_up"];
+    }];
+
+    NSSet *names = [self queuedAssetNamesForCampaign:campaignDict];
+
+    XCTAssertEqualObjects(names, [[self buttonBasicsAssets] setByAddingObject:@"image_button_asset"]);
+}
+
+- (void)testDynamicImageButtonWithoutImageUpQueuesOnlyDynamicImage {
+    NSDictionary *campaignDict = [self buttonBasicsCampaignWithFirstButton:^(NSMutableDictionary *button) {
+        [button removeObjectForKey:@"theme"];
+        [button removeObjectForKey:@"image_up"];
+        [button setObject:@"https://fakeitem/dynamic.png" forKey:@"dynamic_image_url"];
+    }];
+
+    NSSet *names = [self queuedAssetNamesForCampaign:campaignDict];
+
+    NSString *dynamicImage = [self sha1ForUrl:@"https://fakeitem/dynamic.png"];
+    XCTAssertEqualObjects(names, [[self buttonBasicsAssets] setByAddingObject:dynamicImage]);
+}
+
+- (void)testButtonImageIsImageUpOrNil {
+    NSDictionary *imageUp = @{@"image_up": @{@"type": @"asset", @"value": @"image_button_asset"}};
+    XCTAssertEqualObjects([[SwrveButton alloc] initWithDictionary:imageUp campaignId:1 messageId:1].image, @"image_button_asset");
+
+    // No image_up means no image, so a dynamic image is reported to QA as having no fallback
+    XCTAssertNil([[SwrveButton alloc] initWithDictionary:@{} campaignId:1 messageId:1].image);
+}
+
+- (void)testAssetsReadyForThemedButtons {
+    SwrveInAppCampaign *campaign = [self campaignFromDictionary:[self firstCampaignInFile:@"campaign_native_button_basics"]
+                                                    assetsQueue:[NSMutableSet new]];
+
+    XCTAssertTrue([campaign.message assetsReady:[self buttonBasicsAssets] withPersonalization:@{}]);
+}
+
+- (void)testAssetsNotReadyForButtonWithoutThemeOrImage {
+    NSDictionary *campaignDict = [self buttonBasicsCampaignWithFirstButton:^(NSMutableDictionary *button) {
+        [button removeObjectForKey:@"theme"];
+        [button removeObjectForKey:@"image_up"];
+    }];
+    SwrveInAppCampaign *campaign = [self campaignFromDictionary:campaignDict assetsQueue:[NSMutableSet new]];
+
+    // The button has nothing to draw, so the message can never show
+    XCTAssertFalse([campaign.message assetsReady:[self buttonBasicsAssets] withPersonalization:@{}]);
+}
+
+- (void)testAssetsReadyForDynamicImageButtonOnceDynamicImageDownloaded {
+    NSDictionary *campaignDict = [self buttonBasicsCampaignWithFirstButton:^(NSMutableDictionary *button) {
+        [button removeObjectForKey:@"theme"];
+        [button removeObjectForKey:@"image_up"];
+        [button setObject:@"https://fakeitem/dynamic.png" forKey:@"dynamic_image_url"];
+    }];
+    SwrveInAppCampaign *campaign = [self campaignFromDictionary:campaignDict assetsQueue:[NSMutableSet new]];
+
+    XCTAssertFalse([campaign.message assetsReady:[self buttonBasicsAssets] withPersonalization:@{}]);
+    NSSet *downloaded = [[self buttonBasicsAssets] setByAddingObject:[self sha1ForUrl:@"https://fakeitem/dynamic.png"]];
+    XCTAssertTrue([campaign.message assetsReady:downloaded withPersonalization:@{}]);
+}
+
+- (void)testDynamicImageButtonWithUndecodableImageAndNoImageUpShows {
+    // The dynamic image is downloaded but does not decode, and there is no image_up to fall back to
+    NSString *dynamicImageUrl = @"https://fakeitem/dynamic.png";
+    [SwrveTestHelper createDummyAssets:@[[self sha1ForUrl:dynamicImageUrl]]];
+
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"campaign_visible_if" ofType:@"json"];
+    NSMutableDictionary *json = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:filePath] options:NSJSONReadingMutableContainers error:nil];
+    for (NSMutableDictionary *format in [[[json objectForKey:@"campaigns"] firstObject] valueForKeyPath:@"message.template.formats"]) {
+        for (NSMutableDictionary *button in [format objectForKey:@"buttons"]) {
+            if ([[button objectForKey:@"name"] isEqualToString:@"always_visible"]) {
+                [button removeObjectForKey:@"image_up"];
+                [button setObject:dynamicImageUrl forKey:@"dynamic_image_url"];
+            }
+        }
+    }
+
+    NSDictionary *personalization = @{@"Recipient.show_button": @"false"};
+    id swrveMock = [self swrveMockWithCampaigns:json withConfig:[SwrveConfig new]];
+    SwrveMessageController *controller = [swrveMock messaging];
+    SwrveCampaign *campaign = [[controller messageCenterCampaignsWithPersonalization:personalization] firstObject];
+    XCTAssertNotNil(campaign);
+
+    [controller showMessageCenterCampaign:campaign withPersonalization:personalization];
+
+    SwrveMessageViewController *messageViewController = [self messageViewControllerFrom:controller];
+    XCTAssertNotNil(messageViewController);
+    SwrveMessageUIView *view = [self swrveMessageUIViewFromController:messageViewController];
+    SwrveUIButton *buttonView = nil;
+    for (UIView *subview in view.subviews) {
+        if ([subview.accessibilityIdentifier isEqualToString:@"always_visible"]) {
+            buttonView = (SwrveUIButton *)subview;
+        }
+    }
+    XCTAssertNotNil(buttonView);
+    XCTAssertNil([buttonView backgroundImageForState:UIControlStateNormal]);
 }
 
 @end

@@ -80,7 +80,6 @@ extension HTTPURLResponse {
     }
 
     // swiftlint:disable empty_count
-    // swiftlint:disable force_cast
     @objc public func updatePushInbox(_ inboxMessages: NSArray?, writeToCache: Bool) {
 
         guard let inboxMessages else {
@@ -94,9 +93,13 @@ extension HTTPURLResponse {
             } else {
 
                 self.inbox.removeAll()
-                inboxMessages.forEach { dict in
+                inboxMessages.forEach { element in
+                    guard let dict = element as? NSDictionary else {
+                        SwrveLogger.logError("Failed to parse an inbox message - not a JSON object: \(element)")
+                        return
+                    }
                     do {
-                        try self.inbox.append(SwrvePushInboxMessage(dict as! NSDictionary))
+                        try self.inbox.append(SwrvePushInboxMessage(dict))
                     } catch {
                         SwrveLogger.logError("Failed to parse an inbox message - \(error)")
                     }
@@ -267,6 +270,7 @@ extension HTTPURLResponse {
         request.httpBody = postData as Data
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.setValue("\(postData.count)", forHTTPHeaderField: "Content-Length")
+        // swiftlint:disable:next force_cast
         let mutableRequest: NSMutableURLRequest = (request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
 
         var localHandler: RestHandlerClosure?

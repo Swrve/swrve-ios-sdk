@@ -9,23 +9,19 @@
 /* Begin PBXBuildFile section */
 		3A8CB7622E685E59005F5FDF /* demo_campaigns.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A8CB7612E685E4F005F5FDF /* demo_campaigns.json */; };
 		3A8CB8E32E73233B005F5FDF /* demo_campaigns.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3A8CB8E22E73233B005F5FDF /* demo_campaigns.txt */; };
-		C549D387537820A5BC001BAF /* Pods_SwrveEmbeddedSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEA1757DDD42283795C34D13 /* Pods_SwrveEmbeddedSample.framework */; };
+		3E7DA953175C2416D895F2CE /* SwrveSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 8A96C55A9F3D0369FF1AC412 /* SwrveSDKCommon */; };
+		596D0280247533C0CBE4EA75 /* SwrveSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 765834D050AF52FE07EAF9F3 /* SwrveSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3A8CB66F2E670B45005F5FDF /* SwrveEmbeddedSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwrveEmbeddedSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A8CB7612E685E4F005F5FDF /* demo_campaigns.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = demo_campaigns.json; sourceTree = "<group>"; };
 		3A8CB8E22E73233B005F5FDF /* demo_campaigns.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = demo_campaigns.txt; sourceTree = "<group>"; };
-		66D8606DC944BCB574F39E9B /* Pods-SwrveEmbeddedSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveEmbeddedSample.debug.xcconfig"; path = "Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample.debug.xcconfig"; sourceTree = "<group>"; };
-		9BF6BA93F19E4E3DAAB4DF9A /* Pods-SwrveEmbeddedSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwrveEmbeddedSample.release.xcconfig"; path = "Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample.release.xcconfig"; sourceTree = "<group>"; };
-		EEA1757DDD42283795C34D13 /* Pods_SwrveEmbeddedSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwrveEmbeddedSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3A8CB6712E670B45005F5FDF /* SwrveEmbeddedSample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = SwrveEmbeddedSample;
 			sourceTree = "<group>";
 		};
@@ -36,21 +32,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C549D387537820A5BC001BAF /* Pods_SwrveEmbeddedSample.framework in Frameworks */,
+				596D0280247533C0CBE4EA75 /* SwrveSDK in Frameworks */,
+				3E7DA953175C2416D895F2CE /* SwrveSDKCommon in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1A2F02056F28A60749036C30 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				EEA1757DDD42283795C34D13 /* Pods_SwrveEmbeddedSample.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		3A8CB6662E670B45005F5FDF = {
 			isa = PBXGroup;
 			children = (
@@ -58,8 +47,6 @@
 				3A8CB7612E685E4F005F5FDF /* demo_campaigns.json */,
 				3A8CB6712E670B45005F5FDF /* SwrveEmbeddedSample */,
 				3A8CB6702E670B45005F5FDF /* Products */,
-				FBAF66AF56A13A4C5DA97BDB /* Pods */,
-				1A2F02056F28A60749036C30 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,15 +58,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FBAF66AF56A13A4C5DA97BDB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				66D8606DC944BCB574F39E9B /* Pods-SwrveEmbeddedSample.debug.xcconfig */,
-				9BF6BA93F19E4E3DAAB4DF9A /* Pods-SwrveEmbeddedSample.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -87,11 +65,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3A8CB67A2E670B48005F5FDF /* Build configuration list for PBXNativeTarget "SwrveEmbeddedSample" */;
 			buildPhases = (
-				96F3681238F29820994012EC /* [CP] Check Pods Manifest.lock */,
 				3A8CB66B2E670B45005F5FDF /* Sources */,
 				3A8CB66C2E670B45005F5FDF /* Frameworks */,
 				3A8CB66D2E670B45005F5FDF /* Resources */,
-				0F1A95E5F4821D2F43C225DE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -101,6 +77,10 @@
 				3A8CB6712E670B45005F5FDF /* SwrveEmbeddedSample */,
 			);
 			name = SwrveEmbeddedSample;
+			packageProductDependencies = (
+				765834D050AF52FE07EAF9F3 /* SwrveSDK */,
+				8A96C55A9F3D0369FF1AC412 /* SwrveSDKCommon */,
+			);
 			productName = SwrveEmbeddedSample;
 			productReference = 3A8CB66F2E670B45005F5FDF /* SwrveEmbeddedSample.app */;
 			productType = "com.apple.product-type.application";
@@ -129,6 +109,9 @@
 			);
 			mainGroup = 3A8CB6662E670B45005F5FDF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				97BB45AC98D728697326D123 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3A8CB6702E670B45005F5FDF /* Products */;
 			projectDirPath = "";
@@ -150,48 +133,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		0F1A95E5F4821D2F43C225DE /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwrveEmbeddedSample/Pods-SwrveEmbeddedSample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		96F3681238F29820994012EC /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwrveEmbeddedSample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3A8CB66B2E670B45005F5FDF /* Sources */ = {
@@ -325,7 +266,6 @@
 		};
 		3A8CB67B2E670B48005F5FDF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 66D8606DC944BCB574F39E9B /* Pods-SwrveEmbeddedSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -360,7 +300,6 @@
 		};
 		3A8CB67C2E670B48005F5FDF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9BF6BA93F19E4E3DAAB4DF9A /* Pods-SwrveEmbeddedSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -415,6 +354,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		97BB45AC98D728697326D123 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swrve/swrve-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		765834D050AF52FE07EAF9F3 /* SwrveSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97BB45AC98D728697326D123 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDK;
+		};
+		8A96C55A9F3D0369FF1AC412 /* SwrveSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97BB45AC98D728697326D123 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDKCommon;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3A8CB6672E670B45005F5FDF /* Project object */;
 }

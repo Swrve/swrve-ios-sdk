@@ -1,0 +1,128 @@
+{
+  "campaigns": [
+    {
+      "id": 900,
+      "start_date_iso": "2013-03-07T15:55:00Z",
+      "end_date_iso": "2044-12-05T16:41:40Z",
+      "timezone_type": "global",
+      "rules": {
+        "display_order": "random",
+        "dismiss_after_views": 5,
+        "delay_first_message": 0,
+        "min_delay_between_messages": 0
+      },
+      "message": {
+        "id": 901,
+        "name": "Fit",
+        "rules": {},
+        "template": {
+          "template_id": "20",
+          "formats": [
+            {
+              "orientation": "landscape",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1550
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1000
+                }
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "image": {
+                    "type": "asset",
+                    "value": "c8891dc537d4b0f36ccb16a34d989047af5b8a6e"
+                  },
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 2325
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 1500
+                  }
+                }
+              ],
+              "buttons": [],
+              "name": "landscape",
+              "language": "*",
+              "scale": 1
+            },
+            {
+              "orientation": "portrait",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1000
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1550
+                }
+              },
+              "images": [
+                {
+                  "name": "Background",
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "image": {
+                    "type": "asset",
+                    "value": "bc5f1b888921145eb25b37b9bd1fd0cbd3b52a82"
+                  },
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1500
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 2325
+                  }
+                }
+              ],
+              "buttons": [],
+              "name": "portrait",
+              "language": "*",
+              "scale": 1
+            }
+          ]
+        }
+      },
+      "triggers": []
+    }
+  ],
+  "rules": {
+    "min_delay_between_messages": 0,
+    "max_messages_per_session": 99999,
+    "delay_first_message": 0
+  },
+  "cdn_paths": {
+    "message_images": "https://content-cdn.swrve.com/messaging/message_image/"
+  },
+  "version": 2
+}

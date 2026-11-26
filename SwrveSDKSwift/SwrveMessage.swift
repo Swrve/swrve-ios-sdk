@@ -1,10 +1,6 @@
 import Foundation
 import UIKit
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 #if canImport(SwrveSDKCommon)
 import SwrveSDKCommon
 #endif
@@ -111,7 +107,8 @@ import SwrveSDKCommon
                                 return false
                             }
                         } else {
-                            var hasButtonImage = true
+                            // A button without a theme needs its image, or its dynamic image when it has one
+                            var hasButtonImage = false
                             if let buttonImage = button.image {
                                 hasButtonImage = assets.contains(buttonImage)
                             }

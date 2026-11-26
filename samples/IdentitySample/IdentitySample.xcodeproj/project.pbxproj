@@ -9,18 +9,16 @@
 /* Begin PBXBuildFile section */
 		1B77C7FE6F1DAA87AB962171 /* IdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79FF03C134EF18EADFAB67 /* IdentityView.swift */; };
 		29A2D719D8B1FBE26E036466 /* IdentitySampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51808F9B041EA455D46C597A /* IdentitySampleApp.swift */; };
-		5D0C5415FBEFD431B4558645 /* Pods_IdentitySample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 787476DE0556AE4FCBFF1CA5 /* Pods_IdentitySample.framework */; };
+		39728E6725D26929DEE269EE /* SwrveSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B3BDE7395FA76A5BA3A6969E /* SwrveSDK */; };
+		4CC0D85A4C31052B30321ADE /* SwrveSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = C28D3578ABE423551BE6A1C3 /* SwrveSDKCommon */; };
 		CDDA1348CFA451BA007A373F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D87A7ED717F849A9A5030F7 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2D869DBA14A16B175DE5F9E1 /* Pods-IdentitySample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IdentitySample.debug.xcconfig"; path = "Target Support Files/Pods-IdentitySample/Pods-IdentitySample.debug.xcconfig"; sourceTree = "<group>"; };
 		51808F9B041EA455D46C597A /* IdentitySampleApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IdentitySampleApp.swift; sourceTree = "<group>"; };
-		787476DE0556AE4FCBFF1CA5 /* Pods_IdentitySample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IdentitySample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B79FF03C134EF18EADFAB67 /* IdentityView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IdentityView.swift; sourceTree = "<group>"; };
 		7D87A7ED717F849A9A5030F7 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB1F87BD7902552404644505 /* IdentitySample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IdentitySample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF75E1DF7FBFCA57DF40498D /* Pods-IdentitySample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IdentitySample.release.xcconfig"; path = "Target Support Files/Pods-IdentitySample/Pods-IdentitySample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,23 +26,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D0C5415FBEFD431B4558645 /* Pods_IdentitySample.framework in Frameworks */,
+				39728E6725D26929DEE269EE /* SwrveSDK in Frameworks */,
+				4CC0D85A4C31052B30321ADE /* SwrveSDKCommon in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13FC26598E103446B46EB936 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				EF75E1DF7FBFCA57DF40498D /* Pods-IdentitySample.release.xcconfig */,
-				2D869DBA14A16B175DE5F9E1 /* Pods-IdentitySample.debug.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		1DB92B5F35877AA06D1FFF79 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -59,7 +48,6 @@
 				1DB92B5F35877AA06D1FFF79 /* Products */,
 				9DB18EBB230FBB8D4E560916 /* Frameworks */,
 				A86C675CECAA97211AEA8B90 /* IdentitySample */,
-				13FC26598E103446B46EB936 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,7 +55,6 @@
 			isa = PBXGroup;
 			children = (
 				FBA0F265C49FC7BB07C42F23 /* iOS */,
-				787476DE0556AE4FCBFF1CA5 /* Pods_IdentitySample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -97,17 +84,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 231E589E7D8B1EE1B879F87A /* Build configuration list for PBXNativeTarget "IdentitySample" */;
 			buildPhases = (
-				D03389905912DC1F68591346 /* [CP] Check Pods Manifest.lock */,
 				E5493B3275BDF87B9196C09A /* Sources */,
 				42C6FDA2942450EDFE22157E /* Frameworks */,
 				6ED37EFB19C5B9C5D6621E2F /* Resources */,
-				5400A4A4547133473585605F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = IdentitySample;
+			packageProductDependencies = (
+				B3BDE7395FA76A5BA3A6969E /* SwrveSDK */,
+				C28D3578ABE423551BE6A1C3 /* SwrveSDKCommon */,
+			);
 			productName = IdentitySample;
 			productReference = BB1F87BD7902552404644505 /* IdentitySample.app */;
 			productType = "com.apple.product-type.application";
@@ -131,6 +120,9 @@
 			);
 			mainGroup = 9282A1879E7EE45265C82462;
 			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				BCB2C90A5E3F1787E2737F18 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1DB92B5F35877AA06D1FFF79 /* Products */;
 			projectDirPath = "";
@@ -151,53 +143,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		5400A4A4547133473585605F /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-IdentitySample/Pods-IdentitySample-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-IdentitySample/Pods-IdentitySample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D03389905912DC1F68591346 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-IdentitySample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E5493B3275BDF87B9196C09A /* Sources */ = {
@@ -268,7 +213,6 @@
 		};
 		937F1B3022A5A6FFCF69CFE9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EF75E1DF7FBFCA57DF40498D /* Pods-IdentitySample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -289,7 +233,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -357,7 +301,6 @@
 		};
 		FD17810F531565786CA6E905 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2D869DBA14A16B175DE5F9E1 /* Pods-IdentitySample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -378,7 +321,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -404,6 +347,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BCB2C90A5E3F1787E2737F18 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swrve/swrve-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B3BDE7395FA76A5BA3A6969E /* SwrveSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BCB2C90A5E3F1787E2737F18 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDK;
+		};
+		C28D3578ABE423551BE6A1C3 /* SwrveSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BCB2C90A5E3F1787E2737F18 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDKCommon;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 184F397755B5D14BDD1ABDE2 /* Project object */;
 }

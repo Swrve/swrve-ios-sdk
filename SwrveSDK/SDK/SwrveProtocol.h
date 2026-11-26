@@ -38,7 +38,7 @@
 @class SwrveConfig;
 
 /*! The release version of this SDK. */
-#define SWRVE_SDK_VERSION "10.11.2"
+#define SWRVE_SDK_VERSION "10.12.0"
 
 /*! Defines the block signature for receiving resources after calling
  * Swrve userResources.
@@ -149,7 +149,10 @@ NSString * eventsPayloadAsJSON);
  * \param product The SDKProduct of the purchased item.
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product;
+#pragma clang diagnostic pop
 
 /*!
  * Call this when the user has bought something using real currency.
@@ -165,7 +168,10 @@ NSString * eventsPayloadAsJSON);
  * \param transaction The SKPaymentTransaction object received from the iTunes Store.
  * \returns SWRVE_SUCCESS if the call was successful, otherwise SWRVE_ERROR.
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 -(int) iap:(SKPaymentTransaction*) transaction product:(SKProduct*) product rewards:(SwrveIAPRewards*)rewards;
+#pragma clang diagnostic pop
 
 /*! Similar to IAP event but does not validate the receipt data server side.
  *
@@ -347,14 +353,19 @@ NSString * eventsPayloadAsJSON);
 
 #endif //TARGET_OS_IOS
 
-/*! Call this method from application:openURL:option
+/*! Call this method when your app receives an inbound deeplink url.
+
+ In a scene-based app the url arrives at scene:openURLContexts:. An app without a scene delegate
+ receives it at application:openURL:options: instead.
 
  @param url The deeplink url to process.
 
  @code
-    - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
-        [SwrveSDK handleDeeplink:url];
-        return YES;
+    - (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+        NSURL *url = URLContexts.anyObject.URL;
+        if (url) {
+            [SwrveSDK handleDeeplink:url];
+        }
     }
  @endcode
 */

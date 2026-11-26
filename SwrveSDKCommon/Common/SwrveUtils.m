@@ -21,7 +21,10 @@
 }
 
 + (float)estimate_dpi {
-    float scale = (float)[[UIScreen mainScreen] scale];
+    return [self estimateDpiForScale:(float)[[UIScreen mainScreen] scale]];
+}
+
++ (float)estimateDpiForScale:(float)scale {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         return 132.0f * scale;
     }

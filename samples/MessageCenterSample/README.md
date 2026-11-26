@@ -10,7 +10,7 @@ The list is not a feed you subscribe to — it is a snapshot you fetch. Campaign
 
 ## Setup
 
-1. `pod install`, then open `MessageCenterSample.xcworkspace` (not the `.xcodeproj`).
+1. Open `MessageCenterSample.xcodeproj`. Xcode resolves the Swrve SDK package automatically.
 2. In [`MessageCenterSampleApp.swift`](MessageCenterSample/MessageCenterSampleApp.swift), replace `YOUR_APP_ID` and `YOUR_API_KEY` with your own, from the Swrve dashboard under **Settings → Integration settings**.
 3. Run the app.
 

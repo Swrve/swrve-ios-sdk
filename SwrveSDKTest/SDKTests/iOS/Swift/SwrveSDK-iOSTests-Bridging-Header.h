@@ -13,3 +13,7 @@
 - (NSString *)signatureKey;
 @end
 
+@interface SwrveMessageViewController()
+@property(nonatomic) SwrveInAppStoryView *storyView;
+- (void)segmentFinishedAtIndex:(NSInteger)segmentIndex;
+@end

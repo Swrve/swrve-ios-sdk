@@ -38,6 +38,7 @@ static NSString *SWRVE_INFLUENCE_DATA = @"swrve.influence_data";
 static NSString *SWRVE_QA_USER = @"swrve.q1";
 //this has replaced swrve_device_id and short_device_id
 static NSString *SWRVE_DEVICE_UUID = @"swrve_device_uuid";
+static NSString *SWRVE_LARGEST_SCREEN = @"swrve_largest_screen";
 static NSString *SWRVE_BACKUP_DEFAULTS = @"swrve_backup_defaults";
 static NSString *SWRVE_USERS = @"swrve_users";
 static NSString *SWRVE_IDFA = @"swrve_ifda";
@@ -272,6 +273,22 @@ static dispatch_once_t swrveAppSupportDirOnceToken = 0;
         deviceUUID = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_DEVICE_UUID];
     }
     return deviceUUID;
+}
+
+//// SWRVE LARGEST SCREEN ////
+
++ (void)saveLargestScreen:(NSDictionary *)screen {
+    [[self defaults] setObject:screen forKey:SWRVE_LARGEST_SCREEN];
+    [SwrveLocalStorage writeValueToDictionaryFile:SWRVE_BACKUP_DEFAULTS value:screen key:SWRVE_LARGEST_SCREEN];
+}
+
++ (nullable NSDictionary *)largestScreen {
+    NSDictionary *screen = [[self defaults] dictionaryForKey:SWRVE_LARGEST_SCREEN];
+    if (screen == nil) {
+        id backup = [SwrveLocalStorage readValueFromDictionaryFile:SWRVE_BACKUP_DEFAULTS forKey:SWRVE_LARGEST_SCREEN];
+        screen = [backup isKindOfClass:[NSDictionary class]] ? backup : nil; // the file could hold anything if corrupted
+    }
+    return screen;
 }
 
 //// SWRVE USERS ////

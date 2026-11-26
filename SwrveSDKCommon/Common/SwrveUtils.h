@@ -20,6 +20,14 @@
 + (float)estimate_dpi;
 
 /**
+  Get an estimate for the dpi of the device's screen at a given scale
+
+  @param scale The screen's scale
+  @return dpi as float
+ */
++ (float)estimateDpiForScale:(float)scale;
+
+/**
   Get the machine namne for the device
  
   @return Machine name string

@@ -1,4 +1,5 @@
 #import "SwrveDeviceProperties.h"
+#import "SwrveSDKUtils.h"
 #if __has_include(<SwrveSDKCommon/SwrveLocalStorage.h>)
 #import <SwrveSDKCommon/SwrveLocalStorage.h>
 #import <SwrveSDKCommon/SwrvePermissions.h>
@@ -108,10 +109,10 @@ static NSString* PLATFORM =                             @"iOS "; // with trailin
     
     // Basic Device Properties
     UIDevice* device = [UIDevice currentDevice];
-    CGRect screen_bounds = [SwrveUtils deviceScreenBounds];
-    NSNumber* device_width  = [NSNumber numberWithFloat: (float)screen_bounds.size.width];
-    NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_bounds.size.height];
-    NSNumber* dpi = [NSNumber numberWithFloat:[SwrveUtils estimate_dpi]];
+    CGSize screen_size = [SwrveSDKUtils largestScreenSize];
+    NSNumber* device_width  = [NSNumber numberWithFloat: (float)screen_size.width];
+    NSNumber* device_height = [NSNumber numberWithFloat: (float)screen_size.height];
+    NSNumber* dpi = [NSNumber numberWithFloat:[SwrveSDKUtils largestScreenDpi]];
     
     [deviceProperties setValue:[SwrveUtils hardwareMachineName] forKey:SWRVE_DEVICE_NAME];
     [deviceProperties setValue:[[device systemName] lowercaseString]            forKey:SWRVE_OS];

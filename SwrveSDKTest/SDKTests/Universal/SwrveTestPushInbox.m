@@ -609,6 +609,67 @@ NSString *const RESPONSE_UNMODIFED = @"{\"state\": \"unmodified\"}";
     OCMVerify(times(1), [mockRestClient sendHttpRequest:OCMOCK_ANY completionHandler:OCMOCK_ANY]);
 }
 
+- (NSMutableDictionary *)validInboxMessage:(uint64_t)messageId {
+    return [@{
+        @"message_id": @(messageId),
+        @"variant_id": @11,
+        @"state": @"U",
+        @"sent_date": @1714555770000,
+        @"end_date": @32515660796000,
+    } mutableCopy];
+}
+
+- (NSArray<SwrvePushInboxMessage *> *)messagesFromInboxJson:(NSArray *)inboxJson {
+    SwrveRESTClient *restClient = [[SwrveRESTClient alloc] initWithTimeoutInterval:60];
+    SwrvePushInboxController *pushInbox = [[SwrvePushInboxController alloc]init:@"userid"
+                                                                        baseUrl:@"https://whatever.swrve.com/api/1/push_inbox_update"
+                                                                         apiKey:@"apiKey"
+                                                                   signatureKey:@"key"
+                                                                     restClient:restClient];
+    [pushInbox updatePushInbox:inboxJson writeToCache:NO];
+    return [pushInbox messages];
+}
+
+// A malformed numeric field is logged and that message skipped, the others are still delivered
+- (void)testPushInboxParse_InvalidNumericFieldIsSkipped {
+    NSArray *keys = @[@"message_id", @"variant_id", @"sent_date", @"end_date"];
+    NSArray *invalidValues = @[[NSNull null], @-1, @1.5, @"12345", @"abc"];
+
+    for (NSString *key in keys) {
+        NSMutableDictionary *missing = [self validInboxMessage:2];
+        [missing removeObjectForKey:key];
+        NSArray<SwrvePushInboxMessage *> *messages = [self messagesFromInboxJson:@[[self validInboxMessage:1], missing]];
+        XCTAssertEqual(messages.count, 1, @"%@ missing", key);
+        XCTAssertEqual(messages.firstObject.messageId, 1, @"%@ missing", key);
+
+        for (id value in invalidValues) {
+            NSMutableDictionary *invalid = [self validInboxMessage:2];
+            invalid[key] = value;
+            messages = [self messagesFromInboxJson:@[[self validInboxMessage:1], invalid]];
+            XCTAssertEqual(messages.count, 1, @"%@ = %@", key, value);
+            XCTAssertEqual(messages.firstObject.messageId, 1, @"%@ = %@", key, value);
+        }
+    }
+}
+
+- (void)testPushInboxParse_MillisecondTimestampsParse {
+    NSMutableDictionary *integralDouble = [self validInboxMessage:2];
+    integralDouble[@"sent_date"] = @1.75968e12;
+
+    NSArray<SwrvePushInboxMessage *> *messages = [self messagesFromInboxJson:@[[self validInboxMessage:1], integralDouble]];
+    XCTAssertEqual(messages.count, 2);
+    XCTAssertEqual(messages[0].sentDate, 1714555770000);
+    XCTAssertEqual(messages[0].endDate, 32515660796000);
+    XCTAssertEqual(messages[1].sentDate, 1759680000000);
+}
+
+- (void)testPushInboxParse_NonObjectEntryIsSkipped {
+    NSArray *inboxJson = @[[self validInboxMessage:1], @"not an object", @42, [NSNull null], @[]];
+    NSArray<SwrvePushInboxMessage *> *messages = [self messagesFromInboxJson:inboxJson];
+    XCTAssertEqual(messages.count, 1);
+    XCTAssertEqual(messages.firstObject.messageId, 1);
+}
+
 - (void) testInvokeCampaignsUpdateDelegate {
     // No campaigns section in the response, so the only invocation should be the startup one that
     // reports the first content attempt finishing.

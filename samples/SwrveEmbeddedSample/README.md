@@ -132,7 +132,7 @@ A `Set<AnyHashable>` of message IDs prevents duplicate impression reporting.
 ---
 ## Running the Sample
 Steps:
-1. `pod install` and open the workspace in Xcode.
+1. Open `SwrveEmbeddedSample.xcodeproj` in Xcode. It resolves the Swrve SDK package automatically.
 2. Build & run.
 3. Main menu opens with buttons to Carousel, Offers, Fixed Banner, Floating Banner, etc.
 4. Setup button allows to switch on live campaigns by entering credentials, otherwise offline mode loads off the shelf content.

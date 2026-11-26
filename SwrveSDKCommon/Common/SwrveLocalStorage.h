@@ -69,6 +69,8 @@ typedef enum SwrveTrackingState {
 + (void)saveQaUser:(NSDictionary *)qaUser;
 + (void)saveDeviceUUID:(NSString *)deviceUUID;
 + (NSString *)deviceUUID;
++ (void)saveLargestScreen:(NSDictionary *)screen;
++ (NSDictionary *)largestScreen;
 + (void)saveSwrveUsers:(NSData *)data;
 + (NSData *)swrveUsers;
 + (void)saveIDFA:(NSString *)idfa;

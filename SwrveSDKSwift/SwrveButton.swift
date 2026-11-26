@@ -1,9 +1,5 @@
 import UIKit
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 @objc public class SwrveButton: NSObject {
     @objc public var name: String?
     @objc public var buttonId: NSNumber?
@@ -65,12 +61,8 @@ import SwrveSDK
     }
 
     private func parseImages(from data: [String: Any]) {
-        if let imageUp = data["image_up"] as? [String: Any],
-            let imageValue = imageUp["value"] as? String
-        {
-            image = imageValue
-        } else {
-            image = "buttonup.png"
+        if let imageUp = data["image_up"] as? [String: Any] {
+            image = imageUp["value"] as? String
         }
 
         dynamicImageUrl = data["dynamic_image_url"] as? String

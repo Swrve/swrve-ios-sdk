@@ -31,6 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)renderScaleFor:(SwrveMessageFormat *)format withParentSize:(CGSize)sizeParent;
 
++ (UIScreen *)screenForWindow:(nullable UIWindow *)window;
+
++ (void)updateLargestScreenFromConnectedScenes;
++ (void)updateLargestScreenWithScene:(UIScene *)scene API_AVAILABLE(ios(13.0), tvos(13.0));
++ (BOOL)updateLargestScreenWithSize:(CGSize)size scale:(CGFloat)scale;
++ (CGSize)largestScreenSize;
++ (float)largestScreenDpi;
+
 + (nullable UIImage *)iamStoryDismissImage;
 
 @end

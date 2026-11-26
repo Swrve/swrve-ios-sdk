@@ -25,6 +25,9 @@ extern NSString *const SwrveCampaignKey;
 
 #pragma mark - rich media keys
 extern NSString *const SwrveNotificationMediaKey;
+extern NSString *const SwrveNotificationCarouselKey;
+extern NSString *const SwrveNotificationCarouselImageUrlKey;
+extern NSString *const SwrveNotificationCarouselCategoryIdentifier;
 extern NSString *const SwrveNotificationTitleKey;
 extern NSString *const SwrveNotificationSubtitleKey;
 extern NSString *const SwrveNotificationBodyKey;

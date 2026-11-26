@@ -70,7 +70,10 @@
 }
 
 - (void)updateBounds {
-    [self.view setFrame:[[UIScreen mainScreen] bounds]]; // Update the bounds to the new screen size
+    UIWindow *window = self.messageController.inAppMessageWindow;
+    if (window != nil) {
+        [self.view setFrame:window.bounds]; // the message window covers the scene the message is shown in
+    }
 }
 
 - (void)removeAllSubViews {

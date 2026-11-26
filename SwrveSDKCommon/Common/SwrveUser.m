@@ -112,9 +112,14 @@
     unsigned char digest[CC_MD5_DIGEST_LENGTH] = {0};
     unsigned int length = (unsigned int)[buffer length];
     CC_MD5_CTX context;
+    // Deliberately MD5: this digest is the session token the server verifies and the on-disk name
+    // of cached push assets, so changing the algorithm breaks authentication and orphans assets.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     CC_MD5_Init(&context);
     CC_MD5_Update(&context, [buffer bytes], length);
     CC_MD5_Final(digest, &context);
+#pragma clang diagnostic pop
     
     NSString* result = [NSString stringWithFormat:digestFormat,
                         digest[ 0], digest[ 1], digest[ 2], digest[ 3],

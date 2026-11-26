@@ -5,6 +5,11 @@
 #import "SwrveLocalStorage.h"
 #import "SwrveUtils.h"
 #import "SwrveQAEventsQueueManager.h"
+#if __has_include(<SwrveSDKCommon/SwrveSDKCommon-Swift.h>)
+#import <SwrveSDKCommon/SwrveSDKCommon-Swift.h>
+#elif __has_include("SwrveSDKCommon-Swift.h")
+#import "SwrveSDKCommon-Swift.h"
+#endif
 
 @interface SwrveTestQA : XCTestCase {
     id classSwrveUtilsMock;

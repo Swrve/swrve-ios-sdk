@@ -36,8 +36,8 @@ extension Optional where Wrapped == String {
 
     @objc init(_ objectData: NSDictionary) throws {
 
-        messageId = (objectData.value(forKey: "message_id") as? UInt64)!
-        variantId = (objectData.value(forKey: "variant_id") as? UInt64)!
+        messageId = try SwrvePushInboxMessage.requiredUInt64(objectData, "message_id")
+        variantId = try SwrvePushInboxMessage.requiredUInt64(objectData, "variant_id")
 
         let state = (objectData.value(forKey: "state") as? String)?.uppercased()
         self.state =
@@ -48,9 +48,19 @@ extension Optional where Wrapped == String {
             }
 
         customerJson = objectData.value(forKey: "customer_json") as? NSDictionary ?? nil
-        sentDate = (objectData.value(forKey: "sent_date") as? UInt64)!
-        endDate = (objectData.value(forKey: "end_date") as? UInt64)!
+        sentDate = try SwrvePushInboxMessage.requiredUInt64(objectData, "sent_date")
+        endDate = try SwrvePushInboxMessage.requiredUInt64(objectData, "end_date")
         trackingData = objectData.value(forKey: "mg_tracking_data") as? String ?? ""
+    }
+
+    // Accepts a whole non-negative number only. Anything else (missing, null, string, negative, fractional) throws so the caller skips this message instead of crashing.
+    private static func requiredUInt64(_ objectData: NSDictionary, _ key: String) throws -> UInt64 {
+        let value = objectData.value(forKey: key)
+        guard let number = value as? UInt64 else {
+            let received = value.map { "\($0)" } ?? "<nil>"
+            throw SwrveError.InvalidValue("\(key) \(received)")
+        }
+        return number
     }
 
 }

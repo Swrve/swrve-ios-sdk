@@ -1,10 +1,6 @@
 //swiftlint:disable file_length
 import Foundation
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 #if canImport(ActivityKit)
 import ActivityKit
 #endif
@@ -393,12 +389,15 @@ public enum SwrveSDKError: Error, Equatable {
 
     #endif
 
-    /// Call this method from application:openURL:option
+    /// Call this method when your app receives an inbound deeplink URL.
+    ///
+    /// In a scene-based app the URL arrives at `scene(_:openURLContexts:)`. An app without a scene
+    /// delegate receives it at `application(_:open:options:)` instead.
     /// - Parameter url: The deeplink URL to process.
     /// ```swift
-    /// func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    /// func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    ///     guard let url = URLContexts.first?.url else { return }
     ///     SwrveSDK.handleDeeplink(url)
-    ///     return true
     /// }
     /// ```
     @objc public class func handleDeeplink(_ url: URL) {

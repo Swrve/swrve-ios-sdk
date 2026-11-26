@@ -1,0 +1,268 @@
+{
+  "game_data": {},
+  "campaigns": [
+    {
+      "id": 749297,
+      "timezone_type": "global",
+      "start_date_iso": "2026-11-03T16:02:53Z",
+      "end_date_iso": "2038-01-01T01:00:00Z",
+      "rules": {
+        "delay_first_message": 0,
+        "dismiss_after_views": 99999,
+        "display_order": "random",
+        "min_delay_between_messages": 0
+      },
+      "triggers": [
+        {
+          "event_name": "show_images_message",
+          "conditions": {}
+        }
+      ],
+      "message_center": true,
+      "blackout_dates": [],
+      "interval_times": [],
+      "message": {
+        "id": 754818,
+        "name": "Screenshot test (used in public SwrveSDKTest) - Images",
+        "rules": {
+          "orientations": "portrait"
+        },
+        "priority": 9999,
+        "template": {
+          "formats": [
+            {
+              "name": "[0.6568627450980392]phones-foldables-tablets-global-census-2026-10-15 - portrait",
+              "orientation": "portrait",
+              "language": "*",
+              "size": {
+                "w": {
+                  "type": "number",
+                  "value": 1206
+                },
+                "h": {
+                  "type": "number",
+                  "value": 1875
+                }
+              },
+              "images": [
+                {
+                  "name": "Button 1",
+                  "iam_z_index": 1,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": -591
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 197
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 131
+                  },
+                  "image_width": 723,
+                  "image_height": 542,
+                  "image_filename": "image_1100x825.png",
+                  "image": {
+                    "type": "asset",
+                    "value": "991b322d97743c1e8d8f7b3248191ecfa9f9e764"
+                  },
+                  "color": {
+                    "type": "color",
+                    "value": "FFFFFF"
+                  },
+                  "accessibility_text": "alt text",
+                  "media_format": "image"
+                }
+              ],
+              "buttons": [
+                {
+                  "name": "Background",
+                  "iam_z_index": 0,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 1809
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 2810
+                  },
+                  "image_width": 1809,
+                  "image_height": 2810,
+                  "image_filename": "iam_test_2754x4278_portrait_safe1836x2855.png",
+                  "image_up": {
+                    "type": "asset",
+                    "value": "57a40d228c6f3530361a4558b53f50cfcc5c8cae"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "media_format": "image"
+                },
+                {
+                  "name": "Button 2",
+                  "iam_z_index": 2,
+                  "x": {
+                    "type": "number",
+                    "value": -328
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": -131
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 197
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 131
+                  },
+                  "image_width": 243,
+                  "image_height": 243,
+                  "image_filename": "icon_button_370x370.png",
+                  "image_up": {
+                    "type": "asset",
+                    "value": "5cdaa8c4ff8475da00d256cc7b89ee8406062ada"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "media_format": "image"
+                },
+                {
+                  "name": "Button 3",
+                  "iam_z_index": 3,
+                  "x": {
+                    "type": "number",
+                    "value": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 263
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 197
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 131
+                  },
+                  "image_width": 723,
+                  "image_height": 171,
+                  "image_filename": "image_button_1100x260.png",
+                  "image_up": {
+                    "type": "asset",
+                    "value": "094dfa7cb186b9dec5900db3112d0047ddee6b44"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "media_format": "image"
+                },
+                {
+                  "name": "Button 4",
+                  "iam_z_index": 4,
+                  "x": {
+                    "type": "number",
+                    "value": 3
+                  },
+                  "y": {
+                    "type": "number",
+                    "value": 754
+                  },
+                  "w": {
+                    "type": "number",
+                    "value": 197
+                  },
+                  "h": {
+                    "type": "number",
+                    "value": 131
+                  },
+                  "image_width": 985,
+                  "image_height": 263,
+                  "image_filename": "1500x400.png",
+                  "image_up": {
+                    "type": "asset",
+                    "value": "b48be8e5feef1310d250a54e718e67a8f26b2b7a"
+                  },
+                  "type": {
+                    "type": "text",
+                    "value": "DISMISS"
+                  },
+                  "action": {
+                    "type": "text",
+                    "value": ""
+                  },
+                  "game_id": {
+                    "type": "number",
+                    "value": ""
+                  },
+                  "text": {
+                    "type": "text",
+                    "value": "Dismiss text button"
+                  }
+                }
+              ],
+              "scaled_by": 0.6568627450980392,
+              "scaled_from": "phones-foldables-tablets-global-census-2026-10-15 - portrait",
+              "scale": 1
+            }
+          ]
+        }
+      },
+      "subject": "",
+      "in_app_version": 15
+    }
+  ],
+  "rules": {
+    "max_messages_per_session": 99999,
+    "delay_first_message": 0,
+    "min_delay_between_messages": 0
+  },
+  "cdn_paths": {
+    "message_images": "https://campaign-content.swrve.com/messaging/message_image/",
+    "message_fonts": "https://campaign-content.swrve.com/messaging/fonts/"
+  },
+  "version": 2
+}

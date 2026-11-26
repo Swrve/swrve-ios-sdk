@@ -2,20 +2,10 @@ import SwiftUI
 import SwrveSDK
 import UserNotifications
 
+// The SDK is created in the app delegate because pushResponseDelegate has to be set before
+// initialisation, and initialisation has to happen before the app finishes launching.
 @main
-struct PushNotificationSampleApp: App {
-    // The SDK is created in the app delegate because pushResponseDelegate has to be set before
-    // initialisation, and initialisation has to happen before the app finishes launching.
-    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-
-    var body: some Scene {
-        WindowGroup {
-            PushNotificationView()
-        }
-    }
-}
-
-final class AppDelegate: NSObject, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _ application: UIApplication,
@@ -50,10 +40,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        UNUserNotificationCenter.current().setBadgeCount(0)
-    }
-
     private func notificationCategory() -> UNNotificationCategory {
         UNNotificationCategory(
             identifier: "com.swrve.sampleAppButtons",
@@ -64,6 +50,54 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             intentIdentifiers: [],
             options: []
         )
+    }
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
+    }
+}
+
+// MARK: - Scene delegate
+
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        // The SwiftUI view, hosted in a UIKit window.
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = UIHostingController(rootView: PushNotificationView())
+        window?.makeKeyAndVisible()
+
+        // A URL that launched the app arrives here, and is not re-delivered below.
+        handle(connectionOptions.urlContexts)
+    }
+
+    /// Where a URL arrives when the app is already running. Before scenes this was `application(_:open:options:)` on the app delegate, which UIKit no longer calls.
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        handle(URLContexts)
+    }
+
+    private func handle(_ urlContexts: Set<UIOpenURLContext>) {
+        if let url = urlContexts.first?.url {
+            print("Deeplink: \(url)")
+        }
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
 }
 
@@ -80,8 +114,8 @@ extension AppDelegate: SwrvePushResponseDelegate {
         _ notification: UNNotification,
         withCompletionHandler completionHandler: ((UNNotificationPresentationOptions) -> Void)
     ) {
-        // Return options here to show the notification while the app is in the foreground.
-        completionHandler([])
+        // iOS suppresses notifications while the app is in the foreground unless you ask for them here. Return [] to keep that behaviour.
+        completionHandler([.banner, .sound])
     }
 }
 

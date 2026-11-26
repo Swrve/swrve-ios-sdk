@@ -3,6 +3,7 @@
 #import "SwrveTestHelper.h"
 #import "TestPermissionsDelegate.h"
 #import "SwrveMockNSURLProtocol.h"
+#import "SwrveSDKUtils.h"
 
 @interface SwrveDeviceProperties ()
 - (NSString *)installDate:(UInt64)appInstallTimeSeconds;
@@ -200,6 +201,14 @@
     NSDictionary *deviceInfoManagedAutostartFalse = [swrveDevicePropertiesManagedAutostartFalse deviceProperties];
     XCTAssertEqual([deviceInfoManagedAutostartFalse count], [self devicePropertyCount] + 1);
     XCTAssertEqualObjects([deviceInfoManagedAutostartFalse valueForKey:@"swrve.sdk_init_mode"] , @"auto");
+}
+
+- (void)testDevicePropertiesReportTheLargestScreen {
+    [SwrveSDKUtils updateLargestScreenWithSize:CGSizeMake(4000, 6000) scale:2]; // larger than any simulator
+    NSDictionary *deviceInfo = [[SwrveDeviceProperties new] deviceProperties];
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_width"], @4000);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_height"], @6000);
+    XCTAssertEqualObjects([deviceInfo objectForKey:@"swrve.device_dpi"], @([SwrveUtils estimateDpiForScale:2]));
 }
 
 - (void)testDeviceProperties_InstallDateLocal {

@@ -8,6 +8,12 @@
 + (void) handleContent:(UNNotificationContent *)notificationContent
 withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completion;
 
+/// As handleContent:withCompletionCallback:, and also downloads a carousel push's media into the App Group
+/// for the content extension.
++ (void) handleContent:(UNNotificationContent *)notificationContent
+withAppGroupIdentifier:(NSString *)appGroupIdentifier
+withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completion;
+
 + (NSURL *)notificationResponseReceived:(NSString *)identifier withUserInfo:(NSDictionary *)userInfo notificationRequestId:(NSString *)notificationRequestId;
 
 + (void)clearAllAuthenticatedNotifications;

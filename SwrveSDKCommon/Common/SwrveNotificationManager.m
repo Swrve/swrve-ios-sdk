@@ -1,11 +1,17 @@
 #import "SwrveCommon.h"
 #import "SwrveNotificationManager.h"
+#import "SwrveSEConfig.h"
 #import "SwrveNotificationOptions.h"
 #import "SwrveCampaignInfluence.h"
 #import "SwrveNotificationConstants.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveUser.h"
 #import "SwrveUtils.h"
+#if __has_include(<SwrveSDKCommon/SwrveSDKCommon-Swift.h>)
+#import <SwrveSDKCommon/SwrveSDKCommon-Swift.h>
+#elif __has_include("SwrveSDKCommon-Swift.h")
+#import "SwrveSDKCommon-Swift.h"
+#endif
 
 // Apple might call different AppDelegate callbacks that could end up calling the Swrve SDK with the same push payload.
 // This would result in bad engagement reports etc. The lastProcessedPushId var is used to check that the same push id
@@ -27,6 +33,12 @@ static NSString *lastProcessedPushId = nil;
 }
 
 + (void) handleContent:(UNNotificationContent *)notificationContent
+withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completion {
+    [self handleContent:notificationContent withAppGroupIdentifier:nil withCompletionCallback:completion];
+}
+
++ (void) handleContent:(UNNotificationContent *)notificationContent
+withAppGroupIdentifier:(NSString *)appGroupIdentifier
 withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completion {
 
     __block UNMutableNotificationContent *mutableNotificationContent = [notificationContent mutableCopy];
@@ -73,6 +85,11 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                 }
             }];
         }];
+    } else if (mutableNotificationContent.categoryIdentifier.length == 0 &&
+               [self carouselInUserInfo:mutableNotificationContent.userInfo]) {
+        // A content extension is matched on the notification's category, but a carousel has no
+        // buttons so categoryFromUserInfo generates nothing. Tag it so the extension can match.
+        mutableNotificationContent.categoryIdentifier = SwrveNotificationCarouselCategoryIdentifier;
     }
     
     NSDictionary *sw = [mutableNotificationContent.userInfo objectForKey:SwrveNotificationContentIdentifierKey];
@@ -157,6 +174,14 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         }
     }
     
+    if (appGroupIdentifier.length > 0 && [self carouselInUserInfo:mutableNotificationContent.userInfo]) {
+        dispatch_group_enter(notificationGroup);
+        NSDictionary *swrvePayload = [mutableNotificationContent.userInfo objectForKey:SwrveNotificationContentIdentifierKey];
+        [[self carouselImageLoaderForAppGroup:appGroupIdentifier] downloadCarouselMediaFromSwrvePayload:swrvePayload completion:^{
+            dispatch_group_leave(notificationGroup);
+        }];
+    }
+
     dispatch_group_notify(notificationGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         /** Everything is finished, return the result **/
         completion(mutableNotificationContent);
@@ -178,6 +203,27 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         }
     }
     return content;
+}
+
+// One loader per process, so its URL session is reused rather than created per push
++ (SwrveCarouselImageLoader *)carouselImageLoaderForAppGroup:(NSString *)appGroupIdentifier {
+    static SwrveCarouselImageLoader *loader = nil;
+    static NSString *loaderAppGroupIdentifier = nil;
+    @synchronized (self) {
+        if (loader == nil || ![loaderAppGroupIdentifier isEqualToString:appGroupIdentifier]) {
+            loader = [[SwrveCarouselImageLoader alloc] initWithAppGroupIdentifier:appGroupIdentifier];
+            // NSURLSession's default, as for a media attachment, so the extension's own time limit applies
+            loader.timeout = 60;
+            loaderAppGroupIdentifier = [appGroupIdentifier copy];
+        }
+        return loader;
+    }
+}
+
++ (BOOL)carouselInUserInfo:(NSDictionary *)userInfo {
+    NSDictionary *richDict = [userInfo objectForKey:SwrveNotificationContentIdentifierKey];
+    NSArray *carousel = [richDict objectForKey:SwrveNotificationCarouselKey];
+    return ([carousel isKindOfClass:[NSArray class]] && [carousel count] > 0);
 }
 
 + (UNNotificationCategory *)categoryFromUserInfo:(NSDictionary *)userInfo {
@@ -411,14 +457,31 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     if ([identifier isEqualToString:SwrveNotificationResponseDefaultActionKey]) {
         [SwrveLogger debug:@"SwrveNotificationManager: Performed a direct press on Swrve notification with id %@", notificationId];
 
+        NSDictionary *carouselItemTap = [SwrveSEConfig consumeCarouselItemTap:swrveCommon.appGroupIdentifier
+                                                                    requestId:notificationRequestId];
+
         // get deeplink if there is one, but pass it back up so it can be processed by calling code
         NSString *deeplinkString = [self deeplinkStringFromUserInfo:userInfo];
+        if (carouselItemTap != nil) {
+            deeplinkString = [carouselItemTap objectForKey:SwrveCarouselItemTapActionKey];
+            [SwrveLogger debug:@"SwrveNotificationManager: carousel item %@ tapped on notification %@",
+                               [carouselItemTap objectForKey:SwrveCarouselItemTapIndexKey], notificationId];
+        }
         if (deeplinkString != nil) {
             deeplinkUrl = [self deeplinkUrlfromString:deeplinkString];
         }
-        
+
+        if (carouselItemTap != nil) {
+            [self sendCarouselClickEvent:notificationId
+                             andUserInfo:userInfo
+                      andCarouselItemTap:carouselItemTap];
+        }
+
         // send engaged event
-        [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkString];
+        [self sendEngagedEventForNotificationId:notificationId
+                                    andUserInfo:userInfo
+                                    andDeeplink:deeplinkString
+                             andCarouselItemTap:carouselItemTap];
 
         // check for campaign, if present try to load
         [self loadCampaignFromNotification:userInfo];
@@ -460,7 +523,10 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
                                              andPayload:payload];
 
             // send engaged event
-            [self sendEngagedEventForNotificationId:notificationId andUserInfo:userInfo andDeeplink:deeplinkString];
+            [self sendEngagedEventForNotificationId:notificationId
+                                        andUserInfo:userInfo
+                                        andDeeplink:deeplinkString
+                                 andCarouselItemTap:nil];
 
             // check for open campaign action, if present try to load
             [self loadCampaignFromButton:selectedButton];
@@ -555,7 +621,42 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
     [swrveCommon sendQueuedEvents];
 }
 
-+ (void)sendEngagedEventForNotificationId:(NSString *)notificationId andUserInfo:(NSDictionary *)userInfo andDeeplink:(NSString *)deeplink {
++ (void)sendCarouselClickEvent:(NSString *)notificationId
+                   andUserInfo:(NSDictionary *)userInfo
+            andCarouselItemTap:(NSDictionary *)carouselItemTap {
+
+    NSNumber *itemIndex = [carouselItemTap objectForKey:SwrveCarouselItemTapIndexKey];
+    if (![itemIndex isKindOfClass:[NSNumber class]]) {
+        return;
+    }
+    NSMutableDictionary *payload = [NSMutableDictionary new];
+    [payload setObject:@YES forKey:@"carousel"];
+    [payload setObject:itemIndex forKey:@"slide"];
+    NSMutableDictionary *trackingPayload = [SwrveUtils pushTrackingPayload:userInfo];
+    if (trackingPayload != nil) {
+        [payload addEntriesFromDictionary:trackingPayload];
+    }
+    NSString *deeplink = [carouselItemTap objectForKey:SwrveCarouselItemTapActionKey];
+    if (deeplink != nil) {
+        [payload setObject:deeplink forKey:@"deeplink"];
+    }
+
+    NSMutableDictionary *eventData = [NSMutableDictionary new];
+    [eventData setValue:notificationId forKey:@"id"];
+    [eventData setValue:SwrveNotificationCampaignTypePush forKey:@"campaignType"];
+    [eventData setValue:@"slide_click" forKey:@"actionType"];
+    [eventData setValue:[itemIndex stringValue] forKey:@"contextId"];
+    [eventData setValue:payload forKey:@"payload"];
+
+    id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
+    [swrveCommon queueEvent:@"generic_campaign_event" data:eventData triggerCallback:false];
+    [swrveCommon sendQueuedEvents];
+}
+
++ (void)sendEngagedEventForNotificationId:(NSString *)notificationId
+                              andUserInfo:(NSDictionary *)userInfo
+                              andDeeplink:(NSString *)deeplink
+                       andCarouselItemTap:(NSDictionary *)carouselItemTap {
     id <SwrveCommonDelegate> swrveCommon = (id <SwrveCommonDelegate>) [SwrveCommon sharedInstance];
     NSString *campaignType = [self campaignTypeFromUserInfo:userInfo];
     if ([campaignType isEqualToString:SwrveNotificationCampaignTypeGeo]) {
@@ -581,6 +682,17 @@ withCompletionCallback:(void (^)(UNMutableNotificationContent *content))completi
         }
         if (deeplink != nil) {
             [payload setObject:deeplink forKey:@"deeplink"];
+        }
+        if ([self carouselInUserInfo:userInfo]) {
+            [payload setObject:@YES forKey:@"carousel"];
+        }
+        // The index of the item tapped, 0-based, matching the record the extension wrote and the
+        // `slide` reported by slide_view. Absent when the body was tapped rather than an item.
+        if (carouselItemTap != nil) {
+            NSNumber *itemIndex = [carouselItemTap objectForKey:SwrveCarouselItemTapIndexKey];
+            if (itemIndex != nil) {
+                [payload setObject:itemIndex forKey:@"slide"];
+            }
         }
         [swrveCommon sendPushNotificationEngagedEvent:notificationId withPayload:payload];
     }

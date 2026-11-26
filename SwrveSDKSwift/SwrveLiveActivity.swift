@@ -3,10 +3,6 @@ import Foundation
 import ActivityKit
 import CommonCrypto
 
-#if canImport(SwrveSDK)
-import SwrveSDK
-#endif
-
 #if canImport(SwrveSDKCommon)
 import SwrveSDKCommon
 #endif

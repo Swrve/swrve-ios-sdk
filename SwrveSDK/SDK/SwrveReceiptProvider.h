@@ -19,6 +19,9 @@
  */
 @interface SwrveReceiptProvider : NSObject
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (SwrveReceiptProviderResult *)receiptForTransaction:(SKPaymentTransaction *)transaction;
+#pragma clang diagnostic pop
 
 @end

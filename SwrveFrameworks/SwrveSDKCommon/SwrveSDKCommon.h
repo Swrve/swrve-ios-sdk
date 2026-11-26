@@ -28,7 +28,6 @@ FOUNDATION_EXPORT const unsigned char SwrveSDKCommonVersionString[];
 #import <SwrveSDKCommon/SwrveQA.h>
 #import <SwrveSDKCommon/SwrveQACampaignInfo.h>
 #import <SwrveSDKCommon/SwrveQAEventsQueueManager.h>
-#import <SwrveSDKCommon/SwrveQAImagePersonalizationInfo.h>
 #import <SwrveSDKCommon/SwrveCampaignInfluence.h>
 #import <SwrveSDKCommon/SwrveCampaignDelivery.h>
 #import <SwrveSDKCommon/SwrveUser.h>

@@ -10,7 +10,7 @@ Swrve gives every device its own anonymous user ID. `identify()` links that devi
 
 ## Setup
 
-1. `pod install`, then open `IdentitySample.xcworkspace` (not the `.xcodeproj`).
+1. Open `IdentitySample.xcodeproj`. Xcode resolves the Swrve SDK package automatically.
 2. In [`IdentitySampleApp.swift`](IdentitySample/IdentitySampleApp.swift), replace `YOUR_APP_ID` and `YOUR_API_KEY` with your own, from the Swrve dashboard under **Settings → Integration settings**.
 3. Run the app, enter any external user ID and tap **Identify**.
 

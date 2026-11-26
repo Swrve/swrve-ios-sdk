@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
+#import "SwrveSEConfig.h"
 
 #import "SwrvePush.h"
 #import "SwrveNotificationManager.h"
@@ -58,6 +59,158 @@
     OCMVerify([mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedButtonPayload mutableCopy] triggerCallback:false]);
     OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
 
+}
+
+- (void)testCarouselItemTapReportsSlideIndexAndItemDeeplink {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon appGroupIdentifier]).andReturn(@"app.groupid");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    id fileManagerMock = OCMPartialMock([NSFileManager defaultManager]);
+    OCMStub([fileManagerMock containerURLForSecurityApplicationGroupIdentifier:OCMOCK_ANY]).andReturn([NSURL new]);
+
+    // The index the content extension recorded is reported as-is, and the item's own action
+    // replaces the notification's deeplink.
+    [SwrveSEConfig saveCarouselItemTap:@"app.groupid"
+                             requestId:@"someId"
+                             itemIndex:1
+                                action:@"https://www.example.com/"];
+
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
+        @"deeplink": @"https://www.example.com/",
+        @"carousel": @YES,
+        @"slide": @1
+    };
+
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+    NSMutableDictionary *sw = [[userInfo objectForKey:@"_sw"] mutableCopy];
+    [sw setObject:@[@{@"image_url": @"https://example.com/item0.png"},
+                    @{@"image_url": @"https://example.com/item1.png"}] forKey:@"carousel"];
+    [userInfo setObject:sw forKey:@"_sw"];
+
+    [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey
+                                              withUserInfo:userInfo
+                                     notificationRequestId:@"someId"];
+
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
+    [fileManagerMock stopMocking];
+}
+
+- (void)testCarouselItemTapSendsSlideClick {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon appGroupIdentifier]).andReturn(@"app.groupid");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    id fileManagerMock = OCMPartialMock([NSFileManager defaultManager]);
+    OCMStub([fileManagerMock containerURLForSecurityApplicationGroupIdentifier:OCMOCK_ANY]).andReturn([NSURL new]);
+
+    [SwrveSEConfig saveCarouselItemTap:@"app.groupid"
+                             requestId:@"someId"
+                             itemIndex:1
+                                action:@"https://www.example.com/"];
+
+    NSDictionary *expectedSlideClick = @{
+        @"id": @"123",
+        @"campaignType": @"push",
+        @"actionType": @"slide_click",
+        @"contextId": @"1",
+        @"payload": @{
+            @"carousel": @YES,
+            @"slide": @1,
+            @"trackingData": self.trackingData,
+            @"platform": @"iOS",
+            @"deeplink": @"https://www.example.com/"
+        }
+    };
+
+    [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey
+                                              withUserInfo:[self carouselUserInfo]
+                                     notificationRequestId:@"someId"];
+
+    OCMVerify(times(1), [mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedSlideClick mutableCopy] triggerCallback:false]);
+    OCMVerify([mockSwrveCommon sendQueuedEvents]);
+    OCMVerify(times(1), [mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:OCMOCK_ANY]);
+    [fileManagerMock stopMocking];
+}
+
+- (void)testOpenAppCarouselItemTapSendsSlideClick {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    OCMStub([mockSwrveCommon appGroupIdentifier]).andReturn(@"app.groupid");
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    id fileManagerMock = OCMPartialMock([NSFileManager defaultManager]);
+    OCMStub([fileManagerMock containerURLForSecurityApplicationGroupIdentifier:OCMOCK_ANY]).andReturn([NSURL new]);
+
+    // An open_app item has no action, so the index is all its tap record carries, and the push's
+    // deeplink isn't reported in its place
+    [SwrveSEConfig saveCarouselItemTap:@"app.groupid" requestId:@"someId" itemIndex:0 action:nil];
+
+    NSDictionary *expectedSlideClick = @{
+        @"id": @"123",
+        @"campaignType": @"push",
+        @"actionType": @"slide_click",
+        @"contextId": @"0",
+        @"payload": @{
+            @"carousel": @YES,
+            @"slide": @0,
+            @"trackingData": self.trackingData,
+            @"platform": @"iOS"
+        }
+    };
+
+    [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey
+                                              withUserInfo:[self carouselUserInfo]
+                                     notificationRequestId:@"someId"];
+
+    OCMVerify(times(1), [mockSwrveCommon queueEvent:@"generic_campaign_event" data:[expectedSlideClick mutableCopy] triggerCallback:false]);
+    [fileManagerMock stopMocking];
+}
+
+- (void)testBodyTapOnCarouselPushStillReportsCarousel {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    // No carousel item was tapped — the user pressed the notification body. That is still an
+    // engagement with a carousel push, so `carousel` must be reported. `slide` must not be, since
+    // no particular item was engaged with.
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS",
+        @"carousel": @YES
+    };
+
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+    NSMutableDictionary *sw = [[userInfo objectForKey:@"_sw"] mutableCopy];
+    [sw setObject:@[@{@"image_url": @"https://example.com/item0.png"}] forKey:@"carousel"];
+    [userInfo setObject:sw forKey:@"_sw"];
+
+    [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey
+                                              withUserInfo:userInfo
+                                     notificationRequestId:@"someId"];
+
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
+    OCMVerify(never(), [mockSwrveCommon queueEvent:@"generic_campaign_event" data:OCMOCK_ANY triggerCallback:false]);
+}
+
+- (void)testBodyTapOnNonCarouselPushDoesNotReportCarousel {
+    id mockSwrveCommon = OCMProtocolMock(@protocol(SwrveCommonDelegate));
+    [SwrveCommon addSharedInstance:mockSwrveCommon];
+
+    NSDictionary *expectedEngagedPayload = @{
+        @"trackingData": self.trackingData,
+        @"platform": @"iOS"
+    };
+
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+
+    [SwrveNotificationManager notificationResponseReceived:SwrveNotificationResponseDefaultActionKey
+                                              withUserInfo:userInfo
+                                     notificationRequestId:@"someId"];
+
+    OCMVerify([mockSwrveCommon sendPushNotificationEngagedEvent:@"123" withPayload:[expectedEngagedPayload mutableCopy]]);
+    OCMVerify(never(), [mockSwrveCommon queueEvent:@"generic_campaign_event" data:OCMOCK_ANY triggerCallback:false]);
 }
 
 - (void)testNotificationResponseReceivedWithInvalidDeeplinkStillSendsDeeplinkPayload {
@@ -210,6 +363,80 @@
     [center setNotificationCategories:[NSSet new]];
 }
 
+- (UNMutableNotificationContent *)carouselContentWithCategory:(NSString *)category {
+    UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
+    testContent.userInfo = @{@"_sw": @{
+        @"carousel": @[
+            @{@"image_url": @"https://sample/url/item0.png"}
+        ]
+    }};
+    if (category != nil) {
+        testContent.categoryIdentifier = category;
+    }
+    return testContent;
+}
+
+- (NSString *)categoryAfterHandleContent:(UNMutableNotificationContent *)testContent {
+    __block NSString *result = nil;
+    XCTestExpectation *handleContent = [self expectationWithDescription:@"handleContent"];
+    [SwrveNotificationManager handleContent:testContent withCompletionCallback:^(UNMutableNotificationContent *content) {
+        result = content.categoryIdentifier;
+        [handleContent fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    return result;
+}
+
+- (void)testCarouselCategoryAddedWhenNoneSet {
+    NSString *category = [self categoryAfterHandleContent:[self carouselContentWithCategory:nil]];
+    XCTAssertEqualObjects(@"swrve.carousel", category);
+}
+
+- (void)testCarouselCategoryAddedWithAppGroup {
+    UNMutableNotificationContent *testContent = [self carouselContentWithCategory:nil];
+
+    __block UNMutableNotificationContent *result = nil;
+    XCTestExpectation *handleContent = [self expectationWithDescription:@"handleContent"];
+    [SwrveNotificationManager handleContent:testContent withAppGroupIdentifier:@"group.com.swrve.carouseltests" withCompletionCallback:^(UNMutableNotificationContent *content) {
+        result = content;
+        [handleContent fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+
+    XCTAssertEqualObjects(@"swrve.carousel", result.categoryIdentifier);
+}
+
+- (void)testCarouselCategoryDoesNotOverwriteExistingCategory {
+    NSString *category = [self categoryAfterHandleContent:[self carouselContentWithCategory:@"customerCategory"]];
+    XCTAssertEqualObjects(@"customerCategory", category);
+}
+
+- (void)testCarouselCategoryNotAddedWithoutCarousel {
+    UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
+    testContent.userInfo = @{@"_sw": @{@"media": @{@"title": @"Sample Title"}}};
+
+    NSString *category = [self categoryAfterHandleContent:testContent];
+    XCTAssertEqualObjects(@"", category);
+}
+
+- (void)testGeneratedButtonCategoryWinsOverCarouselCategory {
+    UNMutableNotificationContent *testContent = [[UNMutableNotificationContent alloc] init];
+    testContent.userInfo = @{@"_sw": @{
+        @"carousel": @[
+            @{@"image_url": @"https://sample/url/item0.png"}
+        ],
+        @"buttons": @[
+            @{@"title": @"Custom button open app", @"action_type": @"open_app", @"action": @""}
+        ]
+    }};
+
+    NSString *category = [self categoryAfterHandleContent:testContent];
+    XCTAssertNotEqualObjects(@"swrve.carousel", category);
+    XCTAssertTrue([category hasPrefix:@"swrve-"], @"expected a generated category, got %@", category);
+
+    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:[NSSet new]];
+}
+
 - (NSDictionary *)userInfoForCampaignType:(NSString *)campaignType {
     NSDictionary *standardInfo = @{
         @"_p": @"123",
@@ -244,6 +471,17 @@
         [allInfo setObject:self.trackingData forKey:@"_td"];
     }
     return allInfo;
+}
+
+/// Has a push deeplink of its own, so tests can check an item's event never reports it.
+- (NSDictionary *)carouselUserInfo {
+    NSMutableDictionary *userInfo = [[self userInfoForCampaignType:@"iam"] mutableCopy];
+    [userInfo setObject:@"swrve://push-deeplink" forKey:@"_sd"];
+    NSMutableDictionary *sw = [[userInfo objectForKey:@"_sw"] mutableCopy];
+    [sw setObject:@[@{@"image_url": @"https://example.com/item0.png"},
+                    @{@"image_url": @"https://example.com/item1.png"}] forKey:@"carousel"];
+    [userInfo setObject:sw forKey:@"_sw"];
+    return userInfo;
 }
 
 -(NSDictionary *)addtionalPayload:(NSString *)campaignType actionType:(NSString *)actionType{

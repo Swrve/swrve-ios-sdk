@@ -2,7 +2,11 @@
 #import "SwrveCommon.h"
 #import "SwrveLocalStorage.h"
 #import "SwrveQAEventsQueueManager.h"
-#import "SwrveQAImagePersonalizationInfo.h"
+#if __has_include(<SwrveSDKCommon/SwrveSDKCommon-Swift.h>)
+#import <SwrveSDKCommon/SwrveSDKCommon-Swift.h>
+#elif __has_include("SwrveSDKCommon-Swift.h")
+#import "SwrveSDKCommon-Swift.h"
+#endif
 #import "SwrveEvents.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)

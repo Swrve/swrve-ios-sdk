@@ -3,19 +3,20 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		05E3783B7356821525192125 /* MultiplePushProvidersSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F6BB31683A64691A6E5F3B1 /* MultiplePushProvidersSampleApp.swift */; };
-		08BC72C9AAA6AB7580428F22 /* Pods_MultiplePushProvidersSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EF6941389DADBE1C64BE412 /* Pods_MultiplePushProvidersSample.framework */; };
 		0E48AA88092A565E7A5573F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 142E385C08543BFAB03FBA6E /* Assets.xcassets */; };
 		1834348337CF73ADEF910299 /* PushActivityLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237EA9AE8D16D9181CF2343F /* PushActivityLog.swift */; };
+		2842FBA95478BB3F8A2DF052 /* SwrveSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 06FB484D638E83D95250189E /* SwrveSDK */; };
 		5FA761A0F1FDCAD82F3FEB2D /* PushActivityLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237EA9AE8D16D9181CF2343F /* PushActivityLog.swift */; };
+		663BAC2AA7CD137C3BA79063 /* SwrveSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 508A68E36169910C37CCA6D7 /* SwrveSDKCommon */; };
 		8EE3F22CEA6734C9304E7CBA /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E0FE6DDC8A09FE2FF7F9AB /* NotificationService.swift */; };
 		90C476168213600A0A7B493F /* MultiplePushProvidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC31CF5D7343FD77893EF2C /* MultiplePushProvidersView.swift */; };
 		A2763AE8C3F3EA403E775178 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC6DE792179110C7403D911 /* Foundation.framework */; };
-		BAEF0E4EB049E0AFCD057BA3 /* Pods_MultiplePushProvidersSampleServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3713231D1C75E7B4BE609A24 /* Pods_MultiplePushProvidersSampleServiceExtension.framework */; };
+		A48A96AE82ADFCBD01A3DCF5 /* SwrveSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 134A7BB21527D69007E9C87C /* SwrveSDKCommon */; };
 		BAF8D1A188DD8858FBFAACBA /* MultiplePushProvidersSampleServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 08B48D06F341746E1002C873 /* MultiplePushProvidersSampleServiceExtension.appex */; };
 		CE0236ECCB1814CA5744433B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC6DE792179110C7403D911 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -51,17 +52,11 @@
 		0EC31CF5D7343FD77893EF2C /* MultiplePushProvidersView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiplePushProvidersView.swift; sourceTree = "<group>"; };
 		142E385C08543BFAB03FBA6E /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		237EA9AE8D16D9181CF2343F /* PushActivityLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PushActivityLog.swift; sourceTree = "<group>"; };
-		2D966C2CAEFA5E0739BF7A3F /* Pods-MultiplePushProvidersSampleServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MultiplePushProvidersSampleServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-MultiplePushProvidersSampleServiceExtension/Pods-MultiplePushProvidersSampleServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		2F6BB31683A64691A6E5F3B1 /* MultiplePushProvidersSampleApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiplePushProvidersSampleApp.swift; sourceTree = "<group>"; };
-		3713231D1C75E7B4BE609A24 /* Pods_MultiplePushProvidersSampleServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MultiplePushProvidersSampleServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3EF6941389DADBE1C64BE412 /* Pods_MultiplePushProvidersSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MultiplePushProvidersSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		46E0FE6DDC8A09FE2FF7F9AB /* NotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		7063BB6B718864A4FB87C732 /* MultiplePushProvidersSampleServiceExtension.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MultiplePushProvidersSampleServiceExtension.entitlements; sourceTree = "<group>"; };
-		7D725044E5CF1FF97DABC28D /* Pods-MultiplePushProvidersSampleServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MultiplePushProvidersSampleServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-MultiplePushProvidersSampleServiceExtension/Pods-MultiplePushProvidersSampleServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		84679306F855ECC68EC3F6F2 /* MultiplePushProvidersSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiplePushProvidersSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EAE201A61FD04B680D17B84 /* MultiplePushProvidersSample.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MultiplePushProvidersSample.entitlements; sourceTree = "<group>"; };
-		B5854B2A34A6DE9BD76F2752 /* Pods-MultiplePushProvidersSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MultiplePushProvidersSample.debug.xcconfig"; path = "Target Support Files/Pods-MultiplePushProvidersSample/Pods-MultiplePushProvidersSample.debug.xcconfig"; sourceTree = "<group>"; };
-		E3689B35735EB037C740AF11 /* Pods-MultiplePushProvidersSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MultiplePushProvidersSample.release.xcconfig"; path = "Target Support Files/Pods-MultiplePushProvidersSample/Pods-MultiplePushProvidersSample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +65,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2763AE8C3F3EA403E775178 /* Foundation.framework in Frameworks */,
-				BAEF0E4EB049E0AFCD057BA3 /* Pods_MultiplePushProvidersSampleServiceExtension.framework in Frameworks */,
+				A48A96AE82ADFCBD01A3DCF5 /* SwrveSDKCommon in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,7 +74,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE0236ECCB1814CA5744433B /* Foundation.framework in Frameworks */,
-				08BC72C9AAA6AB7580428F22 /* Pods_MultiplePushProvidersSample.framework in Frameworks */,
+				2842FBA95478BB3F8A2DF052 /* SwrveSDK in Frameworks */,
+				663BAC2AA7CD137C3BA79063 /* SwrveSDKCommon in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,21 +86,8 @@
 			isa = PBXGroup;
 			children = (
 				4D8D5D1538CCD01396B457A5 /* iOS */,
-				3EF6941389DADBE1C64BE412 /* Pods_MultiplePushProvidersSample.framework */,
-				3713231D1C75E7B4BE609A24 /* Pods_MultiplePushProvidersSampleServiceExtension.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		234B0CA4AF071BD9F55879E1 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				E3689B35735EB037C740AF11 /* Pods-MultiplePushProvidersSample.release.xcconfig */,
-				B5854B2A34A6DE9BD76F2752 /* Pods-MultiplePushProvidersSample.debug.xcconfig */,
-				7D725044E5CF1FF97DABC28D /* Pods-MultiplePushProvidersSampleServiceExtension.release.xcconfig */,
-				2D966C2CAEFA5E0739BF7A3F /* Pods-MultiplePushProvidersSampleServiceExtension.debug.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		4B2C646C8B11CB1FA2AC927B = {
@@ -114,7 +97,6 @@
 				2112A7033FAC22CC00B9B76C /* Frameworks */,
 				8267083D2D9886082D3F80B1 /* MultiplePushProvidersSample */,
 				6BF24593D4235803DE990938 /* MultiplePushProvidersSampleServiceExtension */,
-				234B0CA4AF071BD9F55879E1 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -164,12 +146,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 81EAFC6BB7EEED2CF7697CF8 /* Build configuration list for PBXNativeTarget "MultiplePushProvidersSample" */;
 			buildPhases = (
-				30DFBB8725410C8A2C3D0EC2 /* [CP] Check Pods Manifest.lock */,
 				84C17FF058FED280316AE86A /* Sources */,
 				A6BEE1E02782A20DD31E318C /* Frameworks */,
 				08F3CA96EC95ACC764726D19 /* Resources */,
 				5FAA006A1F064C27ED0A99B6 /* Embed Foundation Extensions */,
-				4B561C19C57F079CF337C856 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -177,6 +157,10 @@
 				7A0C47034D7B9AF7C5AA1D4F /* PBXTargetDependency */,
 			);
 			name = MultiplePushProvidersSample;
+			packageProductDependencies = (
+				06FB484D638E83D95250189E /* SwrveSDK */,
+				508A68E36169910C37CCA6D7 /* SwrveSDKCommon */,
+			);
 			productName = MultiplePushProvidersSample;
 			productReference = 84679306F855ECC68EC3F6F2 /* MultiplePushProvidersSample.app */;
 			productType = "com.apple.product-type.application";
@@ -185,7 +169,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BFF7C83C95DE0C28E3CFDA16 /* Build configuration list for PBXNativeTarget "MultiplePushProvidersSampleServiceExtension" */;
 			buildPhases = (
-				F15987B19D2B0573A7A745C3 /* [CP] Check Pods Manifest.lock */,
 				80717BDD2BAFE478D527B133 /* Sources */,
 				9AD408FA514F80DCA0ABBE23 /* Frameworks */,
 				1D9EFC1033D771F5231CBA4F /* Resources */,
@@ -195,6 +178,9 @@
 			dependencies = (
 			);
 			name = MultiplePushProvidersSampleServiceExtension;
+			packageProductDependencies = (
+				134A7BB21527D69007E9C87C /* SwrveSDKCommon */,
+			);
 			productName = MultiplePushProvidersSampleServiceExtension;
 			productReference = 08B48D06F341746E1002C873 /* MultiplePushProvidersSampleServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -217,6 +203,9 @@
 				Base,
 			);
 			mainGroup = 4B2C646C8B11CB1FA2AC927B;
+			packageReferences = (
+				BC32BAF90262C0E890761A69 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */,
+			);
 			productRefGroup = B4AA27687A180395EF59110B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -244,75 +233,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		30DFBB8725410C8A2C3D0EC2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MultiplePushProvidersSample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4B561C19C57F079CF337C856 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MultiplePushProvidersSample/Pods-MultiplePushProvidersSample-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDK/SwrveSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/SwrveSDKCommon/SwrveSDKCommon.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwrveSDKCommon.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MultiplePushProvidersSample/Pods-MultiplePushProvidersSample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F15987B19D2B0573A7A745C3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MultiplePushProvidersSampleServiceExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		80717BDD2BAFE478D527B133 /* Sources */ = {
@@ -348,7 +268,6 @@
 /* Begin XCBuildConfiguration section */
 		29AA57CA56933BDC254A9DE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B5854B2A34A6DE9BD76F2752 /* Pods-MultiplePushProvidersSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -363,20 +282,22 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		6041D404D2956791B47B5017 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E3689B35735EB037C740AF11 /* Pods-MultiplePushProvidersSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -391,14 +312,17 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = swrve.RichPushSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -451,7 +375,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -519,7 +444,6 @@
 		};
 		914373E2454B16432CC71C98 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2D966C2CAEFA5E0739BF7A3F /* Pods-MultiplePushProvidersSampleServiceExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = MultiplePushProvidersSampleServiceExtension/MultiplePushProvidersSampleServiceExtension.entitlements;
@@ -535,13 +459,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		DFC850DA66C0759FC1DF4F15 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D725044E5CF1FF97DABC28D /* Pods-MultiplePushProvidersSampleServiceExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = MultiplePushProvidersSampleServiceExtension/MultiplePushProvidersSampleServiceExtension.entitlements;
@@ -557,7 +480,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -593,6 +516,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BC32BAF90262C0E890761A69 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swrve/swrve-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		06FB484D638E83D95250189E /* SwrveSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC32BAF90262C0E890761A69 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDK;
+		};
+		134A7BB21527D69007E9C87C /* SwrveSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC32BAF90262C0E890761A69 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDKCommon;
+		};
+		508A68E36169910C37CCA6D7 /* SwrveSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC32BAF90262C0E890761A69 /* XCRemoteSwiftPackageReference "swrve-ios-sdk" */;
+			productName = SwrveSDKCommon;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C7C2F3F19C5B2D222C6D9BB8 /* Project object */;
 }

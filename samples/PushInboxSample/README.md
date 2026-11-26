@@ -12,7 +12,7 @@ The API is small — four calls and a delegate. Most of what is worth knowing is
 
 ## Setup
 
-1. `pod install`, then open `PushInboxSample.xcworkspace` (not the `.xcodeproj`).
+1. Open `PushInboxSample.xcodeproj`. Xcode resolves the Swrve SDK package automatically.
 2. In [`PushInboxSampleApp.swift`](PushInboxSample/PushInboxSampleApp.swift), replace `YOUR_APP_ID` and `YOUR_API_KEY` with your own, from the Swrve dashboard under **Settings → Integration settings**.
 3. Run the app, enter an external user ID on the **Home** tab, and press **Identify**.
 4. Open the **Inbox** tab.
